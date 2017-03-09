@@ -2825,6 +2825,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/include\"";
 				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS\"",
@@ -2852,6 +2853,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/include\"";
 				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS\"",
@@ -2885,6 +2887,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS",
 				);
 				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SKIP_INSTALL = YES;
@@ -2911,6 +2914,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS",
 				);
 				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SKIP_INSTALL = YES;
@@ -2941,6 +2945,7 @@
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -2968,6 +2973,7 @@
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Release;
 		};
