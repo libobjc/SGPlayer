@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 
 @class SGState;
 @class SGProgress;

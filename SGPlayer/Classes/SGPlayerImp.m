@@ -6,7 +6,7 @@
 //  Copyright © 2016年 single. All rights reserved.
 //
 
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 #import "SGPlayerMacro.h"
 #import "SGPlayerNotification.h"
 #import "SGDisplayView.h"

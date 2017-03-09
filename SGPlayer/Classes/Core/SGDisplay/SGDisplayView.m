@@ -8,7 +8,7 @@
 
 #import "SGDisplayView.h"
 #import "SGPlayerMacro.h"
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 #import "SGAVPlayer.h"
 #import "SGGLAVView.h"
 #import "SGGLFFView.h"

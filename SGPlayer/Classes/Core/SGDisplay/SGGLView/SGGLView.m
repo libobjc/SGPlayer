@@ -8,7 +8,7 @@
 
 #import "SGGLView.h"
 #import "SGPlayerMacro.h"
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 #import "SGGLNormalModel.h"
 #import "SGGLVRModel.h"
 #import "SGMatrix.h"

@@ -7,7 +7,7 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 #import "SGFFDecoder.h"
 #import "SGFingerRotation.h"
 

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayer.h"
+#import "SGPlayerImp.h"
 
 @interface SGFFPlayer : NSObject
 

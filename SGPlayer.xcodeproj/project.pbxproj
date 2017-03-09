@@ -10,27 +10,27 @@
 		9C0912421E71287D00E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123D1E71283100E5AA46 /* SGPlatform.framework */; };
 		9C0912431E71288400E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123F1E71283100E5AA46 /* SGPlatform.framework */; };
 		9C0912441E71288800E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C0912411E71283100E5AA46 /* SGPlatform.framework */; };
-		9C478EFF1E713A3200AD4289 /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayer.h */; };
-		9C478F001E713A3200AD4289 /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayer.h */; };
-		9C478F011E713A3200AD4289 /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayer.h */; };
-		9C478F021E713A3200AD4289 /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayer.m */; };
-		9C478F031E713A3200AD4289 /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayer.m */; };
-		9C478F041E713A3200AD4289 /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayer.m */; };
-		9C478F051E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; };
-		9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; };
-		9C478F071E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; };
+		9C478EFF1E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F001E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F011E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F021E713A3200AD4289 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
+		9C478F031E713A3200AD4289 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
+		9C478F041E713A3200AD4289 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
+		9C478F051E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F071E713A3200AD4289 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C478F081E713A3200AD4289 /* SGPlayerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFA1E713A3200AD4289 /* SGPlayerAction.m */; };
 		9C478F091E713A3200AD4289 /* SGPlayerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFA1E713A3200AD4289 /* SGPlayerAction.m */; };
 		9C478F0A1E713A3200AD4289 /* SGPlayerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFA1E713A3200AD4289 /* SGPlayerAction.m */; };
-		9C478F0B1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; };
-		9C478F0C1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; };
-		9C478F0D1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; };
+		9C478F0B1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F0C1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F0D1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C478F0E1E713A3200AD4289 /* SGPlayerDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFC1E713A3200AD4289 /* SGPlayerDecoder.m */; };
 		9C478F0F1E713A3200AD4289 /* SGPlayerDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFC1E713A3200AD4289 /* SGPlayerDecoder.m */; };
 		9C478F101E713A3200AD4289 /* SGPlayerDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFC1E713A3200AD4289 /* SGPlayerDecoder.m */; };
-		9C478F111E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; };
-		9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; };
-		9C478F131E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; };
+		9C478F111E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C478F131E713A3200AD4289 /* SGPlayerTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C478F141E713A3200AD4289 /* SGPlayerTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFE1E713A3200AD4289 /* SGPlayerTrack.m */; };
 		9C478F151E713A3200AD4289 /* SGPlayerTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFE1E713A3200AD4289 /* SGPlayerTrack.m */; };
 		9C478F161E713A3200AD4289 /* SGPlayerTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFE1E713A3200AD4289 /* SGPlayerTrack.m */; };
@@ -849,8 +849,8 @@
 
 /* Begin PBXFileReference section */
 		9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SGPlatform.xcodeproj; path = Vendors/SGPlatform/SGPlatform.xcodeproj; sourceTree = "<group>"; };
-		9C478EF71E713A3200AD4289 /* SGPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
-		9C478EF81E713A3200AD4289 /* SGPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayer.m; sourceTree = "<group>"; };
+		9C478EF71E713A3200AD4289 /* SGPlayerImp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerImp.h; sourceTree = "<group>"; };
+		9C478EF81E713A3200AD4289 /* SGPlayerImp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayerImp.m; sourceTree = "<group>"; };
 		9C478EF91E713A3200AD4289 /* SGPlayerAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerAction.h; sourceTree = "<group>"; };
 		9C478EFA1E713A3200AD4289 /* SGPlayerAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayerAction.m; sourceTree = "<group>"; };
 		9C478EFB1E713A3200AD4289 /* SGPlayerDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerDecoder.h; sourceTree = "<group>"; };
@@ -1216,8 +1216,8 @@
 		9C478EF31E7139E500AD4289 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				9C478EF71E713A3200AD4289 /* SGPlayer.h */,
-				9C478EF81E713A3200AD4289 /* SGPlayer.m */,
+				9C478EF71E713A3200AD4289 /* SGPlayerImp.h */,
+				9C478EF81E713A3200AD4289 /* SGPlayerImp.m */,
 				9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */,
 				9C478EFE1E713A3200AD4289 /* SGPlayerTrack.m */,
 				9C478EF91E713A3200AD4289 /* SGPlayerAction.h */,
@@ -1740,6 +1740,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C478F111E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
+				9C478F0B1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
+				9C478F051E713A3200AD4289 /* SGPlayerAction.h in Headers */,
+				9C478EFF1E713A3200AD4289 /* SGPlayerImp.h in Headers */,
 				9C47922C1E713B1000AD4289 /* srp.h in Headers */,
 				9C4790DF1E713B0F00AD4289 /* eval.h in Headers */,
 				9C478F651E713AC600AD4289 /* SGSensors.h in Headers */,
@@ -1782,7 +1786,6 @@
 				9C4791DE1E713B1000AD4289 /* krb5_asn.h in Headers */,
 				9C4791781E713B1000AD4289 /* swscale.h in Headers */,
 				9C47911E1E713B0F00AD4289 /* mathematics.h in Headers */,
-				9C478F111E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
 				9C4792441E713B1000AD4289 /* tls1.h in Headers */,
 				9C4792291E713B1000AD4289 /* sha.h in Headers */,
 				9C4792021E713B1000AD4289 /* ossl_typ.h in Headers */,
@@ -1840,7 +1843,6 @@
 				9C4792531E713B1000AD4289 /* whrlpool.h in Headers */,
 				9C47911B1E713B0F00AD4289 /* mastering_display_metadata.h in Headers */,
 				9C47912A1E713B0F00AD4289 /* murmur3.h in Headers */,
-				9C478F0B1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
 				9C4791A51E713B1000AD4289 /* conf.h in Headers */,
 				9C4790EE1E713B0F00AD4289 /* hash.h in Headers */,
 				9C478F4C1E713AA800AD4289 /* SGYUVTools.h in Headers */,
@@ -1888,7 +1890,6 @@
 				9C4791C91E713B1000AD4289 /* ecdh.h in Headers */,
 				9C4790C11E713B0F00AD4289 /* cast5.h in Headers */,
 				9C4791CC1E713B1000AD4289 /* ecdsa.h in Headers */,
-				9C478F051E713A3200AD4289 /* SGPlayerAction.h in Headers */,
 				9C4791661E713B1000AD4289 /* tree.h in Headers */,
 				9C47908E1E713B0F00AD4289 /* avio.h in Headers */,
 				9C4790EB1E713B0F00AD4289 /* frame.h in Headers */,
@@ -1927,7 +1928,6 @@
 				9C4790431E713B0F00AD4289 /* avcodec.h in Headers */,
 				9C4791D81E713B1000AD4289 /* hmac.h in Headers */,
 				9C4791F01E713B1000AD4289 /* modes.h in Headers */,
-				9C478EFF1E713A3200AD4289 /* SGPlayer.h in Headers */,
 				9C4790461E713B0F00AD4289 /* avdct.h in Headers */,
 				9C47905B1E713B0F00AD4289 /* mediacodec.h in Headers */,
 				9C47914B1E713B1000AD4289 /* samplefmt.h in Headers */,
@@ -1969,6 +1969,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
+				9C478F0C1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
+				9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */,
+				9C478F001E713A3200AD4289 /* SGPlayerImp.h in Headers */,
 				9C4791A61E713B1000AD4289 /* conf.h in Headers */,
 				9C4791311E713B0F00AD4289 /* parseutils.h in Headers */,
 				9C4790891E713B0F00AD4289 /* version.h in Headers */,
@@ -1993,7 +1997,6 @@
 				9C4791731E713B1000AD4289 /* swresample.h in Headers */,
 				9C4791371E713B1000AD4289 /* pixelutils.h in Headers */,
 				9C4791971E713B1000AD4289 /* camellia.h in Headers */,
-				9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
 				9C47904D1E713B0F00AD4289 /* d3d11va.h in Headers */,
 				9C4791B51E713B1000AD4289 /* dh.h in Headers */,
 				9C4791BB1E713B1000AD4289 /* dso.h in Headers */,
@@ -2005,7 +2008,6 @@
 				9C4790B91E713B0F00AD4289 /* bswap.h in Headers */,
 				9C4790651E713B0F00AD4289 /* vda.h in Headers */,
 				9C4790CB1E713B0F00AD4289 /* cpu.h in Headers */,
-				9C478F0C1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
 				9C4791851E713B1000AD4289 /* asn1_mac.h in Headers */,
 				9C47920F1E713B1000AD4289 /* pkcs7.h in Headers */,
 				9C4791B81E713B1000AD4289 /* dsa.h in Headers */,
@@ -2076,7 +2078,6 @@
 				9C4792241E713B1000AD4289 /* safestack.h in Headers */,
 				9C4791101E713B0F00AD4289 /* lfg.h in Headers */,
 				9C4790AA1E713B0F00AD4289 /* avstring.h in Headers */,
-				9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */,
 				9C4792DE1E713B4900AD4289 /* SGAVPlayer.h in Headers */,
 				9C4792271E713B1000AD4289 /* seed.h in Headers */,
 				9C4790B61E713B0F00AD4289 /* bprint.h in Headers */,
@@ -2119,7 +2120,6 @@
 				9C4791761E713B1000AD4289 /* version.h in Headers */,
 				9C47930E1E713B4900AD4289 /* SGGLAVTexture.h in Headers */,
 				9C4790531E713B0F00AD4289 /* dv_profile.h in Headers */,
-				9C478F001E713A3200AD4289 /* SGPlayer.h in Headers */,
 				9C4790981E713B0F00AD4289 /* aes.h in Headers */,
 				9C4790D41E713B0F00AD4289 /* dict.h in Headers */,
 				9C47923C1E713B1000AD4289 /* ssl3.h in Headers */,
@@ -2199,6 +2199,10 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C478F131E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
+				9C478F0D1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
+				9C478F071E713A3200AD4289 /* SGPlayerAction.h in Headers */,
+				9C478F011E713A3200AD4289 /* SGPlayerImp.h in Headers */,
 				9C4791A71E713B1000AD4289 /* conf.h in Headers */,
 				9C4791321E713B1000AD4289 /* parseutils.h in Headers */,
 				9C47908A1E713B0F00AD4289 /* version.h in Headers */,
@@ -2225,7 +2229,6 @@
 				9C4791741E713B1000AD4289 /* swresample.h in Headers */,
 				9C4791381E713B1000AD4289 /* pixelutils.h in Headers */,
 				9C4791981E713B1000AD4289 /* camellia.h in Headers */,
-				9C478F131E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
 				9C47904E1E713B0F00AD4289 /* d3d11va.h in Headers */,
 				9C4791B61E713B1000AD4289 /* dh.h in Headers */,
 				9C4791BC1E713B1000AD4289 /* dso.h in Headers */,
@@ -2237,7 +2240,6 @@
 				9C4790BA1E713B0F00AD4289 /* bswap.h in Headers */,
 				9C4790661E713B0F00AD4289 /* vda.h in Headers */,
 				9C4790CC1E713B0F00AD4289 /* cpu.h in Headers */,
-				9C478F0D1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
 				9C4791861E713B1000AD4289 /* asn1_mac.h in Headers */,
 				9C4792101E713B1000AD4289 /* pkcs7.h in Headers */,
 				9C4791B91E713B1000AD4289 /* dsa.h in Headers */,
@@ -2306,7 +2308,6 @@
 				9C4791111E713B0F00AD4289 /* lfg.h in Headers */,
 				9C4790AB1E713B0F00AD4289 /* avstring.h in Headers */,
 				9C4793091E713B4900AD4289 /* SGGLProgram.h in Headers */,
-				9C478F071E713A3200AD4289 /* SGPlayerAction.h in Headers */,
 				9C4792281E713B1000AD4289 /* seed.h in Headers */,
 				9C4790B71E713B0F00AD4289 /* bprint.h in Headers */,
 				9C4791891E713B1000AD4289 /* asn1t.h in Headers */,
@@ -2347,7 +2348,6 @@
 				9C4792A91E713B1000AD4289 /* SGFFVideoFrame.h in Headers */,
 				9C4791771E713B1000AD4289 /* version.h in Headers */,
 				9C4790541E713B0F00AD4289 /* dv_profile.h in Headers */,
-				9C478F011E713A3200AD4289 /* SGPlayer.h in Headers */,
 				9C4790991E713B0F00AD4289 /* aes.h in Headers */,
 				9C4790D51E713B0F00AD4289 /* dict.h in Headers */,
 				9C47923D1E713B1000AD4289 /* ssl3.h in Headers */,
@@ -2614,7 +2614,7 @@
 				9C4792921E713B1000AD4289 /* SGFFPacketQueue.m in Sources */,
 				9C4793041E713B4900AD4289 /* SGGLFFProgram.m in Sources */,
 				9C478F601E713ABB00AD4289 /* SGMatrix.m in Sources */,
-				9C478F021E713A3200AD4289 /* SGPlayer.m in Sources */,
+				9C478F021E713A3200AD4289 /* SGPlayerImp.m in Sources */,
 				9C47932E1E713B4900AD4289 /* SGDistortionRenderer.m in Sources */,
 				9C47928C1E713B1000AD4289 /* SGFFMetadata.m in Sources */,
 				9C4792861E713B1000AD4289 /* SGFFFrameQueue.m in Sources */,
@@ -2666,7 +2666,7 @@
 				9C478F4A1E713AA800AD4289 /* SGPlayer+DisplayView.m in Sources */,
 				9C47929F1E713B1000AD4289 /* SGFFTrack.m in Sources */,
 				9C478F611E713ABB00AD4289 /* SGMatrix.m in Sources */,
-				9C478F031E713A3200AD4289 /* SGPlayer.m in Sources */,
+				9C478F031E713A3200AD4289 /* SGPlayerImp.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2710,7 +2710,7 @@
 				9C4792A01E713B1000AD4289 /* SGFFTrack.m in Sources */,
 				9C4792E21E713B4900AD4289 /* SGAVPlayer.m in Sources */,
 				9C478F621E713ABB00AD4289 /* SGMatrix.m in Sources */,
-				9C478F041E713A3200AD4289 /* SGPlayer.m in Sources */,
+				9C478F041E713A3200AD4289 /* SGPlayerImp.m in Sources */,
 				9C4793121E713B4900AD4289 /* SGGLAVTexture.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
