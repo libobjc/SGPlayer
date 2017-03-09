@@ -4,6 +4,16 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>SGPlayer copy copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>2</integer>
+		</dict>
+		<key>SGPlayer copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>SGPlayer.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -13,6 +23,16 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>9CEFA6D51E7122BF00835CAB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9CEFA6E11E7125C800835CAB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9CEFA6EC1E7125CC00835CAB</key>
 		<dict>
 			<key>primary</key>
 			<true/>
