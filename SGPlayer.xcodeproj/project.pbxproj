@@ -7,12 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9C0912421E71287D00E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123D1E71283100E5AA46 /* SGPlatform.framework */; };
+		9C0912431E71288400E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123F1E71283100E5AA46 /* SGPlatform.framework */; };
+		9C0912441E71288800E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C0912411E71283100E5AA46 /* SGPlatform.framework */; };
 		9CEFA6DB1E7122BF00835CAB /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEFA6D91E7122BF00835CAB /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CEFA6E51E7125C800835CAB /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEFA6D91E7122BF00835CAB /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CEFA6F01E7125CC00835CAB /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEFA6D91E7122BF00835CAB /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		9C09123C1E71283100E5AA46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9CEFA6361E7106B500835CAB;
+			remoteInfo = "SGPlatform iOS";
+		};
+		9C09123E1E71283100E5AA46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9CEFA64A1E71071800835CAB;
+			remoteInfo = "SGPlatform macOS";
+		};
+		9C0912401E71283100E5AA46 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 9CEFA6551E71073700835CAB;
+			remoteInfo = "SGPlatform tvOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SGPlatform.xcodeproj; path = Vendors/SGPlatform/SGPlatform.xcodeproj; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6D91E7122BF00835CAB /* SGPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -25,6 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C0912421E71287D00E5AA46 /* SGPlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -32,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C0912431E71288400E5AA46 /* SGPlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,15 +69,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C0912441E71288800E5AA46 /* SGPlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C0912371E71283100E5AA46 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9C09123D1E71283100E5AA46 /* SGPlatform.framework */,
+				9C09123F1E71283100E5AA46 /* SGPlatform.framework */,
+				9C0912411E71283100E5AA46 /* SGPlatform.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		9CEFA6CC1E7122BF00835CAB = {
 			isa = PBXGroup;
 			children = (
+				9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */,
 				9CEFA6D81E7122BF00835CAB /* SGPlayer */,
 				9CEFA6D71E7122BF00835CAB /* Products */,
 			);
@@ -188,6 +230,12 @@
 			mainGroup = 9CEFA6CC1E7122BF00835CAB;
 			productRefGroup = 9CEFA6D71E7122BF00835CAB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 9C0912371E71283100E5AA46 /* Products */;
+					ProjectRef = 9C0912361E71283100E5AA46 /* SGPlatform.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				9CEFA6D51E7122BF00835CAB /* SGPlayer iOS */,
@@ -196,6 +244,30 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		9C09123D1E71283100E5AA46 /* SGPlatform.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SGPlatform.framework;
+			remoteRef = 9C09123C1E71283100E5AA46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9C09123F1E71283100E5AA46 /* SGPlatform.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SGPlatform.framework;
+			remoteRef = 9C09123E1E71283100E5AA46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		9C0912411E71283100E5AA46 /* SGPlatform.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SGPlatform.framework;
+			remoteRef = 9C0912401E71283100E5AA46 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		9CEFA6D41E7122BF00835CAB /* Resources */ = {
@@ -488,6 +560,7 @@
 				9CEFA6E01E7122BF00835CAB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9CEFA6E71E7125C800835CAB /* Build configuration list for PBXNativeTarget "SGPlayer macOS" */ = {
 			isa = XCConfigurationList;
