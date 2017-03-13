@@ -388,9 +388,10 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         {
             [self reloadPlayableTime];
             NSTimeInterval interval = self.playableTime - self.progress;
+            NSTimeInterval residue = self.duration - self.progress;
             if (interval > self.abstractPlayer.playableBufferInterval) {
                 [self playIfNeed];
-            } else if (interval < 0.3) {
+            } else if (interval < 0.3 && residue > 1.5) {
                 [self setPlayIfNeed];
             }
         }
