@@ -29,7 +29,7 @@
 
 ### 1.脚本编译
 
-```
+```obj-c
 
 // iOS
 git clone git@github.com:libobjc/SGPlayer.git
@@ -64,14 +64,13 @@ git submodule update --init --recursive
 
 - 步骤2 - 手动编译FFmpeg并放在指定目录下
 
-```
+```obj-c
+
 // 将FFmpeg编译出的.a静态库分别放在对应目录
-// iOS
-/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS
-// macOS
-/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS
-// tvOS
-/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS
+/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS        // iOS
+/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS      // macOS
+/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS       // tvOS
+
 ```
 
 - 编译完成效果图(仅目标平台的静态库存在即可)
