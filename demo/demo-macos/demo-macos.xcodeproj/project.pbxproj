@@ -1,0 +1,359 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD401E79537500959FDA /* google-help-vr.mp4 */; };
+		9C36DD431E79537500959FDA /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD411E79537500959FDA /* i-see-fire.mp4 */; };
+		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
+		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
+		9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* ViewController.m */; };
+		9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925201E7942AC00DE6721 /* Assets.xcassets */; };
+		9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925221E7942AC00DE6721 /* Main.storyboard */; };
+		9CB925311E79469A00DE6721 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9252F1E79469A00DE6721 /* PlayerViewController.m */; };
+		9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925361E79476E00DE6721 /* libiconv.tbd */; };
+		9CB925391E79477200DE6721 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925381E79477200DE6721 /* libz.tbd */; };
+		9CB9253B1E79477600DE6721 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253A1E79477600DE6721 /* libbz2.tbd */; };
+		9CB9253D1E79478200DE6721 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253C1E79478200DE6721 /* SGPlayer.framework */; };
+		9CB925411E79479500DE6721 /* VideoDecodeAcceleration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */; };
+		9CB925451E7947B000DE6721 /* liblzma.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925441E7947B000DE6721 /* liblzma.tbd */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		9C36DD401E79537500959FDA /* google-help-vr.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "google-help-vr.mp4"; path = "../../demo-assset/google-help-vr.mp4"; sourceTree = "<group>"; };
+		9C36DD411E79537500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
+		9CB925141E7942AC00DE6721 /* SGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CB925171E7942AC00DE6721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		9CB925181E7942AC00DE6721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		9CB9251B1E7942AC00DE6721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9CB9251D1E7942AC00DE6721 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9CB9251E1E7942AC00DE6721 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9CB925201E7942AC00DE6721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9CB925231E7942AC00DE6721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9CB925251E7942AC00DE6721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9CB9252E1E79469A00DE6721 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
+		9CB9252F1E79469A00DE6721 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
+		9CB925341E79475C00DE6721 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = ../../build/Debug/SGPlayer.framework; sourceTree = "<group>"; };
+		9CB925361E79476E00DE6721 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		9CB925381E79477200DE6721 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		9CB9253A1E79477600DE6721 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		9CB9253C1E79478200DE6721 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-eihmyibiajxgvzgpltouukszknss/Build/Products/Debug/SGPlayer.framework"; sourceTree = "<group>"; };
+		9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
+		9CB925421E7947A900DE6721 /* liblzma.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.5.tbd; path = usr/lib/liblzma.5.tbd; sourceTree = SDKROOT; };
+		9CB925441E7947B000DE6721 /* liblzma.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.tbd; path = usr/lib/liblzma.tbd; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		9CB925111E7942AC00DE6721 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CB9253B1E79477600DE6721 /* libbz2.tbd in Frameworks */,
+				9CB925391E79477200DE6721 /* libz.tbd in Frameworks */,
+				9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */,
+				9CB925451E7947B000DE6721 /* liblzma.tbd in Frameworks */,
+				9CB925411E79479500DE6721 /* VideoDecodeAcceleration.framework in Frameworks */,
+				9CB9253D1E79478200DE6721 /* SGPlayer.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		9CB9250B1E7942AC00DE6721 = {
+			isa = PBXGroup;
+			children = (
+				9CB925161E7942AC00DE6721 /* demo-macos */,
+				9CB925151E7942AC00DE6721 /* Products */,
+				9CB925331E79475B00DE6721 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		9CB925151E7942AC00DE6721 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				9CB925141E7942AC00DE6721 /* SGPlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		9CB925161E7942AC00DE6721 /* demo-macos */ = {
+			isa = PBXGroup;
+			children = (
+				9CB925171E7942AC00DE6721 /* AppDelegate.h */,
+				9CB925181E7942AC00DE6721 /* AppDelegate.m */,
+				9CB9251D1E7942AC00DE6721 /* ViewController.h */,
+				9CB9251E1E7942AC00DE6721 /* ViewController.m */,
+				9CB9252E1E79469A00DE6721 /* PlayerViewController.h */,
+				9CB9252F1E79469A00DE6721 /* PlayerViewController.m */,
+				9CB925201E7942AC00DE6721 /* Assets.xcassets */,
+				9CB925221E7942AC00DE6721 /* Main.storyboard */,
+				9CB925251E7942AC00DE6721 /* Info.plist */,
+				9CB9251A1E7942AC00DE6721 /* Supporting Files */,
+			);
+			path = "demo-macos";
+			sourceTree = "<group>";
+		};
+		9CB9251A1E7942AC00DE6721 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9C36DD401E79537500959FDA /* google-help-vr.mp4 */,
+				9C36DD411E79537500959FDA /* i-see-fire.mp4 */,
+				9CB9251B1E7942AC00DE6721 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9CB925331E79475B00DE6721 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9CB925441E7947B000DE6721 /* liblzma.tbd */,
+				9CB925421E7947A900DE6721 /* liblzma.5.tbd */,
+				9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */,
+				9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */,
+				9CB9253C1E79478200DE6721 /* SGPlayer.framework */,
+				9CB9253A1E79477600DE6721 /* libbz2.tbd */,
+				9CB925381E79477200DE6721 /* libz.tbd */,
+				9CB925361E79476E00DE6721 /* libiconv.tbd */,
+				9CB925341E79475C00DE6721 /* SGPlayer.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9CB925131E7942AC00DE6721 /* demo-macos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9CB925281E7942AC00DE6721 /* Build configuration list for PBXNativeTarget "demo-macos" */;
+			buildPhases = (
+				9CB925101E7942AC00DE6721 /* Sources */,
+				9CB925111E7942AC00DE6721 /* Frameworks */,
+				9CB925121E7942AC00DE6721 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "demo-macos";
+			productName = "demo-macos";
+			productReference = 9CB925141E7942AC00DE6721 /* SGPlayer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		9CB9250C1E7942AC00DE6721 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = single;
+				TargetAttributes = {
+					9CB925131E7942AC00DE6721 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = SWXNKT9754;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 9CB9250F1E7942AC00DE6721 /* Build configuration list for PBXProject "demo-macos" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 9CB9250B1E7942AC00DE6721;
+			productRefGroup = 9CB925151E7942AC00DE6721 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9CB925131E7942AC00DE6721 /* demo-macos */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		9CB925121E7942AC00DE6721 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */,
+				9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */,
+				9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */,
+				9C36DD431E79537500959FDA /* i-see-fire.mp4 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		9CB925101E7942AC00DE6721 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */,
+				9CB925311E79469A00DE6721 /* PlayerViewController.m in Sources */,
+				9CB9251C1E7942AC00DE6721 /* main.m in Sources */,
+				9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		9CB925221E7942AC00DE6721 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9CB925231E7942AC00DE6721 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		9CB925261E7942AC00DE6721 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		9CB925271E7942AC00DE6721 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		9CB925291E7942AC00DE6721 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SWXNKT9754;
+				INFOPLIST_FILE = "demo-macos/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.single.demo-macos";
+				PRODUCT_NAME = SGPlayer;
+			};
+			name = Debug;
+		};
+		9CB9252A1E7942AC00DE6721 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = SWXNKT9754;
+				INFOPLIST_FILE = "demo-macos/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.single.demo-macos";
+				PRODUCT_NAME = SGPlayer;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		9CB9250F1E7942AC00DE6721 /* Build configuration list for PBXProject "demo-macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CB925261E7942AC00DE6721 /* Debug */,
+				9CB925271E7942AC00DE6721 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		9CB925281E7942AC00DE6721 /* Build configuration list for PBXNativeTarget "demo-macos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				9CB925291E7942AC00DE6721 /* Debug */,
+				9CB9252A1E7942AC00DE6721 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 9CB9250C1E7942AC00DE6721 /* Project object */;
+}
