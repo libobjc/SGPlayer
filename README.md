@@ -1,18 +1,19 @@
 ![(banner)](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/banner-small.png)
 
-![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
+![Support](https://img.shields.io/badge/support-%20VR%20360%C2%B0%20-orange.svg)
 
 # SGPlayer 
 
-- SGPlayer是一个强大的媒体资源播放器框架，内核由AVPlayer、FFmpeg组成，通过播放内核选择策略动态选择最优播放内核，并且可以自定义内核选择策略。
+- SGPlayer是一个强大的媒体资源播放器框架，内核由AVPlayer、FFmpeg组成，通过播放内核选择策略动态选择最优播放内核，并可以自定义内核选择策略。
 
 ## 功能特点
 
 - 支持VR全景视频播放
 - 支持手势、传感器操控VR全景视频
 - 支持VR眼镜双眼模式，并具有边缘畸变校正功能
-- 支持iOS、macOS、TVos
+- 支持iOS、macOS、tvOS
 - 支持H.264硬解解码(VideoToolBox)
 - 支持选择软件解码、硬件解码
 - 支持RTMP、RTSP等直播流
@@ -165,5 +166,6 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续�
 
 ## 联系方式
 
-- e-mail : musicman_leehom@126.com
+- Sina Weibo : 程序员Single
+- Email : musicman_leehom@126.com
 - QQ交流群 : 616349536
