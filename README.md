@@ -26,7 +26,7 @@
 - 支持Bitcode
 - 极简的事件通知机制
 
-## 编译方式
+## 编译方式（2选1即可）
 
 ### 1.脚本编译
 
@@ -74,7 +74,7 @@ git submodule update --init --recursive
 
 ```
 
-- 编译完成效果图(仅目标平台的静态库存在即可)
+### 编译完成效果(仅目标平台的静态库存在即可)
 
 ![ffmpeg-libs](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ffmpeg-libs.png)
 
