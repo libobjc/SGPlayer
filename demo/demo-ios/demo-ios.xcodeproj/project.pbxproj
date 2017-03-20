@@ -152,6 +152,11 @@
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = SWXNKT9754;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
