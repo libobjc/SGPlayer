@@ -129,6 +129,7 @@ self.player.decoder.ffmpegHardwareDecoderEnable = YES;
 self.player.displayMode = SGDisplayModeBox;
 
 // 设置后台播放模式
+// 如果需要后台播放，需将项目的Background Modes打开并勾选Audio选项， 并将AVAudioSession的Category设为AVAudioSessionCategoryPlayback
 self.player.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;  // 自动暂停及恢复
 self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续播放
 
