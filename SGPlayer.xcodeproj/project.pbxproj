@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9C0912421E71287D00E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123D1E71283100E5AA46 /* SGPlatform.framework */; };
-		9C0912431E71288400E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123F1E71283100E5AA46 /* SGPlatform.framework */; };
-		9C0912441E71288800E5AA46 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C0912411E71283100E5AA46 /* SGPlatform.framework */; };
 		9C478EFF1E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C478F001E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C478F011E713A3200AD4289 /* SGPlayerImp.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF71E713A3200AD4289 /* SGPlayerImp.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1153,7 +1150,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C0912421E71287D00E5AA46 /* SGPlatform.framework in Frameworks */,
 				9C47934C1E71402E00AD4289 /* libavcodec.a in Frameworks */,
 				9C47934D1E71402E00AD4289 /* libavdevice.a in Frameworks */,
 				9C47934E1E71402E00AD4289 /* libavfilter.a in Frameworks */,
@@ -1170,7 +1166,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C0912431E71288400E5AA46 /* SGPlatform.framework in Frameworks */,
 				9C47935E1E71403500AD4289 /* libavcodec.a in Frameworks */,
 				9C47935F1E71403500AD4289 /* libavdevice.a in Frameworks */,
 				9C4793601E71403500AD4289 /* libavfilter.a in Frameworks */,
@@ -1187,7 +1182,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C0912441E71288800E5AA46 /* SGPlatform.framework in Frameworks */,
 				9C4793701E71404A00AD4289 /* libavcodec.a in Frameworks */,
 				9C4793711E71404A00AD4289 /* libavdevice.a in Frameworks */,
 				9C4793721E71404A00AD4289 /* libavfilter.a in Frameworks */,
