@@ -25,6 +25,7 @@
 @property (nonatomic, strong) SGFFPlayer * ffPlayer;
 
 @property (nonatomic, assign) BOOL needAutoPlay;
+@property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
 
 @end
 
@@ -393,7 +394,11 @@
                 case SGPlayerStatePlaying:
                 case SGPlayerStateBuffering:
                 {
-                    [strongSelf pause];
+                    // fix : maybe receive interruption notification when enter foreground.
+                    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+                    if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
+                        [strongSelf pause];
+                    }
                 }
                     break;
                 default:
@@ -455,6 +460,7 @@
                     if (self.needAutoPlay) {
                         self.needAutoPlay = NO;
                         [self play];
+                        self.lastForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
                     }
                 }
                     break;
