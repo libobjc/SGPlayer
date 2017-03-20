@@ -83,6 +83,24 @@ git submodule update --init --recursive
 
 - 详细使用示例参见demo
 
+#### iOS依赖
+
+- SGPlayer.framework
+- SGPlatform.framework
+- libiconv.tbd
+- libbz2.tbd
+- libz.tbd
+
+#### macOS依赖
+
+- SGPlayer.framework
+- SGPlatform.framework
+- VideoDecodeAcceleration.framework
+- libiconv.tbd
+- libbz2.tbd
+- libz.tbd
+- libizma.tbd
+
 ### 基础视屏播放
 
 ```obj-c
