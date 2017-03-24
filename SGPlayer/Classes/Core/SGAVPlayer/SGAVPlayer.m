@@ -30,9 +30,11 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 @property (atomic, strong) AVPlayerItemVideoOutput * avOutput;
 @property (atomic, assign) NSTimeInterval readyToPlayTime;
 
-@property (atomic, assign) BOOL needPlay;        // seek and buffering use
-@property (atomic, assign) BOOL autoNeedPlay;    // background use
+@property (atomic, assign) BOOL playing;
+@property (atomic, assign) BOOL buffering;
 @property (atomic, assign) BOOL hasPixelBuffer;
+
+@property (nonatomic, assign) SGPlayerState stateBeforBuffering;
 
 
 #pragma mark - track info
@@ -68,19 +70,30 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 - (void)play
 {
-    if (self.state == SGPlayerStateFailed || self.state == SGPlayerStateFinished) {
-        [self replaceEmpty];
-    }
-    
-    [self tryReplaceVideo];
+    self.playing = YES;
     
     switch (self.state) {
+        case SGPlayerStateFinished:
+            [self.avPlayer seekToTime:kCMTimeZero];
+            self.state = SGPlayerStatePlaying;
+            break;
+        case SGPlayerStateFailed:
+            [self replaceEmpty];
+            [self replaceVideo];
+            break;
         case SGPlayerStateNone:
             self.state = SGPlayerStateBuffering;
             break;
         case SGPlayerStateSuspend:
+            if (self.buffering) {
+                self.state = SGPlayerStateBuffering;
+            } else {
+                self.state = SGPlayerStatePlaying;
+            }
+            break;
         case SGPlayerStateReadyToPlay:
             self.state = SGPlayerStatePlaying;
+            break;
         default:
             break;
     }
@@ -98,71 +111,49 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     });
 }
 
-- (void)setAutoPlayIfNeed
+- (void)startBuffering
 {
-    switch (self.state) {
-        case SGPlayerStatePlaying:
-        case SGPlayerStateBuffering:
-            self.state = SGPlayerStateSuspend;
-            self.autoNeedPlay = YES;
-            [self pause];
-            break;
-        default:
-            break;
+    if (self.playing) {
+        [self.avPlayer pause];
     }
+    self.buffering = YES;
+    if (self.state != SGPlayerStateBuffering) {
+        self.stateBeforBuffering = self.state;
+    }
+    self.state = SGPlayerStateBuffering;
 }
 
-- (void)cancelAutoPlayIfNeed
+- (void)stopBuffering
 {
-    if (self.autoNeedPlay) {
-        self.autoNeedPlay = NO;
-    }
+    self.buffering = NO;
 }
 
-- (void)autoPlayIfNeed
+- (void)resumeStateAfterBuffering
 {
-    if (self.autoNeedPlay) {
-        [self play];
-        self.autoNeedPlay = NO;
-    }
-}
-
-- (void)setPlayIfNeed
-{
-    switch (self.state) {
-        case SGPlayerStatePlaying:
-            self.state = SGPlayerStateBuffering;
-        case SGPlayerStateBuffering:
-            self.needPlay = YES;
-            [self.avPlayer pause];
-            break;
-        default:
-            break;
-    }
-}
-
-- (void)cancelPlayIfNeed
-{
-    if (self.needPlay) {
-        self.needPlay = NO;
-    }
-}
-
-- (void)playIfNeed
-{
-    if (self.needPlay) {
-        self.state = SGPlayerStatePlaying;
+    if (self.playing) {
         [self.avPlayer play];
-        self.needPlay = NO;
+        self.state = SGPlayerStatePlaying;
+    } else if (self.state == SGPlayerStateBuffering) {
+        self.state = self.stateBeforBuffering;
     }
+}
+
+- (BOOL)playIfNeed
+{
+    if (self.playing) {
+        [self.avPlayer play];
+        self.state = SGPlayerStatePlaying;
+        return YES;
+    }
+    return NO;
 }
 
 - (void)pause
 {
+    [self.avPlayer pause];
+    self.playing = NO;
     if (self.state == SGPlayerStateFailed) return;
     self.state = SGPlayerStateSuspend;
-    [self cancelPlayIfNeed];
-    [self.avPlayer pause];
 }
 
 - (void)seekToTime:(NSTimeInterval)time
@@ -175,13 +166,14 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     if (self.avPlayerItem.status != AVPlayerItemStatusReadyToPlay) return;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self setPlayIfNeed];
         self.seeking = YES;
+        [self startBuffering];
         SGWeakSelf
         [self.avPlayerItem seekToTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.seeking = NO;
-                [weakSelf playIfNeed];
+                [weakSelf stopBuffering];
+                [weakSelf resumeStateAfterBuffering];
                 if (completeHandler) {
                     completeHandler(finished);
                 }
@@ -218,6 +210,16 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     if (_state != state) {
         SGPlayerState temp = _state;
         _state = state;
+        switch (self.state) {
+            case SGPlayerStateFinished:
+                self.playing = NO;
+                break;
+            case SGPlayerStateFailed:
+                self.playing = NO;
+                break;
+            default:
+                break;
+        }
         if (_state != SGPlayerStateFailed) {
             self.abstractPlayer.error = nil;
         }
@@ -315,34 +317,33 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
             switch (self.avPlayerItem.status) {
                 case AVPlayerItemStatusUnknown:
                 {
-                    self.state = SGPlayerStateBuffering;
+                    [self startBuffering];
                     SGPlayerLog(@"SGAVPlayer item status unknown");
                 }
                     break;
                 case AVPlayerItemStatusReadyToPlay:
                 {
+                    [self stopBuffering];
                     [self setupTrackInfo];
                     SGPlayerLog(@"SGAVPlayer item status ready to play");
                     self.readyToPlayTime = [NSDate date].timeIntervalSince1970;
-                    switch (self.state) {
-                        case SGPlayerStateBuffering:
-                            self.state = SGPlayerStatePlaying;
-                        case SGPlayerStatePlaying:
-                            [self playIfNeed];
-                            break;
-                        case SGPlayerStateSuspend:
-                        case SGPlayerStateFinished:
-                        case SGPlayerStateFailed:
-                            break;
-                        default:
-                            self.state = SGPlayerStateReadyToPlay;
-                            break;
+                    if (![self playIfNeed]) {
+                        switch (self.state) {
+                            case SGPlayerStateSuspend:
+                            case SGPlayerStateFinished:
+                            case SGPlayerStateFailed:
+                                break;
+                            default:
+                                self.state = SGPlayerStateReadyToPlay;
+                                break;
+                        }
                     }
                 }
                     break;
                 case AVPlayerItemStatusFailed:
                 {
                     SGPlayerLog(@"SGAVPlayer item status failed");
+                    [self stopBuffering];
                     self.readyToPlayTime = 0;
                     SGError * error = [[SGError alloc] init];
                     if (self.avPlayerItem.error) {
@@ -381,7 +382,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
         {
             if (self.avPlayerItem.playbackBufferEmpty) {
-                [self setPlayIfNeed];
+                [self startBuffering];
             }
         }
         else if ([keyPath isEqualToString:@"loadedTimeRanges"])
@@ -390,9 +391,10 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
             NSTimeInterval interval = self.playableTime - self.progress;
             NSTimeInterval residue = self.duration - self.progress;
             if (interval > self.abstractPlayer.playableBufferInterval) {
-                [self playIfNeed];
+                [self stopBuffering];
+                [self resumeStateAfterBuffering];
             } else if (interval < 0.3 && residue > 1.5) {
-                [self setPlayIfNeed];
+                [self startBuffering];
             }
         }
     }
@@ -410,18 +412,12 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 #pragma mark - replace video
 
-- (void)tryReplaceVideo
-{
-    if (!self.avPlayerItem) {
-        [self replaceVideo];
-    }
-}
-
 - (void)replaceVideo
 {
     [self replaceEmpty];
     if (!self.abstractPlayer.contentURL) return;
     
+    [self startBuffering];
     self.avAsset = [AVURLAsset assetWithURL:self.abstractPlayer.contentURL];
     switch (self.abstractPlayer.videoType) {
         case SGVideoTypeNormal:
@@ -565,10 +561,12 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     [self cleanAVPlayer];
     [self cleanTrackInfo];
     self.state = SGPlayerStateNone;
-    self.needPlay = NO;
+    self.stateBeforBuffering = SGPlayerStateNone;
     self.seeking = NO;
     self.playableTime = 0;
     self.readyToPlayTime = 0;
+    self.buffering = NO;
+    self.playing = NO;
     [self.abstractPlayer.displayView cleanEmptyBuffer];
 }
 
