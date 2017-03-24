@@ -327,7 +327,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.sgplayer.demo-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SGPlayer.demo-ios";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Debug;
@@ -339,7 +339,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.sgplayer.demo-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SGPlayer.demo-ios";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Release;
