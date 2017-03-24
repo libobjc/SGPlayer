@@ -318,7 +318,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.single.demo-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Debug;
@@ -331,7 +331,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.single.demo-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Release;
