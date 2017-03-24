@@ -67,9 +67,15 @@
         case SGPlayerStateBuffering:
             self.state = SGPlayerStateBuffering;
             break;
+        case SGPlayerStateSuspend:
+            if (self.decoder.buffering) {
+                self.state = SGPlayerStateBuffering;
+            } else {
+                self.state = SGPlayerStatePlaying;
+            }
+            break;
         case SGPlayerStateReadyToPlay:
         case SGPlayerStatePlaying:
-        case SGPlayerStateSuspend:
             self.state = SGPlayerStatePlaying;
             break;
     }
