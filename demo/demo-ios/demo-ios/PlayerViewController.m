@@ -60,7 +60,7 @@
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_Normal:
-            self.player.decoder.mpeg4Format = SGDecoderTypeFFmpeg;
+            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
             self.player.decoder.ffmpegHardwareDecoderEnable = NO;
             [self.player replaceVideoWithURL:normalVideo];
             break;
