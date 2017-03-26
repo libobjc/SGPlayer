@@ -86,7 +86,7 @@ git submodule update --init --recursive
 #### iOS依赖
 
 - SGPlayer.framework
-- SGPlatform.framework
+- SGPlatform.framework  Optional
 - libiconv.tbd
 - libbz2.tbd
 - libz.tbd
@@ -94,7 +94,7 @@ git submodule update --init --recursive
 #### macOS依赖
 
 - SGPlayer.framework
-- SGPlatform.framework
+- SGPlatform.framework  Optional
 - VideoDecodeAcceleration.framework
 - libiconv.tbd
 - libbz2.tbd
