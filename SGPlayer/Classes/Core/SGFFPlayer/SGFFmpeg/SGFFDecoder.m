@@ -187,6 +187,7 @@
 #pragma mark - operation thread
 
 static int max_packet_buffer_size = 20 * 1024 * 1024;
+static NSTimeInterval max_packet_buffer_time_interval = 10;
 static NSTimeInterval max_packet_sleep_full_time_interval = 0.1;
 static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
@@ -242,7 +243,13 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             self.selectAudioTrackIndex = 0;
             continue;
         }
-        if (self.audioDecoder.size + self.videoDecoder.packetSize >= max_packet_buffer_size) {
+        BOOL needSleep = NO;
+        if (self.audioEnable) {
+            needSleep = self.audioDecoder.duration >= max_packet_buffer_time_interval;
+        } else {
+            needSleep = self.videoDecoder.packetSize >= max_packet_buffer_size;
+        }
+        if (needSleep) {
             NSTimeInterval interval = 0;
             if (self.paused) {
                 interval = max_packet_sleep_full_and_pause_time_interval;
