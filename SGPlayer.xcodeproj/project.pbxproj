@@ -2832,7 +2832,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS",
 				);
 				MACH_O_TYPE = staticlib;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2860,7 +2860,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS",
 				);
 				MACH_O_TYPE = staticlib;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
@@ -2888,7 +2888,7 @@
 				);
 				MACH_O_TYPE = staticlib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SKIP_INSTALL = YES;
 			};
@@ -2915,7 +2915,7 @@
 				);
 				MACH_O_TYPE = staticlib;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SKIP_INSTALL = YES;
 			};
@@ -2941,7 +2941,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS",
 				);
 				MACH_O_TYPE = staticlib;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
@@ -2969,7 +2969,7 @@
 					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS",
 				);
 				MACH_O_TYPE = staticlib;
-				PRODUCT_BUNDLE_IDENTIFIER = com.single.SGPlayer;
+				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGPlayer;
 				PRODUCT_NAME = SGPlayer;
 				SDKROOT = appletvos;
 				SKIP_INSTALL = YES;
