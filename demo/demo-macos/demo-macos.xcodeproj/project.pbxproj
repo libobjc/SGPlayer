@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9C2167181E7F81E900272348 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C2167171E7F81E900272348 /* SGPlatform.framework */; };
 		9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD401E79537500959FDA /* google-help-vr.mp4 */; };
 		9C36DD431E79537500959FDA /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD411E79537500959FDA /* i-see-fire.mp4 */; };
+		9CA86E881E8757A700E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
 		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
 		9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* ViewController.m */; };
@@ -28,6 +28,9 @@
 		9C2167171E7F81E900272348 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-eihmyibiajxgvzgpltouukszknss/Build/Products/Debug-iphoneos/SGPlatform.framework"; sourceTree = "<group>"; };
 		9C36DD401E79537500959FDA /* google-help-vr.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "google-help-vr.mp4"; path = "../../demo-assset/google-help-vr.mp4"; sourceTree = "<group>"; };
 		9C36DD411E79537500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
+		9CA86E811E8756E700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug/SGPlatform.framework"; sourceTree = "<group>"; };
+		9CA86E831E87571800E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
+		9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
 		9CB925141E7942AC00DE6721 /* SGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CB925171E7942AC00DE6721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9CB925181E7942AC00DE6721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -61,7 +64,7 @@
 				9CB925451E7947B000DE6721 /* liblzma.tbd in Frameworks */,
 				9CB925411E79479500DE6721 /* VideoDecodeAcceleration.framework in Frameworks */,
 				9CB9253D1E79478200DE6721 /* SGPlayer.framework in Frameworks */,
-				9C2167181E7F81E900272348 /* SGPlatform.framework in Frameworks */,
+				9CA86E881E8757A700E4A8B1 /* SGPlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -115,6 +118,9 @@
 		9CB925331E79475B00DE6721 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */,
+				9CA86E831E87571800E4A8B1 /* SGPlatform.framework */,
+				9CA86E811E8756E700E4A8B1 /* SGPlatform.framework */,
 				9C2167171E7F81E900272348 /* SGPlatform.framework */,
 				9CB925441E7947B000DE6721 /* liblzma.tbd */,
 				9CB925421E7947A900DE6721 /* liblzma.5.tbd */,
