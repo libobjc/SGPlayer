@@ -23,7 +23,7 @@
 - (void)reloadViewport;
 
 - (void)displayAsyncOnMainThread;
-- (void)cleanEmptyBuffer;
+- (void)cleanAsyncOnMainThread;
 
 - (SGPLFImage *)customSnapshot;
 

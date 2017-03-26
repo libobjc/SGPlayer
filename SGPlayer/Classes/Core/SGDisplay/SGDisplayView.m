@@ -163,10 +163,10 @@
 {
     [self.fingerRotation clean];
     if (self.avplayerView) {
-        [self.avplayerView cleanEmptyBuffer];
+        [self.avplayerView cleanAsyncOnMainThread];
     }
     if (self.ffplayerView) {
-        [self.ffplayerView cleanEmptyBuffer];
+        [self.ffplayerView cleanAsyncOnMainThread];
     }
 }
 

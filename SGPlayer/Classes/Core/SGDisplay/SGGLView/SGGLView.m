@@ -117,22 +117,27 @@
 
 - (void)displayAsyncOnMainThread
 {
-    if ([NSThread isMainThread]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
         [self displayIfApplicationActive];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self displayIfApplicationActive];
-        });
-    }
+    });
 }
 
 - (void)displayIfApplicationActive
 {
+    if (!self.displayView.abstractPlayer.contentURL) return;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) return;
 #endif
-    if (!self.displayView.abstractPlayer.contentURL) return;
     [self displayAndClear:NO];
+}
+
+- (void)cleanAsyncOnMainThread
+{
+    [self cleanTexture];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self displayAndClear:YES];
+    });
 }
 
 - (void)displayAndClear:(BOOL)clear
@@ -149,19 +154,6 @@
     } else {
         self.viewport = self.bounds;
         [self drawOpenGL];
-    }
-}
-
-- (void)cleanEmptyBuffer
-{
-    [self cleanTexture];
-    
-    if ([NSThread isMainThread]) {
-        [self displayAndClear:YES];
-    } else {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self displayAndClear:YES];
-        });
     }
 }
 
