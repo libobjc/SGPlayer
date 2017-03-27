@@ -68,6 +68,26 @@
             self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
             [self.player replaceVideoWithURL:normalVideo];
             break;
+        case DemoType_FFmpeg_VR:
+            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+            break;
+        case DemoType_FFmpeg_VR_Hardware:
+            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+            break;
+        case DemoType_FFmpeg_VR_Box:
+            self.player.displayMode = SGDisplayModeBox;
+            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+            break;
+        case DemoType_FFmpeg_VR_Box_Hardware:
+            self.player.displayMode = SGDisplayModeBox;
+            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+            break;
     }
 }
 
@@ -86,7 +106,11 @@
                          @"google help,  AVPlayer,  VR",
                          @"google help,  AVPlayer,  VR,  Box",
                          @"i see fire,   FFmpeg",
-                         @"i see fire,   FFmpeg,  Hardware Acceleration"];
+                         @"i see fire,   FFmpeg,  Hardware Acceleration",
+                         @"google help,  FFmpeg,  VR",
+                         @"google help,  FFmpeg,  VR,  Hardware Acceleration",
+                         @"google help,  FFmpeg,  VR,  Box",
+                         @"google help,  FFmpeg,  VR,  Box,  Hardware Acceleration"];
     });
     if (demoType < displayNames.count) {
         return [displayNames objectAtIndex:demoType];
