@@ -63,10 +63,18 @@
     return (SGFFAVYUVVideoFrame *)self.videoFrame;
 }
 
-- (NSTimeInterval)currentPTS
+- (NSTimeInterval)currentPosition
 {
     if (self.videoFrame) {
         return self.videoFrame.position;
+    }
+    return -1;
+}
+
+- (NSTimeInterval)currentDuration
+{
+    if (self.videoFrame) {
+        return self.videoFrame.duration;
     }
     return -1;
 }

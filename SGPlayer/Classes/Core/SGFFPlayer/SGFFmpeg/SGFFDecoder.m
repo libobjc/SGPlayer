@@ -288,7 +288,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     [self checkBufferingStatus];
 }
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPTS:(NSTimeInterval)currentPTS;
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.closed || self.error) {
         return  nil;
@@ -298,6 +298,28 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
     if (self.videoDecoder.frameEmpty) {
         return nil;
+    }
+    if (currentPostion < 0) {
+        return [self.videoDecoder getFrameAsync];
+    }
+    if (self.paused) {
+        return nil;
+    }
+    if (self.formatContext.audioEnable) {
+        NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
+        NSTimeInterval audioTimeClock = self.audioTimeClock;
+        NSTimeInterval currentStop = currentPostion + currentDuration;
+        
+        if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
+            if (firstPosition < currentPostion) {
+                return [self.videoDecoder getFrameAsync];
+            }
+            return nil;
+        } else {
+            return [self.videoDecoder getFrameAsync];
+        }
+    } else {
+        
     }
     return [self.videoDecoder getFrameAsync];
 }

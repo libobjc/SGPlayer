@@ -26,6 +26,7 @@
 - (void)putSortFrame:(__kindof SGFFFrame *)frame;
 - (__kindof SGFFFrame *)getFrameSync;
 - (__kindof SGFFFrame *)getFrameAsync;
+- (NSTimeInterval)getFirstFramePositionAsync;
 
 - (void)flush;
 - (void)destroy;

@@ -126,6 +126,18 @@
     return frame;
 }
 
+- (NSTimeInterval)getFirstFramePositionAsync
+{
+    [self.condition lock];
+    if (self.destoryToken || self.frames.count <= 0) {
+        [self.condition unlock];
+        return -1;
+    }
+    NSTimeInterval time = self.frames.firstObject.position;
+    [self.condition unlock];
+    return time;
+}
+
 - (void)flush
 {
     [self.condition lock];

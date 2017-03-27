@@ -53,6 +53,7 @@
 
 - (SGFFVideoFrame *)getFrameSync;
 - (SGFFVideoFrame *)getFrameAsync;
+- (NSTimeInterval)getFirstFramePositionAsync;
 
 - (void)putPacket:(AVPacket)packet;
 

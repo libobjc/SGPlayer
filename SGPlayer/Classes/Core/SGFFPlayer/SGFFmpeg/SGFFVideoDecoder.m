@@ -127,6 +127,11 @@ static AVPacket flush_packet;
     return [self.frameQueue getFrameAsync];
 }
 
+- (NSTimeInterval)getFirstFramePositionAsync
+{
+    return [self.frameQueue getFirstFramePositionAsync];
+}
+
 - (void)putPacket:(AVPacket)packet
 {
     NSTimeInterval duration = 0;
