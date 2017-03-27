@@ -7,7 +7,16 @@
 //
 
 #import <SGPlatform/SGPlatform.h>
+#import "SGDisplayView.h"
 
 @interface SGGLViewController : SGPLFGLViewController
+
++ (instancetype)viewControllerWithDisplayView:(SGDisplayView *)displayView;
+
+@property (nonatomic, weak, readonly) SGDisplayView * displayView;
+
+- (void)reloadViewport;
+- (void)flushClearColor;
+- (SGPLFImage *)snapshot;
 
 @end
