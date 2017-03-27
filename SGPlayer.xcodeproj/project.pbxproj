@@ -815,6 +815,12 @@
 		9C4793761E71404A00AD4289 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936D1E71404A00AD4289 /* libssl.a */; };
 		9C4793771E71404A00AD4289 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936E1E71404A00AD4289 /* libswresample.a */; };
 		9C4793781E71404A00AD4289 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936F1E71404A00AD4289 /* libswscale.a */; };
+		9C5AB68E1E88B2AD0021F460 /* SGGLViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5AB68C1E88B2AD0021F460 /* SGGLViewController.h */; };
+		9C5AB68F1E88B2AD0021F460 /* SGGLViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5AB68C1E88B2AD0021F460 /* SGGLViewController.h */; };
+		9C5AB6901E88B2AD0021F460 /* SGGLViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5AB68C1E88B2AD0021F460 /* SGGLViewController.h */; };
+		9C5AB6911E88B2AD0021F460 /* SGGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB68D1E88B2AD0021F460 /* SGGLViewController.m */; };
+		9C5AB6921E88B2AD0021F460 /* SGGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB68D1E88B2AD0021F460 /* SGGLViewController.m */; };
+		9C5AB6931E88B2AD0021F460 /* SGGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB68D1E88B2AD0021F460 /* SGGLViewController.m */; };
 		9C816A281E8755E4007ED41B /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123D1E71283100E5AA46 /* SGPlatform.framework */; };
 		9CA86E7F1E8756BF00E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123F1E71283100E5AA46 /* SGPlatform.framework */; };
 		9CA86E801E8756C700E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C0912411E71283100E5AA46 /* SGPlatform.framework */; };
@@ -1141,6 +1147,8 @@
 		9C47936D1E71404A00AD4289 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libssl.a"; sourceTree = "<group>"; };
 		9C47936E1E71404A00AD4289 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libswresample.a"; sourceTree = "<group>"; };
 		9C47936F1E71404A00AD4289 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libswscale.a"; sourceTree = "<group>"; };
+		9C5AB68C1E88B2AD0021F460 /* SGGLViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGGLViewController.h; sourceTree = "<group>"; };
+		9C5AB68D1E88B2AD0021F460 /* SGGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLViewController.m; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6D91E7122BF00835CAB /* SGPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1635,6 +1643,8 @@
 		9C4792D11E713B4900AD4289 /* SGGLView */ = {
 			isa = PBXGroup;
 			children = (
+				9C5AB68C1E88B2AD0021F460 /* SGGLViewController.h */,
+				9C5AB68D1E88B2AD0021F460 /* SGGLViewController.m */,
 				9C4792D61E713B4900AD4289 /* SGGLView.h */,
 				9C4792D71E713B4900AD4289 /* SGGLView.m */,
 				9C4792D21E713B4900AD4289 /* SGGLAVView.h */,
@@ -1833,6 +1843,7 @@
 				9C47913C1E713B1000AD4289 /* random_seed.h in Headers */,
 				9C4791811E713B1000AD4289 /* asn1.h in Headers */,
 				9C4791FF1E713B1000AD4289 /* opensslv.h in Headers */,
+				9C5AB68E1E88B2AD0021F460 /* SGGLViewController.h in Headers */,
 				9C4791691E713B1000AD4289 /* twofish.h in Headers */,
 				9C4790E81E713B0F00AD4289 /* file.h in Headers */,
 				9C4791571E713B1000AD4289 /* tea.h in Headers */,
@@ -2055,6 +2066,7 @@
 				9C4793261E713B4900AD4289 /* SGDistortionModel.h in Headers */,
 				9C4790F81E713B0F00AD4289 /* hwcontext_cuda.h in Headers */,
 				9C4790FB1E713B0F00AD4289 /* hwcontext_dxva2.h in Headers */,
+				9C5AB68F1E88B2AD0021F460 /* SGGLViewController.h in Headers */,
 				9C47916D1E713B1000AD4289 /* version.h in Headers */,
 				9C47922A1E713B1000AD4289 /* sha.h in Headers */,
 				9C4791551E713B1000AD4289 /* stereo3d.h in Headers */,
@@ -2344,6 +2356,7 @@
 				9C4792F71E713B4900AD4289 /* SGGLVRModel.h in Headers */,
 				9C4790811E713B0F00AD4289 /* avfiltergraph.h in Headers */,
 				9C4790901E713B0F00AD4289 /* avio.h in Headers */,
+				9C5AB6901E88B2AD0021F460 /* SGGLViewController.h in Headers */,
 				9C47914D1E713B1000AD4289 /* samplefmt.h in Headers */,
 				9C4792A91E713B1000AD4289 /* SGFFVideoFrame.h in Headers */,
 				9C4791771E713B1000AD4289 /* version.h in Headers */,
@@ -2614,6 +2627,7 @@
 				9C4792921E713B1000AD4289 /* SGFFPacketQueue.m in Sources */,
 				9C4793041E713B4900AD4289 /* SGGLFFProgram.m in Sources */,
 				9C478F601E713ABB00AD4289 /* SGMatrix.m in Sources */,
+				9C5AB6911E88B2AD0021F460 /* SGGLViewController.m in Sources */,
 				9C478F021E713A3200AD4289 /* SGPlayerImp.m in Sources */,
 				9C47932E1E713B4900AD4289 /* SGDistortionRenderer.m in Sources */,
 				9C47928C1E713B1000AD4289 /* SGFFMetadata.m in Sources */,
@@ -2653,6 +2667,7 @@
 				9C4793051E713B4900AD4289 /* SGGLFFProgram.m in Sources */,
 				9C4792E11E713B4900AD4289 /* SGAVPlayer.m in Sources */,
 				9C4792A51E713B1000AD4289 /* SGFFVideoDecoder.m in Sources */,
+				9C5AB6921E88B2AD0021F460 /* SGGLViewController.m in Sources */,
 				9C4792F91E713B4900AD4289 /* SGGLVRModel.m in Sources */,
 				9C4792631E713B1000AD4289 /* SGFFAudioDecoder.m in Sources */,
 				9C478F441E713AA800AD4289 /* SGPlayerNotification.m in Sources */,
@@ -2674,6 +2689,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C5AB6931E88B2AD0021F460 /* SGGLViewController.m in Sources */,
 				9C4792F41E713B4900AD4289 /* SGGLNormalModel.m in Sources */,
 				9C47931E1E713B4900AD4289 /* SGGLFFView.m in Sources */,
 				9C47928E1E713B1000AD4289 /* SGFFMetadata.m in Sources */,
