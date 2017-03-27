@@ -81,6 +81,13 @@
     SGPLFGLViewSetContext(glView, context);
     SGPLGLContextSetCurrentContext(context);
     
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    glView.drawableDepthFormat = GLKViewDrawableDepthFormat24;
+    glView.contentScaleFactor = [UIScreen mainScreen].scale;
+    self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
+    self.preferredFramesPerSecond = 60;
+#endif
+    
     self.textureNV12 = [[SGGLTextureNV12 alloc] initWithContext:context];
     self.textureYUV420 = [[SGGLTextureYUV420 alloc] init];
     
@@ -91,14 +98,8 @@
     self.vrModel = [SGGLVRModel model];
     
     self.vrMatrix = [[SGMatrix alloc] init];
-#if SGPLATFORM_TARGET_OS_IPHONE
-    self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
-#endif
     self.currentFrame = [SGGLFrame frame];
-    
     self.aspect = 16.0 / 9.0;
-    
-    self.preferredFramesPerSecond = 60;
 }
 
 - (void)flushClearColor
