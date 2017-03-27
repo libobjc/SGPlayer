@@ -68,7 +68,8 @@
 {
     [super viewDidLayoutSubviews];
     CGFloat scale = SGPLFScreenGetScale();
-    self.distorionRenderer.viewportSize = CGSizeMake(CGRectGetWidth(self.view.bounds) * scale, CGRectGetHeight(self.view.bounds) * scale);
+    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    self.distorionRenderer.viewportSize = CGSizeMake(CGRectGetWidth(glView.bounds) * scale, CGRectGetHeight(glView.bounds) * scale);
 }
 #endif
 
@@ -118,7 +119,8 @@
         self.clearToken = NO;
     } else {
         if ([self needDrawOpenGL]) {
-            self.viewport = self.view.bounds;
+            SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+            self.viewport = glView.bounds;
             [self drawOpenGL];
             [self.currentFrame didDraw];
         }
@@ -295,14 +297,16 @@
 - (SGPLFImage *)snapshot
 {
     if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
-        return SGPLFGLViewGetCurrentSnapshot(self);
+        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+        return SGPLFGLViewGetCurrentSnapshot(glView);
     } else {
         SGPLFImage * image = [self.currentFrame imageFromVideoFrame];
         if (image) {
             return image;
         }
     }
-    return SGPLFGLViewGetCurrentSnapshot(self);
+    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    return SGPLFGLViewGetCurrentSnapshot(glView);
 }
 
 - (void)dealloc
