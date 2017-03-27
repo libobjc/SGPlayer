@@ -63,6 +63,22 @@
     return (SGFFAVYUVVideoFrame *)self.videoFrame;
 }
 
+- (SGPLFImage *)imageFromVideoFrame
+{
+    if ([self.videoFrame isKindOfClass:[SGFFAVYUVVideoFrame class]]) {
+        SGFFAVYUVVideoFrame * frame = (SGFFAVYUVVideoFrame *)self.videoFrame;
+        SGPLFImage * image = frame.image;
+        if (image) return image;
+    } else if ([self.videoFrame isKindOfClass:[SGFFCVYUVVideoFrame class]]) {
+        SGFFCVYUVVideoFrame * frame = (SGFFCVYUVVideoFrame *)self.videoFrame;
+        if (frame.pixelBuffer) {
+            SGPLFImage * image = SGPLFImageWithCVPixelBuffer(frame.pixelBuffer);
+            if (image) return image;
+        }
+    }
+    return nil;
+}
+
 - (void)didDraw
 {
     self->_hasUpate = NO;

@@ -293,7 +293,15 @@
 
 - (SGPLFImage *)snapshot
 {
-    return nil;
+    if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
+        return SGPLFGLViewGetCurrentSnapshot(self);
+    } else {
+        SGPLFImage * image = [self.currentFrame imageFromVideoFrame];
+        if (image) {
+            return image;
+        }
+    }
+    return SGPLFGLViewGetCurrentSnapshot(self);
 }
 
 - (void)dealloc
