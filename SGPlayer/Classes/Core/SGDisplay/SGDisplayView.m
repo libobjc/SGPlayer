@@ -10,8 +10,8 @@
 #import "SGPlayerMacro.h"
 #import "SGPlayerImp.h"
 #import "SGAVPlayer.h"
-#import "SGGLAVView.h"
-#import "SGGLFFView.h"
+#import "SGGLViewController.h"
+#import "SGGLFrame.h"
 
 @interface SGDisplayView ()
 
@@ -19,8 +19,7 @@
 
 @property (nonatomic, assign) BOOL avplayerLayerToken;
 @property (nonatomic, strong) AVPlayerLayer * avplayerLayer;
-@property (nonatomic, strong) SGGLAVView * avplayerView;
-@property (nonatomic, strong) SGGLFFView * ffplayerView;
+@property (nonatomic, strong) SGGLViewController * glViewController;
 
 @end
 
@@ -41,9 +40,19 @@
     return self;
 }
 
-- (void)decoder:(SGFFDecoder *)decoder renderVideoFrame:(SGFFVideoFrame *)videoFrame
+- (void)updateGLFrame:(SGGLFrame *)glFrame
 {
-    [self.ffplayerView renderFrame:videoFrame];
+    if (self.rendererType == SGDisplayRendererTypeAVPlayerPixelBufferVR) {
+        CVPixelBufferRef pixelBuffer = [self.sgavplayer pixelBufferAtCurrentTime];
+        if (pixelBuffer) {
+            [glFrame updateWithCVPixelBuffer:pixelBuffer];
+        }
+    } else {
+        SGFFVideoFrame * videoFrame = [self.sgffdecoder fetchVideoFrame];
+        if (videoFrame) {
+            [glFrame updateWithSGFFVideoFrame:videoFrame];
+        }
+    }
 }
 
 - (void)setRendererType:(SGDisplayRendererType)rendererType
@@ -70,16 +79,14 @@
             }
             break;
         case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-            if (!self.avplayerView) {
-                self.avplayerView = [SGGLAVView viewWithDisplayView:self];
-                SGPLFViewInsertSubview(self, self.avplayerView, 0);
-            }
-            break;
         case SGDisplayRendererTypeFFmpegPexelBuffer:
         case SGDisplayRendererTypeFFmpegPexelBufferVR:
-            if (!self.ffplayerView) {
-                self.ffplayerView = [SGGLFFView viewWithDisplayView:self];
-                SGPLFViewInsertSubview(self, self.ffplayerView, 0);
+            if (!self.glViewController) {
+                self.glViewController = [SGGLViewController viewControllerWithDisplayView:self];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
+                    SGPLFViewInsertSubview(self, glView, 0);
+                });
             }
             break;
     }
@@ -118,7 +125,7 @@
 
 - (void)cleanView
 {
-    [self cleanViewCleanAVPlayerLayer:YES cleanAVPlayerView:YES cleanFFPlayerView:YES];
+    [self cleanViewCleanAVPlayerLayer:YES cleanGLViewController:YES];
 }
 
 - (void)cleanViewIgnore
@@ -128,33 +135,27 @@
             [self cleanView];
             break;
         case SGDisplayRendererTypeAVPlayerLayer:
-            [self cleanViewCleanAVPlayerLayer:NO cleanAVPlayerView:YES cleanFFPlayerView:YES];
+            [self cleanViewCleanAVPlayerLayer:NO cleanGLViewController:YES];
             break;
         case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-            [self cleanViewCleanAVPlayerLayer:YES cleanAVPlayerView:NO cleanFFPlayerView:YES];
-            break;
         case SGDisplayRendererTypeFFmpegPexelBuffer:
         case SGDisplayRendererTypeFFmpegPexelBufferVR:
-            [self cleanViewCleanAVPlayerLayer:YES cleanAVPlayerView:YES cleanFFPlayerView:NO];
+            [self cleanViewCleanAVPlayerLayer:YES cleanGLViewController:NO];
             break;
     }
 }
 
-- (void)cleanViewCleanAVPlayerLayer:(BOOL)cleanAVPlayerLayer cleanAVPlayerView:(BOOL)cleanAVPlayerView cleanFFPlayerView:(BOOL)cleanFFPlayerView
+- (void)cleanViewCleanAVPlayerLayer:(BOOL)cleanAVPlayerLayer cleanGLViewController:(BOOL)cleanGLViewController
 {
     [self cleanEmptyBuffer];
     if (cleanAVPlayerLayer && self.avplayerLayer) {
         [self.avplayerLayer removeFromSuperlayer];
         self.avplayerLayer = nil;
     }
-    if (cleanAVPlayerView && self.avplayerView) {
-        [self.avplayerView invalidate];
-        [self.avplayerView removeFromSuperview];
-        self.avplayerView = nil;
-    }
-    if (cleanFFPlayerView && self.ffplayerView) {
-        [self.ffplayerView removeFromSuperview];
-        self.ffplayerView = nil;
+    if (cleanGLViewController && self.glViewController) {
+        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
+        [glView removeFromSuperview];
+        self.glViewController = nil;
     }
     self.avplayerLayerToken = NO;
 }
@@ -162,11 +163,8 @@
 - (void)cleanEmptyBuffer
 {
     [self.fingerRotation clean];
-    if (self.avplayerView) {
-        [self.avplayerView cleanAsyncOnMainThread];
-    }
-    if (self.ffplayerView) {
-        [self.ffplayerView cleanAsyncOnMainThread];
+    if (self.glViewController) {
+        [self.glViewController flushClearColor];
     }
 }
 
@@ -186,10 +184,9 @@
         case SGDisplayRendererTypeAVPlayerLayer:
             return self.sgavplayer.snapshotAtCurrentTime;
         case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-            return self.avplayerView.customSnapshot;
         case SGDisplayRendererTypeFFmpegPexelBuffer:
         case SGDisplayRendererTypeFFmpegPexelBufferVR:
-            return self.ffplayerView.customSnapshot;
+            return [self.glViewController snapshot];
     }
 }
 
@@ -202,11 +199,8 @@
             self.avplayerLayerToken = YES;
         }
     }
-    if (self.avplayerView) {
-        [self.avplayerView reloadViewport];
-    }
-    if (self.ffplayerView) {
-        [self.ffplayerView reloadViewport];
+    if (self.glViewController) {
+        [self.glViewController reloadViewport];
     }
 }
 
@@ -289,12 +283,6 @@ static BOOL mouse_dragged = NO;
 {
     if (_avplayerLayer) {
         _avplayerLayer.player = self.sgavplayer.avPlayer;
-    }
-    if (self.avplayerView) {
-        [self.avplayerView displayAsyncOnMainThread];
-    }
-    if (self.ffplayerView) {
-        [self.ffplayerView displayAsyncOnMainThread];
     }
 }
 
