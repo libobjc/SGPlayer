@@ -33,8 +33,6 @@
 
 @protocol SGFFDecoderVideoOutput <NSObject>
 
-- (void)decoder:(SGFFDecoder *)decoder renderVideoFrame:(SGFFVideoFrame *)videoFrame;
-
 @end
 
 @protocol SGFFDecoderAudioOutput <NSObject>
@@ -79,6 +77,7 @@
 - (void)pause;
 - (void)resume;
 - (SGFFAudioFrame *)fetchAudioFrame;
+- (SGFFVideoFrame *)fetchVideoFrame;
 
 @property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;

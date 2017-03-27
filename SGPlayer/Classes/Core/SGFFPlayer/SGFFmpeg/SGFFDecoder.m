@@ -135,13 +135,13 @@
             [self.decodeFrameOperation addDependency:self.openFileOperation];
             [self.ffmpegOperationQueue addOperation:self.decodeFrameOperation];
         }
-        if (!self.displayOperation || self.displayOperation.isFinished) {
-            self.displayOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayThread) object:nil];
-            self.displayOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-            self.displayOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-            [self.displayOperation addDependency:self.openFileOperation];
-            [self.ffmpegOperationQueue addOperation:self.displayOperation];
-        }
+//        if (!self.displayOperation || self.displayOperation.isFinished) {
+//            self.displayOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayThread) object:nil];
+//            self.displayOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+//            self.displayOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+//            [self.displayOperation addDependency:self.openFileOperation];
+//            [self.ffmpegOperationQueue addOperation:self.displayOperation];
+//        }
     }
 }
 
@@ -296,6 +296,14 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     [self checkBufferingStatus];
 }
 
+- (SGFFVideoFrame *)fetchVideoFrame
+{
+    if (self.videoDecoder.frameEmpty) {
+        return nil;
+    }
+    return [self.videoDecoder getFrameAsync];
+}
+
 - (void)displayThread
 {
     while (1) {
@@ -308,9 +316,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             continue;
         }
         if (self.paused && self.currentVideoFrame) {
-            if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-                [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-            }
+//            if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
+//                [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
+//            }
             [NSThread sleepForTimeInterval:0.03];
             continue;
         }
@@ -347,9 +355,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             }
             self.currentVideoFrame = newFrame;
             if (self.currentVideoFrame) {
-                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-                }
+//                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
+//                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
+//                }
                 [self updateProgressByVideo];
                 if (self.endOfFile) {
                     [self updateBufferedDurationByVideo];
@@ -369,9 +377,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             }
             self.currentVideoFrame = newFrame;
             if (self.currentVideoFrame) {
-                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-                }
+//                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
+//                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
+//                }
                 [self updateProgressByVideo];
                 if (self.endOfFile) {
                     [self updateBufferedDurationByVideo];
