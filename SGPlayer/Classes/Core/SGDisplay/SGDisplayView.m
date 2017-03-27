@@ -48,7 +48,7 @@
             [glFrame updateWithCVPixelBuffer:pixelBuffer];
         }
     } else {
-        SGFFVideoFrame * videoFrame = [self.sgffdecoder fetchVideoFrame];
+        SGFFVideoFrame * videoFrame = [self.sgffdecoder fetchVideoFrameWithCurrentPTS:glFrame.currentPTS];
         if (videoFrame) {
             [glFrame updateWithSGFFVideoFrame:videoFrame];
         }

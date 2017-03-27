@@ -77,7 +77,7 @@
 - (void)pause;
 - (void)resume;
 - (SGFFAudioFrame *)fetchAudioFrame;
-- (SGFFVideoFrame *)fetchVideoFrame;
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPTS:(NSTimeInterval)currentPTS;
 
 @property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;

@@ -63,6 +63,14 @@
     return (SGFFAVYUVVideoFrame *)self.videoFrame;
 }
 
+- (NSTimeInterval)currentPTS
+{
+    if (self.videoFrame) {
+        return self.videoFrame.position;
+    }
+    return -1;
+}
+
 - (SGPLFImage *)imageFromVideoFrame
 {
     if ([self.videoFrame isKindOfClass:[SGFFAVYUVVideoFrame class]]) {

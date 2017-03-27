@@ -22,7 +22,6 @@
 @property (nonatomic, strong) NSInvocationOperation * openFileOperation;
 @property (nonatomic, strong) NSInvocationOperation * readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation * decodeFrameOperation;
-@property (nonatomic, strong) NSInvocationOperation * displayOperation;
 
 @property (nonatomic, strong) SGFFFormatContext * formatContext;
 @property (nonatomic, strong) SGFFAudioDecoder * audioDecoder;
@@ -97,7 +96,7 @@
 - (void)setupOperationQueue
 {
     self.ffmpegOperationQueue = [[NSOperationQueue alloc] init];
-    self.ffmpegOperationQueue.maxConcurrentOperationCount = 3;
+    self.ffmpegOperationQueue.maxConcurrentOperationCount = 2;
     self.ffmpegOperationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     
     [self setupOpenFileOperation];
@@ -135,13 +134,6 @@
             [self.decodeFrameOperation addDependency:self.openFileOperation];
             [self.ffmpegOperationQueue addOperation:self.decodeFrameOperation];
         }
-//        if (!self.displayOperation || self.displayOperation.isFinished) {
-//            self.displayOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(displayThread) object:nil];
-//            self.displayOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-//            self.displayOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-//            [self.displayOperation addDependency:self.openFileOperation];
-//            [self.ffmpegOperationQueue addOperation:self.displayOperation];
-//        }
     }
 }
 
@@ -296,8 +288,14 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     [self checkBufferingStatus];
 }
 
-- (SGFFVideoFrame *)fetchVideoFrame
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPTS:(NSTimeInterval)currentPTS;
 {
+    if (self.closed || self.error) {
+        return  nil;
+    }
+    if (self.seeking || self.buffering) {
+        return  nil;
+    }
     if (self.videoDecoder.frameEmpty) {
         return nil;
     }
@@ -520,7 +518,6 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 {
     self.readPacketOperation = nil;
     self.openFileOperation = nil;
-    self.displayOperation = nil;
     self.decodeFrameOperation = nil;
     self.ffmpegOperationQueue = nil;
 }

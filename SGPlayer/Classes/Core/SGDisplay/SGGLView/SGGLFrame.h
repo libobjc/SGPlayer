@@ -31,6 +31,8 @@ typedef NS_ENUM(NSUInteger, SGGLFrameType) {
 
 - (CVPixelBufferRef)pixelBufferForNV12;
 - (SGFFAVYUVVideoFrame *)pixelBufferForYUV420;
+
+- (NSTimeInterval)currentPTS;
 - (SGPLFImage *)imageFromVideoFrame;
 
 @end
