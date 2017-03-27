@@ -192,16 +192,18 @@
 
 - (void)updateDisplayViewLayout:(CGRect)frame
 {
-    if (self.avplayerLayer) {
-        self.avplayerLayer.frame = frame;
-        if (self.abstractPlayer.viewAnimationHidden || !self.avplayerLayerToken) {
-            [self.avplayerLayer removeAllAnimations];
-            self.avplayerLayerToken = YES;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (self.avplayerLayer) {
+            self.avplayerLayer.frame = frame;
+            if (self.abstractPlayer.viewAnimationHidden || !self.avplayerLayerToken) {
+                [self.avplayerLayer removeAllAnimations];
+                self.avplayerLayerToken = YES;
+            }
         }
-    }
-    if (self.glViewController) {
-        [self.glViewController reloadViewport];
-    }
+        if (self.glViewController) {
+            [self.glViewController reloadViewport];
+        }
+    });
 }
 
 #pragma mark - Event Handler
