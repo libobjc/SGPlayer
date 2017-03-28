@@ -14,7 +14,7 @@
 
 + (instancetype)videoToolBoxWithCodecContext:(AVCodecContext *)codecContext;
 
-- (BOOL)sendPacket:(AVPacket)packet;
+- (BOOL)sendPacket:(AVPacket)packet needFlush:(BOOL *)needFlush;
 - (CVImageBufferRef)imageBuffer;
 
 - (BOOL)trySetupVTSession;

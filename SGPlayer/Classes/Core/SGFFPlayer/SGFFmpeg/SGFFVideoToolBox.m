@@ -143,7 +143,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoToolBoxErrorCode) {
     self->_decode_output = NULL;
 }
 
-- (BOOL)sendPacket:(AVPacket)packet
+- (BOOL)sendPacket:(AVPacket)packet needFlush:(BOOL *)needFlush
 {
     BOOL setupResult = [self trySetupVTSession];
     if (!setupResult) return NO;
@@ -186,6 +186,8 @@ typedef NS_ENUM(NSUInteger, SGFFVideoToolBoxErrorCode) {
                 if (self->_decode_status == noErr && self->_decode_output != NULL) {
                     result = YES;
                 }
+            } else if (status == kVTInvalidSessionErr) {
+                * needFlush = YES;
             }
         }
         if (sampleBuffer) {
