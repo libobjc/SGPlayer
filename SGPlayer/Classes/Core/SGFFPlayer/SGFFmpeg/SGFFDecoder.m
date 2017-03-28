@@ -394,10 +394,10 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         
         if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
             if (firstPosition < currentPostion && firstPosition >= 0) {
-                videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioTimeClock];
+                videoFrame = [self.videoDecoder getFrameAsync];
             }
         } else {
-            videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioTimeClock];
+            videoFrame = [self.videoDecoder getFrameAsync];
         }
     }
     else
