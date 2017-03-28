@@ -127,9 +127,19 @@ static AVPacket flush_packet;
     return [self.frameQueue getFrameAsync];
 }
 
+- (SGFFVideoFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
+{
+    return [self.frameQueue getFrameAsyncPosistion:position];
+}
+
 - (NSTimeInterval)getFirstFramePositionAsync
 {
     return [self.frameQueue getFirstFramePositionAsync];
+}
+
+- (void)discardFrameBeforPosition:(NSTimeInterval)position
+{
+    [self.frameQueue discardFrameBeforPosition:position];
 }
 
 - (void)putPacket:(AVPacket)packet

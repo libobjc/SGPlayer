@@ -55,6 +55,7 @@
 @property (nonatomic, strong) SGFFAudioFrame * currentAudioFrame;
 
 @property (atomic, assign) NSTimeInterval audioTimeClock;
+@property (atomic, assign) NSTimeInterval videoTimeToken;
 
 @end
 
@@ -214,6 +215,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
                 self.seekCompleteHandler = nil;
             }
             self.audioTimeClock = self.progress;
+            self.videoTimeToken = -1;
             self.currentVideoFrame = nil;
             self.currentAudioFrame = nil;
             [self updateBufferedDurationByVideo];
@@ -288,137 +290,6 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     [self checkBufferingStatus];
 }
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
-{
-    if (self.closed || self.error) {
-        return  nil;
-    }
-    if (self.seeking || self.buffering) {
-        return  nil;
-    }
-    if (self.videoDecoder.frameEmpty) {
-        return nil;
-    }
-    if (currentPostion < 0) {
-        return [self.videoDecoder getFrameAsync];
-    }
-    if (self.paused) {
-        return nil;
-    }
-    if (self.formatContext.audioEnable) {
-        NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
-        NSTimeInterval audioTimeClock = self.audioTimeClock;
-        NSTimeInterval currentStop = currentPostion + currentDuration;
-        
-        if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
-            if (firstPosition < currentPostion) {
-                return [self.videoDecoder getFrameAsync];
-            }
-            return nil;
-        } else {
-            return [self.videoDecoder getFrameAsync];
-        }
-    } else {
-        
-    }
-    return [self.videoDecoder getFrameAsync];
-}
-
-- (void)displayThread
-{
-    while (1) {
-        if (self.closed || self.error) {
-            SGFFThreadLog(@"display thread quit");
-            break;
-        }
-        if (self.seeking || self.buffering) {
-            [NSThread sleepForTimeInterval:0.01];
-            continue;
-        }
-        if (self.paused && self.currentVideoFrame) {
-//            if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-//                [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-//            }
-            [NSThread sleepForTimeInterval:0.03];
-            continue;
-        }
-        if (self.endOfFile && self.videoDecoder.empty) {
-            SGFFThreadLog(@"display finished");
-            break;
-        }
-        
-        if (self.formatContext.audioEnable) {
-            NSTimeInterval audioTimeClock = self.audioTimeClock;
-            NSTimeInterval sleepTime = 0;
-            if (self.currentVideoFrame) {
-                if (self.currentVideoFrame.position >= audioTimeClock) {
-                    sleepTime = (1.0 / self.videoDecoder.fps) / 2;
-                } else if ((self.currentVideoFrame.position + self.currentVideoFrame.duration) >= audioTimeClock) {
-                    sleepTime = self.currentVideoFrame.duration / 2;
-                }
-                if (sleepTime != 0) {
-                    if (sleepTime < 0.015) {
-                        sleepTime = 0.015;
-                    }
-                    SGFFSleepLog(@"display thread sleep : %f", sleepTime);
-                    [NSThread sleepForTimeInterval:sleepTime];
-                    continue;
-                }
-            }
-            if (self.videoDecoder.frameEmpty) {
-                [self updateBufferedDurationByVideo];
-            }
-
-            SGFFVideoFrame * newFrame = [self.videoDecoder getFrameSync];
-            if (self.currentVideoFrame.position > newFrame.position) {
-                continue;
-            }
-            self.currentVideoFrame = newFrame;
-            if (self.currentVideoFrame) {
-//                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-//                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-//                }
-                [self updateProgressByVideo];
-                if (self.endOfFile) {
-                    [self updateBufferedDurationByVideo];
-                }
-            } else {
-                if (self.endOfFile) {
-                    [self updateBufferedDurationByVideo];
-                }
-            }
-        } else {
-            if (self.videoDecoder.frameEmpty) {
-                [self updateBufferedDurationByVideo];
-            }
-            SGFFVideoFrame * newFrame = [self.videoDecoder getFrameSync];
-            if (self.currentVideoFrame.position > newFrame.position) {
-                continue;
-            }
-            self.currentVideoFrame = newFrame;
-            if (self.currentVideoFrame) {
-//                if ([self.videoOutput respondsToSelector:@selector(decoder:renderVideoFrame:)]) {
-//                    [self.videoOutput decoder:self renderVideoFrame:self.currentVideoFrame];
-//                }
-                [self updateProgressByVideo];
-                if (self.endOfFile) {
-                    [self updateBufferedDurationByVideo];
-                }
-                NSTimeInterval sleepTime = self.currentVideoFrame.duration;
-                if (sleepTime < 0.0001) {
-                    sleepTime = (1.0 / self.videoDecoder.fps);
-                }
-                [NSThread sleepForTimeInterval:sleepTime];
-            } else {
-                if (self.endOfFile) {
-                    [self updateBufferedDurationByVideo];
-                }
-            }
-        }
-    }
-    [self checkBufferingStatus];
-}
-
 - (void)pause
 {
     self.paused = YES;
@@ -487,6 +358,60 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     [self updateProgressByAudio];
     self.audioTimeClock = self.currentAudioFrame.position;
     return self.currentAudioFrame;
+}
+
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
+{
+    if (self.closed || self.error) {
+        return  nil;
+    }
+    if (self.seeking || self.buffering) {
+        return  nil;
+    }
+    if (self.videoDecoder.frameEmpty) {
+        return nil;
+    }
+    if (self.endOfFile && self.videoDecoder.empty) {
+        return nil;
+    }
+    
+    SGFFVideoFrame * videoFrame = nil;
+    if (self.formatContext.audioEnable)
+    {
+        NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
+        NSTimeInterval audioTimeClock = self.audioTimeClock;
+        NSTimeInterval currentStop = currentPostion + currentDuration;
+        
+        if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
+            if (firstPosition < currentPostion && firstPosition >= 0) {
+                videoFrame = [self.videoDecoder getFrameAsync];
+            }
+        } else {
+            videoFrame = [self.videoDecoder getFrameAsync];
+        }
+    }
+    else
+    {
+        NSTimeInterval timeInterval = [NSDate date].timeIntervalSince1970;
+        if (timeInterval >= self.videoTimeToken || self.videoTimeToken < 0) {
+            videoFrame = [self.videoDecoder getFrameAsync];
+            if (videoFrame) {
+                NSTimeInterval duration = videoFrame.duration;
+                if (duration < 0.00001) {
+                    duration = (1.0 / self.videoDecoder.fps);
+                }
+                self.videoTimeToken = timeInterval + duration;
+            }
+        }
+    }
+    if (videoFrame) {
+        self.currentVideoFrame = videoFrame;
+        [self updateProgressByVideo];
+        if (self.endOfFile) {
+            [self updateBufferedDurationByVideo];
+        }
+    }
+    return videoFrame;
 }
 
 #pragma mark - close stream

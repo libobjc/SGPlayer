@@ -126,6 +126,43 @@
     return frame;
 }
 
+- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
+{
+    [self.condition lock];
+    if (self.destoryToken || self.frames.count <= 0) {
+        [self.condition unlock];
+        return nil;
+    }
+    SGFFFrame * frame = nil;
+    NSMutableArray * temp = [NSMutableArray array];
+    for (SGFFFrame * obj in self.frames) {
+        if (obj.position < position) {
+            [temp addObject:obj];
+            self.duration -= obj.duration;
+            self.size -= obj.size;
+        } else {
+            break;
+        }
+    }
+    if (temp.count > 0) {
+        frame = temp.firstObject;
+        [self.frames removeObjectsInArray:temp];
+    } else {
+        frame = self.frames.firstObject;
+        [self.frames removeObject:frame];
+        self.duration -= frame.duration;
+        self.size -= frame.size;
+    }
+    if (self.duration < 0 || self.count <= 0) {
+        self.duration = 0;
+    }
+    if (self.size <= 0 || self.count <= 0) {
+        self.size = 0;
+    }
+    [self.condition unlock];
+    return frame;
+}
+
 - (NSTimeInterval)getFirstFramePositionAsync
 {
     [self.condition lock];
@@ -136,6 +173,35 @@
     NSTimeInterval time = self.frames.firstObject.position;
     [self.condition unlock];
     return time;
+}
+
+- (void)discardFrameBeforPosition:(NSTimeInterval)position
+{
+    [self.condition lock];
+    if (self.destoryToken || self.frames.count <= 0) {
+        [self.condition unlock];
+        return;
+    }
+    NSMutableArray * temp = [NSMutableArray array];
+    for (SGFFFrame * obj in self.frames) {
+        if (obj.position < position) {
+            [temp addObject:obj];
+            self.duration -= obj.duration;
+            self.size -= obj.size;
+        } else {
+            break;
+        }
+    }
+    if (temp.count > 0) {
+        [self.frames removeObjectsInArray:temp];
+    }
+    if (self.duration < 0 || self.count <= 0) {
+        self.duration = 0;
+    }
+    if (self.size <= 0 || self.count <= 0) {
+        self.size = 0;
+    }
+    [self.condition unlock];
 }
 
 - (void)flush
