@@ -161,6 +161,9 @@ SGAudioOutputContext;
             self.registered = YES;
         }
     }
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    [self.audioSession setActive:YES error:nil];
+#endif
     return self.registered;
 }
 
@@ -468,11 +471,6 @@ SGAudioOutputContext;
     if (!self->_playing) {
         if ([self registerAudioSession]) {
             OSStatus result = AUGraphStart(self.outputContext->graph);
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                if (self->_playing) {
-                    AUGraphStart(self.outputContext->graph);
-                }
-            });
             self.error = checkError(result, @"graph start error");
             if (self.error) {
                 [self delegateErrorCallback];
