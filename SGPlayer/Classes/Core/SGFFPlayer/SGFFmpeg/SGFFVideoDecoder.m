@@ -129,7 +129,12 @@ static AVPacket flush_packet;
 
 - (SGFFVideoFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
 {
-    return [self.frameQueue getFrameAsyncPosistion:position];
+    NSMutableArray <SGFFFrame *> * discardFrames = nil;
+    SGFFVideoFrame * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
+    for (SGFFVideoFrame * obj in discardFrames) {
+        [obj cancel];
+    }
+    return videoFrame;
 }
 
 - (NSTimeInterval)getFirstFramePositionAsync
@@ -139,7 +144,10 @@ static AVPacket flush_packet;
 
 - (void)discardFrameBeforPosition:(NSTimeInterval)position
 {
-    [self.frameQueue discardFrameBeforPosition:position];
+    NSMutableArray <SGFFFrame *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
+    for (SGFFVideoFrame * obj in discardFrames) {
+        [obj cancel];
+    }
 }
 
 - (void)putPacket:(AVPacket)packet

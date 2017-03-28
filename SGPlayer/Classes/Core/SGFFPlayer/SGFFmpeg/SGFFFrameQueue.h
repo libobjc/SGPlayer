@@ -26,9 +26,9 @@
 - (void)putSortFrame:(__kindof SGFFFrame *)frame;
 - (__kindof SGFFFrame *)getFrameSync;
 - (__kindof SGFFFrame *)getFrameAsync;
-- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position;
+- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame *> **)discardFrames;
 - (NSTimeInterval)getFirstFramePositionAsync;
-- (void)discardFrameBeforPosition:(NSTimeInterval)position;
+- (NSMutableArray <__kindof SGFFFrame *> *)discardFrameBeforPosition:(NSTimeInterval)position;
 
 - (void)flush;
 - (void)destroy;

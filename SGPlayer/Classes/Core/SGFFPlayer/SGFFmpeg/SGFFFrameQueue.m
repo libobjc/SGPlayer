@@ -126,7 +126,7 @@
     return frame;
 }
 
-- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
+- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame *> **)discardFrames
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
@@ -147,6 +147,10 @@
     if (temp.count > 0) {
         frame = temp.firstObject;
         [self.frames removeObjectsInArray:temp];
+        [temp removeObject:frame];
+        if (temp.count > 0) {
+            * discardFrames = temp;
+        }
     } else {
         frame = self.frames.firstObject;
         [self.frames removeObject:frame];
@@ -175,12 +179,12 @@
     return time;
 }
 
-- (void)discardFrameBeforPosition:(NSTimeInterval)position
+- (NSMutableArray <__kindof SGFFFrame *> *)discardFrameBeforPosition:(NSTimeInterval)position
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
         [self.condition unlock];
-        return;
+        return nil;
     }
     NSMutableArray * temp = [NSMutableArray array];
     for (SGFFFrame * obj in self.frames) {
@@ -202,6 +206,11 @@
         self.size = 0;
     }
     [self.condition unlock];
+    if (temp.count > 0) {
+        return temp;
+    } else {
+        return nil;
+    }
 }
 
 - (void)flush
