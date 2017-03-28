@@ -468,6 +468,11 @@ SGAudioOutputContext;
     if (!self->_playing) {
         if ([self registerAudioSession]) {
             OSStatus result = AUGraphStart(self.outputContext->graph);
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                if (self->_playing) {
+                    AUGraphStart(self.outputContext->graph);
+                }
+            });
             self.error = checkError(result, @"graph start error");
             if (self.error) {
                 [self delegateErrorCallback];
@@ -576,6 +581,7 @@ SGAudioOutputContext;
         free(self->_outData);
         self->_outData = NULL;
     }
+    self->_playing = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
