@@ -359,6 +359,11 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
     [self updateProgressByAudio];
     self.audioTimeClock = self.currentAudioFrame.position;
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        [self.videoDecoder discardFrameBeforPosition:self.audioTimeClock];
+    }
+#endif
     return self.currentAudioFrame;
 }
 
@@ -389,10 +394,10 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         
         if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
             if (firstPosition < currentPostion && firstPosition >= 0) {
-                videoFrame = [self.videoDecoder getFrameAsync];
+                videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioTimeClock];
             }
         } else {
-            videoFrame = [self.videoDecoder getFrameAsync];
+            videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioTimeClock];
         }
     }
     else
