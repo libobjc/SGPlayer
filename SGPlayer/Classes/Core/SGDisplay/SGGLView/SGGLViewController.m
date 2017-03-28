@@ -87,6 +87,8 @@
     glView.contentScaleFactor = [UIScreen mainScreen].scale;
     self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
     self.preferredFramesPerSecond = 60;
+    self.pauseOnWillResignActive = NO;
+    self.resumeOnDidBecomeActive = YES;
 #endif
     
     self.textureNV12 = [[SGGLTextureNV12 alloc] initWithContext:context];
@@ -112,6 +114,11 @@
 
 - (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect
 {
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+        return;
+    }
+#endif
     if (self.clearToken) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
