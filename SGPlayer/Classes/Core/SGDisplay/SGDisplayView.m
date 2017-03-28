@@ -268,7 +268,6 @@ static BOOL mouse_dragged = NO;
 
 - (void)macOS_updateFrameAction:(NSNotification *)notification
 {
-    NSLog(@"%s", __func__);
     [self updateDisplayViewLayout:self.bounds];
 }
 

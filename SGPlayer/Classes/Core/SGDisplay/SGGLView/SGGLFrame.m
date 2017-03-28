@@ -115,7 +115,6 @@
 - (void)dealloc
 {
     [self flush];
-    NSLog(@"SGGLFrame release");
 }
 
 @end

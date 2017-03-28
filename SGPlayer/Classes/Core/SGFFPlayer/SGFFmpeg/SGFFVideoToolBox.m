@@ -215,7 +215,6 @@ typedef NS_ENUM(NSUInteger, SGFFVideoToolBoxErrorCode) {
 - (void)dealloc
 {
     [self flush];
-    NSLog(@"SGFFVideoToolBox release");
 }
 
 static void outputCallback(void * decompressionOutputRefCon, void * sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)

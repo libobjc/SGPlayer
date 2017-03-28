@@ -48,7 +48,6 @@
 
 - (instancetype)init
 {
-    NSLog(@"创建 VideoFrame");
     if (self = [super init]) {
         channel_lenghts[SGYUVChannelLuma] = 0;
         channel_lenghts[SGYUVChannelChromaB] = 0;
@@ -193,7 +192,6 @@
     if (channel_pixels[SGYUVChannelChromaR] != NULL && channel_pixels_buffer_size[SGYUVChannelChromaR] > 0) {
         free(channel_pixels[SGYUVChannelChromaR]);
     }
-    NSLog(@"释放 VideoFrame");
 }
 
 @end
