@@ -238,13 +238,13 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
             BOOL result = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
             if (result) {
                 videoFrame = [self videoFrameFromVideoToolBox:packet];
-                self.frameQueue.minFrameCountForGet = 5;
+                self.frameQueue.minFrameCountForGet = 4;
             } else if (needFlush) {
                 [self.videoToolBox flush];
                 BOOL result2 = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
                 if (result2) {
                     videoFrame = [self videoFrameFromVideoToolBox:packet];
-                    self.frameQueue.minFrameCountForGet = 5;
+                    self.frameQueue.minFrameCountForGet = 4;
                 }
             }
         } else {
