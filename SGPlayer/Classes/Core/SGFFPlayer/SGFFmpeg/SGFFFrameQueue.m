@@ -155,7 +155,7 @@
         }
     }
     if (temp.count > 0) {
-        frame = temp.firstObject;
+        frame = temp.lastObject;
         [self.frames removeObjectsInArray:temp];
         [temp removeObject:frame];
         if (temp.count > 0) {
