@@ -218,6 +218,7 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
         }
         if (packet.data == flush_packet.data) {
             SGFFDecodeLog(@"video codec flush");
+            [self.frameQueue flush];
             avcodec_flush_buffers(_codec_context);
 #if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
             [self.videoToolBox flush];
