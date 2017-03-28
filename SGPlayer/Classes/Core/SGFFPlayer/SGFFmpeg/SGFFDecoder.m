@@ -397,7 +397,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
                 videoFrame = [self.videoDecoder getFrameAsync];
             }
         } else {
-            videoFrame = [self.videoDecoder getFrameAsync];
+            videoFrame = [self.videoDecoder getFrameAsyncPosistion:self.audioTimeClock];
         }
     }
     else
