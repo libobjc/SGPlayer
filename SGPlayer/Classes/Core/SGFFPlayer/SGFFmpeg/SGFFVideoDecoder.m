@@ -237,9 +237,11 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
             BOOL result = [self.videoToolBox sendPacket:packet];
             if (result) {
                 videoFrame = [self videoFrameFromVideoToolBox:packet];
+                self.frameQueue.minFrameCountForGet = 5;
             }
         } else {
 #endif
+            self.frameQueue.minFrameCountForGet = 1;
             int result = avcodec_send_packet(_codec_context, &packet);
             if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
                 self.error = SGFFCheckError(result);
@@ -268,6 +270,7 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     end:
         av_packet_unref(&packet);
     }
+    self.frameQueue.ignoreMinFrameCountForGetLimit = YES;
     self.decoding = NO;
     [self.delegate videoDecoderNeedCheckBufferingStatus:self];
 }
