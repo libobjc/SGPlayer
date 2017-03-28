@@ -56,6 +56,7 @@
 
 @property (atomic, assign) NSTimeInterval audioTimeClock;
 @property (atomic, assign) NSTimeInterval videoTimeToken;
+@property (atomic, assign) BOOL needUpdateVideo;
 
 @end
 
@@ -218,6 +219,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             self.videoTimeToken = -1;
             self.currentVideoFrame = nil;
             self.currentAudioFrame = nil;
+            self.needUpdateVideo = YES;
             [self updateBufferedDurationByVideo];
             [self updateBufferedDurationByAudio];
             continue;
@@ -374,7 +376,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     if (self.endOfFile && self.videoDecoder.empty) {
         return nil;
     }
-    if (self.paused && ABS(self.progress - currentPostion) < 1) {
+    if (self.paused && !self.needUpdateVideo) {
         return nil;
     }
     
@@ -413,6 +415,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         if (self.endOfFile) {
             [self updateBufferedDurationByVideo];
         }
+        self.needUpdateVideo = NO;
     }
     return videoFrame;
 }
@@ -462,6 +465,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     self.videoDecoder.endOfFile = NO;
     self.selectAudioTrack = NO;
     self.selectAudioTrackIndex = 0;
+    self.needUpdateVideo = NO;
 }
 
 - (void)closeOperation
