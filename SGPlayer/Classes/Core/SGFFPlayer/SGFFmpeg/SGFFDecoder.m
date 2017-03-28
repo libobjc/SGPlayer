@@ -374,6 +374,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     if (self.endOfFile && self.videoDecoder.empty) {
         return nil;
     }
+    if (self.paused && ABS(self.progress - currentPostion) < 1) {
+        return nil;
+    }
     
     SGFFVideoFrame * videoFrame = nil;
     if (self.formatContext.audioEnable)
