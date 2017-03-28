@@ -22,6 +22,9 @@
 @property (nonatomic, assign, readonly) NSUInteger count;
 @property (atomic, assign, readonly) NSTimeInterval duration;
 
+@property (nonatomic, assign) NSUInteger minFrameCountForGet;    // default is 1.
+@property (nonatomic, assign) BOOL ignoreMinFrameCountForGetLimit;
+
 - (void)putFrame:(__kindof SGFFFrame *)frame;
 - (void)putSortFrame:(__kindof SGFFFrame *)frame;
 - (__kindof SGFFFrame *)getFrameSync;

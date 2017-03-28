@@ -33,6 +33,8 @@
     if (self = [super init]) {
         self.frames = [NSMutableArray array];
         self.condition = [[NSCondition alloc] init];
+        self.minFrameCountForGet = 1;
+        self.ignoreMinFrameCountForGetLimit = NO;
     }
     return self;
 }
@@ -84,7 +86,7 @@
 - (__kindof SGFFFrame *)getFrameSync
 {
     [self.condition lock];
-    while (!self.frames.firstObject) {
+    while (self.frames.count < self.minFrameCountForGet && !(self.ignoreMinFrameCountForGetLimit && self.frames.firstObject)) {
         if (self.destoryToken) {
             [self.condition unlock];
             return nil;
@@ -112,6 +114,10 @@
         [self.condition unlock];
         return nil;
     }
+    if (!self.ignoreMinFrameCountForGetLimit && self.frames.count < self.minFrameCountForGet) {
+        [self.condition unlock];
+        return nil;
+    }
     SGFFFrame * frame = self.frames.firstObject;
     [self.frames removeObjectAtIndex:0];
     self.duration -= frame.duration;
@@ -130,6 +136,10 @@
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
+        [self.condition unlock];
+        return nil;
+    }
+    if (!self.ignoreMinFrameCountForGetLimit && self.frames.count < self.minFrameCountForGet) {
         [self.condition unlock];
         return nil;
     }
@@ -174,6 +184,10 @@
         [self.condition unlock];
         return -1;
     }
+    if (!self.ignoreMinFrameCountForGetLimit && self.frames.count < self.minFrameCountForGet) {
+        [self.condition unlock];
+        return -1;
+    }
     NSTimeInterval time = self.frames.firstObject.position;
     [self.condition unlock];
     return time;
@@ -183,6 +197,10 @@
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
+        [self.condition unlock];
+        return nil;
+    }
+    if (!self.ignoreMinFrameCountForGetLimit && self.frames.count < self.minFrameCountForGet) {
         [self.condition unlock];
         return nil;
     }
@@ -219,6 +237,7 @@
     [self.frames removeAllObjects];
     self.duration = 0;
     self.size = 0;
+    self.ignoreMinFrameCountForGetLimit = NO;
     [self.condition unlock];
 }
 
