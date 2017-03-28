@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
@@ -699,6 +699,10 @@
                                             <menuItem title="google help,  AVPlayer,  VR,  Box" id="5ue-l7-BFg"/>
                                             <menuItem title="i see fire,   FFmpeg" id="Xbi-QP-43t"/>
                                             <menuItem title="i see fire,   FFmpeg,  Hardware Acceleration" id="r6t-0L-Js8"/>
+                                            <menuItem title="google help,  FFmpeg,  VR" id="012-hm-Gfs"/>
+                                            <menuItem title="google help,  FFmpeg,  VR,  Hardware Acceleration" id="A5p-bA-UUb"/>
+                                            <menuItem title="google help,  FFmpeg,  VR,  Box" id="yB4-Yg-dco"/>
+                                            <menuItem title="google help,  FFmpeg,  VR,  Box,  Hardware Acceleration" id="gJq-yw-OeU"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
