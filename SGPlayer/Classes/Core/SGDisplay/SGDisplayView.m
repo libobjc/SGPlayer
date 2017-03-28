@@ -90,7 +90,9 @@
             }
             break;
     }
-    [self updateDisplayViewLayout:self.bounds];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateDisplayViewLayout:self.bounds];
+    });
 }
 
 - (void)reloadGravityMode
@@ -192,18 +194,16 @@
 
 - (void)updateDisplayViewLayout:(CGRect)frame
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (self.avplayerLayer) {
-            self.avplayerLayer.frame = frame;
-            if (self.abstractPlayer.viewAnimationHidden || !self.avplayerLayerToken) {
-                [self.avplayerLayer removeAllAnimations];
-                self.avplayerLayerToken = YES;
-            }
+    if (self.avplayerLayer) {
+        self.avplayerLayer.frame = frame;
+        if (self.abstractPlayer.viewAnimationHidden || !self.avplayerLayerToken) {
+            [self.avplayerLayer removeAllAnimations];
+            self.avplayerLayerToken = YES;
         }
-        if (self.glViewController) {
-            [self.glViewController reloadViewport];
-        }
-    });
+    }
+    if (self.glViewController) {
+        [self.glViewController reloadViewport];
+    }
 }
 
 #pragma mark - Event Handler
