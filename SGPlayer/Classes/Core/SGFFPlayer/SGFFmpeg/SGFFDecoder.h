@@ -33,6 +33,8 @@
 
 @protocol SGFFDecoderVideoOutput <NSObject>
 
+- (BOOL)videoOutputPaused;
+
 @end
 
 @protocol SGFFDecoderAudioOutput <NSObject>

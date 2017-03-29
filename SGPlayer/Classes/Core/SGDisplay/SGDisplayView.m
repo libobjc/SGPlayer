@@ -40,6 +40,14 @@
     return self;
 }
 
+- (BOOL)videoOutputPaused
+{
+    if (self.glViewController) {
+        return self.glViewController.isPaused;
+    }
+    return YES;
+}
+
 - (void)updateGLFrame:(SGGLFrame *)glFrame
 {
     if (self.rendererType == SGDisplayRendererTypeAVPlayerPixelBufferVR) {

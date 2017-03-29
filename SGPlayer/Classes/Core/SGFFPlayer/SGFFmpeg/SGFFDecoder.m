@@ -359,11 +359,14 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
     [self updateProgressByAudio];
     self.audioTimeClock = self.currentAudioFrame.position;
+    BOOL videoOuputPuused = [self.videoOutput videoOutputPaused];
+    BOOL background = NO;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+    background = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
+#endif
+    if (background || videoOuputPuused) {
         [self.videoDecoder discardFrameBeforPosition:self.audioTimeClock];
     }
-#endif
     return self.currentAudioFrame;
 }
 
