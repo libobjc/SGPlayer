@@ -86,7 +86,6 @@
     glView.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     glView.contentScaleFactor = [UIScreen mainScreen].scale;
     self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
-    self.preferredFramesPerSecond = 60;
     self.pauseOnWillResignActive = NO;
     self.resumeOnDidBecomeActive = YES;
 #endif
@@ -103,6 +102,7 @@
     self.vrMatrix = [[SGMatrix alloc] init];
     self.currentFrame = [SGGLFrame frame];
     self.aspect = 16.0 / 9.0;
+    self.preferredFramesPerSecond = 60;
 }
 
 - (void)flushClearColor
@@ -297,6 +297,13 @@
     if (_aspect != aspect) {
         _aspect = aspect;
         [self reloadViewport];
+    }
+}
+
+- (void)setVideoDecoderMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+{
+    if (self.preferredFramesPerSecond != preferredFramesPerSecond) {
+        self.preferredFramesPerSecond = preferredFramesPerSecond;
     }
 }
 

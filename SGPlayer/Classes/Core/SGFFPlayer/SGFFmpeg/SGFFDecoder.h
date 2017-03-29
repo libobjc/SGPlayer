@@ -34,6 +34,7 @@
 @protocol SGFFDecoderVideoOutput <NSObject>
 
 - (BOOL)videoOutputPaused;
+- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
 
 @end
 

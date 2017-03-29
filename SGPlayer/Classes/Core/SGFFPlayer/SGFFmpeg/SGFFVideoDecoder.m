@@ -28,6 +28,7 @@ static AVPacket flush_packet;
 
 @property (nonatomic, assign) BOOL decoding;
 @property (nonatomic, strong) NSError * error;
+@property (nonatomic, assign) NSInteger preferredFramesPerSecond;
 
 @property (nonatomic, assign) BOOL canceled;
 
@@ -247,8 +248,10 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
                     self.frameQueue.minFrameCountForGet = 4;
                 }
             }
+            self.preferredFramesPerSecond = 60;
         } else {
 #endif
+            self.preferredFramesPerSecond = 30;
             self.frameQueue.minFrameCountForGet = 1;
             int result = avcodec_send_packet(_codec_context, &packet);
             if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
@@ -341,6 +344,14 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     return _videoToolBox;
 }
 #endif
+
+- (void)setPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+{
+    if (_preferredFramesPerSecond != preferredFramesPerSecond) {
+        _preferredFramesPerSecond = preferredFramesPerSecond;
+    }
+    [self.delegate videoDecoder:self didChangePreferredFramesPerSecond:_preferredFramesPerSecond];
+}
 
 - (void)delegateErrorCallback
 {

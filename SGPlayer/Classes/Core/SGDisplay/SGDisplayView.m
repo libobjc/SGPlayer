@@ -48,6 +48,11 @@
     return YES;
 }
 
+- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+{
+    [self.glViewController setVideoDecoderMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+}
+
 - (void)updateGLFrame:(SGGLFrame *)glFrame
 {
     if (self.rendererType == SGDisplayRendererTypeAVPlayerPixelBufferVR) {
