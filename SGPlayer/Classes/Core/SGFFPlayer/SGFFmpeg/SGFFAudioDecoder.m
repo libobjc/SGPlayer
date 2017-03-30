@@ -25,7 +25,6 @@
     Float64 _samplingRate;
     UInt32 _channelCount;
     
-    struct SwsContext * _video_sws_context;
     SwrContext * _audio_swr_context;
     void * _audio_swr_buffer;
     NSUInteger _audio_swr_buffer_size;
