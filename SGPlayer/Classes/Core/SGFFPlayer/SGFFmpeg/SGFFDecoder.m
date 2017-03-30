@@ -51,12 +51,13 @@
 @property (nonatomic, assign) BOOL selectAudioTrack;
 @property (nonatomic, assign) BOOL selectAudioTrackIndex;
 
-@property (nonatomic, strong) SGFFVideoFrame * currentVideoFrame;
-@property (nonatomic, strong) SGFFAudioFrame * currentAudioFrame;
+@property (atomic, assign) NSTimeInterval audioFrameTimeClock;
+@property (atomic, assign) NSTimeInterval audioFramePosition;
+@property (atomic, assign) NSTimeInterval audioFrameDuration;
 
-@property (atomic, assign) NSTimeInterval audioTimeClock;
-@property (atomic, assign) NSTimeInterval videoTimeToken;
-@property (atomic, assign) BOOL needUpdateVideo;
+@property (atomic, assign) NSTimeInterval videoFrameTimeClock;
+@property (atomic, assign) NSTimeInterval videoFramePosition;
+@property (atomic, assign) NSTimeInterval videoFrameDuration;
 
 @end
 
@@ -187,6 +188,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)readPacketThread
 {
+    [self cleanAudioFrame];
+    [self cleanVideoFrame];
+    
     [self.videoDecoder flush];
     [self.audioDecoder flush];
     
@@ -215,11 +219,8 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
                 self.seekCompleteHandler(YES);
                 self.seekCompleteHandler = nil;
             }
-            self.audioTimeClock = self.progress;
-            self.videoTimeToken = -1;
-            self.currentVideoFrame = nil;
-            self.currentAudioFrame = nil;
-            self.needUpdateVideo = YES;
+            [self cleanAudioFrame];
+            [self cleanVideoFrame];
             [self updateBufferedDurationByVideo];
             [self updateBufferedDurationByAudio];
             continue;
@@ -232,7 +233,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
                                                                      timebase:self.formatContext.audioTimebase
                                                                      delegate:self];
                 if (!self.playbackFinished) {
-                    [self seekToTime:self.audioTimeClock];
+                    [self seekToTime:self.progress];
                 }
             }
             self.selectAudioTrack = NO;
@@ -351,23 +352,25 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         [self updateBufferedDurationByAudio];
         return nil;
     }
-    self.currentAudioFrame = [self.audioDecoder getFrameSync];
-    if (!self.currentAudioFrame) return nil;
+    SGFFAudioFrame * audioFrame = [self.audioDecoder getFrameSync];
+    if (!audioFrame) return nil;
+    self.audioFramePosition = audioFrame.position;
+    self.audioFrameDuration = audioFrame.duration;
     
     if (self.endOfFile) {
         [self updateBufferedDurationByAudio];
     }
     [self updateProgressByAudio];
-    self.audioTimeClock = self.currentAudioFrame.position;
     BOOL videoOuputPuused = [self.videoOutput videoOutputPaused];
     BOOL background = NO;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     background = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
 #endif
     if (background || videoOuputPuused) {
-        [self.videoDecoder discardFrameBeforPosition:self.audioTimeClock];
+        [self.videoDecoder discardFrameBeforPosition:self.audioFramePosition];
     }
-    return self.currentAudioFrame;
+    self.audioFrameTimeClock = [NSDate date].timeIntervalSince1970;
+    return audioFrame;
 }
 
 - (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
@@ -378,52 +381,62 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     if (self.seeking || self.buffering) {
         return  nil;
     }
-    if (self.videoDecoder.frameEmpty) {
-        return nil;
-    }
     if (self.endOfFile && self.videoDecoder.empty) {
         return nil;
     }
-    if (self.paused && !self.needUpdateVideo) {
+    if (self.paused && self.videoFrameTimeClock > 0) {
+        return nil;
+    }
+    if (self.audioEnable && self.audioFrameTimeClock < 0 && self.videoFrameTimeClock > 0) {
+        return nil;
+    }
+    if (self.videoDecoder.frameEmpty) {
         return nil;
     }
     
+    NSTimeInterval timeInterval = [NSDate date].timeIntervalSince1970;
     SGFFVideoFrame * videoFrame = nil;
     if (self.formatContext.audioEnable)
     {
-        NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
-        NSTimeInterval audioTimeClock = self.audioTimeClock;
-        NSTimeInterval currentStop = currentPostion + currentDuration;
-        
-        if (currentPostion >= audioTimeClock || currentStop > audioTimeClock) {
-            if (firstPosition < currentPostion && firstPosition >= 0) {
-                videoFrame = [self.videoDecoder getFrameAsync];
-            }
+        NSTimeInterval audioTimeClock = self.audioFrameTimeClock;
+        if (audioTimeClock < 0) {
+            videoFrame = [self.videoDecoder getFrameAsync];
         } else {
-            videoFrame = [self.videoDecoder getFrameAsyncPosistion:self.audioTimeClock];
+            NSTimeInterval audioTimeClockDelta = timeInterval - audioTimeClock;
+            NSTimeInterval audioPositionReal = self.audioFramePosition + audioTimeClockDelta;
+            
+            NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
+            NSTimeInterval currentStop = currentPostion + currentDuration;
+            
+            if (currentStop > audioPositionReal) {
+                if (firstPosition < currentPostion && firstPosition >= 0) {
+                    videoFrame = [self.videoDecoder getFrameAsync];
+                }
+            } else {
+                videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioPositionReal];
+            }
         }
     }
     else
     {
-        NSTimeInterval timeInterval = [NSDate date].timeIntervalSince1970;
-        if (timeInterval >= self.videoTimeToken || self.videoTimeToken < 0) {
+        if (timeInterval >= self.videoFrameTimeClock + self.videoFrameDuration || self.videoFrameTimeClock < 0) {
             videoFrame = [self.videoDecoder getFrameAsync];
             if (videoFrame) {
                 NSTimeInterval duration = videoFrame.duration;
                 if (duration < 0.00001) {
                     duration = (1.0 / self.videoDecoder.fps);
                 }
-                self.videoTimeToken = timeInterval + duration;
             }
         }
     }
     if (videoFrame) {
-        self.currentVideoFrame = videoFrame;
+        self.videoFrameTimeClock = timeInterval;
+        self.videoFramePosition = videoFrame.position;
+        self.videoFrameDuration = videoFrame.duration;
         [self updateProgressByVideo];
         if (self.endOfFile) {
             [self updateBufferedDurationByVideo];
         }
-        self.needUpdateVideo = NO;
     }
     return videoFrame;
 }
@@ -467,13 +480,12 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     self.prepareToDecode = NO;
     self.endOfFile = NO;
     self.playbackFinished = NO;
-    self.currentVideoFrame = nil;
-    self.currentAudioFrame = nil;
+    [self cleanAudioFrame];
+    [self cleanVideoFrame];
     self.videoDecoder.paused = NO;
     self.videoDecoder.endOfFile = NO;
     self.selectAudioTrack = NO;
     self.selectAudioTrackIndex = 0;
-    self.needUpdateVideo = NO;
 }
 
 - (void)closeOperation
@@ -482,6 +494,20 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     self.openFileOperation = nil;
     self.decodeFrameOperation = nil;
     self.ffmpegOperationQueue = nil;
+}
+
+- (void)cleanAudioFrame
+{
+    self.audioFrameTimeClock = -1;
+    self.audioFramePosition = -1;
+    self.audioFrameDuration = -1;
+}
+
+- (void)cleanVideoFrame
+{
+    self.videoFrameTimeClock = -1;
+    self.videoFramePosition = -1;
+    self.videoFrameDuration = -1;
 }
 
 #pragma mark - setter/getter
@@ -598,14 +624,14 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 - (void)updateProgressByVideo;
 {
     if (!self.formatContext.audioEnable && self.formatContext.videoEnable) {
-        self.progress = self.currentVideoFrame.position;
+        self.progress = self.videoFramePosition;
     }
 }
 
 - (void)updateProgressByAudio
 {
     if (self.formatContext.audioEnable) {
-        self.progress = self.currentAudioFrame.position;
+        self.progress = self.audioFramePosition;
     }
 }
 
