@@ -267,7 +267,10 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     codec_context->codec_id = codec->id;
     
-    result = avcodec_open2(codec_context, codec, NULL);
+    AVDictionary * option;
+    av_dict_set(&option, "threads", "auto", 0);
+    av_dict_set(&option, "refcounted_frames", "1", 0);
+    result = avcodec_open2(codec_context, codec, &option);
     error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecOpen2);
     if (error)
     {
