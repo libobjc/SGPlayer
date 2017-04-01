@@ -26,8 +26,6 @@ static AVPacket flush_packet;
     AVFrame * _temp_frame;
 }
 
-@property (nonatomic, assign) BOOL decoding;
-@property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) NSInteger preferredFramesPerSecond;
 
 @property (nonatomic, assign) BOOL canceled;
@@ -48,17 +46,20 @@ static AVPacket flush_packet;
 + (instancetype)decoderWithCodecContext:(AVCodecContext *)codec_context
                                timebase:(NSTimeInterval)timebase
                                     fps:(NSTimeInterval)fps
+                     videoToolBoxEnable:(BOOL)videoToolBoxEnable
                                delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     return [[self alloc] initWithCodecContext:codec_context
                                      timebase:timebase
                                           fps:fps
+                           videoToolBoxEnable:(BOOL)videoToolBoxEnable
                                      delegate:delegate];
 }
 
 - (instancetype)initWithCodecContext:(AVCodecContext *)codec_context
                             timebase:(NSTimeInterval)timebase
                                  fps:(NSTimeInterval)fps
+                  videoToolBoxEnable:(BOOL)videoToolBoxEnable
                             delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     if (self = [super init]) {
@@ -70,84 +71,72 @@ static AVPacket flush_packet;
         });
         self.delegate = delegate;
         self->_codec_context = codec_context;
-        self->_temp_frame = av_frame_alloc();
-        self.timebase = timebase;
-        self.fps = fps;
-        self.packetQueue = [SGFFPacketQueue packetQueueWithTimebase:timebase];
-        self.frameQueue = [SGFFFrameQueue frameQueue];
-        self.maxDecodeDuration = 2.f;
-#if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
-        self.videoToolBoxEnable = YES;
-#endif
+        self->_timebase = timebase;
+        self->_fps = fps;
+        self->_videoToolBoxEnable = videoToolBoxEnable;
+        [self setupCodecContext];
     }
     return self;
 }
 
-- (int)packetSize
+- (void)setupCodecContext
 {
-    return self.packetQueue.size;
-}
-
-- (BOOL)empty
-{
-    return [self packetEmpty] && [self frameEmpty];
-}
-
-- (BOOL)packetEmpty
-{
-    return self.packetQueue.count <= 0;
-}
-
-- (BOOL)frameEmpty
-{
-    return self.frameQueue.count <= 0;
-}
-
-- (NSTimeInterval)duration
-{
-    return [self packetDuration] + [self frameDuration];
-}
-
-- (NSTimeInterval)packetDuration
-{
-    return self.packetQueue.duration;
-}
-
-- (NSTimeInterval)frameDuration
-{
-    return self.frameQueue.duration;
-}
-
-- (SGFFVideoFrame *)getFrameSync
-{
-    return [self.frameQueue getFrameSync];
+    self->_temp_frame = av_frame_alloc();
+    self.packetQueue = [SGFFPacketQueue packetQueueWithTimebase:self.timebase];
+    self.videoToolBoxMaxDecodeDuration = 2.f;
+#if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
+    if (self.videoToolBoxEnable && _codec_context->codec_id == AV_CODEC_ID_H264) {
+        self.videoToolBox = [SGFFVideoToolBox videoToolBoxWithCodecContext:self->_codec_context];
+        if ([self.videoToolBox trySetupVTSession]) {
+            self->_videoToolBoxDidOpen = YES;
+            self.frameQueue = [SGFFFrameQueue frameQueue];
+        } else {
+            [self.videoToolBox flush];
+            self.videoToolBox = nil;
+        }
+    }
+#endif
+    if (self.videoToolBoxDidOpen) {
+        self.preferredFramesPerSecond = 60;
+        self.frameQueue.minFrameCountForGet = 4;
+        self->_decodeAsync = YES;
+    } else {
+        self.preferredFramesPerSecond = 30;
+        self->_decodeSync = YES;
+        self.framePool = [SGFFFramePool videoPool];
+    }
 }
 
 - (SGFFVideoFrame *)getFrameAsync
 {
-    return [self.frameQueue getFrameAsync];
+    if (self.videoToolBoxDidOpen) {
+        return [self.frameQueue getFrameAsync];
+    } else {
+        return [self ffmpegDecodeSync];
+    }
 }
 
 - (SGFFVideoFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
 {
-    NSMutableArray <SGFFFrame *> * discardFrames = nil;
-    SGFFVideoFrame * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
-    for (SGFFVideoFrame * obj in discardFrames) {
-        [obj cancel];
+    if (self.videoToolBoxDidOpen) {
+        NSMutableArray <SGFFFrame *> * discardFrames = nil;
+        SGFFVideoFrame * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
+        for (SGFFVideoFrame * obj in discardFrames) {
+            [obj cancel];
+        }
+        return videoFrame;
+    } else {
+        return [self ffmpegDecodeSync];
     }
-    return videoFrame;
-}
-
-- (NSTimeInterval)getFirstFramePositionAsync
-{
-    return [self.frameQueue getFirstFramePositionAsync];
 }
 
 - (void)discardFrameBeforPosition:(NSTimeInterval)position
 {
-    NSMutableArray <SGFFFrame *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
-    for (SGFFVideoFrame * obj in discardFrames) {
-        [obj cancel];
+    if (self.videoToolBoxDidOpen) {
+        NSMutableArray <SGFFFrame *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
+        for (SGFFVideoFrame * obj in discardFrames) {
+            [obj cancel];
+        }
     }
 }
 
@@ -160,133 +149,55 @@ static AVPacket flush_packet;
     [self.packetQueue putPacket:packet duration:duration];
 }
 
-- (void)flush
-{
-    [self.packetQueue flush];
-    [self.frameQueue flush];
-    if (self->_framePool) {
-        [self.framePool flush];
-    }
-    [self putPacket:flush_packet];
-}
 
-- (void)destroy
+#pragma mark - FFmpeg
+
+- (SGFFVideoFrame *)ffmpegDecodeSync
 {
-    self.canceled = YES;
+    if (self.canceled || self.error) {
+        return nil;
+    }
+    if (self.paused) {
+        return nil;
+    }
+    if (self.endOfFile && self.packetQueue.count <= 0) {
+        return nil;
+    }
     
-    [self.frameQueue destroy];
-    [self.packetQueue destroy];
-    if (self->_framePool) {
-        [self.framePool flush];
+    AVPacket packet = [self.packetQueue getPacketAsync];
+    if (packet.data == flush_packet.data) {
+        avcodec_flush_buffers(_codec_context);
+        return nil;
     }
-}
+    if (packet.stream_index < 0 || packet.data == NULL) {
+        return nil;
+    }
 
-static NSTimeInterval max_video_frame_sleep_full_time_interval = 0.1;
-static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
-
-- (void)decodeFrameThread
-{
-    self.decoding = YES;
-    BOOL finished = NO;
-    while (!finished) {
-        if (self.canceled || self.error) {
-            SGFFThreadLog(@"decode video thread quit");
-            break;
+    SGFFVideoFrame * videoFrame = nil;
+    int result = avcodec_send_packet(_codec_context, &packet);
+    if (result < 0) {
+        if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+            self->_error = SGFFCheckError(result);
+            [self delegateErrorCallback];
         }
-        if (self.paused) {
-            [NSThread sleepForTimeInterval:0.01];
-            continue;
-        }
-        if (self.endOfFile && self.packetEmpty) {
-            SGFFThreadLog(@"decode video finished");
-            break;
-        }
-        if (self.frameDuration >= self.maxDecodeDuration) {
-            NSTimeInterval interval = 0;
-            if (self.paused) {
-                interval = max_video_frame_sleep_full_and_pause_time_interval;
+    } else {
+        while (result >= 0) {
+            result = avcodec_receive_frame(_codec_context, _temp_frame);
+            if (result < 0) {
+                if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
+                    self->_error = SGFFCheckError(result);
+                    [self delegateErrorCallback];
+                }
             } else {
-                interval = max_video_frame_sleep_full_time_interval;
+                videoFrame = [self videoFrameFromTempFrame:packet.size];
             }
-            SGFFSleepLog(@"decode video thread sleep : %f", interval);
-            [NSThread sleepForTimeInterval:interval];
-            continue;
         }
-        
-        AVPacket packet = [self.packetQueue getPacketSync];
-        if (self.endOfFile) {
-            [self.delegate videoDecoderNeedUpdateBufferedDuration:self];
-        }
-        if (packet.data == flush_packet.data) {
-            SGFFDecodeLog(@"video codec flush");
-            [self.frameQueue flush];
-            avcodec_flush_buffers(_codec_context);
-#if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
-            [self.videoToolBox flush];
-#endif
-            continue;
-        }
-        if (packet.stream_index < 0 || packet.data == NULL) continue;
-        
-        SGFFVideoFrame * videoFrame = nil;
-#if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
-        BOOL vtbEnable = NO;
-        if (self.videoToolBoxEnable && _codec_context->codec_id == AV_CODEC_ID_H264) {
-            vtbEnable = [self.videoToolBox trySetupVTSession];
-        }
-        if (vtbEnable) {
-            BOOL needFlush = NO;
-            BOOL result = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
-            if (result) {
-                videoFrame = [self videoFrameFromVideoToolBox:packet];
-                self.frameQueue.minFrameCountForGet = 4;
-            } else if (needFlush) {
-                [self.videoToolBox flush];
-                BOOL result2 = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
-                if (result2) {
-                    videoFrame = [self videoFrameFromVideoToolBox:packet];
-                    self.frameQueue.minFrameCountForGet = 4;
-                }
-            }
-            self.preferredFramesPerSecond = 60;
-        } else {
-#endif
-            self.preferredFramesPerSecond = 30;
-            self.frameQueue.minFrameCountForGet = 1;
-            int result = avcodec_send_packet(_codec_context, &packet);
-            if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
-                self.error = SGFFCheckError(result);
-                [self delegateErrorCallback];
-                goto end;
-            }
-            while (result >= 0) {
-                result = avcodec_receive_frame(_codec_context, _temp_frame);
-                if (result < 0) {
-                    if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
-                        break;
-                    } else {
-                        self.error = SGFFCheckError(result);
-                        goto end;
-                    }
-                }
-                videoFrame = [self videoFrameFromTempFrame];
-            }
-#if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
-        }
-#endif
-        if (videoFrame) {
-            [self.frameQueue putSortFrame:videoFrame];
-        }
-        
-    end:
-        av_packet_unref(&packet);
     }
-    self.frameQueue.ignoreMinFrameCountForGetLimit = YES;
-    self.decoding = NO;
-    [self.delegate videoDecoderNeedCheckBufferingStatus:self];
+    av_packet_unref(&packet);
+    return videoFrame;
 }
 
-- (SGFFAVYUVVideoFrame *)videoFrameFromTempFrame
+- (SGFFAVYUVVideoFrame *)videoFrameFromTempFrame:(int)packetSize
 {
     if (!_temp_frame->data[0] || !_temp_frame->data[1] || !_temp_frame->data[2]) return nil;
     
@@ -294,6 +205,7 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     
     [videoFrame setFrameData:_temp_frame width:_codec_context->width height:_codec_context->height];
     videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.timebase;
+    videoFrame.packetSize = packetSize;
     
     const int64_t frame_duration = av_frame_get_pkt_duration(_temp_frame);
     if (frame_duration) {
@@ -305,15 +217,75 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     return videoFrame;
 }
 
-- (SGFFFramePool *)framePool
+
+#pragma mark - VideoToolBox
+
+- (void)decodeFrameThread
 {
-    if (!_framePool) {
-        _framePool = [SGFFFramePool videoPool];
+    if (self.videoToolBoxDidOpen) {
+        [self videoToolBoxDecodeThread];
     }
-    return _framePool;
 }
 
+- (void)videoToolBoxDecodeThread
+{
 #if SGPLATFORM_TARGET_OS_MAC_OR_IPHONE
+    
+    while (YES) {
+        if (!self.videoToolBoxDidOpen) {
+            break;
+        }
+        if (self.canceled || self.error) {
+            SGFFThreadLog(@"decode video thread quit");
+            break;
+        }
+        if (self.endOfFile && self.packetQueue.count <= 0) {
+            SGFFThreadLog(@"decode video finished");
+            break;
+        }
+        if (self.paused) {
+            SGFFSleepLog(@"decode video thread pause sleep");
+            [NSThread sleepForTimeInterval:0.01];
+            continue;
+        }
+        if (self.frameQueue.duration >= self.videoToolBoxMaxDecodeDuration) {
+            SGFFSleepLog(@"decode video thread sleep");
+            [NSThread sleepForTimeInterval:0.03];
+            continue;
+        }
+        
+        AVPacket packet = [self.packetQueue getPacketSync];
+        if (packet.data == flush_packet.data) {
+            SGFFDecodeLog(@"video codec flush");
+            [self.frameQueue flush];
+            [self.videoToolBox flush];
+            continue;
+        }
+        if (packet.stream_index < 0 || packet.data == NULL) continue;
+        
+        SGFFVideoFrame * videoFrame = nil;
+        BOOL vtbEnable = [self.videoToolBox trySetupVTSession];
+        if (vtbEnable) {
+            BOOL needFlush = NO;
+            BOOL result = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
+            if (result) {
+                videoFrame = [self videoFrameFromVideoToolBox:packet];
+            } else if (needFlush) {
+                [self.videoToolBox flush];
+                BOOL result2 = [self.videoToolBox sendPacket:packet needFlush:&needFlush];
+                if (result2) {
+                    videoFrame = [self videoFrameFromVideoToolBox:packet];
+                }
+            }
+        }
+        if (videoFrame) {
+            [self.frameQueue putSortFrame:videoFrame];
+        }
+        av_packet_unref(&packet);
+    }
+    self.frameQueue.ignoreMinFrameCountForGetLimit = YES;
+}
+
 - (SGFFVideoFrame *)videoFrameFromVideoToolBox:(AVPacket)packet
 {
     CVImageBufferRef imageBuffer = [self.videoToolBox imageBuffer];
@@ -326,6 +298,7 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     } else {
         videoFrame.position = packet.dts;
     }
+    videoFrame.packetSize = packet.size;
     
     const int64_t frame_duration = packet.duration;
     if (frame_duration) {
@@ -334,16 +307,9 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
         videoFrame.duration = 1.0 / self.fps;
     }
     return videoFrame;
-}
-
-- (SGFFVideoToolBox *)videoToolBox
-{
-    if (!_videoToolBox) {
-        _videoToolBox = [SGFFVideoToolBox videoToolBoxWithCodecContext:self->_codec_context];
-    }
-    return _videoToolBox;
-}
+    
 #endif
+}
 
 - (void)setPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
@@ -353,11 +319,55 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
     [self.delegate videoDecoder:self didChangePreferredFramesPerSecond:_preferredFramesPerSecond];
 }
 
+- (int)size
+{
+    if (self.videoToolBoxDidOpen) {
+        return self.packetQueue.size + self.frameQueue.packetSize;
+    } else {
+        return self.packetQueue.size;
+    }
+}
+
+- (BOOL)empty
+{
+    if (self.videoToolBoxDidOpen) {
+        return self.packetQueue.count <= 0 && self.frameQueue.count <= 0;
+    } else {
+        return self.packetQueue.count <= 0;
+    }
+}
+
+- (NSTimeInterval)duration
+{
+    if (self.videoToolBoxDidOpen) {
+        return self.packetQueue.duration + self.frameQueue.duration;
+    } else {
+        return self.packetQueue.duration;
+    }
+}
+
 - (void)delegateErrorCallback
 {
     if (self.error) {
         [self.delegate videoDecoder:self didError:self.error];
     }
+}
+
+- (void)flush
+{
+    [self.packetQueue flush];
+    [self.frameQueue flush];
+    [self.framePool flush];
+    [self putPacket:flush_packet];
+}
+
+- (void)destroy
+{
+    self.canceled = YES;
+    
+    [self.frameQueue destroy];
+    [self.packetQueue destroy];
+    [self.framePool flush];
 }
 
 - (void)dealloc
