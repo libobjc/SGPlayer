@@ -19,7 +19,8 @@
 @property (nonatomic, assign, readonly) NSTimeInterval timebase;
 
 - (void)putPacket:(AVPacket)packet duration:(NSTimeInterval)duration;
-- (AVPacket)getPacket;
+- (AVPacket)getPacketSync;
+- (AVPacket)getPacketAsync;
 
 - (void)flush;
 - (void)destroy;

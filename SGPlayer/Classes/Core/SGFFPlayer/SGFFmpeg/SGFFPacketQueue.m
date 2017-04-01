@@ -57,7 +57,7 @@
     [self.condition unlock];
 }
 
-- (AVPacket)getPacket
+- (AVPacket)getPacketSync
 {
     [self.condition lock];
     AVPacket packet;
@@ -68,6 +68,29 @@
             return packet;
         }
         [self.condition wait];
+    }
+    [self.packets.firstObject getValue:&packet];
+    [self.packets removeObjectAtIndex:0];
+    self.size -= packet.size;
+    if (self.size < 0 || self.count <= 0) {
+        self.size = 0;
+    }
+    self.duration -= packet.duration * self.timebase;
+    if (self.duration < 0 || self.count <= 0) {
+        self.duration = 0;
+    }
+    [self.condition unlock];
+    return packet;
+}
+
+- (AVPacket)getPacketAsync
+{
+    [self.condition lock];
+    AVPacket packet;
+    packet.stream_index = -2;
+    if (self.packets.count <= 0 || self.destoryToken) {
+        [self.condition unlock];
+        return packet;
     }
     [self.packets.firstObject getValue:&packet];
     [self.packets removeObjectAtIndex:0];

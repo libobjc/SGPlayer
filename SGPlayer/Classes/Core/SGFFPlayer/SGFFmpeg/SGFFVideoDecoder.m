@@ -213,7 +213,7 @@ static NSTimeInterval max_video_frame_sleep_full_and_pause_time_interval = 0.5;
             continue;
         }
         
-        AVPacket packet = [self.packetQueue getPacket];
+        AVPacket packet = [self.packetQueue getPacketSync];
         if (self.endOfFile) {
             [self.delegate videoDecoderNeedUpdateBufferedDuration:self];
         }
