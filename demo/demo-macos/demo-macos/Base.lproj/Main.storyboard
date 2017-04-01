@@ -810,10 +810,10 @@
                                 </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0FV-aY-ct6">
-                                <rect key="frame" x="388" y="54" width="74" height="20"/>
+                                <rect key="frame" x="378" y="54" width="84" height="20"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="20" id="LLm-kq-Uz7"/>
-                                    <constraint firstAttribute="width" constant="70" id="YpC-nK-52N"/>
+                                    <constraint firstAttribute="width" constant="80" id="YpC-nK-52N"/>
                                 </constraints>
                                 <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="State" id="ckt-jT-o7L">
                                     <font key="font" metaFont="system" size="16"/>
