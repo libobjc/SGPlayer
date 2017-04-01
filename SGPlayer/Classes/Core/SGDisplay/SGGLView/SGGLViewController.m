@@ -114,17 +114,15 @@
 
 - (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect
 {
-#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-    if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-        return;
-    }
-#endif
     if (self.clearToken) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         self.clearToken = NO;
     } else {
         if ([self needDrawOpenGL]) {
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+            if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) return;
+#endif
             SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
             self.viewport = glView.bounds;
             [self drawOpenGL];
