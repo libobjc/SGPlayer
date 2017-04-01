@@ -166,8 +166,8 @@
         self.videoDecoder = [SGFFVideoDecoder decoderWithCodecContext:self.formatContext->_video_codec_context
                                                              timebase:self.formatContext.videoTimebase
                                                                   fps:self.formatContext.videoFPS
+                                                   videoToolBoxEnable:self.hardwareDecoderEnable
                                                              delegate:self];
-        self.videoDecoder.videoToolBoxEnable = self.hardwareDecoderEnable;
     }
     if (self.formatContext.audioEnable) {
         self.audioDecoder = [SGFFAudioDecoder decoderWithCodecContext:self.formatContext->_audio_codec_context
@@ -181,8 +181,7 @@
 
 #pragma mark - operation thread
 
-static int max_packet_buffer_size = 20 * 1024 * 1024;
-static NSTimeInterval max_packet_buffer_time_interval = 10;
+static int max_packet_buffer_size = 15 * 1024 * 1024;
 static NSTimeInterval max_packet_sleep_full_time_interval = 0.1;
 static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
@@ -240,13 +239,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             self.selectAudioTrackIndex = 0;
             continue;
         }
-        BOOL needSleep = NO;
-        if (self.audioEnable) {
-            needSleep = self.audioDecoder.duration >= max_packet_buffer_time_interval;
-        } else {
-            needSleep = self.videoDecoder.packetSize >= max_packet_buffer_size;
-        }
-        if (needSleep) {
+        if (self.audioDecoder.size + self.videoDecoder.size >= max_packet_buffer_size) {
             NSTimeInterval interval = 0;
             if (self.paused) {
                 interval = max_packet_sleep_full_and_pause_time_interval;
@@ -361,14 +354,6 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         [self updateBufferedDurationByAudio];
     }
     [self updateProgressByAudio];
-    BOOL videoOuputPuused = [self.videoOutput videoOutputPaused];
-    BOOL background = NO;
-#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-    background = [UIApplication sharedApplication].applicationState == UIApplicationStateBackground;
-#endif
-    if (background || videoOuputPuused) {
-        [self.videoDecoder discardFrameBeforPosition:self.audioFramePosition];
-    }
     self.audioFrameTimeClock = [NSDate date].timeIntervalSince1970;
     return audioFrame;
 }
@@ -381,16 +366,13 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     if (self.seeking || self.buffering) {
         return  nil;
     }
-    if (self.endOfFile && self.videoDecoder.empty) {
-        return nil;
-    }
     if (self.paused && self.videoFrameTimeClock > 0) {
         return nil;
     }
     if (self.audioEnable && self.audioFrameTimeClock < 0 && self.videoFrameTimeClock > 0) {
         return nil;
     }
-    if (self.videoDecoder.frameEmpty) {
+    if (self.videoDecoder.empty) {
         return nil;
     }
     
@@ -398,35 +380,23 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     SGFFVideoFrame * videoFrame = nil;
     if (self.formatContext.audioEnable)
     {
-        NSTimeInterval audioTimeClock = self.audioFrameTimeClock;
-        if (audioTimeClock < 0) {
+        if (self.videoFrameTimeClock < 0) {
             videoFrame = [self.videoDecoder getFrameAsync];
         } else {
+            NSTimeInterval audioTimeClock = self.audioFrameTimeClock;
             NSTimeInterval audioTimeClockDelta = timeInterval - audioTimeClock;
             NSTimeInterval audioPositionReal = self.audioFramePosition + audioTimeClockDelta;
-            
-            NSTimeInterval firstPosition = [self.videoDecoder getFirstFramePositionAsync];
             NSTimeInterval currentStop = currentPostion + currentDuration;
             
-            if (currentStop > audioPositionReal) {
-                if (firstPosition < currentPostion && firstPosition >= 0) {
-                    videoFrame = [self.videoDecoder getFrameAsync];
-                }
-            } else {
-                videoFrame = [self.videoDecoder getFrameAsyncPosistion:audioPositionReal];
+            if (currentStop <= audioPositionReal) {
+                videoFrame = [self.videoDecoder getFrameAsyncPosistion:currentPostion];
             }
         }
     }
-    else
+    else if (self.formatContext.videoEnable)
     {
-        if (timeInterval >= self.videoFrameTimeClock + self.videoFrameDuration || self.videoFrameTimeClock < 0) {
+        if (self.videoFrameTimeClock < 0 || timeInterval >= self.videoFrameTimeClock + self.videoFrameDuration) {
             videoFrame = [self.videoDecoder getFrameAsync];
-            if (videoFrame) {
-                NSTimeInterval duration = videoFrame.duration;
-                if (duration < 0.00001) {
-                    duration = (1.0 / self.videoDecoder.fps);
-                }
-            }
         }
     }
     if (videoFrame) {
