@@ -87,6 +87,9 @@ git submodule update --init --recursive
 
 - SGPlayer.framework
 - SGPlatform.framework  Optional
+- CoreMedia.framework
+- AudioToolBox.framework
+- VideoToolBox.framework
 - libiconv.tbd
 - libbz2.tbd
 - libz.tbd
@@ -95,6 +98,9 @@ git submodule update --init --recursive
 
 - SGPlayer.framework
 - SGPlatform.framework  Optional
+- CoreMedia.framework
+- AudioToolBox.framework
+- VideoToolBox.framework
 - VideoDecodeAcceleration.framework
 - libiconv.tbd
 - libbz2.tbd
