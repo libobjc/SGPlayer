@@ -223,15 +223,7 @@
     [self.decoder open];
     [self reloadVolume];
     [self reloadPlayableBufferInterval];
-    
-    switch (self.abstractPlayer.videoType) {
-        case SGVideoTypeNormal:
-            self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBuffer;
-            break;
-        case SGVideoTypeVR:
-            self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBufferVR;
-            break;
-    }
+    self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeEmpty;
 }
 
 #pragma mark - SGFFDecoderDelegate
@@ -243,7 +235,16 @@
 
 - (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder
 {
-//    self.state = SGPlayerStateReadyToPlay;
+    if (self.decoder.videoEnable) {
+        switch (self.abstractPlayer.videoType) {
+            case SGVideoTypeNormal:
+                self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBuffer;
+                break;
+            case SGVideoTypeVR:
+                self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBufferVR;
+                break;
+        }
+    }
 }
 
 - (void)decoderDidEndOfFile:(SGFFDecoder *)decoder
