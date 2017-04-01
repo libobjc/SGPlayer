@@ -36,6 +36,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType) {
 @property (nonatomic, assign) NSTimeInterval position;
 @property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) int size;
+@property (nonatomic, assign) int packetSize;
 
 - (void)startPlaying;
 - (void)stopPlaying;
