@@ -19,6 +19,7 @@
 + (NSTimeInterval)sleepTimeIntervalForFullAndPaused;
 
 @property (nonatomic, assign, readonly) int size;
+@property (nonatomic, assign, readonly) int packetSize;
 @property (nonatomic, assign, readonly) NSUInteger count;
 @property (atomic, assign, readonly) NSTimeInterval duration;
 

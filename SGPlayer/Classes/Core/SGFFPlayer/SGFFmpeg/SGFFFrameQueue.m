@@ -11,6 +11,7 @@
 @interface SGFFFrameQueue ()
 
 @property (nonatomic, assign) int size;
+@property (nonatomic, assign) int packetSize;
 @property (nonatomic, assign) NSUInteger count;
 @property (atomic, assign) NSTimeInterval duration;
 
@@ -50,6 +51,7 @@
     [self.frames addObject:frame];
     self.duration += frame.duration;
     self.size += frame.size;
+    self.packetSize += frame.packetSize;
     [self.condition signal];
     [self.condition unlock];
 }
@@ -79,6 +81,7 @@
     }
     self.duration += frame.duration;
     self.size += frame.size;
+    self.packetSize += frame.packetSize;
     [self.condition signal];
     [self.condition unlock];
 }
@@ -102,6 +105,10 @@
     self.size -= frame.size;
     if (self.size <= 0 || self.count <= 0) {
         self.size = 0;
+    }
+    self.packetSize -= frame.packetSize;
+    if (self.packetSize <= 0 || self.count <= 0) {
+        self.packetSize = 0;
     }
     [self.condition unlock];
     return frame;
@@ -128,6 +135,10 @@
     if (self.size <= 0 || self.count <= 0) {
         self.size = 0;
     }
+    self.packetSize -= frame.packetSize;
+    if (self.packetSize <= 0 || self.count <= 0) {
+        self.packetSize = 0;
+    }
     [self.condition unlock];
     return frame;
 }
@@ -146,10 +157,11 @@
     SGFFFrame * frame = nil;
     NSMutableArray * temp = [NSMutableArray array];
     for (SGFFFrame * obj in self.frames) {
-        if (obj.position < position) {
+        if (obj.position + obj.duration < position) {
             [temp addObject:obj];
             self.duration -= obj.duration;
             self.size -= obj.size;
+            self.packetSize -= obj.packetSize;
         } else {
             break;
         }
@@ -166,12 +178,16 @@
         [self.frames removeObject:frame];
         self.duration -= frame.duration;
         self.size -= frame.size;
+        self.packetSize -= frame.packetSize;
     }
     if (self.duration < 0 || self.count <= 0) {
         self.duration = 0;
     }
     if (self.size <= 0 || self.count <= 0) {
         self.size = 0;
+    }
+    if (self.packetSize <= 0 || self.count <= 0) {
+        self.packetSize = 0;
     }
     [self.condition unlock];
     return frame;
@@ -206,10 +222,11 @@
     }
     NSMutableArray * temp = [NSMutableArray array];
     for (SGFFFrame * obj in self.frames) {
-        if (obj.position < position) {
+        if (obj.position + obj.duration < position) {
             [temp addObject:obj];
             self.duration -= obj.duration;
             self.size -= obj.size;
+            self.packetSize -= obj.packetSize;
         } else {
             break;
         }
@@ -222,6 +239,9 @@
     }
     if (self.size <= 0 || self.count <= 0) {
         self.size = 0;
+    }
+    if (self.packetSize <= 0 || self.count <= 0) {
+        self.packetSize = 0;
     }
     [self.condition unlock];
     if (temp.count > 0) {
@@ -237,6 +257,7 @@
     [self.frames removeAllObjects];
     self.duration = 0;
     self.size = 0;
+    self.packetSize = 0;
     self.ignoreMinFrameCountForGetLimit = NO;
     [self.condition unlock];
 }
