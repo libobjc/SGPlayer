@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, SGDisplayRendererType) {
 @property (nonatomic, weak) SGAVPlayer * sgavplayer;
 - (void)reloadSGAVPlayer;
 
+@property (nonatomic, assign) NSInteger preferredFramesPerSecond;
 @property (nonatomic, assign) SGDisplayRendererType rendererType;
 @property (nonatomic, strong) SGFingerRotation * fingerRotation;
 

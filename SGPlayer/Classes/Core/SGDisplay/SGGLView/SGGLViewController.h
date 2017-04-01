@@ -15,8 +15,7 @@
 
 @property (nonatomic, weak, readonly) SGDisplayView * displayView;
 
-- (void)setVideoDecoderMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
-
+- (void)reloadPreferredFramesPerSecond;
 - (void)reloadViewport;
 - (void)flushClearColor;
 - (SGPLFImage *)snapshot;

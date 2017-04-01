@@ -316,8 +316,8 @@ static AVPacket flush_packet;
 {
     if (_preferredFramesPerSecond != preferredFramesPerSecond) {
         _preferredFramesPerSecond = preferredFramesPerSecond;
+        [self.delegate videoDecoder:self didChangePreferredFramesPerSecond:_preferredFramesPerSecond];
     }
-    [self.delegate videoDecoder:self didChangePreferredFramesPerSecond:_preferredFramesPerSecond];
 }
 
 - (int)size

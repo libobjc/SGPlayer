@@ -36,6 +36,7 @@
         self.abstractPlayer = abstractPlayer;
         SGPLFViewSetBackgroundColor(self, [SGPLFColor blackColor]);
         [self setupEventHandler];
+        self.preferredFramesPerSecond = 30;
     }
     return self;
 }
@@ -50,7 +51,8 @@
 
 - (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    [self.glViewController setVideoDecoderMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+    self.preferredFramesPerSecond = preferredFramesPerSecond;
+    [self.glViewController reloadPreferredFramesPerSecond];
 }
 
 - (void)updateGLFrame:(SGGLFrame *)glFrame
@@ -101,6 +103,8 @@
                     SGPLFViewInsertSubview(self, glView, 0);
                 });
             }
+            self.preferredFramesPerSecond = 60;
+            [self.glViewController reloadPreferredFramesPerSecond];
             break;
     }
     dispatch_async(dispatch_get_main_queue(), ^{

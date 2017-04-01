@@ -102,7 +102,6 @@
     self.vrMatrix = [[SGMatrix alloc] init];
     self.currentFrame = [SGGLFrame frame];
     self.aspect = 16.0 / 9.0;
-    self.preferredFramesPerSecond = 60;
 }
 
 - (void)flushClearColor
@@ -246,6 +245,18 @@
 #endif
 }
 
+- (void)reloadPreferredFramesPerSecond
+{
+    NSInteger count = 32;
+    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
+    if (videoType == SGVideoTypeVR) {
+        count = MAX(self.displayView.preferredFramesPerSecond, 32);
+    }
+    if (self.preferredFramesPerSecond != count) {
+        self.preferredFramesPerSecond = count;
+    }
+}
+
 - (void)reloadViewport
 {
     SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
@@ -295,13 +306,6 @@
     if (_aspect != aspect) {
         _aspect = aspect;
         [self reloadViewport];
-    }
-}
-
-- (void)setVideoDecoderMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
-{
-    if (self.preferredFramesPerSecond != preferredFramesPerSecond) {
-        self.preferredFramesPerSecond = preferredFramesPerSecond;
     }
 }
 
