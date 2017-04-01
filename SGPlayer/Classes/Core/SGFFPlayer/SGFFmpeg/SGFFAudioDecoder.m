@@ -78,7 +78,7 @@
 
 - (int)size
 {
-    return [self.frameQueue size];
+    return self.frameQueue.packetSize;
 }
 
 - (BOOL)empty
@@ -130,7 +130,7 @@
         }
         @autoreleasepool
         {
-            SGFFAudioFrame * frame = [self decode];
+            SGFFAudioFrame * frame = [self decode:packet.size];
             if (frame) {
                 [self.frameQueue putFrame:frame];
             }
@@ -140,7 +140,7 @@
     return 0;
 }
 
-- (SGFFAudioFrame *)decode
+- (SGFFAudioFrame *)decode:(int)packetSize
 {
     if (!_temp_frame->data[0]) return nil;
     
@@ -176,6 +176,7 @@
     }
     
     SGFFAudioFrame * audioFrame = [self.framePool getUnuseFrame];
+    audioFrame.packetSize = packetSize;
     audioFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * _timebase;
     audioFrame.duration = av_frame_get_pkt_duration(_temp_frame) * _timebase;
     

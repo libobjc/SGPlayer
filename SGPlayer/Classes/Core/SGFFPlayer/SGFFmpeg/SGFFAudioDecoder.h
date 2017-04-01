@@ -25,9 +25,9 @@
 
 @property (nonatomic, weak) id <SGFFAudioDecoderDelegate> delegate;
 
-- (int)size;
-- (BOOL)empty;
-- (NSTimeInterval)duration;
+@property (nonatomic, assign, readonly) int size;
+@property (nonatomic, assign, readonly) BOOL empty;
+@property (nonatomic, assign, readonly) NSTimeInterval duration;
 
 - (SGFFAudioFrame *)getFrameSync;
 - (int)putPacket:(AVPacket)packet;
