@@ -264,13 +264,13 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
             }
             break;
         }
-        if (packet.stream_index == self.formatContext.videoTrack.index)
+        if (packet.stream_index == self.formatContext.videoTrack.index && self.formatContext.videoEnable)
         {
             SGFFPacketLog(@"video : put packet");
             [self.videoDecoder putPacket:packet];
             [self updateBufferedDurationByVideo];
         }
-        else if (packet.stream_index == self.formatContext.audioTrack.index)
+        else if (packet.stream_index == self.formatContext.audioTrack.index && self.formatContext.audioEnable)
         {
             SGFFPacketLog(@"audio : put packet");
             int result = [self.audioDecoder putPacket:packet];
