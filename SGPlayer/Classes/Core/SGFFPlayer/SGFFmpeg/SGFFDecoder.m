@@ -638,16 +638,6 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     * channelCount = self.audioOutput.numberOfChannels;
 }
 
-- (void)videoDecoderNeedUpdateBufferedDuration:(SGFFVideoDecoder *)videoDecoder
-{
-    [self updateBufferedDurationByVideo];
-}
-
-- (void)videoDecoderNeedCheckBufferingStatus:(SGFFVideoDecoder *)videoDecoder
-{
-    [self checkBufferingStatus];
-}
-
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didError:(NSError *)error
 {
     self.error = error;

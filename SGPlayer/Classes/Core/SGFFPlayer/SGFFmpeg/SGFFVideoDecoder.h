@@ -16,8 +16,6 @@
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didError:(NSError *)error;
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didChangePreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
-- (void)videoDecoderNeedUpdateBufferedDuration:(SGFFVideoDecoder *)videoDecoder;
-- (void)videoDecoderNeedCheckBufferingStatus:(SGFFVideoDecoder *)videoDecoder;
 
 @end
 
