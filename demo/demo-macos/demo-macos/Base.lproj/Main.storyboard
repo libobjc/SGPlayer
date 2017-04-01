@@ -696,13 +696,8 @@
                                         <items>
                                             <menuItem title="i see fire,   AVPlayer" state="on" id="vBj-11-myk"/>
                                             <menuItem title="google help,  AVPlayer,  VR" id="NPh-jG-cBN"/>
-                                            <menuItem title="google help,  AVPlayer,  VR,  Box" id="5ue-l7-BFg"/>
                                             <menuItem title="i see fire,   FFmpeg" id="Xbi-QP-43t"/>
-                                            <menuItem title="i see fire,   FFmpeg,  Hardware Acceleration" id="r6t-0L-Js8"/>
                                             <menuItem title="google help,  FFmpeg,  VR" id="012-hm-Gfs"/>
-                                            <menuItem title="google help,  FFmpeg,  VR,  Hardware Acceleration" id="A5p-bA-UUb"/>
-                                            <menuItem title="google help,  FFmpeg,  VR,  Box" id="yB4-Yg-dco"/>
-                                            <menuItem title="google help,  FFmpeg,  VR,  Box,  Hardware Acceleration" id="gJq-yw-OeU"/>
                                         </items>
                                     </menu>
                                 </popUpButtonCell>
