@@ -15,8 +15,8 @@
 @interface SGFFDecoder () <SGFFFormatContextDelegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
 
 @property (nonatomic, weak) id <SGFFDecoderDelegate> delegate;
-@property (nonatomic, weak) id <SGFFDecoderVideoOutputConfig> videoOutput;
-@property (nonatomic, weak) id <SGFFDecoderAudioOutputConfig> audioOutput;
+@property (nonatomic, weak) id <SGFFDecoderVideoOutputConfig> videoOutputConfig;
+@property (nonatomic, weak) id <SGFFDecoderAudioOutputConfig> audioOutputConfig;
 
 @property (nonatomic, strong) NSOperationQueue * ffmpegOperationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openFileOperation;
@@ -63,12 +63,21 @@
 
 @implementation SGFFDecoder
 
-+ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id<SGFFDecoderAudioOutputConfig>)audioOutput
++ (instancetype)decoderWithContentURL:(NSURL *)contentURL
+                             delegate:(id<SGFFDecoderDelegate>)delegate
+                    videoOutputConfig:(id<SGFFDecoderVideoOutputConfig>)videoOutputConfig
+                    audioOutputConfig:(id<SGFFDecoderAudioOutputConfig>)audioOutputConfig
 {
-    return [[self alloc] initWithContentURL:contentURL delegate:delegate videoOutput:videoOutput audioOutput:audioOutput];
+    return [[self alloc] initWithContentURL:contentURL
+                                   delegate:delegate
+                          videoOutputConfig:videoOutputConfig
+                          audioOutputConfig:audioOutputConfig];
 }
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id<SGFFDecoderAudioOutputConfig>)audioOutput
+- (instancetype)initWithContentURL:(NSURL *)contentURL
+                          delegate:(id<SGFFDecoderDelegate>)delegate
+                 videoOutputConfig:(id<SGFFDecoderVideoOutputConfig>)videoOutputConfig
+                 audioOutputConfig:(id<SGFFDecoderAudioOutputConfig>)audioOutputConfig
 {
     if (self = [super init]) {
         
@@ -81,8 +90,8 @@
         
         self.contentURL = contentURL;
         self.delegate = delegate;
-        self.videoOutput = videoOutput;
-        self.audioOutput = audioOutput;
+        self.videoOutputConfig = videoOutputConfig;
+        self.audioOutputConfig = audioOutputConfig;
         
         self.hardwareDecoderEnable = YES;
     }
@@ -630,12 +639,12 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder samplingRate:(Float64 *)samplingRate
 {
-    * samplingRate = self.audioOutput.samplingRate;
+    * samplingRate = self.audioOutputConfig.samplingRate;
 }
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder channelCount:(UInt32 *)channelCount
 {
-    * channelCount = self.audioOutput.numberOfChannels;
+    * channelCount = self.audioOutputConfig.numberOfChannels;
 }
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didError:(NSError *)error
@@ -646,7 +655,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didChangePreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    [self.videoOutput videoOutputUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+    [self.videoOutputConfig videoOutputUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
 }
 
 

@@ -66,7 +66,10 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id <SGFFDecoderDelegate>)delegate videoOutput:(id <SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id <SGFFDecoderAudioOutputConfig>)audioOutput;
++ (instancetype)decoderWithContentURL:(NSURL *)contentURL
+                             delegate:(id <SGFFDecoderDelegate>)delegate
+                    videoOutputConfig:(id <SGFFDecoderVideoOutputConfig>)videoOutputConfig
+                    audioOutputConfig:(id <SGFFDecoderAudioOutputConfig>)audioOutputConfig;
 
 @property (nonatomic, strong, readonly) NSError * error;
 

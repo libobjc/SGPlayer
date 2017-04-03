@@ -217,7 +217,10 @@
     [self clean];
     if (!self.abstractPlayer.contentURL) return;
     
-    self.decoder = [SGFFDecoder decoderWithContentURL:self.abstractPlayer.contentURL delegate:self videoOutput:self.abstractPlayer.displayView audioOutput:self];
+    self.decoder = [SGFFDecoder decoderWithContentURL:self.abstractPlayer.contentURL
+                                             delegate:self
+                                    videoOutputConfig:self.abstractPlayer.displayView
+                                    audioOutputConfig:self];
     self.abstractPlayer.displayView.sgffdecoder = self.decoder;
     self.decoder.hardwareDecoderEnable = self.abstractPlayer.decoder.ffmpegHardwareDecoderEnable;
     [self.decoder open];
