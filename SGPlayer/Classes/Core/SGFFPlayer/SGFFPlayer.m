@@ -354,7 +354,7 @@
 
 - (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    self.abstractPlayer.displayView.preferredFramesPerSecond = preferredFramesPerSecond;
+    
 }
 
 

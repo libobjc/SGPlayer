@@ -107,6 +107,16 @@
     self.vrMatrix = [[SGMatrix alloc] init];
     self.currentFrame = [SGGLFrame frame];
     self.aspect = 16.0 / 9.0;
+    
+    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
+    switch (videoType) {
+        case SGVideoTypeNormal:
+            self.preferredFramesPerSecond = 35;
+            break;
+        case SGVideoTypeVR:
+            self.preferredFramesPerSecond = 60;
+            break;
+    }
 }
 
 - (void)flushClearColor
@@ -256,18 +266,6 @@
         [self.distorionRenderer afterDrawFrame];
     }
 #endif
-}
-
-- (void)reloadPreferredFramesPerSecond
-{
-    NSInteger count = 32;
-    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
-    if (videoType == SGVideoTypeVR) {
-        count = MAX(self.displayView.preferredFramesPerSecond, 32);
-    }
-    if (self.preferredFramesPerSecond != count) {
-        self.preferredFramesPerSecond = count;
-    }
 }
 
 - (void)reloadViewport

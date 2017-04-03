@@ -15,7 +15,6 @@
 
 @property (nonatomic, weak, readonly) SGDisplayView * displayView;
 
-- (void)reloadPreferredFramesPerSecond;
 - (void)reloadViewport;
 - (void)flushClearColor;
 - (SGPLFImage *)snapshot;

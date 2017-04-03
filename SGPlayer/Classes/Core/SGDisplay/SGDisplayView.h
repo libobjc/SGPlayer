@@ -38,7 +38,6 @@ typedef NS_ENUM(NSUInteger, SGDisplayPlayerOutputType) {
 
 @property (nonatomic, weak, readonly) SGPlayer * abstractPlayer;
 @property (nonatomic, strong, readonly) SGFingerRotation * fingerRotation;
-@property (nonatomic, assign) NSInteger preferredFramesPerSecond;
 
 
 // player output type

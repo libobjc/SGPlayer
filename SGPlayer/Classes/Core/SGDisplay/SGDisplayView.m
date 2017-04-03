@@ -101,7 +101,6 @@
                 SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
                 SGPLFViewInsertSubview(self, glView, 0);
             });
-            self.preferredFramesPerSecond = 60;
         }
             break;
     }
@@ -165,14 +164,6 @@
         }
             break;
     }
-}
-
-- (void)setPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
-{
-    if (_preferredFramesPerSecond != preferredFramesPerSecond) {
-        _preferredFramesPerSecond = preferredFramesPerSecond;
-    }
-    [self.glViewController reloadPreferredFramesPerSecond];
 }
 
 - (SGPLFImage *)snapshot

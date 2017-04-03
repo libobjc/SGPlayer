@@ -81,6 +81,7 @@ static AVPacket flush_packet;
 
 - (void)setupCodecContext
 {
+    self.preferredFramesPerSecond = 60;
     self->_temp_frame = av_frame_alloc();
     self.packetQueue = [SGFFPacketQueue packetQueueWithTimebase:self.timebase];
     self.videoToolBoxMaxDecodeDuration = 2.f;
@@ -97,11 +98,9 @@ static AVPacket flush_packet;
     }
 #endif
     if (self.videoToolBoxDidOpen) {
-        self.preferredFramesPerSecond = 60;
         self.frameQueue.minFrameCountForGet = 4;
         self->_decodeAsync = YES;
     } else {
-        self.preferredFramesPerSecond = 30;
         self->_decodeSync = YES;
         self.framePool = [SGFFFramePool videoPool];
     }
@@ -232,7 +231,6 @@ static AVPacket flush_packet;
 #if SGPLATFORM_TARGET_OS_IPHONE
     
     while (YES) {
-        [NSThread sleepForTimeInterval:0.02];
         if (!self.videoToolBoxDidOpen) {
             break;
         }
