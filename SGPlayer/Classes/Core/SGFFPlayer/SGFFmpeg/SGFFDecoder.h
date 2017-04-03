@@ -14,6 +14,7 @@
 
 @class SGFFDecoder;
 
+
 @protocol SGFFDecoderDelegate <NSObject>
 
 @optional
@@ -31,10 +32,10 @@
 
 @end
 
-@protocol SGFFDecoderVideoOutputConfig <NSObject>
 
-- (BOOL)videoOutputPaused;
-- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
+@protocol SGFFDecoderAudioOutput <NSObject>
+
+- (SGFFAudioFrame *)fetchAudioFrame;
 
 @end
 
@@ -45,7 +46,22 @@
 
 @end
 
-@interface SGFFDecoder : NSObject
+
+@protocol SGFFDecoderVideoOutput <NSObject>
+
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration;
+
+@end
+
+@protocol SGFFDecoderVideoOutputConfig <NSObject>
+
+- (BOOL)videoOutputPaused;
+- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
+
+@end
+
+
+@interface SGFFDecoder : NSObject <SGFFDecoderAudioOutput, SGFFDecoderVideoOutput>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -79,8 +95,6 @@
 
 - (void)pause;
 - (void)resume;
-- (SGFFAudioFrame *)fetchAudioFrame;
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration;
 
 @property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;
