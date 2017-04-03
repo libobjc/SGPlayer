@@ -9,7 +9,14 @@
 #import "SGPlayerImp.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface SGAVPlayer : NSObject
+@protocol SGAVPlayerOutput <NSObject>
+
+- (SGPLFImage *)snapshotAtCurrentTime;
+- (CVPixelBufferRef)pixelBufferAtCurrentTime;
+
+@end
+
+@interface SGAVPlayer : NSObject <SGAVPlayerOutput>
 
 + (instancetype)new NS_UNAVAILABLE;
 + (instancetype)init NS_UNAVAILABLE;
@@ -35,9 +42,6 @@
 - (void)stop;
 - (void)seekToTime:(NSTimeInterval)time;
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(void(^)(BOOL finished))completeHandler;
-
-- (SGPLFImage *)snapshotAtCurrentTime;
-- (CVPixelBufferRef)pixelBufferAtCurrentTime;
 
 
 #pragma mark - track info

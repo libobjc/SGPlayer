@@ -261,6 +261,9 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     return CGSizeZero;
 }
 
+
+#pragma mark - SGAVPlayerOutput
+
 - (SGPLFImage *)snapshotAtCurrentTime
 {
     switch (self.abstractPlayer.videoType) {
@@ -306,6 +309,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     }
     return pixelBuffer;
 }
+
 
 #pragma mark - play state change
 
@@ -456,6 +460,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
             break;
     }
 }
+
 
 #pragma mark - setup/clean
 
