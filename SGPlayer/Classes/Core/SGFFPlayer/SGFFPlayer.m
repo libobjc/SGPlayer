@@ -315,7 +315,7 @@
     self.prepareToken = NO;
     self.lastPostProgressTime = 0;
     self.lastPostPlayableTime = 0;
-    [self.abstractPlayer.displayView cleanEmptyBuffer];
+    [self.abstractPlayer.displayView resetRendererType];
 }
 
 - (void)cleanFrame

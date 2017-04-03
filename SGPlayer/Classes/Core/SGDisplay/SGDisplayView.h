@@ -43,6 +43,7 @@ typedef NS_ENUM(NSUInteger, SGDisplayRendererType) {
 
 - (void)reloadGravityMode;
 - (void)cleanEmptyBuffer;
+- (void)resetRendererType;
 
 - (SGPLFImage *)snapshot;
 

@@ -187,6 +187,11 @@
     }
 }
 
+- (void)resetRendererType
+{
+    self.rendererType = SGDisplayRendererTypeEmpty;
+}
+
 - (SGFingerRotation *)fingerRotation
 {
     if (!_fingerRotation) {

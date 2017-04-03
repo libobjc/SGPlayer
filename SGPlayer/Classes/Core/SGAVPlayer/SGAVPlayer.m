@@ -567,7 +567,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     self.readyToPlayTime = 0;
     self.buffering = NO;
     self.playing = NO;
-    [self.abstractPlayer.displayView cleanEmptyBuffer];
+    [self.abstractPlayer.displayView resetRendererType];
 }
 
 + (NSArray <NSString *> *)AVAssetloadKeys
