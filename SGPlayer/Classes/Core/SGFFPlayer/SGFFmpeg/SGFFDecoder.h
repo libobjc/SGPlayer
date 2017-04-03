@@ -31,14 +31,14 @@
 
 @end
 
-@protocol SGFFDecoderVideoOutput <NSObject>
+@protocol SGFFDecoderVideoOutputConfig <NSObject>
 
 - (BOOL)videoOutputPaused;
 - (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
 
 @end
 
-@protocol SGFFDecoderAudioOutput <NSObject>
+@protocol SGFFDecoderAudioOutputConfig <NSObject>
 
 - (Float64)samplingRate;
 - (UInt32)numberOfChannels;
@@ -50,7 +50,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id <SGFFDecoderDelegate>)delegate videoOutput:(id <SGFFDecoderVideoOutput>)videoOutput audioOutput:(id <SGFFDecoderAudioOutput>)audioOutput;
++ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id <SGFFDecoderDelegate>)delegate videoOutput:(id <SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id <SGFFDecoderAudioOutputConfig>)audioOutput;
 
 @property (nonatomic, strong, readonly) NSError * error;
 

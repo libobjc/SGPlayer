@@ -15,8 +15,8 @@
 @interface SGFFDecoder () <SGFFFormatContextDelegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
 
 @property (nonatomic, weak) id <SGFFDecoderDelegate> delegate;
-@property (nonatomic, weak) id <SGFFDecoderVideoOutput> videoOutput;
-@property (nonatomic, weak) id <SGFFDecoderAudioOutput> audioOutput;
+@property (nonatomic, weak) id <SGFFDecoderVideoOutputConfig> videoOutput;
+@property (nonatomic, weak) id <SGFFDecoderAudioOutputConfig> audioOutput;
 
 @property (nonatomic, strong) NSOperationQueue * ffmpegOperationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openFileOperation;
@@ -63,12 +63,12 @@
 
 @implementation SGFFDecoder
 
-+ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutput>)videoOutput audioOutput:(id<SGFFDecoderAudioOutput>)audioOutput
++ (instancetype)decoderWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id<SGFFDecoderAudioOutputConfig>)audioOutput
 {
     return [[self alloc] initWithContentURL:contentURL delegate:delegate videoOutput:videoOutput audioOutput:audioOutput];
 }
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutput>)videoOutput audioOutput:(id<SGFFDecoderAudioOutput>)audioOutput
+- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id<SGFFDecoderDelegate>)delegate videoOutput:(id<SGFFDecoderVideoOutputConfig>)videoOutput audioOutput:(id<SGFFDecoderAudioOutputConfig>)audioOutput
 {
     if (self = [super init]) {
         

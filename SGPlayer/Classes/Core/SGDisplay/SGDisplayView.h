@@ -23,7 +23,7 @@ typedef NS_ENUM(NSUInteger, SGDisplayRendererType) {
     SGDisplayRendererTypeFFmpegPexelBufferVR,
 };
 
-@interface SGDisplayView : SGPLFView <SGFFDecoderVideoOutput>
+@interface SGDisplayView : SGPLFView <SGFFDecoderVideoOutputConfig>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

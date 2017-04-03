@@ -13,7 +13,7 @@
 #import "SGPlayerMacro.h"
 #import "SGPlayer+DisplayView.h"
 
-@interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderAudioOutput, SGAudioManagerDelegate>
+@interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
 
 @property (nonatomic, strong) NSLock * stateLock;
 
