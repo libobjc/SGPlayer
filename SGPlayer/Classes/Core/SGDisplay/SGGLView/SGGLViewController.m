@@ -32,6 +32,7 @@
 
 @property (nonatomic, strong) SGMatrix * vrMatrix;
 
+@property (nonatomic, strong) NSLock * openGLLock;
 @property (nonatomic, assign) BOOL clearToken;
 @property (nonatomic, assign) CGFloat aspect;
 @property (nonatomic, assign) CGRect viewport;
@@ -75,6 +76,7 @@
 
 - (void)setupOpenGL
 {
+    self.openGLLock = [[NSLock alloc] init];
     SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
     SGPLFViewSetBackgroundColor(glView, [SGPLFColor blackColor]);
     
@@ -106,13 +108,17 @@
 
 - (void)flushClearColor
 {
+    [self.openGLLock lock];
     self.clearToken = YES;
+    [self.currentFrame flush];
     [self.textureNV12 flush];
     [self.textureYUV420 flush];
+    [self.openGLLock unlock];
 }
 
 - (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect
 {
+    [self.openGLLock lock];
     if (self.clearToken) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -120,7 +126,10 @@
     } else {
         if ([self needDrawOpenGL]) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-            if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) return;
+            if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+                [self.openGLLock unlock];
+                return;
+            }
 #endif
             SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
             self.viewport = glView.bounds;
@@ -128,6 +137,7 @@
             [self.currentFrame didDraw];
         }
     }
+    [self.openGLLock unlock];
 }
 
 - (SGGLProgram *)chooseProgram

@@ -106,9 +106,11 @@
     self->_hasUpate = NO;
     if (self.pixelBuffer) {
         CVPixelBufferRelease(self.pixelBuffer);
+        self.pixelBuffer = NULL;
     }
     if (self.videoFrame) {
         [self.videoFrame stopPlaying];
+        self.videoFrame = nil;
     }
 }
 
