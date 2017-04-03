@@ -223,7 +223,6 @@
     [self.decoder open];
     [self reloadVolume];
     [self reloadPlayableBufferInterval];
-    self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeEmpty;
 }
 
 #pragma mark - SGFFDecoderDelegate
