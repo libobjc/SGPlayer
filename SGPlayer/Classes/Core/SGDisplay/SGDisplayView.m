@@ -157,7 +157,8 @@
             break;
         case SGDisplayPlayerOutputTypeFF:
         {
-            SGFFVideoFrame * videoFrame = [self.playerOutputFF fetchVideoFrameWithCurrentPostion:glFrame.currentPosition currentDuration:glFrame.currentDuration];
+            SGFFVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
+                                                                                           currentDuration:glFrame.currentDuration];
             if (videoFrame) {
                 [glFrame updateWithSGFFVideoFrame:videoFrame];
             }

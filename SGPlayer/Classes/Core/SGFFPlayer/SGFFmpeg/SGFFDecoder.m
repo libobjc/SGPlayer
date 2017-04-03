@@ -346,7 +346,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
 }
 
-- (SGFFAudioFrame *)fetchAudioFrame
+- (SGFFAudioFrame *)decoderAudioOutputGetAudioFrame
 {
     BOOL check = self.closed || self.seeking || self.buffering || self.paused || self.playbackFinished || !self.formatContext.audioEnable;
     if (check) return nil;
@@ -367,7 +367,8 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     return audioFrame;
 }
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
+- (SGFFVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+                                                      currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.closed || self.error) {
         return  nil;
@@ -639,12 +640,12 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder samplingRate:(Float64 *)samplingRate
 {
-    * samplingRate = self.audioOutputConfig.samplingRate;
+    * samplingRate = [self.audioOutputConfig decoderAudioOutputConfigGetSamplingRate];
 }
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder channelCount:(UInt32 *)channelCount
 {
-    * channelCount = self.audioOutputConfig.numberOfChannels;
+    * channelCount = [self.audioOutputConfig decoderAudioOutputConfigGetNumberOfChannels];
 }
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didError:(NSError *)error
@@ -655,7 +656,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didChangePreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    [self.videoOutputConfig videoOutputUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+    [self.videoOutputConfig decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
 }
 
 

@@ -35,27 +35,28 @@
 
 @protocol SGFFDecoderAudioOutput <NSObject>
 
-- (SGFFAudioFrame *)fetchAudioFrame;
+- (SGFFAudioFrame *)decoderAudioOutputGetAudioFrame;
 
 @end
 
 @protocol SGFFDecoderAudioOutputConfig <NSObject>
 
-- (Float64)samplingRate;
-- (UInt32)numberOfChannels;
+- (Float64)decoderAudioOutputConfigGetSamplingRate;
+- (UInt32)decoderAudioOutputConfigGetNumberOfChannels;
 
 @end
 
 
 @protocol SGFFDecoderVideoOutput <NSObject>
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration;
+- (SGFFVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+                                                      currentDuration:(NSTimeInterval)currentDuration;
 
 @end
 
 @protocol SGFFDecoderVideoOutputConfig <NSObject>
 
-- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
+- (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
 
 @end
 

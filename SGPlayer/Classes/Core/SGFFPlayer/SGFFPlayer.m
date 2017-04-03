@@ -339,10 +339,12 @@
 
 #pragma mark - SGFFPlayerOutput
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
+- (SGFFVideoFrame *)playerOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+                                                currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.decoder) {
-        return [self.decoder fetchVideoFrameWithCurrentPostion:currentPostion currentDuration:currentDuration];
+        return [self.decoder decoderVideoOutputGetVideoFrameWithCurrentPostion:currentPostion
+                                                               currentDuration:currentDuration];
     }
     return nil;
 }
@@ -350,7 +352,7 @@
 
 #pragma mark - Video Config
 
-- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+- (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
     self.abstractPlayer.displayView.preferredFramesPerSecond = preferredFramesPerSecond;
 }
@@ -358,12 +360,12 @@
 
 #pragma mark - Audio Config
 
-- (Float64)samplingRate
+- (Float64)decoderAudioOutputConfigGetSamplingRate
 {
     return self.audioManager.samplingRate;
 }
 
-- (UInt32)numberOfChannels
+- (UInt32)decoderAudioOutputConfigGetNumberOfChannels
 {
     return self.audioManager.numberOfChannels;
 }
@@ -379,7 +381,7 @@
         while (numberOfFrames > 0)
         {
             if (!self.currentAudioFrame) {
-                self.currentAudioFrame = [self.decoder fetchAudioFrame];
+                self.currentAudioFrame = [self.decoder decoderAudioOutputGetAudioFrame];
                 [self.currentAudioFrame startPlaying];
             }
             if (!self.currentAudioFrame) {

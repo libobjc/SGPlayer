@@ -13,7 +13,8 @@
 
 @protocol SGFFPlayerOutput <NSObject>
 
-- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration;
+- (SGFFVideoFrame *)playerOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+                                                currentDuration:(NSTimeInterval)currentDuration;
 
 @end
 
