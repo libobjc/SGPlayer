@@ -88,9 +88,11 @@
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     glView.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     glView.contentScaleFactor = [UIScreen mainScreen].scale;
-    self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
     self.pauseOnWillResignActive = NO;
     self.resumeOnDidBecomeActive = YES;
+#endif
+#if SGPLATFORM_TARGET_OS_IPHONE
+    self.distorionRenderer = [SGDistortionRenderer distortionRenderer];
 #endif
     
     self.textureNV12 = [[SGGLTextureNV12 alloc] initWithContext:context];

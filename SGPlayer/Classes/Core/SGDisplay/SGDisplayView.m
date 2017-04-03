@@ -131,7 +131,7 @@
 {
     if (self.avplayerLayer && self.playerOutputType == SGDisplayPlayerOutputTypeAV) {
 #if SGPLATFORM_TARGET_OS_MAC
-        self.avplayerLayer.player = self.playerOutputAV.avplayer;
+        self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         if ([self.playerOutputAV playerOutputGetAVPlayer] && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
             self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
