@@ -61,7 +61,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 {
     if (self = [super init]) {
         self.abstractPlayer = abstractPlayer;
-        self.abstractPlayer.displayView.sgavplayer = self;
+        self.abstractPlayer.displayView.playerOutputAV = self;
     }
     return self;
 }
@@ -264,7 +264,32 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 #pragma mark - SGAVPlayerOutput
 
-- (SGPLFImage *)snapshotAtCurrentTime
+- (AVPlayer *)playerOutputGetAVPlayer
+{
+    return self.avPlayer;
+}
+
+- (CVPixelBufferRef)playerOutputGetPixelBufferAtCurrentTime
+{
+    if (self.seeking) return nil;
+    
+    BOOL hasNewPixelBuffer = [self.avOutput hasNewPixelBufferForItemTime:self.avPlayerItem.currentTime];
+    if (!hasNewPixelBuffer) {
+        if (self.hasPixelBuffer) return nil;
+        [self trySetupOutput];
+        return nil;
+    }
+    
+    CVPixelBufferRef pixelBuffer = [self.avOutput copyPixelBufferForItemTime:self.avPlayerItem.currentTime itemTimeForDisplay:nil];
+    if (!pixelBuffer) {
+        [self trySetupOutput];
+    } else {
+        self.hasPixelBuffer = YES;
+    }
+    return pixelBuffer;
+}
+
+- (SGPLFImage *)playerOutputGetSnapshotAtCurrentTime
 {
     switch (self.abstractPlayer.videoType) {
         case SGVideoTypeNormal:
@@ -288,26 +313,6 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         }
             break;
     }
-}
-
-- (CVPixelBufferRef)pixelBufferAtCurrentTime
-{
-    if (self.seeking) return nil;
-    
-    BOOL hasNewPixelBuffer = [self.avOutput hasNewPixelBufferForItemTime:self.avPlayerItem.currentTime];
-    if (!hasNewPixelBuffer) {
-        if (self.hasPixelBuffer) return nil;
-        [self trySetupOutput];
-        return nil;
-    }
-    
-    CVPixelBufferRef pixelBuffer = [self.avOutput copyPixelBufferForItemTime:self.avPlayerItem.currentTime itemTimeForDisplay:nil];
-    if (!pixelBuffer) {
-        [self trySetupOutput];
-    } else {
-        self.hasPixelBuffer = YES;
-    }
-    return pixelBuffer;
 }
 
 
@@ -421,19 +426,20 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     [self replaceEmpty];
     if (!self.abstractPlayer.contentURL) return;
     
+    [self.abstractPlayer.displayView playerOutputTypeAV];
     [self startBuffering];
     self.avAsset = [AVURLAsset assetWithURL:self.abstractPlayer.contentURL];
     switch (self.abstractPlayer.videoType) {
         case SGVideoTypeNormal:
             [self setupAVPlayerItemAutoLoadedAsset:YES];
             [self setupAVPlayer];
-            self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeAVPlayerLayer;
+            [self.abstractPlayer.displayView rendererTypeAVPlayerLayer];
             break;
         case SGVideoTypeVR:
         {
             [self setupAVPlayerItemAutoLoadedAsset:NO];
             [self setupAVPlayer];
-            self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeAVPlayerPixelBufferVR;
+            [self.abstractPlayer.displayView rendererTypeOpenGL];
             SGWeakSelf
             [self.avAsset loadValuesAsynchronouslyForKeys:[self.class AVAssetloadKeys] completionHandler:^{
                 SGStrongSelf
@@ -481,7 +487,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
             [SGPlayerNotification postPlayer:strongSelf.abstractPlayer progressPercent:@(current/duration) current:@(current) total:@(duration)];
         }
     }];
-    [self.abstractPlayer.displayView reloadSGAVPlayer];
+    [self.abstractPlayer.displayView reloadPlayerConfig];
     [self reloadVolume];
 }
 
@@ -496,7 +502,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         self.playBackTimeObserver = nil;
     }
     self.avPlayer = nil;
-    [self.abstractPlayer.displayView reloadSGAVPlayer];
+    [self.abstractPlayer.displayView reloadPlayerConfig];
 }
 
 - (void)setupAVPlayerItemAutoLoadedAsset:(BOOL)autoLoadedAsset
@@ -572,7 +578,8 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     self.readyToPlayTime = 0;
     self.buffering = NO;
     self.playing = NO;
-    [self.abstractPlayer.displayView resetRendererType];
+    [self.abstractPlayer.displayView playerOutputTypeFF];
+    [self.abstractPlayer.displayView rendererTypeEmpty];
 }
 
 + (NSArray <NSString *> *)AVAssetloadKeys

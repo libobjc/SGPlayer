@@ -9,7 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "SGPlayerImp.h"
 
-@interface SGFFPlayer : NSObject
+@class SGFFVideoFrame;
+
+@protocol SGFFPlayerOutput <NSObject>
+
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration;
+
+@end
+
+@interface SGFFPlayer : NSObject <SGFFPlayerOutput>
 
 + (instancetype)new NS_UNAVAILABLE;
 + (instancetype)init NS_UNAVAILABLE;

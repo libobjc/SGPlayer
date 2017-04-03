@@ -7,6 +7,7 @@
 //
 
 #import "SGGLViewController.h"
+#import "SGPlayerMacro.h"
 #import "SGGLFrame.h"
 #import "SGGLProgramNV12.h"
 #import "SGGLProgramYUV420.h"
@@ -162,7 +163,7 @@
 
 - (BOOL)needDrawOpenGL
 {
-    [self.displayView updateGLFrame:self.currentFrame];
+    [self.displayView reloadVideoFrameForGLFrame:self.currentFrame];
     if (!self.currentFrame.hasData) {
         return NO;
     }

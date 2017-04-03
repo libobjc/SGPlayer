@@ -11,8 +11,9 @@
 
 @protocol SGAVPlayerOutput <NSObject>
 
-- (SGPLFImage *)snapshotAtCurrentTime;
-- (CVPixelBufferRef)pixelBufferAtCurrentTime;
+- (AVPlayer *)playerOutputGetAVPlayer;
+- (CVPixelBufferRef)playerOutputGetPixelBufferAtCurrentTime;
+- (SGPLFImage *)playerOutputGetSnapshotAtCurrentTime;
 
 @end
 

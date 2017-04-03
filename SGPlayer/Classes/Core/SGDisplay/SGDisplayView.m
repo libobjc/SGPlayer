@@ -8,10 +8,9 @@
 
 #import "SGDisplayView.h"
 #import "SGPlayerMacro.h"
-#import "SGPlayerImp.h"
-#import "SGAVPlayer.h"
 #import "SGGLViewController.h"
 #import "SGGLFrame.h"
+#import "SGFingerRotation.h"
 
 @interface SGDisplayView ()
 
@@ -34,77 +33,76 @@
 {
     if (self = [super initWithFrame:CGRectZero]) {
         self.abstractPlayer = abstractPlayer;
+        self->_fingerRotation = [SGFingerRotation fingerRotation];
         SGPLFViewSetBackgroundColor(self, [SGPLFColor blackColor]);
         [self setupEventHandler];
-        self.preferredFramesPerSecond = 30;
     }
     return self;
 }
 
-- (BOOL)videoOutputPaused
+- (void)playerOutputTypeEmpty
 {
-    if (self.glViewController) {
-        return self.glViewController.isPaused;
-    }
-    return YES;
+    self->_playerOutputType = SGDisplayPlayerOutputTypeEmpty;
 }
 
-- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+- (void)playerOutputTypeFF
 {
-    self.preferredFramesPerSecond = preferredFramesPerSecond;
-    [self.glViewController reloadPreferredFramesPerSecond];
+    self->_playerOutputType = SGDisplayPlayerOutputTypeFF;
 }
 
-- (void)updateGLFrame:(SGGLFrame *)glFrame
+- (void)playerOutputTypeAV
 {
-    if (self.rendererType == SGDisplayRendererTypeAVPlayerPixelBufferVR) {
-        CVPixelBufferRef pixelBuffer = [self.sgavplayer pixelBufferAtCurrentTime];
-        if (pixelBuffer) {
-            [glFrame updateWithCVPixelBuffer:pixelBuffer];
-        }
-    } else {
-        SGFFVideoFrame * videoFrame = [self.sgffdecoder fetchVideoFrameWithCurrentPostion:glFrame.currentPosition currentDuration:glFrame.currentDuration];
-        if (videoFrame) {
-            [glFrame updateWithSGFFVideoFrame:videoFrame];
-        }
+    self->_playerOutputType = SGDisplayPlayerOutputTypeAV;
+}
+
+- (void)rendererTypeEmpty
+{
+    if (self.rendererType != SGDisplayRendererTypeEmpty) {
+        self->_rendererType = SGDisplayRendererTypeEmpty;
+        [self reloadView];
     }
 }
 
-- (void)setRendererType:(SGDisplayRendererType)rendererType
+- (void)rendererTypeAVPlayerLayer
 {
-    if (_rendererType != rendererType) {
-        _rendererType = rendererType;
+    if (self.rendererType != SGDisplayRendererTypeAVPlayerLayer) {
+        self->_rendererType = SGDisplayRendererTypeAVPlayerLayer;
+        [self reloadView];
+    }
+}
+
+- (void)rendererTypeOpenGL
+{
+    if (self.rendererType != SGDisplayRendererTypeOpenGL) {
+        self->_rendererType = SGDisplayRendererTypeOpenGL;
         [self reloadView];
     }
 }
 
 - (void)reloadView
 {
-    [self cleanViewIgnore];
+    [self cleanView];
     switch (self.rendererType) {
         case SGDisplayRendererTypeEmpty:
             break;
         case SGDisplayRendererTypeAVPlayerLayer:
-            if (!self.avplayerLayer) {
-                self.avplayerLayer = [AVPlayerLayer playerLayerWithPlayer:nil];
-                [self reloadSGAVPlayer];
-                self.avplayerLayerToken = NO;
-                [self.layer insertSublayer:self.avplayerLayer atIndex:0];
-                [self reloadGravityMode];
-            }
+        {
+            self.avplayerLayer = [AVPlayerLayer playerLayerWithPlayer:nil];
+            [self reloadPlayerConfig];
+            self.avplayerLayerToken = NO;
+            [self.layer insertSublayer:self.avplayerLayer atIndex:0];
+            [self reloadGravityMode];
+        }
             break;
-        case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-        case SGDisplayRendererTypeFFmpegPexelBuffer:
-        case SGDisplayRendererTypeFFmpegPexelBufferVR:
-            if (!self.glViewController) {
-                self.glViewController = [SGGLViewController viewControllerWithDisplayView:self];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
-                    SGPLFViewInsertSubview(self, glView, 0);
-                });
-            }
+        case SGDisplayRendererTypeOpenGL:
+        {
+            self.glViewController = [SGGLViewController viewControllerWithDisplayView:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
+                SGPLFViewInsertSubview(self, glView, 0);
+            });
             self.preferredFramesPerSecond = 60;
-            [self.glViewController reloadPreferredFramesPerSecond];
+        }
             break;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -129,75 +127,51 @@
     }
 }
 
-- (void)reloadSGAVPlayer
+- (void)reloadPlayerConfig
 {
+    if (self.avplayerLayer && self.playerOutputType == SGDisplayPlayerOutputTypeAV) {
 #if SGPLATFORM_TARGET_OS_MAC
-    self.avplayerLayer.player = self.sgavplayer.avPlayer;
+        self.avplayerLayer.player = self.playerOutputAV.avplayer;
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-    if (self.sgavplayer.avPlayer && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        self.avplayerLayer.player = self.sgavplayer.avPlayer;
-    } else {
-        self.avplayerLayer.player = nil;
-    }
+        if ([self.playerOutputAV playerOutputGetAVPlayer] && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+            self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
+        } else {
+            self.avplayerLayer.player = nil;
+        }
 #endif
+    }
 }
 
-- (void)cleanView
+- (void)reloadVideoFrameForGLFrame:(SGGLFrame *)glFrame
 {
-    [self cleanViewCleanAVPlayerLayer:YES cleanGLViewController:YES];
-}
-
-- (void)cleanViewIgnore
-{
-    switch (self.rendererType) {
-        case SGDisplayRendererTypeEmpty:
-            [self cleanView];
+    switch (self.playerOutputType) {
+        case SGDisplayPlayerOutputTypeEmpty:
             break;
-        case SGDisplayRendererTypeAVPlayerLayer:
-            [self cleanViewCleanAVPlayerLayer:NO cleanGLViewController:YES];
+        case SGDisplayPlayerOutputTypeAV:
+        {
+            CVPixelBufferRef pixelBuffer = [self.playerOutputAV playerOutputGetPixelBufferAtCurrentTime];
+            if (pixelBuffer) {
+                [glFrame updateWithCVPixelBuffer:pixelBuffer];
+            }
+        }
             break;
-        case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-        case SGDisplayRendererTypeFFmpegPexelBuffer:
-        case SGDisplayRendererTypeFFmpegPexelBufferVR:
-            [self cleanViewCleanAVPlayerLayer:YES cleanGLViewController:NO];
+        case SGDisplayPlayerOutputTypeFF:
+        {
+            SGFFVideoFrame * videoFrame = [self.playerOutputFF fetchVideoFrameWithCurrentPostion:glFrame.currentPosition currentDuration:glFrame.currentDuration];
+            if (videoFrame) {
+                [glFrame updateWithSGFFVideoFrame:videoFrame];
+            }
+        }
             break;
     }
 }
 
-- (void)cleanViewCleanAVPlayerLayer:(BOOL)cleanAVPlayerLayer cleanGLViewController:(BOOL)cleanGLViewController
+- (void)setPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    [self cleanEmptyBuffer];
-    if (cleanAVPlayerLayer && self.avplayerLayer) {
-        [self.avplayerLayer removeFromSuperlayer];
-        self.avplayerLayer = nil;
+    if (_preferredFramesPerSecond != preferredFramesPerSecond) {
+        _preferredFramesPerSecond = preferredFramesPerSecond;
     }
-    if (cleanGLViewController && self.glViewController) {
-        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
-        [glView removeFromSuperview];
-        self.glViewController = nil;
-    }
-    self.avplayerLayerToken = NO;
-}
-
-- (void)cleanEmptyBuffer
-{
-    [self.fingerRotation clean];
-    if (self.glViewController) {
-        [self.glViewController flushClearColor];
-    }
-}
-
-- (void)resetRendererType
-{
-    self.rendererType = SGDisplayRendererTypeEmpty;
-}
-
-- (SGFingerRotation *)fingerRotation
-{
-    if (!_fingerRotation) {
-        _fingerRotation = [SGFingerRotation fingerRotation];
-    }
-    return _fingerRotation;
+    [self.glViewController reloadPreferredFramesPerSecond];
 }
 
 - (SGPLFImage *)snapshot
@@ -206,12 +180,25 @@
         case SGDisplayRendererTypeEmpty:
             return nil;
         case SGDisplayRendererTypeAVPlayerLayer:
-            return self.sgavplayer.snapshotAtCurrentTime;
-        case SGDisplayRendererTypeAVPlayerPixelBufferVR:
-        case SGDisplayRendererTypeFFmpegPexelBuffer:
-        case SGDisplayRendererTypeFFmpegPexelBufferVR:
+            return [self.playerOutputAV playerOutputGetSnapshotAtCurrentTime];
+        case SGDisplayRendererTypeOpenGL:
             return [self.glViewController snapshot];
     }
+}
+
+- (void)cleanView
+{
+    if (self.avplayerLayer) {
+        [self.avplayerLayer removeFromSuperlayer];
+        self.avplayerLayer = nil;
+    }
+    if (self.glViewController) {
+        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self.glViewController);
+        [glView removeFromSuperview];
+        self.glViewController = nil;
+    }
+    self.avplayerLayerToken = NO;
+    [self.fingerRotation clean];
 }
 
 - (void)updateDisplayViewLayout:(CGRect)frame
@@ -305,7 +292,7 @@ static BOOL mouse_dragged = NO;
 - (void)iOS_applicationWillEnterForegroundAction:(NSNotification *)notification
 {
     if (_avplayerLayer) {
-        _avplayerLayer.player = self.sgavplayer.avPlayer;
+        _avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
     }
 }
 

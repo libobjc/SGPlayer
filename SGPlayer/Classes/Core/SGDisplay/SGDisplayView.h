@@ -8,22 +8,26 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import "SGPlayerImp.h"
-#import "SGFFDecoder.h"
-#import "SGFingerRotation.h"
+#import "SGAVPlayer.h"
+#import "SGFFPlayer.h"
 
-@class SGAVPlayer;
-@class SGDisplayView;
+@class SGFingerRotation;
 @class SGGLFrame;
 
 typedef NS_ENUM(NSUInteger, SGDisplayRendererType) {
     SGDisplayRendererTypeEmpty,
     SGDisplayRendererTypeAVPlayerLayer,
-    SGDisplayRendererTypeAVPlayerPixelBufferVR,
-    SGDisplayRendererTypeFFmpegPexelBuffer,
-    SGDisplayRendererTypeFFmpegPexelBufferVR,
+    SGDisplayRendererTypeOpenGL,
 };
 
-@interface SGDisplayView : SGPLFView <SGFFDecoderVideoOutputConfig>
+typedef NS_ENUM(NSUInteger, SGDisplayPlayerOutputType) {
+    SGDisplayPlayerOutputTypeEmpty,
+    SGDisplayPlayerOutputTypeFF,
+    SGDisplayPlayerOutputTypeAV,
+};
+
+@interface SGDisplayView : SGPLFView
+
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -31,23 +35,33 @@ typedef NS_ENUM(NSUInteger, SGDisplayRendererType) {
 
 + (instancetype)displayViewWithAbstractPlayer:(SGPlayer *)abstractPlayer;
 
+
 @property (nonatomic, weak, readonly) SGPlayer * abstractPlayer;
-
-@property (nonatomic, weak) SGFFDecoder * sgffdecoder;
-@property (nonatomic, weak) SGAVPlayer * sgavplayer;
-- (void)reloadSGAVPlayer;
-
+@property (nonatomic, strong, readonly) SGFingerRotation * fingerRotation;
 @property (nonatomic, assign) NSInteger preferredFramesPerSecond;
-@property (nonatomic, assign) SGDisplayRendererType rendererType;
-@property (nonatomic, strong) SGFingerRotation * fingerRotation;
 
+
+// player output type
+@property (nonatomic, assign, readonly) SGDisplayPlayerOutputType playerOutputType;
+@property (nonatomic, weak) id <SGFFPlayerOutput> playerOutputFF;
+@property (nonatomic, weak) id <SGAVPlayerOutput> playerOutputAV;
+- (void)playerOutputTypeEmpty;
+- (void)playerOutputTypeFF;
+- (void)playerOutputTypeAV;
+
+
+// renderer type
+@property (nonatomic, assign, readonly) SGDisplayRendererType rendererType;
+- (void)rendererTypeEmpty;
+- (void)rendererTypeAVPlayerLayer;
+- (void)rendererTypeOpenGL;
+
+
+// reload
 - (void)reloadGravityMode;
-- (void)cleanEmptyBuffer;
-- (void)resetRendererType;
+- (void)reloadPlayerConfig;
+- (void)reloadVideoFrameForGLFrame:(SGGLFrame *)glFrame;
 
 - (SGPLFImage *)snapshot;
-
-
-- (void)updateGLFrame:(SGGLFrame *)glFrame;
 
 @end

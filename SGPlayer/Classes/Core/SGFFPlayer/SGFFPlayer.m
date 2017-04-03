@@ -13,7 +13,7 @@
 #import "SGPlayerMacro.h"
 #import "SGPlayer+DisplayView.h"
 
-@interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
+@interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderVideoOutputConfig, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
 
 @property (nonatomic, strong) NSLock * stateLock;
 
@@ -46,6 +46,7 @@
 {
     if (self = [super init]) {
         self.abstractPlayer = abstractPlayer;
+        self.abstractPlayer.displayView.playerOutputFF = self;
         self.stateLock = [[NSLock alloc] init];
         self.audioManager = [SGAudioManager manager];
         [self.audioManager registerAudioSession];
@@ -217,11 +218,11 @@
     [self clean];
     if (!self.abstractPlayer.contentURL) return;
     
+    [self.abstractPlayer.displayView playerOutputTypeFF];
     self.decoder = [SGFFDecoder decoderWithContentURL:self.abstractPlayer.contentURL
                                              delegate:self
-                                    videoOutputConfig:self.abstractPlayer.displayView
+                                    videoOutputConfig:self
                                     audioOutputConfig:self];
-    self.abstractPlayer.displayView.sgffdecoder = self.decoder;
     self.decoder.hardwareDecoderEnable = self.abstractPlayer.decoder.ffmpegHardwareDecoderEnable;
     [self.decoder open];
     [self reloadVolume];
@@ -238,14 +239,7 @@
 - (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder
 {
     if (self.decoder.videoEnable) {
-        switch (self.abstractPlayer.videoType) {
-            case SGVideoTypeNormal:
-                self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBuffer;
-                break;
-            case SGVideoTypeVR:
-                self.abstractPlayer.displayView.rendererType = SGDisplayRendererTypeFFmpegPexelBufferVR;
-                break;
-        }
+        [self.abstractPlayer.displayView rendererTypeOpenGL];
     }
 }
 
@@ -317,7 +311,8 @@
     self.prepareToken = NO;
     self.lastPostProgressTime = 0;
     self.lastPostPlayableTime = 0;
-    [self.abstractPlayer.displayView resetRendererType];
+    [self.abstractPlayer.displayView playerOutputTypeEmpty];
+    [self.abstractPlayer.displayView rendererTypeEmpty];
 }
 
 - (void)cleanFrame
@@ -341,7 +336,27 @@
     SGPlayerLog(@"SGFFPlayer release");
 }
 
-#pragma mark - audio
+
+#pragma mark - SGFFPlayerOutput
+
+- (SGFFVideoFrame *)fetchVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion currentDuration:(NSTimeInterval)currentDuration
+{
+    if (self.decoder) {
+        return [self.decoder fetchVideoFrameWithCurrentPostion:currentPostion currentDuration:currentDuration];
+    }
+    return nil;
+}
+
+
+#pragma mark - Video Config
+
+- (void)videoOutputUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+{
+    self.abstractPlayer.displayView.preferredFramesPerSecond = preferredFramesPerSecond;
+}
+
+
+#pragma mark - Audio Config
 
 - (Float64)samplingRate
 {
@@ -393,7 +408,7 @@
 }
 
 
-#pragma mark - track info
+#pragma mark - Track Info
 
 - (BOOL)videoEnable
 {
