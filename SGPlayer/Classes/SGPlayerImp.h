@@ -118,6 +118,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+
+#pragma mark - Thread Category
+
+@interface SGPlayer (Thread)
+
+@property (nonatomic, assign, readonly) BOOL videoDecodeOnMainThread;
+@property (nonatomic, assign, readonly) BOOL audioDecodeOnMainThread;
+
+@end
+
 NS_ASSUME_NONNULL_END
 
 #import "SGPlayerAction.h"

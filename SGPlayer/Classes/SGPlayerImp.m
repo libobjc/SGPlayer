@@ -571,3 +571,31 @@
 }
 
 @end
+
+
+#pragma mark - Thread Category
+
+@implementation SGPlayer (Thread)
+
+- (BOOL)videoDecodeOnMainThread
+{
+    switch (self.decoderType) {
+        case SGDecoderTypeAVPlayer:
+            return NO;
+        case SGDecoderTypeFFmpeg:
+            if (self.videoType == SGVideoTypeVR) {
+                return YES;
+            } else {
+                return NO;
+            }
+        case SGDecoderTypeError:
+            return NO;
+    }
+}
+
+- (BOOL)audioDecodeOnMainThread
+{
+    return NO;
+}
+
+@end
