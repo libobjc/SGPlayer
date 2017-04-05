@@ -8,6 +8,12 @@
 
 #import "SGPlayerDecoder.h"
 
+@interface SGPlayerDecoder ()
+
+@property (nonatomic, strong) NSMutableDictionary * formatContextOptions;
+
+@end
+
 @implementation SGPlayerDecoder
 
 + (instancetype)decoderByDefault
@@ -53,8 +59,30 @@
 {
     if (self = [super init]) {
         self.hardwareAccelerateEnableForFFmpeg = YES;
+        self.formatContextOptions = [NSMutableDictionary dictionary];
+        [self setFFmpegFormatContextOptionStringValue:@"SGPlayer" forKey:@"user-agent"];
     }
     return self;
+}
+
+- (NSDictionary *)FFmpegFormatContextOptions
+{
+    return [self.formatContextOptions copy];
+}
+
+- (void)setFFmpegFormatContextOptionIntValue:(int64_t)value forKey:(NSString *)key
+{
+    [self.formatContextOptions setValue:@(value) forKey:key];
+}
+
+- (void)setFFmpegFormatContextOptionStringValue:(NSString *)value forKey:(NSString *)key
+{
+    [self.formatContextOptions setValue:value forKey:key];
+}
+
+- (void)removeFFmpegFormatContextOptionForKey:(NSString *)key
+{
+    [self.formatContextOptions removeObjectForKey:key];
 }
 
 - (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL

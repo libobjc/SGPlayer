@@ -99,7 +99,8 @@ static int ffmpeg_interrupt_callback(void *ctx)
     _format_context->interrupt_callback.callback = ffmpeg_interrupt_callback;
     _format_context->interrupt_callback.opaque = (__bridge void *)self;
     
-    reslut = avformat_open_input(&_format_context, [self contentURLString].UTF8String, NULL, NULL);
+    AVDictionary * options = SGFFFFmpegBrigeOfNSDictionary(self.formatContextOptions);
+    reslut = avformat_open_input(&_format_context, [self contentURLString].UTF8String, NULL, &options);
     error = SGFFCheckErrorCode(reslut, SGFFDecoderErrorCodeFormatOpenInput);
     if (error || !_format_context)
     {

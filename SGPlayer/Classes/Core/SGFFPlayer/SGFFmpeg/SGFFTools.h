@@ -90,3 +90,4 @@ double SGFFStreamGetTimebase(AVStream * stream, double default_timebase);
 double SGFFStreamGetFPS(AVStream * stream, double timebase);
 
 NSDictionary * SGFFFoundationBrigeOfAVDictionary(AVDictionary * avDictionary);
+AVDictionary * SGFFFFmpegBrigeOfNSDictionary(NSDictionary * dictionary);

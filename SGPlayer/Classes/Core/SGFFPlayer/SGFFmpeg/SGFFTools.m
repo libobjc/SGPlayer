@@ -81,3 +81,26 @@ NSDictionary * SGFFFoundationBrigeOfAVDictionary(AVDictionary * avDictionary)
     return dictionary;
 }
 
+AVDictionary * SGFFFFmpegBrigeOfNSDictionary(NSDictionary * dictionary)
+{
+    if (dictionary.count <= 0) {
+        return NULL;
+    }
+    
+    __block BOOL success = NO;
+    __block AVDictionary * dict = NULL;
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        if ([obj isKindOfClass:[NSNumber class]]) {
+            av_dict_set_int(&dict, [key UTF8String], [obj integerValue], 0);
+            success = YES;
+        } else if ([obj isKindOfClass:[NSString class]]) {
+            av_dict_set(&dict, [key UTF8String], [obj UTF8String], 0);
+            success = YES;
+        }
+    }];
+    if (success) {
+        return dict;
+    }
+    return NULL;
+}
+

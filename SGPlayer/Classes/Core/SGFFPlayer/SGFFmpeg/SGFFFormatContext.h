@@ -54,6 +54,8 @@
 
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
 
+@property (nonatomic, strong) NSDictionary * formatContextOptions;
+
 - (void)setupSync;
 - (void)destroy;
 
