@@ -57,6 +57,7 @@
 @protocol SGFFDecoderVideoOutputConfig <NSObject>
 
 - (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
+- (BOOL)decoderVideoOutputConfigAVCodecContextDecodeAsync;
 
 @end
 

@@ -179,7 +179,7 @@
         self.videoDecoder = [SGFFVideoDecoder decoderWithCodecContext:self.formatContext->_video_codec_context
                                                              timebase:self.formatContext.videoTimebase
                                                                   fps:self.formatContext.videoFPS
-                                                    codecContextAsync:NO
+                                                    codecContextAsync:[self.videoOutputConfig decoderVideoOutputConfigAVCodecContextDecodeAsync]
                                                    videoToolBoxEnable:self.hardwareDecoderEnable
                                                              delegate:self];
     }

@@ -357,6 +357,14 @@
     
 }
 
+- (BOOL)decoderVideoOutputConfigAVCodecContextDecodeAsync
+{
+    if (self.abstractPlayer.videoType == SGVideoTypeVR) {
+        return NO;
+    }
+    return YES;
+}
+
 
 #pragma mark - Audio Config
 

@@ -88,7 +88,7 @@ static AVPacket flush_packet;
     self.preferredFramesPerSecond = 60;
     self->_temp_frame = av_frame_alloc();
     self.packetQueue = [SGFFPacketQueue packetQueueWithTimebase:self.timebase];
-    self.videoToolBoxMaxDecodeFrameCount = 3;
+    self.videoToolBoxMaxDecodeFrameCount = 20;
     self.codecContextMaxDecodeFrameCount = 3;
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (self.videoToolBoxEnable && _codec_context->codec_id == AV_CODEC_ID_H264) {
@@ -188,12 +188,12 @@ static AVPacket flush_packet;
         }
         if (self.paused) {
             SGFFSleepLog(@"decode video thread pause sleep");
-            [NSThread sleepForTimeInterval:0.01];
+            [NSThread sleepForTimeInterval:0.03];
             continue;
         }
         if (self.frameQueue.count >= self.codecContextMaxDecodeFrameCount) {
             SGFFSleepLog(@"decode video thread sleep");
-            [NSThread sleepForTimeInterval:0.01];
+            [NSThread sleepForTimeInterval:0.03];
             continue;
         }
         
