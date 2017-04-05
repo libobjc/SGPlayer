@@ -279,9 +279,13 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     codec_context->codec_id = codec->id;
     
-    AVDictionary * options = NULL;
-    av_dict_set(&options, "threads", "auto", 0);
-    av_dict_set(&options, "refcounted_frames", "1", 0);
+    AVDictionary * options = SGFFFFmpegBrigeOfNSDictionary(self.codecContextOptions);
+    if (!av_dict_get(options, "threads", NULL, 0)) {
+        av_dict_set(&options, "threads", "auto", 0);
+    }
+    if (codec_context->codec_type == AVMEDIA_TYPE_VIDEO || codec_context->codec_type == AVMEDIA_TYPE_AUDIO) {
+        av_dict_set(&options, "refcounted_frames", "1", 0);
+    }
     result = avcodec_open2(codec_context, codec, &options);
     error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecOpen2);
     if (error)

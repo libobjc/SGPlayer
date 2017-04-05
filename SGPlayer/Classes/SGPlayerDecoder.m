@@ -11,6 +11,7 @@
 @interface SGPlayerDecoder ()
 
 @property (nonatomic, strong) NSMutableDictionary * formatContextOptions;
+@property (nonatomic, strong) NSMutableDictionary * codecContextOptions;
 
 @end
 
@@ -59,45 +60,10 @@
 {
     if (self = [super init]) {
         self.hardwareAccelerateEnableForFFmpeg = YES;
-        [self configFFmpegFormatContextOptions];
+        [self configFFmpegOptions];
     }
     return self;
 }
-
-
-#pragma mark - ffmpeg format context opstions
-
-- (void)configFFmpegFormatContextOptions
-{
-    self.formatContextOptions = [NSMutableDictionary dictionary];
-    
-    [self setFFmpegFormatContextOptionStringValue:@"SGPlayer" forKey:@"user-agent"];
-    [self setFFmpegFormatContextOptionIntValue:20 * 1000 * 1000 forKey:@"timeout"];
-    [self setFFmpegFormatContextOptionIntValue:1 forKey:@"reconnect"];
-}
-
-- (NSDictionary *)FFmpegFormatContextOptions
-{
-    return [self.formatContextOptions copy];
-}
-
-- (void)setFFmpegFormatContextOptionIntValue:(int64_t)value forKey:(NSString *)key
-{
-    [self.formatContextOptions setValue:@(value) forKey:key];
-}
-
-- (void)setFFmpegFormatContextOptionStringValue:(NSString *)value forKey:(NSString *)key
-{
-    [self.formatContextOptions setValue:value forKey:key];
-}
-
-- (void)removeFFmpegFormatContextOptionForKey:(NSString *)key
-{
-    [self.formatContextOptions removeObjectForKey:key];
-}
-
-
-#pragma mark - format hand out
 
 - (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL
 {
@@ -159,6 +125,59 @@
         case SGMediaFormatRTSP:
             return self.decodeTypeForRTSP;
     }
+}
+
+
+#pragma mark - ffmpeg opstions
+
+- (void)configFFmpegOptions
+{
+    self.formatContextOptions = [NSMutableDictionary dictionary];
+    self.codecContextOptions = [NSMutableDictionary dictionary];
+    
+    [self setFFmpegFormatContextOptionStringValue:@"SGPlayer" forKey:@"user-agent"];
+    [self setFFmpegFormatContextOptionIntValue:20 * 1000 * 1000 forKey:@"timeout"];
+    [self setFFmpegFormatContextOptionIntValue:1 forKey:@"reconnect"];
+}
+
+- (NSDictionary *)FFmpegFormatContextOptions
+{
+    return [self.formatContextOptions copy];
+}
+
+- (void)setFFmpegFormatContextOptionIntValue:(int64_t)value forKey:(NSString *)key
+{
+    [self.formatContextOptions setValue:@(value) forKey:key];
+}
+
+- (void)setFFmpegFormatContextOptionStringValue:(NSString *)value forKey:(NSString *)key
+{
+    [self.formatContextOptions setValue:value forKey:key];
+}
+
+- (void)removeFFmpegFormatContextOptionForKey:(NSString *)key
+{
+    [self.formatContextOptions removeObjectForKey:key];
+}
+
+- (NSDictionary *)FFmpegCodecContextOptions
+{
+    return [self.codecContextOptions copy];
+}
+
+- (void)setFFmpegCodecContextOptionIntValue:(int64_t)value forKey:(NSString *)key
+{
+    [self.codecContextOptions setValue:@(value) forKey:key];
+}
+
+- (void)setFFmpegCodecContextOptionStringValue:(NSString *)value forKey:(NSString *)key
+{
+    [self.codecContextOptions setValue:value forKey:key];
+}
+
+- (void)removeFFmpegCodecContextOptionForKey:(NSString *)key
+{
+    [self.codecContextOptions removeObjectForKey:key];
 }
 
 @end

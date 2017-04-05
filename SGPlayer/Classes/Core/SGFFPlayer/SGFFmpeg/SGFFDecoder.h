@@ -98,6 +98,7 @@
 @property (atomic, assign, readonly) BOOL prepareToDecode;
 
 @property (nonatomic, strong) NSDictionary * formatContextOptions;
+@property (nonatomic, strong) NSDictionary * codecContextOptions;
 
 - (void)pause;
 - (void)resume;

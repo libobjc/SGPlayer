@@ -43,12 +43,20 @@ typedef NS_ENUM(NSUInteger, SGMediaFormat) {
 @property (nonatomic, assign) SGDecoderType decodeTypeForRTMP;         // default is SGDecodeTypeFFmpeg
 @property (nonatomic, assign) SGDecoderType decodeTypeForRTSP;         // default is SGDecodeTypeFFmpeg
 
+- (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL;
+- (SGDecoderType)decoderTypeForContentURL:(NSURL *)contentURL;
+
+
+#pragma mark - FFmpeg optioins
+
 - (NSDictionary *)FFmpegFormatContextOptions;
 - (void)setFFmpegFormatContextOptionIntValue:(int64_t)value forKey:(NSString *)key;
 - (void)setFFmpegFormatContextOptionStringValue:(NSString *)value forKey:(NSString *)key;
 - (void)removeFFmpegFormatContextOptionForKey:(NSString *)key;
 
-- (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL;
-- (SGDecoderType)decoderTypeForContentURL:(NSURL *)contentURL;
+- (NSDictionary *)FFmpegCodecContextOptions;
+- (void)setFFmpegCodecContextOptionIntValue:(int64_t)value forKey:(NSString *)key;
+- (void)setFFmpegCodecContextOptionStringValue:(NSString *)value forKey:(NSString *)key;
+- (void)removeFFmpegCodecContextOptionForKey:(NSString *)key;
 
 @end

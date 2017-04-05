@@ -163,6 +163,7 @@
     
     self.formatContext = [SGFFFormatContext formatContextWithContentURL:self.contentURL delegate:self];
     self.formatContext.formatContextOptions = self.formatContextOptions;
+    self.formatContext.codecContextOptions = self.codecContextOptions;
     [self.formatContext setupSync];
     
     if (self.formatContext.error) {

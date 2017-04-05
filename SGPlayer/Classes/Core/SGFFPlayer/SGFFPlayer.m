@@ -224,6 +224,7 @@
                                     videoOutputConfig:self
                                     audioOutputConfig:self];
     self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
+    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
     self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
     [self.decoder open];
     [self reloadVolume];
