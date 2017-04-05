@@ -100,7 +100,15 @@ static int ffmpeg_interrupt_callback(void *ctx)
     _format_context->interrupt_callback.opaque = (__bridge void *)self;
     
     AVDictionary * options = SGFFFFmpegBrigeOfNSDictionary(self.formatContextOptions);
-    reslut = avformat_open_input(&_format_context, [self contentURLString].UTF8String, NULL, &options);
+    
+    // options filter.
+    NSString * URLString = [self contentURLString];
+    NSString * lowercaseURLString = [URLString lowercaseString];
+    if ([lowercaseURLString hasPrefix:@"rtmp"] || [lowercaseURLString hasPrefix:@"rtsp"]) {
+        av_dict_set(&options, "timeout", NULL, 0);
+    }
+    
+    reslut = avformat_open_input(&_format_context, URLString.UTF8String, NULL, &options);
     error = SGFFCheckErrorCode(reslut, SGFFDecoderErrorCodeFormatOpenInput);
     if (error || !_format_context)
     {

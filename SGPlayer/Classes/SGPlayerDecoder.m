@@ -59,10 +59,21 @@
 {
     if (self = [super init]) {
         self.hardwareAccelerateEnableForFFmpeg = YES;
-        self.formatContextOptions = [NSMutableDictionary dictionary];
-        [self setFFmpegFormatContextOptionStringValue:@"SGPlayer" forKey:@"user-agent"];
+        [self configFFmpegFormatContextOptions];
     }
     return self;
+}
+
+
+#pragma mark - ffmpeg format context opstions
+
+- (void)configFFmpegFormatContextOptions
+{
+    self.formatContextOptions = [NSMutableDictionary dictionary];
+    
+    [self setFFmpegFormatContextOptionStringValue:@"SGPlayer" forKey:@"user-agent"];
+    [self setFFmpegFormatContextOptionIntValue:20 * 1000 * 1000 forKey:@"timeout"];
+    [self setFFmpegFormatContextOptionIntValue:1 forKey:@"reconnect"];
 }
 
 - (NSDictionary *)FFmpegFormatContextOptions
@@ -84,6 +95,9 @@
 {
     [self.formatContextOptions removeObjectForKey:key];
 }
+
+
+#pragma mark - format hand out
 
 - (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL
 {
