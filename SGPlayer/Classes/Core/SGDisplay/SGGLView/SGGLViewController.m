@@ -132,23 +132,25 @@
 - (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect
 {
     [self.openGLLock lock];
+    SGPLFGLViewPrepareOpenGL(view);
+    
     if (self.clearToken) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
         self.clearToken = NO;
-    } else {
-        if ([self needDrawOpenGL]) {
+        SGPLFGLViewFlushBuffer(view);
+    } else if ([self needDrawOpenGL]) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-            if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-                [self.openGLLock unlock];
-                return;
-            }
-#endif
-            SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
-            self.viewport = glView.bounds;
-            [self drawOpenGL];
-            [self.currentFrame didDraw];
+        if ([UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+            [self.openGLLock unlock];
+            return;
         }
+#endif
+        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+        self.viewport = glView.bounds;
+        [self drawOpenGL];
+        [self.currentFrame didDraw];
+        SGPLFGLViewFlushBuffer(view);
     }
     [self.openGLLock unlock];
 }
