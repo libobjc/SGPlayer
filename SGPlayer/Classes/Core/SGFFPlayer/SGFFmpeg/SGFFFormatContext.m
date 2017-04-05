@@ -109,6 +109,9 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     
     reslut = avformat_open_input(&_format_context, URLString.UTF8String, NULL, &options);
+    if (options) {
+        av_dict_free(&options);
+    }
     error = SGFFCheckErrorCode(reslut, SGFFDecoderErrorCodeFormatOpenInput);
     if (error || !_format_context)
     {
@@ -276,10 +279,10 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     codec_context->codec_id = codec->id;
     
-    AVDictionary * option = NULL;
-    av_dict_set(&option, "threads", "auto", 0);
-    av_dict_set(&option, "refcounted_frames", "1", 0);
-    result = avcodec_open2(codec_context, codec, &option);
+    AVDictionary * options = NULL;
+    av_dict_set(&options, "threads", "auto", 0);
+    av_dict_set(&options, "refcounted_frames", "1", 0);
+    result = avcodec_open2(codec_context, codec, &options);
     error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecOpen2);
     if (error)
     {
