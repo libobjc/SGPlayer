@@ -223,7 +223,7 @@
                                              delegate:self
                                     videoOutputConfig:self
                                     audioOutputConfig:self];
-    self.decoder.hardwareDecoderEnable = self.abstractPlayer.decoder.ffmpegHardwareDecoderEnable;
+    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
     [self.decoder open];
     [self reloadVolume];
     [self reloadPlayableBufferInterval];

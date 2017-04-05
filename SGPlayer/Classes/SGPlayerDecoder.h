@@ -15,33 +15,35 @@ typedef NS_ENUM(NSUInteger, SGDecoderType) {
     SGDecoderTypeFFmpeg,
 };
 
-// video format
-typedef NS_ENUM(NSUInteger, SGVideoFormat) {
-    SGVideoFormatError,
-    SGVideoFormatUnknown,
-    SGVideoFormatMPEG4,
-    SGVideoFormatFLV,
-    SGVideoFormatM3U8,
-    SGVideoFormatRTMP,
-    SGVideoFormatRTSP,
+// media format
+typedef NS_ENUM(NSUInteger, SGMediaFormat) {
+    SGMediaFormatError,
+    SGMediaFormatUnknown,
+    SGMediaFormatMP3,
+    SGMediaFormatMPEG4,
+    SGMediaFormatFLV,
+    SGMediaFormatM3U8,
+    SGMediaFormatRTMP,
+    SGMediaFormatRTSP,
 };
 
 @interface SGPlayerDecoder : NSObject
 
-+ (instancetype)defaultDecoder;
-+ (instancetype)AVPlayerDecoder;
-+ (instancetype)FFmpegDecoder;
++ (instancetype)decoderByDefault;
++ (instancetype)decoderByAVPlayer;
++ (instancetype)decoderByFFmpeg;
 
-- (SGVideoFormat)formatForContentURL:(NSURL *)contentURL;
+@property (nonatomic, assign) BOOL hardwareAccelerateEnableForFFmpeg;  // default is YES
+
+@property (nonatomic, assign) SGDecoderType decodeTypeForUnknown;      // default is SGDecodeTypeFFmpeg
+@property (nonatomic, assign) SGDecoderType decodeTypeForMP3;          // default is SGDecodeTypeAVPlayer
+@property (nonatomic, assign) SGDecoderType decodeTypeForMPEG4;        // default is SGDecodeTypeAVPlayer
+@property (nonatomic, assign) SGDecoderType decodeTypeForFLV;          // default is SGDecodeTypeFFmpeg
+@property (nonatomic, assign) SGDecoderType decodeTypeForM3U8;         // default is SGDecodeTypeAVPlayer
+@property (nonatomic, assign) SGDecoderType decodeTypeForRTMP;         // default is SGDecodeTypeFFmpeg
+@property (nonatomic, assign) SGDecoderType decodeTypeForRTSP;         // default is SGDecodeTypeFFmpeg
+
+- (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL;
 - (SGDecoderType)decoderTypeForContentURL:(NSURL *)contentURL;
-
-@property (nonatomic, assign) BOOL ffmpegHardwareDecoderEnable; // default is YES
-
-@property (nonatomic, assign) SGDecoderType unkonwnFormat;      // default is SGDecodeTypeFFmpeg
-@property (nonatomic, assign) SGDecoderType mpeg4Format;        // default is SGDecodeTypeAVPlayer
-@property (nonatomic, assign) SGDecoderType flvFormat;          // default is SGDecodeTypeFFmpeg
-@property (nonatomic, assign) SGDecoderType m3u8Format;         // default is SGDecodeTypeAVPlayer
-@property (nonatomic, assign) SGDecoderType rtmpFormat;         // default is SGDecodeTypeFFmpeg
-@property (nonatomic, assign) SGDecoderType rtspFormat;         // default is SGDecodeTypeFFmpeg
 
 @end

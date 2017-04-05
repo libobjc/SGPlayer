@@ -42,7 +42,7 @@
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         [self setupNotification];
 #endif
-        self.decoder = [SGPlayerDecoder defaultDecoder];
+        self.decoder = [SGPlayerDecoder decoderByDefault];
         self.contentURL = nil;
         self.videoType = SGVideoTypeNormal;
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;

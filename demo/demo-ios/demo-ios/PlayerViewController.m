@@ -60,32 +60,32 @@
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_Normal:
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
-            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
             [self.player replaceVideoWithURL:normalVideo];
             break;
         case DemoType_FFmpeg_Normal_Hardware:
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
             [self.player replaceVideoWithURL:normalVideo];
             break;
         case DemoType_FFmpeg_VR:
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
-            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_VR_Hardware:
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_VR_Box:
             self.player.displayMode = SGDisplayModeBox;
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
-            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_VR_Box_Hardware:
             self.player.displayMode = SGDisplayModeBox;
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
     }

@@ -61,13 +61,13 @@
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
         case DemoType_FFmpeg_Normal:
-            self.player.decoder.mpeg4Format = SGDecoderTypeFFmpeg;
-            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
             [self.player replaceVideoWithURL:normalVideo];
             break;
         case DemoType_FFmpeg_VR:
-            self.player.decoder = [SGPlayerDecoder FFmpegDecoder];
-            self.player.decoder.ffmpegHardwareDecoderEnable = NO;
+            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
             [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
             break;
     }

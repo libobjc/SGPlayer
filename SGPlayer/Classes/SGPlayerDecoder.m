@@ -10,53 +10,56 @@
 
 @implementation SGPlayerDecoder
 
-+ (instancetype)defaultDecoder
++ (instancetype)decoderByDefault
 {
     SGPlayerDecoder * decoder = [[self alloc] init];
-    decoder.unkonwnFormat   = SGDecoderTypeFFmpeg;
-    decoder.mpeg4Format     = SGDecoderTypeAVPlayer;
-    decoder.flvFormat       = SGDecoderTypeFFmpeg;
-    decoder.m3u8Format      = SGDecoderTypeAVPlayer;
-    decoder.rtmpFormat      = SGDecoderTypeFFmpeg;
-    decoder.rtspFormat      = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForUnknown   = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForMP3       = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForMPEG4     = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForFLV       = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForM3U8      = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForRTMP      = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForRTSP      = SGDecoderTypeFFmpeg;
     return decoder;
 }
 
-+ (instancetype)AVPlayerDecoder
++ (instancetype)decoderByAVPlayer
 {
     SGPlayerDecoder * decoder = [[self alloc] init];
-    decoder.unkonwnFormat   = SGDecoderTypeAVPlayer;
-    decoder.mpeg4Format     = SGDecoderTypeAVPlayer;
-    decoder.flvFormat       = SGDecoderTypeAVPlayer;
-    decoder.m3u8Format      = SGDecoderTypeAVPlayer;
-    decoder.rtmpFormat      = SGDecoderTypeAVPlayer;
-    decoder.rtspFormat      = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForUnknown   = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForMP3       = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForMPEG4     = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForFLV       = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForM3U8      = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForRTMP      = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForRTSP      = SGDecoderTypeAVPlayer;
     return decoder;
 }
 
-+ (instancetype)FFmpegDecoder
++ (instancetype)decoderByFFmpeg
 {
     SGPlayerDecoder * decoder = [[self alloc] init];
-    decoder.unkonwnFormat   = SGDecoderTypeFFmpeg;
-    decoder.mpeg4Format     = SGDecoderTypeFFmpeg;
-    decoder.flvFormat       = SGDecoderTypeFFmpeg;
-    decoder.m3u8Format      = SGDecoderTypeFFmpeg;
-    decoder.rtmpFormat      = SGDecoderTypeFFmpeg;
-    decoder.rtspFormat      = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForUnknown   = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForMP3       = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForMPEG4     = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForFLV       = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForM3U8      = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForRTMP      = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForRTSP      = SGDecoderTypeFFmpeg;
     return decoder;
 }
 
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.ffmpegHardwareDecoderEnable = YES;
+        self.hardwareAccelerateEnableForFFmpeg = YES;
     }
     return self;
 }
 
-- (SGVideoFormat)formatForContentURL:(NSURL *)contentURL
+- (SGMediaFormat)mediaFormatForContentURL:(NSURL *)contentURL
 {
-    if (!contentURL) return SGVideoFormatError;
+    if (!contentURL) return SGMediaFormatError;
     
     NSString * path;
     if (contentURL.isFileURL) {
@@ -64,48 +67,55 @@
     } else {
         path = contentURL.absoluteString;
     }
+    path = [path lowercaseString];
     
     if ([path hasPrefix:@"rtmp:"])
     {
-        return SGVideoFormatRTMP;
+        return SGMediaFormatRTMP;
     }
     else if ([path hasPrefix:@"rtsp:"])
     {
-        return SGVideoFormatRTSP;
+        return SGMediaFormatRTSP;
     }
     else if ([path containsString:@".flv"])
     {
-        return SGVideoFormatFLV;
+        return SGMediaFormatFLV;
     }
     else if ([path containsString:@".mp4"])
     {
-        return SGVideoFormatMPEG4;
+        return SGMediaFormatMPEG4;
+    }
+    else if ([path containsString:@".mp3"])
+    {
+        return SGMediaFormatMP3;
     }
     else if ([path containsString:@".m3u8"])
     {
-        return SGVideoFormatM3U8;
+        return SGMediaFormatM3U8;
     }
-    return SGVideoFormatUnknown;
+    return SGMediaFormatUnknown;
 }
 
 - (SGDecoderType)decoderTypeForContentURL:(NSURL *)contentURL
 {
-    SGVideoFormat format = [self formatForContentURL:contentURL];
-    switch (format) {
-        case SGVideoFormatError:
+    SGMediaFormat mediaFormat = [self mediaFormatForContentURL:contentURL];
+    switch (mediaFormat) {
+        case SGMediaFormatError:
             return SGDecoderTypeError;
-        case SGVideoFormatUnknown:
-            return self.unkonwnFormat;
-        case SGVideoFormatMPEG4:
-            return self.mpeg4Format;
-        case SGVideoFormatFLV:
-            return self.flvFormat;
-        case SGVideoFormatM3U8:
-            return self.m3u8Format;
-        case SGVideoFormatRTMP:
-            return self.rtmpFormat;
-        case SGVideoFormatRTSP:
-            return self.rtspFormat;
+        case SGMediaFormatUnknown:
+            return self.decodeTypeForUnknown;
+        case SGMediaFormatMP3:
+            return self.decodeTypeForMP3;
+        case SGMediaFormatMPEG4:
+            return self.decodeTypeForMPEG4;
+        case SGMediaFormatFLV:
+            return self.decodeTypeForFLV;
+        case SGMediaFormatM3U8:
+            return self.decodeTypeForM3U8;
+        case SGMediaFormatRTMP:
+            return self.decodeTypeForRTMP;
+        case SGMediaFormatRTSP:
+            return self.decodeTypeForRTSP;
     }
 }
 

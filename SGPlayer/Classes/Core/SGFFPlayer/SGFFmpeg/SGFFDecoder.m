@@ -93,7 +93,7 @@
         self.videoOutputConfig = videoOutputConfig;
         self.audioOutputConfig = audioOutputConfig;
         
-        self.hardwareDecoderEnable = YES;
+        self.hardwareAccelerateEnable = YES;
     }
     return self;
 }
@@ -180,7 +180,7 @@
                                                              timebase:self.formatContext.videoTimebase
                                                                   fps:self.formatContext.videoFPS
                                                     codecContextAsync:[self.videoOutputConfig decoderVideoOutputConfigAVCodecContextDecodeAsync]
-                                                   videoToolBoxEnable:self.hardwareDecoderEnable
+                                                   videoToolBoxEnable:self.hardwareAccelerateEnable
                                                              delegate:self];
     }
     if (self.formatContext.audioEnable) {
