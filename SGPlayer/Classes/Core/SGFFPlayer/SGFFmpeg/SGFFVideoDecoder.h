@@ -36,9 +36,10 @@
 
 @property (nonatomic, assign, readonly) BOOL videoToolBoxEnable;
 @property (nonatomic, assign, readonly) BOOL videoToolBoxDidOpen;
-@property (nonatomic, assign) NSTimeInterval videoToolBoxMaxDecodeDuration;     // default is 2s;
+@property (nonatomic, assign) NSInteger videoToolBoxMaxDecodeFrameCount;     // default is 20.
 
 @property (nonatomic, assign, readonly) BOOL codecContextAsync;
+@property (nonatomic, assign) NSInteger codecContextMaxDecodeFrameCount;     // default is 3.
 
 @property (nonatomic, assign, readonly) BOOL decodeSync;
 @property (nonatomic, assign, readonly) BOOL decodeAsync;
