@@ -131,7 +131,9 @@
     }
     
     if (!self.readPacketOperation || self.readPacketOperation.isFinished) {
-        self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readPacketThread) object:nil];
+        self.readPacketOperation = [[NSInvocationOperation alloc] initWithTarget:self
+                                                                        selector:@selector(readPacketThread)
+                                                                          object:nil];
         self.readPacketOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
         self.readPacketOperation.qualityOfService = NSQualityOfServiceUserInteractive;
         [self.readPacketOperation addDependency:self.openFileOperation];
@@ -140,7 +142,9 @@
     
     if (self.formatContext.videoEnable) {
         if (!self.decodeFrameOperation || self.decodeFrameOperation.isFinished) {
-            self.decodeFrameOperation = [[NSInvocationOperation alloc] initWithTarget:self.videoDecoder selector:@selector(decodeFrameThread) object:nil];
+            self.decodeFrameOperation = [[NSInvocationOperation alloc] initWithTarget:self.videoDecoder
+                                                                             selector:@selector(startDecodeThread)
+                                                                               object:nil];
             self.decodeFrameOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
             self.decodeFrameOperation.qualityOfService = NSQualityOfServiceUserInteractive;
             [self.decodeFrameOperation addDependency:self.openFileOperation];
@@ -175,6 +179,7 @@
         self.videoDecoder = [SGFFVideoDecoder decoderWithCodecContext:self.formatContext->_video_codec_context
                                                              timebase:self.formatContext.videoTimebase
                                                                   fps:self.formatContext.videoFPS
+                                                    codecContextAsync:NO
                                                    videoToolBoxEnable:self.hardwareDecoderEnable
                                                              delegate:self];
     }

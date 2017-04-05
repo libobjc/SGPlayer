@@ -24,6 +24,7 @@
 + (instancetype)decoderWithCodecContext:(AVCodecContext *)codec_context
                                timebase:(NSTimeInterval)timebase
                                     fps:(NSTimeInterval)fps
+                      codecContextAsync:(BOOL)codecContextAsync
                      videoToolBoxEnable:(BOOL)videoToolBoxEnable
                                delegate:(id <SGFFVideoDecoderDlegate>)delegate;
 
@@ -33,9 +34,11 @@
 @property (nonatomic, assign, readonly) NSTimeInterval timebase;
 @property (nonatomic, assign, readonly) NSTimeInterval fps;
 
-@property (nonatomic, assign, readonly) BOOL videoToolBoxEnable;      // default is YES;
+@property (nonatomic, assign, readonly) BOOL videoToolBoxEnable;
 @property (nonatomic, assign, readonly) BOOL videoToolBoxDidOpen;
 @property (nonatomic, assign) NSTimeInterval videoToolBoxMaxDecodeDuration;     // default is 2s;
+
+@property (nonatomic, assign, readonly) BOOL codecContextAsync;
 
 @property (nonatomic, assign, readonly) BOOL decodeSync;
 @property (nonatomic, assign, readonly) BOOL decodeAsync;
@@ -56,6 +59,6 @@
 - (void)flush;
 - (void)destroy;
 
-- (void)decodeFrameThread;
+- (void)startDecodeThread;
 
 @end
