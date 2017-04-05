@@ -179,6 +179,9 @@
     if (!self.currentFrame.hasData) {
         return NO;
     }
+    if (self.displayView.abstractPlayer.videoType != SGVideoTypeVR && !self.currentFrame.hasUpate) {
+        return NO;
+    }
     
     SGGLTexture * texture = [self chooseTexture];
     CGFloat aspect = 16.0 / 9.0;
