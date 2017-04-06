@@ -60,7 +60,9 @@
 - (void)setupSync;
 - (void)destroy;
 
+- (BOOL)seekEnable;
 - (void)seekFileWithFFTimebase:(NSTimeInterval)time;
+
 - (int)readFrame:(AVPacket *)packet;
 
 - (BOOL)containAudioTrack:(int)audioTrackIndex;

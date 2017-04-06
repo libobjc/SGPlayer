@@ -566,7 +566,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (BOOL)seekEnable
 {
-    return self.duration > 0;
+    return self.formatContext.seekEnable;
 }
 
 - (CGSize)presentationSize

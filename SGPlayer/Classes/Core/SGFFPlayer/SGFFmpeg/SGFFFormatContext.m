@@ -387,6 +387,15 @@ static int ffmpeg_interrupt_callback(void *ctx)
     return (NSTimeInterval)duration / AV_TIME_BASE;
 }
 
+- (BOOL)seekEnable
+{
+    if (!self->_format_context) return NO;
+    if (self->_format_context->pb->seekable && self.duration > 0) {
+        return YES;
+    }
+    return NO;
+}
+
 - (NSTimeInterval)bitrate
 {
     if (!self->_format_context) return 0;
