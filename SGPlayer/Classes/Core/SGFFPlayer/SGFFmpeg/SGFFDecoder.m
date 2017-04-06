@@ -647,12 +647,16 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder samplingRate:(Float64 *)samplingRate
 {
-    * samplingRate = [self.audioOutputConfig decoderAudioOutputConfigGetSamplingRate];
+    if ([self.audioOutputConfig respondsToSelector:@selector(decoderAudioOutputConfigGetSamplingRate)]) {
+        * samplingRate = [self.audioOutputConfig decoderAudioOutputConfigGetSamplingRate];
+    }
 }
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder channelCount:(UInt32 *)channelCount
 {
-    * channelCount = [self.audioOutputConfig decoderAudioOutputConfigGetNumberOfChannels];
+    if ([self.audioOutputConfig respondsToSelector:@selector(decoderAudioOutputGetAudioFrame)]) {
+        * channelCount = [self.audioOutputConfig decoderAudioOutputConfigGetNumberOfChannels];
+    }
 }
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didError:(NSError *)error
@@ -663,7 +667,9 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)videoDecoder:(SGFFVideoDecoder *)videoDecoder didChangePreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
 {
-    [self.videoOutputConfig decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+    if ([self.videoOutputConfig respondsToSelector:@selector(decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:)]) {
+        [self.videoOutputConfig decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:preferredFramesPerSecond];
+    }
 }
 
 
