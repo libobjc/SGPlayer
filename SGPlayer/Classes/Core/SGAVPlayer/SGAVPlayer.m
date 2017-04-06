@@ -163,7 +163,12 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(void (^)(BOOL))completeHandler
 {
-    if (self.avPlayerItem.status != AVPlayerItemStatusReadyToPlay) return;
+    if (self.avPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        if (completeHandler) {
+            completeHandler(NO);
+        }
+        return;
+    }
     
     dispatch_async(dispatch_get_main_queue(), ^{
         self.seeking = YES;
