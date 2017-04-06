@@ -654,7 +654,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 - (void)audioDecoder:(SGFFAudioDecoder *)audioDecoder channelCount:(UInt32 *)channelCount
 {
-    if ([self.audioOutputConfig respondsToSelector:@selector(decoderAudioOutputGetAudioFrame)]) {
+    if ([self.audioOutputConfig respondsToSelector:@selector(decoderAudioOutputConfigGetNumberOfChannels)]) {
         * channelCount = [self.audioOutputConfig decoderAudioOutputConfigGetNumberOfChannels];
     }
 }
