@@ -154,7 +154,7 @@
             NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
             if (currentTime - self.lastPostProgressTime >= 1) {
                 self.lastPostProgressTime = currentTime;
-                if (!self.decoder.seekEnable) {
+                if (!self.decoder.seekEnable && duration <= 0) {
                     duration = _progress;
                 }
                 [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(_progress/duration) current:@(_progress) total:@(duration)];
