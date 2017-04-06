@@ -380,8 +380,11 @@ static int ffmpeg_interrupt_callback(void *ctx)
 - (NSTimeInterval)duration
 {
     if (!self->_format_context) return 0;
-    if (self->_format_context->duration == AV_NOPTS_VALUE) return MAXFLOAT;
-    return (CGFloat)(self->_format_context->duration) / AV_TIME_BASE;
+    int64_t duration = self->_format_context->duration;
+    if (duration < 0) {
+        return 0;
+    }
+    return (NSTimeInterval)duration / AV_TIME_BASE;
 }
 
 - (NSTimeInterval)bitrate
