@@ -581,6 +581,7 @@ SGAudioOutputContext;
     }
     self->_playing = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    SGPlayerLog(@"SGAudioManager release");
 }
 
 static NSError * checkError(OSStatus result, NSString * domain)
