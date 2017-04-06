@@ -390,7 +390,11 @@ static int ffmpeg_interrupt_callback(void *ctx)
 - (BOOL)seekEnable
 {
     if (!self->_format_context) return NO;
-    if (self->_format_context->pb->seekable && self.duration > 0) {
+    BOOL ioSeekAble = YES;
+    if (self->_format_context->pb) {
+        ioSeekAble = self->_format_context->pb->seekable;
+    }
+    if (ioSeekAble && self.duration > 0) {
         return YES;
     }
     return NO;
