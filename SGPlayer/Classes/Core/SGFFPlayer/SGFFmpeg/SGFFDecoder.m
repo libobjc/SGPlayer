@@ -616,14 +616,22 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 - (void)updateProgressByVideo;
 {
     if (!self.formatContext.audioEnable && self.formatContext.videoEnable) {
-        self.progress = self.videoFramePosition;
+        if (self.videoFramePosition > 0) {
+            self.progress = self.videoFramePosition;
+        } else {
+            self.progress = 0;
+        }
     }
 }
 
 - (void)updateProgressByAudio
 {
     if (self.formatContext.audioEnable) {
-        self.progress = self.audioFramePosition;
+        if (self.audioFramePosition > 0) {
+            self.progress = self.audioFramePosition;
+        } else {
+            self.progress = 0;
+        }
     }
 }
 
