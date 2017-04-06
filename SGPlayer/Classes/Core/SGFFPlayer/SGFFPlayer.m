@@ -207,6 +207,11 @@
     return 0;
 }
 
+- (BOOL)videoDecodeOnMainThread
+{
+    return self.decoder.videoDecodeOnMainThread;
+}
+
 - (void)reloadVolume
 {
     self.audioManager.volume = self.abstractPlayer.volume;

@@ -583,11 +583,7 @@
         case SGDecoderTypeAVPlayer:
             return NO;
         case SGDecoderTypeFFmpeg:
-            if (self.videoType == SGVideoTypeVR) {
-                return YES;
-            } else {
-                return NO;
-            }
+            return self.ffPlayer.videoDecodeOnMainThread;
         case SGDecoderTypeError:
             return NO;
     }

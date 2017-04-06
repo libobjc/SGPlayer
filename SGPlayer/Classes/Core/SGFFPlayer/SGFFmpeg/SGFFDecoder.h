@@ -97,6 +97,8 @@
 @property (atomic, assign, readonly) BOOL reading;
 @property (atomic, assign, readonly) BOOL prepareToDecode;
 
+@property (nonatomic, assign, readonly) BOOL videoDecodeOnMainThread;
+
 @property (nonatomic, strong) NSDictionary * formatContextOptions;
 @property (nonatomic, strong) NSDictionary * codecContextOptions;
 

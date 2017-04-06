@@ -112,6 +112,7 @@ static AVPacket flush_packet;
     } else {
         self.framePool = [SGFFFramePool videoPool];
         self->_decodeSync = YES;
+        self->_decodeOnMainThread = YES;
     }
 }
 

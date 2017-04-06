@@ -579,6 +579,11 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     return self.formatContext.videoAspect;
 }
 
+- (BOOL)videoDecodeOnMainThread
+{
+    return self.videoDecoder.decodeOnMainThread;
+}
+
 #pragma mark - delegate callback
 
 - (void)checkBufferingStatus

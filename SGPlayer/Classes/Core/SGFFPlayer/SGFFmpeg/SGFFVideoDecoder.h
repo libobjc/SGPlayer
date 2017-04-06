@@ -43,6 +43,7 @@
 
 @property (nonatomic, assign, readonly) BOOL decodeSync;
 @property (nonatomic, assign, readonly) BOOL decodeAsync;
+@property (nonatomic, assign, readonly) BOOL decodeOnMainThread;
 
 @property (nonatomic, assign, readonly) int size;
 @property (nonatomic, assign, readonly) BOOL empty;
