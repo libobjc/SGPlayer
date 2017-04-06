@@ -27,7 +27,7 @@
     
     SwrContext * _audio_swr_context;
     void * _audio_swr_buffer;
-    NSUInteger _audio_swr_buffer_size;
+    int _audio_swr_buffer_size;
 }
 
 @property (nonatomic, strong) SGFFFrameQueue * frameQueue;
@@ -196,8 +196,12 @@
 
 - (void)reloadAudioOuputInfo
 {
-    [self.delegate audioDecoder:self samplingRate:&self->_samplingRate];
-    [self.delegate audioDecoder:self channelCount:&self->_channelCount];
+    if ([self.delegate respondsToSelector:@selector(audioDecoder:channelCount:)]) {
+        [self.delegate audioDecoder:self samplingRate:&self->_samplingRate];
+    }
+    if ([self.delegate respondsToSelector:@selector(audioDecoder:samplingRate:)]) {
+        [self.delegate audioDecoder:self channelCount:&self->_channelCount];
+    }
 }
 
 - (void)dealloc
