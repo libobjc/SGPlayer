@@ -35,17 +35,17 @@
 // iOS
 git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
-sh build.sh iOS
+sh compile-build.sh iOS
 
 // macOS
 git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
-sh build.sh macOS
+sh compile-build.sh macOS
 
 // tvOS
 git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
-sh build.sh tvOS
+sh compile-build.sh tvOS
 
 ```
 
