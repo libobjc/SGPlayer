@@ -22,13 +22,17 @@ do_lib_ffmpeg () {
 
 do_framework_SGPlatform () {
   echo "check SGPlatform..."
-  git submodule update --init --recursive
+  if [ -d ".git" ]; then
+    git submodule update --init --recursive
+  else
+    echo "no git repository."
+  fi
   if [ ! -d "Vendors/SGPlatform/SGPlatform.xcodeproj" ]; then
     echo "clone SGPlatform from GitHub..."
     git clone https://github.com/libobjc/SGPlatform.git Vendors/SGPlatform
-    echo "clone SGPlatform done."
+    echo "SGPlatform done."
   else
-    echo "clone SGPlatform done."
+    echo "SGPlatform done."
   fi
 }
 
