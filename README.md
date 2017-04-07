@@ -33,19 +33,19 @@
 ```obj-c
 
 // iOS
-git clone git@github.com:libobjc/SGPlayer.git
+git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
 git submodule update --init --recursive
 sh build.sh iOS
 
 // macOS
-git clone git@github.com:libobjc/SGPlayer.git
+git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
 git submodule update --init --recursive
 sh build.sh macOS
 
 // tvOS
-git clone git@github.com:libobjc/SGPlayer.git
+git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
 git submodule update --init --recursive
 sh build.sh tvOS
