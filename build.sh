@@ -17,20 +17,35 @@ do_lib_ffmpeg () {
   unzip $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/
   echo "clean build file..."
   rm -rf $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip
-  echo "build done"
+  echo "build done."
+}
+
+do_framework_SGPlatform () {
+  echo "check SGPlatform..."
+  git submodule update --init --recursive
+  if [ ! -d "Vendors/SGPlatform/SGPlatform.xcodeproj" ]; then
+    echo "clone SGPlatform from GitHub..."
+    git clone https://github.com/libobjc/SGPlatform.git Vendors/SGPlatform
+    echo "clone SGPlatform done."
+  else
+    echo "clone SGPlatform done."
+  fi
 }
 
 if [ "$ARGV1" == "iOS" ]; then
-  echo "build for iOS"
+  echo "build for iOS."
   LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_IOS
+  do_framework_SGPlatform
   do_lib_ffmpeg
 elif [ "$ARGV1" == "macOS" ]; then
-  echo "build for macOS"
+  echo "build for macOS."
   LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_MACOS
+  do_framework_SGPlatform
   do_lib_ffmpeg
 elif [ "$ARGV1" == "tvOS" ]; then
-  echo "build for tvOS"
+  echo "build for tvOS."
   LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_TVOS
+  do_framework_SGPlatform
   do_lib_ffmpeg
 else
   echo echo "Usage:"
