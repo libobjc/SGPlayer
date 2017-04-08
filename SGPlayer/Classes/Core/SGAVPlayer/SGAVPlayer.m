@@ -203,6 +203,12 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 - (NSTimeInterval)progress
 {
+    CMTime currentTime = self.avPlayerItem.currentTime;
+    Boolean indefinite = CMTIME_IS_INDEFINITE(currentTime);
+    Boolean invalid = CMTIME_IS_INVALID(currentTime);
+    if (indefinite || invalid) {
+        return 0;
+    }
     return CMTimeGetSeconds(self.avPlayerItem.currentTime);
 }
 
@@ -268,9 +274,11 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 {
     if (self.avPlayerItem.status == AVPlayerItemStatusReadyToPlay) {
         CMTimeRange range = [self.avPlayerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-        NSTimeInterval start = CMTimeGetSeconds(range.start);
-        NSTimeInterval duration = CMTimeGetSeconds(range.duration);
-        self.playableTime = (start + duration);
+        if (CMTIMERANGE_IS_VALID(range)) {
+            NSTimeInterval start = CMTimeGetSeconds(range.start);
+            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
+            self.playableTime = (start + duration);
+        }
     } else {
         self.playableTime = 0;
     }
