@@ -156,6 +156,14 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     self.state = SGPlayerStateSuspend;
 }
 
+- (BOOL)seekEnable
+{
+    if (self.duration <= 0 || self.avPlayerItem.status != AVPlayerItemStatusReadyToPlay) {
+        return NO;
+    }
+    return YES;
+}
+
 - (void)seekToTime:(NSTimeInterval)time
 {
     [self seekToTime:time completeHandler:nil];
@@ -200,7 +208,26 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
 
 - (NSTimeInterval)duration
 {
-    return CMTimeGetSeconds(self.avPlayerItem.duration);
+    CMTime duration = self.avPlayerItem.duration;
+    Boolean indefinite = CMTIME_IS_INDEFINITE(duration);
+    Boolean invalid = CMTIME_IS_INVALID(duration);
+    if (indefinite || invalid) {
+        return 0;
+    }
+    return CMTimeGetSeconds(self.avPlayerItem.duration);;
+}
+
+- (double)percentForTime:(NSTimeInterval)time duration:(NSTimeInterval)duration
+{
+    double percent = 0;
+    if (time > 0) {
+        if (duration <= 0) {
+            percent = 1;
+        } else {
+            percent = time / duration;
+        }
+    }
+    return percent;
 }
 
 - (NSTimeInterval)bitrate
@@ -254,7 +281,8 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     if (_playableTime != playableTime) {
         _playableTime = playableTime;
         CGFloat duration = self.duration;
-        [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(playableTime/duration) current:@(playableTime) total:@(duration)];
+        double percent = [self percentForTime:_playableTime duration:duration];
+        [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(playableTime) total:@(duration)];
     }
 }
 
@@ -404,6 +432,9 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
             [self reloadPlayableTime];
             NSTimeInterval interval = self.playableTime - self.progress;
             NSTimeInterval residue = self.duration - self.progress;
+            if (residue <= -1.5) {
+                residue = 2;
+            }
             if (interval > self.abstractPlayer.playableBufferInterval) {
                 [self stopBuffering];
                 [self resumeStateAfterBuffering];
@@ -489,7 +520,8 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         if (strongSelf.state == SGPlayerStatePlaying) {
             CGFloat current = CMTimeGetSeconds(time);
             CGFloat duration = strongSelf.duration;
-            [SGPlayerNotification postPlayer:strongSelf.abstractPlayer progressPercent:@(current/duration) current:@(current) total:@(duration)];
+            double percent = [strongSelf percentForTime:current duration:duration];
+            [SGPlayerNotification postPlayer:strongSelf.abstractPlayer progressPercent:@(percent) current:@(current) total:@(duration)];
         }
     }];
     [self.abstractPlayer.displayView reloadPlayerConfig];
