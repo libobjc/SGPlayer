@@ -42,6 +42,8 @@
 - (void)play;
 - (void)pause;
 - (void)stop;
+
+@property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(void(^)(BOOL finished))completeHandler;
 

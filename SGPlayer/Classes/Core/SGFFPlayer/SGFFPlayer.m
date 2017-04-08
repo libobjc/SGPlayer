@@ -108,6 +108,11 @@
     [self clean];
 }
 
+- (BOOL)seekEnable
+{
+    return self.decoder.seekEnable;
+}
+
 - (void)seekToTime:(NSTimeInterval)time
 {
     [self seekToTime:time completeHandler:nil];
@@ -143,13 +148,27 @@
     [self.stateLock unlock];
 }
 
+- (double)percentForTime:(NSTimeInterval)time duration:(NSTimeInterval)duration
+{
+    double percent = 0;
+    if (time > 0) {
+        if (duration <= 0) {
+            percent = 1;
+        } else {
+            percent = time / duration;
+        }
+    }
+    return percent;
+}
+
 - (void)setProgress:(NSTimeInterval)progress
 {
     if (_progress != progress) {
         _progress = progress;
         NSTimeInterval duration = self.duration;
+        double percent = [self percentForTime:_progress duration:duration];
         if (_progress <= 0.000001 || _progress == duration) {
-            [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(_progress/duration) current:@(_progress) total:@(duration)];
+            [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
         } else {
             NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
             if (currentTime - self.lastPostProgressTime >= 1) {
@@ -157,7 +176,7 @@
 //                if (!self.decoder.seekEnable && duration <= 0) {
 //                    duration = _progress;
 //                }
-                [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(_progress/duration) current:@(_progress) total:@(duration)];
+                [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
             }
         }
     }
@@ -174,13 +193,14 @@
     
     if (_playableTime != playableTime) {
         _playableTime = playableTime;
+        double percent = [self percentForTime:_playableTime duration:duration];
         if (_playableTime == 0 || _playableTime == duration) {
-            [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(_playableTime/self.duration) current:@(_playableTime) total:@(duration)];
+            [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
         } else if (!self.decoder.endOfFile && self.decoder.seekEnable) {
             NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
             if (currentTime - self.lastPostPlayableTime >= 1) {
                 self.lastPostPlayableTime = currentTime;
-                [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(_playableTime/duration) current:@(_playableTime) total:@(duration)];
+                [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
             }
         }
     }
