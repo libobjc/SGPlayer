@@ -94,6 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)play;
 - (void)pause;
+
+@property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(nullable void(^)(BOOL finished))completeHandler;
 

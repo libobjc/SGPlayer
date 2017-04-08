@@ -132,6 +132,19 @@
     }
 }
 
+- (BOOL)seekEnable
+{
+    switch (self.decoderType) {
+        case SGDecoderTypeAVPlayer:
+            return self.avPlayer.seekEnable;
+            break;
+        case SGDecoderTypeFFmpeg:
+            return self.ffPlayer.seekEnable;
+        case SGDecoderTypeError:
+            return NO;
+    }
+}
+
 - (void)seekToTime:(NSTimeInterval)time
 {
     [self seekToTime:time completeHandler:nil];
