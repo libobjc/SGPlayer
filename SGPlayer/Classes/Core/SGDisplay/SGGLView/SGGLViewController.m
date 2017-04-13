@@ -35,6 +35,7 @@
 
 @property (nonatomic, strong) NSLock * openGLLock;
 @property (nonatomic, assign) BOOL clearToken;
+@property (nonatomic, assign) BOOL drawToekn;
 @property (nonatomic, assign) CGFloat aspect;
 @property (nonatomic, assign) CGRect viewport;
 
@@ -121,8 +122,10 @@
 
 - (void)flushClearColor
 {
+    NSLog(@"flush .....");
     [self.openGLLock lock];
     self.clearToken = YES;
+    self.drawToekn = NO;
     [self.currentFrame flush];
     [self.textureNV12 flush];
     [self.textureYUV420 flush];
@@ -150,6 +153,7 @@
         self.viewport = glView.bounds;
         [self drawOpenGL];
         [self.currentFrame didDraw];
+        self.drawToekn = YES;
         SGPLFGLViewFlushBuffer(view);
     }
     [self.openGLLock unlock];
@@ -181,7 +185,7 @@
     if (!self.currentFrame.hasData) {
         return NO;
     }
-    if (self.displayView.abstractPlayer.videoType != SGVideoTypeVR && !self.currentFrame.hasUpate) {
+    if (self.displayView.abstractPlayer.videoType != SGVideoTypeVR && !self.currentFrame.hasUpate && self.drawToekn) {
         return NO;
     }
     
@@ -315,6 +319,7 @@
             glView.frame = superviewFrame;
             break;
     }
+    self.drawToekn = NO;
 }
 
 - (void)setAspect:(CGFloat)aspect
