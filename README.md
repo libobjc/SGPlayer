@@ -14,7 +14,7 @@
 - 支持手势、传感器操控VR全景视频
 - 支持VR眼镜双眼模式，并具有边缘畸变校正功能
 - 支持iOS、macOS、tvOS
-- 支持H.264硬解解码(VideoToolBox)
+- 支持H.264硬件解码(VideoToolBox)
 - 支持选择软件解码、硬件解码
 - 支持RTMP、RTSP等直播流
 - 支持所有常见媒体格式
@@ -73,7 +73,7 @@ git submodule update --init --recursive
 
 ### 编译完成效果(仅目标平台的静态库存在即可)
 
-![ffmpeg-libs](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ffmpeg-libs.png)
+![ffmpeg-libs](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ffmpeg-libs.jpg)
 
 
 ## 使用示例
