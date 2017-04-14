@@ -1,6 +1,6 @@
 # SGPlayer 原理详解
 
-SGPlayer 是一款强大的媒体资源播放器框架。支持全景视频，RTMP、RTSP 等直播流；且同时支持 iOS、macOS、tvOS 三个平台。
+SGPlayer 是一款强大的媒体资源播放器框架。支持全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。本文将采用图解+说明的方式把关键模块的实现原理介绍给大家。
 
 ## 发起原因
 
@@ -149,4 +149,4 @@ SGAudioDecoder 是音频解码器，采用同步解码，收到音频包后立�
 
 ## 总结
 
-关于 SGPlayer 的原理就阐述到这里，由于本文以理论为主，所以并没有贴代码。感兴趣的同学可以在 GitHub 上找到全部的代码实现。希望对大家能有所帮助。
+关于 SGPlayer 的原理就阐述到这里，由于本文以理论为主，所以并没有贴代码。感兴趣的同学可以在 [GitHub](https://github.com/libobjc/SGPlayer) 上找到全部的代码实现。希望对大家能有所帮助。
