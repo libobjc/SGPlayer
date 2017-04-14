@@ -182,6 +182,7 @@
 {
     if (self.avplayerLayer) {
         [self.avplayerLayer removeFromSuperlayer];
+        self.avplayerLayer.player = nil;
         self.avplayerLayer = nil;
     }
     if (self.glViewController) {
