@@ -184,9 +184,10 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
         SGWeakSelf
         [self.avPlayerItem seekToTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                SGStrongSelf
                 self.seeking = NO;
-                [weakSelf stopBuffering];
-                [weakSelf resumeStateAfterBuffering];
+                [strongSelf stopBuffering];
+                [strongSelf resumeStateAfterBuffering];
                 if (completeHandler) {
                     completeHandler(finished);
                 }
@@ -623,7 +624,7 @@ static NSString * const AVMediaSelectionOptionTrackIDKey = @"MediaSelectionOptio
     self.readyToPlayTime = 0;
     self.buffering = NO;
     self.playing = NO;
-    [self.abstractPlayer.displayView playerOutputTypeFF];
+    [self.abstractPlayer.displayView playerOutputTypeEmpty];
     [self.abstractPlayer.displayView rendererTypeEmpty];
 }
 
