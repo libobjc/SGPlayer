@@ -8,22 +8,22 @@
 
 # SGPlayer 
 
-- SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。
+- SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持360°全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。
 
 ## 功能特点
 
-- 支持全景视频播放。
-- 支持手势、传感器操控全景视频。
+- 支持360°全景视频播放。
+- 支持手势、传感器操控360°全景视频。
 - 支持双眼模式，具有畸变校正、色散校正。
 - 支持 iOS、macOS、tvOS。
 - 支持 H.264 硬件解码（VideoToolBox）。
-- 支持RTMP、RTSP等直播流。
+- 支持 RTMP、RTSP 等直播流。
 - 支持后台播放。
 - 支持选择音频轨道。
 - 支持控制音频输出音量。
 - 支持无损视频截图。
 - 支持近所有常用媒体格式。
-- 支持Bitcode。
+- 支持 Bitcode。
 - 极简的事件通知机制。
 
 ## 编译方式（2选1即可）
