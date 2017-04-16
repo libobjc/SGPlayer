@@ -8,11 +8,11 @@
 
 # SGPlayer 
 
-- SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持360°全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。
+- SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持360°全景视频，VR视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。
 
 ## 功能特点
 
-- 支持360°全景视频播放。
+- 支持播放360°全景视频。
 - 支持手势、传感器操控360°全景视频。
 - 支持双眼模式，具有畸变校正、色散校正。
 - 支持 iOS、macOS、tvOS。
@@ -122,7 +122,7 @@ self.player = [SGPlayer player];
 [self.player replaceVideoWithURL:contentURL]; // 方式1
 [self.player replaceVideoWithURL:contentURL videoType:SGVideoTypeNormal]; // 方式2
 
-// 播放VR全景视频
+// 播放360度全景视频、VR视频
 [self.player replaceVideoWithURL:contentURL videoType:SGVideoTypeVR];
 
 // 播放
@@ -146,7 +146,7 @@ self.player.decoder.decodeTypeForMPEG4 = SGDecoderTypeFFmpeg;      // 使用 FFm
 // 开启 FFmpeg 硬解
 self.player.decoder.hardwareAccelerateEnableForFFmpeg = YES;
 
-// 进入VR眼镜模式
+// 进入 VR眼镜 模式
 self.player.displayMode = SGDisplayModeBox;
 
 // 设置后台播放模式
@@ -165,11 +165,11 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续�
 
 ![ios-i-see-fire](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-i-see-fire.gif)
 
-- VR全景视频
+- 360度全景视频
 
 ![ios-google-vr](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-google-vr.gif)
 
-- VR全景视频双眼模式
+- 360度全景视频双眼模式
 
 ![ios-google-vr-box](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-google-vr-box.gif)
 
