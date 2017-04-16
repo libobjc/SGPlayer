@@ -1,6 +1,6 @@
 # SGPlayer 原理详解
 
-SGPlayer 是一款强大的媒体资源播放器框架。支持全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。本文将采用图解+说明的方式把关键模块的实现原理介绍给大家。
+SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持全景视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。本文将采用图解+说明的方式把关键模块的实现原理介绍给大家。
 
 ## 发起原因
 
