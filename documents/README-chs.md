@@ -4,30 +4,31 @@
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
 ![Support](https://img.shields.io/badge/support-%20VR%20360%C2%B0%20-orange.svg)
 
-[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md)
+[English README](https://github.com/libobjc/SGPlayer/blob/master/README.md) | [原理详解](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md)
 
 # SGPlayer 
 
-- SGPlayer is a powerful media player framework for iOS, macOS, and tvOS. based on AVPlayer and FFmpeg. Support 360° panorama video, VR video. RTMP streaming.
+- SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支持360°全景视频，VR视频，RTMP、RTSP 等直播流；同时支持 iOS、macOS、tvOS 三个平台。
 
-## Features
+## 功能特点
 
-- 360° panorama video.
-- Gestures and sensors control vr video.
-- distortion correction in cardboard mode.
-- Support iOS, macOS, and tvOS.
-- H.264 hardware accelerator (VideoToolBox).
-- RTMP, RTSP streamings.
-- Background playback mode.
-- Selected audio track.
-- Adjust the volume.
-- Capture video artwork.
-- Bitcode support.
-- Simplest callback handle.
+- 支持播放360°全景视频。
+- 支持手势、传感器操控360°全景视频。
+- 支持双眼模式，具有畸变校正、色散校正。
+- 支持 iOS、macOS、tvOS。
+- 支持 H.264 硬件解码（VideoToolBox）。
+- 支持 RTMP、RTSP 等直播流。
+- 支持后台播放。
+- 支持选择音频轨道。
+- 支持控制音频输出音量。
+- 支持无损视频截图。
+- 支持近所有常用媒体格式。
+- 支持 Bitcode。
+- 极简的事件通知机制。
 
-## Build Instructions (Choose one of the way)
+## 编译方式（2选1即可）
 
-### Method 1. Using build script
+### 1.脚本编译
 
 ```obj-c
 
@@ -48,9 +49,9 @@ sh compile-build.sh tvOS
 
 ```
 
-### Method 2. Manually build
+### 2.手动编译
 
-- Step 1 - clone and init submodule.
+- 步骤1 - 克隆项目并安装子模块
 
 ```
 git clone git@github.com:libobjc/SGPlayer.git
@@ -59,30 +60,28 @@ git submodule update --init --recursive
 
 ```
 
-- Step 2 - build FFmpeg and add libs to the corresponding directory.
+- 步骤2 - 手动编译 FFmpeg 并放在指定目录下
 
 ```obj-c
 
+// 将FFmpeg编译出的.a静态库分别放在对应目录
 /SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS        // iOS
 /SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS      // macOS
 /SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS       // tvOS
 
 ```
 
-### check build results
+### 编译完成效果（仅目标平台的静态库存在即可）
 
 ![ffmpeg-libs](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ffmpeg-libs.jpg)
 
 
-## Usage
+## 使用示例
 
-- more examples in the demo applications.
+- 详细使用示例参见 demo
 
-#### Dependencies
+#### iOS依赖
 
-```obj-c
-
-// iOS
 - SGPlayer.framework
 - SGPlatform.framework  Optional
 - CoreMedia.framework
@@ -92,7 +91,8 @@ git submodule update --init --recursive
 - libbz2.tbd
 - libz.tbd
 
-// macOS
+#### macOS依赖
+
 - SGPlayer.framework
 - SGPlatform.framework  Optional
 - CoreMedia.framework
@@ -104,41 +104,39 @@ git submodule update --init --recursive
 - libz.tbd
 - libizma.tbd
 
-```
-
-### Basic video playback
+### 基础视屏播放
 
 ```obj-c
 
 self.player = [SGPlayer player];
 
-// register callback handle.
+// 注册事件通知
 [self.player registerPlayerNotificationTarget:self stateAction:@selector(stateAction:) progressAction:@selector(progressAction:) playableAction:@selector(playableAction:) errorAction:@selector(errorAction:)];
 
-// display view tap action.
+// 视频画面点击事件
 [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
-NSLog(@"player display view did click!");
+    NSLog(@"player display view did click!");
 }];
 
-// playback plane video.
+// 播放普通视频 （2种方式2选1即可）
 [self.player replaceVideoWithURL:contentURL]; // 方式1
 [self.player replaceVideoWithURL:contentURL videoType:SGVideoTypeNormal]; // 方式2
 
-// playback 360° panorama video.
+// 播放360度全景视频、VR视频
 [self.player replaceVideoWithURL:contentURL videoType:SGVideoTypeVR];
 
-// start playing
+// 播放
 [self.player play];
 
 ```
 
-### Advanced settings
+### 高级设置
 
 
 ```obj-c
 
 // 三种预设播放内核选择策略
-self.player.decoder = [SGPlayerDecoder defaultDecoder];     // 默认配置，混合使用 AVPlayer和FFmpeg，根据容器格式动态选择播放内核
+self.player.decoder = [SGPlayerDecoder defaultDecoder];     // 默认配置，混合使用 AVPlayer和FFmpeg，根据容器格式动态选择播放内核
 self.player.decoder = [SGPlayerDecoder AVPlayerDecoder];    // 仅使用 AVPlayer
 self.player.decoder = [SGPlayerDecoder FFmpegDecoder];      // 仅使用 FFmpeg
 
@@ -159,37 +157,37 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续�
 ```
 
 
-## Screenshots
+## 效果演示
 
 ### iOS
 
-- Plane video
+- 普通视频
 
 ![ios-i-see-fire](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-i-see-fire.gif)
 
-- 360° panorama video
+- 360度全景视频
 
 ![ios-google-vr](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-google-vr.gif)
 
-- Cardboard mode
+- 360度全景视频双眼模式
 
 ![ios-google-vr-box](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/ios-google-vr-box.gif)
 
 
 ### macOS
 
-- Plane video
+- 普通视频
 
 ![mac-i-see-fire](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/mac-google-vr.gif)
 
-- 360° panorama video
+- VR全景视频
 
 ![mac-google-vr](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/mac-google-vr.gif)
 
 
 
-## Communication
+## 联系方式
 
 - Sina Weibo : 程序员Single
 - Email : musicman_leehom@126.com
-- QQ Group : 616349536
+- QQ交流群 : 616349536
