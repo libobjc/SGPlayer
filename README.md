@@ -137,24 +137,24 @@ NSLog(@"player display view did click!");
 
 ```obj-c
 
-// 三种预设播放内核选择策略
-self.player.decoder = [SGPlayerDecoder defaultDecoder];     // 默认配置，混合使用 AVPlayer和FFmpeg，根据容器格式动态选择播放内核
-self.player.decoder = [SGPlayerDecoder AVPlayerDecoder];    // 仅使用 AVPlayer
-self.player.decoder = [SGPlayerDecoder FFmpegDecoder];      // 仅使用 FFmpeg
+// selected playback core.
+self.player.decoder = [SGPlayerDecoder defaultDecoder];     // default config，Together with AVPlayer and FFmpeg.
+self.player.decoder = [SGPlayerDecoder AVPlayerDecoder];    // only use AVPlayer
+self.player.decoder = [SGPlayerDecoder FFmpegDecoder];      // only use FFmpeg
 
-// 单个容器格式单独配置示例
-self.player.decoder.decodeTypeForMPEG4 = SGDecoderTypeFFmpeg;      // 使用 FFmpeg 播放 mp4 文件
+// set the specified format playback core.
+self.player.decoder.decodeTypeForMPEG4 = SGDecoderTypeFFmpeg;      // use FFmoeg play mp4 files.
 
-// 开启 FFmpeg 硬解
+// open FFmpeg hardware accelerate.
 self.player.decoder.hardwareAccelerateEnableForFFmpeg = YES;
 
-// 进入 VR眼镜 模式
+// enter cardboard mode
 self.player.displayMode = SGDisplayModeBox;
 
-// 设置后台播放模式
-// 如果需要后台播放，需将项目的 Background Modes 打开并勾选 Audio 选项， 并将 AVAudioSession 的 Category 设为AVAudioSessionCategoryPlayback
-self.player.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;  // 自动暂停及恢复
-self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续播放
+// set background mode.
+// if allow background mode, you should open 'Background Modes' and check 'Audio' option， and set AVAudioSession Category to AVAudioSessionCategoryPlayback
+self.player.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;  // auto play and pause.
+self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // continue.
 
 ```
 
