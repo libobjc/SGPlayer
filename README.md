@@ -190,6 +190,7 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // continu
 
 ## Communication
 
-- Sina Weibo : 程序员Single
-- Email : musicman_leehom@126.com
+- Email : libobjc@gmail.com
+- Twitter : CoderSingle
+- Weibo : 程序员Single
 - QQ Group : 616349536
