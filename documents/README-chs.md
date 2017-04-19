@@ -188,6 +188,7 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // 继续�
 
 ## 联系方式
 
-- Sina Weibo : 程序员Single
-- Email : musicman_leehom@126.com
-- QQ交流群 : 616349536
+- Email : libobjc@gmail.com
+- Twitter : CoderSingle
+- Weibo : 程序员Single
+- QQ Group : 616349536
