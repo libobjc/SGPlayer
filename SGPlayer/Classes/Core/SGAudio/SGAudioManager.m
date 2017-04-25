@@ -170,6 +170,7 @@ SGAudioOutputContext;
 - (void)unregisterAudioSession
 {
     if (self.registered) {
+        self.registered = NO;
         OSStatus result = AUGraphUninitialize(self.outputContext->graph);
         self.warning = checkError(result, @"graph uninitialize error");
         if (self.warning) {
@@ -189,7 +190,6 @@ SGAudioOutputContext;
             free(self.outputContext);
             self.outputContext = NULL;
         }
-        self.registered = NO;
     }
 }
 
@@ -416,6 +416,10 @@ SGAudioOutputContext;
 
 - (OSStatus)renderFrames:(UInt32)numberOfFrames ioData:(AudioBufferList *)ioData
 {
+    if (!self.registered) {
+        return noErr;
+    }
+    
     for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
         memset(ioData->mBuffers[iBuffer].mData, 0, ioData->mBuffers[iBuffer].mDataByteSize);
     }
@@ -542,6 +546,9 @@ SGAudioOutputContext;
 
 - (Float64)samplingRate
 {
+    if (!self.registered) {
+        return 0;
+    }
     Float64 number = self.outputContext->commonFormat.mSampleRate;
     if (number > 0) {
         return number;
@@ -551,6 +558,9 @@ SGAudioOutputContext;
 
 - (UInt32)numberOfChannels
 {
+    if (!self.registered) {
+        return 0;
+    }
     UInt32 number = self.outputContext->commonFormat.mChannelsPerFrame;
     if (number > 0) {
         return number;
