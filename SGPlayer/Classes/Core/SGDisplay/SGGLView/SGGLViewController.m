@@ -179,6 +179,20 @@
     }
 }
 
+- (SGGLModelTextureRotateType)chooseModelTextureRotateType
+{
+    switch (self.currentFrame.rotateType) {
+        case SGFFVideoFrameRotateType0:
+            return SGGLModelTextureRotateType0;
+        case SGFFVideoFrameRotateType90:
+            return SGGLModelTextureRotateType90;
+        case SGFFVideoFrameRotateType180:
+            return SGGLModelTextureRotateType180;
+        case SGFFVideoFrameRotateType270:
+            return SGGLModelTextureRotateType270;
+    }
+}
+
 - (BOOL)needDrawOpenGL
 {
     [self.displayView reloadVideoFrameForGLFrame:self.currentFrame];
@@ -199,6 +213,9 @@
         self.aspect = 16.0 / 9.0;
     } else {
         self.aspect = aspect;
+    }
+    if (self.currentFrame.hasUpdateRotateType) {
+        [self reloadViewport];
     }
     return YES;
 }
@@ -226,7 +243,7 @@
     switch (videoType) {
         case SGVideoTypeNormal:
         {
-            [self.normalModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location];
+            [self.normalModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location textureRotateType:[self chooseModelTextureRotateType]];
             glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect), CGRectGetHeight(rect));
             [program updateMatrix:GLKMatrix4Identity];
             glDrawElements(GL_TRIANGLES, self.normalModel.index_count, GL_UNSIGNED_SHORT, 0);
@@ -288,28 +305,39 @@
         return;
     }
     
+    CGFloat resultAspect = self.aspect;
+    switch (self.currentFrame.rotateType) {
+        case SGFFVideoFrameRotateType90:
+        case SGFFVideoFrameRotateType270:
+            resultAspect = 1 / self.aspect;
+            break;
+        case SGFFVideoFrameRotateType0:
+        case SGFFVideoFrameRotateType180:
+            break;
+    }
+    
     SGGravityMode gravityMode = self.displayView.abstractPlayer.viewGravityMode;
     switch (gravityMode) {
         case SGGravityModeResize:
             glView.frame = superviewFrame;
             break;
         case SGGravityModeResizeAspect:
-            if (superviewAspect < self.aspect) {
-                CGFloat height = superviewFrame.size.width / self.aspect;
+            if (superviewAspect < resultAspect) {
+                CGFloat height = superviewFrame.size.width / resultAspect;
                 glView.frame = CGRectMake(0, (superviewFrame.size.height - height) / 2, superviewFrame.size.width, height);
-            } else if (superviewAspect > self.aspect) {
-                CGFloat width = superviewFrame.size.height * self.aspect;
+            } else if (superviewAspect > resultAspect) {
+                CGFloat width = superviewFrame.size.height * resultAspect;
                 glView.frame = CGRectMake((superviewFrame.size.width - width) / 2, 0, width, superviewFrame.size.height);
             } else {
                 glView.frame = superviewFrame;
             }
             break;
         case SGGravityModeResizeAspectFill:
-            if (superviewAspect < self.aspect) {
-                CGFloat width = superviewFrame.size.height * self.aspect;
+            if (superviewAspect < resultAspect) {
+                CGFloat width = superviewFrame.size.height * resultAspect;
                 glView.frame = CGRectMake(-(width - superviewFrame.size.width) / 2, 0, width, superviewFrame.size.height);
-            } else if (superviewAspect > self.aspect) {
-                CGFloat height = superviewFrame.size.width / self.aspect;
+            } else if (superviewAspect > resultAspect) {
+                CGFloat height = superviewFrame.size.width / resultAspect;
                 glView.frame = CGRectMake(0, -(height - superviewFrame.size.height) / 2, superviewFrame.size.width, height);
             } else {
                 glView.frame = superviewFrame;
@@ -320,6 +348,7 @@
             break;
     }
     self.drawToekn = NO;
+    [self.currentFrame didUpdateRotateType];
 }
 
 - (void)setAspect:(CGFloat)aspect

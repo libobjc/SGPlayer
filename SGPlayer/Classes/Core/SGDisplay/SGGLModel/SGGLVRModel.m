@@ -87,7 +87,17 @@ void setup_vr()
     self.texture_id = texture_buffer_id;
 }
 
-- (void)bindPositionLocation:(GLint)position_location textureCoordLocation:(GLint)textureCoordLocation
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+{
+    [self bindPositionLocation:position_location
+          textureCoordLocation:textureCoordLocation
+             textureRotateType:SGGLModelTextureRotateType0];
+}
+
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+           textureRotateType:(SGGLModelTextureRotateType)textureRotateType
 {
     // index
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_id);

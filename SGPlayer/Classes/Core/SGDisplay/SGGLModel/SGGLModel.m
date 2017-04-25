@@ -32,6 +32,10 @@
 #pragma mark - subclass override
 
 - (void)setupModel {}
-- (void)bindPositionLocation:(GLint)position_location textureCoordLocation:(GLint)textureCoordLocation {}
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation {}
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+           textureRotateType:(SGGLModelTextureRotateType)textureRotateType {}
 
 @end

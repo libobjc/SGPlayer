@@ -19,7 +19,16 @@ typedef NS_ENUM(int, SGYUVChannel) {
     SGYUVChannelCount = 3,
 };
 
+typedef NS_ENUM(NSUInteger, SGFFVideoFrameRotateType) {
+    SGFFVideoFrameRotateType0,
+    SGFFVideoFrameRotateType90,
+    SGFFVideoFrameRotateType180,
+    SGFFVideoFrameRotateType270,
+};
+
 @interface SGFFVideoFrame : SGFFFrame
+
+@property (nonatomic, assign) SGFFVideoFrameRotateType rotateType;
 
 @end
 

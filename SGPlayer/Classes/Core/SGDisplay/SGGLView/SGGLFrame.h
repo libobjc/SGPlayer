@@ -20,13 +20,16 @@ typedef NS_ENUM(NSUInteger, SGGLFrameType) {
 + (instancetype)frame;
 
 @property (nonatomic, assign, readonly) SGGLFrameType type;
+@property (nonatomic, assign) SGFFVideoFrameRotateType rotateType;
 
 @property (nonatomic, assign, readonly) BOOL hasData;
 @property (nonatomic, assign, readonly) BOOL hasUpate;
+@property (nonatomic, assign, readonly) BOOL hasUpdateRotateType;
 
 - (void)updateWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 - (void)updateWithSGFFVideoFrame:(SGFFVideoFrame *)videoFrame;
 - (void)didDraw;
+- (void)didUpdateRotateType;
 - (void)flush;
 
 - (CVPixelBufferRef)pixelBufferForNV12;

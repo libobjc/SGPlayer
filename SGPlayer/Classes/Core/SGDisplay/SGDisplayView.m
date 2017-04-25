@@ -160,6 +160,7 @@
                                                                                            currentDuration:glFrame.currentDuration];
             if (videoFrame) {
                 [glFrame updateWithSGFFVideoFrame:videoFrame];
+                glFrame.rotateType = videoFrame.rotateType;
             }
         }
             break;

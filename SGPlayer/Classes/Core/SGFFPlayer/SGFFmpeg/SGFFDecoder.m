@@ -183,6 +183,7 @@
                                                                   fps:self.formatContext.videoFPS
                                                     codecContextAsync:[self.videoOutputConfig decoderVideoOutputConfigAVCodecContextDecodeAsync]
                                                    videoToolBoxEnable:self.hardwareAccelerateEnable
+                                                           rotateType:self.formatContext.videoFrameRotateType
                                                              delegate:self];
     }
     if (self.formatContext.audioEnable) {

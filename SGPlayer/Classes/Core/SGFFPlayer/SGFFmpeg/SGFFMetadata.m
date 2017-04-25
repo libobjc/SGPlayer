@@ -17,8 +17,12 @@
 
 - (instancetype)initWithAVDictionary:(AVDictionary *)avDictionary
 {
-    if (self = [super init]) {
+    if (self = [super init])
+    {
         NSDictionary * dic = SGFFFoundationBrigeOfAVDictionary(avDictionary);
+        
+        self.metadata = dic;
+        
         self.language = [dic objectForKey:@"language"];
         self.BPS = [[dic objectForKey:@"BPS"] longLongValue];
         self.duration = [dic objectForKey:@"DURATION"];

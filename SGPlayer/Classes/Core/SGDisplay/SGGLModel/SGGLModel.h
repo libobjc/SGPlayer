@@ -8,6 +8,13 @@
 
 #import <GLKit/GLKit.h>
 
+typedef NS_ENUM(NSUInteger, SGGLModelTextureRotateType) {
+    SGGLModelTextureRotateType0,
+    SGGLModelTextureRotateType90,
+    SGGLModelTextureRotateType180,
+    SGGLModelTextureRotateType270,
+};
+
 @interface SGGLModel : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -22,7 +29,12 @@
 @property (nonatomic, assign) int index_count;
 @property (nonatomic, assign) int vertex_count;
 
-- (void)bindPositionLocation:(GLint)position_location textureCoordLocation:(GLint)textureCoordLocation;
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation;
+
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+           textureRotateType:(SGGLModelTextureRotateType)textureRotateType;
 
 #pragma mark - subclass override
 

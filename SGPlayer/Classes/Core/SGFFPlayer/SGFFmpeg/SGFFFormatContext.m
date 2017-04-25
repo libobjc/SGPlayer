@@ -152,6 +152,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
                 SGFFTrack * track = [[SGFFTrack alloc] init];
                 track.type = SGFFTrackTypeVideo;
                 track.index = i;
+                track.metadata = [SGFFMetadata metadataWithAVDictionary:stream->metadata];
                 [videoTracks addObject:track];
             }
                 break;
@@ -160,6 +161,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
                 SGFFTrack * track = [[SGFFTrack alloc] init];
                 track.type = SGFFTrackTypeAudio;
                 track.index = i;
+                track.metadata = [SGFFMetadata metadataWithAVDictionary:stream->metadata];
                 [audioTracks addObject:track];
             }
                 break;
@@ -416,6 +418,19 @@ static int ffmpeg_interrupt_callback(void *ctx)
     {
         return [self.contentURL absoluteString];
     }
+}
+
+- (SGFFVideoFrameRotateType)videoFrameRotateType
+{
+    int rotate = [[self.videoTrack.metadata.metadata objectForKey:@"rotate"] intValue];
+    if (rotate == 90) {
+        return SGFFVideoFrameRotateType90;
+    } else if (rotate == 180) {
+        return SGFFVideoFrameRotateType180;
+    } else if (rotate == 270) {
+        return SGFFVideoFrameRotateType270;
+    }
+    return SGFFVideoFrameRotateType0;
 }
 
 - (void)destroyAudioTrack

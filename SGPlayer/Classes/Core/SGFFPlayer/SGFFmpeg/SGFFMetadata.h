@@ -13,6 +13,8 @@
 
 + (instancetype)metadataWithAVDictionary:(AVDictionary *)avDictionary;
 
+@property (nonatomic, strong) NSDictionary * metadata;
+
 @property (nonatomic, copy) NSString * language;
 @property (nonatomic, assign) long long BPS;
 @property (nonatomic, copy) NSString * duration;

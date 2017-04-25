@@ -95,15 +95,29 @@
     return nil;
 }
 
+- (void)setRotateType:(SGFFVideoFrameRotateType)rotateType
+{
+    if (_rotateType != rotateType) {
+        _rotateType = rotateType;
+        self->_hasUpdateRotateType = YES;
+    }
+}
+
 - (void)didDraw
 {
     self->_hasUpate = NO;
+}
+
+- (void)didUpdateRotateType
+{
+    self->_hasUpdateRotateType = NO;
 }
 
 - (void)flush
 {
     self->_hasData = NO;
     self->_hasUpate = NO;
+    self->_hasUpdateRotateType = NO;
     if (self.pixelBuffer) {
         CVPixelBufferRelease(self.pixelBuffer);
         self.pixelBuffer = NULL;

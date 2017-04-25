@@ -48,13 +48,15 @@ static AVPacket flush_packet;
                                     fps:(NSTimeInterval)fps
                       codecContextAsync:(BOOL)codecContextAsync
                      videoToolBoxEnable:(BOOL)videoToolBoxEnable
+                             rotateType:(SGFFVideoFrameRotateType)rotateType
                                delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     return [[self alloc] initWithCodecContext:codec_context
                                      timebase:timebase
                                           fps:fps
-                            codecContextAsync:(BOOL)codecContextAsync
-                           videoToolBoxEnable:(BOOL)videoToolBoxEnable
+                            codecContextAsync:codecContextAsync
+                           videoToolBoxEnable:videoToolBoxEnable
+                                   rotateType:rotateType
                                      delegate:delegate];
 }
 
@@ -63,6 +65,7 @@ static AVPacket flush_packet;
                                  fps:(NSTimeInterval)fps
                    codecContextAsync:(BOOL)codecContextAsync
                   videoToolBoxEnable:(BOOL)videoToolBoxEnable
+                          rotateType:(SGFFVideoFrameRotateType)rotateType
                             delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     if (self = [super init]) {
@@ -78,6 +81,7 @@ static AVPacket flush_packet;
         self->_fps = fps;
         self->_codecContextAsync = codecContextAsync;
         self->_videoToolBoxEnable = videoToolBoxEnable;
+        self->_rotateType = rotateType;
         [self setupCodecContext];
     }
     return self;
@@ -284,6 +288,7 @@ static AVPacket flush_packet;
     if (!_temp_frame->data[0] || !_temp_frame->data[1] || !_temp_frame->data[2]) return nil;
     
     SGFFAVYUVVideoFrame * videoFrame = [self.framePool getUnuseFrame];
+    videoFrame.rotateType = self.rotateType;
     
     [videoFrame setFrameData:_temp_frame width:_codec_context->width height:_codec_context->height];
     videoFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * self.timebase;
@@ -367,6 +372,7 @@ static AVPacket flush_packet;
     if (imageBuffer == NULL) return nil;
     
     SGFFCVYUVVideoFrame * videoFrame = [[SGFFCVYUVVideoFrame alloc] initWithAVPixelBuffer:imageBuffer];
+    videoFrame.rotateType = self.rotateType;
     
     if (packet.pts != AV_NOPTS_VALUE) {
         videoFrame.position = packet.pts * self.timebase;

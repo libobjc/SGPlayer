@@ -19,11 +19,32 @@ static GLushort index_buffer_data[] = {
     0, 1, 2, 0, 2, 3
 };
 
-static GLKVector2 texture_buffer_data[] = {
+static GLKVector2 texture_buffer_data_r0[] = {
     {0.0, 0.0},
     {1.0, 0.0},
     {1.0, 1.0},
     {0.0, 1.0},
+};
+
+static GLKVector2 texture_buffer_data_r90[] = {
+    {0.0, 1.0},
+    {0.0, 0.0},
+    {1.0, 0.0},
+    {1.0, 1.0},
+};
+
+static GLKVector2 texture_buffer_data_r180[] = {
+    {1.0, 1.0},
+    {0.0, 1.0},
+    {0.0, 0.0},
+    {1.0, 0.0},
+};
+
+static GLKVector2 texture_buffer_data_r270[] = {
+    {1.0, 0.0},
+    {1.0, 1.0},
+    {0.0, 1.0},
+    {0.0, 0.0},
 };
 
 static GLuint vertex_buffer_id = 0;
@@ -55,7 +76,17 @@ void setup_normal()
     self.texture_id = texture_buffer_id;
 }
 
-- (void)bindPositionLocation:(GLint)position_location textureCoordLocation:(GLint)textureCoordLocation
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+{
+    [self bindPositionLocation:position_location
+          textureCoordLocation:textureCoordLocation
+             textureRotateType:SGGLModelTextureRotateType0];
+}
+
+- (void)bindPositionLocation:(GLint)position_location
+        textureCoordLocation:(GLint)textureCoordLocation
+           textureRotateType:(SGGLModelTextureRotateType)textureRotateType
 {
     // index
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, self.index_id);
@@ -69,7 +100,20 @@ void setup_normal()
     
     // texture coord
     glBindBuffer(GL_ARRAY_BUFFER, self.texture_id);
-    glBufferData(GL_ARRAY_BUFFER, self.vertex_count * 2 * sizeof(GLfloat), texture_buffer_data, GL_DYNAMIC_DRAW);
+    switch (textureRotateType) {
+        case SGGLModelTextureRotateType0:
+            glBufferData(GL_ARRAY_BUFFER, self.vertex_count * 2 * sizeof(GLfloat), texture_buffer_data_r0, GL_DYNAMIC_DRAW);
+            break;
+        case SGGLModelTextureRotateType90:
+            glBufferData(GL_ARRAY_BUFFER, self.vertex_count * 2 * sizeof(GLfloat), texture_buffer_data_r90, GL_DYNAMIC_DRAW);
+            break;
+        case SGGLModelTextureRotateType180:
+            glBufferData(GL_ARRAY_BUFFER, self.vertex_count * 2 * sizeof(GLfloat), texture_buffer_data_r180, GL_DYNAMIC_DRAW);
+            break;
+        case SGGLModelTextureRotateType270:
+            glBufferData(GL_ARRAY_BUFFER, self.vertex_count * 2 * sizeof(GLfloat), texture_buffer_data_r270, GL_DYNAMIC_DRAW);
+            break;
+    }
     glEnableVertexAttribArray(textureCoordLocation);
     glVertexAttribPointer(textureCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*2, NULL);
 }

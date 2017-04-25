@@ -26,6 +26,7 @@
                                     fps:(NSTimeInterval)fps
                       codecContextAsync:(BOOL)codecContextAsync
                      videoToolBoxEnable:(BOOL)videoToolBoxEnable
+                             rotateType:(SGFFVideoFrameRotateType)rotateType
                                delegate:(id <SGFFVideoDecoderDlegate>)delegate;
 
 @property (nonatomic, weak) id <SGFFVideoDecoderDlegate> delegate;
@@ -33,6 +34,8 @@
 
 @property (nonatomic, assign, readonly) NSTimeInterval timebase;
 @property (nonatomic, assign, readonly) NSTimeInterval fps;
+
+@property (nonatomic, assign, readonly) SGFFVideoFrameRotateType rotateType;
 
 @property (nonatomic, assign, readonly) BOOL videoToolBoxEnable;
 @property (nonatomic, assign, readonly) BOOL videoToolBoxDidOpen;
