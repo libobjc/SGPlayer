@@ -23,6 +23,7 @@
     decoder.decodeTypeForUnknown   = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForMP3       = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForMPEG4     = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForMOV       = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForFLV       = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForM3U8      = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForRTMP      = SGDecoderTypeFFmpeg;
@@ -36,6 +37,7 @@
     decoder.decodeTypeForUnknown   = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForMP3       = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForMPEG4     = SGDecoderTypeAVPlayer;
+    decoder.decodeTypeForMOV       = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForFLV       = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForM3U8      = SGDecoderTypeAVPlayer;
     decoder.decodeTypeForRTMP      = SGDecoderTypeAVPlayer;
@@ -49,6 +51,7 @@
     decoder.decodeTypeForUnknown   = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForMP3       = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForMPEG4     = SGDecoderTypeFFmpeg;
+    decoder.decodeTypeForMOV       = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForFLV       = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForM3U8      = SGDecoderTypeFFmpeg;
     decoder.decodeTypeForRTMP      = SGDecoderTypeFFmpeg;
@@ -101,6 +104,10 @@
     {
         return SGMediaFormatM3U8;
     }
+    else if ([path containsString:@".mov"])
+    {
+        return SGMediaFormatMOV;
+    }
     return SGMediaFormatUnknown;
 }
 
@@ -116,6 +123,8 @@
             return self.decodeTypeForMP3;
         case SGMediaFormatMPEG4:
             return self.decodeTypeForMPEG4;
+        case SGMediaFormatMOV:
+            return self.decodeTypeForMOV;
         case SGMediaFormatFLV:
             return self.decodeTypeForFLV;
         case SGMediaFormatM3U8:

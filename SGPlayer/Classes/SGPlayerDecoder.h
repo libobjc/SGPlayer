@@ -21,6 +21,7 @@ typedef NS_ENUM(NSUInteger, SGMediaFormat) {
     SGMediaFormatUnknown,
     SGMediaFormatMP3,
     SGMediaFormatMPEG4,
+    SGMediaFormatMOV,
     SGMediaFormatFLV,
     SGMediaFormatM3U8,
     SGMediaFormatRTMP,
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSUInteger, SGMediaFormat) {
 @property (nonatomic, assign) SGDecoderType decodeTypeForUnknown;      // default is SGDecodeTypeFFmpeg
 @property (nonatomic, assign) SGDecoderType decodeTypeForMP3;          // default is SGDecodeTypeAVPlayer
 @property (nonatomic, assign) SGDecoderType decodeTypeForMPEG4;        // default is SGDecodeTypeAVPlayer
+@property (nonatomic, assign) SGDecoderType decodeTypeForMOV;          // default is SGDecodeTypeAVPlayer
 @property (nonatomic, assign) SGDecoderType decodeTypeForFLV;          // default is SGDecodeTypeFFmpeg
 @property (nonatomic, assign) SGDecoderType decodeTypeForM3U8;         // default is SGDecodeTypeAVPlayer
 @property (nonatomic, assign) SGDecoderType decodeTypeForRTMP;         // default is SGDecodeTypeFFmpeg
