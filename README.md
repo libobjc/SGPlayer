@@ -53,7 +53,7 @@ sh compile-build.sh tvOS
 - Step 1 - clone and init submodule.
 
 ```
-git clone git@github.com:libobjc/SGPlayer.git
+git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
 git submodule update --init --recursive
 
