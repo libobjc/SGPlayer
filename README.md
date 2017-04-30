@@ -1,10 +1,10 @@
-![(banner)](https://github.com/libobjc/resource/blob/master/SGPlayer/banner-small.png?raw=true)
+![(Logo)](https://github.com/libobjc/resource/blob/master/SGPlayer/banner-small.png?raw=true)
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
 ![Support](https://img.shields.io/badge/support-%20VR%20360%C2%B0%20-orange.svg)
 
-[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle - 原理详解](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download](https://github.com/libobjc/SGDownload)
+[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle - 原理详解](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download - 视频下载](https://github.com/libobjc/SGDownload)
 
 # SGPlayer 
 
@@ -133,7 +133,6 @@ NSLog(@"player display view did click!");
 ```
 
 ### Advanced settings
-
 
 ```obj-c
 
