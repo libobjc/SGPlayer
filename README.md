@@ -1,3 +1,14 @@
+# 开发进度
+
+正在准备 1.1.0 迭代版本，重点是添加一些功能和提升稳定性。目前确定会做的更新如下：
+
+- 倍速播放。
+- 支持内嵌字幕。
+- 仅播放画面或声音。
+- 性能优化。
+
+如果你有需求建议请拼命提 issue。我会考虑纳入开发计划中。
+
 ![(Logo)](https://github.com/libobjc/resource/blob/master/SGPlayer/banner-small.png?raw=true)
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
@@ -9,17 +20,6 @@
 # SGPlayer 
 
 - SGPlayer is a powerful media player framework for iOS, macOS, and tvOS. based on AVPlayer and FFmpeg. Support 360° panorama video, VR video. RTMP streaming.
-
-## 1.1.0 做些什么？
-
-正在准备 1.1.0 迭代版本，重点是添加一些功能和提升稳定性。目前确定会做的更新如下：
-
-- 倍速播放。
-- 支持内嵌字幕。
-- 仅播放画面或声音。
-- 性能优化。
-
-如果你有需求建议请拼命提 issue。我会考虑纳入开发计划中。
 
 ## Features
 
