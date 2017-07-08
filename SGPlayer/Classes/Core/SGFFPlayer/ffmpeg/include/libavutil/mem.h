@@ -1,3 +1,9 @@
+/**
+ * Add by Single
+ */
+#pragma clang diagnostic ignored "-Wdocumentation"
+
+
 /*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *

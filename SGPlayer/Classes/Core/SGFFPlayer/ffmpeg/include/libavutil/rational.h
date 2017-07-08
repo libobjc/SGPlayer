@@ -1,3 +1,9 @@
+/**
+ * Add by Single
+ */
+#pragma clang diagnostic ignored "-Wdocumentation"
+
+
 /*
  * rational numbers
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
