@@ -15,7 +15,7 @@
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
 ![Support](https://img.shields.io/badge/support-%20VR%20360%C2%B0%20-orange.svg)
 
-[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle（原理详解）](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download（视频下载）](https://github.com/libobjc/SGDownload)
+[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle（原理详解）](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download（视频下载）](https://github.com/libobjc/SGDownload) | [Android Version - XLPlayer](https://github.com/xl-player-developers/xl_player)
 
 # SGPlayer 
 
