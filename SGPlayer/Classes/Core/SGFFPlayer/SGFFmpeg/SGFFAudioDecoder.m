@@ -196,10 +196,10 @@
 
 - (void)reloadAudioOuputInfo
 {
-    if ([self.delegate respondsToSelector:@selector(audioDecoder:channelCount:)]) {
+    if ([self.delegate respondsToSelector:@selector(audioDecoder:samplingRate:)]) {
         [self.delegate audioDecoder:self samplingRate:&self->_samplingRate];
     }
-    if ([self.delegate respondsToSelector:@selector(audioDecoder:samplingRate:)]) {
+    if ([self.delegate respondsToSelector:@selector(audioDecoder:channelCount:)]) {
         [self.delegate audioDecoder:self channelCount:&self->_channelCount];
     }
 }
