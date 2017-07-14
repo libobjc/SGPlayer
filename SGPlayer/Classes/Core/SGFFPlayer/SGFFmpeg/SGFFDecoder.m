@@ -49,7 +49,7 @@
 @property (nonatomic, copy) void (^seekCompleteHandler)(BOOL finished);
 
 @property (nonatomic, assign) BOOL selectAudioTrack;
-@property (nonatomic, assign) BOOL selectAudioTrackIndex;
+@property (nonatomic, assign) int selectAudioTrackIndex;
 
 @property (atomic, assign) NSTimeInterval audioFrameTimeClock;
 @property (atomic, assign) NSTimeInterval audioFramePosition;
