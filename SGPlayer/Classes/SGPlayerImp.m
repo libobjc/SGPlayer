@@ -55,11 +55,6 @@
     return self;
 }
 
-- (void)replaceEmpty
-{
-    [self replaceVideoWithURL:nil];
-}
-
 - (void)replaceVideoWithURL:(nullable NSURL *)contentURL
 {
     [self replaceVideoWithURL:contentURL videoType:SGVideoTypeNormal];
@@ -132,6 +127,15 @@
     }
 }
 
+- (void)stop
+{
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+#endif
+    
+    [self replaceVideoWithURL:nil];
+}
+
 - (BOOL)seekEnable
 {
     switch (self.decoderType) {
@@ -140,6 +144,18 @@
             break;
         case SGDecoderTypeFFmpeg:
             return self.ffPlayer.seekEnable;
+        case SGDecoderTypeError:
+            return NO;
+    }
+}
+
+- (BOOL)seeking
+{
+    switch (self.decoderType) {
+        case SGDecoderTypeAVPlayer:
+            return self.avPlayer.seeking;
+        case SGDecoderTypeFFmpeg:
+            return self.ffPlayer.seeking;
         case SGDecoderTypeError:
             return NO;
     }
@@ -282,18 +298,6 @@
 - (SGPLFImage *)snapshot
 {
     return self.displayView.snapshot;
-}
-
-- (BOOL)seeking
-{
-    switch (self.decoderType) {
-        case SGDecoderTypeAVPlayer:
-            return self.avPlayer.seeking;
-        case SGDecoderTypeFFmpeg:
-            return self.ffPlayer.seeking;
-        case SGDecoderTypeError:
-            return NO;
-    }
 }
 
 - (SGPLFView *)view

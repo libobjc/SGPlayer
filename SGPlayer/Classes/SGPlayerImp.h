@@ -68,7 +68,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong, readonly, nullable) SGError * error;
 
-- (void)replaceEmpty;
 - (void)replaceVideoWithURL:(nullable NSURL *)contentURL;
 - (void)replaceVideoWithURL:(nullable NSURL *)contentURL videoType:(SGVideoType)videoType;
 
@@ -81,21 +80,23 @@ NS_ASSUME_NONNULL_BEGIN
 - (SGPLFImage *)snapshot;
 
 // control
-@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;    // background mode
 @property (nonatomic, assign, readonly) SGPlayerState state;
 @property (nonatomic, assign, readonly) CGSize presentationSize;
 @property (nonatomic, assign, readonly) NSTimeInterval bitrate;
 @property (nonatomic, assign, readonly) NSTimeInterval progress;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval playableTime;
+
+@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;    // background mode
 @property (nonatomic, assign) NSTimeInterval playableBufferInterval;    // default is 2s
-@property (nonatomic, assign, readonly) BOOL seeking;
 @property (nonatomic, assign) CGFloat volume;       // default is 1
 
 - (void)play;
 - (void)pause;
+- (void)stop;
 
 @property (nonatomic, assign, readonly) BOOL seekEnable;
+@property (nonatomic, assign, readonly) BOOL seeking;
 - (void)seekToTime:(NSTimeInterval)time;
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(nullable void(^)(BOOL finished))completeHandler;
 
