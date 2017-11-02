@@ -19,6 +19,9 @@
 
 @interface SGPlayer ()
 
+@property (nonatomic, copy) NSURL * contentURL;
+@property (nonatomic, assign) SGVideoType videoType;
+
 @property (nonatomic, strong) SGDisplayView * displayView;
 @property (nonatomic, assign) SGDecoderType decoderType;
 @property (nonatomic, strong) SGAVPlayer * avPlayer;
@@ -51,6 +54,7 @@
         self.playableBufferInterval = 2.f;
         self.viewAnimationHidden = YES;
         self.volume = 1;
+        self.displayView = [SGDisplayView displayViewWithAbstractPlayer:self];
     }
     return self;
 }
@@ -66,27 +70,43 @@
     self.contentURL = contentURL;
     self.decoderType = [self.decoder decoderTypeForContentURL:self.contentURL];
     self.videoType = videoType;
+    switch (self.videoType)
+    {
+        case SGVideoTypeNormal:
+        case SGVideoTypeVR:
+            break;
+        default:
+            self.videoType = SGVideoTypeNormal;
+            break;
+    }
     
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
-            if (_ffPlayer) {
-                [self.ffPlayer stop];
+        {
+            [self.ffPlayer stop];
+            
+            if (!self.avPlayer) {
+                self.avPlayer =[SGAVPlayer playerWithAbstractPlayer:self];
             }
             [self.avPlayer replaceVideo];
+        }
             break;
         case SGDecoderTypeFFmpeg:
-            if (_avPlayer) {
-                [self.avPlayer stop];
+        {
+            [self.avPlayer stop];
+            
+            if (!self.ffPlayer) {
+                self.ffPlayer = [SGFFPlayer playerWithAbstractPlayer:self];
             }
             [self.ffPlayer replaceVideo];
+        }
             break;
         case SGDecoderTypeError:
-            if (_avPlayer) {
-                [self.avPlayer stop];
-            }
-            if (_ffPlayer) {
-                [self.ffPlayer stop];
-            }
+        {
+            [self.avPlayer stop];
+            [self.ffPlayer stop];
+        }
             break;
     }
 }
@@ -97,7 +117,8 @@
     [UIApplication sharedApplication].idleTimerDisabled = YES;
 #endif
     
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             [self.avPlayer play];
             break;
@@ -115,7 +136,8 @@
     [UIApplication sharedApplication].idleTimerDisabled = NO;
 #endif
     
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             [self.avPlayer pause];
             break;
@@ -138,7 +160,8 @@
 
 - (BOOL)seekEnable
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.seekEnable;
             break;
@@ -151,7 +174,8 @@
 
 - (BOOL)seeking
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.seeking;
         case SGDecoderTypeFFmpeg:
@@ -168,7 +192,8 @@
 
 - (void)seekToTime:(NSTimeInterval)time completeHandler:(nullable void (^)(BOOL))completeHandler
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             [self.avPlayer seekToTime:time completeHandler:completeHandler];
             break;
@@ -180,41 +205,17 @@
     }
 }
 
-- (void)setContentURL:(NSURL *)contentURL
-{
-    _contentURL = [contentURL copy];
-}
-
-- (void)setVideoType:(SGVideoType)videoType
-{
-    switch (videoType) {
-        case SGVideoTypeNormal:
-        case SGVideoTypeVR:
-            _videoType = videoType;
-            break;
-        default:
-            _videoType = SGVideoTypeNormal;
-            break;
-    }
-}
-
 - (void)setVolume:(CGFloat)volume
 {
     _volume = volume;
-    if (_avPlayer) {
-        [self.avPlayer reloadVolume];
-    }
-    if (_ffPlayer) {
-        [self.ffPlayer reloadVolume];
-    }
+    [self.avPlayer reloadVolume];
+    [self.ffPlayer reloadVolume];
 }
 
 - (void)setPlayableBufferInterval:(NSTimeInterval)playableBufferInterval
 {
     _playableBufferInterval = playableBufferInterval;
-    if (_ffPlayer) {
-        [self.ffPlayer reloadPlayableBufferInterval];
-    }
+    [self.ffPlayer reloadPlayableBufferInterval];
 }
 
 - (void)setViewGravityMode:(SGGravityMode)viewGravityMode
@@ -225,7 +226,8 @@
 
 - (SGPlayerState)state
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.state;
         case SGDecoderTypeFFmpeg:
@@ -237,7 +239,8 @@
 
 - (CGSize)presentationSize
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.presentationSize;
         case SGDecoderTypeFFmpeg:
@@ -249,7 +252,8 @@
 
 - (NSTimeInterval)bitrate
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.bitrate;
         case SGDecoderTypeFFmpeg:
@@ -261,7 +265,8 @@
 
 - (NSTimeInterval)progress
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.progress;
         case SGDecoderTypeFFmpeg:
@@ -273,7 +278,8 @@
 
 - (NSTimeInterval)duration
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.duration;
         case SGDecoderTypeFFmpeg:
@@ -285,7 +291,8 @@
 
 - (NSTimeInterval)playableTime
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.playableTime;
         case SGDecoderTypeFFmpeg:
@@ -305,50 +312,6 @@
     return self.displayView;
 }
 
-- (SGDisplayView *)displayView
-{
-    if (!_displayView) {
-        _displayView = [SGDisplayView displayViewWithAbstractPlayer:self];
-    }
-    return _displayView;
-}
-
-- (SGAVPlayer *)avPlayer
-{
-    if (!_avPlayer) {
-        _avPlayer = [SGAVPlayer playerWithAbstractPlayer:self];
-    }
-    return _avPlayer;
-}
-
-- (SGFFPlayer *)ffPlayer
-{
-    if (!_ffPlayer) {
-        _ffPlayer = [SGFFPlayer playerWithAbstractPlayer:self];
-    }
-    return _ffPlayer;
-}
-
-- (void)setupPlayerView:(SGPLFView *)playerView;
-{
-    [self cleanPlayerView];
-    if (playerView) {
-        [self.view addSubview:playerView];
-        
-        playerView.translatesAutoresizingMaskIntoConstraints = NO;
-        
-        NSLayoutConstraint * top = [NSLayoutConstraint constraintWithItem:playerView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-        NSLayoutConstraint * bottom = [NSLayoutConstraint constraintWithItem:playerView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1 constant:0];
-        NSLayoutConstraint * left = [NSLayoutConstraint constraintWithItem:playerView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0];
-        NSLayoutConstraint * right = [NSLayoutConstraint constraintWithItem:playerView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0];
-        
-        [self.view addConstraint:top];
-        [self.view addConstraint:bottom];
-        [self.view addConstraint:left];
-        [self.view addConstraint:right];
-    }
-}
-
 - (void)setError:(SGError * _Nullable)error
 {
     if (self.error != error) {
@@ -358,14 +321,12 @@
 
 - (void)cleanPlayer
 {
-    if (_avPlayer) {
-        [self.avPlayer stop];
-        self.avPlayer = nil;
-    }
-    if (_ffPlayer) {
-        [self.ffPlayer stop];
-        self.ffPlayer = nil;
-    }
+    [self.avPlayer stop];
+    self.avPlayer = nil;
+    
+    [self.ffPlayer stop];
+    self.ffPlayer = nil;
+    
     [self cleanPlayerView];
     
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
@@ -499,7 +460,8 @@
 
 - (BOOL)videoEnable
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.videoEnable;
         case SGDecoderTypeFFmpeg:
@@ -511,7 +473,8 @@
 
 - (BOOL)audioEnable
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.audioEnable;
         case SGDecoderTypeFFmpeg:
@@ -523,7 +486,8 @@
 
 - (SGPlayerTrack *)videoTrack
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.videoTrack;
         case SGDecoderTypeFFmpeg:
@@ -535,7 +499,8 @@
 
 - (SGPlayerTrack *)audioTrack
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.audioTrack;
         case SGDecoderTypeFFmpeg:
@@ -547,7 +512,8 @@
 
 - (NSArray<SGPlayerTrack *> *)videoTracks
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.videoTracks;
         case SGDecoderTypeFFmpeg:
@@ -559,7 +525,8 @@
 
 - (NSArray<SGPlayerTrack *> *)audioTracks
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return self.avPlayer.audioTracks;
         case SGDecoderTypeFFmpeg:
@@ -576,7 +543,8 @@
 
 - (void)selectAudioTrackIndex:(int)audioTrackIndex
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             [self.avPlayer selectAudioTrackIndex:audioTrackIndex];
         case SGDecoderTypeFFmpeg:
@@ -596,7 +564,8 @@
 
 - (BOOL)videoDecodeOnMainThread
 {
-    switch (self.decoderType) {
+    switch (self.decoderType)
+    {
         case SGDecoderTypeAVPlayer:
             return NO;
         case SGDecoderTypeFFmpeg:
