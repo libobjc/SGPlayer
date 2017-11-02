@@ -588,6 +588,9 @@
 		9C5AB7061E88F0560021F460 /* SGGLProgramYUV420.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */; };
 		9C5AB7071E88F0560021F460 /* SGGLProgramYUV420.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */; };
 		9C816A281E8755E4007ED41B /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123D1E71283100E5AA46 /* SGPlatform.framework */; };
+		9C9823CA1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C9823C91FAAFFEB00142215 /* SGPlayerBuildConfig.h */; };
+		9C9823CB1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C9823C91FAAFFEB00142215 /* SGPlayerBuildConfig.h */; };
+		9C9823CC1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C9823C91FAAFFEB00142215 /* SGPlayerBuildConfig.h */; };
 		9CA86E7F1E8756BF00E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C09123F1E71283100E5AA46 /* SGPlatform.framework */; };
 		9CA86E801E8756C700E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C0912411E71283100E5AA46 /* SGPlatform.framework */; };
 		9CEFA6DB1E7122BF00835CAB /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEFA6D91E7122BF00835CAB /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -859,6 +862,7 @@
 		9C5AB6F91E88F0400021F460 /* SGGLProgramNV12.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramNV12.m; sourceTree = "<group>"; };
 		9C5AB7001E88F0560021F460 /* SGGLProgramYUV420.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGGLProgramYUV420.h; sourceTree = "<group>"; };
 		9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramYUV420.m; sourceTree = "<group>"; };
+		9C9823C91FAAFFEB00142215 /* SGPlayerBuildConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerBuildConfig.h; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6D91E7122BF00835CAB /* SGPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1106,6 +1110,7 @@
 			isa = PBXGroup;
 			children = (
 				9C478F351E713AA800AD4289 /* SGPlayerMacro.h */,
+				9C9823C91FAAFFEB00142215 /* SGPlayerBuildConfig.h */,
 				9C478F361E713AA800AD4289 /* SGPlayerNotification.h */,
 				9C478F371E713AA800AD4289 /* SGPlayerNotification.m */,
 				9C4792B91E713B4900AD4289 /* SGAVPlayer */,
@@ -1410,6 +1415,7 @@
 				9C41E5F11E975631006E5A65 /* d3d11va.h in Headers */,
 				9C4792711E713B1000AD4289 /* SGFFFormatContext.h in Headers */,
 				9C41E69C1E975631006E5A65 /* hwcontext_qsv.h in Headers */,
+				9C9823CA1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */,
 				9C41E6841E975631006E5A65 /* fifo.h in Headers */,
 				9C41E7021E975631006E5A65 /* timestamp.h in Headers */,
 				9C4792AD1E713B1000AD4289 /* SGFFPlayer.h in Headers */,
@@ -1593,6 +1599,7 @@
 				9C41E6851E975631006E5A65 /* fifo.h in Headers */,
 				9C41E6BE1E975631006E5A65 /* mathematics.h in Headers */,
 				9C41E6821E975631006E5A65 /* ffversion.h in Headers */,
+				9C9823CB1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */,
 				9C41E64F1E975631006E5A65 /* base64.h in Headers */,
 				9C478F411E713AA800AD4289 /* SGPlayerNotification.h in Headers */,
 				9C4792E41E713B4900AD4289 /* SGDisplayView.h in Headers */,
@@ -1685,6 +1692,7 @@
 				9C41E63B1E975631006E5A65 /* aes_ctr.h in Headers */,
 				9C41E5ED1E975631006E5A65 /* avdct.h in Headers */,
 				9C478F131E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
+				9C9823CC1FAAFFEB00142215 /* SGPlayerBuildConfig.h in Headers */,
 				9C5AB6DC1E88E7980021F460 /* SGGLTexture.h in Headers */,
 				9C41E65C1E975631006E5A65 /* buffer.h in Headers */,
 				9C41E60E1E975631006E5A65 /* vdpau.h in Headers */,
