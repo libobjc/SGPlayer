@@ -11,7 +11,10 @@
 @interface SGGLFrame ()
 
 @property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
+
+#if SGPlayerBuildConfig_FFmpeg_Enable
 @property (nonatomic, strong) SGFFVideoFrame * videoFrame;
+#endif
 
 @end
 
@@ -33,6 +36,21 @@
     self->_hasUpate = YES;
 }
 
+- (CVPixelBufferRef)pixelBufferForNV12
+{
+    if (self.pixelBuffer) {
+        return self.pixelBuffer;
+    } else {
+#if SGPlayerBuildConfig_FFmpeg_Enable
+        return [(SGFFCVYUVVideoFrame *)self.videoFrame pixelBuffer];
+#endif
+    }
+    return nil;
+}
+
+
+#if SGPlayerBuildConfig_FFmpeg_Enable
+
 - (void)updateWithSGFFVideoFrame:(SGFFVideoFrame *)videoFrame;
 {
     [self flush];
@@ -49,38 +67,45 @@
     self->_hasUpate = YES;
 }
 
-- (CVPixelBufferRef)pixelBufferForNV12
-{
-    if (self.pixelBuffer) {
-        return self.pixelBuffer;
-    } else {
-        return [(SGFFCVYUVVideoFrame *)self.videoFrame pixelBuffer];
-    }
-}
-
 - (SGFFAVYUVVideoFrame *)pixelBufferForYUV420
 {
     return (SGFFAVYUVVideoFrame *)self.videoFrame;
 }
 
+- (void)setRotateType:(SGFFVideoFrameRotateType)rotateType
+{
+    if (_rotateType != rotateType) {
+        _rotateType = rotateType;
+        self->_hasUpdateRotateType = YES;
+    }
+}
+
+#endif
+
+
 - (NSTimeInterval)currentPosition
 {
+#if SGPlayerBuildConfig_FFmpeg_Enable
     if (self.videoFrame) {
         return self.videoFrame.position;
     }
+#endif
     return -1;
 }
 
 - (NSTimeInterval)currentDuration
 {
+#if SGPlayerBuildConfig_FFmpeg_Enable
     if (self.videoFrame) {
         return self.videoFrame.duration;
     }
+#endif
     return -1;
 }
 
 - (SGPLFImage *)imageFromVideoFrame
 {
+#if SGPlayerBuildConfig_FFmpeg_Enable
     if ([self.videoFrame isKindOfClass:[SGFFAVYUVVideoFrame class]]) {
         SGFFAVYUVVideoFrame * frame = (SGFFAVYUVVideoFrame *)self.videoFrame;
         SGPLFImage * image = frame.image;
@@ -92,15 +117,8 @@
             if (image) return image;
         }
     }
+#endif
     return nil;
-}
-
-- (void)setRotateType:(SGFFVideoFrameRotateType)rotateType
-{
-    if (_rotateType != rotateType) {
-        _rotateType = rotateType;
-        self->_hasUpdateRotateType = YES;
-    }
 }
 
 - (void)didDraw
@@ -122,10 +140,13 @@
         CVPixelBufferRelease(self.pixelBuffer);
         self.pixelBuffer = NULL;
     }
+    
+#if SGPlayerBuildConfig_FFmpeg_Enable
     if (self.videoFrame) {
         [self.videoFrame stopPlaying];
         self.videoFrame = nil;
     }
+#endif
 }
 
 - (void)dealloc

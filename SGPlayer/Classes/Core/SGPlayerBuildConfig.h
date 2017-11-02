@@ -9,7 +9,9 @@
 #ifndef SGPlayerBuildConfig_h
 #define SGPlayerBuildConfig_h
 
-#define SGPlayerBuildConfig_AVPlayer_Disable    NO
-#define SGPlayerBuildConfig_FFmpeg_Disable      NO
 
-#endif /* SGPlayerBuildConfig_h */
+#define SGPlayerBuildConfig_FFmpeg_Enable       1
+#define SGPlayerBuildConfig_FFmpeg_Disable      !SGPlayerBuildConfig_FFmpeg_Enable
+
+
+#endif

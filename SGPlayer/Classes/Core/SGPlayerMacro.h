@@ -6,6 +6,10 @@
 //  Copyright © 2016年 single. All rights reserved.
 //
 
+#ifndef SGPlayerMacro_h
+#define SGPlayerMacro_h
+
+
 #import <Foundation/Foundation.h>
 
 // weak self
@@ -17,4 +21,7 @@
 #define SGPlayerLog(...) NSLog(__VA_ARGS__)
 #else
 #define SGPlayerLog(...)
+#endif
+
+
 #endif
