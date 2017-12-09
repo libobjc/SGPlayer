@@ -82,7 +82,7 @@ git submodule update --init --recursive
 
 ### check build results
 
-![ffmpeg-libs](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ffmpeg-libs.jpg)
+![ffmpeg-libs](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ffmpeg-libs.png)
 
 
 ## Usage
