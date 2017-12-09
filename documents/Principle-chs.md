@@ -9,7 +9,7 @@ SGPlayer 是一款基于 AVPlayer、FFmpeg 的媒体资源播放器框架。支�
 
 ## 组成结构 和 播放流程
 
-![SGPlayer](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/SGFFPlayer-playback.jpeg)
+![SGPlayer](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/SGFFPlayer-playback.jpeg)
 
 上图展示了 SGPlayer 的播放流程和主要组件，下面简单介绍图中各组件的分工
 
@@ -60,7 +60,7 @@ SGAudioManager 负责声音的播放和音频事件的处理。内部使用 AUGr
 
 ### 贴图规则
 
-![image](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/vr-texture.jpeg)
+![image](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/vr-texture.jpeg)
 
 把平面图片贴到球面上的过程和地球仪很相似。以上图为例，左侧图片中的每一个像素，都可以在右侧球面上找到对应的位置。下面列举一个关键的对应关系。
 
@@ -71,7 +71,7 @@ SGAudioManager 负责声音的播放和音频事件的处理。内部使用 AUGr
 
 ### 呈现方式
 
-![ball](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/vr-ball.jpeg)
+![ball](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/vr-ball.jpeg)
 
 上图展示了全景图像的呈现方式，不同于平面，全景图像需将观景点放在球心，站在球心观看球面上的图像。最终将 曲面ABCD 在 平面ABCD 上的投影显示到屏幕上。
 
@@ -82,7 +82,7 @@ SGAudioManager 负责声音的播放和音频事件的处理。内部使用 AUGr
 
 ## SGFFPlayer 运作流程
 
-![SGFFPlayer](https://coding.net/u/0x010101/p/resource-public/git/raw/master/SGPlayer/SGFFPlayer-thread.jpeg)
+![SGFFPlayer](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/SGFFPlayer-thread.jpeg)
 
 上图展示了 SGFFPlayer 的协作流程图，下面简单介绍图中各组件
 
