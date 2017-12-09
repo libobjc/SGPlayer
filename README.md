@@ -9,7 +9,7 @@
 
 如果你有需求建议请拼命提 issue。我会考虑纳入开发计划中。
 
-![(Logo)](https://github.com/libobjc/resource/blob/master/SGPlayer/banner-small.png?raw=true)
+![(Logo)](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/banner-small.png)
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
@@ -82,7 +82,7 @@ git submodule update --init --recursive
 
 ### check build results
 
-![ffmpeg-libs](https://github.com/libobjc/resource/blob/master/SGPlayer/ffmpeg-libs.jpg?raw=true)
+![ffmpeg-libs](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ffmpeg-libs.jpg)
 
 
 ## Usage
@@ -175,26 +175,26 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // continu
 
 - Plane video
 
-![ios-i-see-fire](https://github.com/libobjc/resource/blob/master/SGPlayer/ios-i-see-fire.gif?raw=true)
+![ios-i-see-fire](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ios-i-see-fire.gif)
 
 - 360° panorama video
 
-![ios-google-vr](https://github.com/libobjc/resource/blob/master/SGPlayer/ios-google-vr.gif?raw=true)
+![ios-google-vr](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ios-google-vr.gif)
 
 - Cardboard mode
 
-![ios-google-vr-box](https://github.com/libobjc/resource/blob/master/SGPlayer/ios-google-vr-box.gif?raw=true)
+![ios-google-vr-box](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/ios-google-vr-box.gif)
 
 
 ### macOS
 
 - Plane video
 
-![mac-i-see-fire](https://github.com/libobjc/resource/blob/master/SGPlayer/mac-i-see-fire.gif?raw=true)
+![mac-i-see-fire](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/mac-i-see-fire.gif)
 
 - 360° panorama video
 
-![mac-google-vr](https://github.com/libobjc/resource/blob/master/SGPlayer/mac-google-vr.gif?raw=true)
+![mac-google-vr](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/mac-google-vr.gif)
 
 
 
