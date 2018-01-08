@@ -1,14 +1,3 @@
-# 开发进度
-
-正在准备 1.1.0 迭代版本，重点是添加一些功能和提升稳定性。目前确定会做的更新如下：
-
-- 倍速播放。
-- 支持内嵌字幕。
-- 仅播放画面或声音。
-- 性能优化。
-
-如果你有需求建议请拼命提 issue。我会考虑纳入开发计划中。
-
 ![(Logo)](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/banner-small.png)
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
