@@ -100,9 +100,9 @@ NSString * const SGPlayerPlayableTotalKey = @"total";       // playable
     return progress;
 }
 
-+ (SGPlayable *)playableFromUserInfo:(NSDictionary *)userInfo
++ (SGloaded *)playableFromUserInfo:(NSDictionary *)userInfo
 {
-    SGPlayable * playable = [[SGPlayable alloc] init];
+    SGloaded * playable = [[SGloaded alloc] init];
     playable.percent = [[userInfo objectForKey:SGPlayerPlayablePercentKey] doubleValue];
     playable.current = [[userInfo objectForKey:SGPlayerPlayableCurrentKey] doubleValue];
     playable.total = [[userInfo objectForKey:SGPlayerPlayableTotalKey] doubleValue];
@@ -133,7 +133,7 @@ NSString * const SGPlayerPlayableTotalKey = @"total";       // playable
 @implementation SGProgress
 @end
 
-@implementation SGPlayable
+@implementation SGloaded
 @end
 
 @implementation SGErrorEvent

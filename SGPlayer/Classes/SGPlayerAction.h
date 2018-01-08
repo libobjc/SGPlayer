@@ -10,7 +10,7 @@
 
 @class SGState;
 @class SGProgress;
-@class SGPlayable;
+@class SGloaded;
 @class SGError;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -69,7 +69,7 @@ SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
 
 + (SGState *)stateFromUserInfo:(NSDictionary *)userInfo;
 + (SGProgress *)progressFromUserInfo:(NSDictionary *)userInfo;
-+ (SGPlayable *)playableFromUserInfo:(NSDictionary *)userInfo;
++ (SGloaded *)playableFromUserInfo:(NSDictionary *)userInfo;
 + (SGError *)errorFromUserInfo:(NSDictionary *)userInfo;
 
 @end
@@ -85,7 +85,7 @@ SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
 @property (nonatomic, assign) CGFloat total;
 @end
 
-@interface SGPlayable : SGModel
+@interface SGloaded : SGModel
 @property (nonatomic, assign) CGFloat percent;
 @property (nonatomic, assign) CGFloat current;
 @property (nonatomic, assign) CGFloat total;

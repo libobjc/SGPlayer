@@ -187,7 +187,7 @@
 
 - (void)playableAction:(NSNotification *)notification
 {
-    SGPlayable * playable = [SGPlayable playableFromUserInfo:notification.userInfo];
+    SGloaded * playable = [SGloaded playableFromUserInfo:notification.userInfo];
     NSLog(@"playable time : %f", playable.current);
 }
 
