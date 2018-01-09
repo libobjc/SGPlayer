@@ -274,7 +274,7 @@
 - (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder
 {
     if (self.decoder.videoEnable) {
-        [self.abstractPlayer.displayView rendererTypeOpenGL];
+//        [self.abstractPlayer.displayView rendererTypeOpenGL];
     }
 }
 
@@ -346,8 +346,8 @@
     self.prepareToken = NO;
     self.lastPostProgressTime = 0;
     self.lastPostPlayableTime = 0;
-    [self.abstractPlayer.displayView playerOutputTypeEmpty];
-    [self.abstractPlayer.displayView rendererTypeEmpty];
+//    [self.abstractPlayer.displayView playerOutputTypeEmpty];
+//    [self.abstractPlayer.displayView rendererTypeEmpty];
 }
 
 - (void)cleanFrame

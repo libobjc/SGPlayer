@@ -6,12 +6,11 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGPlayerImp.h"
+#import <Foundation/Foundation.h>
+#import "SGPlayerDefines.h"
 
-@class SGState;
-@class SGProgress;
-@class SGloaded;
-@class SGError;
+@class SGStateModel;
+@class SGTimeModel;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -45,67 +44,39 @@ SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
 
 #pragma mark - SGPlayer Action Category
 
-@interface SGPlayer (SGPlayerAction)
+@interface NSObject (SGPlayerAction)
 
-- (void)registerPlayerNotificationTarget:(id)target
-                             stateAction:(nullable SEL)stateAction
-                          progressAction:(nullable SEL)progressAction
-                          playableAction:(nullable SEL)playableAction;      // object's class is NSNotification
-
-- (void)registerPlayerNotificationTarget:(id)target
+- (void)sg_registerNotificationForPlayer:(id)player
                              stateAction:(nullable SEL)stateAction
                           progressAction:(nullable SEL)progressAction
                           playableAction:(nullable SEL)playableAction
                              errorAction:(nullable SEL)errorAction;
 
-- (void)removePlayerNotificationTarget:(id)target;
+- (void)sg_removeNotificationForPlayer:(id)player;
 
 @end
 
 
 #pragma mark - SGPlayer Action Models
 
-@interface SGModel : NSObject
+@interface NSDictionary (SGPlayerModel)
 
-+ (SGState *)stateFromUserInfo:(NSDictionary *)userInfo;
-+ (SGProgress *)progressFromUserInfo:(NSDictionary *)userInfo;
-+ (SGloaded *)playableFromUserInfo:(NSDictionary *)userInfo;
-+ (SGError *)errorFromUserInfo:(NSDictionary *)userInfo;
+- (SGStateModel *)sg_stateModel;
+- (SGTimeModel *)sg_playbackTimeModel;
+- (SGTimeModel *)sg_loadedTimeModel;
+- (NSError *)sg_error;
 
 @end
 
-@interface SGState : SGModel
+@interface SGStateModel : NSObject
 @property (nonatomic, assign) SGPlayerState previous;
 @property (nonatomic, assign) SGPlayerState current;
 @end
 
-@interface SGProgress : SGModel
-@property (nonatomic, assign) CGFloat percent;
-@property (nonatomic, assign) CGFloat current;
-@property (nonatomic, assign) CGFloat total;
-@end
-
-@interface SGloaded : SGModel
-@property (nonatomic, assign) CGFloat percent;
-@property (nonatomic, assign) CGFloat current;
-@property (nonatomic, assign) CGFloat total;
-@end
-
-@interface SGErrorEvent : SGModel
-@property (nonatomic, copy, nullable) NSDate * date;
-@property (nonatomic, copy, nullable) NSString * URI;
-@property (nonatomic, copy, nullable) NSString * serverAddress;
-@property (nonatomic, copy, nullable) NSString * playbackSessionID;
-@property (nonatomic, assign) NSInteger errorStatusCode;
-@property (nonatomic, copy) NSString * errorDomain;
-@property (nonatomic, copy, nullable) NSString * errorComment;
-@end
-
-@interface SGError : SGModel
-@property (nonatomic, copy) NSError * error;
-@property (nonatomic, copy, nullable) NSData * extendedLogData;
-@property (nonatomic, assign) NSStringEncoding extendedLogDataStringEncoding;
-@property (nonatomic, copy, nullable) NSArray <SGErrorEvent *> * errorEvents;
+@interface SGTimeModel : NSObject
+@property (nonatomic, assign) NSTimeInterval percent;
+@property (nonatomic, assign) NSTimeInterval current;
+@property (nonatomic, assign) NSTimeInterval total;
 @end
 
 NS_ASSUME_NONNULL_END

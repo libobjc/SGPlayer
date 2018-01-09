@@ -35,49 +35,12 @@
         self.abstractPlayer = abstractPlayer;
         self->_fingerRotation = [SGFingerRotation fingerRotation];
         SGPLFViewSetBackgroundColor(self, [SGPLFColor blackColor]);
-        [self setupEventHandler];
+//        [self setupEventHandler];
     }
     return self;
 }
 
-- (void)playerOutputTypeEmpty
-{
-    self->_playerOutputType = SGDisplayPlayerOutputTypeEmpty;
-}
-
-- (void)playerOutputTypeFF
-{
-    self->_playerOutputType = SGDisplayPlayerOutputTypeFF;
-}
-
-- (void)playerOutputTypeAV
-{
-    self->_playerOutputType = SGDisplayPlayerOutputTypeAV;
-}
-
-- (void)rendererTypeEmpty
-{
-    if (self.rendererType != SGDisplayRendererTypeEmpty) {
-        self->_rendererType = SGDisplayRendererTypeEmpty;
-        [self reloadView];
-    }
-}
-
-- (void)rendererTypeAVPlayerLayer
-{
-    if (self.rendererType != SGDisplayRendererTypeAVPlayerLayer) {
-        self->_rendererType = SGDisplayRendererTypeAVPlayerLayer;
-        [self reloadView];
-    }
-}
-
-- (void)rendererTypeOpenGL
-{
-    if (self.rendererType != SGDisplayRendererTypeOpenGL) {
-        self->_rendererType = SGDisplayRendererTypeOpenGL;
-        [self reloadView];
-    }
-}
+/*
 
 - (void)reloadView
 {
@@ -132,11 +95,11 @@
 #if SGPLATFORM_TARGET_OS_MAC
         self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-        if ([self.playerOutputAV playerOutputGetAVPlayer] && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-            self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
-        } else {
-            self.avplayerLayer.player = nil;
-        }
+//        if ([self.playerOutputAV playerOutputGetAVPlayer] && [UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+//            self.avplayerLayer.player = [self.playerOutputAV playerOutputGetAVPlayer];
+//        } else {
+//            self.avplayerLayer.player = nil;
+//        }
 #endif
     }
 }
@@ -332,5 +295,7 @@ static BOOL mouse_dragged = NO;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     SGPlayerLog(@"SGDisplayView release");
 }
+ 
+ */
 
 @end

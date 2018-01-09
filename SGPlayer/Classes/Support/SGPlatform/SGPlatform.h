@@ -10,22 +10,22 @@
 
 
 // Target Conditionals
-#import <SGPlayer/SGPLFTargets.h>
+#import "SGPLFTargets.h"
 
 
 // UIKit and AppKit Objects
-#import <SGPlayer/SGPLFObject.h>
+#import "SGPLFObject.h"
 
-#import <SGPlayer/SGPLFView.h>
-#import <SGPlayer/SGPLFImage.h>
-#import <SGPlayer/SGPLFColor.h>
-#import <SGPlayer/SGPLFScreen.h>
-#import <SGPlayer/SGPLFDisplayLink.h>
+#import "SGPLFView.h"
+#import "SGPLFImage.h"
+#import "SGPLFColor.h"
+#import "SGPLFScreen.h"
+#import "SGPLFDisplayLink.h"
 
 
 // OpenGL
-#import <SGPlayer/SGPLFOpenGL.h>
+#import "SGPLFOpenGL.h"
 
-#import <SGPlayer/SGPLFGLView.h>
-#import <SGPlayer/SGPLFGLContext.h>
-#import <SGPlayer/SGPLFGLViewController.h>
+#import "SGPLFGLView.h"
+#import "SGPLFGLContext.h"
+#import "SGPLFGLViewController.h"
