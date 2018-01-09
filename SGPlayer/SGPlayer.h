@@ -13,7 +13,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 
 // Platform
-#import <SGPlatform/SGPlatform.h>
+#import <SGPlayer/SGPlatform.h>
 
 
 // SGPlayer

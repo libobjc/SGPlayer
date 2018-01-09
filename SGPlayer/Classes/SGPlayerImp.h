@@ -6,7 +6,7 @@
 //  Copyright © 2016年 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "SGPlayerTrack.h"
 #import "SGPlayerDecoder.h"
 

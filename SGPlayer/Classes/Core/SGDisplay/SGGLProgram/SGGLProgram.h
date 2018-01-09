@@ -6,7 +6,7 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 
 @interface SGGLProgram : NSObject
 

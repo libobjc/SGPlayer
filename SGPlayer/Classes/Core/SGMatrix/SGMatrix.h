@@ -6,7 +6,7 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "SGFingerRotation.h"
 
 @interface SGMatrix : NSObject

@@ -8,7 +8,7 @@
 
 #import "SGFFFrame.h"
 #import <AVFoundation/AVFoundation.h>
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "avformat.h"
 #import "pixfmt.h"
 

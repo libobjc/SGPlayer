@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "SGGLTextureNV12.h"
 #import "SGPlayerMacro.h"
 #import "SGYUVTools.h"

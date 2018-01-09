@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "pixfmt.h"
 
 int SGYUVChannelFilterNeedSize(int linesize, int width, int height, int channel_count);

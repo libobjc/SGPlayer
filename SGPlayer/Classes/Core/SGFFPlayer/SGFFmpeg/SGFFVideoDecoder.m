@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import <SGPlatform/SGPlatform.h>
+#import "SGPlatform.h"
 #import "SGFFVideoDecoder.h"
 #import "SGFFPacketQueue.h"
 #import "SGFFFrameQueue.h"
