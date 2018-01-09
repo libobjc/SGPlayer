@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import "SGPlayerBuildConfig.h"
 #import "SGFFVideoFrame.h"
 
 typedef NS_ENUM(NSUInteger, SGGLFrameType) {
@@ -33,14 +32,10 @@ typedef NS_ENUM(NSUInteger, SGGLFrameType) {
 - (void)updateWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 - (CVPixelBufferRef)pixelBufferForNV12;
 
-#if SGPlayerBuildConfig_FFmpeg_Enable
-
 - (void)updateWithSGFFVideoFrame:(SGFFVideoFrame *)videoFrame;
 - (SGFFAVYUVVideoFrame *)pixelBufferForYUV420;
 
 @property (nonatomic, assign) SGFFVideoFrameRotateType rotateType;
-
-#endif
 
 - (NSTimeInterval)currentPosition;
 - (NSTimeInterval)currentDuration;

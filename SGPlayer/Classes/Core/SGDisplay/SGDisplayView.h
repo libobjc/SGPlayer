@@ -7,7 +7,6 @@
 //
 
 #import <AVFoundation/AVFoundation.h>
-#import "SGPlayerBuildConfig.h"
 #import "SGPlayerImp.h"
 #import "SGAVPlayer.h"
 #import "SGFFPlayer.h"
@@ -47,10 +46,8 @@ typedef NS_ENUM(NSUInteger, SGDisplayPlayerOutputType) {
 - (void)playerOutputTypeAV;
 - (void)playerOutputTypeEmpty;
 
-#if SGPlayerBuildConfig_FFmpeg_Enable
 @property (nonatomic, weak) id <SGFFPlayerOutput> playerOutputFF;
 - (void)playerOutputTypeFF;
-#endif
 
 
 // renderer type

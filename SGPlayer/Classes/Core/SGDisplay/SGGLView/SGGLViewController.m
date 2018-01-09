@@ -17,7 +17,6 @@
 #import "SGGLVRModel.h"
 #import "SGMatrix.h"
 #import "SGDistortionRenderer.h"
-#import "SGPlayerBuildConfig.h"
 
 @interface SGGLViewController ()
 
@@ -182,7 +181,6 @@
 
 - (SGGLModelTextureRotateType)chooseModelTextureRotateType
 {
-#if SGPlayerBuildConfig_FFmpeg_Enable
     switch (self.currentFrame.rotateType) {
         case SGFFVideoFrameRotateType0:
             return SGGLModelTextureRotateType0;
@@ -193,7 +191,6 @@
         case SGFFVideoFrameRotateType270:
             return SGGLModelTextureRotateType270;
     }
-#endif
     return SGGLModelTextureRotateType0;
 }
 
@@ -310,7 +307,6 @@
     }
     
     CGFloat resultAspect = self.aspect;
-#if SGPlayerBuildConfig_FFmpeg_Enable
     switch (self.currentFrame.rotateType) {
         case SGFFVideoFrameRotateType90:
         case SGFFVideoFrameRotateType270:
@@ -320,7 +316,6 @@
         case SGFFVideoFrameRotateType180:
             break;
     }
-#endif
     
     SGGravityMode gravityMode = self.displayView.abstractPlayer.viewGravityMode;
     switch (gravityMode) {

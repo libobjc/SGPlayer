@@ -7,7 +7,6 @@
 //
 
 #import "SGGLTextureYUV420.h"
-#import "SGPlayerBuildConfig.h"
 
 @interface SGGLTextureYUV420 ()
 
@@ -31,7 +30,6 @@ static GLuint gl_texture_ids[3];
 
 - (BOOL)updateTextureWithGLFrame:(SGGLFrame *)glFrame aspect:(CGFloat *)aspect
 {
-#if SGPlayerBuildConfig_FFmpeg_Enable
     SGFFAVYUVVideoFrame * videoFrame = [glFrame pixelBufferForYUV420];
     
     if (!videoFrame) {
@@ -75,9 +73,6 @@ static GLuint gl_texture_ids[3];
     }
     
     return YES;
-#else
-    return NO;
-#endif
 }
 
 @end

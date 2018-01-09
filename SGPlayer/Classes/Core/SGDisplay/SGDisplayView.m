@@ -156,14 +156,12 @@
             break;
         case SGDisplayPlayerOutputTypeFF:
         {
-#if SGPlayerBuildConfig_FFmpeg_Enable
             SGFFVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
                                                                                            currentDuration:glFrame.currentDuration];
             if (videoFrame) {
                 [glFrame updateWithSGFFVideoFrame:videoFrame];
                 glFrame.rotateType = videoFrame.rotateType;
             }
-#endif
         }
             break;
     }

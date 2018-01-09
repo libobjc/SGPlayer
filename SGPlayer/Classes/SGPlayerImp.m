@@ -11,13 +11,7 @@
 #import "SGPlayerNotification.h"
 #import "SGDisplayView.h"
 #import "SGAVPlayer.h"
-
-#import "SGPlayerBuildConfig.h"
-#if SGPlayerBuildConfig_FFmpeg_Enable
 #import "SGFFPlayer.h"
-#else
-#import "SGFFPlayerShell.h"
-#endif
 
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 #import "SGAudioManager.h"
@@ -31,12 +25,7 @@
 @property (nonatomic, strong) SGDisplayView * displayView;
 @property (nonatomic, assign) SGDecoderType decoderType;
 @property (nonatomic, strong) SGAVPlayer * avPlayer;
-
-#if SGPlayerBuildConfig_FFmpeg_Enable
 @property (nonatomic, strong) SGFFPlayer * ffPlayer;
-#else
-@property (nonatomic, strong) SGFFPlayerShell * ffPlayer;
-#endif
 
 @property (nonatomic, assign) BOOL needAutoPlay;
 @property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
@@ -108,9 +97,7 @@
             [self.avPlayer stop];
             
             if (!self.ffPlayer) {
-#if SGPlayerBuildConfig_FFmpeg_Enable
                 self.ffPlayer = [SGFFPlayer playerWithAbstractPlayer:self];
-#endif
             }
             [self.ffPlayer replaceVideo];
         }
