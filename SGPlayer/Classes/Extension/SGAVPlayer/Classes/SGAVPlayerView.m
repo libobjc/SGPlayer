@@ -10,4 +10,14 @@
 
 @implementation SGAVPlayerView
 
++ (Class)layerClass
+{
+    return [AVPlayerLayer class];
+}
+
+- (AVPlayerLayer *)playerLayer
+{
+    return (AVPlayerLayer *)self.layer;
+}
+
 @end

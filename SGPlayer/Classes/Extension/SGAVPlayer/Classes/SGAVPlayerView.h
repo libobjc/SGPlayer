@@ -7,7 +7,10 @@
 //
 
 #import "SGPLFView.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface SGAVPlayerView : SGPLFView
+
+@property (nonatomic, strong, readonly) AVPlayerLayer * playerLayer;
 
 @end

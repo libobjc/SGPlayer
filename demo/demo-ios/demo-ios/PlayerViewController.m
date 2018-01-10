@@ -50,7 +50,6 @@
         vrVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     });
     [self.player replaceWithContentURL:normalVideo];
-    [self.player play];
 //    switch (self.demoType)
 //    {
 //        case DemoType_AVPlayer_Normal:

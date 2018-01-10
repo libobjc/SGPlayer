@@ -85,6 +85,7 @@
     
     // AVPlayer
     self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
+    self.playerView.playerLayer.player = self.player;
     if (@available(iOS 10.0, *)) {
         self.player.automaticallyWaitsToMinimizeStalling = NO;
     }
@@ -118,6 +119,7 @@
         [self.player cancelPendingPrerolls];
         [self.player replaceCurrentItemWithPlayerItem:nil];
         self.player = nil;
+        self.playerView.playerLayer.player = nil;
     }
     
     // AVPlayerItem
