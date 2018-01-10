@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SGPlayerDefines.h"
 
-@class SGStateModel;
+@class SGPlaybackStateModel;
+@class SGLoadedStateModel;
 @class SGTimeModel;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -21,25 +22,16 @@ NS_ASSUME_NONNULL_BEGIN
 #define SGPLAYER_EXTERN extern
 #endif
 
+
 // notification name
-SGPLAYER_EXTERN NSString * const SGPlayerErrorNotificationName;             // player error
-SGPLAYER_EXTERN NSString * const SGPlayerStateChangeNotificationName;       // player state change
-SGPLAYER_EXTERN NSString * const SGPlayerProgressChangeNotificationName;    // player play progress change
-SGPLAYER_EXTERN NSString * const SGPlayerPlayableChangeNotificationName;    // player playable progress change
+SGPLAYER_EXTERN NSString * const SGPlayerPlaybackStateDidChangeNotificationName;     // player state change
+SGPLAYER_EXTERN NSString * const SGPlayerLoadStateDidChangeNotificationName;     // player state change
+SGPLAYER_EXTERN NSString * const SGPlayerPlaybackTimeDidChangeNotificationName;  // player play progress change
+SGPLAYER_EXTERN NSString * const SGPlayerLoadedTimeDidChangeNotificationName;   // player playable progress change
+SGPLAYER_EXTERN NSString * const SGPlayerDidErrorNotificationName;                   // player error
 
 // notification userinfo key
-SGPLAYER_EXTERN NSString * const SGPlayerErrorKey;              // error
-
-SGPLAYER_EXTERN NSString * const SGPlayerStatePreviousKey;      // state
-SGPLAYER_EXTERN NSString * const SGPlayerStateCurrentKey;       // state
-
-SGPLAYER_EXTERN NSString * const SGPlayerProgressPercentKey;    // progress
-SGPLAYER_EXTERN NSString * const SGPlayerProgressCurrentKey;    // progress
-SGPLAYER_EXTERN NSString * const SGPlayerProgressTotalKey;      // progress
-
-SGPLAYER_EXTERN NSString * const SGPlayerPlayablePercentKey;    // playable
-SGPLAYER_EXTERN NSString * const SGPlayerPlayableCurrentKey;    // playable
-SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // state
 
 
 #pragma mark - SGPlayer Action Category
@@ -47,10 +39,11 @@ SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
 @interface NSObject (SGPlayerAction)
 
 - (void)sg_registerNotificationForPlayer:(id)player
-                             stateAction:(nullable SEL)stateAction
-                          progressAction:(nullable SEL)progressAction
-                          playableAction:(nullable SEL)playableAction
-                             errorAction:(nullable SEL)errorAction;
+                     playbackStateAction:(SEL)playbackStateAction
+                         loadStateAction:(SEL)loadStateAction
+                      playbackTimeAction:(SEL)playbackTimeAction
+                            loadedAction:(SEL)loadedAction
+                             errorAction:(SEL)errorAction;
 
 - (void)sg_removeNotificationForPlayer:(id)player;
 
@@ -61,22 +54,28 @@ SGPLAYER_EXTERN NSString * const SGPlayerPlayableTotalKey;      // playable
 
 @interface NSDictionary (SGPlayerModel)
 
-- (SGStateModel *)sg_stateModel;
+- (SGPlaybackStateModel *)sg_playbackStateModel;
+- (SGLoadedStateModel *)sg_loadedStateModel;
 - (SGTimeModel *)sg_playbackTimeModel;
 - (SGTimeModel *)sg_loadedTimeModel;
 - (NSError *)sg_error;
 
 @end
 
-@interface SGStateModel : NSObject
-@property (nonatomic, assign) SGPlayerState previous;
-@property (nonatomic, assign) SGPlayerState current;
+@interface SGPlaybackStateModel : NSObject
+@property (nonatomic, assign) SGPlayerPlaybackState previous;
+@property (nonatomic, assign) SGPlayerPlaybackState current;
+@end
+
+@interface SGLoadedStateModel : NSObject
+@property (nonatomic, assign) SGPlayerLoadState previous;
+@property (nonatomic, assign) SGPlayerLoadState current;
 @end
 
 @interface SGTimeModel : NSObject
-@property (nonatomic, assign) NSTimeInterval percent;
 @property (nonatomic, assign) NSTimeInterval current;
-@property (nonatomic, assign) NSTimeInterval total;
+@property (nonatomic, assign) NSTimeInterval duration;
+@property (nonatomic, assign, readonly) NSTimeInterval percent;
 @end
 
 NS_ASSUME_NONNULL_END

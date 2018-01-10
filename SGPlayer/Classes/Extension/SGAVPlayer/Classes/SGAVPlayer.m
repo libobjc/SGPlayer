@@ -18,7 +18,9 @@
 @interface SGAVPlayer ()
 
 @property (nonatomic, copy) NSURL * contentURL;
-@property (nonatomic, assign) SGPlayerState state;
+@property (nonatomic, assign) SGPlayerPlaybackState playbackState;
+@property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
+@property (nonatomic, assign) SGPlayerLoadState loadState;
 @property (nonatomic, assign) NSTimeInterval loadedTime;
 @property (nonatomic, copy) NSError * error;
 
@@ -27,14 +29,8 @@
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
-@property (nonatomic, assign) BOOL playing;
-@property (nonatomic, assign) BOOL buffering;
-@property (nonatomic, assign) BOOL seeking;
 @property (nonatomic, assign) BOOL shouldAutoPlay;
-
-@property (nonatomic, assign) SGPlayerState stateBeforBuffering;
 @property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
-@property (nonatomic, assign) NSTimeInterval readyToPlayTimeInterval;
 
 @end
 
@@ -56,7 +52,8 @@
 
 - (void)dealloc
 {
-    [self clear];
+    [SGPlayerActivity playerResignActive];
+    [self cleanPlayer];
     [self removeInterrupt];
 }
 
@@ -68,7 +65,6 @@
         return;
     }
     self.contentURL = contentURL;
-    [self startBuffering];
     [self setupPlayer];
 }
 
@@ -97,11 +93,11 @@
     SGWeakSelf
     self.playerTimeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         SGStrongSelf
-        if (strongSelf.state == SGPlayerStatePlaying) {
+        if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
+        {
             CGFloat current = CMTimeGetSeconds(time);
             CGFloat duration = strongSelf.duration;
-            double percent = [strongSelf percentForTime:current duration:duration];
-            [SGPlayerCallback callbackForPlaybackTime:strongSelf percent:percent current:current total:duration];
+            [SGPlayerCallback callbackForPlaybackTime:strongSelf current:current duration:duration];
         }
     }];
 }
@@ -137,65 +133,28 @@
     }
 }
 
-- (void)clear
-{
-    [SGPlayerActivity playerResignActive];
-    [self cleanPlayer];
-    [SGPlayerCallback callbackForPlaybackTime:self percent:0 current:0 total:0];
-    [SGPlayerCallback callbackForLoadedTime:self percent:0 current:0 total:0];
-    self.error = nil;
-    self.contentURL = nil;
-    self.state = SGPlayerStateNone;
-    self.stateBeforBuffering = SGPlayerStateNone;
-    self.loadedTime = 0;
-    self.readyToPlayTimeInterval = 0;
-    self.seeking = NO;
-    self.buffering = NO;
-    self.playing = NO;
-    self.shouldAutoPlay = NO;
-}
-
 
 #pragma mark - Control
 
 - (void)play
 {
     [SGPlayerActivity playerBecomeActive];
-    self.playing = YES;
-    switch (self.state)
+    switch (self.playbackState)
     {
-        case SGPlayerStateFinished:
+        case SGPlayerPlaybackStateFinished:
             [self.player seekToTime:kCMTimeZero];
-            self.state = SGPlayerStatePlaying;
             break;
-        case SGPlayerStateFailed:
+        case SGPlayerPlaybackStateFailed:
             [self replaceWithContentURL:self.contentURL];
-            break;
-        case SGPlayerStateNone:
-            self.state = SGPlayerStateBuffering;
-            break;
-        case SGPlayerStateSuspend:
-            if (self.buffering) {
-                self.state = SGPlayerStateBuffering;
-            } else {
-                self.state = SGPlayerStatePlaying;
-            }
-            break;
-        case SGPlayerStateReadyToPlay:
-            self.state = SGPlayerStatePlaying;
             break;
         default:
             break;
     }
+    self.playbackState = SGPlayerPlaybackStatePlaying;
     [self.player play];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        switch (self.state) {
-            case SGPlayerStateBuffering:
-            case SGPlayerStatePlaying:
-            case SGPlayerStateReadyToPlay:
-                [self.player play];
-            default:
-                break;
+        if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+            [self.player play];
         }
     });
 }
@@ -204,16 +163,58 @@
 {
     [SGPlayerActivity playerResignActive];
     [self.player pause];
-    self.playing = NO;
-    if (self.state == SGPlayerStateFailed) {
-        return;
+    switch (self.playbackState) {
+        case SGPlayerPlaybackStateStopped:
+        case SGPlayerPlaybackStateFinished:
+        case SGPlayerPlaybackStateFailed:
+            return;
+        default:
+            break;
     }
-    self.state = SGPlayerStateSuspend;
+    self.playbackState = SGPlayerPlaybackStatePaused;
+}
+
+- (void)interrupt
+{
+    [SGPlayerActivity playerResignActive];
+    [self.player pause];
+    switch (self.playbackState) {
+        case SGPlayerPlaybackStateStopped:
+        case SGPlayerPlaybackStateFinished:
+        case SGPlayerPlaybackStateFailed:
+            return;
+        default:
+            break;
+    }
+    self.playbackState = SGPlayerPlaybackStateInterrupted;
 }
 
 - (void)stop
 {
-    [self clear];
+    [SGPlayerActivity playerResignActive];
+    [self cleanPlayer];
+    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
+    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
+    self.error = nil;
+    self.contentURL = nil;
+    self.loadedTime = 0;
+    self.shouldAutoPlay = NO;
+    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+    self.playbackState = SGPlayerPlaybackStateStopped;
+}
+
+- (void)clear
+{
+    [SGPlayerActivity playerResignActive];
+    [self cleanPlayer];
+    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
+    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
+    self.error = nil;
+    self.contentURL = nil;
+    self.loadedTime = 0;
+    self.shouldAutoPlay = NO;
+    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+    self.playbackState = SGPlayerPlaybackStateIdle;
 }
 
 - (void)seekToTime:(NSTimeInterval)time
@@ -230,19 +231,24 @@
         return;
     }
     dispatch_async(dispatch_get_main_queue(), ^{
-        self.seeking = YES;
-        [self startBuffering];
+        if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+            [self.player pause];
+        }
+        self.playbackStateBeforSeeking = self.playbackState;
+        self.playbackState = SGPlayerPlaybackStateSeeking;
         SGWeakSelf
         [self.playerItem seekToTime:CMTimeMakeWithSeconds(time, NSEC_PER_SEC) completionHandler:^(BOOL finished) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 SGStrongSelf
-                strongSelf.seeking = NO;
-                [strongSelf stopBuffering];
-                [strongSelf resumeStateAfterBuffering];
+                strongSelf.playbackState = strongSelf.playbackStateBeforSeeking;
+                strongSelf.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+                if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
+                    [strongSelf.player play];
+                }
                 if (completeHandler) {
                     completeHandler(finished);
                 }
-                SGPlayerLog(@"SGAVPlayer seek success");
+                SGPlayerLog(@"SGAVPlayer seek finished");
             });
         }];
     });
@@ -251,27 +257,13 @@
 
 #pragma mark - Internal Functions
 
-- (void)setState:(SGPlayerState)state
+- (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
 {
-    if (_state != state)
+    if (_playbackState != playbackState)
     {
-        SGPlayerState previous = _state;
-        _state = state;
-        switch (self.state)
-        {
-            case SGPlayerStateFinished:
-                self.playing = NO;
-                break;
-            case SGPlayerStateFailed:
-                self.playing = NO;
-                break;
-            default:
-                break;
-        }
-        if (_state != SGPlayerStateFailed) {
-            self.error = nil;
-        }
-        [SGPlayerCallback callbackForState:self current:_state previous:previous];
+        SGPlayerPlaybackState previous = _playbackState;
+        _playbackState = playbackState;
+        [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
     }
 }
 
@@ -302,46 +294,8 @@
     if (_loadedTime != loadedTime) {
         _loadedTime = loadedTime;
         CGFloat duration = self.duration;
-        double percent = [self percentForTime:_loadedTime duration:duration];
-        [SGPlayerCallback callbackForLoadedTime:self percent:percent current:_loadedTime total:duration];
+        [SGPlayerCallback callbackForLoadedTime:self current:_loadedTime duration:duration];
     }
-}
-
-- (void)startBuffering
-{
-    if (self.playing) {
-        [self.player pause];
-    }
-    self.buffering = YES;
-    if (self.state != SGPlayerStateBuffering) {
-        self.stateBeforBuffering = self.state;
-    }
-    self.state = SGPlayerStateBuffering;
-}
-
-- (void)stopBuffering
-{
-    self.buffering = NO;
-}
-
-- (void)resumeStateAfterBuffering
-{
-    if (self.playing) {
-        [self.player play];
-        self.state = SGPlayerStatePlaying;
-    } else if (self.state == SGPlayerStateBuffering) {
-        self.state = self.stateBeforBuffering;
-    }
-}
-
-- (BOOL)playIfNeed
-{
-    if (self.playing) {
-        [self.player play];
-        self.state = SGPlayerStatePlaying;
-        return YES;
-    }
-    return NO;
 }
 
 - (BOOL)seekEnable
@@ -350,19 +304,6 @@
         return NO;
     }
     return YES;
-}
-
-- (double)percentForTime:(NSTimeInterval)time duration:(NSTimeInterval)duration
-{
-    double percent = 0;
-    if (time > 0) {
-        if (duration <= 0) {
-            percent = 1;
-        } else {
-            percent = time / duration;
-        }
-    }
-    return percent;
 }
 
 - (void)reloadPlayableTime
@@ -381,7 +322,7 @@
 
 - (void)playerItemDidPlayToEnd:(NSNotification *)notification
 {
-    self.state = SGPlayerStateFinished;
+    self.playbackState = SGPlayerPlaybackStatePlaying;
 }
 
 - (UIView *)view
@@ -400,33 +341,20 @@
             switch (self.playerItem.status) {
                 case AVPlayerItemStatusUnknown:
                 {
-                    [self startBuffering];
                     SGPlayerLog(@"SGAVPlayer item status unknown");
+//                    [self startBuffering];
                 }
                     break;
                 case AVPlayerItemStatusReadyToPlay:
                 {
-                    [self stopBuffering];
                     SGPlayerLog(@"SGAVPlayer item status ready to play");
-                    self.readyToPlayTimeInterval = [NSDate date].timeIntervalSince1970;
-                    if (![self playIfNeed]) {
-                        switch (self.state) {
-                            case SGPlayerStateSuspend:
-                            case SGPlayerStateFinished:
-                            case SGPlayerStateFailed:
-                                break;
-                            default:
-                                self.state = SGPlayerStateReadyToPlay;
-                                break;
-                        }
-                    }
+//                    [self stopBuffering];
                 }
                     break;
                 case AVPlayerItemStatusFailed:
                 {
                     SGPlayerLog(@"SGAVPlayer item status failed");
-                    [self stopBuffering];
-                    self.readyToPlayTimeInterval = 0;
+//                    [self stopBuffering];
                     
                     NSError * error = nil;
                     if (self.playerItem.error) {
@@ -437,7 +365,7 @@
                         error = [NSError errorWithDomain:@"AVPlayer playback error" code:-1 userInfo:nil];
                     }
                     self.error = error;
-                    self.state = SGPlayerStateFailed;
+                    self.playbackState = SGPlayerPlaybackStateFailed;
                     [SGPlayerCallback callbackForError:self error:error];
                 }
                     break;
@@ -446,7 +374,7 @@
         else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
         {
             if (self.playerItem.playbackBufferEmpty) {
-                [self startBuffering];
+//                [self startBuffering];
             }
         }
         else if ([keyPath isEqualToString:@"loadedTimeRanges"])
@@ -458,10 +386,10 @@
                 residue = 2;
             }
             if (interval > self.minimumPlayableDuration) {
-                [self stopBuffering];
-                [self resumeStateAfterBuffering];
+//                [self stopBuffering];
+//                [self resumeStateAfterBuffering];
             } else if (interval < 0.3 && residue > 1.5) {
-                [self startBuffering];
+//                [self startBuffering];
             }
         }
     }
@@ -479,34 +407,23 @@
     SGAudioManager * manager = [SGAudioManager manager];
     [manager setHandlerTarget:self interruption:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerInterruptionType type, SGAudioManagerInterruptionOption option) {
         SGStrongSelf
-        if (type == SGAudioManagerInterruptionTypeBegin) {
-            switch (strongSelf.state) {
-                case SGPlayerStatePlaying:
-                case SGPlayerStateBuffering:
-                {
-                    // fix : maybe receive interruption notification when enter foreground.
-                    NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
-                    if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
-                        [strongSelf pause];
-                    }
+        if (type == SGAudioManagerInterruptionTypeBegin)
+        {
+            if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
+            {
+                // fix : maybe receive interruption notification when enter foreground.
+                NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+                if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
+                    [strongSelf interrupt];
                 }
-                    break;
-                default:
-                    break;
             }
         }
     } routeChange:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerRouteChangeReason reason) {
         SGStrongSelf
-        if (reason == SGAudioManagerRouteChangeReasonOldDeviceUnavailable) {
-            switch (strongSelf.state) {
-                case SGPlayerStatePlaying:
-                case SGPlayerStateBuffering:
-                {
-                    [strongSelf pause];
-                }
-                    break;
-                default:
-                    break;
+        if (reason == SGAudioManagerRouteChangeReasonOldDeviceUnavailable)
+        {
+            if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
+                [strongSelf interrupt];
             }
         }
     }];
@@ -526,16 +443,10 @@
             break;
         case SGPlayerBackgroundModeAutoPlayAndPause:
         {
-            switch (self.state) {
-                case SGPlayerStatePlaying:
-                case SGPlayerStateBuffering:
-                {
-                    self.shouldAutoPlay = YES;
-                    [self pause];
-                }
-                    break;
-                default:
-                    break;
+            if (self.playbackState == SGPlayerPlaybackStatePlaying)
+            {
+                self.shouldAutoPlay = YES;
+                [self interrupt];
             }
         }
             break;
@@ -550,18 +461,10 @@
             break;
         case SGPlayerBackgroundModeAutoPlayAndPause:
         {
-            switch (self.state) {
-                case SGPlayerStateSuspend:
-                {
-                    if (self.shouldAutoPlay) {
-                        self.shouldAutoPlay = NO;
-                        [self play];
-                        self.lastForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
-                    }
-                }
-                    break;
-                default:
-                    break;
+            if (self.shouldAutoPlay && self.playbackState == SGPlayerPlaybackStateInterrupted) {
+                self.shouldAutoPlay = NO;
+                [self play];
+                self.lastForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
             }
         }
             break;

@@ -32,9 +32,10 @@
     
     self.player = [[SGAVPlayer alloc] init];
     [self sg_registerNotificationForPlayer:self.player
-                               stateAction:@selector(stateAction:)
-                            progressAction:@selector(progressAction:)
-                            playableAction:@selector(playableAction:)
+                       playbackStateAction:@selector(playbackStateAction:)
+                           loadStateAction:@selector(loadStateAction:)
+                        playbackTimeAction:@selector(playbackTimeAction:)
+                              loadedAction:@selector(loadedTimeAction:)
                                errorAction:@selector(errorAction:)];
 //    [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
 //        NSLog(@"player display view did click!");
@@ -49,6 +50,7 @@
         vrVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     });
     [self.player replaceWithContentURL:normalVideo];
+    [self.player play];
 //    switch (self.demoType)
 //    {
 //        case DemoType_AVPlayer_Normal:
@@ -145,40 +147,47 @@
     [self.player seekToTime:self.player.duration * self.progressSilder.value];
 }
 
-- (void)stateAction:(NSNotification *)notification
+- (void)playbackStateAction:(NSNotification *)notification
 {
-    SGStateModel * state = [notification.userInfo sg_stateModel];
+    SGPlaybackStateModel * state = [notification.userInfo sg_playbackStateModel];
     
     NSString * text;
     switch (state.current) {
-        case SGPlayerStateNone:
-            text = @"None";
+        case SGPlayerPlaybackStateIdle:
+            text = @"Idle";
             break;
-        case SGPlayerStateBuffering:
-            text = @"Buffering...";
-            break;
-        case SGPlayerStateReadyToPlay:
-            text = @"Prepare";
-            self.totalTimeLabel.text = [self timeStringFromSeconds:self.player.duration];
-            [self.player play];
-            break;
-        case SGPlayerStatePlaying:
+        case SGPlayerPlaybackStatePlaying:
             text = @"Playing";
             break;
-        case SGPlayerStateSuspend:
-            text = @"Suspend";
+        case SGPlayerPlaybackStateSeeking:
+            text = @"Seeking";
             break;
-        case SGPlayerStateFinished:
+        case SGPlayerPlaybackStatePaused:
+            text = @"Paused";
+            break;
+        case SGPlayerPlaybackStateInterrupted:
+            text = @"Interrupted";
+            break;
+        case SGPlayerPlaybackStateStopped:
+            text = @"Stopped";
+            break;
+        case SGPlayerPlaybackStateFinished:
             text = @"Finished";
             break;
-        case SGPlayerStateFailed:
-            text = @"Error";
+        case SGPlayerPlaybackStateFailed:
+            text = @"Failed";
             break;
     }
     self.stateLabel.text = text;
 }
 
-- (void)progressAction:(NSNotification *)notification
+- (void)loadStateAction:(NSNotification *)notification
+{
+    SGPlaybackStateModel * state = [notification.userInfo sg_playbackStateModel];
+    NSLog(@"%s, %ld", __func__, state.current);
+}
+
+- (void)playbackTimeAction:(NSNotification *)notification
 {
     SGTimeModel * progress = [notification.userInfo sg_playbackTimeModel];
     if (!self.progressSilderTouching) {
@@ -187,7 +196,7 @@
     self.currentTimeLabel.text = [self timeStringFromSeconds:progress.current];
 }
 
-- (void)playableAction:(NSNotification *)notification
+- (void)loadedTimeAction:(NSNotification *)notification
 {
     SGTimeModel * playable = [notification.userInfo sg_loadedTimeModel];
     NSLog(@"playable time : %f", playable.current);

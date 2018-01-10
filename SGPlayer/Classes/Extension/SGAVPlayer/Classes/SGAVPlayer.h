@@ -14,7 +14,9 @@
 @property (nonatomic, copy, readonly) NSURL * contentURL;
 - (void)replaceWithContentURL:(NSURL *)contentURL;
 
-@property (nonatomic, assign, readonly) SGPlayerState state;
+@property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
+@property (nonatomic, assign, readonly) SGPlayerLoadState loadState;
+
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval playbackTime;
 @property (nonatomic, assign, readonly) NSTimeInterval loadedTime;

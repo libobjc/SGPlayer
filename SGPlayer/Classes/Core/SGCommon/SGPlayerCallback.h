@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayerDefines.h"
+#import "SGPlayerAction.h"
 
 @interface SGPlayerCallback : NSObject
 
-+ (void)callbackForState:(id)player current:(SGPlayerState)current previous:(SGPlayerState)previous;
-+ (void)callbackForPlaybackTime:(id)player percent:(NSTimeInterval)percent current:(NSTimeInterval)current total:(NSTimeInterval)total;
-+ (void)callbackForLoadedTime:(id)player percent:(NSTimeInterval)percent current:(NSTimeInterval)current total:(NSTimeInterval)total;
++ (void)callbackForPlaybackState:(id)player current:(SGPlayerPlaybackState)current previous:(SGPlayerPlaybackState)previous;
++ (void)callbackForLoadState:(id)player current:(SGPlayerLoadState)current previous:(SGPlayerLoadState)previous;
++ (void)callbackForPlaybackTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration;
++ (void)callbackForLoadedTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration;
 + (void)callbackForError:(id)player error:(NSError *)error;
 
 @end

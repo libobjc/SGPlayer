@@ -8,25 +8,15 @@
 
 #import "SGPlayerAction.h"
 
+
 // notification name
-NSString * const SGPlayerErrorNotificationName = @"SGPlayerErrorNotificationName";                   // player error
-NSString * const SGPlayerStateChangeNotificationName = @"SGPlayerStateChangeNotificationName";     // player state change
-NSString * const SGPlayerProgressChangeNotificationName = @"SGPlayerProgressChangeNotificationName";  // player play progress change
-NSString * const SGPlayerPlayableChangeNotificationName = @"SGPlayerPlayableChangeNotificationName";   // player playable progress change
+NSString * const SGPlayerPlaybackStateDidChangeNotificationName = @"SGPlayerPlaybackStateDidChangeNotificationName";     // player state change
+NSString * const SGPlayerLoadStateDidChangeNotificationName = @"SGPlayerLoadStateDidChangeNotificationName";     // player state change
+NSString * const SGPlayerPlaybackTimeDidChangeNotificationName = @"SGPlayerPlaybackTimeDidChangeNotificationName";  // player play progress change
+NSString * const SGPlayerLoadedTimeDidChangeNotificationName = @"SGPlayerLoadedTimeDidChangeNotificationName";   // player playable progress change
+NSString * const SGPlayerDidErrorNotificationName = @"SGPlayerDidErrorNotificationName";                   // player error
 
-// notification userinfo key
-NSString * const SGPlayerErrorKey = @"error";               // error
-
-NSString * const SGPlayerStatePreviousKey = @"previous";    // state
-NSString * const SGPlayerStateCurrentKey = @"current";      // state
-
-NSString * const SGPlayerProgressPercentKey = @"percent";   // progress
-NSString * const SGPlayerProgressCurrentKey = @"current";   // progress
-NSString * const SGPlayerProgressTotalKey = @"total";       // progress
-
-NSString * const SGPlayerPlayablePercentKey = @"percent";   // playable
-NSString * const SGPlayerPlayableCurrentKey = @"current";   // playable
-NSString * const SGPlayerPlayableTotalKey = @"total";       // playable
+NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationUserInfoObjectKey";    // state
 
 
 #pragma mark - SGPlayer Action Category
@@ -34,45 +24,53 @@ NSString * const SGPlayerPlayableTotalKey = @"total";       // playable
 @implementation NSObject (SGPlayerAction)
 
 - (void)sg_registerNotificationForPlayer:(id)player
-                             stateAction:(SEL)stateAction
-                          progressAction:(SEL)progressAction
-                          playableAction:(SEL)playableAction
+                     playbackStateAction:(SEL)playbackStateAction
+                         loadStateAction:(SEL)loadStateAction
+                      playbackTimeAction:(SEL)playbackTimeAction
+                            loadedAction:(SEL)loadedAction
                              errorAction:(SEL)errorAction
 {
     [self sg_removeNotificationForPlayer:player];
     
-    if (stateAction) {
+    if (playbackStateAction) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:stateAction
-                                                     name:SGPlayerStateChangeNotificationName
+                                                 selector:playbackStateAction
+                                                     name:SGPlayerPlaybackStateDidChangeNotificationName
                                                    object:player];
     }
-    if (progressAction) {
+    if (loadStateAction) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:progressAction
-                                                     name:SGPlayerProgressChangeNotificationName
+                                                 selector:loadStateAction
+                                                     name:SGPlayerLoadStateDidChangeNotificationName
                                                    object:player];
     }
-    if (playableAction) {
+    if (playbackTimeAction) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:playableAction
-                                                     name:SGPlayerPlayableChangeNotificationName
+                                                 selector:playbackTimeAction
+                                                     name:SGPlayerPlaybackTimeDidChangeNotificationName
+                                                   object:player];
+    }
+    if (loadedAction) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:loadedAction
+                                                     name:SGPlayerLoadedTimeDidChangeNotificationName
                                                    object:player];
     }
     if (errorAction) {
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:errorAction
-                                                     name:SGPlayerErrorNotificationName
+                                                     name:SGPlayerDidErrorNotificationName
                                                    object:player];
     }
 }
 
 - (void)sg_removeNotificationForPlayer:(id)player
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerStateChangeNotificationName object:player];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerProgressChangeNotificationName object:player];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlayableChangeNotificationName object:player];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerErrorNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlaybackStateDidChangeNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerLoadStateDidChangeNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlaybackTimeDidChangeNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerLoadedTimeDidChangeNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerDidErrorNotificationName object:player];
 }
 
 @end
@@ -82,41 +80,46 @@ NSString * const SGPlayerPlayableTotalKey = @"total";       // playable
 
 @implementation NSDictionary (SGPlayerModel)
 
-- (SGStateModel *)sg_stateModel
+- (SGPlaybackStateModel *)sg_playbackStateModel
 {
-    SGStateModel * state = [[SGStateModel alloc] init];
-    state.previous = [[self objectForKey:SGPlayerStatePreviousKey] integerValue];
-    state.current = [[self objectForKey:SGPlayerStateCurrentKey] integerValue];
-    return state;
+    return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
+}
+
+- (SGLoadedStateModel *)sg_loadedStateModel
+{
+    return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }
 
 - (SGTimeModel *)sg_playbackTimeModel
 {
-    SGTimeModel * time = [[SGTimeModel alloc] init];
-    time.percent = [[self objectForKey:SGPlayerProgressPercentKey] doubleValue];
-    time.current = [[self objectForKey:SGPlayerProgressCurrentKey] doubleValue];
-    time.total = [[self objectForKey:SGPlayerProgressTotalKey] doubleValue];
-    return time;
+    return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }
 
 - (SGTimeModel *)sg_loadedTimeModel
 {
-    SGTimeModel * time = [[SGTimeModel alloc] init];
-    time.percent = [[self objectForKey:SGPlayerPlayablePercentKey] doubleValue];
-    time.current = [[self objectForKey:SGPlayerPlayableCurrentKey] doubleValue];
-    time.total = [[self objectForKey:SGPlayerPlayableTotalKey] doubleValue];
-    return time;
+    return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }
 
 - (NSError *)sg_error
 {
-    return [self objectForKey:SGPlayerErrorKey];
+    return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }
 
 @end
 
-@implementation SGStateModel
+@implementation SGPlaybackStateModel
+
+@end
+
+@implementation SGLoadedStateModel
+
 @end
 
 @implementation SGTimeModel
+
+- (NSTimeInterval)percent
+{
+    return self.current / self.duration;
+}
+
 @end

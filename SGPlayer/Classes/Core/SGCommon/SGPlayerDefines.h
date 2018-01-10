@@ -13,15 +13,23 @@
 #import <Foundation/Foundation.h>
 
 
-typedef NS_ENUM(NSUInteger, SGPlayerState)
+typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
 {
-    SGPlayerStateNone = 0,
-    SGPlayerStateBuffering = 1,
-    SGPlayerStateReadyToPlay = 2,
-    SGPlayerStatePlaying = 3,
-    SGPlayerStateSuspend = 4,
-    SGPlayerStateFinished = 5,
-    SGPlayerStateFailed = 6,
+    SGPlayerPlaybackStateIdle,
+    SGPlayerPlaybackStatePlaying,
+    SGPlayerPlaybackStateSeeking,
+    SGPlayerPlaybackStatePaused,
+    SGPlayerPlaybackStateInterrupted,
+    SGPlayerPlaybackStateStopped,
+    SGPlayerPlaybackStateFinished,
+    SGPlayerPlaybackStateFailed,
+};
+
+typedef NS_ENUM(NSUInteger, SGPlayerLoadState)
+{
+    SGPlayerLoadStateIdle,
+    SGPlayerLoadStateLoading,
+    SGPlayerLoadStatePlayable,
 };
 
 typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)
