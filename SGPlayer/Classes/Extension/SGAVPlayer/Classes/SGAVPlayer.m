@@ -9,6 +9,7 @@
 #import "SGAVPlayer.h"
 #import "SGAVPlayerView.h"
 #import "SGPlayerCallback.h"
+#import "SGPlayerActivity.h"
 #import "SGAudioManager.h"
 #import "SGPlayerMacro.h"
 #import <AVFoundation/AVFoundation.h>
@@ -55,14 +56,14 @@
 
 - (void)dealloc
 {
+    [self clear];
     [self removeInterrupt];
-    [self clean];
 }
 
 
 - (void)replaceWithContentURL:(nullable NSURL *)contentURL
 {
-    [self clean];
+    [self clear];
     if (contentURL == nil) {
         return;
     }
@@ -82,7 +83,7 @@
     [self.playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:NULL];
     [self.playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:NULL];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(avplayerItemDidPlayToEnd:)
+                                             selector:@selector(playerItemDidPlayToEnd:)
                                                  name:AVPlayerItemDidPlayToEndTimeNotification
                                                object:self.playerItem];
     
@@ -136,21 +137,19 @@
     }
 }
 
-- (void)clean
+- (void)clear
 {
-    [UIApplication sharedApplication].idleTimerDisabled = NO;
-    
+    [SGPlayerActivity playerResignActive];
     [self cleanPlayer];
-    
     [SGPlayerCallback callbackForPlaybackTime:self percent:0 current:0 total:0];
     [SGPlayerCallback callbackForLoadedTime:self percent:0 current:0 total:0];
     self.error = nil;
     self.contentURL = nil;
     self.state = SGPlayerStateNone;
     self.stateBeforBuffering = SGPlayerStateNone;
-    self.seeking = NO;
     self.loadedTime = 0;
     self.readyToPlayTimeInterval = 0;
+    self.seeking = NO;
     self.buffering = NO;
     self.playing = NO;
     self.shouldAutoPlay = NO;
@@ -161,11 +160,10 @@
 
 - (void)play
 {
-    [UIApplication sharedApplication].idleTimerDisabled = YES;
-    
+    [SGPlayerActivity playerBecomeActive];
     self.playing = YES;
-    
-    switch (self.state) {
+    switch (self.state)
+    {
         case SGPlayerStateFinished:
             [self.player seekToTime:kCMTimeZero];
             self.state = SGPlayerStatePlaying;
@@ -189,7 +187,6 @@
         default:
             break;
     }
-    
     [self.player play];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         switch (self.state) {
@@ -205,17 +202,18 @@
 
 - (void)pause
 {
-    [UIApplication sharedApplication].idleTimerDisabled = NO;
-    
+    [SGPlayerActivity playerResignActive];
     [self.player pause];
     self.playing = NO;
-    if (self.state == SGPlayerStateFailed) return;
+    if (self.state == SGPlayerStateFailed) {
+        return;
+    }
     self.state = SGPlayerStateSuspend;
 }
 
 - (void)stop
 {
-    [self clean];
+    [self clear];
 }
 
 - (void)seekToTime:(NSTimeInterval)time
@@ -231,7 +229,6 @@
         }
         return;
     }
-    
     dispatch_async(dispatch_get_main_queue(), ^{
         self.seeking = YES;
         [self startBuffering];
@@ -256,10 +253,12 @@
 
 - (void)setState:(SGPlayerState)state
 {
-    if (_state != state) {
-        SGPlayerState temp = _state;
+    if (_state != state)
+    {
+        SGPlayerState previous = _state;
         _state = state;
-        switch (self.state) {
+        switch (self.state)
+        {
             case SGPlayerStateFinished:
                 self.playing = NO;
                 break;
@@ -272,7 +271,7 @@
         if (_state != SGPlayerStateFailed) {
             self.error = nil;
         }
-        [SGPlayerCallback callbackForState:self current:_state previous:temp];
+        [SGPlayerCallback callbackForState:self current:_state previous:previous];
     }
 }
 
@@ -380,7 +379,7 @@
     }
 }
 
-- (void)avplayerItemDidPlayToEnd:(NSNotification *)notification
+- (void)playerItemDidPlayToEnd:(NSNotification *)notification
 {
     self.state = SGPlayerStateFinished;
 }
