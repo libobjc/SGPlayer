@@ -17,7 +17,6 @@
 @interface SGAVPlayer ()
 
 @property (nonatomic, copy) NSURL * contentURL;
-
 @property (nonatomic, assign) SGPlayerState state;
 @property (nonatomic, assign) NSTimeInterval loadedTime;
 @property (nonatomic, copy) NSError * error;
@@ -27,14 +26,13 @@
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
-@property (nonatomic, assign) NSTimeInterval readyToPlayTime;
-
 @property (nonatomic, assign) BOOL playing;
 @property (nonatomic, assign) BOOL buffering;
 @property (nonatomic, assign) BOOL seeking;
 
 @property (nonatomic, assign) SGPlayerState stateBeforBuffering;
 @property (nonatomic, assign) NSTimeInterval playableBufferInterval;
+@property (nonatomic, assign) NSTimeInterval readyToPlayTime;
 
 @property (nonatomic, assign) BOOL needAutoPlay;
 @property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
@@ -49,8 +47,7 @@
 {
     if (self = [super init])
     {
-        [self setupNotifications];
-        self.contentURL = nil;
+        [self registerInterrupt];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.playableBufferInterval = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
@@ -60,8 +57,7 @@
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SGAudioManager manager] removeHandlerTarget:self];
+    [self removeInterrupt];
     [self clean];
 }
 
@@ -475,9 +471,9 @@
 }
 
 
-#pragma mark - Notifications
+#pragma mark - Interrupt
 
-- (void)setupNotifications
+- (void)registerInterrupt
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
@@ -517,6 +513,12 @@
             }
         }
     }];
+}
+
+- (void)removeInterrupt
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[SGAudioManager manager] removeHandlerTarget:self];
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
@@ -568,6 +570,7 @@
             break;
     }
 }
+
 
 @end
 
