@@ -22,6 +22,7 @@
 
 @property (nonatomic, strong, readonly) UIView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
+@property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;
 
 - (void)play;
 - (void)pause;

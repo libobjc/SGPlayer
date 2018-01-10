@@ -29,13 +29,11 @@
 @property (nonatomic, assign) BOOL playing;
 @property (nonatomic, assign) BOOL buffering;
 @property (nonatomic, assign) BOOL seeking;
+@property (nonatomic, assign) BOOL shouldAutoPlay;
 
 @property (nonatomic, assign) SGPlayerState stateBeforBuffering;
-@property (nonatomic, assign) NSTimeInterval playableBufferInterval;
-@property (nonatomic, assign) NSTimeInterval readyToPlayTime;
-
-@property (nonatomic, assign) BOOL needAutoPlay;
 @property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
+@property (nonatomic, assign) NSTimeInterval readyToPlayTimeInterval;
 
 @end
 
@@ -49,7 +47,7 @@
     {
         [self registerInterrupt];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
-        self.playableBufferInterval = 2.f;
+        self.minimumPlayableDuration = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
     }
     return self;
@@ -152,10 +150,10 @@
     self.stateBeforBuffering = SGPlayerStateNone;
     self.seeking = NO;
     self.loadedTime = 0;
-    self.readyToPlayTime = 0;
+    self.readyToPlayTimeInterval = 0;
     self.buffering = NO;
     self.playing = NO;
-    self.needAutoPlay = NO;
+    self.shouldAutoPlay = NO;
 }
 
 
@@ -411,7 +409,7 @@
                 {
                     [self stopBuffering];
                     SGPlayerLog(@"SGAVPlayer item status ready to play");
-                    self.readyToPlayTime = [NSDate date].timeIntervalSince1970;
+                    self.readyToPlayTimeInterval = [NSDate date].timeIntervalSince1970;
                     if (![self playIfNeed]) {
                         switch (self.state) {
                             case SGPlayerStateSuspend:
@@ -429,7 +427,7 @@
                 {
                     SGPlayerLog(@"SGAVPlayer item status failed");
                     [self stopBuffering];
-                    self.readyToPlayTime = 0;
+                    self.readyToPlayTimeInterval = 0;
                     
                     NSError * error = nil;
                     if (self.playerItem.error) {
@@ -460,7 +458,7 @@
             if (residue <= -1.5) {
                 residue = 2;
             }
-            if (interval > self.playableBufferInterval) {
+            if (interval > self.minimumPlayableDuration) {
                 [self stopBuffering];
                 [self resumeStateAfterBuffering];
             } else if (interval < 0.3 && residue > 1.5) {
@@ -533,7 +531,7 @@
                 case SGPlayerStatePlaying:
                 case SGPlayerStateBuffering:
                 {
-                    self.needAutoPlay = YES;
+                    self.shouldAutoPlay = YES;
                     [self pause];
                 }
                     break;
@@ -556,8 +554,8 @@
             switch (self.state) {
                 case SGPlayerStateSuspend:
                 {
-                    if (self.needAutoPlay) {
-                        self.needAutoPlay = NO;
+                    if (self.shouldAutoPlay) {
+                        self.shouldAutoPlay = NO;
                         [self play];
                         self.lastForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
                     }
