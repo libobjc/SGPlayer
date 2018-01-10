@@ -659,7 +659,7 @@
 		9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
 		9CE6F57C2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
 		9CE6F57D2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
-		9CE6F58B2004DECC00D1F4C8 /* SGAVPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5842004DECC00D1F4C8 /* SGAVPlayer.h */; };
+		9CE6F58B2004DECC00D1F4C8 /* SGAVPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5842004DECC00D1F4C8 /* SGAVPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F58C2004DECC00D1F4C8 /* SGAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5852004DECC00D1F4C8 /* SGAVPlayer.m */; };
 		9CE6F58D2004DECC00D1F4C8 /* SGAVPlayerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5862004DECC00D1F4C8 /* SGAVPlayerView.h */; };
 		9CE6F58E2004DECC00D1F4C8 /* SGAVPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5872004DECC00D1F4C8 /* SGAVPlayerView.m */; };
@@ -675,12 +675,12 @@
 		9CE6F59D2004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */; };
 		9CE6F59E2004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */; };
 		9CE6F59F2004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */; };
-		9CE6F5A02004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */; };
+		9CE6F5A02004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F5A22004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
 		9CE6F5A32004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
 		9CE6F5A42004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
 		9CE6F5A52004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
-		9CE6F5A62004E85600D1F4C8 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; };
+		9CE6F5A62004E85600D1F4C8 /* SGPlayerAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C478EF91E713A3200AD4289 /* SGPlayerAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F5A72004E85C00D1F4C8 /* SGPlayerAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EFA1E713A3200AD4289 /* SGPlayerAction.m */; };
 		9CE6F5A82004ED9100D1F4C8 /* SGAudioManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4793321E713B5400AD4289 /* SGAudioManager.h */; };
 		9CE6F5A92004ED9400D1F4C8 /* SGAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4793331E713B5400AD4289 /* SGAudioManager.m */; };
@@ -904,7 +904,7 @@
 		9C5AB6F91E88F0400021F460 /* SGGLProgramNV12.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramNV12.m; sourceTree = "<group>"; };
 		9C5AB7001E88F0560021F460 /* SGGLProgramYUV420.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGGLProgramYUV420.h; sourceTree = "<group>"; };
 		9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramYUV420.m; sourceTree = "<group>"; };
-		9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer_iOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer_iOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFColor.h; sourceTree = "<group>"; };
 		9CE6F51B2004D97C00D1F4C8 /* SGPLFColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPLFColor.m; sourceTree = "<group>"; };
 		9CE6F51C2004D97C00D1F4C8 /* SGPLFDisplayLink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFDisplayLink.h; sourceTree = "<group>"; };
@@ -1505,7 +1505,7 @@
 				9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */,
 				9CEFA6EA1E7125C800835CAB /* SGPlayer.framework */,
 				9CEFA6F51E7125CC00835CAB /* SGPlayer.framework */,
-				9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer_iOS.framework */,
+				9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1527,25 +1527,25 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CE6F57A2004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
-				9CE6F5562004D97D00D1F4C8 /* SGPLFView.h in Headers */,
+				9CE6F58B2004DECC00D1F4C8 /* SGAVPlayer.h in Headers */,
+				9CE6F5A62004E85600D1F4C8 /* SGPlayerAction.h in Headers */,
+				9CE6F5A02004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */,
 				9CE6F5902004DECC00D1F4C8 /* SGAVPlayer.h in Headers */,
-				9CE6F53A2004D97D00D1F4C8 /* SGPLFDisplayLink.h in Headers */,
 				9CE6F5A52004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
+				9CE6F5562004D97D00D1F4C8 /* SGPLFView.h in Headers */,
+				9CE6F57A2004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
+				9CE6F53A2004D97D00D1F4C8 /* SGPLFDisplayLink.h in Headers */,
 				9CE6F5662004D97D00D1F4C8 /* SGPLFGLView.h in Headers */,
 				9CE6F5322004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
 				9CE6F55E2004D97D00D1F4C8 /* SGPLFGLContext.h in Headers */,
 				9CE6F5422004D97D00D1F4C8 /* SGPLFImage.h in Headers */,
 				9CE6F5762004D97D00D1F4C8 /* SGPLFOpenGL.h in Headers */,
-				9CE6F58D2004DECC00D1F4C8 /* SGAVPlayerView.h in Headers */,
-				9CE6F5972004E39500D1F4C8 /* SGPlayerCallback.h in Headers */,
-				9CE6F58B2004DECC00D1F4C8 /* SGAVPlayer.h in Headers */,
-				9CE6F5A82004ED9100D1F4C8 /* SGAudioManager.h in Headers */,
-				9CE6F5A62004E85600D1F4C8 /* SGPlayerAction.h in Headers */,
-				9CE6F5A02004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */,
 				9CE6F54A2004D97D00D1F4C8 /* SGPLFObject.h in Headers */,
 				9CE6F54E2004D97D00D1F4C8 /* SGPLFScreen.h in Headers */,
 				9CE6F56E2004D97D00D1F4C8 /* SGPLFGLViewController.h in Headers */,
+				9CE6F58D2004DECC00D1F4C8 /* SGAVPlayerView.h in Headers */,
+				9CE6F5972004E39500D1F4C8 /* SGPlayerCallback.h in Headers */,
+				9CE6F5A82004ED9100D1F4C8 /* SGAudioManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2065,7 +2065,7 @@
 			);
 			name = "SGAVPlayer iOS";
 			productName = SGAVPlayer;
-			productReference = 9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer_iOS.framework */;
+			productReference = 9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		9CEFA6D51E7122BF00835CAB /* SGPlayer iOS */ = {
@@ -2410,9 +2410,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/Classes/Extension/SGAVPlayer/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc..SGAVPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = SGAVPlayer;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2438,9 +2439,10 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/Classes/Extension/SGAVPlayer/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc..SGAVPlayer;
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PRODUCT_NAME = SGAVPlayer;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";

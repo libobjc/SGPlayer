@@ -9,12 +9,12 @@
 /* Begin PBXBuildFile section */
 		9C02F6511E79293A00932489 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C02F64F1E79293A00932489 /* PlayerViewController.m */; };
 		9C02F6521E79293A00932489 /* PlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C02F6501E79293A00932489 /* PlayerViewController.xib */; };
+		9C329AA62005E11500252B10 /* SGAVPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C329AA72005E11500252B10 /* SGAVPlayer.framework */; };
 		9C36DD461E79538500959FDA /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD441E79538500959FDA /* google-help-vr.mp4 */; };
 		9C36DD471E79538500959FDA /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD451E79538500959FDA /* i-see-fire.mp4 */; };
 		9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */; };
 		9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */; };
 		9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */; };
-		9C572BF41FAB266300606429 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9824A41FAB073B00142215 /* SGPlayer.framework */; };
 		9C886B981E78EC9F00F2CFD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B971E78EC9F00F2CFD1 /* main.m */; };
 		9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */; };
 		9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */; };
@@ -31,6 +31,8 @@
 		9C02F64F1E79293A00932489 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
 		9C02F6501E79293A00932489 /* PlayerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayerViewController.xib; sourceTree = "<group>"; };
 		9C2167151E7F81B800272348 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-eihmyibiajxgvzgpltouukszknss/Build/Products/Debug-iphoneos/SGPlatform.framework"; sourceTree = "<group>"; };
+		9C329AA52005DF4A00252B10 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C329AA72005E11500252B10 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C36DD441E79538500959FDA /* google-help-vr.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "google-help-vr.mp4"; path = "../../demo-assset/google-help-vr.mp4"; sourceTree = "<group>"; };
 		9C36DD451E79538500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
 		9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
@@ -63,7 +65,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C572BF41FAB266300606429 /* SGPlayer.framework in Frameworks */,
+				9C329AA62005E11500252B10 /* SGAVPlayer.framework in Frameworks */,
 				9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */,
 				9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */,
@@ -125,6 +127,8 @@
 		9C886BAE1E78ECE500F2CFD1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9C329AA72005E11500252B10 /* SGAVPlayer.framework */,
+				9C329AA52005DF4A00252B10 /* SGAVPlayer.framework */,
 				9C4032C41FAB1188005AEB36 /* SGPlayer.framework */,
 				9C9824AE1FAB10B100142215 /* SGPlayer.framework */,
 				9C9824A41FAB073B00142215 /* SGPlayer.framework */,
@@ -360,6 +364,10 @@
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-Objc",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-ios";
 				PRODUCT_NAME = SGPlayer;
 			};
@@ -373,6 +381,10 @@
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-all_load",
+					"-Objc",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-ios";
 				PRODUCT_NAME = SGPlayer;
 			};

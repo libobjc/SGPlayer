@@ -63,10 +63,10 @@
 - (void)replaceWithContentURL:(nullable NSURL *)contentURL
 {
     [self clean];
-    
-    if (!contentURL) return;
+    if (contentURL == nil) {
+        return;
+    }
     self.contentURL = contentURL;
-    
     [self startBuffering];
     [self setupPlayer];
 }

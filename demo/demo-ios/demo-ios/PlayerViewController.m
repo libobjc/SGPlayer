@@ -7,11 +7,12 @@
 //
 
 #import "PlayerViewController.h"
-#import <SGPlayer/SGPlayer.h>
+//#import <SGPlayer/SGPlayer.h>
+#import <SGAVPlayer/SGAVPlayer.h>
 
 @interface PlayerViewController ()
 
-@property (nonatomic, strong) SGPlayer * player;
+@property (nonatomic, strong) SGAVPlayer * player;
 
 @property (weak, nonatomic) IBOutlet UILabel *stateLabel;
 @property (weak, nonatomic) IBOutlet UISlider *progressSilder;
@@ -29,15 +30,15 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.player = [SGPlayer player];
-    [self.player registerPlayerNotificationTarget:self
-                                      stateAction:@selector(stateAction:)
-                                   progressAction:@selector(progressAction:)
-                                   playableAction:@selector(playableAction:)
-                                      errorAction:@selector(errorAction:)];
-    [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
-        NSLog(@"player display view did click!");
-    }];
+    self.player = [[SGAVPlayer alloc] init];
+    [self sg_registerNotificationForPlayer:self.player
+                               stateAction:@selector(stateAction:)
+                            progressAction:@selector(progressAction:)
+                            playableAction:@selector(playableAction:)
+                               errorAction:@selector(errorAction:)];
+//    [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
+//        NSLog(@"player display view did click!");
+//    }];
     [self.view insertSubview:self.player.view atIndex:0];
     
     static NSURL * normalVideo = nil;
@@ -47,48 +48,49 @@
         normalVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
         vrVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     });
-    switch (self.demoType)
-    {
-        case DemoType_AVPlayer_Normal:
-            [self.player replaceVideoWithURL:normalVideo];
-            break;
-        case DemoType_AVPlayer_VR:
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-        case DemoType_AVPlayer_VR_Box:
-            self.player.displayMode = SGDisplayModeBox;
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-        case DemoType_FFmpeg_Normal:
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-            [self.player replaceVideoWithURL:normalVideo];
-            break;
-        case DemoType_FFmpeg_Normal_Hardware:
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            [self.player replaceVideoWithURL:normalVideo];
-            break;
-        case DemoType_FFmpeg_VR:
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-        case DemoType_FFmpeg_VR_Hardware:
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-        case DemoType_FFmpeg_VR_Box:
-            self.player.displayMode = SGDisplayModeBox;
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-        case DemoType_FFmpeg_VR_Box_Hardware:
-            self.player.displayMode = SGDisplayModeBox;
-            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-            break;
-    }
+    [self.player replaceWithContentURL:normalVideo];
+//    switch (self.demoType)
+//    {
+//        case DemoType_AVPlayer_Normal:
+//            [self.player replaceVideoWithURL:normalVideo];
+//            break;
+//        case DemoType_AVPlayer_VR:
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//        case DemoType_AVPlayer_VR_Box:
+//            self.player.displayMode = SGDisplayModeBox;
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//        case DemoType_FFmpeg_Normal:
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
+//            [self.player replaceVideoWithURL:normalVideo];
+//            break;
+//        case DemoType_FFmpeg_Normal_Hardware:
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            [self.player replaceVideoWithURL:normalVideo];
+//            break;
+//        case DemoType_FFmpeg_VR:
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//        case DemoType_FFmpeg_VR_Hardware:
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//        case DemoType_FFmpeg_VR_Box:
+//            self.player.displayMode = SGDisplayModeBox;
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//        case DemoType_FFmpeg_VR_Box_Hardware:
+//            self.player.displayMode = SGDisplayModeBox;
+//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
+//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
+//            break;
+//    }
 }
 
 - (void)viewDidLayoutSubviews
@@ -145,7 +147,7 @@
 
 - (void)stateAction:(NSNotification *)notification
 {
-    SGState * state = [SGState stateFromUserInfo:notification.userInfo];
+    SGStateModel * state = [notification.userInfo sg_stateModel];
     
     NSString * text;
     switch (state.current) {
@@ -178,7 +180,7 @@
 
 - (void)progressAction:(NSNotification *)notification
 {
-    SGProgress * progress = [SGProgress progressFromUserInfo:notification.userInfo];
+    SGTimeModel * progress = [notification.userInfo sg_playbackTimeModel];
     if (!self.progressSilderTouching) {
         self.progressSilder.value = progress.percent;
     }
@@ -187,14 +189,14 @@
 
 - (void)playableAction:(NSNotification *)notification
 {
-    SGloaded * playable = [SGloaded playableFromUserInfo:notification.userInfo];
+    SGTimeModel * playable = [notification.userInfo sg_loadedTimeModel];
     NSLog(@"playable time : %f", playable.current);
 }
 
 - (void)errorAction:(NSNotification *)notification
 {
-    SGError * error = [SGError errorFromUserInfo:notification.userInfo];
-    NSLog(@"player did error : %@", error.error);
+    NSError * error = [notification.userInfo sg_error];
+    NSLog(@"player did error : %@", error);
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
@@ -204,7 +206,7 @@
 
 - (void)dealloc
 {
-    [self.player removePlayerNotificationTarget:self];
+    [self sg_removeNotificationForPlayer:self.player];
 }
 
 @end
