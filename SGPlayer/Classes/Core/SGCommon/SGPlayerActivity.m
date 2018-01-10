@@ -10,12 +10,12 @@
 
 @implementation SGPlayerActivity
 
-+ (void)playerBecomeActive
++ (void)becomeActive:(id)object
 {
     
 }
 
-+ (void)playerResignActive
++ (void)resignActive:(id)object
 {
     
 }

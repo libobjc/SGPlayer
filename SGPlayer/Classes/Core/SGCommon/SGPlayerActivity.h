@@ -10,7 +10,7 @@
 
 @interface SGPlayerActivity : NSObject
 
-+ (void)playerBecomeActive;
-+ (void)playerResignActive;
++ (void)becomeActive:(id)object;
++ (void)resignActive:(id)object;
 
 @end

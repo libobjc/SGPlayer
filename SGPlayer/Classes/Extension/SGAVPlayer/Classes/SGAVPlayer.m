@@ -52,7 +52,7 @@
 
 - (void)dealloc
 {
-    [SGPlayerActivity playerResignActive];
+    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [self removeInterrupt];
 }
@@ -138,7 +138,7 @@
 
 - (void)play
 {
-    [SGPlayerActivity playerBecomeActive];
+    [SGPlayerActivity becomeActive:self];
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
@@ -161,7 +161,7 @@
 
 - (void)pause
 {
-    [SGPlayerActivity playerResignActive];
+    [SGPlayerActivity resignActive:self];
     [self.player pause];
     switch (self.playbackState) {
         case SGPlayerPlaybackStateStopped:
@@ -176,7 +176,7 @@
 
 - (void)interrupt
 {
-    [SGPlayerActivity playerResignActive];
+    [SGPlayerActivity resignActive:self];
     [self.player pause];
     switch (self.playbackState) {
         case SGPlayerPlaybackStateStopped:
@@ -191,7 +191,7 @@
 
 - (void)stop
 {
-    [SGPlayerActivity playerResignActive];
+    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
     [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
@@ -205,7 +205,7 @@
 
 - (void)clear
 {
-    [SGPlayerActivity playerResignActive];
+    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
     [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
