@@ -17,10 +17,10 @@
 @interface SGAVPlayer ()
 
 @property (nonatomic, copy) NSURL * contentURL;
-@property (nonatomic, strong) NSError * error;
+@property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, assign) SGPlayerState state;
-@property (nonatomic, assign) NSTimeInterval playableTime;
+@property (nonatomic, assign) NSTimeInterval loadedTime;
 @property (nonatomic, assign) BOOL seeking;
 
 @property (atomic, strong) id playBackTimeObserver;
@@ -45,11 +45,6 @@
 @implementation SGAVPlayer
 
 
-+ (instancetype)player
-{
-    return [[self alloc] init];
-}
-
 - (instancetype)init
 {
     if (self = [super init])
@@ -71,7 +66,7 @@
 }
 
 
-- (void)replaceVideoWithURL:(nullable NSURL *)contentURL
+- (void)replaceWithContentURL:(nullable NSURL *)contentURL
 {
     [self clean];
     
@@ -160,7 +155,7 @@
     self.state = SGPlayerStateNone;
     self.stateBeforBuffering = SGPlayerStateNone;
     self.seeking = NO;
-    self.playableTime = 0;
+    self.loadedTime = 0;
     self.readyToPlayTime = 0;
     self.buffering = NO;
     self.playing = NO;
@@ -182,7 +177,7 @@
             self.state = SGPlayerStatePlaying;
             break;
         case SGPlayerStateFailed:
-            [self replaceVideoWithURL:self.contentURL];
+            [self replaceWithContentURL:self.contentURL];
             break;
         case SGPlayerStateNone:
             self.state = SGPlayerStateBuffering;
@@ -287,7 +282,7 @@
     }
 }
 
-- (NSTimeInterval)progress
+- (NSTimeInterval)playbackTime
 {
     CMTime currentTime = self.avPlayerItem.currentTime;
     Boolean indefinite = CMTIME_IS_INDEFINITE(currentTime);
@@ -309,13 +304,13 @@
     return CMTimeGetSeconds(self.avPlayerItem.duration);;
 }
 
-- (void)setPlayableTime:(NSTimeInterval)playableTime
+- (void)setLoadedTime:(NSTimeInterval)loadedTime
 {
-    if (_playableTime != playableTime) {
-        _playableTime = playableTime;
+    if (_loadedTime != loadedTime) {
+        _loadedTime = loadedTime;
         CGFloat duration = self.duration;
-        double percent = [self percentForTime:_playableTime duration:duration];
-        [SGPlayerCallback callbackForLoadedTime:self percent:percent current:playableTime total:duration];
+        double percent = [self percentForTime:_loadedTime duration:duration];
+        [SGPlayerCallback callbackForLoadedTime:self percent:percent current:_loadedTime total:duration];
     }
 }
 
@@ -384,10 +379,10 @@
         if (CMTIMERANGE_IS_VALID(range)) {
             NSTimeInterval start = CMTimeGetSeconds(range.start);
             NSTimeInterval duration = CMTimeGetSeconds(range.duration);
-            self.playableTime = (start + duration);
+            self.loadedTime = (start + duration);
         }
     } else {
-        self.playableTime = 0;
+        self.loadedTime = 0;
     }
 }
 
@@ -464,8 +459,8 @@
         else if ([keyPath isEqualToString:@"loadedTimeRanges"])
         {
             [self reloadPlayableTime];
-            NSTimeInterval interval = self.playableTime - self.progress;
-            NSTimeInterval residue = self.duration - self.progress;
+            NSTimeInterval interval = self.loadedTime - self.playbackTime;
+            NSTimeInterval residue = self.duration - self.playbackTime;
             if (residue <= -1.5) {
                 residue = 2;
             }

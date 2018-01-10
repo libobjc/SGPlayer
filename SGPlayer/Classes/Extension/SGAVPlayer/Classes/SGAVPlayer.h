@@ -11,23 +11,16 @@
 
 @interface SGAVPlayer : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-+ (instancetype)player;
-
 @property (nonatomic, copy, readonly) NSURL * contentURL;
-- (void)replaceVideoWithURL:(NSURL *)contentURL;
-
-@property (nonatomic, strong, readonly) NSError * error;
-
-@property (nonatomic, strong, readonly) UIView * view;
+- (void)replaceWithContentURL:(NSURL *)contentURL;
 
 @property (nonatomic, assign, readonly) SGPlayerState state;
-@property (nonatomic, assign, readonly) NSTimeInterval progress;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, assign, readonly) NSTimeInterval playableTime;
+@property (nonatomic, assign, readonly) NSTimeInterval playbackTime;
+@property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
+@property (nonatomic, copy, readonly) NSError * error;
 
+@property (nonatomic, strong, readonly) UIView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
 
 - (void)play;
