@@ -17,21 +17,21 @@
 @interface SGAVPlayer ()
 
 @property (nonatomic, copy) NSURL * contentURL;
-@property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, assign) SGPlayerState state;
 @property (nonatomic, assign) NSTimeInterval loadedTime;
-@property (nonatomic, assign) BOOL seeking;
+@property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) AVPlayer * player;
 @property (nonatomic, strong) AVPlayerItem * playerItem;
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
-@property (atomic, assign) NSTimeInterval readyToPlayTime;
+@property (nonatomic, assign) NSTimeInterval readyToPlayTime;
 
-@property (atomic, assign) BOOL playing;
-@property (atomic, assign) BOOL buffering;
+@property (nonatomic, assign) BOOL playing;
+@property (nonatomic, assign) BOOL buffering;
+@property (nonatomic, assign) BOOL seeking;
 
 @property (nonatomic, assign) SGPlayerState stateBeforBuffering;
 @property (nonatomic, assign) NSTimeInterval playableBufferInterval;
