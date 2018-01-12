@@ -20,7 +20,7 @@ NSString * const SGPlayerNotificationUserInfoObjectKey          = @"SGPlayerNoti
 
 @implementation NSObject (SGPlayerAction)
 
-- (void)sg_registerNotificationForPlayer:(id)player
+- (void)sg_registerNotificationForPlayer:(id<SGPlayer>)player
                      playbackStateAction:(SEL)playbackStateAction
                          loadStateAction:(SEL)loadStateAction
                        currentTimeAction:(SEL)currentTimeAction
@@ -61,7 +61,7 @@ NSString * const SGPlayerNotificationUserInfoObjectKey          = @"SGPlayerNoti
     }
 }
 
-- (void)sg_removeNotificationForPlayer:(id)player
+- (void)sg_removeNotificationForPlayer:(id<SGPlayer>)player
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlaybackStateDidChangeNotificationName object:player];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerLoadStateDidChangeNotificationName object:player];

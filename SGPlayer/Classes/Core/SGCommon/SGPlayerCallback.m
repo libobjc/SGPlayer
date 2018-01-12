@@ -10,7 +10,9 @@
 
 @implementation SGPlayerCallback
 
-+ (void)callbackForPlaybackState:(id)player current:(SGPlayerPlaybackState)current previous:(SGPlayerPlaybackState)previous
++ (void)callbackForPlaybackState:(id<SGPlayer>)player
+                         current:(SGPlayerPlaybackState)current
+                        previous:(SGPlayerPlaybackState)previous
 {
     if (player == nil) {
         return;
@@ -18,10 +20,14 @@
     SGPlaybackStateModel * model = [[SGPlaybackStateModel alloc] init];
     model.current = current;
     model.previous = previous;
-    [self callback:SGPlayerPlaybackStateDidChangeNotificationName object:player userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
+    [self callback:SGPlayerPlaybackStateDidChangeNotificationName
+            object:player
+          userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
 }
 
-+ (void)callbackForLoadState:(id)player current:(SGPlayerLoadState)current previous:(SGPlayerLoadState)previous
++ (void)callbackForLoadState:(id<SGPlayer>)player
+                     current:(SGPlayerLoadState)current
+                    previous:(SGPlayerLoadState)previous
 {
     if (player == nil) {
         return;
@@ -29,10 +35,14 @@
     SGLoadedStateModel * model = [[SGLoadedStateModel alloc] init];
     model.current = current;
     model.previous = previous;
-    [self callback:SGPlayerLoadStateDidChangeNotificationName object:player userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
+    [self callback:SGPlayerLoadStateDidChangeNotificationName
+            object:player
+          userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
 }
 
-+ (void)callbackForCurrentTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration
++ (void)callbackForCurrentTime:(id<SGPlayer>)player
+                       current:(NSTimeInterval)current
+                      duration:(NSTimeInterval)duration
 {
     if (player == nil) {
         return;
@@ -40,10 +50,14 @@
     SGTimeModel * model = [[SGTimeModel alloc] init];
     model.current = current;
     model.duration = duration;
-    [self callback:SGPlayerCurrentTimeDidChangeNotificationName object:player userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
+    [self callback:SGPlayerCurrentTimeDidChangeNotificationName
+            object:player
+          userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
 }
 
-+ (void)callbackForLoadedTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration
++ (void)callbackForLoadedTime:(id<SGPlayer>)player
+                      current:(NSTimeInterval)current
+                     duration:(NSTimeInterval)duration
 {
     if (player == nil) {
         return;
@@ -51,18 +65,25 @@
     SGTimeModel * model = [[SGTimeModel alloc] init];
     model.current = current;
     model.duration = duration;
-    [self callback:SGPlayerLoadedTimeDidChangeNotificationName object:player userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
+    [self callback:SGPlayerLoadedTimeDidChangeNotificationName
+            object:player
+          userInfo:@{SGPlayerNotificationUserInfoObjectKey : model}];
 }
 
-+ (void)callbackForError:(id)player error:(NSError *)error
++ (void)callbackForError:(id<SGPlayer>)player
+                   error:(NSError *)error
 {
     if (error == nil) {
         return;
     }
-    [self callback:SGPlayerDidErrorNotificationName object:player userInfo:@{SGPlayerNotificationUserInfoObjectKey : error}];
+    [self callback:SGPlayerDidErrorNotificationName
+            object:player
+          userInfo:@{SGPlayerNotificationUserInfoObjectKey : error}];
 }
 
-+ (void)callback:(NSString *)name object:(id)object userInfo:(NSDictionary *)userInfo
++ (void)callback:(NSString *)name
+          object:(id)object
+        userInfo:(NSDictionary *)userInfo
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         [[NSNotificationCenter defaultCenter] postNotificationName:name object:object userInfo:userInfo];
