@@ -20,13 +20,6 @@
 #endif
 
 
-@protocol SGPlayer <NSObject>
-
-- (NSInteger)tag;
-
-@end
-
-
 typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
 {
     SGPlayerPlaybackStateIdle,
@@ -51,6 +44,17 @@ typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)
     SGPlayerBackgroundModeAutoPlayAndPause,
     SGPlayerBackgroundModeContinue,
 };
+
+
+@protocol SGPlayer <NSObject>
+
+- (NSInteger)tag;
+- (SGPlayerPlaybackState)playbackState;
+- (SGPlayerBackgroundMode)backgroundMode;
+- (void)play;
+- (void)pause;
+
+@end
 
 
 #endif /* SGPlayerDefines_h */

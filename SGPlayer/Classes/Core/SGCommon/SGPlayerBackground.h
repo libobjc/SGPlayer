@@ -9,18 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "SGPlayerDefines.h"
 
-@class SGPlayerBackground;
-
-@protocol SGPlayerBackgroundDelegate <NSObject>
-
-- (void)backgroundWillEnterForeground:(SGPlayerBackground *)background;
-- (void)backgroundDidEnterBackground:(SGPlayerBackground *)background;
-
-@end
-
 @interface SGPlayerBackground : NSObject
 
-@property (nonatomic, weak) id <SGPlayerBackgroundDelegate> delegate;
+@property (nonatomic, weak, readonly) id<SGPlayer> player;
 
 - (void)becomeActive:(id<SGPlayer>)player;
 - (void)resignActive:(id<SGPlayer>)player;

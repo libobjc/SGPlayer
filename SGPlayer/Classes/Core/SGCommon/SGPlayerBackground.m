@@ -9,10 +9,19 @@
 #import "SGPlayerBackground.h"
 #import "SGPLFObject.h"
 
+@interface SGPlayerBackground ()
+
+@property (nonatomic, weak) id<SGPlayer> player;
+@property (nonatomic, assign) BOOL shouldAutoPlay;
+
+@end
+
 @implementation SGPlayerBackground
 
 - (void)becomeActive:(id<SGPlayer>)player
 {
+    self.player = player;
+    
     [[NSNotificationCenter defaultCenter] addObserver:player
                                              selector:@selector(applicationDidEnterBackground:)
                                                  name:UIApplicationDidEnterBackgroundNotification
@@ -30,15 +39,28 @@
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
-    if ([self.delegate respondsToSelector:@selector(backgroundWillEnterForeground:)]) {
-        [self.delegate backgroundWillEnterForeground:self];
+    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+    {
+        if (self.shouldAutoPlay)
+        {
+            self.shouldAutoPlay = NO;
+            if (self.player.playbackState == SGPlayerPlaybackStatePaused)
+            {
+                [self.player play];
+            }
+        }
     }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
-    if ([self.delegate respondsToSelector:@selector(backgroundDidEnterBackground:)]) {
-        [self.delegate backgroundDidEnterBackground:self];
+    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+    {
+        if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
+        {
+            self.shouldAutoPlay = YES;
+            [self.player pause];
+        }
     }
 }
 

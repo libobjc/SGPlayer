@@ -16,7 +16,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface SGAVPlayer () <SGPlayerBackgroundDelegate>
+@interface SGAVPlayer ()
 
 {
     NSTimeInterval _callbackDurationTime;
@@ -38,9 +38,6 @@
 @property (nonatomic, strong) AVPlayerItem * playerItem;
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
-
-@property (nonatomic, assign) BOOL shouldAutoPlay;
-@property (nonatomic, assign) NSTimeInterval lastForegroundTimeInterval;
 
 @end
 
@@ -67,7 +64,6 @@
         self.tagInternal = tag++;
         
         self.background = [[SGPlayerBackground alloc] init];
-        self.background.delegate = self;
         [self.background becomeActive:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
@@ -425,7 +421,6 @@
     self.error = nil;
     self.contentURL = nil;
     self.loadedTime = 0;
-    self.shouldAutoPlay = NO;
     self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
     self.loadState = SGPlayerLoadStateIdle;
 }
@@ -468,33 +463,6 @@
     }
 }
 
-
-#pragma mark - SGPlayerBackgroundDelegate
-
-- (void)backgroundWillEnterForeground:(SGPlayerBackground *)background
-{
-    if (self.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
-    {
-        if (self.shouldAutoPlay)
-        {
-            self.shouldAutoPlay = NO;
-            [self play];
-        }
-    }
-}
-
-- (void)backgroundDidEnterBackground:(SGPlayerBackground *)background
-{
-    if (self.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
-    {
-        if (self.playbackState == SGPlayerPlaybackStatePlaying)
-        {
-            self.shouldAutoPlay = YES;
-            [self pause];
-        }
-    }
-}
-
 #pragma mark - Interrupt
 
 - (void)registerInterrupt
@@ -508,10 +476,10 @@
             if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
             {
                 // fix : maybe receive interruption notification when enter foreground.
-                NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
-                if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
-                    [strongSelf interrupt];
-                }
+//                NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
+//                if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
+//                    [strongSelf interrupt];
+//                }
             }
         }
     } routeChange:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerRouteChangeReason reason) {
