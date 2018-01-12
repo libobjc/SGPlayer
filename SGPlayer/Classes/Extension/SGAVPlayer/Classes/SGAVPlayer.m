@@ -25,7 +25,6 @@
 }
 
 @property (nonatomic, assign) NSInteger tagInternal;
-@property (nonatomic, strong) SGPlayerBackground * background;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
@@ -39,21 +38,12 @@
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
+@property (nonatomic, strong) SGPlayerBackground * background;
+
 @end
 
 
 @implementation SGAVPlayer
-
-
-#pragma mark - Protocol
-
-- (NSInteger)tag
-{
-    return self.tagInternal;
-}
-
-
-#pragma mark - Class
 
 
 - (instancetype)init
@@ -256,6 +246,11 @@
         return NO;
     }
     return YES;
+}
+
+- (NSInteger)tag
+{
+    return self.tagInternal;
 }
 
 - (SGPLFView *)view
