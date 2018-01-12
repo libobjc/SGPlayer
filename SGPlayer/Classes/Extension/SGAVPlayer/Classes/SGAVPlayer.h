@@ -7,8 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+
+#if __has_include(<SGAVPlayer/SGAVPlayer.h>)
+FOUNDATION_EXPORT double SGAVPlayerVersionNumber;
+FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
+#import <SGAVPlayer/SGPlayerDefines.h>
+#import <SGAVPlayer/SGPlayerAction.h>
+#else
 #import "SGPlayerDefines.h"
 #import "SGPlayerAction.h"
+#endif
+
 
 @interface SGAVPlayer : NSObject
 

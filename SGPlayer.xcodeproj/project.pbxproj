@@ -665,7 +665,6 @@
 		9CE6F58C2004DECC00D1F4C8 /* SGAVPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5852004DECC00D1F4C8 /* SGAVPlayer.m */; };
 		9CE6F58D2004DECC00D1F4C8 /* SGAVPlayerView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5862004DECC00D1F4C8 /* SGAVPlayerView.h */; };
 		9CE6F58E2004DECC00D1F4C8 /* SGAVPlayerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5872004DECC00D1F4C8 /* SGAVPlayerView.m */; };
-		9CE6F5902004DECC00D1F4C8 /* SGAVPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F58A2004DECC00D1F4C8 /* SGAVPlayer.h */; };
 		9CE6F5942004E39500D1F4C8 /* SGPlayerCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5922004E39500D1F4C8 /* SGPlayerCallback.h */; };
 		9CE6F5952004E39500D1F4C8 /* SGPlayerCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5922004E39500D1F4C8 /* SGPlayerCallback.h */; };
 		9CE6F5962004E39500D1F4C8 /* SGPlayerCallback.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5922004E39500D1F4C8 /* SGPlayerCallback.h */; };
@@ -933,7 +932,6 @@
 		9CE6F5872004DECC00D1F4C8 /* SGAVPlayerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGAVPlayerView.m; sourceTree = "<group>"; };
 		9CE6F5882004DECC00D1F4C8 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CE6F5892004DECC00D1F4C8 /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
-		9CE6F58A2004DECC00D1F4C8 /* SGAVPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGAVPlayer.h; sourceTree = "<group>"; };
 		9CE6F5922004E39500D1F4C8 /* SGPlayerCallback.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerCallback.h; sourceTree = "<group>"; };
 		9CE6F5932004E39500D1F4C8 /* SGPlayerCallback.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerCallback.m; sourceTree = "<group>"; };
 		9CE6F59C2004E42B00D1F4C8 /* SGPlayerDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerDefines.h; sourceTree = "<group>"; };
@@ -1461,7 +1459,6 @@
 				9CE6F5832004DECC00D1F4C8 /* Classes */,
 				9CE6F5882004DECC00D1F4C8 /* Info.plist */,
 				9CE6F5892004DECC00D1F4C8 /* module.modulemap */,
-				9CE6F58A2004DECC00D1F4C8 /* SGAVPlayer.h */,
 			);
 			path = SGAVPlayer;
 			sourceTree = "<group>";
@@ -1532,7 +1529,6 @@
 				9CE6F58B2004DECC00D1F4C8 /* SGAVPlayer.h in Headers */,
 				9CE6F5A62004E85600D1F4C8 /* SGPlayerAction.h in Headers */,
 				9CE6F5A02004E42B00D1F4C8 /* SGPlayerDefines.h in Headers */,
-				9CE6F5902004DECC00D1F4C8 /* SGAVPlayer.h in Headers */,
 				9C329AAD2005E3F800252B10 /* SGPlayerActivity.h in Headers */,
 				9CE6F5A52004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
 				9CE6F5562004D97D00D1F4C8 /* SGPLFView.h in Headers */,
