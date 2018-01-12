@@ -13,6 +13,13 @@
 #import <Foundation/Foundation.h>
 
 
+#if defined(__cplusplus)
+#define SGPLAYER_EXTERN extern "C"
+#else
+#define SGPLAYER_EXTERN extern
+#endif
+
+
 typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
 {
     SGPlayerPlaybackStateIdle,

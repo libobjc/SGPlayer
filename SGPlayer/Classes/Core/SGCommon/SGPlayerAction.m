@@ -9,17 +9,14 @@
 #import "SGPlayerAction.h"
 
 
-// notification name
-NSString * const SGPlayerPlaybackStateDidChangeNotificationName = @"SGPlayerPlaybackStateDidChangeNotificationName";     // player state change
-NSString * const SGPlayerLoadStateDidChangeNotificationName = @"SGPlayerLoadStateDidChangeNotificationName";     // player state change
-NSString * const SGPlayerCurrentTimeDidChangeNotificationName = @"SGPlayerCurrentTimeDidChangeNotificationName";  // player play progress change
-NSString * const SGPlayerLoadedTimeDidChangeNotificationName = @"SGPlayerLoadedTimeDidChangeNotificationName";   // player playable progress change
-NSString * const SGPlayerDidErrorNotificationName = @"SGPlayerDidErrorNotificationName";                   // player error
+NSString * const SGPlayerPlaybackStateDidChangeNotificationName = @"SGPlayerPlaybackStateDidChangeNotificationName";
+NSString * const SGPlayerLoadStateDidChangeNotificationName     = @"SGPlayerLoadStateDidChangeNotificationName";
+NSString * const SGPlayerCurrentTimeDidChangeNotificationName   = @"SGPlayerCurrentTimeDidChangeNotificationName";
+NSString * const SGPlayerLoadedTimeDidChangeNotificationName    = @"SGPlayerLoadedTimeDidChangeNotificationName";
+NSString * const SGPlayerDidErrorNotificationName               = @"SGPlayerDidErrorNotificationName";
 
-NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationUserInfoObjectKey";    // state
+NSString * const SGPlayerNotificationUserInfoObjectKey          = @"SGPlayerNotificationUserInfoObjectKey";
 
-
-#pragma mark - SGPlayer Action Category
 
 @implementation NSObject (SGPlayerAction)
 
@@ -76,8 +73,6 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
 @end
 
 
-#pragma mark - Action Models
-
 @implementation NSDictionary (SGPlayerModel)
 
 - (SGPlaybackStateModel *)sg_playbackStateModel
@@ -107,13 +102,16 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
 
 @end
 
+
 @implementation SGPlaybackStateModel
 
 @end
 
+
 @implementation SGLoadedStateModel
 
 @end
+
 
 @implementation SGTimeModel
 

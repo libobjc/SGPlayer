@@ -13,28 +13,21 @@
 @class SGLoadedStateModel;
 @class SGTimeModel;
 
-NS_ASSUME_NONNULL_BEGIN
 
-// extern
-#if defined(__cplusplus)
-#define SGPLAYER_EXTERN extern "C"
-#else
-#define SGPLAYER_EXTERN extern
-#endif
+/**
+ *  Notification Name
+ */
+SGPLAYER_EXTERN NSString * const SGPlayerPlaybackStateDidChangeNotificationName;
+SGPLAYER_EXTERN NSString * const SGPlayerLoadStateDidChangeNotificationName;
+SGPLAYER_EXTERN NSString * const SGPlayerCurrentTimeDidChangeNotificationName;
+SGPLAYER_EXTERN NSString * const SGPlayerLoadedTimeDidChangeNotificationName;
+SGPLAYER_EXTERN NSString * const SGPlayerDidErrorNotificationName;
 
+/**
+ *  Notification Userinfo Key
+ */
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // Common Object Key.
 
-// notification name
-SGPLAYER_EXTERN NSString * const SGPlayerPlaybackStateDidChangeNotificationName;     // player state change
-SGPLAYER_EXTERN NSString * const SGPlayerLoadStateDidChangeNotificationName;     // player state change
-SGPLAYER_EXTERN NSString * const SGPlayerCurrentTimeDidChangeNotificationName;  // player play progress change
-SGPLAYER_EXTERN NSString * const SGPlayerLoadedTimeDidChangeNotificationName;   // player playable progress change
-SGPLAYER_EXTERN NSString * const SGPlayerDidErrorNotificationName;                   // player error
-
-// notification userinfo key
-SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // state
-
-
-#pragma mark - SGPlayer Action Category
 
 @interface NSObject (SGPlayerAction)
 
@@ -50,10 +43,11 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // st
 @end
 
 
-#pragma mark - SGPlayer Action Models
-
 @interface NSDictionary (SGPlayerModel)
 
+/**
+ *  Objects In UserInfo
+ */
 - (SGPlaybackStateModel *)sg_playbackStateModel;
 - (SGLoadedStateModel *)sg_loadedStateModel;
 - (SGTimeModel *)sg_currentTimeModel;
@@ -62,20 +56,27 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // st
 
 @end
 
+
 @interface SGPlaybackStateModel : NSObject
+
 @property (nonatomic, assign) SGPlayerPlaybackState previous;
 @property (nonatomic, assign) SGPlayerPlaybackState current;
+
 @end
+
 
 @interface SGLoadedStateModel : NSObject
+
 @property (nonatomic, assign) SGPlayerLoadState previous;
 @property (nonatomic, assign) SGPlayerLoadState current;
+
 @end
 
+
 @interface SGTimeModel : NSObject
+
 @property (nonatomic, assign) NSTimeInterval current;
 @property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval percent;
-@end
 
-NS_ASSUME_NONNULL_END
+@end

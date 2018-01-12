@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SGPlayerDefines.h"
 #import "SGPlayerAction.h"
 
 @interface SGAVPlayer : NSObject
