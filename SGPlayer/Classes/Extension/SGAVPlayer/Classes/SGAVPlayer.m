@@ -84,7 +84,9 @@
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
-            [self.player seekToTime:kCMTimeZero];
+            if (ABS(self.playbackTime - self.duration) < 0.1) {
+                [self.player seekToTime:kCMTimeZero];
+            }
             break;
         case SGPlayerPlaybackStateFailed:
             [self replaceWithContentURL:self.contentURL];
