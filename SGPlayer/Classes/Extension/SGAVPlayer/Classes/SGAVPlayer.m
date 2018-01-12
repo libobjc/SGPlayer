@@ -269,7 +269,7 @@
         NSTimeInterval residue = duration - playbackTime - errorInterval;
         NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
         
-        if (loadedInterval >= minimumPlayableDuration) {
+        if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
             loadState = SGPlayerLoadStatePlayable;
         } else {
             loadState = SGPlayerLoadStateLoading;
