@@ -194,12 +194,13 @@
     }
     self.currentTimeLabel.text = [self timeStringFromSeconds:progress.current];
     self.totalTimeLabel.text = [self timeStringFromSeconds:progress.duration];
+    NSLog(@"playback time : %f", progress.current);
 }
 
 - (void)loadedTimeAction:(NSNotification *)notification
 {
     SGTimeModel * playable = [notification.userInfo sg_loadedTimeModel];
-    NSLog(@"playable time : %f", playable.current);
+    NSLog(@"loaded time : %f", playable.current);
 }
 
 - (void)errorAction:(NSNotification *)notification

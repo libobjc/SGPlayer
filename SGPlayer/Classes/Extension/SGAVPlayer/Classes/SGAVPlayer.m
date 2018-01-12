@@ -72,6 +72,7 @@
     }
     self.contentURL = contentURL;
     [self setupPlayer];
+    [self reloadLoadState];
 }
 
 
@@ -185,6 +186,16 @@
     }
 }
 
+- (void)setLoadState:(SGPlayerLoadState)loadState
+{
+    if (_loadState != loadState)
+    {
+        SGPlayerLoadState previous = _loadState;
+        _loadState = loadState;
+        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
+    }
+}
+
 - (NSTimeInterval)duration
 {
     if (self.playerItem == nil) {
@@ -201,27 +212,24 @@
     return [self secondsFromCMTime:self.playerItem.currentTime];
 }
 
-- (void)reloadLoadedTime
+- (NSTimeInterval)loadedTime
 {
-    if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-        if (CMTIMERANGE_IS_VALID(range)) {
-            NSTimeInterval start = CMTimeGetSeconds(range.start);
-            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
-            self.loadedTime = (start + duration);
-        }
-    } else {
-        self.loadedTime = 0;
+    if (self.playerItem == nil) {
+        return 0;
     }
-}
-
-- (void)setLoadedTime:(NSTimeInterval)loadedTime
-{
-    if (_loadedTime != loadedTime) {
-        _loadedTime = loadedTime;
-        CGFloat duration = self.duration;
-        [SGPlayerCallback callbackForLoadedTime:self current:_loadedTime duration:duration];
+    if (self.playerItem.status != AVPlayerItemStatusReadyToPlay) {
+        return 0;
     }
+    if (self.playerItem.playbackBufferEmpty) {
+        return 0;
+    }
+    CMTimeRange loadedTimeRange = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+    if (!CMTIMERANGE_IS_VALID(loadedTimeRange)) {
+        return 0;
+    }
+    NSTimeInterval start = [self secondsFromCMTime:loadedTimeRange.start];
+    NSTimeInterval duration = [self secondsFromCMTime:loadedTimeRange.duration];
+    return start + duration;
 }
 
 - (BOOL)seekEnable
@@ -247,6 +255,29 @@
     return CMTimeGetSeconds(time);
 }
 
+- (void)reloadLoadState
+{
+    SGPlayerLoadState loadState = SGPlayerLoadStateIdle;
+    if (self.playerItem != nil || self.playerItem.status != AVPlayerItemStatusFailed)
+    {
+        NSTimeInterval duration = self.duration;
+        NSTimeInterval playbackTime = self.playbackTime;
+        NSTimeInterval loadedTime = self.loadedTime;
+        
+        NSTimeInterval errorInterval = 0.1;
+        NSTimeInterval loadedInterval = loadedTime - playbackTime;
+        NSTimeInterval residue = duration - playbackTime - errorInterval;
+        NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
+        
+        if (loadedInterval >= minimumPlayableDuration) {
+            loadState = SGPlayerLoadStatePlayable;
+        } else {
+            loadState = SGPlayerLoadStateLoading;
+        }
+    }
+    self.loadState = loadState;
+}
+
 
 #pragma mark - KVO
 
@@ -259,19 +290,18 @@
                 case AVPlayerItemStatusUnknown:
                 {
                     SGPlayerLog(@"SGAVPlayer item status unknown");
-//                    [self startBuffering];
                 }
                     break;
                 case AVPlayerItemStatusReadyToPlay:
                 {
                     SGPlayerLog(@"SGAVPlayer item status ready to play");
-//                    [self stopBuffering];
+                    [self callbackForTimes];
+                    [self reloadLoadState];
                 }
                     break;
                 case AVPlayerItemStatusFailed:
                 {
                     SGPlayerLog(@"SGAVPlayer item status failed");
-//                    [self stopBuffering];
                     
                     NSError * error = nil;
                     if (self.playerItem.error) {
@@ -288,28 +318,10 @@
                     break;
             }
         }
-        else if ([keyPath isEqualToString:@"playbackBufferEmpty"])
+        else if ([keyPath isEqualToString:@"playbackBufferEmpty"] || [keyPath isEqualToString:@"loadedTimeRanges"])
         {
-            if (self.playerItem.playbackBufferEmpty) {
-//                [self startBuffering];
-                NSLog(@"playbackBufferEmpty");
-            }
-        }
-        else if ([keyPath isEqualToString:@"loadedTimeRanges"])
-        {
-            NSLog(@"loadedTimeRanges");
-            [self reloadLoadedTime];
-            NSTimeInterval interval = self.loadedTime - self.playbackTime;
-            NSTimeInterval residue = self.duration - self.playbackTime;
-            if (residue <= -1.5) {
-                residue = 2;
-            }
-            if (interval > self.minimumPlayableDuration) {
-//                [self stopBuffering];
-//                [self resumeStateAfterBuffering];
-            } else if (interval < 0.3 && residue > 1.5) {
-//                [self startBuffering];
-            }
+            [self callbackForTimes];
+            [self reloadLoadState];
         }
     }
 }
