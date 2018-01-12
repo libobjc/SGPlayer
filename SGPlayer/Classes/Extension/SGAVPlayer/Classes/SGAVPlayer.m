@@ -310,7 +310,6 @@
                 case AVPlayerItemStatusFailed:
                 {
                     SGPlayerLog(@"SGAVPlayer item status failed");
-                    
                     NSError * error = nil;
                     if (self.playerItem.error) {
                         error = self.playerItem.error;
