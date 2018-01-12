@@ -61,6 +61,9 @@
 {
     if (self = [super init])
     {
+        static NSInteger tag = 1900;
+        self.tagInternal = tag++;
+        
         [self registerInterrupt];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
