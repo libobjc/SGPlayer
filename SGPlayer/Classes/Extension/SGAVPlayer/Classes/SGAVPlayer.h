@@ -18,13 +18,13 @@
 @property (nonatomic, assign, readonly) SGPlayerLoadState loadState;
 
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, assign, readonly) NSTimeInterval playbackTime;
+@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
 @property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
 @property (nonatomic, copy, readonly) NSError * error;
 
 @property (nonatomic, strong, readonly) UIView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
-@property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;
+@property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;       // Default is 2s.
 
 - (void)play;
 - (void)pause;

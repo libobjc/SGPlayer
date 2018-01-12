@@ -13,7 +13,7 @@
 
 + (void)callbackForPlaybackState:(id)player current:(SGPlayerPlaybackState)current previous:(SGPlayerPlaybackState)previous;
 + (void)callbackForLoadState:(id)player current:(SGPlayerLoadState)current previous:(SGPlayerLoadState)previous;
-+ (void)callbackForPlaybackTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration;
++ (void)callbackForCurrentTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration;
 + (void)callbackForLoadedTime:(id)player current:(NSTimeInterval)current duration:(NSTimeInterval)duration;
 + (void)callbackForError:(id)player error:(NSError *)error;
 

@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 // notification name
 SGPLAYER_EXTERN NSString * const SGPlayerPlaybackStateDidChangeNotificationName;     // player state change
 SGPLAYER_EXTERN NSString * const SGPlayerLoadStateDidChangeNotificationName;     // player state change
-SGPLAYER_EXTERN NSString * const SGPlayerPlaybackTimeDidChangeNotificationName;  // player play progress change
+SGPLAYER_EXTERN NSString * const SGPlayerCurrentTimeDidChangeNotificationName;  // player play progress change
 SGPLAYER_EXTERN NSString * const SGPlayerLoadedTimeDidChangeNotificationName;   // player playable progress change
 SGPLAYER_EXTERN NSString * const SGPlayerDidErrorNotificationName;                   // player error
 
@@ -41,7 +41,7 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // st
 - (void)sg_registerNotificationForPlayer:(id)player
                      playbackStateAction:(SEL)playbackStateAction
                          loadStateAction:(SEL)loadStateAction
-                      playbackTimeAction:(SEL)playbackTimeAction
+                       currentTimeAction:(SEL)currentTimeAction
                             loadedAction:(SEL)loadedAction
                              errorAction:(SEL)errorAction;
 
@@ -56,7 +56,7 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // st
 
 - (SGPlaybackStateModel *)sg_playbackStateModel;
 - (SGLoadedStateModel *)sg_loadedStateModel;
-- (SGTimeModel *)sg_playbackTimeModel;
+- (SGTimeModel *)sg_currentTimeModel;
 - (SGTimeModel *)sg_loadedTimeModel;
 - (NSError *)sg_error;
 

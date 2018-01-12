@@ -12,7 +12,7 @@
 // notification name
 NSString * const SGPlayerPlaybackStateDidChangeNotificationName = @"SGPlayerPlaybackStateDidChangeNotificationName";     // player state change
 NSString * const SGPlayerLoadStateDidChangeNotificationName = @"SGPlayerLoadStateDidChangeNotificationName";     // player state change
-NSString * const SGPlayerPlaybackTimeDidChangeNotificationName = @"SGPlayerPlaybackTimeDidChangeNotificationName";  // player play progress change
+NSString * const SGPlayerCurrentTimeDidChangeNotificationName = @"SGPlayerCurrentTimeDidChangeNotificationName";  // player play progress change
 NSString * const SGPlayerLoadedTimeDidChangeNotificationName = @"SGPlayerLoadedTimeDidChangeNotificationName";   // player playable progress change
 NSString * const SGPlayerDidErrorNotificationName = @"SGPlayerDidErrorNotificationName";                   // player error
 
@@ -26,7 +26,7 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
 - (void)sg_registerNotificationForPlayer:(id)player
                      playbackStateAction:(SEL)playbackStateAction
                          loadStateAction:(SEL)loadStateAction
-                      playbackTimeAction:(SEL)playbackTimeAction
+                       currentTimeAction:(SEL)currentTimeAction
                             loadedAction:(SEL)loadedAction
                              errorAction:(SEL)errorAction
 {
@@ -44,10 +44,10 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
                                                      name:SGPlayerLoadStateDidChangeNotificationName
                                                    object:player];
     }
-    if (playbackTimeAction) {
+    if (currentTimeAction) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:playbackTimeAction
-                                                     name:SGPlayerPlaybackTimeDidChangeNotificationName
+                                                 selector:currentTimeAction
+                                                     name:SGPlayerCurrentTimeDidChangeNotificationName
                                                    object:player];
     }
     if (loadedAction) {
@@ -68,7 +68,7 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlaybackStateDidChangeNotificationName object:player];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerLoadStateDidChangeNotificationName object:player];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerPlaybackTimeDidChangeNotificationName object:player];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerCurrentTimeDidChangeNotificationName object:player];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerLoadedTimeDidChangeNotificationName object:player];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:SGPlayerDidErrorNotificationName object:player];
 }
@@ -90,7 +90,7 @@ NSString * const SGPlayerNotificationUserInfoObjectKey = @"SGPlayerNotificationU
     return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }
 
-- (SGTimeModel *)sg_playbackTimeModel
+- (SGTimeModel *)sg_currentTimeModel
 {
     return [self objectForKey:SGPlayerNotificationUserInfoObjectKey];
 }

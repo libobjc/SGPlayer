@@ -19,7 +19,7 @@
 
 {
     NSTimeInterval _callbackDurationTime;
-    NSTimeInterval _callbackPlaybackTime;
+    NSTimeInterval _callbackCurrentTime;
     NSTimeInterval _callbackLoadedTime;
 }
 
@@ -84,7 +84,7 @@
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
-            if (ABS(self.playbackTime - self.duration) < 0.1) {
+            if (ABS(self.currentTime - self.duration) < 0.1) {
                 [self.player seekToTime:kCMTimeZero];
             }
             break;
@@ -206,7 +206,7 @@
     return [self secondsFromCMTime:self.playerItem.duration];
 }
 
-- (NSTimeInterval)playbackTime
+- (NSTimeInterval)currentTime
 {
     if (self.playerItem == nil) {
         return 0;
@@ -263,12 +263,12 @@
     if (self.playerItem != nil || self.playerItem.status != AVPlayerItemStatusFailed)
     {
         NSTimeInterval duration = self.duration;
-        NSTimeInterval playbackTime = self.playbackTime;
+        NSTimeInterval currentTime = self.currentTime;
         NSTimeInterval loadedTime = self.loadedTime;
         
         NSTimeInterval errorInterval = 0.1;
-        NSTimeInterval loadedInterval = loadedTime - playbackTime;
-        NSTimeInterval residue = duration - playbackTime - errorInterval;
+        NSTimeInterval loadedInterval = loadedTime - currentTime;
+        NSTimeInterval residue = duration - currentTime - errorInterval;
         NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
         
         if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
@@ -431,18 +431,18 @@
 - (void)callbackForTimes
 {
     NSTimeInterval duration = self.duration;
-    NSTimeInterval playbackTime = self.playbackTime;
+    NSTimeInterval currentTime = self.currentTime;
     NSTimeInterval loadedTime = self.loadedTime;
     
-    BOOL shouldCallbackPlaybackTime = _callbackDurationTime != duration || _callbackPlaybackTime != playbackTime;
+    BOOL shouldCallbackCurrentTime = _callbackDurationTime != duration || _callbackCurrentTime != currentTime;
     BOOL shouldCallbackLoadedTime = _callbackDurationTime != duration || _callbackLoadedTime != loadedTime;
     
     _callbackDurationTime = duration;
-    _callbackPlaybackTime = playbackTime;
+    _callbackCurrentTime = currentTime;
     _callbackLoadedTime = loadedTime;
     
-    if (shouldCallbackPlaybackTime) {
-        [SGPlayerCallback callbackForPlaybackTime:self current:playbackTime duration:duration];
+    if (shouldCallbackCurrentTime) {
+        [SGPlayerCallback callbackForCurrentTime:self current:currentTime duration:duration];
     }
     if (shouldCallbackLoadedTime) {
         [SGPlayerCallback callbackForLoadedTime:self current:loadedTime duration:duration];
