@@ -13,9 +13,11 @@ FOUNDATION_EXPORT double SGAVPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
 #import <SGAVPlayer/SGPlayerDefines.h>
 #import <SGAVPlayer/SGPlayerAction.h>
+#import <SGAVPlayer/SGPlatform.h>
 #else
 #import "SGPlayerDefines.h"
 #import "SGPlayerAction.h"
+#import "SGPlatform.h"
 #endif
 
 
@@ -32,7 +34,7 @@ FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
 @property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
 @property (nonatomic, copy, readonly) NSError * error;
 
-@property (nonatomic, strong, readonly) UIView * view;
+@property (nonatomic, strong, readonly) SGPLFView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
 @property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;       // Default is 2s.
 

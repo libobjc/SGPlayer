@@ -242,7 +242,7 @@
     return YES;
 }
 
-- (UIView *)view
+- (SGPLFView *)view
 {
     return self.playerView;
 }
