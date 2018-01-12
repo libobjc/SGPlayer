@@ -60,79 +60,12 @@
 
 - (void)replaceWithContentURL:(nullable NSURL *)contentURL
 {
-    [self clear];
+    [self clean];
     if (contentURL == nil) {
         return;
     }
     self.contentURL = contentURL;
     [self setupPlayer];
-}
-
-
-#pragma mark - Setup & Clean
-
-- (void)setupPlayer
-{
-    // AVPlayerItem
-    self.playerItem = [AVPlayerItem playerItemWithURL:self.contentURL];
-    [self.playerItem addObserver:self forKeyPath:@"status" options:0 context:NULL];
-    [self.playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:NULL];
-    [self.playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:NULL];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(playerItemDidPlayToEnd:)
-                                                 name:AVPlayerItemDidPlayToEndTimeNotification
-                                               object:self.playerItem];
-    
-    // AVPlayer
-    self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
-    self.playerView.playerLayer.player = self.player;
-    if (@available(iOS 10.0, *)) {
-        self.player.automaticallyWaitsToMinimizeStalling = NO;
-    }
-    
-    // AVPlayer Playback Time Observer
-    SGWeakSelf
-    self.playerTimeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
-        SGStrongSelf
-        if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
-        {
-            CGFloat current = CMTimeGetSeconds(time);
-            CGFloat duration = strongSelf.duration;
-            [SGPlayerCallback callbackForPlaybackTime:strongSelf current:current duration:duration];
-        }
-    }];
-}
-
-- (void)cleanPlayer
-{
-    // AVPlayer Playback Time Observer
-    if (self.playerTimeObserver)
-    {
-        [self.player removeTimeObserver:self.playerTimeObserver];
-        self.playerTimeObserver = nil;
-    }
-    
-    // AVPlayer
-    if (self.player)
-    {
-        [self.player pause];
-        [self.player cancelPendingPrerolls];
-        [self.player replaceCurrentItemWithPlayerItem:nil];
-        self.player = nil;
-        self.playerView.playerLayer.player = nil;
-    }
-    
-    // AVPlayerItem
-    if (self.playerItem)
-    {
-        [self.playerItem.asset cancelLoading];
-        [self.playerItem cancelPendingSeeks];
-        [self.playerItem removeObserver:self forKeyPath:@"status"];
-        [self.playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
-        [self.playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
-        self.playerItem = nil;
-    }
 }
 
 
@@ -163,20 +96,11 @@
 
 - (void)pause
 {
-    [SGPlayerActivity resignActive:self];
-    [self.player pause];
-    switch (self.playbackState) {
-        case SGPlayerPlaybackStateStopped:
-        case SGPlayerPlaybackStateFinished:
-        case SGPlayerPlaybackStateFailed:
-            return;
-        default:
-            break;
-    }
+    [self pausePlayer];
     self.playbackState = SGPlayerPlaybackStatePaused;
 }
 
-- (void)interrupt
+- (void)pausePlayer
 {
     [SGPlayerActivity resignActive:self];
     [self.player pause];
@@ -188,6 +112,11 @@
         default:
             break;
     }
+}
+
+- (void)interrupt
+{
+    [self pausePlayer];
     self.playbackState = SGPlayerPlaybackStateInterrupted;
 }
 
@@ -195,40 +124,20 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
-    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
-    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
-    self.error = nil;
-    self.contentURL = nil;
-    self.loadedTime = 0;
-    self.shouldAutoPlay = NO;
-    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+    [self cleanProperty];
     self.playbackState = SGPlayerPlaybackStateStopped;
-}
-
-- (void)clear
-{
-    [SGPlayerActivity resignActive:self];
-    [self cleanPlayer];
-    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
-    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
-    self.error = nil;
-    self.contentURL = nil;
-    self.loadedTime = 0;
-    self.shouldAutoPlay = NO;
-    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
-    self.playbackState = SGPlayerPlaybackStateIdle;
 }
 
 - (void)seekToTime:(NSTimeInterval)time
 {
-    [self seekToTime:time completeHandler:nil];
+    [self seekToTime:time completionHandler:nil];
 }
 
-- (void)seekToTime:(NSTimeInterval)time completeHandler:(nullable void (^)(BOOL))completeHandler
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(nullable void (^)(BOOL))completionHandler
 {
     if (!self.seekEnable || self.playerItem.status != AVPlayerItemStatusReadyToPlay) {
-        if (completeHandler) {
-            completeHandler(NO);
+        if (completionHandler) {
+            completionHandler(NO);
         }
         return;
     }
@@ -247,8 +156,8 @@
                 if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
                     [strongSelf.player play];
                 }
-                if (completeHandler) {
-                    completeHandler(finished);
+                if (completionHandler) {
+                    completionHandler(finished);
                 }
                 SGPlayerLog(@"SGAVPlayer seek finished");
             });
@@ -257,7 +166,7 @@
 }
 
 
-#pragma mark - Internal Functions
+#pragma mark - Setter & Getter
 
 - (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
 {
@@ -269,15 +178,13 @@
     }
 }
 
-- (NSTimeInterval)playbackTime
+- (void)setLoadedTime:(NSTimeInterval)loadedTime
 {
-    CMTime currentTime = self.playerItem.currentTime;
-    Boolean indefinite = CMTIME_IS_INDEFINITE(currentTime);
-    Boolean invalid = CMTIME_IS_INVALID(currentTime);
-    if (indefinite || invalid) {
-        return 0;
+    if (_loadedTime != loadedTime) {
+        _loadedTime = loadedTime;
+        CGFloat duration = self.duration;
+        [SGPlayerCallback callbackForLoadedTime:self current:_loadedTime duration:duration];
     }
-    return CMTimeGetSeconds(self.playerItem.currentTime);
 }
 
 - (NSTimeInterval)duration
@@ -291,13 +198,15 @@
     return CMTimeGetSeconds(self.playerItem.duration);;
 }
 
-- (void)setLoadedTime:(NSTimeInterval)loadedTime
+- (NSTimeInterval)playbackTime
 {
-    if (_loadedTime != loadedTime) {
-        _loadedTime = loadedTime;
-        CGFloat duration = self.duration;
-        [SGPlayerCallback callbackForLoadedTime:self current:_loadedTime duration:duration];
+    CMTime currentTime = self.playerItem.currentTime;
+    Boolean indefinite = CMTIME_IS_INDEFINITE(currentTime);
+    Boolean invalid = CMTIME_IS_INVALID(currentTime);
+    if (indefinite || invalid) {
+        return 0;
     }
+    return CMTimeGetSeconds(self.playerItem.currentTime);
 }
 
 - (BOOL)seekEnable
@@ -306,25 +215,6 @@
         return NO;
     }
     return YES;
-}
-
-- (void)reloadPlayableTime
-{
-    if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-        if (CMTIMERANGE_IS_VALID(range)) {
-            NSTimeInterval start = CMTimeGetSeconds(range.start);
-            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
-            self.loadedTime = (start + duration);
-        }
-    } else {
-        self.loadedTime = 0;
-    }
-}
-
-- (void)playerItemDidPlayToEnd:(NSNotification *)notification
-{
-    self.playbackState = SGPlayerPlaybackStatePlaying;
 }
 
 - (UIView *)view
@@ -395,6 +285,115 @@
             }
         }
     }
+}
+
+- (void)playerItemDidPlayToEnd:(NSNotification *)notification
+{
+    self.playbackState = SGPlayerPlaybackStateFinished;
+}
+
+
+#pragma mark - Internal Function
+
+- (void)reloadPlayableTime
+{
+    if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
+        CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+        if (CMTIMERANGE_IS_VALID(range)) {
+            NSTimeInterval start = CMTimeGetSeconds(range.start);
+            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
+            self.loadedTime = (start + duration);
+        }
+    } else {
+        self.loadedTime = 0;
+    }
+}
+
+
+
+#pragma mark - Setup & Clean
+
+- (void)setupPlayer
+{
+    // AVPlayerItem
+    self.playerItem = [AVPlayerItem playerItemWithURL:self.contentURL];
+    [self.playerItem addObserver:self forKeyPath:@"status" options:0 context:NULL];
+    [self.playerItem addObserver:self forKeyPath:@"playbackBufferEmpty" options:NSKeyValueObservingOptionNew context:NULL];
+    [self.playerItem addObserver:self forKeyPath:@"loadedTimeRanges" options:NSKeyValueObservingOptionNew context:NULL];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(playerItemDidPlayToEnd:)
+                                                 name:AVPlayerItemDidPlayToEndTimeNotification
+                                               object:self.playerItem];
+    
+    // AVPlayer
+    self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
+    self.playerView.playerLayer.player = self.player;
+    if (@available(iOS 10.0, *)) {
+        self.player.automaticallyWaitsToMinimizeStalling = NO;
+    }
+    
+    // AVPlayer Playback Time Observer
+    SGWeakSelf
+    self.playerTimeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
+        SGStrongSelf
+        if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
+        {
+            CGFloat current = CMTimeGetSeconds(time);
+            CGFloat duration = strongSelf.duration;
+            [SGPlayerCallback callbackForPlaybackTime:strongSelf current:current duration:duration];
+        }
+    }];
+}
+
+- (void)cleanPlayer
+{
+    // AVPlayer Playback Time Observer
+    if (self.playerTimeObserver)
+    {
+        [self.player removeTimeObserver:self.playerTimeObserver];
+        self.playerTimeObserver = nil;
+    }
+    
+    // AVPlayer
+    if (self.player)
+    {
+        [self.player pause];
+        [self.player cancelPendingPrerolls];
+        [self.player replaceCurrentItemWithPlayerItem:nil];
+        self.player = nil;
+        self.playerView.playerLayer.player = nil;
+    }
+    
+    // AVPlayerItem
+    if (self.playerItem)
+    {
+        [self.playerItem.asset cancelLoading];
+        [self.playerItem cancelPendingSeeks];
+        [self.playerItem removeObserver:self forKeyPath:@"status"];
+        [self.playerItem removeObserver:self forKeyPath:@"playbackBufferEmpty"];
+        [self.playerItem removeObserver:self forKeyPath:@"loadedTimeRanges"];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemDidPlayToEndTimeNotification object:self.playerItem];
+        self.playerItem = nil;
+    }
+}
+
+- (void)cleanProperty
+{
+    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
+    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
+    self.error = nil;
+    self.contentURL = nil;
+    self.loadedTime = 0;
+    self.shouldAutoPlay = NO;
+    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+}
+
+- (void)clean
+{
+    [SGPlayerActivity resignActive:self];
+    [self cleanPlayer];
+    [self cleanProperty];
+    self.playbackState = SGPlayerPlaybackStateIdle;
 }
 
 
