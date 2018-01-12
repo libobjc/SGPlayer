@@ -271,8 +271,14 @@
         
         if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
             loadState = SGPlayerLoadStatePlayable;
+            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+                [self.player play];
+            }
         } else {
             loadState = SGPlayerLoadStateLoading;
+            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+                [self.player pause];
+            }
         }
     }
     self.loadState = loadState;
