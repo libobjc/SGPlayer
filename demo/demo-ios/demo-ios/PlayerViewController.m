@@ -34,7 +34,7 @@
     [self sg_registerNotificationForPlayer:self.player
                        playbackStateAction:@selector(playbackStateAction:)
                            loadStateAction:@selector(loadStateAction:)
-                        playbackTimeAction:@selector(playbackTimeAction:)
+                        currentTimeAction:@selector(currentTimeAction:)
                               loadedAction:@selector(loadedTimeAction:)
                                errorAction:@selector(errorAction:)];
     [self.view insertSubview:self.player.view atIndex:0];
@@ -123,17 +123,17 @@
     }
 }
 
-- (void)playbackTimeAction:(NSNotification *)notification
+- (void)currentTimeAction:(NSNotification *)notification
 {
-    SGTimeModel * playbackTimeModel = [notification.userInfo sg_playbackTimeModel];
+    SGTimeModel * currentTimeModel = [notification.userInfo sg_currentTimeModel];
     
-    NSLog(@"%s, %f", __func__, playbackTimeModel.current);
+    NSLog(@"%s, %f", __func__, currentTimeModel.current);
     
     if (!self.progressSilderTouching) {
-        self.progressSilder.value = playbackTimeModel.percent;
+        self.progressSilder.value = currentTimeModel.percent;
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:playbackTimeModel.current];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:playbackTimeModel.duration];
+    self.currentTimeLabel.text = [self timeStringFromSeconds:currentTimeModel.current];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:currentTimeModel.duration];
 }
 
 - (void)loadedTimeAction:(NSNotification *)notification
