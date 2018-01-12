@@ -10,12 +10,13 @@
 #import "SGAVPlayerView.h"
 #import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
+#import "SGPlayerBackground.h"
 #import "SGAudioManager.h"
 #import "SGPlayerMacro.h"
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface SGAVPlayer ()
+@interface SGAVPlayer () <SGPlayerBackgroundDelegate>
 
 {
     NSTimeInterval _callbackDurationTime;
@@ -24,6 +25,7 @@
 }
 
 @property (nonatomic, assign) NSInteger tagInternal;
+@property (nonatomic, strong) SGPlayerBackground * background;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
@@ -64,7 +66,9 @@
         static NSInteger tag = 1900;
         self.tagInternal = tag++;
         
-        [self registerInterrupt];
+        self.background = [[SGPlayerBackground alloc] init];
+        self.background.delegate = self;
+        [self.background becomeActive:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
@@ -76,7 +80,7 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
-    [self removeInterrupt];
+    [self.background resignActive:self];
 }
 
 
@@ -465,13 +469,36 @@
 }
 
 
+#pragma mark - SGPlayerBackgroundDelegate
+
+- (void)backgroundWillEnterForeground:(SGPlayerBackground *)background
+{
+    if (self.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+    {
+        if (self.shouldAutoPlay)
+        {
+            self.shouldAutoPlay = NO;
+            [self play];
+        }
+    }
+}
+
+- (void)backgroundDidEnterBackground:(SGPlayerBackground *)background
+{
+    if (self.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+    {
+        if (self.playbackState == SGPlayerPlaybackStatePlaying)
+        {
+            self.shouldAutoPlay = YES;
+            [self pause];
+        }
+    }
+}
+
 #pragma mark - Interrupt
 
 - (void)registerInterrupt
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-    
     SGWeakSelf
     SGAudioManager * manager = [SGAudioManager manager];
     [manager setHandlerTarget:self interruption:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerInterruptionType type, SGAudioManagerInterruptionOption option) {
@@ -500,44 +527,7 @@
 
 - (void)removeInterrupt
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [[SGAudioManager manager] removeHandlerTarget:self];
-}
-
-- (void)applicationDidEnterBackground:(NSNotification *)notification
-{
-    switch (self.backgroundMode) {
-        case SGPlayerBackgroundModeNothing:
-        case SGPlayerBackgroundModeContinue:
-            break;
-        case SGPlayerBackgroundModeAutoPlayAndPause:
-        {
-            if (self.playbackState == SGPlayerPlaybackStatePlaying)
-            {
-                self.shouldAutoPlay = YES;
-                [self interrupt];
-            }
-        }
-            break;
-    }
-}
-
-- (void)applicationWillEnterForeground:(NSNotification *)notification
-{
-    switch (self.backgroundMode) {
-        case SGPlayerBackgroundModeNothing:
-        case SGPlayerBackgroundModeContinue:
-            break;
-        case SGPlayerBackgroundModeAutoPlayAndPause:
-        {
-            if (self.shouldAutoPlay && self.playbackState == SGPlayerPlaybackStateInterrupted) {
-                self.shouldAutoPlay = NO;
-                [self play];
-                self.lastForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
-            }
-        }
-            break;
-    }
 }
 
 

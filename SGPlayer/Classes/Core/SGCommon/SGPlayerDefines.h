@@ -48,8 +48,7 @@ typedef NS_ENUM(NSUInteger, SGPlayerLoadState)
 
 typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)
 {
-    SGPlayerBackgroundModeNothing,
-    SGPlayerBackgroundModeAutoPlayAndPause,     // default
+    SGPlayerBackgroundModeAutoPlayAndPause,
     SGPlayerBackgroundModeContinue,
 };
 
