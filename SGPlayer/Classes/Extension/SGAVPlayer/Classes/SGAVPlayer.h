@@ -21,7 +21,7 @@ FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
 #endif
 
 
-@interface SGAVPlayer : NSObject
+@interface SGAVPlayer : NSObject <SGPlayer>
 
 @property (nonatomic, copy, readonly) NSURL * contentURL;
 - (void)replaceWithContentURL:(NSURL *)contentURL;

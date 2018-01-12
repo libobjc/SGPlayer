@@ -20,6 +20,13 @@
 #endif
 
 
+@protocol SGPlayer <NSObject>
+
+- (NSInteger)tag;
+
+@end
+
+
 typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
 {
     SGPlayerPlaybackStateIdle,

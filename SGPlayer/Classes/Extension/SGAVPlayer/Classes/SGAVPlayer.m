@@ -23,6 +23,8 @@
     NSTimeInterval _callbackLoadedTime;
 }
 
+@property (nonatomic, assign) NSInteger tagInternal;
+
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
@@ -42,6 +44,17 @@
 
 
 @implementation SGAVPlayer
+
+
+#pragma mark - Protocol
+
+- (NSInteger)tag
+{
+    return self.tagInternal;
+}
+
+
+#pragma mark - Class
 
 
 - (instancetype)init

@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGPlayerDefines.h"
 
 @interface SGPlayerActivity : NSObject
 
-+ (void)becomeActive:(id)object;
-+ (void)resignActive:(id)object;
++ (void)becomeActive:(id<SGPlayer>)player;
++ (void)resignActive:(id<SGPlayer>)player;
 
 @end
