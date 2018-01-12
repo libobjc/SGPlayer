@@ -17,6 +17,12 @@
 
 @interface SGAVPlayer ()
 
+{
+    NSTimeInterval _callbackDurationTime;
+    NSTimeInterval _callbackPlaybackTime;
+    NSTimeInterval _callbackLoadedTime;
+}
+
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
@@ -125,6 +131,7 @@
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [self cleanProperty];
+    [self cleanTimes];
     self.playbackState = SGPlayerPlaybackStateStopped;
 }
 
@@ -178,6 +185,36 @@
     }
 }
 
+- (NSTimeInterval)duration
+{
+    if (self.playerItem == nil) {
+        return 0;
+    }
+    return [self secondsFromCMTime:self.playerItem.duration];
+}
+
+- (NSTimeInterval)playbackTime
+{
+    if (self.playerItem == nil) {
+        return 0;
+    }
+    return [self secondsFromCMTime:self.playerItem.currentTime];
+}
+
+- (void)reloadLoadedTime
+{
+    if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
+        CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
+        if (CMTIMERANGE_IS_VALID(range)) {
+            NSTimeInterval start = CMTimeGetSeconds(range.start);
+            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
+            self.loadedTime = (start + duration);
+        }
+    } else {
+        self.loadedTime = 0;
+    }
+}
+
 - (void)setLoadedTime:(NSTimeInterval)loadedTime
 {
     if (_loadedTime != loadedTime) {
@@ -185,28 +222,6 @@
         CGFloat duration = self.duration;
         [SGPlayerCallback callbackForLoadedTime:self current:_loadedTime duration:duration];
     }
-}
-
-- (NSTimeInterval)duration
-{
-    CMTime duration = self.playerItem.duration;
-    Boolean indefinite = CMTIME_IS_INDEFINITE(duration);
-    Boolean invalid = CMTIME_IS_INVALID(duration);
-    if (indefinite || invalid) {
-        return 0;
-    }
-    return CMTimeGetSeconds(self.playerItem.duration);;
-}
-
-- (NSTimeInterval)playbackTime
-{
-    CMTime currentTime = self.playerItem.currentTime;
-    Boolean indefinite = CMTIME_IS_INDEFINITE(currentTime);
-    Boolean invalid = CMTIME_IS_INVALID(currentTime);
-    if (indefinite || invalid) {
-        return 0;
-    }
-    return CMTimeGetSeconds(self.playerItem.currentTime);
 }
 
 - (BOOL)seekEnable
@@ -220,6 +235,16 @@
 - (UIView *)view
 {
     return self.playerView;
+}
+
+- (NSTimeInterval)secondsFromCMTime:(CMTime)time
+{
+    Boolean indefinite = CMTIME_IS_INDEFINITE(time);
+    Boolean invalid = CMTIME_IS_INVALID(time);
+    if (indefinite || invalid) {
+        return 0;
+    }
+    return CMTimeGetSeconds(time);
 }
 
 
@@ -267,11 +292,13 @@
         {
             if (self.playerItem.playbackBufferEmpty) {
 //                [self startBuffering];
+                NSLog(@"playbackBufferEmpty");
             }
         }
         else if ([keyPath isEqualToString:@"loadedTimeRanges"])
         {
-            [self reloadPlayableTime];
+            NSLog(@"loadedTimeRanges");
+            [self reloadLoadedTime];
             NSTimeInterval interval = self.loadedTime - self.playbackTime;
             NSTimeInterval residue = self.duration - self.playbackTime;
             if (residue <= -1.5) {
@@ -291,24 +318,6 @@
 {
     self.playbackState = SGPlayerPlaybackStateFinished;
 }
-
-
-#pragma mark - Internal Function
-
-- (void)reloadPlayableTime
-{
-    if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-        CMTimeRange range = [self.playerItem.loadedTimeRanges.firstObject CMTimeRangeValue];
-        if (CMTIMERANGE_IS_VALID(range)) {
-            NSTimeInterval start = CMTimeGetSeconds(range.start);
-            NSTimeInterval duration = CMTimeGetSeconds(range.duration);
-            self.loadedTime = (start + duration);
-        }
-    } else {
-        self.loadedTime = 0;
-    }
-}
-
 
 
 #pragma mark - Setup & Clean
@@ -336,12 +345,7 @@
     SGWeakSelf
     self.playerTimeObserver = [self.player addPeriodicTimeObserverForInterval:CMTimeMake(1, 1) queue:dispatch_get_main_queue() usingBlock:^(CMTime time) {
         SGStrongSelf
-        if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
-        {
-            CGFloat current = CMTimeGetSeconds(time);
-            CGFloat duration = strongSelf.duration;
-            [SGPlayerCallback callbackForPlaybackTime:strongSelf current:current duration:duration];
-        }
+        [strongSelf callbackForTimes];
     }];
 }
 
@@ -379,8 +383,6 @@
 
 - (void)cleanProperty
 {
-    [SGPlayerCallback callbackForPlaybackTime:self current:0 duration:0];
-    [SGPlayerCallback callbackForLoadedTime:self current:0 duration:0];
     self.error = nil;
     self.contentURL = nil;
     self.loadedTime = 0;
@@ -388,12 +390,42 @@
     self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
 }
 
+- (void)cleanTimes
+{
+    [self callbackForTimes];
+}
+
 - (void)clean
 {
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [self cleanProperty];
+    [self cleanTimes];
     self.playbackState = SGPlayerPlaybackStateIdle;
+}
+
+
+#pragma mark - Callback
+
+- (void)callbackForTimes
+{
+    NSTimeInterval duration = self.duration;
+    NSTimeInterval playbackTime = self.playbackTime;
+    NSTimeInterval loadedTime = self.loadedTime;
+    
+    BOOL shouldCallbackPlaybackTime = _callbackDurationTime != duration || _callbackPlaybackTime != playbackTime;
+    BOOL shouldCallbackLoadedTime = _callbackDurationTime != duration || _callbackLoadedTime != loadedTime;
+    
+    _callbackDurationTime = duration;
+    _callbackPlaybackTime = playbackTime;
+    _callbackLoadedTime = loadedTime;
+    
+    if (shouldCallbackPlaybackTime) {
+        [SGPlayerCallback callbackForPlaybackTime:self current:playbackTime duration:duration];
+    }
+    if (shouldCallbackLoadedTime) {
+        [SGPlayerCallback callbackForLoadedTime:self current:loadedTime duration:duration];
+    }
 }
 
 

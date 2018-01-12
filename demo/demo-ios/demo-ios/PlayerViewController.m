@@ -193,6 +193,7 @@
         self.progressSilder.value = progress.percent;
     }
     self.currentTimeLabel.text = [self timeStringFromSeconds:progress.current];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:progress.duration];
 }
 
 - (void)loadedTimeAction:(NSNotification *)notification
