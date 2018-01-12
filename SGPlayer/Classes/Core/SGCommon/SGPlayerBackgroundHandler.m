@@ -19,10 +19,16 @@
 @implementation SGPlayerBackgroundHandler
 
 static NSTimeInterval lastWillEnterForegroundTimeInterval = 0;
+static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 
 + (NSTimeInterval)lastWillEnterForegroundTimeInterval
 {
     return lastWillEnterForegroundTimeInterval;
+}
+
++ (NSTimeInterval)lastDidEnterBackgroundTimeInterval
+{
+    return lastDidEnterBackgroundTimeInterval;
 }
 
 - (void)becomeActive:(id<SGPlayer>)player
@@ -62,6 +68,7 @@ static NSTimeInterval lastWillEnterForegroundTimeInterval = 0;
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    lastDidEnterBackgroundTimeInterval = [NSDate date].timeIntervalSince1970;
     if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
     {
         if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
