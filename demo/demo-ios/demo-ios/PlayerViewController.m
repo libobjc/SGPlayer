@@ -37,62 +37,11 @@
                         playbackTimeAction:@selector(playbackTimeAction:)
                               loadedAction:@selector(loadedTimeAction:)
                                errorAction:@selector(errorAction:)];
-//    [self.player setViewTapAction:^(SGPlayer * _Nonnull player, SGPLFView * _Nonnull view) {
-//        NSLog(@"player display view did click!");
-//    }];
     [self.view insertSubview:self.player.view atIndex:0];
     
-    static NSURL * normalVideo = nil;
-    static NSURL * vrVideo = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        normalVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-        vrVideo = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
-    });
-    normalVideo = [NSURL URLWithString:@"http://aliuwmp3.changba.com/userdata/video/45F6BD5E445E4C029C33DC5901307461.mp4"];
-    [self.player replaceWithContentURL:normalVideo];
-//    switch (self.demoType)
-//    {
-//        case DemoType_AVPlayer_Normal:
-//            [self.player replaceVideoWithURL:normalVideo];
-//            break;
-//        case DemoType_AVPlayer_VR:
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//        case DemoType_AVPlayer_VR_Box:
-//            self.player.displayMode = SGDisplayModeBox;
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//        case DemoType_FFmpeg_Normal:
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-//            [self.player replaceVideoWithURL:normalVideo];
-//            break;
-//        case DemoType_FFmpeg_Normal_Hardware:
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            [self.player replaceVideoWithURL:normalVideo];
-//            break;
-//        case DemoType_FFmpeg_VR:
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//        case DemoType_FFmpeg_VR_Hardware:
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//        case DemoType_FFmpeg_VR_Box:
-//            self.player.displayMode = SGDisplayModeBox;
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            self.player.decoder.hardwareAccelerateEnableForFFmpeg = NO;
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//        case DemoType_FFmpeg_VR_Box_Hardware:
-//            self.player.displayMode = SGDisplayModeBox;
-//            self.player.decoder = [SGPlayerDecoder decoderByFFmpeg];
-//            [self.player replaceVideoWithURL:vrVideo videoType:SGVideoTypeVR];
-//            break;
-//    }
+    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
+//    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+    [self.player replaceWithContentURL:contentURL];
 }
 
 - (void)viewDidLayoutSubviews
@@ -101,26 +50,6 @@
     self.player.view.frame = self.view.bounds;
 }
 
-+ (NSString *)displayNameForDemoType:(DemoType)demoType
-{
-    static NSArray * displayNames = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        displayNames = @[@"i see fire,   AVPlayer",
-                         @"google help,  AVPlayer,  VR",
-                         @"google help,  AVPlayer,  VR,  Box",
-                         @"i see fire,   FFmpeg",
-                         @"i see fire,   FFmpeg,  Hardware Acceleration",
-                         @"google help,  FFmpeg,  VR",
-                         @"google help,  FFmpeg,  VR,  Hardware Acceleration",
-                         @"google help,  FFmpeg,  VR,  Box",
-                         @"google help,  FFmpeg,  VR,  Box,  Hardware Acceleration"];
-    });
-    if (demoType < displayNames.count) {
-        return [displayNames objectAtIndex:demoType];
-    }
-    return nil;
-}
 - (IBAction)back:(id)sender
 {
     [self.navigationController popViewControllerAnimated:YES];
@@ -149,10 +78,10 @@
 
 - (void)playbackStateAction:(NSNotification *)notification
 {
-    SGPlaybackStateModel * state = [notification.userInfo sg_playbackStateModel];
+    SGPlaybackStateModel * playbackStateModel = [notification.userInfo sg_playbackStateModel];
     
     NSString * text;
-    switch (state.current) {
+    switch (playbackStateModel.current) {
         case SGPlayerPlaybackStateIdle:
             text = @"Idle";
             break;
@@ -179,35 +108,44 @@
             break;
     }
     self.stateLabel.text = text;
+    
+    NSLog(@"%s, %ld", __func__, playbackStateModel.current);
 }
 
 - (void)loadStateAction:(NSNotification *)notification
 {
-    SGPlaybackStateModel * state = [notification.userInfo sg_playbackStateModel];
-    NSLog(@"%s, %ld", __func__, state.current);
+    SGPlaybackStateModel * loadStateModel = [notification.userInfo sg_playbackStateModel];
+    
+    NSLog(@"%s, %ld", __func__, loadStateModel.current);
+    
+    if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player.playbackState == SGPlayerLoadStateIdle) {
+        [self.player play];
+    }
 }
 
 - (void)playbackTimeAction:(NSNotification *)notification
 {
-    SGTimeModel * progress = [notification.userInfo sg_playbackTimeModel];
+    SGTimeModel * playbackTimeModel = [notification.userInfo sg_playbackTimeModel];
+    
+    NSLog(@"%s, %f", __func__, playbackTimeModel.current);
+    
     if (!self.progressSilderTouching) {
-        self.progressSilder.value = progress.percent;
+        self.progressSilder.value = playbackTimeModel.percent;
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:progress.current];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:progress.duration];
-    NSLog(@"playback time : %f", progress.current);
+    self.currentTimeLabel.text = [self timeStringFromSeconds:playbackTimeModel.current];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:playbackTimeModel.duration];
 }
 
 - (void)loadedTimeAction:(NSNotification *)notification
 {
-    SGTimeModel * playable = [notification.userInfo sg_loadedTimeModel];
-    NSLog(@"loaded time : %f", playable.current);
+    SGTimeModel * loadedTimeModel = [notification.userInfo sg_loadedTimeModel];
+    NSLog(@"%s, %f", __func__, loadedTimeModel.current);
 }
 
 - (void)errorAction:(NSNotification *)notification
 {
     NSError * error = [notification.userInfo sg_error];
-    NSLog(@"player did error : %@", error);
+    NSLog(@"%s, %@", __func__, error);
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

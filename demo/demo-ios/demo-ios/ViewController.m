@@ -18,20 +18,19 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 9;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"cell"];
-    cell.textLabel.text = [PlayerViewController displayNameForDemoType:indexPath.row];
+    cell.textLabel.text = @"Demo";
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     PlayerViewController * obj = [[PlayerViewController alloc] init];
-    obj.demoType = indexPath.row;
     [self.navigationController pushViewController:obj animated:YES];
 }
 
