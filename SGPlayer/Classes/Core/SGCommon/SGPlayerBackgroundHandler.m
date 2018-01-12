@@ -1,22 +1,22 @@
 //
-//  SGPlayerBackground.m
+//  SGPlayerBackgroundHandler.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/12.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGPlayerBackground.h"
+#import "SGPlayerBackgroundHandler.h"
 #import "SGPLFObject.h"
 
-@interface SGPlayerBackground ()
+@interface SGPlayerBackgroundHandler ()
 
 @property (nonatomic, weak) id<SGPlayer> player;
 @property (nonatomic, assign) BOOL shouldAutoPlay;
 
 @end
 
-@implementation SGPlayerBackground
+@implementation SGPlayerBackgroundHandler
 
 - (void)becomeActive:(id<SGPlayer>)player
 {

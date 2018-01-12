@@ -1,5 +1,5 @@
 //
-//  SGPlayerBackground.h
+//  SGPlayerBackgroundHandler.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/12.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGPlayerDefines.h"
 
-@interface SGPlayerBackground : NSObject
+@interface SGPlayerBackgroundHandler : NSObject
 
 @property (nonatomic, weak, readonly) id<SGPlayer> player;
 

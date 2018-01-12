@@ -10,7 +10,7 @@
 #import "SGAVPlayerView.h"
 #import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
-#import "SGPlayerBackground.h"
+#import "SGPlayerBackgroundHandler.h"
 #import "SGAudioManager.h"
 #import "SGPlayerMacro.h"
 #import <AVFoundation/AVFoundation.h>
@@ -38,7 +38,7 @@
 @property (nonatomic, strong) id playerTimeObserver;
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
-@property (nonatomic, strong) SGPlayerBackground * background;
+@property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
 
 @end
 
@@ -53,8 +53,8 @@
         static NSInteger tag = 1900;
         self.tagInternal = tag++;
         
-        self.background = [[SGPlayerBackground alloc] init];
-        [self.background becomeActive:self];
+        self.backgroundHandler = [[SGPlayerBackgroundHandler alloc] init];
+        [self.backgroundHandler becomeActive:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
@@ -66,7 +66,7 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
-    [self.background resignActive:self];
+    [self.backgroundHandler resignActive:self];
 }
 
 
