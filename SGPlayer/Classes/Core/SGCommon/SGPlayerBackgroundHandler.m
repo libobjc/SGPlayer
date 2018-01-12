@@ -31,23 +31,31 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
     return lastDidEnterBackgroundTimeInterval;
 }
 
-- (void)becomeActive:(id<SGPlayer>)player
++ (instancetype)backgroundHandlerWithPlayer:(id<SGPlayer>)player
 {
-    self.player = player;
-    
-    [[NSNotificationCenter defaultCenter] addObserver:player
-                                             selector:@selector(applicationDidEnterBackground:)
-                                                 name:UIApplicationDidEnterBackgroundNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:player
-                                             selector:@selector(applicationWillEnterForeground:)
-                                                 name:UIApplicationWillEnterForegroundNotification
-                                               object:nil];
+    return [[self alloc] initWithPlayer:player];
 }
 
-- (void)resignActive:(id<SGPlayer>)player
+- (instancetype)initWithPlayer:(id<SGPlayer>)player
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:player];
+    if (self = [super init])
+    {
+        self.player = player;
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationDidEnterBackground:)
+                                                     name:UIApplicationDidEnterBackgroundNotification
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(applicationWillEnterForeground:)
+                                                     name:UIApplicationWillEnterForegroundNotification
+                                                   object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)applicationWillEnterForeground:(NSNotification *)notification

@@ -14,9 +14,6 @@
 + (NSTimeInterval)lastWillEnterForegroundTimeInterval;
 + (NSTimeInterval)lastDidEnterBackgroundTimeInterval;
 
-@property (nonatomic, weak, readonly) id<SGPlayer> player;
-
-- (void)becomeActive:(id<SGPlayer>)player;
-- (void)resignActive:(id<SGPlayer>)player;
++ (instancetype)backgroundHandlerWithPlayer:(id<SGPlayer>)player;
 
 @end

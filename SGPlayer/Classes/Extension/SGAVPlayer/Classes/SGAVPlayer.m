@@ -53,8 +53,7 @@
         static NSInteger tag = 1900;
         self.tagInternal = tag++;
         
-        self.backgroundHandler = [[SGPlayerBackgroundHandler alloc] init];
-        [self.backgroundHandler becomeActive:self];
+        self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
@@ -66,7 +65,6 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
-    [self.backgroundHandler resignActive:self];
 }
 
 
