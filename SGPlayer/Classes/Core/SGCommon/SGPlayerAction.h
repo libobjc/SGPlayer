@@ -59,16 +59,16 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // Co
 
 @interface SGPlaybackStateModel : NSObject
 
-@property (nonatomic, assign) SGPlayerPlaybackState previous;
 @property (nonatomic, assign) SGPlayerPlaybackState current;
+@property (nonatomic, assign) SGPlayerPlaybackState previous;
 
 @end
 
 
 @interface SGLoadedStateModel : NSObject
 
-@property (nonatomic, assign) SGPlayerLoadState previous;
 @property (nonatomic, assign) SGPlayerLoadState current;
+@property (nonatomic, assign) SGPlayerLoadState previous;
 
 @end
 
