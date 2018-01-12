@@ -11,6 +11,8 @@
 
 @interface SGPlayerBackgroundHandler : NSObject
 
++ (NSTimeInterval)lastWillEnterForegroundTimeInterval;
+
 @property (nonatomic, weak, readonly) id<SGPlayer> player;
 
 - (void)becomeActive:(id<SGPlayer>)player;
