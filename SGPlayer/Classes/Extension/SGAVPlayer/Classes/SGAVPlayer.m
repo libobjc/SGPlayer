@@ -406,6 +406,7 @@
     self.loadedTime = 0;
     self.shouldAutoPlay = NO;
     self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+    self.loadState = SGPlayerLoadStateIdle;
 }
 
 - (void)cleanTimes
