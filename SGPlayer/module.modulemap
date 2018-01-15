@@ -1,0 +1,5 @@
+framework module SGPlayer {
+    umbrella header "SGAVPlayer.h"
+    export *
+    module * { export * }
+}
