@@ -7,13 +7,25 @@
 //
 
 #import "SGAVPlayerView.h"
+#import "SGPlatform.h"
 
 @implementation SGAVPlayerView
+
+#if SGPLATFORM_TARGET_OS_MAC
+
+- (CALayer *)makeBackingLayer
+{
+    return [AVPlayerLayer playerLayerWithPlayer:nil];
+}
+
+#else
 
 + (Class)layerClass
 {
     return [AVPlayerLayer class];
 }
+
+#endif
 
 - (AVPlayerLayer *)playerLayer
 {

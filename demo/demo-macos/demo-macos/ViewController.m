@@ -26,7 +26,6 @@
 {
     if ([segue.identifier isEqualToString:@"gotoPlay"]) {
         PlayerViewController * obj = (PlayerViewController *)[segue.destinationController contentViewController];
-        obj.demoType = [self.demoTypeButton indexOfSelectedItem];
         [obj setup];
     }
 }
