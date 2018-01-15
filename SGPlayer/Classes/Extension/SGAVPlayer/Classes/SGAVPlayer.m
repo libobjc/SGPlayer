@@ -8,16 +8,16 @@
 
 #import "SGAVPlayer.h"
 #import "SGAVPlayerView.h"
+#import "SGPlayerMacro.h"
 #import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
+#import "SGPlayerDefinesPrivate.h"
 #import "SGPlayerBackgroundHandler.h"
 #import "SGPlayerAudioInterruptHandler.h"
-#import "SGAudioManager.h"
-#import "SGPlayerMacro.h"
 #import <AVFoundation/AVFoundation.h>
 
 
-@interface SGAVPlayer ()
+@interface SGAVPlayer () <SGPlayerPrivate>
 
 {
     NSTimeInterval _callbackDurationTime;

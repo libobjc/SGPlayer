@@ -12,18 +12,18 @@
 
 @interface SGPlayerAudioInterruptHandler ()
 
-@property (nonatomic, weak) id<SGPlayer> player;
+@property (nonatomic, weak) id <SGPlayer, SGPlayerPrivate> player;
 
 @end
 
 @implementation SGPlayerAudioInterruptHandler
 
-+ (instancetype)audioInterruptHandlerWithPlayer:(id<SGPlayer>)player
++ (instancetype)audioInterruptHandlerWithPlayer:(id <SGPlayer, SGPlayerPrivate>)player
 {
     return [[self alloc] initWithPlayer:player];
 }
 
-- (instancetype)initWithPlayer:(id<SGPlayer>)player
+- (instancetype)initWithPlayer:(id<SGPlayer,SGPlayerPrivate>)player
 {
     if (self = [super init])
     {
@@ -60,7 +60,7 @@
                 NSTimeInterval lastWillEnterForegroundTimeInterval = [SGPlayerBackgroundHandler lastWillEnterForegroundTimeInterval];
                 if (timeInterval - lastWillEnterForegroundTimeInterval > 1.5)
                 {
-                    [self.player pause];
+                    [self.player interrupt];
                 }
             }
         }
@@ -69,7 +69,10 @@
         {
             if (option & AVAudioSessionInterruptionOptionShouldResume)
             {
-                
+                if (self.player.playbackState == SGPlayerPlaybackStateInterrupted)
+                {
+                    [self.player play];
+                }
             }
         }
             break;

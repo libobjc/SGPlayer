@@ -14,6 +14,6 @@
 + (NSTimeInterval)lastWillEnterForegroundTimeInterval;
 + (NSTimeInterval)lastDidEnterBackgroundTimeInterval;
 
-+ (instancetype)backgroundHandlerWithPlayer:(id<SGPlayer>)player;
++ (instancetype)backgroundHandlerWithPlayer:(id <SGPlayer>)player;
 
 @end
