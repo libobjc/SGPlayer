@@ -61,11 +61,11 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     lastWillEnterForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
-    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+    if (self.shouldAutoPlay)
     {
-        if (self.shouldAutoPlay)
+        self.shouldAutoPlay = NO;
+        if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
         {
-            self.shouldAutoPlay = NO;
             if (self.player.playbackState == SGPlayerPlaybackStatePaused)
             {
                 [self.player play];

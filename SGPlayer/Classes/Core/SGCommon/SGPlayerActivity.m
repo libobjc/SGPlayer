@@ -83,11 +83,10 @@
 
 - (void)reload
 {
-    if (self.players.count > 0) {
-        [UIApplication sharedApplication].idleTimerDisabled = NO;
-    } else {
-        [UIApplication sharedApplication].idleTimerDisabled = YES;
-    }
+    BOOL disable = self.players.count <= 0;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [UIApplication sharedApplication].idleTimerDisabled = disable;
+    });
 }
 
 @end

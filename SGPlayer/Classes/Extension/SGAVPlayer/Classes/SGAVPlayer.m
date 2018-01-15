@@ -11,6 +11,7 @@
 #import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
 #import "SGPlayerBackgroundHandler.h"
+#import "SGPlayerAudioInterruptHandler.h"
 #import "SGAudioManager.h"
 #import "SGPlayerMacro.h"
 #import <AVFoundation/AVFoundation.h>
@@ -39,6 +40,7 @@
 @property (nonatomic, strong) SGAVPlayerView * playerView;
 
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
+@property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
 
 @end
 
@@ -54,6 +56,7 @@
         self.tagInternal = tag++;
         
         self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
+        self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
@@ -454,41 +457,6 @@
     if (shouldCallbackLoadedTime) {
         [SGPlayerCallback callbackForLoadedTime:self current:loadedTime duration:duration];
     }
-}
-
-#pragma mark - Interrupt
-
-- (void)registerInterrupt
-{
-    SGWeakSelf
-    SGAudioManager * manager = [SGAudioManager manager];
-    [manager setHandlerTarget:self interruption:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerInterruptionType type, SGAudioManagerInterruptionOption option) {
-        SGStrongSelf
-        if (type == SGAudioManagerInterruptionTypeBegin)
-        {
-            if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying)
-            {
-                // fix : maybe receive interruption notification when enter foreground.
-//                NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
-//                if (timeInterval - strongSelf.lastForegroundTimeInterval > 1.5) {
-//                    [strongSelf interrupt];
-//                }
-            }
-        }
-    } routeChange:^(id handlerTarget, SGAudioManager *audioManager, SGAudioManagerRouteChangeReason reason) {
-        SGStrongSelf
-        if (reason == SGAudioManagerRouteChangeReasonOldDeviceUnavailable)
-        {
-            if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
-                [strongSelf interrupt];
-            }
-        }
-    }];
-}
-
-- (void)removeInterrupt
-{
-    [[SGAudioManager manager] removeHandlerTarget:self];
 }
 
 
