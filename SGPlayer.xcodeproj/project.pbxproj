@@ -681,6 +681,24 @@
 		9C5AB7051E88F0560021F460 /* SGGLProgramYUV420.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */; };
 		9C5AB7061E88F0560021F460 /* SGGLProgramYUV420.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */; };
 		9C5AB7071E88F0560021F460 /* SGGLProgramYUV420.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */; };
+		9CCC5F0E200C9B7100E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0D200C9B7000E833DA /* UIKit.framework */; };
+		9CCC5F10200C9B7700E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0F200C9B7700E833DA /* Foundation.framework */; };
+		9CCC5F12200C9B7B00E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */; };
+		9CCC5F14200C9B8200E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F13200C9B8200E833DA /* AVFoundation.framework */; };
+		9CCC5F16200C9B8600E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F15200C9B8600E833DA /* Foundation.framework */; };
+		9CCC5F18200C9B8B00E833DA /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F17200C9B8A00E833DA /* AppKit.framework */; };
+		9CCC5F1A200C9B9400E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F19200C9B9400E833DA /* Foundation.framework */; };
+		9CCC5F1C200C9B9800E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */; };
+		9CCC5F1E200C9BA300E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1D200C9BA200E833DA /* UIKit.framework */; };
+		9CCC5F1F200C9BB200E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0F200C9B7700E833DA /* Foundation.framework */; };
+		9CCC5F20200C9BB700E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */; };
+		9CCC5F21200C9BBB00E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0D200C9B7000E833DA /* UIKit.framework */; };
+		9CCC5F22200C9BC700E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F15200C9B8600E833DA /* Foundation.framework */; };
+		9CCC5F23200C9BCC00E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F13200C9B8200E833DA /* AVFoundation.framework */; };
+		9CCC5F24200C9BD000E833DA /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F17200C9B8A00E833DA /* AppKit.framework */; };
+		9CCC5F25200C9BD500E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F19200C9B9400E833DA /* Foundation.framework */; };
+		9CCC5F26200C9BD900E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */; };
+		9CCC5F27200C9BE100E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1D200C9BA200E833DA /* UIKit.framework */; };
 		9CE6F52F2004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; };
 		9CE6F5302004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; };
 		9CE6F5312004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; };
@@ -1011,6 +1029,15 @@
 		9C5AB6F91E88F0400021F460 /* SGGLProgramNV12.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramNV12.m; sourceTree = "<group>"; };
 		9C5AB7001E88F0560021F460 /* SGGLProgramYUV420.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGGLProgramYUV420.h; sourceTree = "<group>"; };
 		9C5AB7011E88F0560021F460 /* SGGLProgramYUV420.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGGLProgramYUV420.m; sourceTree = "<group>"; };
+		9CCC5F0D200C9B7000E833DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
+		9CCC5F0F200C9B7700E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		9CCC5F13200C9B8200E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9CCC5F15200C9B8600E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		9CCC5F17200C9B8A00E833DA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		9CCC5F19200C9B9400E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
+		9CCC5F1D200C9BA200E833DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFColor.h; sourceTree = "<group>"; };
 		9CE6F51B2004D97C00D1F4C8 /* SGPLFColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPLFColor.m; sourceTree = "<group>"; };
@@ -1054,6 +1081,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F1E200C9BA300E833DA /* UIKit.framework in Frameworks */,
+				9CCC5F1C200C9B9800E833DA /* AVFoundation.framework in Frameworks */,
+				9CCC5F1A200C9B9400E833DA /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1061,6 +1091,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F18200C9B8B00E833DA /* AppKit.framework in Frameworks */,
+				9CCC5F16200C9B8600E833DA /* Foundation.framework in Frameworks */,
+				9CCC5F14200C9B8200E833DA /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1068,6 +1101,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F12200C9B7B00E833DA /* AVFoundation.framework in Frameworks */,
+				9CCC5F10200C9B7700E833DA /* Foundation.framework in Frameworks */,
+				9CCC5F0E200C9B7100E833DA /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1075,6 +1111,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F21200C9BBB00E833DA /* UIKit.framework in Frameworks */,
+				9CCC5F20200C9BB700E833DA /* AVFoundation.framework in Frameworks */,
+				9CCC5F1F200C9BB200E833DA /* Foundation.framework in Frameworks */,
 				9C41E71D1E97569F006E5A65 /* libavcodec.a in Frameworks */,
 				9C41E71E1E97569F006E5A65 /* libavfilter.a in Frameworks */,
 				9C41E71F1E97569F006E5A65 /* libavformat.a in Frameworks */,
@@ -1090,6 +1129,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F24200C9BD000E833DA /* AppKit.framework in Frameworks */,
+				9CCC5F23200C9BCC00E833DA /* AVFoundation.framework in Frameworks */,
+				9CCC5F22200C9BC700E833DA /* Foundation.framework in Frameworks */,
 				9C41E7251E9756A6006E5A65 /* libavcodec.a in Frameworks */,
 				9C41E7261E9756A6006E5A65 /* libavfilter.a in Frameworks */,
 				9C41E7271E9756A6006E5A65 /* libavformat.a in Frameworks */,
@@ -1105,6 +1147,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CCC5F27200C9BE100E833DA /* UIKit.framework in Frameworks */,
+				9CCC5F26200C9BD900E833DA /* AVFoundation.framework in Frameworks */,
+				9CCC5F25200C9BD500E833DA /* Foundation.framework in Frameworks */,
 				9C41E72D1E9756B0006E5A65 /* libavcodec.a in Frameworks */,
 				9C41E72E1E9756B0006E5A65 /* libavfilter.a in Frameworks */,
 				9C41E72F1E9756B0006E5A65 /* libavformat.a in Frameworks */,
@@ -1483,6 +1528,15 @@
 		9C4793421E71402E00AD4289 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CCC5F1D200C9BA200E833DA /* UIKit.framework */,
+				9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */,
+				9CCC5F19200C9B9400E833DA /* Foundation.framework */,
+				9CCC5F17200C9B8A00E833DA /* AppKit.framework */,
+				9CCC5F15200C9B8600E833DA /* Foundation.framework */,
+				9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */,
+				9CCC5F13200C9B8200E833DA /* AVFoundation.framework */,
+				9CCC5F0F200C9B7700E833DA /* Foundation.framework */,
+				9CCC5F0D200C9B7000E833DA /* UIKit.framework */,
 				9C4793671E71404A00AD4289 /* libavcodec.a */,
 				9C4793681E71404A00AD4289 /* libavdevice.a */,
 				9C4793691E71404A00AD4289 /* libavfilter.a */,
@@ -2722,6 +2776,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/Classes/Extension/SGAVPlayer/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGAVPlayer;
 				PRODUCT_NAME = SGAVPlayer;
@@ -2752,6 +2807,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/Classes/Extension/SGAVPlayer/module.modulemap";
 				PRODUCT_BUNDLE_IDENTIFIER = com.libobjc.SGAVPlayer;
 				PRODUCT_NAME = SGAVPlayer;
@@ -2790,6 +2846,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
 			name = Debug;
 		};
@@ -2820,6 +2877,7 @@
 				SKIP_INSTALL = YES;
 				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
