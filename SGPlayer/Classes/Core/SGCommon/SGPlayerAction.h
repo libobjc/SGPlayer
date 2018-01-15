@@ -31,14 +31,14 @@ SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoObjectKey;    // Co
 
 @interface NSObject (SGPlayerAction)
 
-- (void)sg_registerNotificationForPlayer:(id<SGPlayer>)player
+- (void)sg_registerNotificationForPlayer:(id <SGPlayer>)player
                      playbackStateAction:(SEL)playbackStateAction
                          loadStateAction:(SEL)loadStateAction
                        currentTimeAction:(SEL)currentTimeAction
                             loadedAction:(SEL)loadedAction
                              errorAction:(SEL)errorAction;
 
-- (void)sg_removeNotificationForPlayer:(id<SGPlayer>)player;
+- (void)sg_removeNotificationForPlayer:(id <SGPlayer>)player;
 
 @end
 

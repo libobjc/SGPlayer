@@ -33,7 +33,7 @@
     return [[self alloc] initWithPlayer:player];
 }
 
-- (instancetype)initWithPlayer:(id<SGPlayer,SGPlayerPrivate>)player
+- (instancetype)initWithPlayer:(id <SGPlayer,SGPlayerPrivate>)player
 {
     if (self = [super init])
     {

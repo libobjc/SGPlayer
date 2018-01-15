@@ -11,23 +11,23 @@
 
 @interface SGPlayerCallback : NSObject
 
-+ (void)callbackForPlaybackState:(id<SGPlayer>)player
++ (void)callbackForPlaybackState:(id <SGPlayer>)player
                          current:(SGPlayerPlaybackState)current
                         previous:(SGPlayerPlaybackState)previous;
 
-+ (void)callbackForLoadState:(id<SGPlayer>)player
++ (void)callbackForLoadState:(id <SGPlayer>)player
                      current:(SGPlayerLoadState)current
                     previous:(SGPlayerLoadState)previous;
 
-+ (void)callbackForCurrentTime:(id<SGPlayer>)player
++ (void)callbackForCurrentTime:(id <SGPlayer>)player
                        current:(NSTimeInterval)current
                       duration:(NSTimeInterval)duration;
 
-+ (void)callbackForLoadedTime:(id<SGPlayer>)player
++ (void)callbackForLoadedTime:(id <SGPlayer>)player
                       current:(NSTimeInterval)current
                      duration:(NSTimeInterval)duration;
 
-+ (void)callbackForError:(id<SGPlayer>)player
++ (void)callbackForError:(id <SGPlayer>)player
                    error:(NSError *)error;
 
 @end
