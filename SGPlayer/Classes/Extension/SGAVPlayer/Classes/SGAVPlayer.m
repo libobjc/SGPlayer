@@ -368,9 +368,19 @@
     // AVPlayer
     self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
     self.playerView.playerLayer.player = self.player;
+#if SGPLATFORM_TARGET_OS_MAC
+    if (@available(macOS 10.12, *)) {
+        self.player.automaticallyWaitsToMinimizeStalling = NO;
+    }
+#elif SGPLATFORM_TARGET_OS_IPHONE
     if (@available(iOS 10.0, *)) {
         self.player.automaticallyWaitsToMinimizeStalling = NO;
     }
+#elif SGPLATFORM_TARGET_OS_TV
+    if (@available(tvOS 10.0, *)) {
+        self.player.automaticallyWaitsToMinimizeStalling = NO;
+    }
+#endif
     
     // AVPlayer Playback Time Observer
     SGWeakSelf

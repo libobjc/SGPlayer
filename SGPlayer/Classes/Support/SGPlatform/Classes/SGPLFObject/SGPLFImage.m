@@ -26,6 +26,16 @@ SGPLFImage * SGPLFImageWithCVPixelBuffer(CVPixelBufferRef pixelBuffer)
     return image;
 }
 
+CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
+{
+    if (@available(macOS 10.11, *)) {
+        CIImage * image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+        return image;
+    } else {
+        return nil;
+    }
+}
+
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
@@ -42,15 +52,14 @@ SGPLFImage * SGPLFImageWithCVPixelBuffer(CVPixelBufferRef pixelBuffer)
     return [UIImage imageWithCIImage:ciImage];
 }
 
-
-#endif
-
-
 CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 {
     CIImage * image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
     return image;
 }
+
+#endif
+
 
 CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 {
