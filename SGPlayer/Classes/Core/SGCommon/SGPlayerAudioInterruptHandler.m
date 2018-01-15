@@ -9,6 +9,7 @@
 #import "SGPlayerAudioInterruptHandler.h"
 #import <AVFoundation/AVFoundation.h>
 #import "SGPlayerBackgroundHandler.h"
+#import "SGPlatform.h"
 
 @interface SGPlayerAudioInterruptHandler ()
 
@@ -17,6 +18,15 @@
 @end
 
 @implementation SGPlayerAudioInterruptHandler
+
+#if SGPLATFORM_TARGET_OS_MAC
+
++ (instancetype)audioInterruptHandlerWithPlayer:(id <SGPlayer, SGPlayerPrivate>)player
+{
+    return nil;
+}
+
+#else
 
 + (instancetype)audioInterruptHandlerWithPlayer:(id <SGPlayer, SGPlayerPrivate>)player
 {
@@ -97,5 +107,7 @@
             break;
     }
 }
+
+#endif
 
 @end

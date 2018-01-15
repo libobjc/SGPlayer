@@ -83,10 +83,12 @@
 
 - (void)reload
 {
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     BOOL disable = self.players.count <= 0;
     dispatch_async(dispatch_get_main_queue(), ^{
         [UIApplication sharedApplication].idleTimerDisabled = disable;
     });
+#endif
 }
 
 @end

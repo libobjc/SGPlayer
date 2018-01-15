@@ -31,6 +31,15 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
     return lastDidEnterBackgroundTimeInterval;
 }
 
+#if SGPLATFORM_TARGET_OS_MAC
+
++ (instancetype)backgroundHandlerWithPlayer:(id <SGPlayer>)player
+{
+    return nil;
+}
+
+#else
+
 + (instancetype)backgroundHandlerWithPlayer:(id <SGPlayer>)player
 {
     return [[self alloc] initWithPlayer:player];
@@ -86,5 +95,7 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
         }
     }
 }
+
+#endif
 
 @end

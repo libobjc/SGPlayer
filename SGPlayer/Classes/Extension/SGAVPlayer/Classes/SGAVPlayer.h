@@ -6,7 +6,7 @@
 //  Copyright © 2016年 single. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #if __has_include(<SGAVPlayer/SGAVPlayer.h>)
 FOUNDATION_EXPORT double SGAVPlayerVersionNumber;
