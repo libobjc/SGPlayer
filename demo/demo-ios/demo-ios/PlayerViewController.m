@@ -12,7 +12,7 @@
 
 @interface PlayerViewController ()
 
-@property (nonatomic, strong) SGAVPlayer * player;
+@property (nonatomic, strong) SGFFPlayer * player;
 
 @property (weak, nonatomic) IBOutlet UILabel * stateLabel;
 @property (weak, nonatomic) IBOutlet UISlider * progressSilder;
@@ -30,7 +30,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.player = [[SGAVPlayer alloc] init];
+    self.player = [[SGFFPlayer alloc] init];
     [self sg_registerNotificationForPlayer:self.player
                        playbackStateAction:@selector(playbackStateAction:)
                            loadStateAction:@selector(loadStateAction:)

@@ -253,6 +253,7 @@
     [self callbackForTimes];
 }
 
+
 #pragma mark - Callback
 
 - (void)callbackForTimes
@@ -260,5 +261,12 @@
     
 }
 
+
+#pragma mark - SGFFSessionDelegate
+
+- (void)session:(SGFFSession *)session didFailed:(NSError *)error
+{
+    
+}
 
 @end
