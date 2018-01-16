@@ -30,7 +30,6 @@
 @property (nonatomic, assign) NSInteger tagInternal;
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
 @property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
-@property (nonatomic, strong) SGAVPlayerView * playerView;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
@@ -42,6 +41,7 @@
 @property (nonatomic, strong) AVPlayer * player;
 @property (nonatomic, strong) AVPlayerItem * playerItem;
 @property (nonatomic, strong) id playerTimeObserver;
+@property (nonatomic, strong) SGAVPlayerView * playerView;
 
 @end
 

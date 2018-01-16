@@ -7,9 +7,9 @@
 //
 
 #import "SGFFPlayer.h"
-#import "SGFFPlayerView.h"
 #import "SGFFDecoder.h"
-#import "SGAudioManager.h"
+#import "SGFFPlayerView.h"
+#import "SGFFAudioPlayer.h"
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
@@ -20,12 +20,11 @@
 #import "SGPlayerAudioInterruptHandler.h"
 
 
-@interface SGFFPlayer () <SGPlayerPrivate, SGFFDecoderDelegate, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
+@interface SGFFPlayer () <SGPlayerPrivate, SGFFDecoderDelegate>
 
 @property (nonatomic, assign) NSInteger tagInternal;
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
 @property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
-@property (nonatomic, strong) SGFFPlayerView * playerView;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
@@ -35,15 +34,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGFFDecoder * decoder;
-@property (nonatomic, strong) SGAudioManager * audioManager;
-
-@property (nonatomic, assign) BOOL prepareToken;
-@property (nonatomic, assign) NSTimeInterval progress;
-
-@property (nonatomic, assign) NSTimeInterval lastPostProgressTime;
-@property (nonatomic, assign) NSTimeInterval lastPostPlayableTime;
-
-@property (nonatomic, strong) SGFFAudioFrame * currentAudioFrame;
+@property (nonatomic, strong) SGFFPlayerView * playerView;
+@property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
 
 @end
 
@@ -60,8 +52,8 @@
         self.minimumPlayableDuration = 2.f;
         
         self.playerView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
-        self.audioManager = [SGAudioManager manager];
-        [self.audioManager registerAudioSession];
+        self.audioPlayer = [[SGFFAudioPlayer alloc] init];
+        [self.audioPlayer registerAudioSession];
     }
     return self;
 }
@@ -70,8 +62,8 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanDecoder];
-    [self cleanFrame];
-    [self.audioManager unregisterAudioSession];
+    [self cleanTimes];
+    [self.audioPlayer unregisterAudioSession];
 }
 
 
@@ -85,7 +77,7 @@
     self.decoder = [SGFFDecoder decoderWithContentURL:contentURL
                                              delegate:self
                                     videoOutputConfig:nil
-                                    audioOutputConfig:self];
+                                    audioOutputConfig:nil];
     [self.decoder open];
 }
 
@@ -147,7 +139,7 @@
     [SGPlayerActivity resignActive:self];
     [self cleanDecoder];
     [self cleanProperty];
-    [self cleanFrame];
+    [self cleanTimes];
     self.playbackState = SGPlayerPlaybackStateStopped;
 }
 
@@ -193,11 +185,6 @@
     {
         SGPlayerPlaybackState previous = _playbackState;
         _playbackState = playbackState;
-        if (_playbackState == SGPlayerPlaybackStatePlaying) {
-            [self.audioManager playWithDelegate:self];
-        } else {
-            [self.audioManager pause];
-        }
         [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
     }
 }
@@ -232,53 +219,6 @@
     return self.decoder.seekEnable;
 }
 
-- (void)setProgress:(NSTimeInterval)progress
-{
-    if (_progress != progress) {
-        _progress = progress;
-        NSTimeInterval duration = self.duration;
-//        double percent = [self percentForTime:_progress duration:duration];
-        if (_progress <= 0.000001 || _progress == duration) {
-//            [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
-        } else {
-            NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-            if (currentTime - self.lastPostProgressTime >= 1) {
-                self.lastPostProgressTime = currentTime;
-                /*
-                if (!self.decoder.seekEnable && duration <= 0) {
-                    duration = _progress;
-                }
-                 */
-//                [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
-            }
-        }
-    }
-}
-
-- (void)setPlayableTime:(NSTimeInterval)playableTime
-{
-    NSTimeInterval duration = self.duration;
-    if (playableTime > duration) {
-        playableTime = duration;
-    } else if (playableTime < 0) {
-        playableTime = 0;
-    }
-    
-//    if (_playableTime != playableTime) {
-//        _playableTime = playableTime;
-//        double percent = [self percentForTime:_playableTime duration:duration];
-//        if (_playableTime == 0 || _playableTime == duration) {
-////            [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
-//        } else if (!self.decoder.endOfFile && self.decoder.seekEnable) {
-//            NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-//            if (currentTime - self.lastPostPlayableTime >= 1) {
-//                self.lastPostPlayableTime = currentTime;
-////                [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
-//            }
-//        }
-//    }
-}
-
 - (NSInteger)tag
 {
     return self.tagInternal;
@@ -297,13 +237,14 @@
     [SGPlayerActivity resignActive:self];
     [self cleanDecoder];
     [self cleanProperty];
-    [self cleanFrame];
+    [self cleanTimes];
     self.playbackState = SGPlayerPlaybackStateIdle;
 }
 
 - (void)cleanDecoder
 {
-    if (self.decoder) {
+    if (self.decoder)
+    {
         [self.decoder closeFile];
         self.decoder = nil;
     }
@@ -311,20 +252,12 @@
 
 - (void)cleanProperty
 {
-    self.progress = 0;
-    self.playableTime = 0;
-    self.prepareToken = NO;
-    self.lastPostProgressTime = 0;
-    self.lastPostPlayableTime = 0;
+    
 }
 
-- (void)cleanFrame
+- (void)cleanTimes
 {
-    if (self.currentAudioFrame)
-    {
-        [self.currentAudioFrame stopPlaying];
-        self.currentAudioFrame = nil;
-    }
+    [self callbackForTimes];
 }
 
 #pragma mark - Callback
@@ -335,97 +268,9 @@
 }
 
 
-#pragma mark - SGFFDecoderDelegate
-
-- (void)decoderWillOpenInputStream:(SGFFDecoder *)decoder
-{
-//    self.state = SGPlayerStateBuffering;
-}
-
-- (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder
-{
-    if (self.decoder.videoEnable) {
-//        [self.abstractPlayer.displayView rendererTypeOpenGL];
-    }
-}
-
-- (void)decoderDidEndOfFile:(SGFFDecoder *)decoder
-{
-    self.playableTime = self.duration;
-}
-
-- (void)decoderDidPlaybackFinished:(SGFFDecoder *)decoder
-{
-//    self.state = SGPlayerStateFinished;
-}
-
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBuffering:(BOOL)buffering
-{
-//    if (buffering) {
-//        self.state = SGPlayerStateBuffering;
-//    } else {
-//        if (self.playing) {
-//            self.state = SGPlayerStatePlaying;
-//        } else if (!self.prepareToken) {
-//            self.state = SGPlayerStateReadyToPlay;
-//            self.prepareToken = YES;
-//        } else {
-//            self.state = SGPlayerStateSuspend;
-//        }
-//    }
-}
-
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBufferedDuration:(NSTimeInterval)bufferedDuration
-{
-    self.playableTime = self.progress + bufferedDuration;
-}
-
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfProgress:(NSTimeInterval)progress
-{
-    self.progress = progress;
-}
-
-- (void)decoder:(SGFFDecoder *)decoder didError:(NSError *)error
-{
-    [self errorHandler:error];
-}
-
-- (void)errorHandler:(NSError *)error
-{
-//    SGError * obj = [[SGError alloc] init];
-//    obj.error = error;
-//    self.abstractPlayer.error = obj;
-//    self.state = SGPlayerStateFailed;
-//    [SGPlayerNotification postPlayer:self.abstractPlayer error:obj];
-}
-
-
-#pragma mark - SGFFPlayerOutput
-
-- (SGFFVideoFrame *)playerOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
-                                                currentDuration:(NSTimeInterval)currentDuration
-{
-    if (self.decoder) {
-        return [self.decoder decoderVideoOutputGetVideoFrameWithCurrentPostion:currentPostion
-                                                               currentDuration:currentDuration];
-    }
-    return nil;
-}
-
-
 #pragma mark - Audio Config
 
-- (Float64)decoderAudioOutputConfigGetSamplingRate
-{
-    return self.audioManager.samplingRate;
-}
-
-- (UInt32)decoderAudioOutputConfigGetNumberOfChannels
-{
-    return self.audioManager.numberOfChannels;
-}
-
-- (void)audioManager:(SGAudioManager *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
+- (void)audioManager:(SGFFAudioPlayer *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
 {
     if (self.playbackState != SGPlayerPlaybackStatePlaying)
     {
@@ -434,34 +279,34 @@
     }
     @autoreleasepool
     {
-        while (numberOfFrames > 0)
-        {
-            if (!self.currentAudioFrame) {
-                self.currentAudioFrame = [self.decoder decoderAudioOutputGetAudioFrame];
-                [self.currentAudioFrame startPlaying];
-            }
-            if (!self.currentAudioFrame) {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
-                return;
-            }
-            
-            const Byte * bytes = (Byte *)self.currentAudioFrame->samples + self.currentAudioFrame->output_offset;
-            const NSUInteger bytesLeft = self.currentAudioFrame->length - self.currentAudioFrame->output_offset;
-            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
-            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
-            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
-            
-            memcpy(outputData, bytes, bytesToCopy);
-            numberOfFrames -= framesToCopy;
-            outputData += framesToCopy * numberOfChannels;
-            
-            if (bytesToCopy < bytesLeft) {
-                self.currentAudioFrame->output_offset += bytesToCopy;
-            } else {
-                [self.currentAudioFrame stopPlaying];
-                self.currentAudioFrame = nil;
-            }
-        }
+//        while (numberOfFrames > 0)
+//        {
+//            if (!self.currentAudioFrame) {
+//                self.currentAudioFrame = [self.decoder decoderAudioOutputGetAudioFrame];
+//                [self.currentAudioFrame startPlaying];
+//            }
+//            if (!self.currentAudioFrame) {
+//                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+//                return;
+//            }
+//
+//            const Byte * bytes = (Byte *)self.currentAudioFrame->samples + self.currentAudioFrame->output_offset;
+//            const NSUInteger bytesLeft = self.currentAudioFrame->length - self.currentAudioFrame->output_offset;
+//            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
+//            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+//            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+//
+//            memcpy(outputData, bytes, bytesToCopy);
+//            numberOfFrames -= framesToCopy;
+//            outputData += framesToCopy * numberOfChannels;
+//
+//            if (bytesToCopy < bytesLeft) {
+//                self.currentAudioFrame->output_offset += bytesToCopy;
+//            } else {
+//                [self.currentAudioFrame stopPlaying];
+//                self.currentAudioFrame = nil;
+//            }
+//        }
     }
 }
 
