@@ -19,7 +19,7 @@ static int formatContextInterruptCallback(void * ctx)
 @interface SGFFFormatContext ()
 
 {
-    AVFormatContext * _format_context;
+    AVFormatContext * _formatContext;
 }
 
 @property (nonatomic, copy) NSURL * contentURL;
@@ -44,16 +44,16 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)prepare
 {
-    _format_context = avformat_alloc_context();
+    _formatContext = avformat_alloc_context();
     
-    if (!_format_context)
+    if (!_formatContext)
     {
         self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
         return;
     }
     
-    _format_context->interrupt_callback.callback = formatContextInterruptCallback;
-    _format_context->interrupt_callback.opaque = (__bridge void *)self;
+    _formatContext->interrupt_callback.callback = formatContextInterruptCallback;
+    _formatContext->interrupt_callback.opaque = (__bridge void *)self;
     
     self.error = [NSError errorWithDomain:@"Single Error" code:0 userInfo:nil];
 }
