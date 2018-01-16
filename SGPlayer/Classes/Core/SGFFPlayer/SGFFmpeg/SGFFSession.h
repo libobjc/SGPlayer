@@ -14,7 +14,7 @@
 
 @interface SGFFSession : NSObject
 
-+ (instancetype)sessionWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSessionDelegate>)delegate;
+- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSessionDelegate>)delegate;
 
 - (void)prepare;
 

@@ -70,7 +70,8 @@
         return;
     }
     self.contentURL = contentURL;
-    self.session = [SGFFSession sessionWithContentURL:self.contentURL delegate:self];
+    self.session = [[SGFFSession alloc] initWithContentURL:self.contentURL delegate:self];
+    [self.session prepare];
 }
 
 
