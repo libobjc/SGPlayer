@@ -7,21 +7,37 @@
 //
 
 #import "SGFFPlayer.h"
+#import "SGFFPlayerView.h"
 #import "SGFFDecoder.h"
 #import "SGAudioManager.h"
-#import "SGPlayerCallback.h"
+
 #import "SGPlayerMacro.h"
-#import "SGPlayer+DisplayView.h"
+#import "SGPlayerUtil.h"
+#import "SGPlayerCallback.h"
+#import "SGPlayerActivity.h"
+#import "SGPlayerDefinesPrivate.h"
+#import "SGPlayerBackgroundHandler.h"
+#import "SGPlayerAudioInterruptHandler.h"
 
-@interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderVideoOutputConfig, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
 
-@property (nonatomic, strong) NSLock * stateLock;
+@interface SGFFPlayer () <SGPlayerPrivate, SGFFDecoderDelegate, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
+
+@property (nonatomic, assign) NSInteger tagInternal;
+@property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
+@property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
+@property (nonatomic, strong) SGFFPlayerView * playerView;
+
+@property (nonatomic, copy) NSURL * contentURL;
+@property (nonatomic, assign) SGPlayerPlaybackState playbackState;
+@property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
+@property (nonatomic, assign) SGPlayerLoadState loadState;
+@property (nonatomic, assign) NSTimeInterval loadedTime;
+@property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGFFDecoder * decoder;
 @property (nonatomic, strong) SGAudioManager * audioManager;
 
 @property (nonatomic, assign) BOOL prepareToken;
-@property (nonatomic, assign) SGPlayerState state;
 @property (nonatomic, assign) NSTimeInterval progress;
 
 @property (nonatomic, assign) NSTimeInterval lastPostProgressTime;
@@ -37,71 +53,108 @@
 
 - (instancetype)init
 {
-    if (self = [super init]) {
-        self.stateLock = [[NSLock alloc] init];
+    if (self = [super init])
+    {
+        self.tagInternal = [SGPlayerUtil globalPlayerTag];
+        self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
+        self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
+        self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
+        self.minimumPlayableDuration = 2.f;
+        
+        self.playerView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
         self.audioManager = [SGAudioManager manager];
         [self.audioManager registerAudioSession];
     }
     return self;
 }
 
+- (void)dealloc
+{
+    [SGPlayerActivity resignActive:self];
+    [self clean];
+    [self.audioManager unregisterAudioSession];
+}
+
+
+- (void)replaceWithContentURL:(NSURL *)contentURL
+{
+    [self clean];
+    //    if (!self.contentURL) return;
+    
+    //    [self.abstractPlayer.displayView playerOutputTypeFF];
+    self.decoder = [SGFFDecoder decoderWithContentURL:contentURL
+                                             delegate:self
+                                    videoOutputConfig:nil
+                                    audioOutputConfig:self];
+    //    self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
+    //    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
+    //    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
+    [self.decoder open];
+}
+
+
+#pragma mark - Control
+
 - (void)play
 {
+    [SGPlayerActivity becomeActive:self];
     self.playing = YES;
     [self.decoder resume];
     
-    switch (self.state) {
-        case SGPlayerStateFinished:
-            [self seekToTime:0];
-            break;
-        case SGPlayerStateNone:
-        case SGPlayerStateFailed:
-        case SGPlayerStateBuffering:
-            self.state = SGPlayerStateBuffering;
-            break;
-        case SGPlayerStateSuspend:
-            if (self.decoder.buffering) {
-                self.state = SGPlayerStateBuffering;
-            } else {
-                self.state = SGPlayerStatePlaying;
-            }
-            break;
-        case SGPlayerStateReadyToPlay:
-        case SGPlayerStatePlaying:
-            self.state = SGPlayerStatePlaying;
-            break;
-    }
+//    switch (self.state) {
+//        case SGPlayerStateFinished:
+//            [self seekToTime:0];
+//            break;
+//        case SGPlayerStateNone:
+//        case SGPlayerStateFailed:
+//        case SGPlayerStateBuffering:
+//            self.state = SGPlayerStateBuffering;
+//            break;
+//        case SGPlayerStateSuspend:
+//            if (self.decoder.buffering) {
+//                self.state = SGPlayerStateBuffering;
+//            } else {
+//                self.state = SGPlayerStatePlaying;
+//            }
+//            break;
+//        case SGPlayerStateReadyToPlay:
+//        case SGPlayerStatePlaying:
+//            self.state = SGPlayerStatePlaying;
+//            break;
+//    }
 }
 
 - (void)pause
 {
+    [SGPlayerActivity resignActive:self];
     self.playing = NO;
     [self.decoder pause];
     
-    switch (self.state) {
-        case SGPlayerStateNone:
-        case SGPlayerStateSuspend:
-            break;
-        case SGPlayerStateFailed:
-        case SGPlayerStateReadyToPlay:
-        case SGPlayerStateFinished:
-        case SGPlayerStatePlaying:
-        case SGPlayerStateBuffering:
-        {
-            self.state = SGPlayerStateSuspend;
-        }
-            break;
-    }
+//    switch (self.state) {
+//        case SGPlayerStateNone:
+//        case SGPlayerStateSuspend:
+//            break;
+//        case SGPlayerStateFailed:
+//        case SGPlayerStateReadyToPlay:
+//        case SGPlayerStateFinished:
+//        case SGPlayerStatePlaying:
+//        case SGPlayerStateBuffering:
+//        {
+//            self.state = SGPlayerStateSuspend;
+//        }
+//            break;
+//    }
+}
+
+- (void)interrupt
+{
+    [SGPlayerActivity resignActive:self];
 }
 
 - (void)stop
 {
+    [SGPlayerActivity resignActive:self];
     [self clean];
-}
-
-- (BOOL)seekEnable
-{
-    return self.decoder.seekEnable;
 }
 
 - (void)seekToTime:(NSTimeInterval)time
@@ -120,37 +173,55 @@
     [self.decoder seekToTime:time completeHandler:completionHandler];
 }
 
-- (void)setState:(SGPlayerState)state
+
+#pragma mark - Setter & Getter
+
+- (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
 {
-    [self.stateLock lock];
-    if (_state != state) {
-//        SGPlayerState temp = _state;
-        _state = state;
-        if (_state != SGPlayerStateFailed) {
-//            self.abstractPlayer.error = nil;
-        }
-        if (_state == SGPlayerStatePlaying) {
-            [self.audioManager playWithDelegate:self];
-        } else {
-            [self.audioManager pause];
-        }
-//        [SGPlayerNotification postPlayer:self.abstractPlayer statePrevious:temp current:_state];
-    }
-    [self.stateLock unlock];
+    
 }
 
-- (double)percentForTime:(NSTimeInterval)time duration:(NSTimeInterval)duration
+- (void)setLoadState:(SGPlayerLoadState)loadState
 {
-    double percent = 0;
-    if (time > 0) {
-        if (duration <= 0) {
-            percent = 1;
-        } else {
-            percent = time / duration;
-        }
-    }
-    return percent;
+    
 }
+
+- (NSTimeInterval)duration
+{
+    return 0;
+}
+
+- (NSTimeInterval)currentTime
+{
+    return 0;
+}
+
+- (NSTimeInterval)loadedTime
+{
+    return 0;
+}
+
+- (BOOL)seekEnable
+{
+    return self.decoder.seekEnable;
+}
+
+//- (void)setState:(SGPlayerState)state
+//{
+//    if (_state != state) {
+////        SGPlayerState temp = _state;
+//        _state = state;
+//        if (_state != SGPlayerStateFailed) {
+////            self.abstractPlayer.error = nil;
+//        }
+//        if (_state == SGPlayerStatePlaying) {
+//            [self.audioManager playWithDelegate:self];
+//        } else {
+//            [self.audioManager pause];
+//        }
+////        [SGPlayerNotification postPlayer:self.abstractPlayer statePrevious:temp current:_state];
+//    }
+//}
 
 - (void)setProgress:(NSTimeInterval)progress
 {
@@ -199,67 +270,66 @@
 //    }
 }
 
-- (NSTimeInterval)duration
+- (NSInteger)tag
 {
-    return self.decoder.duration;
+    return self.tagInternal;
 }
 
-- (CGSize)presentationSize
+- (SGPLFView *)view
 {
-    if (self.decoder.prepareToDecode) {
-        return self.decoder.presentationSize;
+    return self.playerView;
+}
+
+
+#pragma mark - clean
+
+- (void)clean
+{
+    [self cleanDecoder];
+    [self cleanFrame];
+    [self cleanPlayer];
+}
+
+- (void)cleanPlayer
+{
+    self.playing = NO;
+    //    self.state = SGPlayerStateNone;
+    self.progress = 0;
+    self.playableTime = 0;
+    self.prepareToken = NO;
+    self.lastPostProgressTime = 0;
+    self.lastPostPlayableTime = 0;
+    //    [self.abstractPlayer.displayView playerOutputTypeEmpty];
+    //    [self.abstractPlayer.displayView rendererTypeEmpty];
+}
+
+- (void)cleanFrame
+{
+    [self.currentAudioFrame stopPlaying];
+    self.currentAudioFrame = nil;
+}
+
+- (void)cleanDecoder
+{
+    if (self.decoder) {
+        [self.decoder closeFile];
+        self.decoder = nil;
     }
-    return CGSizeZero;
 }
 
-- (NSTimeInterval)bitrate
-{
-    if (self.decoder.prepareToDecode) {
-        return self.decoder.bitrate;
-    }
-    return 0;
-}
+#pragma mark - Callback
 
-- (BOOL)videoDecodeOnMainThread
+- (void)callbackForTimes
 {
-    return self.decoder.videoDecodeOnMainThread;
-}
-
-- (void)reloadVolume
-{
-//    self.audioManager.volume = self.abstractPlayer.volume;
-}
-
-- (void)reloadPlayableBufferInterval
-{
-//    self.decoder.minBufferedDruation = self.abstractPlayer.playableBufferInterval;
-}
-
-#pragma mark - replace video
-
-- (void)replaceWithContentURL:(NSURL *)contentURL
-{
-    [self clean];
-//    if (!self.contentURL) return;
     
-//    [self.abstractPlayer.displayView playerOutputTypeFF];
-    self.decoder = [SGFFDecoder decoderWithContentURL:contentURL
-                                             delegate:self
-                                    videoOutputConfig:self
-                                    audioOutputConfig:self];
-//    self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
-//    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
-//    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
-    [self.decoder open];
-    [self reloadVolume];
-    [self reloadPlayableBufferInterval];
 }
+
 
 #pragma mark - SGFFDecoderDelegate
 
 - (void)decoderWillOpenInputStream:(SGFFDecoder *)decoder
 {
-    self.state = SGPlayerStateBuffering;
+//    self.state = SGPlayerStateBuffering;
 }
 
 - (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder
@@ -276,23 +346,23 @@
 
 - (void)decoderDidPlaybackFinished:(SGFFDecoder *)decoder
 {
-    self.state = SGPlayerStateFinished;
+//    self.state = SGPlayerStateFinished;
 }
 
 - (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBuffering:(BOOL)buffering
 {
-    if (buffering) {
-        self.state = SGPlayerStateBuffering;
-    } else {
-        if (self.playing) {
-            self.state = SGPlayerStatePlaying;
-        } else if (!self.prepareToken) {
-            self.state = SGPlayerStateReadyToPlay;
-            self.prepareToken = YES;
-        } else {
-            self.state = SGPlayerStateSuspend;
-        }
-    }
+//    if (buffering) {
+//        self.state = SGPlayerStateBuffering;
+//    } else {
+//        if (self.playing) {
+//            self.state = SGPlayerStatePlaying;
+//        } else if (!self.prepareToken) {
+//            self.state = SGPlayerStateReadyToPlay;
+//            self.prepareToken = YES;
+//        } else {
+//            self.state = SGPlayerStateSuspend;
+//        }
+//    }
 }
 
 - (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBufferedDuration:(NSTimeInterval)bufferedDuration
@@ -319,49 +389,6 @@
 //    [SGPlayerNotification postPlayer:self.abstractPlayer error:obj];
 }
 
-#pragma mark - clean
-
-- (void)clean
-{
-    [self cleanDecoder];
-    [self cleanFrame];
-    [self cleanPlayer];
-}
-
-- (void)cleanPlayer
-{
-    self.playing = NO;
-    self.state = SGPlayerStateNone;
-    self.progress = 0;
-    self.playableTime = 0;
-    self.prepareToken = NO;
-    self.lastPostProgressTime = 0;
-    self.lastPostPlayableTime = 0;
-//    [self.abstractPlayer.displayView playerOutputTypeEmpty];
-//    [self.abstractPlayer.displayView rendererTypeEmpty];
-}
-
-- (void)cleanFrame
-{
-    [self.currentAudioFrame stopPlaying];
-    self.currentAudioFrame = nil;
-}
-
-- (void)cleanDecoder
-{
-    if (self.decoder) {
-        [self.decoder closeFile];
-        self.decoder = nil;
-    }
-}
-
-- (void)dealloc
-{
-    [self clean];
-    [self.audioManager unregisterAudioSession];
-    SGPlayerLog(@"SGFFPlayer release");
-}
-
 
 #pragma mark - SGFFPlayerOutput
 
@@ -373,22 +400,6 @@
                                                                currentDuration:currentDuration];
     }
     return nil;
-}
-
-
-#pragma mark - Video Config
-
-- (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
-{
-    
-}
-
-- (BOOL)decoderVideoOutputConfigAVCodecContextDecodeAsync
-{
-//    if (self.abstractPlayer.videoType == SGVideoTypeVR) {
-//        return NO;
-//    }
-    return YES;
 }
 
 
@@ -443,66 +454,5 @@
     }
 }
 
-
-#pragma mark - Track Info
-
-- (BOOL)videoEnable
-{
-    return self.decoder.videoEnable;
-}
-
-- (BOOL)audioEnable
-{
-    return self.decoder.audioEnable;
-}
-
-- (SGPlayerTrack *)videoTrack
-{
-    return [self playerTrackFromFFTrack:self.decoder.videoTrack];
-}
-
-- (SGPlayerTrack *)audioTrack
-{
-    return [self playerTrackFromFFTrack:self.decoder.audioTrack];
-}
-
-- (NSArray <SGPlayerTrack *> *)videoTracks
-{
-    return [self playerTracksFromFFTracks:self.decoder.videoTracks];
-}
-
-- (NSArray <SGPlayerTrack *> *)audioTracks
-{
-    return [self playerTracksFromFFTracks:self.decoder.audioTracks];;
-}
-
-- (void)selectAudioTrackIndex:(int)audioTrackIndex
-{
-    [self.decoder selectAudioTrackIndex:audioTrackIndex];
-}
-
-- (SGPlayerTrack *)playerTrackFromFFTrack:(SGFFTrack *)track
-{
-    if (track) {
-        SGPlayerTrack * obj = [[SGPlayerTrack alloc] init];
-        obj.index = track.index;
-        obj.name = track.metadata.language;
-        return obj;
-    }
-    return nil;
-}
-
-- (NSArray <SGPlayerTrack *> *)playerTracksFromFFTracks:(NSArray <SGFFTrack *> *)tracks
-{
-    NSMutableArray <SGPlayerTrack *> * array = [NSMutableArray array];
-    for (SGFFTrack * obj in tracks) {
-        SGPlayerTrack * track = [self playerTrackFromFFTrack:obj];
-        [array addObject:track];
-    }
-    if (array.count > 0) {
-        return array;
-    }
-    return nil;
-}
 
 @end

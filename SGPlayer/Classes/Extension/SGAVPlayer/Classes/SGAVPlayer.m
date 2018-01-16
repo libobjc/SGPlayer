@@ -8,13 +8,15 @@
 
 #import "SGAVPlayer.h"
 #import "SGAVPlayerView.h"
+#import <AVFoundation/AVFoundation.h>
+
 #import "SGPlayerMacro.h"
+#import "SGPlayerUtil.h"
 #import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
 #import "SGPlayerDefinesPrivate.h"
 #import "SGPlayerBackgroundHandler.h"
 #import "SGPlayerAudioInterruptHandler.h"
-#import <AVFoundation/AVFoundation.h>
 
 
 @interface SGAVPlayer () <SGPlayerPrivate>
@@ -26,6 +28,9 @@
 }
 
 @property (nonatomic, assign) NSInteger tagInternal;
+@property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
+@property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
+@property (nonatomic, strong) SGAVPlayerView * playerView;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
@@ -37,10 +42,6 @@
 @property (nonatomic, strong) AVPlayer * player;
 @property (nonatomic, strong) AVPlayerItem * playerItem;
 @property (nonatomic, strong) id playerTimeObserver;
-@property (nonatomic, strong) SGAVPlayerView * playerView;
-
-@property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
-@property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
 
 @end
 
@@ -52,13 +53,12 @@
 {
     if (self = [super init])
     {
-        static NSInteger tag = 1900;
-        self.tagInternal = tag++;
-        
+        self.tagInternal = [SGPlayerUtil globalPlayerTag];
         self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
         self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
+
         self.playerView = [[SGAVPlayerView alloc] initWithFrame:CGRectZero];
     }
     return self;
