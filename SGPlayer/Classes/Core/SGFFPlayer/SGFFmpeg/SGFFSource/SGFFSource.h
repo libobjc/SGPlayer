@@ -21,6 +21,8 @@
 @protocol SGFFSource <NSObject>
 
 - (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate;
+- (NSURL *)contentURL;
+- (id <SGFFSourceDelegate>)delegate;
 - (NSError *)error;
 - (NSArray <SGFFCodecInfo *> *)codecInfos;
 - (void)prepare;
@@ -29,6 +31,8 @@
 
 
 @protocol SGFFSourceDelegate <NSObject>
+
+- (BOOL)sourceShouldExit:(id <SGFFSource>)source;
 
 @end
 

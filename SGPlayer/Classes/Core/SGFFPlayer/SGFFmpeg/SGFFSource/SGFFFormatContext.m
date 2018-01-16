@@ -7,8 +7,20 @@
 //
 
 #import "SGFFFormatContext.h"
+#import "SGFFUtil.h"
+#import "avformat.h"
+
+static int formatContextInterruptCallback(void * ctx)
+{
+    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
+    return [obj.delegate sourceShouldExit:obj];
+}
 
 @interface SGFFFormatContext ()
+
+{
+    AVFormatContext * _format_context;
+}
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
@@ -32,6 +44,16 @@
 
 - (void)prepare
 {
+    _format_context = avformat_alloc_context();
+    
+    if (!_format_context)
+    {
+        self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
+        return;
+    }
+    
+    _format_context->interrupt_callback.callback = formatContextInterruptCallback;
+    _format_context->interrupt_callback.opaque = (__bridge void *)self;
     
     self.error = [NSError errorWithDomain:@"Single Error" code:0 userInfo:nil];
 }
