@@ -112,11 +112,20 @@
 
 - (void)pause
 {
-    [self pausePlayer];
+    [SGPlayerActivity resignActive:self];
+    [self.player pause];
+    switch (self.playbackState) {
+        case SGPlayerPlaybackStateStopped:
+        case SGPlayerPlaybackStateFinished:
+        case SGPlayerPlaybackStateFailed:
+            return;
+        default:
+            break;
+    }
     self.playbackState = SGPlayerPlaybackStatePaused;
 }
 
-- (void)pausePlayer
+- (void)interrupt
 {
     [SGPlayerActivity resignActive:self];
     [self.player pause];
@@ -128,11 +137,6 @@
         default:
             break;
     }
-}
-
-- (void)interrupt
-{
-    [self pausePlayer];
     self.playbackState = SGPlayerPlaybackStateInterrupted;
 }
 

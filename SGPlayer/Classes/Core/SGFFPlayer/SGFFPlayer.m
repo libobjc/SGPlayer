@@ -71,7 +71,8 @@
 - (void)dealloc
 {
     [SGPlayerActivity resignActive:self];
-    [self clean];
+    [self cleanDecoder];
+    [self cleanFrame];
     [self.audioManager unregisterAudioSession];
 }
 
@@ -79,16 +80,14 @@
 - (void)replaceWithContentURL:(NSURL *)contentURL
 {
     [self clean];
-    //    if (!self.contentURL) return;
-    
-    //    [self.abstractPlayer.displayView playerOutputTypeFF];
+    if (contentURL == nil) {
+        return;
+    }
+    self.contentURL = contentURL;
     self.decoder = [SGFFDecoder decoderWithContentURL:contentURL
                                              delegate:self
                                     videoOutputConfig:nil
                                     audioOutputConfig:self];
-    //    self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
-    //    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
-    //    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
     [self.decoder open];
 }
 
@@ -98,63 +97,60 @@
 - (void)play
 {
     [SGPlayerActivity becomeActive:self];
-    self.playing = YES;
+    switch (self.playbackState)
+    {
+        case SGPlayerPlaybackStateFinished:
+            if (ABS(self.currentTime - self.duration) < 0.1) {
+                [self.decoder seekToTime:0];
+            }
+            break;
+        case SGPlayerPlaybackStateFailed:
+            [self replaceWithContentURL:self.contentURL];
+            break;
+        default:
+            break;
+    }
+    self.playbackState = SGPlayerPlaybackStatePlaying;
     [self.decoder resume];
-    
-//    switch (self.state) {
-//        case SGPlayerStateFinished:
-//            [self seekToTime:0];
-//            break;
-//        case SGPlayerStateNone:
-//        case SGPlayerStateFailed:
-//        case SGPlayerStateBuffering:
-//            self.state = SGPlayerStateBuffering;
-//            break;
-//        case SGPlayerStateSuspend:
-//            if (self.decoder.buffering) {
-//                self.state = SGPlayerStateBuffering;
-//            } else {
-//                self.state = SGPlayerStatePlaying;
-//            }
-//            break;
-//        case SGPlayerStateReadyToPlay:
-//        case SGPlayerStatePlaying:
-//            self.state = SGPlayerStatePlaying;
-//            break;
-//    }
 }
 
 - (void)pause
 {
     [SGPlayerActivity resignActive:self];
-    self.playing = NO;
     [self.decoder pause];
-    
-//    switch (self.state) {
-//        case SGPlayerStateNone:
-//        case SGPlayerStateSuspend:
-//            break;
-//        case SGPlayerStateFailed:
-//        case SGPlayerStateReadyToPlay:
-//        case SGPlayerStateFinished:
-//        case SGPlayerStatePlaying:
-//        case SGPlayerStateBuffering:
-//        {
-//            self.state = SGPlayerStateSuspend;
-//        }
-//            break;
-//    }
+    switch (self.playbackState) {
+        case SGPlayerPlaybackStateStopped:
+        case SGPlayerPlaybackStateFinished:
+        case SGPlayerPlaybackStateFailed:
+            return;
+        default:
+            break;
+    }
+    self.playbackState = SGPlayerPlaybackStatePaused;
 }
 
 - (void)interrupt
 {
     [SGPlayerActivity resignActive:self];
+    [self.decoder pause];
+    switch (self.playbackState) {
+        case SGPlayerPlaybackStateStopped:
+        case SGPlayerPlaybackStateFinished:
+        case SGPlayerPlaybackStateFailed:
+            return;
+        default:
+            break;
+    }
+    self.playbackState = SGPlayerPlaybackStateInterrupted;
 }
 
 - (void)stop
 {
     [SGPlayerActivity resignActive:self];
-    [self clean];
+    [self cleanDecoder];
+    [self cleanProperty];
+    [self cleanFrame];
+    self.playbackState = SGPlayerPlaybackStateStopped;
 }
 
 - (void)seekToTime:(NSTimeInterval)time
@@ -164,13 +160,30 @@
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    if (!self.decoder.prepareToDecode) {
+    if (!self.seekEnable || !self.decoder.prepareToDecode) {
         if (completionHandler) {
             completionHandler(NO);
         }
         return;
     }
-    [self.decoder seekToTime:time completeHandler:completionHandler];
+    if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+        [self.decoder pause];
+    }
+    self.playbackStateBeforSeeking = self.playbackState;
+    self.playbackState = SGPlayerPlaybackStateSeeking;
+    SGWeakSelf
+    [self.decoder seekToTime:time completeHandler:^(BOOL finished) {
+        SGStrongSelf
+        strongSelf.playbackState = strongSelf.playbackStateBeforSeeking;
+        strongSelf.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+        if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
+            [strongSelf.decoder resume];
+        }
+        if (completionHandler) {
+            completionHandler(finished);
+        }
+        SGPlayerLog(@"SGPlayer seek finished");
+    }];
 }
 
 
@@ -178,50 +191,48 @@
 
 - (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
 {
-    
+    if (_playbackState != playbackState)
+    {
+        SGPlayerPlaybackState previous = _playbackState;
+        _playbackState = playbackState;
+        if (_playbackState == SGPlayerPlaybackStatePlaying) {
+            [self.audioManager playWithDelegate:self];
+        } else {
+            [self.audioManager pause];
+        }
+        [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
+    }
 }
 
 - (void)setLoadState:(SGPlayerLoadState)loadState
 {
-    
+    if (_loadState != loadState)
+    {
+        SGPlayerLoadState previous = _loadState;
+        _loadState = loadState;
+        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
+    }
 }
 
 - (NSTimeInterval)duration
 {
-    return 0;
+    return self.decoder.duration;
 }
 
 - (NSTimeInterval)currentTime
 {
-    return 0;
+    return self.decoder.progress;
 }
 
 - (NSTimeInterval)loadedTime
 {
-    return 0;
+    return self.decoder.bufferedDuration;
 }
 
 - (BOOL)seekEnable
 {
     return self.decoder.seekEnable;
 }
-
-//- (void)setState:(SGPlayerState)state
-//{
-//    if (_state != state) {
-////        SGPlayerState temp = _state;
-//        _state = state;
-//        if (_state != SGPlayerStateFailed) {
-////            self.abstractPlayer.error = nil;
-//        }
-//        if (_state == SGPlayerStatePlaying) {
-//            [self.audioManager playWithDelegate:self];
-//        } else {
-//            [self.audioManager pause];
-//        }
-////        [SGPlayerNotification postPlayer:self.abstractPlayer statePrevious:temp current:_state];
-//    }
-//}
 
 - (void)setProgress:(NSTimeInterval)progress
 {
@@ -285,28 +296,11 @@
 
 - (void)clean
 {
+    [SGPlayerActivity resignActive:self];
     [self cleanDecoder];
+    [self cleanProperty];
     [self cleanFrame];
-    [self cleanPlayer];
-}
-
-- (void)cleanPlayer
-{
-    self.playing = NO;
-    //    self.state = SGPlayerStateNone;
-    self.progress = 0;
-    self.playableTime = 0;
-    self.prepareToken = NO;
-    self.lastPostProgressTime = 0;
-    self.lastPostPlayableTime = 0;
-    //    [self.abstractPlayer.displayView playerOutputTypeEmpty];
-    //    [self.abstractPlayer.displayView rendererTypeEmpty];
-}
-
-- (void)cleanFrame
-{
-    [self.currentAudioFrame stopPlaying];
-    self.currentAudioFrame = nil;
+    self.playbackState = SGPlayerPlaybackStateIdle;
 }
 
 - (void)cleanDecoder
@@ -314,6 +308,25 @@
     if (self.decoder) {
         [self.decoder closeFile];
         self.decoder = nil;
+    }
+}
+
+- (void)cleanProperty
+{
+    self.playing = NO;
+    self.progress = 0;
+    self.playableTime = 0;
+    self.prepareToken = NO;
+    self.lastPostProgressTime = 0;
+    self.lastPostPlayableTime = 0;
+}
+
+- (void)cleanFrame
+{
+    if (self.currentAudioFrame)
+    {
+        [self.currentAudioFrame stopPlaying];
+        self.currentAudioFrame = nil;
     }
 }
 

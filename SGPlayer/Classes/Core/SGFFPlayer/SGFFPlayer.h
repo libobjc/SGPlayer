@@ -10,7 +10,7 @@
 
 #import "SGPlayerDefines.h"
 #import "SGPlayerAction.h"
-#import "SGPlatform.h"
+#import "SGFFPlayerView.h"
 
 
 @interface SGFFPlayer : NSObject <SGPlayer>
@@ -28,7 +28,7 @@
 @property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
 @property (nonatomic, copy, readonly) NSError * error;
 
-@property (nonatomic, strong, readonly) SGPLFView * view;
+@property (nonatomic, strong, readonly) SGFFPlayerView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
 @property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;       // Default is 2s.
 
