@@ -6,16 +6,16 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGFFFormatContext.h"
+#import "SGFFFormatContext2.h"
 #import "SGFFTools.h"
 
 static int ffmpeg_interrupt_callback(void *ctx)
 {
-    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
-    return [obj.delegate formatContextNeedInterrupt:obj];
+    SGFFFormatContext2 * obj = (__bridge SGFFFormatContext2 *)ctx;
+    return [obj.delegate formatContext2NeedInterrupt:obj];
 }
 
-@interface SGFFFormatContext ()
+@interface SGFFFormatContext2 ()
 
 @property (nonatomic, copy) NSURL * contentURL;
 
@@ -40,14 +40,14 @@ static int ffmpeg_interrupt_callback(void *ctx)
 
 @end
 
-@implementation SGFFFormatContext
+@implementation SGFFFormatContext2
 
-+ (instancetype)formatContextWithContentURL:(NSURL *)contentURL delegate:(id<SGFFFormatContextDelegate>)delegate
++ (instancetype)formatContextWithContentURL:(NSURL *)contentURL delegate:(id<SGFFFormatContext2Delegate>)delegate
 {
     return [[self alloc] initWithContentURL:contentURL delegate:delegate];
 }
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id<SGFFFormatContextDelegate>)delegate
+- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id<SGFFFormatContext2Delegate>)delegate
 {
     if (self = [super init])
     {

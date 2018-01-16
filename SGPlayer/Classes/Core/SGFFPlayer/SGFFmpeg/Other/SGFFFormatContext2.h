@@ -11,15 +11,15 @@
 #import "SGFFVideoFrame.h"
 #import "SGFFTrack.h"
 
-@class SGFFFormatContext;
+@class SGFFFormatContext2;
 
-@protocol SGFFFormatContextDelegate <NSObject>
+@protocol SGFFFormatContext2Delegate <NSObject>
 
-- (BOOL)formatContextNeedInterrupt:(SGFFFormatContext *)formatContext;
+- (BOOL)formatContext2NeedInterrupt:(SGFFFormatContext2 *)formatContext;
 
 @end
 
-@interface SGFFFormatContext : NSObject
+@interface SGFFFormatContext2 : NSObject
 
 {
 @public
@@ -28,9 +28,9 @@
     AVCodecContext * _audio_codec_context;
 }
 
-+ (instancetype)formatContextWithContentURL:(NSURL *)contentURL delegate:(id <SGFFFormatContextDelegate>)delegate;
++ (instancetype)formatContextWithContentURL:(NSURL *)contentURL delegate:(id <SGFFFormatContext2Delegate>)delegate;
 
-@property (nonatomic, weak) id <SGFFFormatContextDelegate> delegate;
+@property (nonatomic, weak) id <SGFFFormatContext2Delegate> delegate;
 
 @property (nonatomic, copy, readonly) NSError * error;
 

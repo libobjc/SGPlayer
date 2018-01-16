@@ -7,12 +7,12 @@
 //
 
 #import "SGFFDecoder.h"
-#import "SGFFFormatContext.h"
+#import "SGFFFormatContext2.h"
 #import "SGFFAudioDecoder.h"
 #import "SGFFVideoDecoder.h"
 #import "SGFFTools.h"
 
-@interface SGFFDecoder () <SGFFFormatContextDelegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
+@interface SGFFDecoder () <SGFFFormatContext2Delegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
 
 @property (nonatomic, weak) id <SGFFDecoderDelegate> delegate;
 @property (nonatomic, weak) id <SGFFDecoderVideoOutputConfig> videoOutputConfig;
@@ -23,7 +23,7 @@
 @property (nonatomic, strong) NSInvocationOperation * readPacketOperation;
 @property (nonatomic, strong) NSInvocationOperation * decodeFrameOperation;
 
-@property (nonatomic, strong) SGFFFormatContext * formatContext;
+@property (nonatomic, strong) SGFFFormatContext2 * formatContext;
 @property (nonatomic, strong) SGFFAudioDecoder * audioDecoder;
 @property (nonatomic, strong) SGFFVideoDecoder * videoDecoder;
 
@@ -161,7 +161,7 @@
         [self.delegate decoderWillOpenInputStream:self];
     }
     
-    self.formatContext = [SGFFFormatContext formatContextWithContentURL:self.contentURL delegate:self];
+    self.formatContext = [SGFFFormatContext2 formatContextWithContentURL:self.contentURL delegate:self];
     self.formatContext.formatContextOptions = self.formatContextOptions;
     self.formatContext.codecContextOptions = self.codecContextOptions;
     [self.formatContext setupSync];
@@ -654,7 +654,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 
 #pragma delegate callback
 
-- (BOOL)formatContextNeedInterrupt:(SGFFFormatContext *)formatContext
+- (BOOL)formatContext2NeedInterrupt:(SGFFFormatContext2 *)formatContext
 {
     return self.closed;
 }
