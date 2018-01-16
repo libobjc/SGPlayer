@@ -7,60 +7,36 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayerImp.h"
 
-@class SGFFVideoFrame;
+#import "SGPlayerDefines.h"
+#import "SGPlayerAction.h"
+#import "SGPlatform.h"
 
-@protocol SGFFPlayerOutput <NSObject>
 
-- (SGFFVideoFrame *)playerOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
-                                                currentDuration:(NSTimeInterval)currentDuration;
+@interface SGFFPlayer : NSObject <SGPlayer>
 
-@end
+@property (nonatomic, assign, readonly) NSInteger tag;
 
-@interface SGFFPlayer : NSObject <SGFFPlayerOutput>
+@property (nonatomic, copy, readonly) NSURL * contentURL;
+- (void)replaceWithContentURL:(NSURL *)contentURL;
 
-+ (instancetype)new NS_UNAVAILABLE;
-+ (instancetype)init NS_UNAVAILABLE;
+@property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
+@property (nonatomic, assign, readonly) SGPlayerLoadState loadState;
 
-+ (instancetype)playerWithAbstractPlayer:(SGPlayer *)abstractPlayer;
-
-@property (nonatomic, weak, readonly) SGPlayer * abstractPlayer;
-
-@property (nonatomic, assign, readonly) SGPlayerState state;
-@property (nonatomic, assign, readonly) CGSize presentationSize;
-@property (nonatomic, assign, readonly) NSTimeInterval bitrate;
-@property (nonatomic, assign, readonly) NSTimeInterval progress;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, assign, readonly) NSTimeInterval playableTime;
-@property (nonatomic, assign, readonly) BOOL seeking;
+@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
+@property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
+@property (nonatomic, copy, readonly) NSError * error;
 
-- (void)replaceVideo;
-- (void)reloadVolume;
-- (void)reloadPlayableBufferInterval;
+@property (nonatomic, strong, readonly) SGPLFView * view;
+@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
+@property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;       // Default is 2s.
 
 - (void)play;
 - (void)pause;
 - (void)stop;
 
-@property (nonatomic, assign, readonly) BOOL seekEnable;
 - (void)seekToTime:(NSTimeInterval)time;
-- (void)seekToTime:(NSTimeInterval)time completeHandler:(void(^)(BOOL finished))completeHandler;
-
-@property (nonatomic, assign, readonly) BOOL videoDecodeOnMainThread;
-
-
-#pragma mark - track info
-
-@property (nonatomic, assign, readonly) BOOL videoEnable;
-@property (nonatomic, assign, readonly) BOOL audioEnable;
-
-@property (nonatomic, strong, readonly) SGPlayerTrack * videoTrack;
-@property (nonatomic, strong, readonly) SGPlayerTrack * audioTrack;
-
-@property (nonatomic, strong, readonly) NSArray <SGPlayerTrack *> * videoTracks;
-@property (nonatomic, strong, readonly) NSArray <SGPlayerTrack *> * audioTracks;
-
-- (void)selectAudioTrackIndex:(int)audioTrackIndex;
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL finished))completionHandler;
 
 @end

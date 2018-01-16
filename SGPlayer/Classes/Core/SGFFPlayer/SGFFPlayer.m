@@ -9,15 +9,13 @@
 #import "SGFFPlayer.h"
 #import "SGFFDecoder.h"
 #import "SGAudioManager.h"
-#import "SGPlayerNotification.h"
+#import "SGPlayerCallback.h"
 #import "SGPlayerMacro.h"
 #import "SGPlayer+DisplayView.h"
 
 @interface SGFFPlayer () <SGFFDecoderDelegate, SGFFDecoderVideoOutputConfig, SGFFDecoderAudioOutputConfig, SGAudioManagerDelegate>
 
 @property (nonatomic, strong) NSLock * stateLock;
-
-@property (nonatomic, weak) SGPlayer * abstractPlayer;
 
 @property (nonatomic, strong) SGFFDecoder * decoder;
 @property (nonatomic, strong) SGAudioManager * audioManager;
@@ -37,16 +35,9 @@
 
 @implementation SGFFPlayer
 
-+ (instancetype)playerWithAbstractPlayer:(SGPlayer *)abstractPlayer
-{
-    return [[self alloc] initWithAbstractPlayer:abstractPlayer];
-}
-
-- (instancetype)initWithAbstractPlayer:(SGPlayer *)abstractPlayer
+- (instancetype)init
 {
     if (self = [super init]) {
-        self.abstractPlayer = abstractPlayer;
-        self.abstractPlayer.displayView.playerOutputFF = self;
         self.stateLock = [[NSLock alloc] init];
         self.audioManager = [SGAudioManager manager];
         [self.audioManager registerAudioSession];
@@ -115,35 +106,35 @@
 
 - (void)seekToTime:(NSTimeInterval)time
 {
-    [self seekToTime:time completeHandler:nil];
+    [self seekToTime:time completionHandler:nil];
 }
 
-- (void)seekToTime:(NSTimeInterval)time completeHandler:(void (^)(BOOL finished))completeHandler
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
     if (!self.decoder.prepareToDecode) {
-        if (completeHandler) {
-            completeHandler(NO);
+        if (completionHandler) {
+            completionHandler(NO);
         }
         return;
     }
-    [self.decoder seekToTime:time completeHandler:completeHandler];
+    [self.decoder seekToTime:time completeHandler:completionHandler];
 }
 
 - (void)setState:(SGPlayerState)state
 {
     [self.stateLock lock];
     if (_state != state) {
-        SGPlayerState temp = _state;
+//        SGPlayerState temp = _state;
         _state = state;
         if (_state != SGPlayerStateFailed) {
-            self.abstractPlayer.error = nil;
+//            self.abstractPlayer.error = nil;
         }
         if (_state == SGPlayerStatePlaying) {
             [self.audioManager playWithDelegate:self];
         } else {
             [self.audioManager pause];
         }
-        [SGPlayerNotification postPlayer:self.abstractPlayer statePrevious:temp current:_state];
+//        [SGPlayerNotification postPlayer:self.abstractPlayer statePrevious:temp current:_state];
     }
     [self.stateLock unlock];
 }
@@ -166,9 +157,9 @@
     if (_progress != progress) {
         _progress = progress;
         NSTimeInterval duration = self.duration;
-        double percent = [self percentForTime:_progress duration:duration];
+//        double percent = [self percentForTime:_progress duration:duration];
         if (_progress <= 0.000001 || _progress == duration) {
-            [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
+//            [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
         } else {
             NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
             if (currentTime - self.lastPostProgressTime >= 1) {
@@ -178,7 +169,7 @@
                     duration = _progress;
                 }
                  */
-                [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
+//                [SGPlayerNotification postPlayer:self.abstractPlayer progressPercent:@(percent) current:@(_progress) total:@(duration)];
             }
         }
     }
@@ -193,19 +184,19 @@
         playableTime = 0;
     }
     
-    if (_playableTime != playableTime) {
-        _playableTime = playableTime;
-        double percent = [self percentForTime:_playableTime duration:duration];
-        if (_playableTime == 0 || _playableTime == duration) {
-            [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
-        } else if (!self.decoder.endOfFile && self.decoder.seekEnable) {
-            NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
-            if (currentTime - self.lastPostPlayableTime >= 1) {
-                self.lastPostPlayableTime = currentTime;
-                [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
-            }
-        }
-    }
+//    if (_playableTime != playableTime) {
+//        _playableTime = playableTime;
+//        double percent = [self percentForTime:_playableTime duration:duration];
+//        if (_playableTime == 0 || _playableTime == duration) {
+////            [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
+//        } else if (!self.decoder.endOfFile && self.decoder.seekEnable) {
+//            NSTimeInterval currentTime = [NSDate date].timeIntervalSince1970;
+//            if (currentTime - self.lastPostPlayableTime >= 1) {
+//                self.lastPostPlayableTime = currentTime;
+////                [SGPlayerNotification postPlayer:self.abstractPlayer playablePercent:@(percent) current:@(_playableTime) total:@(duration)];
+//            }
+//        }
+//    }
 }
 
 - (NSTimeInterval)duration
@@ -236,29 +227,29 @@
 
 - (void)reloadVolume
 {
-    self.audioManager.volume = self.abstractPlayer.volume;
+//    self.audioManager.volume = self.abstractPlayer.volume;
 }
 
 - (void)reloadPlayableBufferInterval
 {
-    self.decoder.minBufferedDruation = self.abstractPlayer.playableBufferInterval;
+//    self.decoder.minBufferedDruation = self.abstractPlayer.playableBufferInterval;
 }
 
 #pragma mark - replace video
 
-- (void)replaceVideo
+- (void)replaceWithContentURL:(NSURL *)contentURL
 {
     [self clean];
-    if (!self.abstractPlayer.contentURL) return;
+//    if (!self.contentURL) return;
     
-    [self.abstractPlayer.displayView playerOutputTypeFF];
-    self.decoder = [SGFFDecoder decoderWithContentURL:self.abstractPlayer.contentURL
+//    [self.abstractPlayer.displayView playerOutputTypeFF];
+    self.decoder = [SGFFDecoder decoderWithContentURL:contentURL
                                              delegate:self
                                     videoOutputConfig:self
                                     audioOutputConfig:self];
-    self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
-    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
-    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
+//    self.decoder.formatContextOptions = [self.abstractPlayer.decoder FFmpegFormatContextOptions];
+//    self.decoder.codecContextOptions = [self.abstractPlayer.decoder FFmpegCodecContextOptions];
+//    self.decoder.hardwareAccelerateEnable = self.abstractPlayer.decoder.hardwareAccelerateEnableForFFmpeg;
     [self.decoder open];
     [self reloadVolume];
     [self reloadPlayableBufferInterval];
@@ -321,11 +312,11 @@
 
 - (void)errorHandler:(NSError *)error
 {
-    SGError * obj = [[SGError alloc] init];
-    obj.error = error;
-    self.abstractPlayer.error = obj;
-    self.state = SGPlayerStateFailed;
-    [SGPlayerNotification postPlayer:self.abstractPlayer error:obj];
+//    SGError * obj = [[SGError alloc] init];
+//    obj.error = error;
+//    self.abstractPlayer.error = obj;
+//    self.state = SGPlayerStateFailed;
+//    [SGPlayerNotification postPlayer:self.abstractPlayer error:obj];
 }
 
 #pragma mark - clean
@@ -394,9 +385,9 @@
 
 - (BOOL)decoderVideoOutputConfigAVCodecContextDecodeAsync
 {
-    if (self.abstractPlayer.videoType == SGVideoTypeVR) {
-        return NO;
-    }
+//    if (self.abstractPlayer.videoType == SGVideoTypeVR) {
+//        return NO;
+//    }
     return YES;
 }
 

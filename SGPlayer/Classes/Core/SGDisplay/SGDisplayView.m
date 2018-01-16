@@ -103,32 +103,35 @@
 #endif
     }
 }
+*/
 
 - (void)reloadVideoFrameForGLFrame:(SGGLFrame *)glFrame
 {
-    switch (self.playerOutputType) {
-        case SGDisplayPlayerOutputTypeEmpty:
-            break;
-        case SGDisplayPlayerOutputTypeAV:
-        {
-            CVPixelBufferRef pixelBuffer = [self.playerOutputAV playerOutputGetPixelBufferAtCurrentTime];
-            if (pixelBuffer) {
-                [glFrame updateWithCVPixelBuffer:pixelBuffer];
-            }
-        }
-            break;
-        case SGDisplayPlayerOutputTypeFF:
-        {
-            SGFFVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
-                                                                                           currentDuration:glFrame.currentDuration];
-            if (videoFrame) {
-                [glFrame updateWithSGFFVideoFrame:videoFrame];
-                glFrame.rotateType = videoFrame.rotateType;
-            }
-        }
-            break;
-    }
+//    switch (self.playerOutputType) {
+//        case SGDisplayPlayerOutputTypeEmpty:
+//            break;
+//        case SGDisplayPlayerOutputTypeAV:
+//        {
+//            CVPixelBufferRef pixelBuffer = [self.playerOutputAV playerOutputGetPixelBufferAtCurrentTime];
+//            if (pixelBuffer) {
+//                [glFrame updateWithCVPixelBuffer:pixelBuffer];
+//            }
+//        }
+//            break;
+//        case SGDisplayPlayerOutputTypeFF:
+//        {
+//            SGFFVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
+//                                                                                           currentDuration:glFrame.currentDuration];
+//            if (videoFrame) {
+//                [glFrame updateWithSGFFVideoFrame:videoFrame];
+//                glFrame.rotateType = videoFrame.rotateType;
+//            }
+//        }
+//            break;
+//    }
 }
+
+/*
 
 - (SGPLFImage *)snapshot
 {

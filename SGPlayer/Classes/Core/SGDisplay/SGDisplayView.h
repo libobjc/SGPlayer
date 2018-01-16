@@ -16,26 +16,24 @@
 @interface SGDisplayView : SGPLFView
 
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
-
-+ (instancetype)displayViewWithAbstractPlayer:(SGPlayer *)abstractPlayer;
-
-
+//+ (instancetype)new NS_UNAVAILABLE;
+//- (instancetype)init NS_UNAVAILABLE;
+//- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+//
+//+ (instancetype)displayViewWithAbstractPlayer:(SGPlayer *)abstractPlayer;
+//
+//
 @property (nonatomic, weak, readonly) SGPlayer * abstractPlayer;
 @property (nonatomic, strong, readonly) SGFingerRotation * fingerRotation;
-
-
-@property (nonatomic, weak) id <SGFFPlayerOutput> playerOutputFF;
-- (void)playerOutputTypeFF;
-
-
-// reload
-- (void)reloadGravityMode;
-- (void)reloadPlayerConfig;
+//
+//- (void)playerOutputTypeFF;
+//
+//
+//// reload
+//- (void)reloadGravityMode;
+//- (void)reloadPlayerConfig;
 - (void)reloadVideoFrameForGLFrame:(SGGLFrame *)glFrame;
-
-- (SGPLFImage *)snapshot;
+//
+//- (SGPLFImage *)snapshot;
 
 @end

@@ -40,13 +40,6 @@ typedef NS_ENUM(NSUInteger, SGGravityMode) {
     SGGravityModeResizeAspectFill,
 };
 
-// background mode
-typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode) {
-    SGPlayerBackgroundModeNothing,
-    SGPlayerBackgroundModeAutoPlayAndPause,     // default
-    SGPlayerBackgroundModeContinue,
-};
-
 
 #pragma mark - SGPlayer
 
@@ -87,7 +80,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval playableTime;
 
-@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;    // background mode
+//@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;    // background mode
 @property (nonatomic, assign) NSTimeInterval playableBufferInterval;    // default is 2s
 @property (nonatomic, assign) CGFloat volume;       // default is 1
 
@@ -102,34 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-
-#pragma mark - Tracks Category
-
-@interface SGPlayer (Tracks)
-
-@property (nonatomic, assign, readonly) BOOL videoEnable;
-@property (nonatomic, assign, readonly) BOOL audioEnable;
-
-@property (nonatomic, strong, readonly) SGPlayerTrack * videoTrack;
-@property (nonatomic, strong, readonly) SGPlayerTrack * audioTrack;
-
-@property (nonatomic, strong, readonly) NSArray <SGPlayerTrack *> * videoTracks;
-@property (nonatomic, strong, readonly) NSArray <SGPlayerTrack *> * audioTracks;
-
-- (void)selectAudioTrack:(SGPlayerTrack *)audioTrack;
-- (void)selectAudioTrackIndex:(int)audioTrackIndex;
-
-@end
-
-
-#pragma mark - Thread Category
-
-@interface SGPlayer (Thread)
-
-@property (nonatomic, assign, readonly) BOOL videoDecodeOnMainThread;
-@property (nonatomic, assign, readonly) BOOL audioDecodeOnMainThread;
-
-@end
 
 NS_ASSUME_NONNULL_END
 
