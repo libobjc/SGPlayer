@@ -12,12 +12,12 @@
 
 @interface PlayerViewController ()
 
-@property (nonatomic, strong) SGFFPlayer * player;
+@property (nonatomic, strong) SGAVPlayer * player;
 
-@property (weak, nonatomic) IBOutlet UILabel *stateLabel;
-@property (weak, nonatomic) IBOutlet UISlider *progressSilder;
-@property (weak, nonatomic) IBOutlet UILabel *currentTimeLabel;
-@property (weak, nonatomic) IBOutlet UILabel *totalTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel * stateLabel;
+@property (weak, nonatomic) IBOutlet UISlider * progressSilder;
+@property (weak, nonatomic) IBOutlet UILabel * currentTimeLabel;
+@property (weak, nonatomic) IBOutlet UILabel * totalTimeLabel;
 
 @property (nonatomic, assign) BOOL progressSilderTouching;
 
@@ -30,7 +30,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.player = [[SGFFPlayer alloc] init];
+    self.player = [[SGAVPlayer alloc] init];
     [self sg_registerNotificationForPlayer:self.player
                        playbackStateAction:@selector(playbackStateAction:)
                            loadStateAction:@selector(loadStateAction:)

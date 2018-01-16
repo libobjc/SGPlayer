@@ -1,5 +1,5 @@
 framework module SGPlayer {
-    umbrella header "SGAVPlayer.h"
+    umbrella header "SGPlayer.h"
     export *
     module * { export * }
 }

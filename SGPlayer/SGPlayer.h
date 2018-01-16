@@ -17,8 +17,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 
 // SGPlayer
-#import <SGPlayer/SGPlayerImp.h>
 #import <SGPlayer/SGFFPlayer.h>
+#import <SGPlayer/SGAVPlayer.h>
 #import <SGPlayer/SGPlayerTrack.h>
 #import <SGPlayer/SGPlayerAction.h>
 #import <SGPlayer/SGPlayerDecoder.h>
+

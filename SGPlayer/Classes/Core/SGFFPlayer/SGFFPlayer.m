@@ -43,8 +43,6 @@
 @property (nonatomic, assign) NSTimeInterval lastPostProgressTime;
 @property (nonatomic, assign) NSTimeInterval lastPostPlayableTime;
 
-@property (nonatomic, assign) BOOL playing;
-
 @property (nonatomic, strong) SGFFAudioFrame * currentAudioFrame;
 
 @end
@@ -313,7 +311,6 @@
 
 - (void)cleanProperty
 {
-    self.playing = NO;
     self.progress = 0;
     self.playableTime = 0;
     self.prepareToken = NO;
@@ -430,7 +427,8 @@
 
 - (void)audioManager:(SGAudioManager *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
 {
-    if (!self.playing) {
+    if (self.playbackState != SGPlayerPlaybackStatePlaying)
+    {
         memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
         return;
     }
