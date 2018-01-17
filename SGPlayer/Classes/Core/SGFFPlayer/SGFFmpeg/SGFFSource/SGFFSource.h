@@ -11,7 +11,7 @@
 
 
 #import <Foundation/Foundation.h>
-#import "SGFFCodecInfo.h"
+#import "SGFFStream.h"
 
 
 @protocol SGFFSource;
@@ -21,18 +21,25 @@
 @protocol SGFFSource <NSObject>
 
 - (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate;
+
 - (NSURL *)contentURL;
 - (id <SGFFSourceDelegate>)delegate;
 - (NSError *)error;
-- (NSArray <SGFFCodecInfo *> *)codecInfos;
-- (void)prepare;
+- (NSArray <SGFFStream *> *)streams;
+
+- (void)open;
+- (void)read;
+- (void)resume;
+- (void)pause;
+- (void)close;
 
 @end
 
 
 @protocol SGFFSourceDelegate <NSObject>
 
-- (BOOL)sourceShouldExit:(id <SGFFSource>)source;
+- (void)sourceDidOpened:(id <SGFFSource>)source;
+- (void)sourceDidFailed:(id <SGFFSource>)source;
 
 @end
 

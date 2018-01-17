@@ -13,7 +13,7 @@
 static int formatContextInterruptCallback(void * ctx)
 {
     SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
-    return [obj.delegate sourceShouldExit:obj];
+    return NO;
 }
 
 @interface SGFFFormatContext ()
@@ -26,7 +26,11 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
 
 @property (nonatomic, copy) NSError * error;
-@property (nonatomic, strong) NSArray <SGFFCodecInfo *> * codecInfos;
+@property (nonatomic, strong) NSArray <SGFFStream *> * streams;
+
+@property (nonatomic, strong) NSOperationQueue * operationQueue;
+@property (nonatomic, strong) NSInvocationOperation * openOperation;
+@property (nonatomic, strong) NSInvocationOperation * readOperation;
 
 @end
 
@@ -42,20 +46,114 @@ static int formatContextInterruptCallback(void * ctx)
     return self;
 }
 
-- (void)prepare
+- (void)open
+{
+    self.operationQueue = [[NSOperationQueue alloc] init];
+    self.operationQueue.maxConcurrentOperationCount = 2;
+    self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
+    self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.openOperation];
+}
+
+- (void)read
+{
+    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
+    self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.readOperation];
+}
+
+- (void)resume
+{
+    
+}
+
+- (void)pause
+{
+    
+}
+
+- (void)close
+{
+    
+}
+
+
+#pragma mark - Thread
+
+- (void)openThread
 {
     _formatContext = avformat_alloc_context();
     
     if (!_formatContext)
     {
         self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
+        [self callbackForError];
         return;
     }
     
     _formatContext->interrupt_callback.callback = formatContextInterruptCallback;
     _formatContext->interrupt_callback.opaque = (__bridge void *)self;
     
-    self.error = [NSError errorWithDomain:@"Single Error" code:0 userInfo:nil];
+    NSString * contentURLString = self.contentURL.absoluteString;
+    int reslut = avformat_open_input(&_formatContext, contentURLString.UTF8String, NULL, NULL);
+    self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatOpenInput);
+    if (self.error)
+    {
+        if (_formatContext) {
+            avformat_free_context(_formatContext);
+        }
+        [self callbackForError];
+        return;
+    }
+    
+    reslut = avformat_find_stream_info(_formatContext, NULL);
+    self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatFindStreamInfo);
+    if (self.error)
+    {
+        if (_formatContext) {
+            avformat_close_input(&_formatContext);
+            avformat_free_context(_formatContext);
+        }
+        [self callbackForError];
+        return;
+    }
+    
+    NSMutableArray <SGFFStream *> * streams = [NSMutableArray array];
+    for (int i = 0; i < _formatContext->nb_streams; i++)
+    {
+        SGFFStream * stream = [[SGFFStream alloc] init];
+        stream.stream = _formatContext->streams[i];
+        [streams addObject:stream];
+    }
+    self.streams = [streams copy];
+    
+    [self callbackForOpened];
+}
+
+- (void)readThread
+{
+    
+}
+
+
+#pragma mark - Callback
+
+- (void)callbackForError
+{
+    if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)]) {
+        [self.delegate sourceDidFailed:self];
+    }
+}
+
+- (void)callbackForOpened
+{
+    if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)]) {
+        [self.delegate sourceDidOpened:self];
+    }
 }
 
 @end
