@@ -1,5 +1,5 @@
 //
-//  SGFFStream.h
+//  SGFFAudioCodec.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
@@ -10,9 +10,8 @@
 #import "SGFFCodec.h"
 #import "avformat.h"
 
-@interface SGFFStream : NSObject
+@interface SGFFAudioCodec : NSObject <SGFFCodec>
 
-@property (nonatomic, assign) AVStream * stream;
-@property (nonatomic, strong) id <SGFFCodec> codec;
+@property (nonatomic, assign) AVCodecContext * codecContext;
 
 @end

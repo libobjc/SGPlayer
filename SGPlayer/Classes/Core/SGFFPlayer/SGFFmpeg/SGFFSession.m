@@ -10,7 +10,7 @@
 #import "SGFFFormatContext.h"
 #import "SGFFCodecManager.h"
 
-@interface SGFFSession () <SGFFSourceDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecManagerDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -60,7 +60,8 @@
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
-    
+    self.codecManager = [[SGFFCodecManager alloc] initWithStreams:self.source.streams delegate:self];
+    [self.codecManager open];
 }
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
@@ -68,5 +69,20 @@
     self.error = source.error;
     [self callbackForError];
 }
+
+
+#pragma mark - SGFFCodecManagerDelegate
+
+- (void)codecManagerDidOpened:(SGFFCodecManager *)codecManager
+{
+    [self.source read];
+}
+
+- (void)codecManagerDidFailed:(SGFFCodecManager *)codecManager
+{
+    self.error = codecManager.error;
+    [self callbackForError];
+}
+
 
 @end

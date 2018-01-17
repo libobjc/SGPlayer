@@ -18,10 +18,24 @@
 @protocol SGFFSourceDelegate;
 
 
+typedef NS_ENUM(NSUInteger, SGFFSourceState)
+{
+    SGFFSourceStateIdle,
+    SGFFSourceStateOpening,
+    SGFFSourceStateOpened,
+    SGFFSourceStateReading,
+    SGFFSourceStateReadFinshed,
+    SGFFSourceStateSeeking,
+    SGFFSourceStateClosed,
+    SGFFSourceStateFailed,
+};
+
+
 @protocol SGFFSource <NSObject>
 
 - (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate;
 
+- (SGFFSourceState)state;
 - (NSURL *)contentURL;
 - (id <SGFFSourceDelegate>)delegate;
 - (NSError *)error;
@@ -29,8 +43,6 @@
 
 - (void)open;
 - (void)read;
-- (void)resume;
-- (void)pause;
 - (void)close;
 
 @end

@@ -11,7 +11,13 @@
 
 
 #import <Foundation/Foundation.h>
-#import "SGFFCodecInfo.h"
+
+
+@protocol SGFFCodec <NSObject>
+
+- (void)close;
+
+@end
 
 
 #endif /* SGFFCodec_h */

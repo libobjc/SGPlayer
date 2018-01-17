@@ -12,7 +12,7 @@
 
 static int formatContextInterruptCallback(void * ctx)
 {
-    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
+//    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
     return NO;
 }
 
@@ -21,6 +21,8 @@ static int formatContextInterruptCallback(void * ctx)
 {
     AVFormatContext * _formatContext;
 }
+
+@property (nonatomic, assign) SGFFSourceState state;
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
@@ -48,6 +50,8 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)open
 {
+    self.state = SGFFSourceStateOpening;
+    
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 2;
     self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -60,25 +64,18 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)read
 {
+    self.state = SGFFSourceStateReading;
+    
     self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.readOperation addDependency:self.openOperation];
     [self.operationQueue addOperation:self.readOperation];
-}
-
-- (void)resume
-{
-    
-}
-
-- (void)pause
-{
-    
 }
 
 - (void)close
 {
-    
+    self.state = SGFFSourceStateClosed;
 }
 
 
@@ -144,6 +141,7 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)callbackForError
 {
+    self.state = SGFFSourceStateFailed;
     if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)]) {
         [self.delegate sourceDidFailed:self];
     }
@@ -151,6 +149,7 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)callbackForOpened
 {
+    self.state = SGFFSourceStateOpened;
     if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)]) {
         [self.delegate sourceDidOpened:self];
     }

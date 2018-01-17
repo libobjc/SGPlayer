@@ -7,14 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFCodec.h"
+#import "SGFFStream.h"
+
+@class SGFFCodecManager;
+
+@protocol SGFFCodecManagerDelegate <NSObject>
+
+- (void)codecManagerDidOpened:(SGFFCodecManager *)codecManager;
+- (void)codecManagerDidFailed:(SGFFCodecManager *)codecManager;
+
+@end
 
 @interface SGFFCodecManager : NSObject
 
-@property (nonatomic, copy, readonly) NSError * error;
+- (instancetype)initWithStreams:(NSArray <SGFFStream *> *)streams delegate:(id <SGFFCodecManagerDelegate>)delegate;
 
-- (void)addCodecs:(NSArray <SGFFCodecInfo *> *)codecInfos;
+- (NSError *)error;
 
-- (void)prepare;
+- (void)open;
 
 @end
