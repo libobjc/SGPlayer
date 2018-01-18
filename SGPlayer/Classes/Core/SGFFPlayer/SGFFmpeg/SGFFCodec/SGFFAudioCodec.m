@@ -12,7 +12,11 @@
 
 - (void)close
 {
-    
+    if (self.codecContext)
+    {
+        avcodec_close(self.codecContext);
+        self.codecContext = nil;
+    }
 }
 
 @end

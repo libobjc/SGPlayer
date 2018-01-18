@@ -8,14 +8,16 @@
 
 #import "SGFFSession.h"
 #import "SGFFFormatContext.h"
+#import "SGFFStreamManager.h"
 #import "SGFFCodecManager.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecManagerDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
 
 @property (nonatomic, strong) id <SGFFSource> source;
+@property (nonatomic, strong) SGFFStreamManager * streamManager;
 @property (nonatomic, strong) SGFFCodecManager * codecManager;
 
 @end
@@ -60,8 +62,8 @@
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
-    self.codecManager = [[SGFFCodecManager alloc] initWithStreams:self.source.streams delegate:self];
-    [self.codecManager open];
+    self.streamManager = [[SGFFStreamManager alloc] initWithStreams:self.source.streams delegate:self];
+    [self.streamManager open];
 }
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
@@ -71,17 +73,24 @@
 }
 
 
-#pragma mark - SGFFCodecManagerDelegate
+#pragma mark - SGFFStreamManagerDelegate
 
-- (void)codecManagerDidOpened:(SGFFCodecManager *)codecManager
+- (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
-    [self.source read];
+    
 }
 
-- (void)codecManagerDidFailed:(SGFFCodecManager *)codecManager
+- (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager
 {
-    self.error = codecManager.error;
-    [self callbackForError];
+    
+}
+
+- (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream
+{
+    if (!self.codecManager) {
+        self.codecManager = [[SGFFCodecManager alloc] init];
+    }
+    return [self.codecManager codecForStream:stream.stream];
 }
 
 
