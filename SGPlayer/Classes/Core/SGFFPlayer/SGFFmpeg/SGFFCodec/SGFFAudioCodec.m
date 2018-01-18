@@ -7,11 +7,13 @@
 //
 
 #import "SGFFAudioCodec.h"
+#import "SGFFFrameQueue.h"
 #import "SGFFPacketQueue.h"
 #import "SGFFTime.h"
 
 @interface SGFFAudioCodec ()
 
+@property (nonatomic, strong) SGFFFrameQueue * frameQueue;
 @property (nonatomic, strong) SGFFPacketQueue * packetQueue;
 
 @end
@@ -29,6 +31,7 @@
 - (void)open
 {
     self.timebase = SGFFTimebaseValidate(self.timebase, 1, 44100);
+    self.frameQueue = [[SGFFFrameQueue alloc] init];
     self.packetQueue = [[SGFFPacketQueue alloc] init];
 }
 
@@ -59,7 +62,7 @@
 
 - (long long)frameDuration
 {
-    return 0;
+    return self.frameQueue.duration;
 }
 
 - (long long)size
@@ -74,7 +77,7 @@
 
 - (long long)frameSize
 {
-    return 0;
+    return self.frameQueue.size;
 }
 
 @end

@@ -15,6 +15,9 @@
 
 @protocol SGFFFrame <NSObject>
 
+- (long long)duration;
+- (long long)size;
+
 @end
 
 
