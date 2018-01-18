@@ -11,11 +11,14 @@
 
 @interface SGFFFrameQueue : NSObject
 
+- (instancetype)initWithMaxCount:(NSInteger)maxCount;
+
 - (NSInteger)count;
 - (long long)duration;
 - (long long)size;
 
-- (void)putFrame:(id <SGFFFrame>)frame;
+- (void)putFrameSync:(id <SGFFFrame>)frame;
+- (void)putFrameAsync:(id <SGFFFrame>)frame;
 - (id <SGFFFrame>)getFrameSync;
 - (id <SGFFFrame>)getFrameAsync;
 

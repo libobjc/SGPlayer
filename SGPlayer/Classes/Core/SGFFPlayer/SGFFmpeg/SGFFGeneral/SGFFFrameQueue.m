@@ -10,6 +10,7 @@
 
 @interface SGFFFrameQueue ()
 
+@property (nonatomic, assign) NSInteger maxCount;
 @property (nonatomic, assign) long long duration;
 @property (nonatomic, assign) long long size;
 
@@ -22,25 +23,49 @@
 
 @implementation SGFFFrameQueue
 
-- (instancetype)init
+- (instancetype)initWithMaxCount:(NSInteger)maxCount
 {
     if (self = [super init])
     {
+        self.maxCount = maxCount;
         self.frames = [NSMutableArray array];
         self.condition = [[NSCondition alloc] init];
     }
     return self;
 }
 
-- (void)putFrame:(id <SGFFFrame>)frame
+- (void)putFrameSync:(id <SGFFFrame>)frame
 {
     if (self.didDestoryed) {
         return;
     }
     [self.condition lock];
-    [self.frames addObject:frame];
-    self.duration += frame.duration;
-    self.size += frame.size;
+    while (self.frames.count >= self.maxCount)
+    {
+        if (self.didDestoryed)
+        {
+            [self.condition unlock];
+            return;
+        }
+        [self.condition wait];
+    }
+    [self putFrame:frame];
+    [self.condition signal];
+    [self.condition unlock];
+}
+
+- (void)putFrameAsync:(id <SGFFFrame>)frame
+{
+    if (self.didDestoryed) {
+        return;
+    }
+    [self.condition lock];
+    if (self.frames.count >= self.maxCount)
+    {
+        [self.condition unlock];
+        return;
+    }
+    [self putFrame:frame];
     [self.condition signal];
     [self.condition unlock];
 }
@@ -60,6 +85,13 @@
     id <SGFFFrame> frame = [self getFrame];
     [self.condition unlock];
     return frame;
+}
+
+- (void)putFrame:(id <SGFFFrame>)frame
+{
+    [self.frames addObject:frame];
+    self.duration += frame.duration;
+    self.size += frame.size;
 }
 
 - (id <SGFFFrame>)getFrameAsync
