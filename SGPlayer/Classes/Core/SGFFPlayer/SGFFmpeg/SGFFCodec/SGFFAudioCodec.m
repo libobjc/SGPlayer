@@ -7,16 +7,22 @@
 //
 
 #import "SGFFAudioCodec.h"
+#import "SGFFPacketQueue.h"
+#import "SGFFTime.h"
 
 @interface SGFFAudioCodec ()
+
+@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, strong) SGFFPacketQueue * packetQueue;
 
 @end
 
 @implementation SGFFAudioCodec
 
-- (void)putPacket:(AVPacket)packet
+- (void)open
 {
-    
+    self.timebase = SGFFTimebaseValidate(self.timebase, 1, 44100);
+    self.packetQueue = [[SGFFPacketQueue alloc] init];
 }
 
 - (void)close
@@ -28,6 +34,12 @@
     }
 }
 
+- (void)putPacket:(AVPacket)packet
+{
+    [self.packetQueue putPacket:packet];
+    NSLog(@"Audio Codec Packet Queue Duration : %lld", self.packetQueue.duration);
+}
+
 - (long long)duration
 {
     return [self packetDuration] + [self frameDuration];
@@ -35,7 +47,7 @@
 
 - (long long)packetDuration
 {
-    return 0;
+    return self.packetQueue.duration;
 }
 
 - (long long)frameDuration
@@ -50,7 +62,7 @@
 
 - (long long)packetSize
 {
-    return 0;
+    return self.packetQueue.size;
 }
 
 - (long long)frameSize

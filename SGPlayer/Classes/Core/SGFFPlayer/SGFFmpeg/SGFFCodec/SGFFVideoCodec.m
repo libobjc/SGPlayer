@@ -7,12 +7,22 @@
 //
 
 #import "SGFFVideoCodec.h"
+#import "SGFFPacketQueue.h"
+#import "SGFFTime.h"
+
+@interface SGFFVideoCodec ()
+
+@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, strong) SGFFPacketQueue * packetQueue;
+
+@end
 
 @implementation SGFFVideoCodec
 
-- (void)putPacket:(AVPacket)packet
+- (void)open
 {
-    
+    self.timebase = SGFFTimebaseValidate(self.timebase, 1, 25000);
+    self.packetQueue = [[SGFFPacketQueue alloc] init];
 }
 
 - (void)close
@@ -24,6 +34,11 @@
     }
 }
 
+- (void)putPacket:(AVPacket)packet
+{
+//    [self.packetQueue putPacket:packet];
+}
+
 - (long long)duration
 {
     return [self packetDuration] + [self frameDuration];
@@ -31,7 +46,7 @@
 
 - (long long)packetDuration
 {
-    return 0;
+    return self.packetQueue.duration;
 }
 
 - (long long)frameDuration
@@ -46,7 +61,7 @@
 
 - (long long)packetSize
 {
-    return 0;
+    return self.packetQueue.size;
 }
 
 - (long long)frameSize

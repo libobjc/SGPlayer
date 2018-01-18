@@ -14,6 +14,18 @@
 
 @implementation SGFFStream
 
+- (void)open
+{
+    self.codec.timebase = self.stream->time_base;
+    [self.codec open];
+}
+
+- (void)close
+{
+    [self.codec close];
+    self.codec = nil;
+}
+
 - (void)putPacket:(AVPacket)packet
 {
     if (self.codec)

@@ -7,7 +7,7 @@
 //
 
 #import "SGFFStreamManager.h"
-#import "SGFFUtil.h"
+#import "SGFFError.h"
 
 @interface SGFFStreamManager ()
 
@@ -147,19 +147,14 @@
         id <SGFFCodec> codec = [self.delegate streamManager:self codecForStream:stream];
         if (codec)
         {
-            [self closeStream:* streamRef];
+            [(* streamRef) close];
             stream.codec = codec;
             * streamRef = stream;
+            [stream open];
             return YES;
         }
     }
     return NO;
-}
-
-- (void)closeStream:(SGFFStream *)stream
-{
-    [stream.codec close];
-    stream.codec = nil;
 }
 
 @end

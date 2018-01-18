@@ -6,7 +6,7 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFUtil.h"
+#import "SGFFError.h"
 #import "avformat.h"
 
 NSError * SGFFGetError(int result)

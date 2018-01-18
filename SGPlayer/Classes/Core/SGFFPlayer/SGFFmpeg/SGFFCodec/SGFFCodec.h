@@ -16,8 +16,12 @@
 
 @protocol SGFFCodec <NSObject>
 
-- (void)putPacket:(AVPacket)packet;
+- (void)open;
 - (void)close;
+- (void)putPacket:(AVPacket)packet;
+
+- (void)setTimebase:(AVRational)timebase;
+- (AVRational)timebase;
 
 - (long long)duration;
 - (long long)packetDuration;

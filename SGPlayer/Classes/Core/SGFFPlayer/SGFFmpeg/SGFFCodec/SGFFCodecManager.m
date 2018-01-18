@@ -9,7 +9,7 @@
 #import "SGFFCodecManager.h"
 #import "SGFFVideoCodec.h"
 #import "SGFFAudioCodec.h"
-#import "SGFFUtil.h"
+#import "SGFFError.h"
 
 @interface SGFFCodecManager ()
 

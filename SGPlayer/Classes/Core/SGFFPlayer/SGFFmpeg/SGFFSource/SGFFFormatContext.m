@@ -7,7 +7,7 @@
 //
 
 #import "SGFFFormatContext.h"
-#import "SGFFUtil.h"
+#import "SGFFError.h"
 #import "avformat.h"
 
 static int formatContextInterruptCallback(void * ctx)
