@@ -16,6 +16,9 @@
 @property (nonatomic, strong) SGFFFrameQueue * frameQueue;
 @property (nonatomic, strong) SGFFPacketQueue * packetQueue;
 
+@property (nonatomic, strong) NSOperationQueue * operationQueue;
+@property (nonatomic, strong) NSInvocationOperation * decodeOperation;
+
 @end
 
 @implementation SGFFAudioCodec
@@ -28,11 +31,67 @@
     return SGFFCodecTypeAudio;
 }
 
+- (void)decodeThread
+{
+    AVFrame * decodedFrame = av_frame_alloc();
+    while (YES)
+    {
+        AVPacket packet = [self.packetQueue getPacketSync];
+        if (packet.stream_index > 0)
+        {
+            int result = avcodec_send_packet(self.codecContext, &packet);
+            if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)
+            {
+                continue;
+            }
+            while (result >= 0)
+            {
+                result = avcodec_receive_frame(self.codecContext, decodedFrame);
+                if (result < 0)
+                {
+                    if (result != AVERROR(EAGAIN) && result != AVERROR_EOF)
+                    {
+                        continue;
+                    }
+                    break;
+                }
+                @autoreleasepool
+                {
+                    NSLog(@"Audio Frame PTS : %lld", av_frame_get_best_effort_timestamp(decodedFrame));
+                    if ([self.processingDelegate respondsToSelector:@selector(codec:processingDecodedFrame:)])
+                    {
+                        id <SGFFFrame> frame = [self.processingDelegate codec:self processingDecodedFrame:decodedFrame];
+                        if (frame)
+                        {
+                            [self.frameQueue putFrameSync:frame];
+                        }
+                    }
+                }
+            }
+            av_packet_unref(&packet);
+        }
+        else
+        {
+            break;
+        }
+    }
+    av_free(decodedFrame);
+}
+
 - (void)open
 {
     self.timebase = SGFFTimebaseValidate(self.timebase, 1, 44100);
     self.frameQueue = [[SGFFFrameQueue alloc] init];
     self.packetQueue = [[SGFFPacketQueue alloc] init];
+    
+    self.operationQueue = [[NSOperationQueue alloc] init];
+    self.operationQueue.maxConcurrentOperationCount = 1;
+    self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    
+    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeThread) object:nil];
+    self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.decodeOperation];
 }
 
 - (void)close
@@ -47,7 +106,6 @@
 - (void)putPacket:(AVPacket)packet
 {
     [self.packetQueue putPacket:packet];
-    NSLog(@"Audio Codec Packet Queue Duration : %lld", self.packetQueue.duration);
 }
 
 - (long long)duration
