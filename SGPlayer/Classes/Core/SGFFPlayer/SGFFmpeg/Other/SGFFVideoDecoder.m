@@ -8,7 +8,7 @@
 
 #import "SGPlatform.h"
 #import "SGFFVideoDecoder.h"
-#import "SGFFPacketQueue.h"
+#import "SGFFPacketQueue2.h"
 #import "SGFFFrameQueue.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
@@ -30,7 +30,7 @@ static AVPacket flush_packet;
 
 @property (nonatomic, assign) BOOL canceled;
 
-@property (nonatomic, strong) SGFFPacketQueue * packetQueue;
+@property (nonatomic, strong) SGFFPacketQueue2 * packetQueue;
 @property (nonatomic, strong) SGFFFrameQueue * frameQueue;
 
 @property (nonatomic, strong) SGFFFramePool * framePool;
@@ -91,7 +91,7 @@ static AVPacket flush_packet;
 {
     self.preferredFramesPerSecond = 60;
     self->_temp_frame = av_frame_alloc();
-    self.packetQueue = [SGFFPacketQueue packetQueueWithTimebase:self.timebase];
+    self.packetQueue = [SGFFPacketQueue2 packetQueueWithTimebase:self.timebase];
     self.videoToolBoxMaxDecodeFrameCount = 20;
     self.codecContextMaxDecodeFrameCount = 3;
 #if SGPLATFORM_TARGET_OS_IPHONE

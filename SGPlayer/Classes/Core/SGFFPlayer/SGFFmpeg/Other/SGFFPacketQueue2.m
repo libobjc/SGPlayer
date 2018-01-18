@@ -6,9 +6,9 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGFFPacketQueue.h"
+#import "SGFFPacketQueue2.h"
 
-@interface SGFFPacketQueue ()
+@interface SGFFPacketQueue2 ()
 
 @property (nonatomic, assign) int size;
 @property (atomic, assign) NSTimeInterval duration;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation SGFFPacketQueue
+@implementation SGFFPacketQueue2
 
 + (instancetype)packetQueueWithTimebase:(NSTimeInterval)timebase
 {

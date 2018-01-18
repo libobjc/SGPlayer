@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "avformat.h"
 
-@interface SGFFPacketQueue : NSObject
+@interface SGFFPacketQueue2 : NSObject
 
 + (instancetype)packetQueueWithTimebase:(NSTimeInterval)timebase;
 
