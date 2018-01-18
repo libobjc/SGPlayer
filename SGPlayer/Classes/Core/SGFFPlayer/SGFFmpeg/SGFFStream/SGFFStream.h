@@ -12,7 +12,10 @@
 
 @interface SGFFStream : NSObject
 
+@property (nonatomic, assign) NSInteger index;
 @property (nonatomic, assign) AVStream * stream;
 @property (nonatomic, strong) id <SGFFCodec> codec;
+
+- (void)putPacket:(AVPacket)packet;
 
 @end

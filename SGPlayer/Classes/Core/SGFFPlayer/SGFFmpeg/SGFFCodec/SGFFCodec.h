@@ -11,10 +11,12 @@
 
 
 #import <Foundation/Foundation.h>
+#import "avformat.h"
 
 
 @protocol SGFFCodec <NSObject>
 
+- (void)putPacket:(AVPacket)packet;
 - (void)close;
 
 @end

@@ -34,6 +34,9 @@
 @property (nonatomic, copy, readonly) NSError * error;
 
 - (void)open;
+- (void)putPacket:(AVPacket)packet;
 - (BOOL)selectStream:(SGFFStream *)stream;
+- (NSTimeInterval)bufferedDuration;
+- (long long)bufferedSize;
 
 @end

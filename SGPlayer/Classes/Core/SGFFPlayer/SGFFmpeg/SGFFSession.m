@@ -80,7 +80,7 @@
 
 - (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
-    SGPlayerLog(@"Packet Duration : %lld", packet.duration);
+    [self.streamManager putPacket:packet];
 }
 
 

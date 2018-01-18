@@ -81,6 +81,27 @@
     }
 }
 
+- (void)putPacket:(AVPacket)packet
+{
+    for (SGFFStream * obj in self.streams)
+    {
+        if (obj.index == packet.stream_index)
+        {
+            [obj putPacket:packet];
+        }
+    }
+}
+
+- (NSTimeInterval)bufferedDuration
+{
+    return 0;
+}
+
+- (long long)bufferedSize
+{
+    return 0;
+}
+
 - (BOOL)selectStream:(SGFFStream *)stream
 {
     switch (stream.stream->codecpar->codec_type)

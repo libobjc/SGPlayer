@@ -10,4 +10,12 @@
 
 @implementation SGFFStream
 
+- (void)putPacket:(AVPacket)packet
+{
+    if (self.codec)
+    {
+        [self.codec putPacket:packet];
+    }
+}
+
 @end
