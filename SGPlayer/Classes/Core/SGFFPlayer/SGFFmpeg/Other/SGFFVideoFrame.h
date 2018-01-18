@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGFFFrame.h"
+#import "SGFFFrame2.h"
 #import <AVFoundation/AVFoundation.h>
 #import "SGPlatform.h"
 #import "avformat.h"
@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameRotateType) {
     SGFFVideoFrameRotateType270,
 };
 
-@interface SGFFVideoFrame : SGFFFrame
+@interface SGFFVideoFrame : SGFFFrame2
 
 @property (nonatomic, assign) SGFFVideoFrameRotateType rotateType;
 

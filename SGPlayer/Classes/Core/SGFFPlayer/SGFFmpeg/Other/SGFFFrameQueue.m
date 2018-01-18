@@ -16,7 +16,7 @@
 @property (atomic, assign) NSTimeInterval duration;
 
 @property (nonatomic, strong) NSCondition * condition;
-@property (nonatomic, strong) NSMutableArray <__kindof SGFFFrame *> * frames;
+@property (nonatomic, strong) NSMutableArray <__kindof SGFFFrame2 *> * frames;
 
 @property (nonatomic, assign) BOOL destoryToken;
 
@@ -40,7 +40,7 @@
     return self;
 }
 
-- (void)putFrame:(__kindof SGFFFrame *)frame
+- (void)putFrame:(__kindof SGFFFrame2 *)frame
 {
     if (!frame) return;
     [self.condition lock];
@@ -56,7 +56,7 @@
     [self.condition unlock];
 }
 
-- (void)putSortFrame:(__kindof SGFFFrame *)frame
+- (void)putSortFrame:(__kindof SGFFFrame2 *)frame
 {
     if (!frame) return;
     [self.condition lock];
@@ -67,7 +67,7 @@
     BOOL added = NO;
     if (self.frames.count > 0) {
         for (int i = (int)self.frames.count - 1; i >= 0; i--) {
-            SGFFFrame * obj = [self.frames objectAtIndex:i];
+            SGFFFrame2 * obj = [self.frames objectAtIndex:i];
             if (frame.position > obj.position) {
                 [self.frames insertObject:frame atIndex:i + 1];
                 added = YES;
@@ -86,7 +86,7 @@
     [self.condition unlock];
 }
 
-- (__kindof SGFFFrame *)getFrameSync
+- (__kindof SGFFFrame2 *)getFrameSync
 {
     [self.condition lock];
     while (self.frames.count < self.minFrameCountForGet && !(self.ignoreMinFrameCountForGetLimit && self.frames.firstObject)) {
@@ -96,7 +96,7 @@
         }
         [self.condition wait];
     }
-    SGFFFrame * frame = self.frames.firstObject;
+    SGFFFrame2 * frame = self.frames.firstObject;
     [self.frames removeObjectAtIndex:0];
     self.duration -= frame.duration;
     if (self.duration < 0 || self.count <= 0) {
@@ -114,7 +114,7 @@
     return frame;
 }
 
-- (__kindof SGFFFrame *)getFrameAsync
+- (__kindof SGFFFrame2 *)getFrameAsync
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
@@ -125,7 +125,7 @@
         [self.condition unlock];
         return nil;
     }
-    SGFFFrame * frame = self.frames.firstObject;
+    SGFFFrame2 * frame = self.frames.firstObject;
     [self.frames removeObjectAtIndex:0];
     self.duration -= frame.duration;
     if (self.duration < 0 || self.count <= 0) {
@@ -143,7 +143,7 @@
     return frame;
 }
 
-- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame *> **)discardFrames
+- (__kindof SGFFFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame2 *> **)discardFrames
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
@@ -154,9 +154,9 @@
         [self.condition unlock];
         return nil;
     }
-    SGFFFrame * frame = nil;
+    SGFFFrame2 * frame = nil;
     NSMutableArray * temp = [NSMutableArray array];
-    for (SGFFFrame * obj in self.frames) {
+    for (SGFFFrame2 * obj in self.frames) {
         if (obj.position + obj.duration < position) {
             [temp addObject:obj];
             self.duration -= obj.duration;
@@ -209,7 +209,7 @@
     return time;
 }
 
-- (NSMutableArray <__kindof SGFFFrame *> *)discardFrameBeforPosition:(NSTimeInterval)position
+- (NSMutableArray <__kindof SGFFFrame2 *> *)discardFrameBeforPosition:(NSTimeInterval)position
 {
     [self.condition lock];
     if (self.destoryToken || self.frames.count <= 0) {
@@ -221,7 +221,7 @@
         return nil;
     }
     NSMutableArray * temp = [NSMutableArray array];
-    for (SGFFFrame * obj in self.frames) {
+    for (SGFFFrame2 * obj in self.frames) {
         if (obj.position + obj.duration < position) {
             [temp addObject:obj];
             self.duration -= obj.duration;

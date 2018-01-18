@@ -13,9 +13,9 @@
 
 @property (nonatomic, copy) Class frameClassName;
 @property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, strong) SGFFFrame * playingFrame;
-@property (nonatomic, strong) NSMutableSet <SGFFFrame *> * unuseFrames;
-@property (nonatomic, strong) NSMutableSet <SGFFFrame *> * usedFrames;
+@property (nonatomic, strong) SGFFFrame2 * playingFrame;
+@property (nonatomic, strong) NSMutableSet <SGFFFrame2 *> * unuseFrames;
+@property (nonatomic, strong) NSMutableSet <SGFFFrame2 *> * usedFrames;
 
 @end
 
@@ -62,10 +62,10 @@
     return self.usedFrames.count;
 }
 
-- (__kindof SGFFFrame *)getUnuseFrame
+- (__kindof SGFFFrame2 *)getUnuseFrame
 {
     [self.lock lock];
-    SGFFFrame * frame;
+    SGFFFrame2 * frame;
     if (self.unuseFrames.count > 0) {
         frame = [self.unuseFrames anyObject];
         [self.unuseFrames removeObject:frame];
@@ -80,7 +80,7 @@
     return frame;
 }
 
-- (void)setFrameUnuse:(SGFFFrame *)frame
+- (void)setFrameUnuse:(SGFFFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -90,11 +90,11 @@
     [self.lock unlock];
 }
 
-- (void)setFramesUnuse:(NSArray <SGFFFrame *> *)frames
+- (void)setFramesUnuse:(NSArray <SGFFFrame2 *> *)frames
 {
     if (frames.count <= 0) return;
     [self.lock lock];
-    for (SGFFFrame * obj in frames) {
+    for (SGFFFrame2 * obj in frames) {
         if (![obj isKindOfClass:self.frameClassName]) continue;
         [self.usedFrames removeObject:obj];
         [self.unuseFrames addObject:obj];
@@ -102,7 +102,7 @@
     [self.lock unlock];
 }
 
-- (void)setFrameStartDrawing:(SGFFFrame *)frame
+- (void)setFrameStartDrawing:(SGFFFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -115,7 +115,7 @@
     [self.lock unlock];
 }
 
-- (void)setFrameStopDrawing:(SGFFFrame *)frame
+- (void)setFrameStopDrawing:(SGFFFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -130,7 +130,7 @@
 - (void)flush
 {
     [self.lock lock];
-    [self.usedFrames enumerateObjectsUsingBlock:^(SGFFFrame * _Nonnull obj, BOOL * _Nonnull stop) {
+    [self.usedFrames enumerateObjectsUsingBlock:^(SGFFFrame2 * _Nonnull obj, BOOL * _Nonnull stop) {
         [self.unuseFrames addObject:obj];
     }];
     [self.usedFrames removeAllObjects];
@@ -139,17 +139,17 @@
 
 #pragma mark - SGFFFrameDelegate
 
-- (void)frameDidStartPlaying:(SGFFFrame *)frame
+- (void)frameDidStartPlaying:(SGFFFrame2 *)frame
 {
     [self setFrameStartDrawing:frame];
 }
 
-- (void)frameDidStopPlaying:(SGFFFrame *)frame
+- (void)frameDidStopPlaying:(SGFFFrame2 *)frame
 {
     [self setFrameStopDrawing:frame];
 }
 
-- (void)frameDidCancel:(SGFFFrame *)frame
+- (void)frameDidCancel:(SGFFFrame2 *)frame
 {
     [self setFrameUnuse:frame];
 }

@@ -17,17 +17,17 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType) {
     SGFFFrameTypeArtwork,
 };
 
-@class SGFFFrame;
+@class SGFFFrame2;
 
 @protocol SGFFFrameDelegate <NSObject>
 
-- (void)frameDidStartPlaying:(SGFFFrame *)frame;
-- (void)frameDidStopPlaying:(SGFFFrame *)frame;
-- (void)frameDidCancel:(SGFFFrame *)frame;
+- (void)frameDidStartPlaying:(SGFFFrame2 *)frame;
+- (void)frameDidStopPlaying:(SGFFFrame2 *)frame;
+- (void)frameDidCancel:(SGFFFrame2 *)frame;
 
 @end
 
-@interface SGFFFrame : NSObject
+@interface SGFFFrame2 : NSObject
 
 @property (nonatomic, weak) id <SGFFFrameDelegate> delegate;
 @property (nonatomic, assign, readonly) BOOL playing;
@@ -45,12 +45,12 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType) {
 @end
 
 
-@interface SGFFSubtileFrame : SGFFFrame
+@interface SGFFSubtileFrame : SGFFFrame2
 
 @end
 
 
-@interface SGFFArtworkFrame : SGFFFrame
+@interface SGFFArtworkFrame : SGFFFrame2
 
 @property (nonatomic, strong) NSData * picture;
 

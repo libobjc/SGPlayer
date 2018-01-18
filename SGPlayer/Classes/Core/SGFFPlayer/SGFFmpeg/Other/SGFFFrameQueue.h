@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFFrame.h"
+#import "SGFFFrame2.h"
 
 @interface SGFFFrameQueue : NSObject
 
@@ -26,13 +26,13 @@
 @property (nonatomic, assign) NSUInteger minFrameCountForGet;    // default is 1.
 @property (nonatomic, assign) BOOL ignoreMinFrameCountForGetLimit;
 
-- (void)putFrame:(__kindof SGFFFrame *)frame;
-- (void)putSortFrame:(__kindof SGFFFrame *)frame;
-- (__kindof SGFFFrame *)getFrameSync;
-- (__kindof SGFFFrame *)getFrameAsync;
-- (__kindof SGFFFrame *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame *> **)discardFrames;
+- (void)putFrame:(__kindof SGFFFrame2 *)frame;
+- (void)putSortFrame:(__kindof SGFFFrame2 *)frame;
+- (__kindof SGFFFrame2 *)getFrameSync;
+- (__kindof SGFFFrame2 *)getFrameAsync;
+- (__kindof SGFFFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position discardFrames:(NSMutableArray <__kindof SGFFFrame2 *> **)discardFrames;
 - (NSTimeInterval)getFirstFramePositionAsync;
-- (NSMutableArray <__kindof SGFFFrame *> *)discardFrameBeforPosition:(NSTimeInterval)position;
+- (NSMutableArray <__kindof SGFFFrame2 *> *)discardFrameBeforPosition:(NSTimeInterval)position;
 
 - (void)flush;
 - (void)destroy;

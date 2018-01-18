@@ -1,5 +1,5 @@
 //
-//  SGFFUtil.h
+//  SGFFError.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.

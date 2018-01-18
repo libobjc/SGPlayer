@@ -1,5 +1,5 @@
 //
-//  SGFFUtil.m
+//  SGFFError.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.

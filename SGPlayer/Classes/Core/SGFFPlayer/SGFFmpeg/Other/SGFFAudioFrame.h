@@ -6,9 +6,9 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGFFFrame.h"
+#import "SGFFFrame2.h"
 
-@interface SGFFAudioFrame : SGFFFrame
+@interface SGFFAudioFrame : SGFFFrame2
 
 {
 @public

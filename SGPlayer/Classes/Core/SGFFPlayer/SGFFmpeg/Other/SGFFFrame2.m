@@ -6,10 +6,10 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGFFFrame.h"
+#import "SGFFFrame2.h"
 #import "SGFFTools.h"
 
-@implementation SGFFFrame
+@implementation SGFFFrame2
 
 - (void)startPlaying
 {

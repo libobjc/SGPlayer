@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFFrame.h"
+#import "SGFFFrame2.h"
 
 @interface SGFFFramePool : NSObject
 
@@ -19,7 +19,7 @@
 - (NSUInteger)unuseCount;
 - (NSUInteger)usedCount;
 
-- (__kindof SGFFFrame *)getUnuseFrame;
+- (__kindof SGFFFrame2 *)getUnuseFrame;
 
 - (void)flush;
 
