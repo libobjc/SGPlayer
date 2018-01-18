@@ -133,7 +133,46 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)readThread
 {
-    
+    AVPacket packet;
+    while (YES)
+    {
+        BOOL shouldBreak = NO;
+        switch (self.state)
+        {
+            case SGFFSourceStateReadFinished:
+            case SGFFSourceStateClosed:
+            case SGFFSourceStateFailed:
+                shouldBreak = YES;
+                break;
+            default:
+                break;
+        }
+        if (shouldBreak)
+        {
+            break;
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(sourceSleepPeriodForReading:)])
+        {
+            NSTimeInterval sleepPeriod = [self.delegate sourceSleepPeriodForReading:self];
+            if (sleepPeriod > 0)
+            {
+                [NSThread sleepForTimeInterval:sleepPeriod];
+                continue;
+            }
+        }
+        
+        int readResult = av_read_frame(_formatContext, &packet);
+        if (readResult < 0)
+        {
+            self.state = SGFFSourceStateReadFinished;
+            break;
+        }
+        
+        if ([self.delegate respondsToSelector:@selector(source:didOutputPacket:)]) {
+            [self.delegate source:self didOutputPacket:packet];
+        }
+    }
 }
 
 

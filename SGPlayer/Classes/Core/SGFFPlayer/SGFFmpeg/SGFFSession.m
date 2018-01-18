@@ -10,6 +10,7 @@
 #import "SGFFFormatContext.h"
 #import "SGFFStreamManager.h"
 #import "SGFFCodecManager.h"
+#import "SGPlayerMacro.h"
 
 @interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate>
 
@@ -72,12 +73,22 @@
     [self callbackForError];
 }
 
+- (NSTimeInterval)sourceSleepPeriodForReading:(id<SGFFSource>)source
+{
+    return 0;
+}
+
+- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
+{
+    SGPlayerLog(@"Packet Duration : %lld", packet.duration);
+}
+
 
 #pragma mark - SGFFStreamManagerDelegate
 
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
-    
+    [self.source read];
 }
 
 - (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager
