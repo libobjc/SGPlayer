@@ -12,7 +12,7 @@
 #import "SGFFCodecManager.h"
 #import "SGPlayerMacro.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecProcessingDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -106,7 +106,17 @@
     if (!self.codecManager) {
         self.codecManager = [[SGFFCodecManager alloc] init];
     }
-    return [self.codecManager codecForStream:stream.stream];
+    id <SGFFCodec> codec = [self.codecManager codecForStream:stream.stream];
+    codec.processingDelegate = self;
+    return codec;
+}
+
+
+#pragma mark - SGFFCodecProcessingDelegate
+
+- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingDecodedFrame:(AVFrame *)decodedFrame
+{
+    return nil;
 }
 
 

@@ -12,12 +12,19 @@
 
 @interface SGFFAudioCodec ()
 
-@property (nonatomic, assign) AVRational timebase;
 @property (nonatomic, strong) SGFFPacketQueue * packetQueue;
 
 @end
 
 @implementation SGFFAudioCodec
+
+@synthesize processingDelegate = _processingDelegate;
+@synthesize timebase = _timebase;
+
++ (SGFFCodecType)type
+{
+    return SGFFCodecTypeAudio;
+}
 
 - (void)open
 {

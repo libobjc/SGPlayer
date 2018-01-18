@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFStream.h"
+#import "SGFFFrame.h"
 
 @class SGFFStreamManager;
 

@@ -522,6 +522,9 @@
 		9C389AC220106DB2003259FF /* SGFFTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C389ABE20106DB2003259FF /* SGFFTime.m */; };
 		9C389AC320106DB2003259FF /* SGFFTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C389ABE20106DB2003259FF /* SGFFTime.m */; };
 		9C389AC420106DB2003259FF /* SGFFTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C389ABE20106DB2003259FF /* SGFFTime.m */; };
+		9C389ACC20108C2E003259FF /* SGFFFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C389ACB20108C2E003259FF /* SGFFFrame.h */; };
+		9C389ACD20108C2E003259FF /* SGFFFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C389ACB20108C2E003259FF /* SGFFFrame.h */; };
+		9C389ACE20108C2E003259FF /* SGFFFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C389ACB20108C2E003259FF /* SGFFFrame.h */; };
 		9C41E71D1E97569F006E5A65 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4793431E71402E00AD4289 /* libavcodec.a */; };
 		9C41E71E1E97569F006E5A65 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4793451E71402E00AD4289 /* libavfilter.a */; };
 		9C41E71F1E97569F006E5A65 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C4793461E71402E00AD4289 /* libavformat.a */; };
@@ -1056,6 +1059,7 @@
 		9C389AB620106309003259FF /* SGFFPacketQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFPacketQueue.m; sourceTree = "<group>"; };
 		9C389ABD20106DB2003259FF /* SGFFTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFTime.h; sourceTree = "<group>"; };
 		9C389ABE20106DB2003259FF /* SGFFTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFTime.m; sourceTree = "<group>"; };
+		9C389ACB20108C2E003259FF /* SGFFFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFFrame.h; sourceTree = "<group>"; };
 		9C478EF71E713A3200AD4289 /* SGPlayerImp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerImp.h; sourceTree = "<group>"; };
 		9C478EF81E713A3200AD4289 /* SGPlayerImp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayerImp.m; sourceTree = "<group>"; };
 		9C478EF91E713A3200AD4289 /* SGPlayerAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerAction.h; sourceTree = "<group>"; };
@@ -1892,6 +1896,7 @@
 		9CF52CF4200F45AF00950B81 /* SGFFGeneral */ = {
 			isa = PBXGroup;
 			children = (
+				9C389ACB20108C2E003259FF /* SGFFFrame.h */,
 				9C389AB520106309003259FF /* SGFFPacketQueue.h */,
 				9C389AB620106309003259FF /* SGFFPacketQueue.m */,
 			);
@@ -2096,6 +2101,7 @@
 				9C25363A1FAB151500BBFA5C /* SGFFVideoToolBox.h in Headers */,
 				9C25351D1FAB151500BBFA5C /* hwcontext_cuda.h in Headers */,
 				9C2535FE1FAB151500BBFA5C /* SGFFFormatContext2.h in Headers */,
+				9C389ACC20108C2E003259FF /* SGFFFrame.h in Headers */,
 				9C2534A81FAB151500BBFA5C /* buffersink.h in Headers */,
 				9C8D4E48200DFFC700ED8A58 /* SGFFSession.h in Headers */,
 				9C25349C1FAB151500BBFA5C /* vorbis_parser.h in Headers */,
@@ -2202,6 +2208,7 @@
 				9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */,
 				9C2534701FAB151500BBFA5C /* avcodec.h in Headers */,
 				9C25350F1FAB151500BBFA5C /* file.h in Headers */,
+				9C389ACD20108C2E003259FF /* SGFFFrame.h in Headers */,
 				9C2536351FAB151500BBFA5C /* SGFFVideoFrame.h in Headers */,
 				9C25351B1FAB151500BBFA5C /* hwcontext.h in Headers */,
 				9C2535781FAB151500BBFA5C /* sha512.h in Headers */,
@@ -2524,6 +2531,7 @@
 				9C4792F71E713B4900AD4289 /* SGGLVRModel.h in Headers */,
 				9C25350A1FAB151500BBFA5C /* ffversion.h in Headers */,
 				9C2534951FAB151500BBFA5C /* vdpau.h in Headers */,
+				9C389ACE20108C2E003259FF /* SGFFFrame.h in Headers */,
 				9C5AB6901E88B2AD0021F460 /* SGGLViewController.h in Headers */,
 				9C47932D1E713B4900AD4289 /* SGDistortionRenderer.h in Headers */,
 				9C25353D1FAB151500BBFA5C /* lzo.h in Headers */,

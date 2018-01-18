@@ -13,10 +13,8 @@
 @interface SGFFStream : NSObject
 
 @property (nonatomic, assign) NSInteger index;
-@property (nonatomic, assign) double timebase;
 @property (nonatomic, assign) AVStream * stream;
 @property (nonatomic, strong) id <SGFFCodec> codec;
-
 
 - (void)open;
 - (void)close;
