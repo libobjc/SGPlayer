@@ -37,7 +37,7 @@
     while (YES)
     {
         AVPacket packet = [self.packetQueue getPacketSync];
-        if (packet.stream_index > 0)
+        if (packet.data)
         {
             int result = avcodec_send_packet(self.codecContext, &packet);
             if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)

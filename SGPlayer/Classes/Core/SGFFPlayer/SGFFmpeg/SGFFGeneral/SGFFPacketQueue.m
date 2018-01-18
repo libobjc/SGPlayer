@@ -51,8 +51,7 @@
 - (AVPacket)getPacketSync
 {
     [self.condition lock];
-    AVPacket packet;
-    packet.stream_index = -2;
+    AVPacket packet = [self getEmptyPacket];
     while (self.packets.count <= 0)
     {
         if (self.didDestoryed)
@@ -70,8 +69,7 @@
 - (AVPacket)getPacketAsync
 {
     [self.condition lock];
-    AVPacket packet;
-    packet.stream_index = -2;
+    AVPacket packet = [self getEmptyPacket];
     if (self.packets.count <= 0 || self.didDestoryed)
     {
         [self.condition unlock];
@@ -84,8 +82,7 @@
 
 - (AVPacket)getPacket
 {
-    AVPacket packet;
-    packet.stream_index = -2;
+    AVPacket packet = [self getEmptyPacket];
     if (!self.packets.firstObject)
     {
         return packet;
@@ -100,6 +97,15 @@
     if (self.duration < 0 || self.count <= 0) {
         self.duration = 0;
     }
+    return packet;
+}
+
+- (AVPacket)getEmptyPacket
+{
+    AVPacket packet;
+    av_init_packet(&packet);
+    packet.data = NULL;
+    packet.size = 0;
     return packet;
 }
 
