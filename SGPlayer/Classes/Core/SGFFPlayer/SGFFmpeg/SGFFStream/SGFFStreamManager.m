@@ -92,13 +92,23 @@
     }
 }
 
-- (NSTimeInterval)bufferedDuration
+- (long long)bufferedDuration
 {
+    if (self.currentAudioStream) {
+        return self.currentAudioStream.codec.duration;
+    } else if (self.currentVideoStream) {
+        return self.currentVideoStream.codec.duration;
+    }
     return 0;
 }
 
 - (long long)bufferedSize
 {
+    long long bufferedSize = 0;
+    for (SGFFStream * obj in self.streams)
+    {
+        bufferedSize += obj.codec.packetSize;
+    }
     return 0;
 }
 

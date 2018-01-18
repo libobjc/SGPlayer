@@ -36,7 +36,8 @@
 - (void)open;
 - (void)putPacket:(AVPacket)packet;
 - (BOOL)selectStream:(SGFFStream *)stream;
-- (NSTimeInterval)bufferedDuration;
+
+- (long long)bufferedDuration;
 - (long long)bufferedSize;
 
 @end

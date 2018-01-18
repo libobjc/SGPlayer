@@ -19,6 +19,13 @@
 - (void)putPacket:(AVPacket)packet;
 - (void)close;
 
+- (long long)duration;
+- (long long)packetDuration;
+- (long long)frameDuration;
+- (long long)size;
+- (long long)packetSize;
+- (long long)frameSize;
+
 @end
 
 

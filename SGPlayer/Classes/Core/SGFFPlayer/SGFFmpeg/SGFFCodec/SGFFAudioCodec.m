@@ -8,7 +8,16 @@
 
 #import "SGFFAudioCodec.h"
 
+@interface SGFFAudioCodec ()
+
+@end
+
 @implementation SGFFAudioCodec
+
+- (void)putPacket:(AVPacket)packet
+{
+    
+}
 
 - (void)close
 {
@@ -17,6 +26,36 @@
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
+}
+
+- (long long)duration
+{
+    return [self packetDuration] + [self frameDuration];
+}
+
+- (long long)packetDuration
+{
+    return 0;
+}
+
+- (long long)frameDuration
+{
+    return 0;
+}
+
+- (long long)size
+{
+    return [self packetSize] + [self frameSize];
+}
+
+- (long long)packetSize
+{
+    return 0;
+}
+
+- (long long)frameSize
+{
+    return 0;
 }
 
 @end

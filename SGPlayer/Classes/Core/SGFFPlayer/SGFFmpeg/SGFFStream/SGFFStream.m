@@ -8,6 +8,10 @@
 
 #import "SGFFStream.h"
 
+@interface SGFFStream ()
+
+@end
+
 @implementation SGFFStream
 
 - (void)putPacket:(AVPacket)packet
