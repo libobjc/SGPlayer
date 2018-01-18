@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGFFFrame2.h"
 
-@interface SGFFFrameQueue : NSObject
+@interface SGFFFrameQueue2 : NSObject
 
 + (instancetype)frameQueue;
 

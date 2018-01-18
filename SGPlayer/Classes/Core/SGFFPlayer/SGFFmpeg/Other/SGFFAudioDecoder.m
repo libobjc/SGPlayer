@@ -7,7 +7,7 @@
 //
 
 #import "SGFFAudioDecoder.h"
-#import "SGFFFrameQueue.h"
+#import "SGFFFrameQueue2.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
 #import "SGPlayerMacro.h"
@@ -30,7 +30,7 @@
     int _audio_swr_buffer_size;
 }
 
-@property (nonatomic, strong) SGFFFrameQueue * frameQueue;
+@property (nonatomic, strong) SGFFFrameQueue2 * frameQueue;
 @property (nonatomic, strong) SGFFFramePool * framePool;
 
 @end
@@ -56,7 +56,7 @@
 
 - (void)setup
 {
-    self.frameQueue = [SGFFFrameQueue frameQueue];
+    self.frameQueue = [SGFFFrameQueue2 frameQueue];
     self.framePool = [SGFFFramePool audioPool];
     [self setupSwsContext];
 }

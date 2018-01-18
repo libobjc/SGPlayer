@@ -6,9 +6,9 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGFFFrameQueue.h"
+#import "SGFFFrameQueue2.h"
 
-@interface SGFFFrameQueue ()
+@interface SGFFFrameQueue2 ()
 
 @property (nonatomic, assign) int size;
 @property (nonatomic, assign) int packetSize;
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation SGFFFrameQueue
+@implementation SGFFFrameQueue2
 
 + (instancetype)frameQueue
 {

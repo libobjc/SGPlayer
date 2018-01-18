@@ -9,7 +9,7 @@
 #import "SGPlatform.h"
 #import "SGFFVideoDecoder.h"
 #import "SGFFPacketQueue2.h"
-#import "SGFFFrameQueue.h"
+#import "SGFFFrameQueue2.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
 
@@ -31,7 +31,7 @@ static AVPacket flush_packet;
 @property (nonatomic, assign) BOOL canceled;
 
 @property (nonatomic, strong) SGFFPacketQueue2 * packetQueue;
-@property (nonatomic, strong) SGFFFrameQueue * frameQueue;
+@property (nonatomic, strong) SGFFFrameQueue2 * frameQueue;
 
 @property (nonatomic, strong) SGFFFramePool * framePool;
 
@@ -106,11 +106,11 @@ static AVPacket flush_packet;
     }
 #endif
     if (self.videoToolBoxDidOpen) {
-        self.frameQueue = [SGFFFrameQueue frameQueue];
+        self.frameQueue = [SGFFFrameQueue2 frameQueue];
         self.frameQueue.minFrameCountForGet = 4;
         self->_decodeAsync = YES;
     } else if (self.codecContextAsync) {
-        self.frameQueue = [SGFFFrameQueue frameQueue];
+        self.frameQueue = [SGFFFrameQueue2 frameQueue];
         self.framePool = [SGFFFramePool videoPool];
         self->_decodeAsync = YES;
     } else {
