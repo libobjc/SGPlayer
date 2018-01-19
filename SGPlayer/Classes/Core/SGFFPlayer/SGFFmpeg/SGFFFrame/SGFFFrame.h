@@ -13,6 +13,9 @@
 #import <Foundation/Foundation.h>
 #import "SGFFTime.h"
 
+@class SGFFAudioFrame;
+@protocol SGFFFrameUtil;
+
 
 typedef NS_ENUM(NSUInteger, SGFFFrameType)
 {
@@ -23,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 };
 
 
-@protocol SGFFFrame <NSObject>
+@protocol SGFFFrame <NSObject, SGFFFrameUtil>
 
 - (SGFFFrameType)type;
 
@@ -31,6 +34,13 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 - (long long)position;
 - (long long)duration;
 - (long long)size;
+
+@end
+
+
+@protocol SGFFFrameUtil <NSObject>
+
+- (SGFFAudioFrame *)audioFrame;
 
 @end
 

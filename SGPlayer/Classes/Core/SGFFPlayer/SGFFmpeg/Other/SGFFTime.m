@@ -8,6 +8,12 @@
 
 #import "SGFFTime.h"
 
+SGFFTimebase SGFFTimebaseIdentity(void)
+{
+    static SGFFTimebase timebase = {1, 1};
+    return timebase;
+}
+
 SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def)
 {
     if (num > 0 && den > 0)

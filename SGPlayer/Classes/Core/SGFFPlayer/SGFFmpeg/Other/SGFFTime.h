@@ -13,4 +13,5 @@ typedef struct SGFFTimebase {
     int den;
 } SGFFTimebase;
 
+SGFFTimebase SGFFTimebaseIdentity(void);
 SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);

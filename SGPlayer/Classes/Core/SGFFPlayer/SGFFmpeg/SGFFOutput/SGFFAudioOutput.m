@@ -7,6 +7,7 @@
 //
 
 #import "SGFFAudioOutput.h"
+#import "SGFFAudioFrame.h"
 
 @implementation SGFFAudioOutput
 

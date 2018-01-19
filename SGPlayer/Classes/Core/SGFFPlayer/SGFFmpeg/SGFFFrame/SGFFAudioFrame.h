@@ -6,10 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "SGFFFrame.h"
+#import "SGFFFrameInternal.h"
 
-@interface SGFFAudioFrame : NSObject <SGFFFrame>
+@interface SGFFAudioFrame : SGFFFrameInternal
 
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) enum AVSampleFormat format;
