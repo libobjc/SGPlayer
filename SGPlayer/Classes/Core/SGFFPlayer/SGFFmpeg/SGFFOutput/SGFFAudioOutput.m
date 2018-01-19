@@ -9,6 +9,10 @@
 #import "SGFFAudioOutput.h"
 #import "SGFFAudioOutputRender.h"
 
+@interface SGFFAudioOutput ()
+
+@end
+
 @implementation SGFFAudioOutput
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
