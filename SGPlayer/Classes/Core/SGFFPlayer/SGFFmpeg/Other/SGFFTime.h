@@ -7,6 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "avformat.h"
 
-AVRational SGFFTimebaseValidate(AVRational timebase, int num, int den);
+typedef struct SGFFTimebase {
+    int num;
+    int den;
+} SGFFTimebase;
+
+SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);

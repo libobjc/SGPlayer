@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 
 @property (nonatomic, weak) id <SGFFCodecProcessingDelegate> processingDelegate;
 
-- (AVRational)timebase;
+- (SGFFTimebase)timebase;
 - (long long)duration;
 - (long long)size;
 

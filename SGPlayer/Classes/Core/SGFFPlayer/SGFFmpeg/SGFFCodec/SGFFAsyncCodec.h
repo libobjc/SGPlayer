@@ -13,7 +13,7 @@
 
 @interface SGFFAsyncCodec : NSObject <SGFFCodec>
 
-@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, assign) SGFFTimebase timebase;
 
 @property (nonatomic, strong, readonly) SGFFPacketQueue * packetQueue;
 @property (nonatomic, strong, readonly) SGFFOutputRenderQueue * outputRenderQueue;

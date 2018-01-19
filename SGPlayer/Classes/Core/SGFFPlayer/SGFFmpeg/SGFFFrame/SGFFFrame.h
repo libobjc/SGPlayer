@@ -11,6 +11,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import "SGFFTime.h"
 
 
 typedef NS_ENUM(NSUInteger, SGFFFrameType)

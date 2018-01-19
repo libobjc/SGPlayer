@@ -55,7 +55,8 @@
 
 - (BOOL)open
 {
-    self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
+    AVRational timebase = {self.timebase.num, self.timebase.den};
+    self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:timebase];
     if (self.codecContext)
     {
         return [super open];

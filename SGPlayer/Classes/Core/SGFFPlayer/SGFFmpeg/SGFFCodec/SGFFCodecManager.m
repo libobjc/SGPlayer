@@ -25,7 +25,7 @@
         case AVMEDIA_TYPE_VIDEO:
         {
             SGFFVideoAVCodec * videoCodec = [[SGFFVideoAVCodec alloc] init];
-            videoCodec.timebase = SGFFTimebaseValidate(stream->time_base, 1, 25000);
+            videoCodec.timebase = SGFFTimebaseValidate(stream->time_base.num, stream->time_base.den, 1, 25000);
             videoCodec.codecpar = stream->codecpar;
             return videoCodec;
         }
@@ -33,7 +33,7 @@
         case AVMEDIA_TYPE_AUDIO:
         {
             SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
-            audioCodec.timebase = SGFFTimebaseValidate(stream->time_base, 1, 44100);
+            audioCodec.timebase = SGFFTimebaseValidate(stream->time_base.num, stream->time_base.den, 1, 44100);
             audioCodec.codecpar = stream->codecpar;
             return audioCodec;
         }
