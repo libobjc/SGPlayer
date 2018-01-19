@@ -11,6 +11,8 @@
 
 @interface SGFFAudioOutput ()
 
+@property (nonatomic, strong) NSTimer * timer;
+
 @end
 
 @implementation SGFFAudioOutput
@@ -23,6 +25,25 @@
         return [[SGFFAudioOutputRender alloc] initWithAudioFrame:frame.audioFrame];
     }
     return nil;
+}
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
+            [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
+            self.timer.fireDate = [NSDate distantPast];
+        });
+    }
+    return self;
+}
+
+- (void)timerAction
+{
+    id <SGFFOutputRender> render = [self.renderSource outputFecthRender:self];
+    NSLog(@"%@", render);
 }
 
 @end
