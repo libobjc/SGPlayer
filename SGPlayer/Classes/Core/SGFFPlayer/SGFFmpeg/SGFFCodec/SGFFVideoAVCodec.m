@@ -1,18 +1,18 @@
 //
-//  SGFFVideoCodec.m
+//  SGFFVideoAVCodec.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFVideoCodec.h"
+#import "SGFFVideoAVCodec.h"
 
-@interface SGFFVideoCodec ()
+@interface SGFFVideoAVCodec ()
 
 @end
 
-@implementation SGFFVideoCodec
+@implementation SGFFVideoAVCodec
 
 + (SGFFCodecType)type
 {

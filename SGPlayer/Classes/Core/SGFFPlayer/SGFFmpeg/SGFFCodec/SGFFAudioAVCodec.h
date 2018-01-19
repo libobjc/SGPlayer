@@ -1,5 +1,5 @@
 //
-//  SGFFAudioCodec.h
+//  SGFFAudioAVCodec.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
@@ -8,6 +8,6 @@
 
 #import "SGFFAsyncAVCodec.h"
 
-@interface SGFFAudioCodec : SGFFAsyncAVCodec
+@interface SGFFAudioAVCodec : SGFFAsyncAVCodec
 
 @end

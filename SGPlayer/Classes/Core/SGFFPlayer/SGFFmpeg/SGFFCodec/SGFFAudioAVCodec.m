@@ -1,18 +1,18 @@
 //
-//  SGFFAudioCodec.m
+//  SGFFAudioAVCodec.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAudioCodec.h"
+#import "SGFFAudioAVCodec.h"
 
-@interface SGFFAudioCodec ()
+@interface SGFFAudioAVCodec ()
 
 @end
 
-@implementation SGFFAudioCodec
+@implementation SGFFAudioAVCodec
 
 + (SGFFCodecType)type
 {
