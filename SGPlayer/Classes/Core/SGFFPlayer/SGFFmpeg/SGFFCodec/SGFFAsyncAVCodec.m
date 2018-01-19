@@ -113,4 +113,6 @@
     av_free(decodedFrame);
 }
 
+- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame {return nil;}
+
 @end

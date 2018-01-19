@@ -7,11 +7,13 @@
 //
 
 #import "SGFFAsyncCodec.h"
-#import "avformat.h"
+#import "SGFFFrame.h"
 
 @interface SGFFAsyncAVCodec : SGFFAsyncCodec
 
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 @property (nonatomic, assign, readonly) AVCodecContext * codecContext;
+
+- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame;
 
 @end

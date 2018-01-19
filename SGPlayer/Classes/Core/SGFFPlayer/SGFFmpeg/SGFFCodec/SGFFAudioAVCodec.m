@@ -24,4 +24,9 @@
     return 5;
 }
 
+- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame
+{
+    return nil;
+}
+
 @end
