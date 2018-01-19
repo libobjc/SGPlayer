@@ -6,12 +6,8 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "SGFFCodec.h"
-#import "avformat.h"
+#import "SGFFAsyncAVCodec.h"
 
-@interface SGFFAudioCodec : NSObject <SGFFCodec>
-
-@property (nonatomic, assign) AVCodecContext * codecContext;
+@interface SGFFAudioCodec : SGFFAsyncAVCodec
 
 @end

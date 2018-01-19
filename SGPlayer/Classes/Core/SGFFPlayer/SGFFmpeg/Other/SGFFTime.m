@@ -8,13 +8,10 @@
 
 #import "SGFFTime.h"
 
-AVRational SGFFTimebaseValidate(AVRational timebase, int num, int den)
+AVRational SGFFTimebaseValidate(AVRational timebase, AVRational defaultTimebase)
 {
     if (timebase.num > 0 && timebase.den > 0) {
         return timebase;
     }
-    AVRational result;
-    result.num = num;
-    result.den = den;
-    return result;
+    return defaultTimebase;
 }
