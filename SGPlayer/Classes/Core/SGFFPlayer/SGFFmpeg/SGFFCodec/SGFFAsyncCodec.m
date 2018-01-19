@@ -54,6 +54,11 @@
     [self.packetQueue putPacket:packet];
 }
 
+- (id <SGFFOutputRender>)getOutputRender
+{
+    return [self.outputRenderQueue getObjectAsync];
+}
+
 - (void)decodeThread {}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 

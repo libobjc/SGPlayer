@@ -41,6 +41,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 - (BOOL)open;
 - (void)close;
 - (void)putPacket:(AVPacket)packet;
+- (id <SGFFOutputRender>)getOutputRender;
 
 @end
 
