@@ -10,6 +10,8 @@
 #import "SGFFFormatContext.h"
 #import "SGFFStreamManager.h"
 #import "SGFFCodecManager.h"
+#import "SGFFOutputManager.h"
+#import "SGFFAudioOutput.h"
 #import "SGPlayerMacro.h"
 
 @interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecProcessingDelegate>
@@ -20,6 +22,8 @@
 @property (nonatomic, strong) id <SGFFSource> source;
 @property (nonatomic, strong) SGFFStreamManager * streamManager;
 @property (nonatomic, strong) SGFFCodecManager * codecManager;
+@property (nonatomic, strong) SGFFOutputManager * outputManager;
+
 
 @end
 
@@ -103,7 +107,8 @@
 
 - (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream
 {
-    if (!self.codecManager) {
+    if (!self.codecManager)
+    {
         self.codecManager = [[SGFFCodecManager alloc] init];
     }
     id <SGFFCodec> codec = [self.codecManager codecForStream:stream.stream];
@@ -121,7 +126,12 @@
 
 - (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
-    return nil;
+    if (!self.outputManager)
+    {
+        self.outputManager = [[SGFFOutputManager alloc] init];
+        self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
+    }
+    return [self.outputManager renderWithFrame:frame];
 }
 
 
