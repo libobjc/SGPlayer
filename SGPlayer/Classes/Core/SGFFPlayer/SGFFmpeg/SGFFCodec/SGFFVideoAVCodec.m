@@ -19,6 +19,11 @@
     return SGFFCodecTypeVideo;
 }
 
+- (NSInteger)frameQueueMaxCount
+{
+    return 3;
+}
+
 - (void)putPacket:(AVPacket)packet {};
 - (void)decodeThread {};
 

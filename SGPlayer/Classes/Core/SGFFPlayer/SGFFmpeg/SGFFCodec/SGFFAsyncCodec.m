@@ -29,7 +29,7 @@
 
 - (BOOL)open
 {
-    self.frameQueue = [[SGFFFrameQueue alloc] init];
+    self.frameQueue = [[SGFFFrameQueue alloc] initWithMaxCount:self.frameQueueMaxCount];
     self.packetQueue = [[SGFFPacketQueue alloc] init];
     
     self.operationQueue = [[NSOperationQueue alloc] init];
@@ -55,6 +55,7 @@
 }
 
 - (void)decodeThread {}
+- (NSInteger)frameQueueMaxCount {return 5;}
 
 - (long long)duration {return [self packetDuration] + [self frameDuration];}
 - (long long)packetDuration {return self.packetQueue.duration;}

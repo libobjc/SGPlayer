@@ -19,4 +19,9 @@
     return SGFFCodecTypeAudio;
 }
 
+- (NSInteger)frameQueueMaxCount
+{
+    return 5;
+}
+
 @end

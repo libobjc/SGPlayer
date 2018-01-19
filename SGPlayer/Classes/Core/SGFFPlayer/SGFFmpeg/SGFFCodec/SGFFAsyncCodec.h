@@ -21,6 +21,7 @@
 @property (nonatomic, strong, readonly) NSOperationQueue * operationQueue;
 @property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
 
+- (NSInteger)frameQueueMaxCount;        // Default is 5.
 - (void)decodeThread;
 
 @end
