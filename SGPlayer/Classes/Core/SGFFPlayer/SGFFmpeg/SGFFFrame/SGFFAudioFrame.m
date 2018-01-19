@@ -7,6 +7,7 @@
 //
 
 #import "SGFFAudioFrame.h"
+#import "avformat.h"
 
 @implementation SGFFAudioFrame
 
@@ -15,10 +16,16 @@
     return SGFFFrameTypeAudio;
 }
 
-- (SGFFAudioFrame *)initWithAVFrame:(AVFrame *)frame
+@end
+
+
+@implementation SGFFAudioFrame (Factory)
+
+- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe
 {
     if (self = [super init])
     {
+        AVFrame * frame = (AVFrame *)avframe;
         self.format = frame->format;
         self.numberOfSamples = frame->nb_samples;
         self.sampleRate = av_frame_get_sample_rate(frame);
@@ -37,3 +44,4 @@
 }
 
 @end
+

@@ -27,6 +27,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 
 - (SGFFFrameType)type;
 
+- (SGFFTimebase)timebase;
 - (long long)position;
 - (long long)duration;
 - (long long)size;

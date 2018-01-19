@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
-#import "avformat.h"
 
 @interface SGFFAudioFrame : NSObject <SGFFFrame>
 
+@property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) long long numberOfSamples;
 @property (nonatomic, assign) long long sampleRate;
@@ -26,6 +26,11 @@
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t * data;
 
-- (SGFFAudioFrame *)initWithAVFrame:(AVFrame *)frame;
+@end
+
+
+@interface SGFFAudioFrame (Factory)
+
+- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe;
 
 @end
