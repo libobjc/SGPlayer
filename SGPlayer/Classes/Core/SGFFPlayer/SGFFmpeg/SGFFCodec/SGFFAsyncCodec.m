@@ -10,8 +10,8 @@
 
 @interface SGFFAsyncCodec ()
 
-@property (nonatomic, strong) SGFFFrameQueue * frameQueue;
 @property (nonatomic, strong) SGFFPacketQueue * packetQueue;
+@property (nonatomic, strong) SGFFOutputRenderQueue * outputRenderQueue;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
@@ -29,8 +29,8 @@
 
 - (BOOL)open
 {
-    self.frameQueue = [[SGFFFrameQueue alloc] initWithMaxCount:self.frameQueueMaxCount];
     self.packetQueue = [[SGFFPacketQueue alloc] init];
+    self.outputRenderQueue = [[SGFFOutputRenderQueue alloc] initWithMaxCount:self.outputRenderQueueMaxCount];
     
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
@@ -55,13 +55,9 @@
 }
 
 - (void)decodeThread {}
-- (NSInteger)frameQueueMaxCount {return 5;}
+- (NSInteger)outputRenderQueueMaxCount {return 5;}
 
-- (long long)duration {return [self packetDuration] + [self frameDuration];}
-- (long long)packetDuration {return self.packetQueue.duration;}
-- (long long)frameDuration {return self.frameQueue.duration;}
-- (long long)size {return [self packetSize] + [self frameSize];}
-- (long long)packetSize {return self.packetQueue.size;}
-- (long long)frameSize {return self.frameQueue.size;}
+- (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
+- (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
 
 @end

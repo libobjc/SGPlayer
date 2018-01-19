@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
+#import "SGFFOutputRender.h"
 #import "avformat.h"
 
 @protocol SGFFCodec;
@@ -35,11 +36,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 
 - (AVRational)timebase;
 - (long long)duration;
-- (long long)packetDuration;
-- (long long)frameDuration;
 - (long long)size;
-- (long long)packetSize;
-- (long long)frameSize;
 
 - (BOOL)open;
 - (void)close;
@@ -50,7 +47,8 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 
 @protocol SGFFCodecProcessingDelegate <NSObject>
 
-- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingDecodedFrame:(AVFrame *)decodedFrame;
+- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingFrame:(id <SGFFFrame>)frame;
+- (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame;
 
 @end
 

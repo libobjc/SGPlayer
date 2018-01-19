@@ -99,12 +99,17 @@
                 }
                 @autoreleasepool
                 {
-                    if ([self.processingDelegate respondsToSelector:@selector(codec:processingDecodedFrame:)])
+                    if ([self.processingDelegate respondsToSelector:@selector(codec:processingFrame:)]
+                        && [self.processingDelegate respondsToSelector:@selector(codec:processingOutputRender:)])
                     {
-                        id <SGFFFrame> frame = [self.processingDelegate codec:self processingDecodedFrame:decodedFrame];
+                        id <SGFFFrame> frame = [self.processingDelegate codec:self processingFrame:nil];
                         if (frame)
                         {
-                            [self.frameQueue putFrameSync:frame];
+                            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:frame];
+                            if (outputRender)
+                            {
+                                
+                            }
                         }
                     }
                 }

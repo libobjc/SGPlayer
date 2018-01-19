@@ -13,8 +13,20 @@
 #import <Foundation/Foundation.h>
 
 
+typedef NS_ENUM(NSUInteger, SGFFFrameType)
+{
+    SGFFFrameTypeUnkonwn,
+    SGFFFrameTypeVideo,
+    SGFFFrameTypeAudio,
+    SGFFFrameTypeSubtitle,
+};
+
+
 @protocol SGFFFrame <NSObject>
 
+- (SGFFFrameType)type;
+
+- (long long)position;
 - (long long)duration;
 - (long long)size;
 

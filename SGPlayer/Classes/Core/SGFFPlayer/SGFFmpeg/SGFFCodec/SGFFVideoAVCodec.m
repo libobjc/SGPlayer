@@ -19,7 +19,7 @@
     return SGFFCodecTypeVideo;
 }
 
-- (NSInteger)frameQueueMaxCount
+- (NSInteger)outputRenderQueueMaxCount
 {
     return 3;
 }

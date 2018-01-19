@@ -107,7 +107,7 @@
     long long bufferedSize = 0;
     for (SGFFStream * obj in self.streams)
     {
-        bufferedSize += obj.codec.packetSize;
+        bufferedSize += obj.codec.size;
     }
     return 0;
 }

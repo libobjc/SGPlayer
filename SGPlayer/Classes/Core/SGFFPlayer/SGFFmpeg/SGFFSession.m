@@ -114,7 +114,12 @@
 
 #pragma mark - SGFFCodecProcessingDelegate
 
-- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingDecodedFrame:(AVFrame *)decodedFrame
+- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingFrame:(id <SGFFFrame>)frame
+{
+    return frame;
+}
+
+- (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
     return nil;
 }

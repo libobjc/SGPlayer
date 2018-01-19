@@ -8,20 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFCodec.h"
-#import "SGFFFrameQueue.h"
 #import "SGFFPacketQueue.h"
+#import "SGFFOutputRenderQueue.h"
 
 @interface SGFFAsyncCodec : NSObject <SGFFCodec>
 
 @property (nonatomic, assign) AVRational timebase;
 
-@property (nonatomic, strong, readonly) SGFFFrameQueue * frameQueue;
 @property (nonatomic, strong, readonly) SGFFPacketQueue * packetQueue;
+@property (nonatomic, strong, readonly) SGFFOutputRenderQueue * outputRenderQueue;
 
 @property (nonatomic, strong, readonly) NSOperationQueue * operationQueue;
 @property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
 
-- (NSInteger)frameQueueMaxCount;        // Default is 5.
+- (NSInteger)outputRenderQueueMaxCount;        // Default is 5.
 - (void)decodeThread;
 
 @end
