@@ -16,7 +16,7 @@
 @property (nonatomic, assign) AVStream * stream;
 @property (nonatomic, strong) id <SGFFCodec> codec;
 
-- (void)open;
+- (BOOL)open;
 - (void)close;
 - (void)putPacket:(AVPacket)packet;
 

@@ -144,13 +144,11 @@
 {
     if ([self.delegate respondsToSelector:@selector(streamManager:codecForStream:)])
     {
-        id <SGFFCodec> codec = [self.delegate streamManager:self codecForStream:stream];
-        if (codec)
+        stream.codec = [self.delegate streamManager:self codecForStream:stream];
+        if ([stream open])
         {
             [(* streamRef) close];
-            stream.codec = codec;
             * streamRef = stream;
-            [stream open];
             return YES;
         }
     }

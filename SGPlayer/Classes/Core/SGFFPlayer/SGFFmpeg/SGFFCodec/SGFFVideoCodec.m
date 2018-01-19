@@ -19,10 +19,7 @@
     return SGFFCodecTypeVideo;
 }
 
-+ (AVRational)defaultTimebase
-{
-    static AVRational timabase = {1, 25000};
-    return timabase;
-}
+- (void)putPacket:(AVPacket)packet {};
+- (void)decodeThread {};
 
 @end

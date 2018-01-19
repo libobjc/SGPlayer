@@ -10,6 +10,7 @@
 #import "SGFFVideoCodec.h"
 #import "SGFFAudioCodec.h"
 #import "SGFFError.h"
+#import "SGFFTime.h"
 
 @interface SGFFCodecManager ()
 
@@ -23,66 +24,24 @@
     {
         case AVMEDIA_TYPE_VIDEO:
         {
-            AVCodecContext * codecContext = [self codecContextWithStream:stream];
-            if (codecContext)
-            {
-                SGFFVideoCodec * videoCodec = [[SGFFVideoCodec alloc] init];
-                videoCodec.codecContext = codecContext;
-                return videoCodec;
-            }
+            SGFFVideoCodec * videoCodec = [[SGFFVideoCodec alloc] init];
+            videoCodec.timebase = SGFFTimebaseValidate(stream->time_base, 1, 25000);
+            videoCodec.codecpar = stream->codecpar;
+            return videoCodec;
         }
             break;
         case AVMEDIA_TYPE_AUDIO:
         {
-            AVCodecContext * codecContext = [self codecContextWithStream:stream];
-            if (codecContext)
-            {
-                SGFFAudioCodec * audioCodec = [[SGFFAudioCodec alloc] init];
-                audioCodec.codecContext = codecContext;
-                return audioCodec;
-            }
+            SGFFAudioCodec * audioCodec = [[SGFFAudioCodec alloc] init];
+            audioCodec.timebase = SGFFTimebaseValidate(stream->time_base, 1, 44100);
+            audioCodec.codecpar = stream->codecpar;
+            return audioCodec;
         }
             break;
         default:
             break;
     }
     return nil;
-}
-
-- (AVCodecContext *)codecContextWithStream:(AVStream *)stream
-{
-    AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
-    if (!codecContext)
-    {
-        return nil;
-    }
-    
-    int result = avcodec_parameters_to_context(codecContext, stream->codecpar);
-    NSError * error = SGFFGetError(result);
-    if (error)
-    {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    av_codec_set_pkt_timebase(codecContext, stream->time_base);
-    
-    AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
-    if (!codec)
-    {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    codecContext->codec_id = codec->id;
-    
-    result = avcodec_open2(codecContext, codec, NULL);
-    error = SGFFGetError(result);
-    if (error)
-    {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    
-    return codecContext;
 }
 
 @end

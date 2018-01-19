@@ -13,13 +13,14 @@
 
 @interface SGFFAsyncCodec : NSObject <SGFFCodec>
 
+@property (nonatomic, assign) AVRational timebase;
+
 @property (nonatomic, strong, readonly) SGFFFrameQueue * frameQueue;
 @property (nonatomic, strong, readonly) SGFFPacketQueue * packetQueue;
 
 @property (nonatomic, strong, readonly) NSOperationQueue * operationQueue;
 @property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
 
-+ (AVRational)defaultTimebase;
 - (void)decodeThread;
 
 @end

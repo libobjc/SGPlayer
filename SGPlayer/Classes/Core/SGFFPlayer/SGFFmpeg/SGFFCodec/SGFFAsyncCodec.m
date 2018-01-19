@@ -7,7 +7,6 @@
 //
 
 #import "SGFFAsyncCodec.h"
-#import "SGFFTime.h"
 
 @interface SGFFAsyncCodec ()
 
@@ -22,24 +21,14 @@
 @implementation SGFFAsyncCodec
 
 @synthesize processingDelegate = _processingDelegate;
-@synthesize timebase = _timebase;
 
 + (SGFFCodecType)type
 {
     return SGFFCodecTypeUnknown;
 }
 
-+ (AVRational)defaultTimebase
+- (BOOL)open
 {
-    static AVRational timebase = {1, 1};
-    return timebase;
-}
-
-- (void)decodeThread {}
-
-- (void)open
-{
-    self.timebase = SGFFTimebaseValidate(self.timebase, [self.class defaultTimebase]);
     self.frameQueue = [[SGFFFrameQueue alloc] init];
     self.packetQueue = [[SGFFPacketQueue alloc] init];
     
@@ -51,6 +40,8 @@
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.operationQueue addOperation:self.decodeOperation];
+    
+    return YES;
 }
 
 - (void)close
@@ -62,6 +53,8 @@
 {
     [self.packetQueue putPacket:packet];
 }
+
+- (void)decodeThread {}
 
 - (long long)duration {return [self packetDuration] + [self frameDuration];}
 - (long long)packetDuration {return self.packetQueue.duration;}

@@ -32,8 +32,8 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 + (SGFFCodecType)type;
 
 @property (nonatomic, weak) id <SGFFCodecProcessingDelegate> processingDelegate;
-@property (nonatomic, assign) AVRational timebase;
 
+- (AVRational)timebase;
 - (long long)duration;
 - (long long)packetDuration;
 - (long long)frameDuration;
@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 - (long long)packetSize;
 - (long long)frameSize;
 
-- (void)open;
+- (BOOL)open;
 - (void)close;
 - (void)putPacket:(AVPacket)packet;
 

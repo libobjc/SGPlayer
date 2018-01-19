@@ -9,4 +9,4 @@
 #import <Foundation/Foundation.h>
 #import "avformat.h"
 
-AVRational SGFFTimebaseValidate(AVRational timebase, AVRational defaultTimebase);
+AVRational SGFFTimebaseValidate(AVRational timebase, int num, int den);

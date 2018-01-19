@@ -19,10 +19,4 @@
     return SGFFCodecTypeAudio;
 }
 
-+ (AVRational)defaultTimebase
-{
-    static AVRational timabase = {1, 44100};
-    return timabase;
-}
-
 @end
