@@ -29,7 +29,7 @@
 {
     if (decodedFrame->data[0])
     {
-        return [[SGFFAudioFrame alloc] initWithAVFrame:decodedFrame];
+        return [[SGFFAudioFrame alloc] initWithAVFrame:decodedFrame timebase:self.timebase];
     }
     return nil;
 }

@@ -7,7 +7,15 @@
 //
 
 #import "SGFFOutputRenderInternal.h"
+#import "SGFFAudioFrame.h"
 
 @interface SGFFAudioOutputRender : SGFFOutputRenderInternal
+
+@end
+
+
+@interface SGFFAudioOutputRender (Factory)
+
+- (SGFFAudioOutputRender *)initWithAudioFrame:(SGFFAudioFrame *)audioFrame;
 
 @end

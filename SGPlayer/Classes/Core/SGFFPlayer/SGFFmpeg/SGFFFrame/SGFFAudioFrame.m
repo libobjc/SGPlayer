@@ -21,10 +21,11 @@
 
 @implementation SGFFAudioFrame (Factory)
 
-- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe
+- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe timebase:(SGFFTimebase)timebase
 {
     if (self = [super init])
     {
+        self.timebase = timebase;
         AVFrame * frame = (AVFrame *)avframe;
         self.format = frame->format;
         self.numberOfSamples = frame->nb_samples;

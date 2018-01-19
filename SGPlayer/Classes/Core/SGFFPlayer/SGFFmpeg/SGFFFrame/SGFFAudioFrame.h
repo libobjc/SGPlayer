@@ -30,6 +30,6 @@
 
 @interface SGFFAudioFrame (Factory)
 
-- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe;
+- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe timebase:(SGFFTimebase)timebase;
 
 @end

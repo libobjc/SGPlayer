@@ -7,13 +7,17 @@
 //
 
 #import "SGFFAudioOutput.h"
-#import "SGFFAudioFrame.h"
+#import "SGFFAudioOutputRender.h"
 
 @implementation SGFFAudioOutput
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
-    NSLog(@"Frame Position : %lld", frame.position);
+    if (frame.audioFrame)
+    {
+        NSLog(@"Frame Position : %lld", frame.position);
+        return [[SGFFAudioOutputRender alloc] initWithAudioFrame:frame.audioFrame];
+    }
     return nil;
 }
 

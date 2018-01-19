@@ -16,3 +16,17 @@
 }
 
 @end
+
+
+@implementation SGFFAudioOutputRender (Factory)
+
+- (SGFFAudioOutputRender *)initWithAudioFrame:(SGFFAudioFrame *)audioFrame
+{
+    if (self = [super init])
+    {
+        
+    }
+    return self;
+}
+
+@end
