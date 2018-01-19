@@ -75,9 +75,9 @@
 
 - (NSTimeInterval)sourceSleepPeriodForReading:(id<SGFFSource>)source
 {
-    long long bufferedDuration = [self.streamManager bufferedDuration];
     long long bufferedSize = [self.streamManager bufferedSize];
-    if (bufferedDuration > 10 * 1000 || bufferedSize > 15 * 1024 * 1024) {
+    if (bufferedSize > 15 * 1024 * 1024)
+    {
         return 0.1;
     }
     return 0;
