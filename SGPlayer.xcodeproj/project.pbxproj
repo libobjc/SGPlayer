@@ -934,6 +934,12 @@
 		9CF15E122011AEBD00585326 /* SGFFOutputManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E0E2011AEBD00585326 /* SGFFOutputManager.m */; };
 		9CF15E132011AEBD00585326 /* SGFFOutputManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E0E2011AEBD00585326 /* SGFFOutputManager.m */; };
 		9CF15E142011AEBD00585326 /* SGFFOutputManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E0E2011AEBD00585326 /* SGFFOutputManager.m */; };
+		9CF15E172011B93600585326 /* SGFFOutputInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E152011B93600585326 /* SGFFOutputInternal.h */; };
+		9CF15E182011B93600585326 /* SGFFOutputInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E152011B93600585326 /* SGFFOutputInternal.h */; };
+		9CF15E192011B93600585326 /* SGFFOutputInternal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E152011B93600585326 /* SGFFOutputInternal.h */; };
+		9CF15E1A2011B93600585326 /* SGFFOutputInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E162011B93600585326 /* SGFFOutputInternal.m */; };
+		9CF15E1B2011B93600585326 /* SGFFOutputInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E162011B93600585326 /* SGFFOutputInternal.m */; };
+		9CF15E1C2011B93600585326 /* SGFFOutputInternal.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E162011B93600585326 /* SGFFOutputInternal.m */; };
 		9CF52CF7200F45D700950B81 /* SGFFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGFFStream.h */; };
 		9CF52CF8200F45D700950B81 /* SGFFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGFFStream.h */; };
 		9CF52CF9200F45D700950B81 /* SGFFStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGFFStream.h */; };
@@ -1258,6 +1264,8 @@
 		9CF15E062011AE0700585326 /* SGFFAudioOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFAudioOutput.m; sourceTree = "<group>"; };
 		9CF15E0D2011AEBD00585326 /* SGFFOutputManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFOutputManager.h; sourceTree = "<group>"; };
 		9CF15E0E2011AEBD00585326 /* SGFFOutputManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFOutputManager.m; sourceTree = "<group>"; };
+		9CF15E152011B93600585326 /* SGFFOutputInternal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFOutputInternal.h; sourceTree = "<group>"; };
+		9CF15E162011B93600585326 /* SGFFOutputInternal.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFOutputInternal.m; sourceTree = "<group>"; };
 		9CF52CF5200F45D700950B81 /* SGFFStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFStream.h; sourceTree = "<group>"; };
 		9CF52CF6200F45D700950B81 /* SGFFStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFStream.m; sourceTree = "<group>"; };
 		9CF52CFD200F4ED100950B81 /* SGFFAudioAVCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFAudioAVCodec.h; sourceTree = "<group>"; };
@@ -1970,6 +1978,8 @@
 				9CF15E0E2011AEBD00585326 /* SGFFOutputManager.m */,
 				9CF15E012011ADB500585326 /* SGFFOutput.h */,
 				9CF15DF520119FE200585326 /* SGFFOutputRender.h */,
+				9CF15E152011B93600585326 /* SGFFOutputInternal.h */,
+				9CF15E162011B93600585326 /* SGFFOutputInternal.m */,
 				9CF15E052011AE0700585326 /* SGFFAudioOutput.h */,
 				9CF15E062011AE0700585326 /* SGFFAudioOutput.m */,
 			);
@@ -2222,6 +2232,7 @@
 				9C8D4E80200E1ACA00ED8A58 /* SGFFError.h in Headers */,
 				9C4793071E713B4900AD4289 /* SGGLProgram.h in Headers */,
 				9C2534CC1FAB151500BBFA5C /* avconfig.h in Headers */,
+				9CF15E172011B93600585326 /* SGFFOutputInternal.h in Headers */,
 				9C2535741FAB151500BBFA5C /* sha.h in Headers */,
 				9C2534E71FAB151500BBFA5C /* cast5.h in Headers */,
 				9C2534E11FAB151500BBFA5C /* buffer.h in Headers */,
@@ -2390,6 +2401,7 @@
 				9C2534AC1FAB151500BBFA5C /* buffersrc.h in Headers */,
 				9CE6F5642004D97D00D1F4C8 /* SGPLFGLView.h in Headers */,
 				9CE68429200DCEDB007BD834 /* SGPlayerImp.h in Headers */,
+				9CF15E182011B93600585326 /* SGFFOutputInternal.h in Headers */,
 				9CE6F5382004D97D00D1F4C8 /* SGPLFDisplayLink.h in Headers */,
 				9C25354B1FAB151500BBFA5C /* mem.h in Headers */,
 				9C5AB6F31E88EB720021F460 /* SGGLFrame.h in Headers */,
@@ -2574,6 +2586,7 @@
 				9C25359D1FAB151500BBFA5C /* version.h in Headers */,
 				9C329AAC2005E3F800252B10 /* SGPlayerActivity.h in Headers */,
 				9C2535371FAB151500BBFA5C /* lfg.h in Headers */,
+				9CF15E192011B93600585326 /* SGFFOutputInternal.h in Headers */,
 				9C2535341FAB151500BBFA5C /* intreadwrite.h in Headers */,
 				9C2536001FAB151500BBFA5C /* SGFFFormatContext2.h in Headers */,
 				9C25355B1FAB151500BBFA5C /* pixdesc.h in Headers */,
@@ -3020,6 +3033,7 @@
 				9CE6F5332004D97D00D1F4C8 /* SGPLFColor.m in Sources */,
 				9C5AB6911E88B2AD0021F460 /* SGGLViewController.m in Sources */,
 				9CE6F5572004D97D00D1F4C8 /* SGPLFView.m in Sources */,
+				9CF15E1A2011B93600585326 /* SGFFOutputInternal.m in Sources */,
 				9CF15DF020118FB000585326 /* SGFFAsyncAVCodec.m in Sources */,
 				9CE6F55F2004D97D00D1F4C8 /* SGPLFGLContext.m in Sources */,
 				9CF15DE820118E1100585326 /* SGFFAsyncCodec.m in Sources */,
@@ -3074,6 +3088,7 @@
 				9C389AD520109E94003259FF /* SGFFFrameQueue.m in Sources */,
 				9CE68418200DA609007BD834 /* SGFFPlayerView.m in Sources */,
 				9CF15E0B2011AE0700585326 /* SGFFAudioOutput.m in Sources */,
+				9CF15E1B2011B93600585326 /* SGFFOutputInternal.m in Sources */,
 				9C5AB6FE1E88F0400021F460 /* SGGLProgramNV12.m in Sources */,
 				9C47930B1E713B4900AD4289 /* SGGLProgram.m in Sources */,
 				9CF52D03200F4ED100950B81 /* SGFFAudioAVCodec.m in Sources */,
@@ -3174,6 +3189,7 @@
 				9C25361B1FAB151500BBFA5C /* SGFFMetadata.m in Sources */,
 				9CF15E142011AEBD00585326 /* SGFFOutputManager.m in Sources */,
 				9C2536091FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
+				9CF15E1C2011B93600585326 /* SGFFOutputInternal.m in Sources */,
 				9CF15DEA20118E1100585326 /* SGFFAsyncCodec.m in Sources */,
 				9C478F161E713A3200AD4289 /* SGPlayerTrack.m in Sources */,
 				9CF15DF220118FB000585326 /* SGFFAsyncAVCodec.m in Sources */,

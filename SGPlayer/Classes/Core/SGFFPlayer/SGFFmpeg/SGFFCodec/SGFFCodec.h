@@ -12,7 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
-#import "SGFFOutputRender.h"
+#import "SGFFOutput.h"
 #import "avformat.h"
 
 @protocol SGFFCodec;
@@ -28,7 +28,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 };
 
 
-@protocol SGFFCodec <NSObject>
+@protocol SGFFCodec <NSObject, SGFFOutputRenderSource>
 
 + (SGFFCodecType)type;
 
@@ -41,7 +41,6 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 - (BOOL)open;
 - (void)close;
 - (void)putPacket:(AVPacket)packet;
-- (id <SGFFOutputRender>)getOutputRender;
 
 @end
 

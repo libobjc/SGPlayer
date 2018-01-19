@@ -54,7 +54,7 @@
     [self.packetQueue putPacket:packet];
 }
 
-- (id <SGFFOutputRender>)getOutputRender
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
 {
     return [self.outputRenderQueue getObjectAsync];
 }
