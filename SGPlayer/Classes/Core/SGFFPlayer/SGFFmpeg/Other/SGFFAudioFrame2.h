@@ -8,7 +8,7 @@
 
 #import "SGFFFrame2.h"
 
-@interface SGFFAudioFrame : SGFFFrame2
+@interface SGFFAudioFrame2 : SGFFFrame2
 
 {
 @public

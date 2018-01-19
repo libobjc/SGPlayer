@@ -354,7 +354,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
 }
 
-- (SGFFAudioFrame *)decoderAudioOutputGetAudioFrame
+- (SGFFAudioFrame2 *)decoderAudioOutputGetAudioFrame
 {
     BOOL check = self.closed || self.seeking || self.buffering || self.paused || self.playbackFinished || !self.formatContext.audioEnable;
     if (check) return nil;
@@ -362,7 +362,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         [self updateBufferedDurationByAudio];
         return nil;
     }
-    SGFFAudioFrame * audioFrame = [self.audioDecoder getFrameSync];
+    SGFFAudioFrame2 * audioFrame = [self.audioDecoder getFrameSync];
     if (!audioFrame) return nil;
     self.audioFramePosition = audioFrame.position;
     self.audioFrameDuration = audioFrame.duration;

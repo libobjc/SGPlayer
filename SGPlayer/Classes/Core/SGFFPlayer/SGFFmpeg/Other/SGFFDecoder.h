@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "SGFFAudioFrame.h"
+#import "SGFFAudioFrame2.h"
 #import "SGFFVideoFrame.h"
 #import "SGFFTrack.h"
 
@@ -35,7 +35,7 @@
 
 @protocol SGFFDecoderAudioOutput <NSObject>
 
-- (SGFFAudioFrame *)decoderAudioOutputGetAudioFrame;
+- (SGFFAudioFrame2 *)decoderAudioOutputGetAudioFrame;
 
 @end
 

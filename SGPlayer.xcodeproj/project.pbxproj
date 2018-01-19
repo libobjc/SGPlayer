@@ -412,12 +412,12 @@
 		9C2535EF1FAB151500BBFA5C /* SGFFAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */; };
 		9C2535F01FAB151500BBFA5C /* SGFFAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */; };
 		9C2535F11FAB151500BBFA5C /* SGFFAudioDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */; };
-		9C2535F21FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame.h */; };
-		9C2535F31FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame.h */; };
-		9C2535F41FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame.h */; };
-		9C2535F51FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame.m */; };
-		9C2535F61FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame.m */; };
-		9C2535F71FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame.m */; };
+		9C2535F21FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */; };
+		9C2535F31FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */; };
+		9C2535F41FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */; };
+		9C2535F51FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame2.m */; };
+		9C2535F61FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame2.m */; };
+		9C2535F71FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2534561FAB151500BBFA5C /* SGFFAudioFrame2.m */; };
 		9C2535F81FAB151500BBFA5C /* SGFFDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534571FAB151500BBFA5C /* SGFFDecoder.h */; };
 		9C2535F91FAB151500BBFA5C /* SGFFDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534571FAB151500BBFA5C /* SGFFDecoder.h */; };
 		9C2535FA1FAB151500BBFA5C /* SGFFDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2534571FAB151500BBFA5C /* SGFFDecoder.h */; };
@@ -1071,8 +1071,8 @@
 		9C2534361FAB151500BBFA5C /* version.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		9C2534531FAB151500BBFA5C /* SGFFAudioDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFAudioDecoder.h; sourceTree = "<group>"; };
 		9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGFFAudioDecoder.m; sourceTree = "<group>"; };
-		9C2534551FAB151500BBFA5C /* SGFFAudioFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFAudioFrame.h; sourceTree = "<group>"; };
-		9C2534561FAB151500BBFA5C /* SGFFAudioFrame.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGFFAudioFrame.m; sourceTree = "<group>"; };
+		9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFAudioFrame2.h; sourceTree = "<group>"; };
+		9C2534561FAB151500BBFA5C /* SGFFAudioFrame2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGFFAudioFrame2.m; sourceTree = "<group>"; };
 		9C2534571FAB151500BBFA5C /* SGFFDecoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFDecoder.h; sourceTree = "<group>"; };
 		9C2534581FAB151500BBFA5C /* SGFFDecoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGFFDecoder.m; sourceTree = "<group>"; };
 		9C2534591FAB151500BBFA5C /* SGFFFormatContext2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFFormatContext2.h; sourceTree = "<group>"; };
@@ -1771,8 +1771,8 @@
 				9CE6842F200DD12F007BD834 /* SGFFAudioPlayer.m */,
 				9C2534531FAB151500BBFA5C /* SGFFAudioDecoder.h */,
 				9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */,
-				9C2534551FAB151500BBFA5C /* SGFFAudioFrame.h */,
-				9C2534561FAB151500BBFA5C /* SGFFAudioFrame.m */,
+				9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */,
+				9C2534561FAB151500BBFA5C /* SGFFAudioFrame2.m */,
 				9C2534571FAB151500BBFA5C /* SGFFDecoder.h */,
 				9C2534581FAB151500BBFA5C /* SGFFDecoder.m */,
 				9C2534591FAB151500BBFA5C /* SGFFFormatContext2.h */,
@@ -2217,7 +2217,7 @@
 				9C25357D1FAB151500BBFA5C /* tea.h in Headers */,
 				9C2535141FAB151500BBFA5C /* hash.h in Headers */,
 				9C2536041FAB151500BBFA5C /* SGFFFrame2.h in Headers */,
-				9C2535F21FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */,
+				9C2535F21FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */,
 				9C2534991FAB151500BBFA5C /* videotoolbox.h in Headers */,
 				9CF15DFB2011A10500585326 /* SGFFOutputRenderQueue.h in Headers */,
 				9C2535951FAB151500BBFA5C /* xtea.h in Headers */,
@@ -2470,7 +2470,7 @@
 				9C2535061FAB151500BBFA5C /* eval.h in Headers */,
 				9C2535361FAB151500BBFA5C /* lfg.h in Headers */,
 				9C25360B1FAB151500BBFA5C /* SGFFFramePool.h in Headers */,
-				9C2535F31FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */,
+				9C2535F31FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */,
 				9C2535481FAB151500BBFA5C /* md5.h in Headers */,
 				9C2535271FAB151500BBFA5C /* hwcontext_vaapi.h in Headers */,
 				9C2534B21FAB151500BBFA5C /* avformat.h in Headers */,
@@ -2504,7 +2504,7 @@
 				9C2535551FAB151500BBFA5C /* opt.h in Headers */,
 				9C2534F81FAB151500BBFA5C /* des.h in Headers */,
 				9C2536241FAB151500BBFA5C /* SGFFTools.h in Headers */,
-				9C2535F41FAB151500BBFA5C /* SGFFAudioFrame.h in Headers */,
+				9C2535F41FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */,
 				9CE6F5652004D97D00D1F4C8 /* SGPLFGLView.h in Headers */,
 				9C2534DD1FAB151500BBFA5C /* bprint.h in Headers */,
 				9C2534E31FAB151500BBFA5C /* buffer.h in Headers */,
@@ -3006,7 +3006,7 @@
 				9C5AB6DD1E88E7980021F460 /* SGGLTexture.m in Sources */,
 				9C4792E61E713B4900AD4289 /* SGDisplayView.m in Sources */,
 				9C25361F1FAB151500BBFA5C /* SGFFPacketQueue2.m in Sources */,
-				9C2535F51FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */,
+				9C2535F51FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */,
 				9CF52D02200F4ED100950B81 /* SGFFAudioAVCodec.m in Sources */,
 				9C25360D1FAB151500BBFA5C /* SGFFFramePool.m in Sources */,
 				9CF52D0A200F4EDE00950B81 /* SGFFVideoAVCodec.m in Sources */,
@@ -3068,7 +3068,7 @@
 				9C389ABB20106309003259FF /* SGFFPacketQueue.m in Sources */,
 				9CF15E132011AEBD00585326 /* SGFFOutputManager.m in Sources */,
 				9C4793411E713B5C00AD4289 /* SGMacAudioSession.m in Sources */,
-				9C2535F61FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */,
+				9C2535F61FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */,
 				9C2536021FAB151500BBFA5C /* SGFFFormatContext2.m in Sources */,
 				9CF52CFB200F45D700950B81 /* SGFFStream.m in Sources */,
 				9CE6F5502004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
@@ -3137,7 +3137,7 @@
 				9C4792F41E713B4900AD4289 /* SGGLNormalModel.m in Sources */,
 				9C8D4E7D200E112700ED8A58 /* SGFFCodecManager.m in Sources */,
 				9C5AB7071E88F0560021F460 /* SGGLProgramYUV420.m in Sources */,
-				9C2535F71FAB151500BBFA5C /* SGFFAudioFrame.m in Sources */,
+				9C2535F71FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */,
 				9CE6F5592004D97D00D1F4C8 /* SGPLFView.m in Sources */,
 				9C47930C1E713B4900AD4289 /* SGGLProgram.m in Sources */,
 				9CE6F53D2004D97D00D1F4C8 /* SGPLFDisplayLink.m in Sources */,

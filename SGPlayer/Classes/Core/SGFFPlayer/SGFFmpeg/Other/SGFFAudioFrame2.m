@@ -6,9 +6,9 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGFFAudioFrame.h"
+#import "SGFFAudioFrame2.h"
 
-@implementation SGFFAudioFrame
+@implementation SGFFAudioFrame2
 
 {
     size_t buffer_size;
