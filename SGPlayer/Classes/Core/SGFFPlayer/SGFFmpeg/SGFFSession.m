@@ -97,6 +97,10 @@
 
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
+    self.outputManager = [[SGFFOutputManager alloc] init];
+    self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
+    self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
+    
     [self.source read];
 }
 
@@ -126,11 +130,6 @@
 
 - (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
-    if (!self.outputManager)
-    {
-        self.outputManager = [[SGFFOutputManager alloc] init];
-        self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
-    }
     return [self.outputManager renderWithFrame:frame];
 }
 
