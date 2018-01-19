@@ -99,8 +99,11 @@
                 }
                 @autoreleasepool
                 {
-                    id <SGFFFrame> frame = nil;
-                    [self processingFrame:frame];
+                    id <SGFFFrame> frame = [self frameWithDecodedFrame:decodedFrame];
+                    if (frame)
+                    {
+                        [self processingFrame:frame];
+                    }
                 }
             }
             av_packet_unref(&packet);

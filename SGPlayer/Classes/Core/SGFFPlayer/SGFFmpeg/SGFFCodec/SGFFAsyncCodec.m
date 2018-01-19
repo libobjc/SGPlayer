@@ -62,15 +62,15 @@
 - (void)decodeThread {}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 
-- (void)processingFrame:(id<SGFFFrame>)frame
+- (void)processingFrame:(id <SGFFFrame>)frame
 {
     if ([self.processingDelegate respondsToSelector:@selector(codec:processingFrame:)]
         && [self.processingDelegate respondsToSelector:@selector(codec:processingOutputRender:)])
     {
-        id <SGFFFrame> frame = [self.processingDelegate codec:self processingFrame:nil];
-        if (frame)
+        id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
+        if (newFrame)
         {
-            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:frame];
+            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
             if (outputRender)
             {
                 [self.outputRenderQueue putObjectSync:outputRender];
