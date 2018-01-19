@@ -99,19 +99,8 @@
                 }
                 @autoreleasepool
                 {
-                    if ([self.processingDelegate respondsToSelector:@selector(codec:processingFrame:)]
-                        && [self.processingDelegate respondsToSelector:@selector(codec:processingOutputRender:)])
-                    {
-                        id <SGFFFrame> frame = [self.processingDelegate codec:self processingFrame:nil];
-                        if (frame)
-                        {
-                            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:frame];
-                            if (outputRender)
-                            {
-                                
-                            }
-                        }
-                    }
+                    id <SGFFFrame> frame = nil;
+                    [self processingFrame:frame];
                 }
             }
             av_packet_unref(&packet);
