@@ -7,6 +7,7 @@
 //
 
 #import "SGFFAudioAVCodec.h"
+#import "SGFFAudioFrame.h"
 
 @interface SGFFAudioAVCodec ()
 
@@ -26,6 +27,10 @@
 
 - (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame
 {
+    if (decodedFrame->data[0])
+    {
+        return [[SGFFAudioFrame alloc] initWithAVFrame:decodedFrame];
+    }
     return nil;
 }
 
