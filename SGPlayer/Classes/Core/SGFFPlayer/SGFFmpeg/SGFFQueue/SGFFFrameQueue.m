@@ -70,6 +70,13 @@
     [self.condition unlock];
 }
 
+- (void)putFrame:(id <SGFFFrame>)frame
+{
+    [self.frames addObject:frame];
+    self.duration += frame.duration;
+    self.size += frame.size;
+}
+
 - (id <SGFFFrame>)getFrameSync
 {
     [self.condition lock];
@@ -83,15 +90,9 @@
         [self.condition wait];
     }
     id <SGFFFrame> frame = [self getFrame];
+    [self.condition signal];
     [self.condition unlock];
     return frame;
-}
-
-- (void)putFrame:(id <SGFFFrame>)frame
-{
-    [self.frames addObject:frame];
-    self.duration += frame.duration;
-    self.size += frame.size;
 }
 
 - (id <SGFFFrame>)getFrameAsync
@@ -99,9 +100,11 @@
     [self.condition lock];
     if (self.frames.count <= 0 || self.didDestoryed)
     {
+        [self.condition unlock];
         return nil;
     }
     id <SGFFFrame> frame = [self getFrame];
+    [self.condition signal];
     [self.condition unlock];
     return frame;
 }
@@ -135,6 +138,7 @@
     [self.frames removeAllObjects];
     self.size = 0;
     self.duration = 0;
+    [self.condition broadcast];
     [self.condition unlock];
 }
 

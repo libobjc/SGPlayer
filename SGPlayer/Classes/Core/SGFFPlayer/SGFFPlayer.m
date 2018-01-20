@@ -59,7 +59,6 @@
 {
     [SGPlayerActivity resignActive:self];
     [self cleanDecoder];
-    [self cleanTimes];
 }
 
 
@@ -236,11 +235,11 @@
 
 - (void)cleanDecoder
 {
-//    if (self.decoder)
-//    {
-//        [self.decoder closeFile];
-//        self.decoder = nil;
-//    }
+    if (self.session)
+    {
+        [self.session close];
+        self.session = nil;
+    }
 }
 
 - (void)cleanProperty

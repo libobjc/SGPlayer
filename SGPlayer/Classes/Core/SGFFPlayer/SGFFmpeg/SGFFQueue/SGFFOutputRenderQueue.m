@@ -70,6 +70,13 @@
     [self.condition unlock];
 }
 
+- (void)putObject:(id <SGFFOutputRender>)object
+{
+    [self.objects addObject:object];
+    self.duration += object.duration;
+    self.size += object.size;
+}
+
 - (id <SGFFOutputRender>)getObjectSync
 {
     [self.condition lock];
@@ -83,15 +90,9 @@
         [self.condition wait];
     }
     id <SGFFOutputRender> object = [self getObject];
+    [self.condition signal];
     [self.condition unlock];
     return object;
-}
-
-- (void)putObject:(id <SGFFOutputRender>)object
-{
-    [self.objects addObject:object];
-    self.duration += object.duration;
-    self.size += object.size;
 }
 
 - (id <SGFFOutputRender>)getObjectAsync
@@ -99,9 +100,11 @@
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)
     {
+        [self.condition unlock];
         return nil;
     }
     id <SGFFOutputRender> object = [self getObject];
+    [self.condition signal];
     [self.condition unlock];
     return object;
 }
@@ -135,6 +138,7 @@
     [self.objects removeAllObjects];
     self.size = 0;
     self.duration = 0;
+    [self.condition broadcast];
     [self.condition unlock];
 }
 

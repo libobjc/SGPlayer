@@ -8,10 +8,21 @@
 
 #import "SGFFAudioOutput.h"
 #import "SGFFAudioOutputRender.h"
+#import "SGAudioManager.h"
+#import "SGFFError.h"
+#import <Accelerate/Accelerate.h>
+#import "swscale.h"
+#import "swresample.h"
 
-@interface SGFFAudioOutput ()
+@interface SGFFAudioOutput () <SGAudioManagerDelegate>
 
-@property (nonatomic, strong) NSTimer * timer;
+{
+    SwrContext * _swrContext;
+    void * _swrBuffer;
+    int _swrBufferSize;
+}
+
+@property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
 
 @end
 
@@ -19,10 +30,83 @@
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
-    if (frame.audioFrame)
+    SGFFAudioFrame * audioFrame = frame.audioFrame;
+    if (audioFrame)
     {
+        if (!_swrContext)
+        {
+            _swrContext = swr_alloc_set_opts(NULL,
+                                              av_get_default_channel_layout([SGAudioManager manager].numberOfChannels),
+                                              AV_SAMPLE_FMT_S16,
+                                              [SGAudioManager manager].samplingRate,
+                                              av_get_default_channel_layout((int)audioFrame.numberOfChannels),
+                                              audioFrame.format,
+                                              (int)audioFrame.sampleRate,
+                                              0,
+                                              NULL);
+            int result = swr_init(_swrContext);
+            NSError * error = SGFFGetError(result);
+            if (error || !_swrContext)
+            {
+                if (_swrContext)
+                {
+                    swr_free(&_swrContext);
+                    _swrContext = nil;
+                }
+            }
+        }
+        
+        long long numberOfFrames;
+        void * audioDataBuffer;
+        if (_swrContext)
+        {
+            const int channel = MAX(1, (int)[SGAudioManager manager].numberOfChannels / (int)audioFrame.numberOfChannels);
+            const int sample = MAX(1, [SGAudioManager manager].samplingRate / audioFrame.sampleRate);
+            const int ratio = sample * channel * 2;
+            const int bufferSize = av_samples_get_buffer_size(NULL,
+                                                              [SGAudioManager manager].numberOfChannels,
+                                                              (int)audioFrame.numberOfSamples * ratio,
+                                                              AV_SAMPLE_FMT_S16,
+                                                              1);
+            if (!_swrBuffer || _swrBufferSize < bufferSize)
+            {
+                _swrBufferSize = bufferSize;
+                _swrBuffer = realloc(_swrBuffer, _swrBufferSize);
+            }
+            Byte * outputBuffer[2] = {_swrBuffer, 0};
+            numberOfFrames = swr_convert(_swrContext,
+                                         outputBuffer,
+                                         (int)audioFrame.numberOfSamples * ratio,
+                                         (const uint8_t **)audioFrame.data,
+                                         (int)audioFrame.numberOfSamples);
+            NSError * error = SGFFGetError((int)numberOfFrames);
+            if (error)
+            {
+                NSLog(@"audio codec error : %@", error);
+                return nil;
+            }
+            audioDataBuffer = _swrBuffer;
+        }
+        else
+        {
+            if (audioFrame.format != AV_SAMPLE_FMT_S16)
+            {
+                NSLog(@"audio format error");
+                return nil;
+            }
+            audioDataBuffer = audioFrame.data;
+            numberOfFrames = audioFrame.numberOfSamples;
+        }
+        
+        const NSUInteger numberOfElements = numberOfFrames * [SGAudioManager manager].numberOfChannels;
+        SGFFAudioOutputRender * render = [[SGFFAudioOutputRender alloc] initWithLength:numberOfElements * sizeof(float)];
+        
+        float scale = 1.0 / (float)INT16_MAX ;
+        vDSP_vflt16((SInt16 *)audioDataBuffer, 1, render.samples, 1, numberOfElements);
+        vDSP_vsmul(render.samples, 1, &scale, render.samples, 1, numberOfElements);
+        
         NSLog(@"Frame Position : %lld", frame.position);
-        return [[SGFFAudioOutputRender alloc] initWithAudioFrame:frame.audioFrame];
+        return render;
     }
     return nil;
 }
@@ -31,19 +115,64 @@
 {
     if (self = [super init])
     {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.timer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(timerAction) userInfo:nil repeats:YES];
-            [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-            self.timer.fireDate = [NSDate distantPast];
-        });
+        [[SGAudioManager manager] playWithDelegate:self];
     }
     return self;
 }
 
-- (void)timerAction
+- (void)dealloc
 {
-    id <SGFFOutputRender> render = [self.renderSource outputFecthRender:self];
-    NSLog(@"%@", render);
+    [[SGAudioManager manager] pause];
+    
+    if (_swrBuffer)
+    {
+        free(_swrBuffer);
+        _swrBuffer = nil;
+        _swrBufferSize = 0;
+    }
+    if (_swrContext)
+    {
+        swr_free(&_swrContext);
+        _swrContext = nil;
+    }
+}
+
+
+#pragma mark - SGAudioManagerDelegate
+
+- (void)audioManager:(SGAudioManager *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
+{
+    @autoreleasepool
+    {
+        while (numberOfFrames > 0)
+        {
+            if (!self.currentRender)
+            {
+                self.currentRender = [self.renderSource outputFecthRender:self];
+            }
+            if (!self.currentRender)
+            {
+                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+                return;
+            }
+            
+            const Byte * bytes = (Byte *)self.currentRender.samples + self.currentRender.offset;
+            const NSUInteger bytesLeft = self.currentRender.length - self.currentRender.offset;
+            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
+            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+            
+            memcpy(outputData, bytes, bytesToCopy);
+            numberOfFrames -= framesToCopy;
+            outputData += framesToCopy * numberOfChannels;
+            
+            if (bytesToCopy < bytesLeft) {
+                self.currentRender.offset += bytesToCopy;
+            } else {
+                self.currentRender = nil;
+            }
+        }
+    }
 }
 
 @end

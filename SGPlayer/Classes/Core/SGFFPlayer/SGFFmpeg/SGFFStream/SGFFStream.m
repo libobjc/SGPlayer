@@ -32,12 +32,13 @@
     }
 }
 
-- (void)putPacket:(AVPacket)packet
+- (BOOL)putPacket:(AVPacket)packet
 {
     if (self.codec)
     {
-        [self.codec putPacket:packet];
+        return [self.codec putPacket:packet];
     }
+    return NO;
 }
 
 @end

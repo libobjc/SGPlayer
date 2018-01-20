@@ -15,16 +15,26 @@
     return SGFFOutputRenderTypeAudio;
 }
 
+- (void)dealloc
+{
+    if (self.samples)
+    {
+        free(self.samples);
+        self.samples = nil;
+    }
+}
+
 @end
 
 
 @implementation SGFFAudioOutputRender (Factory)
 
-- (SGFFAudioOutputRender *)initWithAudioFrame:(SGFFAudioFrame *)audioFrame
+- (SGFFAudioOutputRender *)initWithLength:(long long)length
 {
     if (self = [super init])
     {
-        
+        self.length = length;
+        self.samples = malloc((unsigned long)self.length);
     }
     return self;
 }

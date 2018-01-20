@@ -81,7 +81,7 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderErrorCode) {
 
 #pragma mark - Util Function
 
-void SGFFLog(void * context, int level, const char * format, va_list args);
+void SGFFLog2(void * context, int level, const char * format, va_list args);
 
 NSError * SGFFCheckError(int result);
 NSError * SGFFCheckErrorCode(int result, NSUInteger errorCode);

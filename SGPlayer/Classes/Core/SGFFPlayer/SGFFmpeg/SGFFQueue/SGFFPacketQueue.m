@@ -126,6 +126,7 @@
     [self.packets removeAllObjects];
     self.size = 0;
     self.duration = 0;
+    [self.condition broadcast];
     [self.condition unlock];
 }
 

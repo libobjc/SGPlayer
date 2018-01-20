@@ -23,5 +23,6 @@
 @property (nonatomic, copy) NSError * error;
 
 - (void)prepare;
+- (void)close;
 
 @end

@@ -10,6 +10,8 @@
 
 @interface SGFFAsyncCodec ()
 
+@property (nonatomic, assign) SGFFCodecState state;
+
 @property (nonatomic, strong) SGFFPacketQueue * packetQueue;
 @property (nonatomic, strong) SGFFOutputRenderQueue * outputRenderQueue;
 
@@ -46,12 +48,17 @@
 
 - (void)close
 {
-    
+    self.state = SGFFCodecStateClosed;
+    [self.packetQueue destroy];
+    [self.outputRenderQueue destroy];
+    [self.operationQueue cancelAllOperations];
+    [self.operationQueue waitUntilAllOperationsAreFinished];
 }
 
-- (void)putPacket:(AVPacket)packet
+- (BOOL)putPacket:(AVPacket)packet
 {
     [self.packetQueue putPacket:packet];
+    return YES;
 }
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output

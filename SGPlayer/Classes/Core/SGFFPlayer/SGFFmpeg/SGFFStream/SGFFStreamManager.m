@@ -81,15 +81,24 @@
     }
 }
 
-- (void)putPacket:(AVPacket)packet
+- (void)close
+{
+    for (SGFFStream * obj in self.streams)
+    {
+        [obj close];
+    }
+}
+
+- (BOOL)putPacket:(AVPacket)packet
 {
     for (SGFFStream * obj in self.streams)
     {
         if (obj.index == packet.stream_index)
         {
-            [obj putPacket:packet];
+            return [obj putPacket:packet];
         }
     }
+    return NO;
 }
 
 - (long long)bufferedDuration

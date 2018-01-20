@@ -11,7 +11,7 @@
 
 #pragma mark - Util Function
 
-void SGFFLog(void * context, int level, const char * format, va_list args)
+void SGFFLog2(void * context, int level, const char * format, va_list args)
 {
 #if SGFFFFmpegLogEnable
         NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];

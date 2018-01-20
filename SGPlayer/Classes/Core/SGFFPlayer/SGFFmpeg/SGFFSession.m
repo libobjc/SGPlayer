@@ -13,6 +13,7 @@
 #import "SGFFOutputManager.h"
 #import "SGFFAudioOutput.h"
 #import "SGPlayerMacro.h"
+#import "SGFFLog.h"
 
 @interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecProcessingDelegate>
 
@@ -35,7 +36,7 @@
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-//            av_log_set_callback(SGFFLog);
+            av_log_set_callback(SGFFLogCallback);
             av_register_all();
             avformat_network_init();
         });
@@ -50,6 +51,12 @@
 {
     self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
     [self.source open];
+}
+
+- (void)close
+{
+    [self.source close];
+    [self.streamManager close];
 }
 
 
@@ -87,9 +94,9 @@
     return 0;
 }
 
-- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
+- (BOOL)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
-    [self.streamManager putPacket:packet];
+    return [self.streamManager putPacket:packet];
 }
 
 

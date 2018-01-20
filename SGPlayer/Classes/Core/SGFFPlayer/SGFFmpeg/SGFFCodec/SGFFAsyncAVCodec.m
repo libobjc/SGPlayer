@@ -79,6 +79,11 @@
     AVFrame * decodedFrame = av_frame_alloc();
     while (YES)
     {
+        if (self.state == SGFFCodecStateClosed)
+        {
+            break;
+        }
+        
         AVPacket packet = [self.packetQueue getPacketSync];
         if (packet.data)
         {

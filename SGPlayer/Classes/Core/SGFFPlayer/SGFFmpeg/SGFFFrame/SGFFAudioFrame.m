@@ -39,7 +39,7 @@
         self.packetPosition = av_frame_get_pkt_pos(frame);
         self.packetDuration = av_frame_get_pkt_duration(frame);
         self.packetSize = av_frame_get_pkt_size(frame);
-        self.data = frame->data[0];
+        self.data = frame->data;
     }
     return self;
 }

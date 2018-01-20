@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
 - (NSTimeInterval)sourceSleepPeriodForReading:(id <SGFFSource>)source;
-- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet;
+- (BOOL)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet;
 
 @end
 

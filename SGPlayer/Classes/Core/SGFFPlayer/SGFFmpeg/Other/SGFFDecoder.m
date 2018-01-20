@@ -83,7 +83,7 @@
         
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            av_log_set_callback(SGFFLog);
+            av_log_set_callback(SGFFLog2);
             av_register_all();
             avformat_network_init();
         });

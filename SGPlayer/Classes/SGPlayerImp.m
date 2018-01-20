@@ -221,7 +221,7 @@
 
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 //    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SGAudioManager manager] removeHandlerTarget:self];
+//    [[SGAudioManager manager] removeHandlerTarget:self];
 #endif
 }
 

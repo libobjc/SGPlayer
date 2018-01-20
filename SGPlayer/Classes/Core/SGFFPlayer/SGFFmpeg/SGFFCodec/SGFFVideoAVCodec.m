@@ -24,7 +24,7 @@
     return 3;
 }
 
-- (void)putPacket:(AVPacket)packet {};
-- (void)decodeThread {};
+- (BOOL)putPacket:(AVPacket)packet {return NO;}
+- (void)decodeThread {}
 
 @end

@@ -18,6 +18,6 @@
 
 - (BOOL)open;
 - (void)close;
-- (void)putPacket:(AVPacket)packet;
+- (BOOL)putPacket:(AVPacket)packet;
 
 @end

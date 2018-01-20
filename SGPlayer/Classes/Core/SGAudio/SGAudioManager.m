@@ -46,10 +46,6 @@ SGAudioOutputContext;
 
 @property (nonatomic, assign) SGAudioOutputContext * outputContext;
 
-@property (nonatomic, weak) id handlerTarget;
-@property (nonatomic, copy) SGAudioManagerInterruptionHandler interruptionHandler;
-@property (nonatomic, copy) SGAudioManagerRouteChangeHandler routeChangeHandler;
-
 @property (nonatomic, assign) BOOL registered;
 
 #if SGPLATFORM_TARGET_OS_MAC
@@ -85,75 +81,10 @@ SGAudioOutputContext;
         self.audioSession = [SGMacAudioSession sharedInstance];
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         self.audioSession = [AVAudioSession sharedInstance];
-        [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(audioSessionInterruptionHandler:) name:AVAudioSessionInterruptionNotification object:nil];
-        [[NSNotificationCenter defaultCenter]  addObserver:self selector:@selector(audioSessionRouteChangeHandler:) name:AVAudioSessionRouteChangeNotification object:nil];
 #endif
     }
     return self;
 }
-
-- (void)setHandlerTarget:(id)handlerTarget
-            interruption:(SGAudioManagerInterruptionHandler)interruptionHandler
-             routeChange:(SGAudioManagerRouteChangeHandler)routeChangeHandler
-{
-    self.handlerTarget = handlerTarget;
-    self.interruptionHandler = interruptionHandler;
-    self.routeChangeHandler = routeChangeHandler;
-}
-
-- (void)removeHandlerTarget:(id)handlerTarget
-{
-    if (self.handlerTarget == handlerTarget || !self.handlerTarget) {
-        self.handlerTarget = nil;
-        self.interruptionHandler = nil;
-        self.routeChangeHandler = nil;
-    }
-}
-
-#if SGPLATFORM_TARGET_OS_MAC
-
-
-
-#elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-
-- (void)audioSessionInterruptionHandler:(NSNotification *)notification
-{
-    if (self.handlerTarget && self.interruptionHandler) {
-        AVAudioSessionInterruptionType avType = [[notification.userInfo objectForKey:AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
-        SGAudioManagerInterruptionType type = SGAudioManagerInterruptionTypeBegin;
-        if (avType == AVAudioSessionInterruptionTypeEnded) {
-            type = SGAudioManagerInterruptionTypeEnded;
-        }
-        SGAudioManagerInterruptionOption option = SGAudioManagerInterruptionOptionNone;
-        id avOption = [notification.userInfo objectForKey:AVAudioSessionInterruptionOptionKey];
-        if (avOption) {
-            AVAudioSessionInterruptionOptions temp = [avOption unsignedIntegerValue];
-            if (temp == AVAudioSessionInterruptionOptionShouldResume) {
-                option = SGAudioManagerInterruptionOptionShouldResume;
-            }
-        }
-        self.interruptionHandler(self.handlerTarget, self, type, option);
-    }
-}
-
-- (void)audioSessionRouteChangeHandler:(NSNotification *)notification
-{
-    if (self.handlerTarget && self.routeChangeHandler) {
-        AVAudioSessionRouteChangeReason avReason = [[notification.userInfo objectForKey:AVAudioSessionRouteChangeReasonKey] unsignedIntegerValue];
-        switch (avReason) {
-            case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
-            {
-                self.routeChangeHandler(self.handlerTarget, self, SGAudioManagerRouteChangeReasonOldDeviceUnavailable);
-            }
-                break;
-            default:
-                break;
-        }
-        
-    }
-}
-
-#endif
 
 - (BOOL)registerAudioSession
 {

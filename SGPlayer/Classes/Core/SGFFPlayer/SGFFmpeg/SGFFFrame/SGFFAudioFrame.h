@@ -23,7 +23,7 @@
 @property (nonatomic, assign) long long packetPosition;
 @property (nonatomic, assign) long long packetDuration;
 @property (nonatomic, assign) long long packetSize;
-@property (nonatomic, assign) uint8_t * data;
+@property (nonatomic, assign) uint8_t ** data;
 
 @end
 

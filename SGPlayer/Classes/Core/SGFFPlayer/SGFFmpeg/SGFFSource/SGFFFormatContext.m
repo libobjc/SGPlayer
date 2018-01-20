@@ -12,8 +12,15 @@
 
 static int formatContextInterruptCallback(void * ctx)
 {
-//    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
-    return NO;
+    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
+    switch (obj.state)
+    {
+        case SGFFSourceStateClosed:
+        case SGFFSourceStateFailed:
+            return YES;
+        default:
+            return NO;
+    }
 }
 
 @interface SGFFFormatContext ()
@@ -76,6 +83,13 @@ static int formatContextInterruptCallback(void * ctx)
 - (void)close
 {
     self.state = SGFFSourceStateClosed;
+    [self.operationQueue cancelAllOperations];
+    [self.operationQueue waitUntilAllOperationsAreFinished];
+    if (_formatContext)
+    {
+        avformat_close_input(&_formatContext);
+        _formatContext = NULL;
+    }
 }
 
 
@@ -170,8 +184,12 @@ static int formatContextInterruptCallback(void * ctx)
             break;
         }
         
+        BOOL shouleReleasePacket = YES;
         if ([self.delegate respondsToSelector:@selector(source:didOutputPacket:)]) {
-            [self.delegate source:self didOutputPacket:packet];
+            shouleReleasePacket = ![self.delegate source:self didOutputPacket:packet];
+        }
+        if (shouleReleasePacket) {
+            av_packet_unref(&packet);
         }
     }
 }
