@@ -35,6 +35,7 @@
 @property (nonatomic, copy, readonly) NSError * error;
 
 - (void)open;
+- (void)flush;
 - (void)close;
 - (BOOL)canPutPacket:(AVPacket)packet;
 - (BOOL)putPacket:(AVPacket)packet;

@@ -81,6 +81,14 @@
     }
 }
 
+- (void)flush
+{
+    for (SGFFStream * obj in self.streams)
+    {
+        [obj flush];
+    }
+}
+
 - (void)close
 {
     for (SGFFStream * obj in self.streams)

@@ -23,6 +23,14 @@
     return NO;
 }
 
+- (void)flush
+{
+    if (self.codec)
+    {
+        [self.codec flush];
+    }
+}
+
 - (void)close
 {
     if (self.codec)

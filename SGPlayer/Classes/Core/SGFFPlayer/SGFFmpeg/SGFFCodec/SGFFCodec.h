@@ -32,7 +32,10 @@ typedef NS_ENUM(NSUInteger, SGFFCodecType)
 typedef NS_ENUM(NSUInteger, SGFFCodecState)
 {
     SGFFCodecStateIdle,
+    SGFFCodecStateOpening,
     SGFFCodecStateOpened,
+    SGFFCodecStateDecoding,
+    SGFFCodecStateFlushing,
     SGFFCodecStateClosed,
     SGFFCodecStateFailed,
 };
@@ -52,6 +55,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 - (double)durationForSeconds;
 
 - (BOOL)open;
+- (void)flush;
 - (void)close;
 - (BOOL)putPacket:(AVPacket)packet;
 

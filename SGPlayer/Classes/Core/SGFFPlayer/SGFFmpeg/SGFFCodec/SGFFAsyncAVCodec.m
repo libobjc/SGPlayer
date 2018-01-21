@@ -11,6 +11,7 @@
 
 @interface SGFFAsyncAVCodec ()
 
+@property (nonatomic, assign) AVFrame * decodedFrame;
 @property (nonatomic, assign) AVCodecContext * codecContext;
 
 @end
@@ -76,50 +77,52 @@
 
 - (void)decodeThread
 {
-    AVFrame * decodedFrame = av_frame_alloc();
-    while (YES)
+    self.decodedFrame = av_frame_alloc();
+    [super decodeThread];
+    av_free(self.decodedFrame);
+    self.decodedFrame = nil;
+}
+
+- (void)doFlushCodec
+{
+    if (self.codecContext)
     {
-        if (self.state == SGFFCodecStateClosed)
-        {
-            break;
-        }
-        
-        AVPacket packet = [self.packetQueue getPacketSync];
-        if (packet.data)
-        {
-            int result = avcodec_send_packet(self.codecContext, &packet);
-            if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)
-            {
-                continue;
-            }
-            while (result >= 0)
-            {
-                result = avcodec_receive_frame(self.codecContext, decodedFrame);
-                if (result < 0)
-                {
-                    if (result != AVERROR(EAGAIN) && result != AVERROR_EOF)
-                    {
-                        continue;
-                    }
-                    break;
-                }
-                @autoreleasepool
-                {
-                    id <SGFFFrame> frame = [self frameWithDecodedFrame:decodedFrame];
-                    if (frame)
-                    {
-                        [self processingFrame:frame];
-                    }
-                }
-            }
-            av_packet_unref(&packet);
-        }
-        else
-        {
-            break;
-        }
+        avcodec_flush_buffers(self.codecContext);
     }
-    av_free(decodedFrame);
+}
+
+- (void)doDecode
+{
+    AVPacket packet = [self.packetQueue getPacketSync];
+    if (packet.data)
+    {
+        int result = avcodec_send_packet(self.codecContext, &packet);
+        if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)
+        {
+            return;
+        }
+        while (result >= 0)
+        {
+            result = avcodec_receive_frame(self.codecContext, self.decodedFrame);
+            if (result < 0)
+            {
+                if (result != AVERROR(EAGAIN) && result != AVERROR_EOF)
+                {
+                    continue;
+                }
+                break;
+            }
+            @autoreleasepool
+            {
+                id <SGFFFrame> frame = [self frameWithDecodedFrame:self.decodedFrame];
+                if (frame)
+                {
+                    [self doProcessingFrame:frame];
+                }
+            }
+        }
+        av_packet_unref(&packet);
+    }
 }
 
 - (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame {return nil;}

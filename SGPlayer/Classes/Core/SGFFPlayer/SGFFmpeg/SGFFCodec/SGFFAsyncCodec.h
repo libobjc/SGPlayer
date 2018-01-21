@@ -23,6 +23,8 @@
 @property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
 
 - (void)decodeThread;
-- (void)processingFrame:(id <SGFFFrame>)frame;
+- (void)doFlushCodec;
+- (void)doDecode;
+- (void)doProcessingFrame:(id <SGFFFrame>)frame;
 
 @end

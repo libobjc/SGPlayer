@@ -17,6 +17,7 @@
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
+@property (nonatomic, strong) NSCondition * decodeCondition;
 
 @end
 
@@ -25,26 +26,33 @@
 @synthesize capacityDelegate = _capacityDelegate;
 @synthesize processingDelegate = _processingDelegate;
 
-+ (SGFFCodecType)type
-{
-    return SGFFCodecTypeUnknown;
-}
++ (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
 
 - (BOOL)open
 {
+    self.state = SGFFCodecStateOpening;
     self.packetQueue = [[SGFFPacketQueue alloc] init];
     self.outputRenderQueue = [[SGFFOutputRenderQueue alloc] initWithMaxCount:self.outputRenderQueueMaxCount];
-    
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
     self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    
     self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeThread) object:nil];
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.operationQueue addOperation:self.decodeOperation];
     
     return YES;
+}
+
+- (void)flush
+{
+    if (self.state == SGFFCodecStateDecoding)
+    {
+        [self.decodeCondition lock];
+        self.state = SGFFCodecStateFlushing;
+        [self.decodeCondition wait];
+        [self.decodeCondition unlock];
+    }
 }
 
 - (void)close
@@ -54,6 +62,9 @@
     [self.outputRenderQueue destroy];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
+    [self.decodeCondition lock];
+    [self.decodeCondition broadcast];
+    [self.decodeCondition unlock];
 }
 
 - (BOOL)putPacket:(AVPacket)packet
@@ -73,10 +84,45 @@
     return outputRender;
 }
 
-- (void)decodeThread {}
+- (void)decodeThread
+{
+    if (!self.decodeCondition)
+    {
+        self.decodeCondition = [[NSCondition alloc] init];
+    }
+    self.state = SGFFCodecStateDecoding;
+    while (YES)
+    {
+        [self.decodeCondition lock];
+        if (self.state == SGFFCodecStateClosed
+            || self.state == SGFFCodecStateFailed)
+        {
+            [self.decodeCondition unlock];
+            break;
+        }
+        else if (self.state == SGFFCodecStateFlushing)
+        {
+            [self doFlushCodec];
+            self.state = SGFFCodecStateDecoding;
+            [self.decodeCondition signal];
+            [self.decodeCondition unlock];
+            continue;
+        }
+        else if (self.state == SGFFCodecStateDecoding)
+        {
+            [self doDecode];
+            [self.decodeCondition unlock];
+            continue;
+        }
+        [self.decodeCondition unlock];
+    }
+}
+
+- (void)doFlushCodec {}
+- (void)doDecode {}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 
-- (void)processingFrame:(id <SGFFFrame>)frame
+- (void)doProcessingFrame:(id <SGFFFrame>)frame
 {
     if ([self.processingDelegate respondsToSelector:@selector(codec:processingFrame:)]
         && [self.processingDelegate respondsToSelector:@selector(codec:processingOutputRender:)])

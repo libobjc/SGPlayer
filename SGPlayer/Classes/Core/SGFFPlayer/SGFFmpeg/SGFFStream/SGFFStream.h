@@ -17,6 +17,7 @@
 @property (nonatomic, strong) id <SGFFCodec> codec;
 
 - (BOOL)open;
+- (void)flush;
 - (void)close;
 - (BOOL)putPacket:(AVPacket)packet;
 
