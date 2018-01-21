@@ -43,7 +43,6 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
 @property (nonatomic, strong) NSCondition * readCondition;
 @property (nonatomic, assign) long long seekingTimestamp;
-@property (nonatomic, assign) BOOL shouldRetryOutputPacket;
 
 @end
 
@@ -243,30 +242,14 @@ static int formatContextInterruptCallback(void * ctx)
         }
         else if (self.state == SGFFSourceStateReading)
         {
-            if (self.shouldRetryOutputPacket)
+            int readResult = av_read_frame(_formatContext, &packet);
+            if (readResult < 0)
             {
-                BOOL success = [self.delegate source:self didOutputPacket:packet];
-                if (success)
-                {
-                    self.shouldRetryOutputPacket = NO;
-                }
-                continue;
+                self.state = SGFFSourceStateFinished;
+                break;
             }
-            else
-            {
-                int readResult = av_read_frame(_formatContext, &packet);
-                if (readResult < 0)
-                {
-                    self.state = SGFFSourceStateFinished;
-                    break;
-                }
-                BOOL success = [self.delegate source:self didOutputPacket:packet];
-                if (!success)
-                {
-                    self.shouldRetryOutputPacket = YES;
-                }
-                continue;
-            }
+            [self.delegate source:self didOutputPacket:packet];
+            continue;
         }
     }
 }

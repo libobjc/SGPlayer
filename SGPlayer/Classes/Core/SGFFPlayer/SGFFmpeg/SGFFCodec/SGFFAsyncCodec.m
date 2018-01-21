@@ -22,6 +22,7 @@
 
 @implementation SGFFAsyncCodec
 
+@synthesize capacityDelegate = _capacityDelegate;
 @synthesize processingDelegate = _processingDelegate;
 
 + (SGFFCodecType)type
@@ -58,12 +59,18 @@
 - (BOOL)putPacket:(AVPacket)packet
 {
     [self.packetQueue putPacket:packet];
+    [self.capacityDelegate codecDidChangeCapacity:self];
     return YES;
 }
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
 {
-    return [self.outputRenderQueue getObjectAsync];
+    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsync];
+    if (outputRender)
+    {
+        [self.capacityDelegate codecDidChangeCapacity:self];
+    }
+    return outputRender;
 }
 
 - (void)decodeThread {}

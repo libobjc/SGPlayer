@@ -16,6 +16,7 @@
 #import "avformat.h"
 
 @protocol SGFFCodec;
+@protocol SGFFCodecCapacityDelegate;
 @protocol SGFFCodecProcessingDelegate;
 
 
@@ -41,6 +42,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 + (SGFFCodecType)type;
 
+@property (nonatomic, weak) id <SGFFCodecCapacityDelegate> capacityDelegate;
 @property (nonatomic, weak) id <SGFFCodecProcessingDelegate> processingDelegate;
 - (SGFFCodecState)state;
 
@@ -52,6 +54,13 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 - (BOOL)open;
 - (void)close;
 - (BOOL)putPacket:(AVPacket)packet;
+
+@end
+
+
+@protocol SGFFCodecCapacityDelegate <NSObject>
+
+- (void)codecDidChangeCapacity:(id <SGFFCodec>)codec;
 
 @end
 

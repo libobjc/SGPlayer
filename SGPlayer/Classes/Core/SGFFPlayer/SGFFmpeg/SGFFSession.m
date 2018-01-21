@@ -15,7 +15,7 @@
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecProcessingDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -84,25 +84,12 @@
     [self callbackForError];
 }
 
-- (BOOL)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
+- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
-    long long size = self.streamManager.size;
-    long long audioDuration = self.streamManager.currentAudioStream.codec.duration;
-    SGFFTimebase audioTimebase = self.streamManager.currentAudioStream.codec.timebase;
-    double duration = SGFFTimebaseConvertToSeconds(audioDuration, audioTimebase);
-    if (size > 15 * 1024 * 1024 || duration > 10)
-    {
-        [source pause];
-        return NO;
-    }
-    else
-    {
-        BOOL success = [self.streamManager putPacket:packet];
-        if (!success)
-        {
-            av_packet_unref(&packet);
-        }
-        return YES;
+    if ([self.streamManager canPutPacket:packet]) {
+        [self.streamManager putPacket:packet];
+    } else {
+        av_packet_unref(&packet);
     }
 }
 
@@ -114,7 +101,6 @@
     self.outputManager = [[SGFFOutputManager alloc] init];
     self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
     self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
-    
     [self.source read];
 }
 
@@ -130,8 +116,33 @@
         self.codecManager = [[SGFFCodecManager alloc] init];
     }
     id <SGFFCodec> codec = [self.codecManager codecForStream:stream.stream];
+    codec.capacityDelegate = self;
     codec.processingDelegate = self;
     return codec;
+}
+
+
+#pragma marl - SGFFCodecCapacityDelegate
+
+- (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
+{
+    BOOL shouldPaused = NO;
+    if (self.streamManager.size > 15 * 1024 * 1024)
+    {
+        shouldPaused = YES;
+    }
+    else if (codec == self.streamManager.currentAudioStream.codec)
+    {
+        if (SGFFTimebaseConvertToSeconds(codec.duration, codec.timebase) > 10)
+        {
+            shouldPaused = YES;
+        }
+    }
+    if (shouldPaused) {
+        [self.source pause];
+    } else {
+        [self.source resume];
+    }
 }
 
 

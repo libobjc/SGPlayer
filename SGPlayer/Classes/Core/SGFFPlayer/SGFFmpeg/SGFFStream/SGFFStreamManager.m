@@ -89,6 +89,18 @@
     }
 }
 
+- (BOOL)canPutPacket:(AVPacket)packet
+{
+    for (SGFFStream * obj in self.streams)
+    {
+        if (obj.index == packet.stream_index)
+        {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (BOOL)putPacket:(AVPacket)packet
 {
     for (SGFFStream * obj in self.streams)
