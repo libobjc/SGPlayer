@@ -15,6 +15,7 @@ static int formatContextInterruptCallback(void * ctx)
     SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
     switch (obj.state)
     {
+        case SGFFSourceStateFinished:
         case SGFFSourceStateClosed:
         case SGFFSourceStateFailed:
             return YES;
@@ -41,6 +42,8 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSInvocationOperation * openOperation;
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
 
+@property (nonatomic, assign) long long seekingTimestamp;
+
 @end
 
 @implementation SGFFFormatContext
@@ -58,26 +61,13 @@ static int formatContextInterruptCallback(void * ctx)
 - (void)open
 {
     self.state = SGFFSourceStateOpening;
-    
-    self.operationQueue = [[NSOperationQueue alloc] init];
-    self.operationQueue.maxConcurrentOperationCount = 2;
-    self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    
-    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
-    self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.operationQueue addOperation:self.openOperation];
+    [self startOpenThread];
 }
 
 - (void)read
 {
     self.state = SGFFSourceStateReading;
-    
-    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
-    self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.readOperation addDependency:self.openOperation];
-    [self.operationQueue addOperation:self.readOperation];
+    [self startReadThread];
 }
 
 - (void)pause
@@ -108,8 +98,38 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
+- (void)seekToTime:(NSTimeInterval)timestamp
+{
+    if (self.state == SGFFSourceStateReading)
+    {
+        self.state = SGFFSourceStateSeeking;
+        self.seekingTimestamp = timestamp * AV_TIME_BASE;
+    }
+    else if (self.state == SGFFSourceStateFinished)
+    {
+        [self startReadThread];
+        self.state = SGFFSourceStateSeeking;
+        int64_t ts = timestamp * AV_TIME_BASE;
+        av_seek_frame(_formatContext, -1, ts, AVSEEK_FLAG_BACKWARD);
+    }
+}
+
 
 #pragma mark - Thread
+
+- (void)startOpenThread
+{
+    if (!self.operationQueue)
+    {
+        self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.maxConcurrentOperationCount = 2;
+        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    }
+    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
+    self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.openOperation];
+}
 
 - (void)openThread
 {
@@ -165,52 +185,65 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
+- (void)startReadThread
+{
+    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
+    self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.readOperation addDependency:self.openOperation];
+    [self.operationQueue addOperation:self.readOperation];
+}
+
 - (void)readThread
 {
-    self.state = SGFFSourceStateReading;
-    
     AVPacket packet;
     while (YES)
     {
-        BOOL shouldBreak = NO;
-        switch (self.state)
-        {
-            case SGFFSourceStateFinished:
-            case SGFFSourceStateClosed:
-            case SGFFSourceStateFailed:
-                shouldBreak = YES;
-                break;
-            default:
-                break;
-        }
-        if (shouldBreak)
+        if (self.state == SGFFSourceStateFinished
+            || self.state == SGFFSourceStateClosed
+            || self.state == SGFFSourceStateFailed)
         {
             break;
         }
-        
-        if ([self.delegate respondsToSelector:@selector(sourceSleepPeriodForReading:)])
+        else if (self.state == SGFFSourceStatePaused)
         {
-            NSTimeInterval sleepPeriod = [self.delegate sourceSleepPeriodForReading:self];
-            if (sleepPeriod > 0)
+            
+        }
+        else if (self.state == SGFFSourceStateSeeking)
+        {
+            if (self.seekingTimestamp > 0)
             {
-                [NSThread sleepForTimeInterval:sleepPeriod];
-                continue;
+                av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
+                self.seekingTimestamp = 0;
             }
+            self.state = SGFFSourceStateReading;
         }
-        
-        int readResult = av_read_frame(_formatContext, &packet);
-        if (readResult < 0)
+        else if (self.state == SGFFSourceStateReading)
         {
-            self.state = SGFFSourceStateFinished;
-            break;
-        }
-        
-        BOOL shouleReleasePacket = YES;
-        if ([self.delegate respondsToSelector:@selector(source:didOutputPacket:)]) {
-            shouleReleasePacket = ![self.delegate source:self didOutputPacket:packet];
-        }
-        if (shouleReleasePacket) {
-            av_packet_unref(&packet);
+            if ([self.delegate respondsToSelector:@selector(sourceSleepPeriodForReading:)])
+            {
+                NSTimeInterval sleepPeriod = [self.delegate sourceSleepPeriodForReading:self];
+                if (sleepPeriod > 0)
+                {
+                    [NSThread sleepForTimeInterval:sleepPeriod];
+                    continue;
+                }
+            }
+            
+            int readResult = av_read_frame(_formatContext, &packet);
+            if (readResult < 0)
+            {
+                self.state = SGFFSourceStateFinished;
+                break;
+            }
+            
+            BOOL shouleReleasePacket = YES;
+            if ([self.delegate respondsToSelector:@selector(source:didOutputPacket:)]) {
+                shouleReleasePacket = ![self.delegate source:self didOutputPacket:packet];
+            }
+            if (shouleReleasePacket) {
+                av_packet_unref(&packet);
+            }
         }
     }
 }

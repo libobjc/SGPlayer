@@ -48,6 +48,8 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)resume;
 - (void)close;
 
+- (void)seekToTime:(NSTimeInterval)timestamp;
+
 @end
 
 
