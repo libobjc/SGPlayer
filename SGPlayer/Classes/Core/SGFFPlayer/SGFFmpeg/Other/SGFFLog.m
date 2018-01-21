@@ -12,8 +12,8 @@
 
 void SGFFLogCallback(void * context, int level, const char * format, va_list args)
 {
-    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
-    SGPlayerLog(@"SGFFLog : %@", message);
+//    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
+//    SGPlayerLog(@"SGFFLog : %@", message);
 }
 
 

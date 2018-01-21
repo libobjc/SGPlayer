@@ -35,7 +35,6 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
     SGFFCodecStateOpening,
     SGFFCodecStateOpened,
     SGFFCodecStateDecoding,
-    SGFFCodecStateFlushing,
     SGFFCodecStateClosed,
     SGFFCodecStateFailed,
 };

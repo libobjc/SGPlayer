@@ -17,7 +17,6 @@
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
-@property (nonatomic, strong) NSCondition * decodeCondition;
 
 @end
 
@@ -46,15 +45,8 @@
 
 - (void)flush
 {
-    if (self.state == SGFFCodecStateDecoding)
-    {
-        self.state = SGFFCodecStateFlushing;
-        [self.packetQueue flush];
-        [self.outputRenderQueue flush];
-        [self.decodeCondition lock];
-        [self.decodeCondition wait];
-        [self.decodeCondition unlock];
-    }
+    [self.packetQueue flush];
+    [self.outputRenderQueue flush];
 }
 
 - (void)close
@@ -64,9 +56,6 @@
     [self.outputRenderQueue destroy];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
-    [self.decodeCondition lock];
-    [self.decodeCondition broadcast];
-    [self.decodeCondition unlock];
 }
 
 - (BOOL)putPacket:(AVPacket)packet
@@ -88,10 +77,6 @@
 
 - (void)decodeThread
 {
-    if (!self.decodeCondition)
-    {
-        self.decodeCondition = [[NSCondition alloc] init];
-    }
     self.state = SGFFCodecStateDecoding;
     while (YES)
     {
@@ -99,15 +84,6 @@
             || self.state == SGFFCodecStateFailed)
         {
             break;
-        }
-        else if (self.state == SGFFCodecStateFlushing)
-        {
-            [self doFlushCodec];
-            self.state = SGFFCodecStateDecoding;
-            [self.decodeCondition lock];
-            [self.decodeCondition signal];
-            [self.decodeCondition unlock];
-            continue;
         }
         else if (self.state == SGFFCodecStateDecoding)
         {

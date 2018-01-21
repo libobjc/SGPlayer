@@ -54,8 +54,17 @@
     return codecContext;
 }
 
+static AVPacket flushPacket;
+
 - (BOOL)open
 {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        av_init_packet(&flushPacket);
+        flushPacket.data = (uint8_t *)&flushPacket;
+        flushPacket.duration = 0;
+    });
+    
     AVRational timebase = {self.timebase.num, self.timebase.den};
     self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:timebase];
     if (self.codecContext)
@@ -63,6 +72,12 @@
         return [super open];
     }
     return NO;
+}
+
+- (void)flush
+{
+    [super flush];
+    [self.packetQueue putPacket:flushPacket];
 }
 
 - (void)close
@@ -85,6 +100,7 @@
 
 - (void)doFlushCodec
 {
+    [super doFlushCodec];
     if (self.codecContext)
     {
         avcodec_flush_buffers(self.codecContext);
@@ -94,7 +110,11 @@
 - (void)doDecode
 {
     AVPacket packet = [self.packetQueue getPacketSync];
-    if (packet.data)
+    if (packet.data == flushPacket.data)
+    {
+        [self doFlushCodec];
+    }
+    else if (packet.data)
     {
         int result = avcodec_send_packet(self.codecContext, &packet);
         if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)
