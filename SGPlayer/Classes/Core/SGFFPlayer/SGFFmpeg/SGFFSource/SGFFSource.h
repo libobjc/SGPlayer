@@ -24,8 +24,9 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
     SGFFSourceStateOpening,
     SGFFSourceStateOpened,
     SGFFSourceStateReading,
-    SGFFSourceStateReadFinished,
+    SGFFSourceStatePaused,
     SGFFSourceStateSeeking,
+    SGFFSourceStateFinished,
     SGFFSourceStateClosed,
     SGFFSourceStateFailed,
 };
@@ -43,6 +44,8 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 
 - (void)open;
 - (void)read;
+- (void)pause;
+- (void)resume;
 - (void)close;
 
 @end

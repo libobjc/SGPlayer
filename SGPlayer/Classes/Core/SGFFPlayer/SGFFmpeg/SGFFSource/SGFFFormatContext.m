@@ -80,6 +80,22 @@ static int formatContextInterruptCallback(void * ctx)
     [self.operationQueue addOperation:self.readOperation];
 }
 
+- (void)pause
+{
+    if (self.state == SGFFSourceStateReading)
+    {
+        self.state = SGFFSourceStatePaused;
+    }
+}
+
+- (void)resume
+{
+    if (self.state == SGFFSourceStatePaused)
+    {
+        self.state = SGFFSourceStateReading;
+    }
+}
+
 - (void)close
 {
     self.state = SGFFSourceStateClosed;
@@ -143,18 +159,23 @@ static int formatContextInterruptCallback(void * ctx)
     }
     self.streams = [streams copy];
     
-    [self callbackForOpened];
+    self.state = SGFFSourceStateOpened;
+    if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)]) {
+        [self.delegate sourceDidOpened:self];
+    }
 }
 
 - (void)readThread
 {
+    self.state = SGFFSourceStateReading;
+    
     AVPacket packet;
     while (YES)
     {
         BOOL shouldBreak = NO;
         switch (self.state)
         {
-            case SGFFSourceStateReadFinished:
+            case SGFFSourceStateFinished:
             case SGFFSourceStateClosed:
             case SGFFSourceStateFailed:
                 shouldBreak = YES;
@@ -180,7 +201,7 @@ static int formatContextInterruptCallback(void * ctx)
         int readResult = av_read_frame(_formatContext, &packet);
         if (readResult < 0)
         {
-            self.state = SGFFSourceStateReadFinished;
+            self.state = SGFFSourceStateFinished;
             break;
         }
         
@@ -202,14 +223,6 @@ static int formatContextInterruptCallback(void * ctx)
     self.state = SGFFSourceStateFailed;
     if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)]) {
         [self.delegate sourceDidFailed:self];
-    }
-}
-
-- (void)callbackForOpened
-{
-    self.state = SGFFSourceStateOpened;
-    if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)]) {
-        [self.delegate sourceDidOpened:self];
     }
 }
 
