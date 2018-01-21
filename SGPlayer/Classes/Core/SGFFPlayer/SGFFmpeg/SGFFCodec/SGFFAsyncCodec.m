@@ -49,6 +49,8 @@
     if (self.state == SGFFCodecStateDecoding)
     {
         self.state = SGFFCodecStateFlushing;
+        [self.packetQueue flush];
+        [self.outputRenderQueue flush];
         [self.decodeCondition lock];
         [self.decodeCondition wait];
         [self.decodeCondition unlock];
