@@ -96,9 +96,9 @@
 
 - (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
-    if ([self.streamManager canPutPacket:packet]) {
-        [self.streamManager putPacket:packet];
-    } else {
+    BOOL success = [self.streamManager putPacket:packet];
+    if (!success)
+    {
         av_packet_unref(&packet);
     }
 }
