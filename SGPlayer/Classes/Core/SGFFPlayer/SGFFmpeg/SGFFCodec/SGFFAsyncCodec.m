@@ -48,8 +48,8 @@
 {
     if (self.state == SGFFCodecStateDecoding)
     {
-        [self.decodeCondition lock];
         self.state = SGFFCodecStateFlushing;
+        [self.decodeCondition lock];
         [self.decodeCondition wait];
         [self.decodeCondition unlock];
     }
@@ -93,17 +93,16 @@
     self.state = SGFFCodecStateDecoding;
     while (YES)
     {
-        [self.decodeCondition lock];
         if (self.state == SGFFCodecStateClosed
             || self.state == SGFFCodecStateFailed)
         {
-            [self.decodeCondition unlock];
             break;
         }
         else if (self.state == SGFFCodecStateFlushing)
         {
             [self doFlushCodec];
             self.state = SGFFCodecStateDecoding;
+            [self.decodeCondition lock];
             [self.decodeCondition signal];
             [self.decodeCondition unlock];
             continue;
@@ -111,10 +110,8 @@
         else if (self.state == SGFFCodecStateDecoding)
         {
             [self doDecode];
-            [self.decodeCondition unlock];
             continue;
         }
-        [self.decodeCondition unlock];
     }
 }
 

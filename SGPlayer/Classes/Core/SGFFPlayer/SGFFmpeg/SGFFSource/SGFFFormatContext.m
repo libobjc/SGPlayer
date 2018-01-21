@@ -82,8 +82,8 @@ static int formatContextInterruptCallback(void * ctx)
 {
     if (self.state == SGFFSourceStatePaused)
     {
-        [self.readCondition lock];
         self.state = SGFFSourceStateReading;
+        [self.readCondition lock];
         [self.readCondition signal];
         [self.readCondition unlock];
     }
@@ -226,10 +226,7 @@ static int formatContextInterruptCallback(void * ctx)
         else if (self.state == SGFFSourceStatePaused)
         {
             [self.readCondition lock];
-            if (self.state == SGFFSourceStatePaused)
-            {
-                [self.readCondition wait];
-            }
+            [self.readCondition wait];
             [self.readCondition unlock];
             continue;
         }
