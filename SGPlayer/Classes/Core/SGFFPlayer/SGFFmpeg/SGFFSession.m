@@ -106,7 +106,8 @@
 
 - (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager
 {
-    
+    self.error = streamManager.error;
+    [self callbackForError];
 }
 
 - (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream
