@@ -121,9 +121,9 @@ static int formatContextInterruptCallback(void * ctx)
     }
     else if (self.state == SGFFSourceStateFinished)
     {
-        [self startReadThread];
         self.state = SGFFSourceStateSeeking;
         self.seekingTimestamp = timestamp * AV_TIME_BASE;
+        [self startReadThread];
     }
 }
 

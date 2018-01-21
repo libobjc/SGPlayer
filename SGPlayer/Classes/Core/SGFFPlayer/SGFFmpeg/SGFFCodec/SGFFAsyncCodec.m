@@ -47,6 +47,7 @@
 {
     [self.packetQueue flush];
     [self.outputRenderQueue flush];
+    [self.capacityDelegate codecDidChangeCapacity:self];
 }
 
 - (void)close
