@@ -24,7 +24,9 @@
     return 3;
 }
 
-- (BOOL)putPacket:(AVPacket)packet {return NO;}
-- (void)decodeThread {}
+- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame
+{
+    return nil;
+}
 
 @end
