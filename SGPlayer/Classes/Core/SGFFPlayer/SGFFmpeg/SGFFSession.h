@@ -22,7 +22,7 @@
 
 @property (nonatomic, copy) NSError * error;
 
-- (void)prepare;
+- (void)open;
 - (void)close;
 
 @end

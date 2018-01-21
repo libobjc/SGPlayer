@@ -47,7 +47,7 @@
     return self;
 }
 
-- (void)prepare
+- (void)open
 {
     self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
     [self.source open];
