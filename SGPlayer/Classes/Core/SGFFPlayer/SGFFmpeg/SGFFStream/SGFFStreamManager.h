@@ -37,9 +37,7 @@
 - (void)open;
 - (void)close;
 - (BOOL)putPacket:(AVPacket)packet;
-- (BOOL)selectStream:(SGFFStream *)stream;
 
-- (long long)bufferedDuration;
-- (long long)bufferedSize;
+- (long long)size;
 
 @end

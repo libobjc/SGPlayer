@@ -84,19 +84,26 @@
     [self callbackForError];
 }
 
-- (NSTimeInterval)sourceSleepPeriodForReading:(id<SGFFSource>)source
-{
-    long long bufferedSize = [self.streamManager bufferedSize];
-    if (bufferedSize > 15 * 1024 * 1024)
-    {
-        return 0.1;
-    }
-    return 0;
-}
-
 - (BOOL)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
-    return [self.streamManager putPacket:packet];
+    long long size = self.streamManager.size;
+    long long audioDuration = self.streamManager.currentAudioStream.codec.duration;
+    SGFFTimebase audioTimebase = self.streamManager.currentAudioStream.codec.timebase;
+    double duration = (double)audioDuration * audioTimebase.num / audioTimebase.den;
+    if (size > 15 * 1024 * 1024 || duration > 10)
+    {
+        [source pause];
+        return NO;
+    }
+    else
+    {
+        BOOL success = [self.streamManager putPacket:packet];
+        if (!success)
+        {
+            av_packet_unref(&packet);
+        }
+        return YES;
+    }
 }
 
 

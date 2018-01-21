@@ -101,17 +101,7 @@
     return NO;
 }
 
-- (long long)bufferedDuration
-{
-    if (self.currentAudioStream) {
-        return self.currentAudioStream.codec.duration;
-    } else if (self.currentVideoStream) {
-        return self.currentVideoStream.codec.duration;
-    }
-    return 0;
-}
-
-- (long long)bufferedSize
+- (long long)size
 {
     long long bufferedSize = 0;
     for (SGFFStream * obj in self.streams)
