@@ -27,6 +27,22 @@
 
 + (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
 
+static AVPacket flushPacket;
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            av_init_packet(&flushPacket);
+            flushPacket.data = (uint8_t *)&flushPacket;
+            flushPacket.duration = 0;
+        });
+    }
+    return self;
+}
+
 - (BOOL)open
 {
     self.state = SGFFCodecStateOpening;
@@ -47,6 +63,7 @@
 {
     [self.packetQueue flush];
     [self.outputRenderQueue flush];
+    [self.packetQueue putPacket:flushPacket];
     [self.capacityDelegate codecDidChangeCapacity:self];
 }
 
@@ -88,14 +105,30 @@
         }
         else if (self.state == SGFFCodecStateDecoding)
         {
-            [self doDecode];
+            AVPacket packet = [self.packetQueue getPacketSync];
+            if (packet.data == flushPacket.data)
+            {
+                [self doFlushCodec];
+            }
+            else if (packet.data)
+            {
+                @autoreleasepool
+                {
+                    id <SGFFFrame> frame = [self doDecode:packet];
+                    if (frame)
+                    {
+                        [self doProcessingFrame:frame];
+                    }
+                }
+            }
+            av_packet_unref(&packet);
             continue;
         }
     }
 }
 
 - (void)doFlushCodec {}
-- (void)doDecode {}
+- (id <SGFFFrame>)doDecode:(AVPacket)packet {return nil;}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 
 - (void)doProcessingFrame:(id <SGFFFrame>)frame

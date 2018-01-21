@@ -24,7 +24,7 @@
 
 - (void)decodeThread;
 - (void)doFlushCodec;
-- (void)doDecode;
+- (id <SGFFFrame>)doDecode:(AVPacket)packet;
 - (void)doProcessingFrame:(id <SGFFFrame>)frame;
 
 @end
