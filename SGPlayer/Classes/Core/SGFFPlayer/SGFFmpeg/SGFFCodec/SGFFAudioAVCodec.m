@@ -7,7 +7,7 @@
 //
 
 #import "SGFFAudioAVCodec.h"
-#import "SGFFAudioFrame.h"
+#import "SGFFFrameFactory.h"
 
 @interface SGFFAudioAVCodec ()
 

@@ -88,5 +88,6 @@
 
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
+- (double)durationForSeconds {return SGFFTimebaseConvertToSeconds(self.duration, self.timebase);}
 
 @end

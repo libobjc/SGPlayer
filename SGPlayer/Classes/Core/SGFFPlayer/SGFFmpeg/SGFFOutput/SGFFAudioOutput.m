@@ -105,7 +105,7 @@
         vDSP_vflt16((SInt16 *)audioDataBuffer, 1, render.samples, 1, numberOfElements);
         vDSP_vsmul(render.samples, 1, &scale, render.samples, 1, numberOfElements);
         
-        NSLog(@"Frame Position : %lld", frame.position);
+        NSLog(@"Frame Position : %f", SGFFTimebaseConvertToSeconds(frame.position, frame.timebase));
         return render;
     }
     return nil;

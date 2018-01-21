@@ -89,7 +89,7 @@
     long long size = self.streamManager.size;
     long long audioDuration = self.streamManager.currentAudioStream.codec.duration;
     SGFFTimebase audioTimebase = self.streamManager.currentAudioStream.codec.timebase;
-    double duration = (double)audioDuration * audioTimebase.num / audioTimebase.den;
+    double duration = SGFFTimebaseConvertToSeconds(audioDuration, audioTimebase);
     if (size > 15 * 1024 * 1024 || duration > 10)
     {
         [source pause];

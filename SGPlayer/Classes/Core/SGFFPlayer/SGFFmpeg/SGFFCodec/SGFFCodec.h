@@ -47,6 +47,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 - (SGFFTimebase)timebase;
 - (long long)duration;
 - (long long)size;
+- (double)durationForSeconds;
 
 - (BOOL)open;
 - (void)close;

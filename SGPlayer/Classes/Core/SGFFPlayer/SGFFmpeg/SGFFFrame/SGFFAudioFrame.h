@@ -10,6 +10,7 @@
 
 @interface SGFFAudioFrame : SGFFFrameInternal
 
+@property (nonatomic, assign, readonly) SGFFFrameType type;
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) long long numberOfSamples;
@@ -24,12 +25,5 @@
 @property (nonatomic, assign) long long packetDuration;
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t ** data;
-
-@end
-
-
-@interface SGFFAudioFrame (Factory)
-
-- (SGFFAudioFrame *)initWithAVFrame:(void *)avframe timebase:(SGFFTimebase)timebase;
 
 @end

@@ -15,3 +15,4 @@ typedef struct SGFFTimebase {
 
 SGFFTimebase SGFFTimebaseIdentity(void);
 SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);
+double SGFFTimebaseConvertToSeconds(long long timestamp, SGFFTimebase timebase);
