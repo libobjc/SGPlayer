@@ -73,7 +73,7 @@
 - (IBAction)progressTouchUp:(id)sender
 {
     self.progressSilderTouching = NO;
-    [self.player seekToTime:self.player.duration * self.progressSilder.value];
+    [self.player seekToTime:60 * self.progressSilder.value];
 }
 
 - (void)playbackStateAction:(NSNotification *)notification

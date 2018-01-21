@@ -25,4 +25,6 @@
 - (void)open;
 - (void)close;
 
+- (void)seekToTime:(NSTimeInterval)timestamp;
+
 @end

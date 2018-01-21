@@ -59,6 +59,11 @@
     [self.streamManager close];
 }
 
+- (void)seekToTime:(NSTimeInterval)timestamp
+{
+    [self.source seekToTime:timestamp];
+}
+
 
 #pragma mark - Callback
 
