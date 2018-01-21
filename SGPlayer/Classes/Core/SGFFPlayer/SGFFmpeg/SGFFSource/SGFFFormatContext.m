@@ -238,6 +238,7 @@ static int formatContextInterruptCallback(void * ctx)
                 self.seekingTimestamp = 0;
             }
             self.state = SGFFSourceStateReading;
+            [self.delegate sourceDidFinishedSeeking:self];
             continue;
         }
         else if (self.state == SGFFSourceStateReading)

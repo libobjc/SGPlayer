@@ -84,6 +84,11 @@
     [self callbackForError];
 }
 
+- (void)sourceDidFinishedSeeking:(id <SGFFSource>)source
+{
+    [self.streamManager flush];
+}
+
 - (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
 {
     if ([self.streamManager canPutPacket:packet]) {
