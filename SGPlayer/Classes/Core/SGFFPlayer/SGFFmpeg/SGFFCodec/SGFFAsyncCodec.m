@@ -117,7 +117,15 @@ static AVPacket flushPacket;
                     id <SGFFFrame> frame = [self doDecode:packet];
                     if (frame)
                     {
-                        [self doProcessingFrame:frame];
+                        id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
+                        if (newFrame)
+                        {
+                            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
+                            if (outputRender)
+                            {
+                                [self.outputRenderQueue putObjectSync:outputRender];
+                            }
+                        }
                     }
                 }
             }
@@ -130,24 +138,6 @@ static AVPacket flushPacket;
 - (void)doFlushCodec {}
 - (id <SGFFFrame>)doDecode:(AVPacket)packet {return nil;}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
-
-- (void)doProcessingFrame:(id <SGFFFrame>)frame
-{
-    if ([self.processingDelegate respondsToSelector:@selector(codec:processingFrame:)]
-        && [self.processingDelegate respondsToSelector:@selector(codec:processingOutputRender:)])
-    {
-        id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
-        if (newFrame)
-        {
-            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
-            if (outputRender)
-            {
-                [self.outputRenderQueue putObjectSync:outputRender];
-            }
-        }
-    }
-}
-
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
 

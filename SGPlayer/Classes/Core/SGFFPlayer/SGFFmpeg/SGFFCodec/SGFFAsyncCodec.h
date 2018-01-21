@@ -17,7 +17,6 @@
 
 @property (nonatomic, strong, readonly) SGFFPacketQueue * packetQueue;
 @property (nonatomic, strong, readonly) SGFFOutputRenderQueue * outputRenderQueue;
-- (NSInteger)outputRenderQueueMaxCount;        // Default is 5.
 
 @property (nonatomic, strong, readonly) NSOperationQueue * operationQueue;
 @property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
@@ -25,6 +24,6 @@
 - (void)decodeThread;
 - (void)doFlushCodec;
 - (id <SGFFFrame>)doDecode:(AVPacket)packet;
-- (void)doProcessingFrame:(id <SGFFFrame>)frame;
+- (NSInteger)outputRenderQueueMaxCount;        // Default is 5.
 
 @end
