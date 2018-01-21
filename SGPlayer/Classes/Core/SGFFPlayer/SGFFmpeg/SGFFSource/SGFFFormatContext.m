@@ -41,8 +41,9 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openOperation;
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
-
+@property (nonatomic, strong) NSCondition * readCondition;
 @property (nonatomic, assign) long long seekingTimestamp;
+@property (nonatomic, assign) BOOL shouldRetryOutputPacket;
 
 @end
 
@@ -83,12 +84,18 @@ static int formatContextInterruptCallback(void * ctx)
     if (self.state == SGFFSourceStatePaused)
     {
         self.state = SGFFSourceStateReading;
+        [self.readCondition lock];
+        [self.readCondition signal];
+        [self.readCondition unlock];
     }
 }
 
 - (void)close
 {
     self.state = SGFFSourceStateClosed;
+    [self.readCondition lock];
+    [self.readCondition broadcast];
+    [self.readCondition unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
     if (_formatContext)
@@ -100,7 +107,15 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)seekToTime:(NSTimeInterval)timestamp
 {
-    if (self.state == SGFFSourceStateReading)
+    if (self.state == SGFFSourceStatePaused)
+    {
+        self.state = SGFFSourceStateSeeking;
+        self.seekingTimestamp = timestamp * AV_TIME_BASE;
+        [self.readCondition lock];
+        [self.readCondition signal];
+        [self.readCondition unlock];
+    }
+    else if (self.state == SGFFSourceStateReading)
     {
         self.state = SGFFSourceStateSeeking;
         self.seekingTimestamp = timestamp * AV_TIME_BASE;
@@ -109,8 +124,7 @@ static int formatContextInterruptCallback(void * ctx)
     {
         [self startReadThread];
         self.state = SGFFSourceStateSeeking;
-        int64_t ts = timestamp * AV_TIME_BASE;
-        av_seek_frame(_formatContext, -1, ts, AVSEEK_FLAG_BACKWARD);
+        self.seekingTimestamp = timestamp * AV_TIME_BASE;
     }
 }
 
@@ -187,6 +201,10 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)startReadThread
 {
+    if (!self.readCondition)
+    {
+        self.readCondition = [[NSCondition alloc] init];
+    }
     self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -197,6 +215,7 @@ static int formatContextInterruptCallback(void * ctx)
 - (void)readThread
 {
     AVPacket packet;
+    av_init_packet(&packet);
     while (YES)
     {
         if (self.state == SGFFSourceStateFinished
@@ -207,7 +226,10 @@ static int formatContextInterruptCallback(void * ctx)
         }
         else if (self.state == SGFFSourceStatePaused)
         {
-            
+            [self.readCondition lock];
+            [self.readCondition wait];
+            [self.readCondition unlock];
+            continue;
         }
         else if (self.state == SGFFSourceStateSeeking)
         {
@@ -217,32 +239,33 @@ static int formatContextInterruptCallback(void * ctx)
                 self.seekingTimestamp = 0;
             }
             self.state = SGFFSourceStateReading;
+            continue;
         }
         else if (self.state == SGFFSourceStateReading)
         {
-            if ([self.delegate respondsToSelector:@selector(sourceSleepPeriodForReading:)])
+            if (self.shouldRetryOutputPacket)
             {
-                NSTimeInterval sleepPeriod = [self.delegate sourceSleepPeriodForReading:self];
-                if (sleepPeriod > 0)
+                BOOL success = [self.delegate source:self didOutputPacket:packet];
+                if (success)
                 {
-                    [NSThread sleepForTimeInterval:sleepPeriod];
-                    continue;
+                    self.shouldRetryOutputPacket = NO;
                 }
+                continue;
             }
-            
-            int readResult = av_read_frame(_formatContext, &packet);
-            if (readResult < 0)
+            else
             {
-                self.state = SGFFSourceStateFinished;
-                break;
-            }
-            
-            BOOL shouleReleasePacket = YES;
-            if ([self.delegate respondsToSelector:@selector(source:didOutputPacket:)]) {
-                shouleReleasePacket = ![self.delegate source:self didOutputPacket:packet];
-            }
-            if (shouleReleasePacket) {
-                av_packet_unref(&packet);
+                int readResult = av_read_frame(_formatContext, &packet);
+                if (readResult < 0)
+                {
+                    self.state = SGFFSourceStateFinished;
+                    break;
+                }
+                BOOL success = [self.delegate source:self didOutputPacket:packet];
+                if (!success)
+                {
+                    self.shouldRetryOutputPacket = YES;
+                }
+                continue;
             }
         }
     }
