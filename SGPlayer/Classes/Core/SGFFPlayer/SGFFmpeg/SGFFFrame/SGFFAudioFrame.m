@@ -7,7 +7,6 @@
 //
 
 #import "SGFFAudioFrame.h"
-#import "SGFFFrameFactory.h"
 
 @interface SGFFAudioFrame ()
 
@@ -20,6 +19,24 @@
 - (SGFFFrameType)type
 {
     return SGFFFrameTypeAudio;
+}
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.coreFrame = av_frame_alloc();
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    if (self.coreFrame)
+    {
+        av_frame_free(&_coreFrame);
+        self.coreFrame = nil;
+    }
 }
 
 - (void)fill
@@ -41,30 +58,6 @@
         self.packetSize = av_frame_get_pkt_size(frame);
         self.data = frame->data;
     }
-}
-
-- (void)dealloc
-{
-    if (self.coreFrame)
-    {
-        av_frame_free(&_coreFrame);
-        self.coreFrame = nil;
-    }
-}
-
-@end
-
-
-@implementation SGFFAudioFrame (Factory)
-
-- (SGFFAudioFrame *)initWithTimebase:(SGFFTimebase)timebase
-{
-    if (self = [super init])
-    {
-        self.timebase = timebase;
-        self.coreFrame = av_frame_alloc();
-    }
-    return self;
 }
 
 @end
