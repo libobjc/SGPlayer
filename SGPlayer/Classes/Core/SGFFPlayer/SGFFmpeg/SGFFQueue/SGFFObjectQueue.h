@@ -30,10 +30,10 @@
 - (long long)duration;
 - (long long)size;
 
-- (void)putObjectSync:(id <SGFFObjectQueueItem>)object;
-- (void)putObjectAsync:(id <SGFFObjectQueueItem>)object;
-- (id <SGFFObjectQueueItem>)getObjectSync;
-- (id <SGFFObjectQueueItem>)getObjectAsync;
+- (void)putObjectSync:(__kindof id <SGFFObjectQueueItem>)object;
+- (void)putObjectAsync:(__kindof id <SGFFObjectQueueItem>)object;
+- (__kindof id <SGFFObjectQueueItem>)getObjectSync;
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsync;
 
 - (void)flush;
 - (void)destroy;

@@ -39,7 +39,7 @@
     return self;
 }
 
-- (void)putObjectSync:(id <SGFFObjectQueueItem>)object
+- (void)putObjectSync:(__kindof id <SGFFObjectQueueItem>)object
 {
     if (self.didDestoryed) {
         return;
@@ -59,7 +59,7 @@
     [self.condition unlock];
 }
 
-- (void)putObjectAsync:(id <SGFFObjectQueueItem>)object
+- (void)putObjectAsync:(__kindof id <SGFFObjectQueueItem>)object
 {
     if (self.didDestoryed) {
         return;
@@ -75,7 +75,7 @@
     [self.condition unlock];
 }
 
-- (void)putObject:(id <SGFFObjectQueueItem>)object
+- (void)putObject:(__kindof id <SGFFObjectQueueItem>)object
 {
     [object lock];
     [self.objects addObject:object];
@@ -83,7 +83,7 @@
     self.size += object.size;
 }
 
-- (id <SGFFObjectQueueItem>)getObjectSync
+- (__kindof id <SGFFObjectQueueItem>)getObjectSync
 {
     [self.condition lock];
     while (self.objects.count <= 0)
@@ -101,7 +101,7 @@
     return object;
 }
 
-- (id <SGFFObjectQueueItem>)getObjectAsync
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsync
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)
@@ -115,7 +115,7 @@
     return object;
 }
 
-- (id <SGFFObjectQueueItem>)getObject
+- (__kindof id <SGFFObjectQueueItem>)getObject
 {
     if (!self.objects.firstObject) {
         return nil;

@@ -8,9 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFObjectPool.h"
+#import "SGFFObjectQueue.h"
 #import "avformat.h"
 
-@interface SGFFPacket : NSObject <SGFFObjectPoolItem>
+@interface SGFFPacket : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
 @property (nonatomic, assign) int streamIndex;
 

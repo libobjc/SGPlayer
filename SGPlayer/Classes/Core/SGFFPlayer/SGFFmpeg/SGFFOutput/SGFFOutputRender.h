@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFObjectPool.h"
+#import "SGFFObjectQueue.h"
 
 
 typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
@@ -23,7 +24,7 @@ typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
 };
 
 
-@protocol SGFFOutputRender <NSObject, SGFFObjectPoolItem>
+@protocol SGFFOutputRender <NSObject, SGFFObjectPoolItem, SGFFObjectQueueItem>
 
 - (SGFFOutputRenderType)type;
 

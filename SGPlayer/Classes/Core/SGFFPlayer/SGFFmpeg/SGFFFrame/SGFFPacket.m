@@ -22,6 +22,7 @@ SGFFObjectPoolItemLockingInterface
 {
     if (self = [super init])
     {
+        NSLog(@"%s", __func__);
         self.corePacket = av_packet_alloc();
     }
     return self;
@@ -29,6 +30,7 @@ SGFFObjectPoolItemLockingInterface
 
 - (void)dealloc
 {
+    NSLog(@"%s", __func__);
     if (self.corePacket)
     {
         av_packet_free(&_corePacket);

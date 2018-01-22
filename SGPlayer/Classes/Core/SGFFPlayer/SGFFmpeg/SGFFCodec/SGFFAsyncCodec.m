@@ -13,8 +13,8 @@
 
 @property (nonatomic, assign) SGFFCodecState state;
 
-@property (nonatomic, strong) SGFFPacketQueue * packetQueue;
-@property (nonatomic, strong) SGFFOutputRenderQueue * outputRenderQueue;
+@property (nonatomic, strong) SGFFObjectQueue * packetQueue;
+@property (nonatomic, strong) SGFFObjectQueue * outputRenderQueue;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
@@ -28,7 +28,7 @@
 
 + (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
 
-static AVPacket flushPacket;
+static SGFFPacket * flushPacket;
 
 - (instancetype)init
 {
@@ -36,9 +36,7 @@ static AVPacket flushPacket;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            av_init_packet(&flushPacket);
-            flushPacket.data = (uint8_t *)&flushPacket;
-            flushPacket.duration = 0;
+            flushPacket = [[SGFFPacket alloc] init];
         });
     }
     return self;
@@ -47,8 +45,8 @@ static AVPacket flushPacket;
 - (BOOL)open
 {
     self.state = SGFFCodecStateOpening;
-    self.packetQueue = [[SGFFPacketQueue alloc] init];
-    self.outputRenderQueue = [[SGFFOutputRenderQueue alloc] initWithMaxCount:self.outputRenderQueueMaxCount];
+    self.packetQueue = [[SGFFObjectQueue alloc] init];
+    self.outputRenderQueue = [[SGFFObjectQueue alloc] initWithMaxCount:self.outputRenderQueueMaxCount];
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
     self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -64,7 +62,7 @@ static AVPacket flushPacket;
 {
     [self.packetQueue flush];
     [self.outputRenderQueue flush];
-    [self.packetQueue putPacket:flushPacket];
+    [self.packetQueue putObjectSync:flushPacket];
     [self.capacityDelegate codecDidChangeCapacity:self];
 }
 
@@ -79,14 +77,14 @@ static AVPacket flushPacket;
 
 - (BOOL)putPacket:(SGFFPacket *)packet
 {
-//    [self.packetQueue putPacket:packet];
+//    [self.packetQueue putObjectSync:packet];
     [self.capacityDelegate codecDidChangeCapacity:self];
     return YES;
 }
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
 {
-    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsync];
+    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectSync];
     if (outputRender)
     {
         [self.capacityDelegate codecDidChangeCapacity:self];
@@ -106,12 +104,12 @@ static AVPacket flushPacket;
         }
         else if (self.state == SGFFCodecStateDecoding)
         {
-            AVPacket packet = [self.packetQueue getPacketSync];
-            if (packet.data == flushPacket.data)
+            SGFFPacket * packet = [self.packetQueue getObjectSync];
+            if (packet == flushPacket)
             {
                 [self doFlushCodec];
             }
-            else if (packet.data)
+            else if (packet)
             {
                 @autoreleasepool
                 {
@@ -138,16 +136,16 @@ static AVPacket flushPacket;
                             [frame unlock];
                         }
                     }
+                    [packet unlock];
                 }
             }
-            av_packet_unref(&packet);
             continue;
         }
     }
 }
 
 - (void)doFlushCodec {}
-- (NSArray <id<SGFFFrame>> *)doDecode:(AVPacket)packet error:(NSError * __autoreleasing *)error {return nil;}
+- (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error {return nil;}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}

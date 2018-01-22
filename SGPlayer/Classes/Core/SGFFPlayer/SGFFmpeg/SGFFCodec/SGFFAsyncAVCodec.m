@@ -83,9 +83,9 @@
     }
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(AVPacket)packet error:(NSError **)error
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError **)error
 {
-    int result = avcodec_send_packet(self.codecContext, &packet);
+    int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)
     {
         return nil;
