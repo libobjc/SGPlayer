@@ -77,7 +77,7 @@ static SGFFPacket * flushPacket;
 
 - (BOOL)putPacket:(SGFFPacket *)packet
 {
-//    [self.packetQueue putObjectSync:packet];
+    [self.packetQueue putObjectSync:packet];
     [self.capacityDelegate codecDidChangeCapacity:self];
     return YES;
 }
