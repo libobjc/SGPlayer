@@ -14,9 +14,9 @@
     size_t buffer_size;
 }
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
-    return SGFFFrameTypeAudio;
+    return SGFFFrameType2Audio;
 }
 
 - (int)size

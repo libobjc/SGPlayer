@@ -6,15 +6,15 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGFFVideoFrame.h"
+#import "SGFFVideoFrame2.h"
 #import "SGFFTools.h"
 #import "SGYUVTools.h"
 
-@implementation SGFFVideoFrame
+@implementation SGFFVideoFrame2
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
-    return SGFFFrameTypeVideo;
+    return SGFFFrameType2Video;
 }
 
 @end
@@ -36,7 +36,7 @@
 
 @implementation SGFFAVYUVVideoFrame
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
     return SGFFFrameTypeAVYUVVideo;
 }
@@ -199,7 +199,7 @@
 
 @implementation SGFFCVYUVVideoFrame
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
     return SGFFFrameTypeCVYUVVideo;
 }

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFVideoFrame.h"
+#import "SGFFVideoFrame2.h"
 #import "avformat.h"
 
 @class SGFFVideoDecoder;
@@ -55,8 +55,8 @@
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL endOfFile;
 
-- (SGFFVideoFrame *)getFrameAsync;
-- (SGFFVideoFrame *)getFrameAsyncPosistion:(NSTimeInterval)position;
+- (SGFFVideoFrame2 *)getFrameAsync;
+- (SGFFVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position;
 - (void)discardFrameBeforPosition:(NSTimeInterval)position;
 
 - (void)putPacket:(AVPacket)packet;

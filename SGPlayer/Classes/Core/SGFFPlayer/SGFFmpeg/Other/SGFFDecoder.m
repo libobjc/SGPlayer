@@ -375,7 +375,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     return audioFrame;
 }
 
-- (SGFFVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+- (SGFFVideoFrame2 *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
                                                       currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.closed || self.error) {
@@ -395,7 +395,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
     
     NSTimeInterval timeInterval = [NSDate date].timeIntervalSince1970;
-    SGFFVideoFrame * videoFrame = nil;
+    SGFFVideoFrame2 * videoFrame = nil;
     if (self.formatContext.audioEnable)
     {
         if (self.videoFrameTimeClock < 0) {

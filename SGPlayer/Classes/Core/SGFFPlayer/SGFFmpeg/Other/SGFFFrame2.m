@@ -40,9 +40,9 @@
 
 @implementation SGFFSubtileFrame
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
-    return SGFFFrameTypeSubtitle;
+    return SGFFFrameType2Subtitle;
 }
 
 @end
@@ -50,7 +50,7 @@
 
 @implementation SGFFArtworkFrame
 
-- (SGFFFrameType)type
+- (SGFFFrameType2)type
 {
     return SGFFFrameTypeArtwork;
 }

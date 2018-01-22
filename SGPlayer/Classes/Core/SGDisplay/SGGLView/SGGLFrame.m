@@ -11,7 +11,7 @@
 @interface SGGLFrame ()
 
 @property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
-@property (nonatomic, strong) SGFFVideoFrame * videoFrame;
+@property (nonatomic, strong) SGFFVideoFrame2 * videoFrame;
 
 @end
 
@@ -43,7 +43,7 @@
     return nil;
 }
 
-- (void)updateWithSGFFVideoFrame:(SGFFVideoFrame *)videoFrame;
+- (void)updateWithSGFFVideoFrame:(SGFFVideoFrame2 *)videoFrame;
 {
     [self flush];
     

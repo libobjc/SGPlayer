@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, SGFFFrameType) {
-    SGFFFrameTypeVideo,
+typedef NS_ENUM(NSUInteger, SGFFFrameType2) {
+    SGFFFrameType2Video,
     SGFFFrameTypeAVYUVVideo,
     SGFFFrameTypeCVYUVVideo,
-    SGFFFrameTypeAudio,
-    SGFFFrameTypeSubtitle,
+    SGFFFrameType2Audio,
+    SGFFFrameType2Subtitle,
     SGFFFrameTypeArtwork,
 };
 
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType) {
 @property (nonatomic, weak) id <SGFFFrameDelegate> delegate;
 @property (nonatomic, assign, readonly) BOOL playing;
 
-@property (nonatomic, assign) SGFFFrameType type;
+@property (nonatomic, assign) SGFFFrameType2 type;
 @property (nonatomic, assign) NSTimeInterval position;
 @property (nonatomic, assign) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) int size;

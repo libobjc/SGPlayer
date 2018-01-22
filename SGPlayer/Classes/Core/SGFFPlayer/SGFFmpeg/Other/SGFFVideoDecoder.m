@@ -120,7 +120,7 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame *)getFrameAsync
+- (SGFFVideoFrame2 *)getFrameAsync
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
         return [self.frameQueue getFrameAsync];
@@ -129,12 +129,12 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame *)getFrameAsyncPosistion:(NSTimeInterval)position
+- (SGFFVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
         NSMutableArray <SGFFFrame2 *> * discardFrames = nil;
-        SGFFVideoFrame * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
-        for (SGFFVideoFrame * obj in discardFrames) {
+        SGFFVideoFrame2 * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
+        for (SGFFVideoFrame2 * obj in discardFrames) {
             [obj cancel];
         }
         return videoFrame;
@@ -147,7 +147,7 @@ static AVPacket flush_packet;
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
         NSMutableArray <SGFFFrame2 *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
-        for (SGFFVideoFrame * obj in discardFrames) {
+        for (SGFFVideoFrame2 * obj in discardFrames) {
             [obj cancel];
         }
     }
@@ -211,7 +211,7 @@ static AVPacket flush_packet;
         }
         if (packet.stream_index < 0 || packet.data == NULL) continue;
         
-        SGFFVideoFrame * videoFrame = nil;
+        SGFFVideoFrame2 * videoFrame = nil;
         int result = avcodec_send_packet(_codec_context, &packet);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
@@ -238,7 +238,7 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame *)codecContextDecodeSync
+- (SGFFVideoFrame2 *)codecContextDecodeSync
 {
     if (self.canceled || self.error) {
         return nil;
@@ -259,7 +259,7 @@ static AVPacket flush_packet;
         return nil;
     }
 
-    SGFFVideoFrame * videoFrame = nil;
+    SGFFVideoFrame2 * videoFrame = nil;
     int result = avcodec_send_packet(_codec_context, &packet);
     if (result < 0) {
         if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
@@ -343,7 +343,7 @@ static AVPacket flush_packet;
         }
         if (packet.stream_index < 0 || packet.data == NULL) continue;
         
-        SGFFVideoFrame * videoFrame = nil;
+        SGFFVideoFrame2 * videoFrame = nil;
         BOOL vtbEnable = [self.videoToolBox trySetupVTSession];
         if (vtbEnable) {
             BOOL needFlush = NO;
@@ -366,7 +366,7 @@ static AVPacket flush_packet;
     self.frameQueue.ignoreMinFrameCountForGetLimit = YES;
 }
 
-- (SGFFVideoFrame *)videoFrameFromVideoToolBox:(AVPacket)packet
+- (SGFFVideoFrame2 *)videoFrameFromVideoToolBox:(AVPacket)packet
 {
     CVImageBufferRef imageBuffer = [self.videoToolBox imageBuffer];
     if (imageBuffer == NULL) return nil;

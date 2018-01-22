@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "SGFFVideoFrame.h"
+#import "SGFFVideoFrame2.h"
 #import "SGFFTrack.h"
 
 @class SGFFFormatContext2;

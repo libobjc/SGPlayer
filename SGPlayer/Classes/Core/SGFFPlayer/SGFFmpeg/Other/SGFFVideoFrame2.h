@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameRotateType) {
     SGFFVideoFrameRotateType270,
 };
 
-@interface SGFFVideoFrame : SGFFFrame2
+@interface SGFFVideoFrame2 : SGFFFrame2
 
 @property (nonatomic, assign) SGFFVideoFrameRotateType rotateType;
 
@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameRotateType) {
 
 
 // FFmpeg AVFrame YUV frame
-@interface SGFFAVYUVVideoFrame : SGFFVideoFrame
+@interface SGFFAVYUVVideoFrame : SGFFVideoFrame2
 
 {
 @public
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameRotateType) {
 
 
 // CoreVideo YUV frame
-@interface SGFFCVYUVVideoFrame : SGFFVideoFrame
+@interface SGFFCVYUVVideoFrame : SGFFVideoFrame2
 
 @property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
 
