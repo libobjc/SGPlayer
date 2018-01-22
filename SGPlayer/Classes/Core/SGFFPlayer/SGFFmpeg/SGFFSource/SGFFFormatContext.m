@@ -250,6 +250,7 @@ static int formatContextInterruptCallback(void * ctx)
             if (readResult < 0)
             {
                 self.state = SGFFSourceStateFinished;
+                [packet unlock];
                 break;
             }
             [packet fill];

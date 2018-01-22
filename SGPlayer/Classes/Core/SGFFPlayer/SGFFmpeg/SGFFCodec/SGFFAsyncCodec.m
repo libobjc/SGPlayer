@@ -84,7 +84,7 @@ static SGFFPacket * flushPacket;
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
 {
-    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectSync];
+    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsync];
     if (outputRender)
     {
         [self.capacityDelegate codecDidChangeCapacity:self];
