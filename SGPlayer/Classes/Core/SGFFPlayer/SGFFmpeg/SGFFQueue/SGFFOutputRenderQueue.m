@@ -37,6 +37,7 @@
 - (void)putObjectSync:(id <SGFFOutputRender>)object
 {
     if (self.didDestoryed) {
+        [object unlock];
         return;
     }
     [self.condition lock];
@@ -44,6 +45,7 @@
     {
         if (self.didDestoryed)
         {
+            [object unlock];
             [self.condition unlock];
             return;
         }
@@ -57,11 +59,13 @@
 - (void)putObjectAsync:(id <SGFFOutputRender>)object
 {
     if (self.didDestoryed) {
+        [object unlock];
         return;
     }
     [self.condition lock];
     if (self.objects.count >= self.maxCount)
     {
+        [object unlock];
         [self.condition unlock];
         return;
     }
@@ -135,6 +139,10 @@
 - (void)flush
 {
     [self.condition lock];
+    for (id <SGFFOutputRender> obj in self.objects)
+    {
+        [obj unlock];
+    }
     [self.objects removeAllObjects];
     self.size = 0;
     self.duration = 0;

@@ -136,6 +136,8 @@
         swr_free(&_swrContext);
         _swrContext = nil;
     }
+    [self.currentRender unlock];
+    self.currentRender = nil;
 }
 
 
