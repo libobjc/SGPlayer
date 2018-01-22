@@ -7,6 +7,8 @@
 //
 
 #import "SGFFVideoAVCodec.h"
+#import "SGFFVideoFrame.h"
+#import "SGFFObjectPool.h"
 
 @interface SGFFVideoAVCodec ()
 
@@ -24,11 +26,12 @@
     return 3;
 }
 
-- (void)decodeThread {}
-
 - (id <SGFFFrame>)fetchFrame
 {
-    return nil;
+    SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
+    [frame updateDataType:SGFFVideoFrameDataTypeAVFrame];
+    frame.timebase = self.timebase;
+    return frame;
 }
 
 @end
