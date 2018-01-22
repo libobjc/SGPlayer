@@ -11,7 +11,7 @@
 
 @interface SGFFFrameInternal ()
 
-@property (nonatomic, assign) NSInteger lockingCount;
+SGFFObjectPoolItemInterface
 
 @end
 
@@ -39,19 +39,6 @@
     return nil;
 }
 
-- (void)lock
-{
-    self.lockingCount++;
-}
-
-- (void)unlock
-{
-    self.lockingCount--;
-    if (self.lockingCount <= 0)
-    {
-        self.lockingCount = 0;
-        [[SGFFObjectPool sharePool] comeback:self];
-    }
-}
+SGFFObjectPoolItemLockingImplementation
 
 @end

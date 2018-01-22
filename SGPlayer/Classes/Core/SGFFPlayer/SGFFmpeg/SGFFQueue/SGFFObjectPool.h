@@ -8,6 +8,32 @@
 
 #import <Foundation/Foundation.h>
 
+
+#define SGFFObjectPoolItemInterface \
+@property (nonatomic, assign) NSInteger lockingCount;\
+
+
+#define SGFFObjectPoolItemImplementation \
+- (void)lock\
+{\
+    self.lockingCount++;\
+}\
+\
+- (void)unlock\
+{\
+    self.lockingCount--;\
+    if (self.lockingCount <= 0)\
+    {\
+        self.lockingCount = 0;\
+        [[SGFFObjectPool sharePool] comeback:self];\
+    }\
+}\
+
+
+#define SGFFObjectPoolItemLockingInterface      SGFFObjectPoolItemInterface
+#define SGFFObjectPoolItemLockingImplementation SGFFObjectPoolItemImplementation
+
+
 @protocol SGFFObjectPoolItem <NSObject>
 
 - (void)lock;
