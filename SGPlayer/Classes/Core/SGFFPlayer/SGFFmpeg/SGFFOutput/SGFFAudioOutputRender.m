@@ -8,11 +8,28 @@
 
 #import "SGFFAudioOutputRender.h"
 
+@interface SGFFAudioOutputRender ()
+
+@property (nonatomic, assign) float * samples;
+@property (nonatomic, assign) long long length;
+@property (nonatomic, assign) long long bufferLength;
+
+@end
+
 @implementation SGFFAudioOutputRender
 
 - (SGFFOutputRenderType)type
 {
     return SGFFOutputRenderTypeAudio;
+}
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        
+    }
+    return self;
 }
 
 - (void)dealloc
@@ -24,19 +41,27 @@
     }
 }
 
-@end
-
-
-@implementation SGFFAudioOutputRender (Factory)
-
-- (SGFFAudioOutputRender *)initWithLength:(long long)length
+- (void)updateLength:(long long)length
 {
-    if (self = [super init])
+    self.length = length;
+    if (self.bufferLength < self.length)
     {
-        self.length = length;
-        self.samples = malloc((unsigned long)self.length);
+        if (self.bufferLength > 0 && self.samples != nil)
+        {
+            free(self.samples);
+        }
+        self.bufferLength = length;
+        self.samples = malloc((unsigned long)self.bufferLength);
     }
-    return self;
+    self.offset = 0;
+}
+
+- (void)clear
+{
+    [super clear];
+    memset(self.samples, 0, self.bufferLength);
+    self.length = 0;
+    self.offset = 0;
 }
 
 @end

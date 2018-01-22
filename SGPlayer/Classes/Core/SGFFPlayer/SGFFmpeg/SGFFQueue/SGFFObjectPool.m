@@ -65,6 +65,7 @@
     NSMutableSet <id <SGFFObjectPoolItem>> * set = [self.pool objectForKey:className];
     if (![set containsObject:object]) {
         [set addObject:object];
+        [object clear];
     }
     [self.coreLock unlock];
 }

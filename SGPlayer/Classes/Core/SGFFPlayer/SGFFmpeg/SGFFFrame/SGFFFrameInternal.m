@@ -41,4 +41,6 @@ SGFFObjectPoolItemInterface
 
 SGFFObjectPoolItemLockingImplementation
 
+- (void)clear {}
+
 @end

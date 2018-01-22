@@ -38,6 +38,7 @@
 
 - (void)lock;
 - (void)unlock;
+- (void)clear;
 
 @end
 

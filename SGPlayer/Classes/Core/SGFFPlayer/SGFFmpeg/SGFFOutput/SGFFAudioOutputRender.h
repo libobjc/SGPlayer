@@ -11,15 +11,10 @@
 
 @interface SGFFAudioOutputRender : SGFFOutputRenderInternal
 
-@property (nonatomic, assign) float * samples;
-@property (nonatomic, assign) long long length;
+@property (nonatomic, assign, readonly) float * samples;
+@property (nonatomic, assign, readonly) long long length;
 @property (nonatomic, assign) long long offset;
 
-@end
-
-
-@interface SGFFAudioOutputRender (Factory)
-
-- (SGFFAudioOutputRender *)initWithLength:(long long)length;
+- (void)updateLength:(long long)length;
 
 @end

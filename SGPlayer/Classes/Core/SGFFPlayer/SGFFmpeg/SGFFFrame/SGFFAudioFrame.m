@@ -60,4 +60,27 @@
     }
 }
 
+- (void)clear
+{
+    [super clear];
+    self.timebase = SGFFTimebaseIdentity();
+    self.format = AV_SAMPLE_FMT_NONE;
+    self.numberOfSamples = 0;
+    self.sampleRate = 0;
+    self.numberOfChannels = 0;
+    self.channelLayout = 0;
+    self.position = 0;
+    self.duration = 0;
+    self.size = 0;
+    self.bestEffortTimestamp = 0;
+    self.packetPosition = 0;
+    self.packetDuration = 0;
+    self.packetSize = 0;
+    self.data = nil;
+    if (self.coreFrame)
+    {
+        av_frame_unref(self.coreFrame);
+    }
+}
+
 @end

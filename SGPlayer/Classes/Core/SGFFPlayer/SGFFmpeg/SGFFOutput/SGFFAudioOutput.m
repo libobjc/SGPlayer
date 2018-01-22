@@ -98,8 +98,9 @@
             numberOfFrames = audioFrame.numberOfSamples;
         }
         
-        const NSUInteger numberOfElements = numberOfFrames * [SGAudioManager manager].numberOfChannels;
-        SGFFAudioOutputRender * render = [[SGFFAudioOutputRender alloc] initWithLength:numberOfElements * sizeof(float)];
+        SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
+        unsigned long numberOfElements = (unsigned long)numberOfFrames * [SGAudioManager manager].numberOfChannels;
+        [render updateLength:numberOfElements];
         
         float scale = 1.0 / (float)INT16_MAX ;
         vDSP_vflt16((SInt16 *)audioDataBuffer, 1, render.samples, 1, numberOfElements);
@@ -157,7 +158,7 @@
             }
             
             const Byte * bytes = (Byte *)self.currentRender.samples + self.currentRender.offset;
-            const NSUInteger bytesLeft = self.currentRender.length - self.currentRender.offset;
+            const NSUInteger bytesLeft = (unsigned long)(self.currentRender.length - self.currentRender.offset);
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
             const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
@@ -170,6 +171,7 @@
                 self.currentRender.offset += bytesToCopy;
             } else {
                 self.currentRender = nil;
+                [self.currentRender unlock];
             }
         }
     }
