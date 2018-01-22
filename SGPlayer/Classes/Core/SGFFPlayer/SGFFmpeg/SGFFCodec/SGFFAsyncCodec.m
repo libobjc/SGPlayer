@@ -77,9 +77,9 @@ static AVPacket flushPacket;
     [self.operationQueue waitUntilAllOperationsAreFinished];
 }
 
-- (BOOL)putPacket:(AVPacket)packet
+- (BOOL)putPacket:(SGFFPacket *)packet
 {
-    [self.packetQueue putPacket:packet];
+//    [self.packetQueue putPacket:packet];
     [self.capacityDelegate codecDidChangeCapacity:self];
     return YES;
 }

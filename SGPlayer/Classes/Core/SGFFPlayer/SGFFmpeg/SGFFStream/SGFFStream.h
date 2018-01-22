@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFCodec.h"
-#import "avformat.h"
+#import "SGFFPacket.h"
 
 @interface SGFFStream : NSObject
 
@@ -19,6 +19,6 @@
 - (BOOL)open;
 - (void)flush;
 - (void)close;
-- (BOOL)putPacket:(AVPacket)packet;
+- (BOOL)putPacket:(SGFFPacket *)packet;
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "SGFFFormatContext.h"
+#import "SGFFPacket.h"
 #import "SGFFError.h"
 #import "avformat.h"
 
@@ -213,8 +214,6 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)readThread
 {
-    AVPacket packet;
-    av_init_packet(&packet);
     while (YES)
     {
         if (self.state == SGFFSourceStateFinished
@@ -246,13 +245,16 @@ static int formatContextInterruptCallback(void * ctx)
         }
         else if (self.state == SGFFSourceStateReading)
         {
-            int readResult = av_read_frame(_formatContext, &packet);
+            SGFFPacket * packet = [[SGFFObjectPool sharePool] objectWithClass:[SGFFPacket class]];
+            int readResult = av_read_frame(_formatContext, packet.corePacket);
             if (readResult < 0)
             {
                 self.state = SGFFSourceStateFinished;
                 break;
             }
+            [packet fill];
             [self.delegate source:self didOutputPacket:packet];
+            [packet unlock];
             continue;
         }
     }

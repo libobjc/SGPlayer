@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFStream.h"
+#import "SGFFPacket.h"
 
 
 @protocol SGFFSource;
@@ -58,7 +59,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
 - (void)sourceDidFinishedSeeking:(id <SGFFSource>)source;
-- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet;
+- (void)source:(id <SGFFSource>)source didOutputPacket:(SGFFPacket *)packet;
 
 @end
 

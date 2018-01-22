@@ -40,7 +40,7 @@
     }
 }
 
-- (BOOL)putPacket:(AVPacket)packet
+- (BOOL)putPacket:(SGFFPacket *)packet
 {
     if (self.codec)
     {

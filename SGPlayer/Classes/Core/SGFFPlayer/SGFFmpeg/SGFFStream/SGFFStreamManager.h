@@ -37,7 +37,7 @@
 - (void)open;
 - (void)flush;
 - (void)close;
-- (BOOL)putPacket:(AVPacket)packet;
+- (BOOL)putPacket:(SGFFPacket *)packet;
 
 - (long long)size;
 

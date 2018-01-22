@@ -97,11 +97,11 @@
     }
 }
 
-- (BOOL)putPacket:(AVPacket)packet
+- (BOOL)putPacket:(SGFFPacket *)packet
 {
     for (SGFFStream * obj in self.streams)
     {
-        if (obj.index == packet.stream_index)
+        if (obj.index == packet.streamIndex)
         {
             return [obj putPacket:packet];
         }

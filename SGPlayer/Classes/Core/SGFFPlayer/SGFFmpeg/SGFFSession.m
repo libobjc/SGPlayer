@@ -95,13 +95,9 @@
     [self.streamManager flush];
 }
 
-- (void)source:(id <SGFFSource>)source didOutputPacket:(AVPacket)packet
+- (void)source:(id <SGFFSource>)source didOutputPacket:(SGFFPacket *)packet
 {
-    BOOL success = [self.streamManager putPacket:packet];
-    if (!success)
-    {
-        av_packet_unref(&packet);
-    }
+    [self.streamManager putPacket:packet];
 }
 
 
