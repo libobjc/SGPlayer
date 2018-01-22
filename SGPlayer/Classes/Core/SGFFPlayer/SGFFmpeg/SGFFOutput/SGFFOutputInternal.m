@@ -13,5 +13,7 @@
 @synthesize renderSource = _renderSource;
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame {return nil;}
+- (void)play {};
+- (void)pause {};
 
 @end

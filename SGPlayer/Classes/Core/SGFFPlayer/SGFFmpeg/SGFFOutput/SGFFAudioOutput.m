@@ -8,13 +8,13 @@
 
 #import "SGFFAudioOutput.h"
 #import "SGFFAudioOutputRender.h"
-#import "SGAudioManager.h"
+#import "SGFFAudioPlayer.h"
 #import "SGFFError.h"
 #import <Accelerate/Accelerate.h>
 #import "swscale.h"
 #import "swresample.h"
 
-@interface SGFFAudioOutput () <SGAudioManagerDelegate>
+@interface SGFFAudioOutput () <SGFFAudioPlayerDelegate>
 
 {
     SwrContext * _swrContext;
@@ -22,6 +22,7 @@
     int _swrBufferSize;
 }
 
+@property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
 
 @end
@@ -36,9 +37,9 @@
         if (!_swrContext)
         {
             _swrContext = swr_alloc_set_opts(NULL,
-                                              av_get_default_channel_layout([SGAudioManager manager].numberOfChannels),
+                                              av_get_default_channel_layout(self.audioPlayer.numberOfChannels),
                                               AV_SAMPLE_FMT_S16,
-                                              [SGAudioManager manager].samplingRate,
+                                              self.audioPlayer.sampleRate,
                                               av_get_default_channel_layout((int)audioFrame.numberOfChannels),
                                               audioFrame.format,
                                               (int)audioFrame.sampleRate,
@@ -60,11 +61,11 @@
         void * audioDataBuffer;
         if (_swrContext)
         {
-            const int channel = MAX(1, (int)[SGAudioManager manager].numberOfChannels / (int)audioFrame.numberOfChannels);
-            const int sample = MAX(1, [SGAudioManager manager].samplingRate / audioFrame.sampleRate);
+            const int channel = MAX(1, (int)self.audioPlayer.numberOfChannels / (int)audioFrame.numberOfChannels);
+            const int sample = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
             const int ratio = sample * channel * 2;
             const int bufferSize = av_samples_get_buffer_size(NULL,
-                                                              [SGAudioManager manager].numberOfChannels,
+                                                              self.audioPlayer.numberOfChannels,
                                                               (int)audioFrame.numberOfSamples * ratio,
                                                               AV_SAMPLE_FMT_S16,
                                                               1);
@@ -99,7 +100,7 @@
         }
         
         SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
-        const NSUInteger numberOfElements = numberOfFrames * [SGAudioManager manager].numberOfChannels;
+        const NSUInteger numberOfElements = numberOfFrames * self.audioPlayer.numberOfChannels;
         [render updateLength:numberOfElements * sizeof(float)];
         
         float scale = 1.0 / (float)INT16_MAX ;
@@ -116,15 +117,23 @@
 {
     if (self = [super init])
     {
-        [[SGAudioManager manager] playWithDelegate:self];
+        self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
     }
     return self;
 }
 
+- (void)play
+{
+    [self.audioPlayer play];
+}
+
+- (void)pause
+{
+    [self.audioPlayer pause];
+}
+
 - (void)dealloc
 {
-    [[SGAudioManager manager] pause];
-    
     if (_swrBuffer)
     {
         free(_swrBuffer);
@@ -143,7 +152,7 @@
 
 #pragma mark - SGAudioManagerDelegate
 
-- (void)audioManager:(SGAudioManager *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
+- (void)audioManager:(SGFFAudioPlayer *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
 {
     @autoreleasepool
     {

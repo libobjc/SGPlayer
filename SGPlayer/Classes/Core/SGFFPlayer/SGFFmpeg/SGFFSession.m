@@ -111,6 +111,7 @@
     self.outputManager.videoOutput = [[SGFFVideoOutput alloc] init];
     self.outputManager.videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
     [self.source read];
+    [self.outputManager.audioOutput play];
 }
 
 - (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager

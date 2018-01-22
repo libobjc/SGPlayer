@@ -1597,6 +1597,7 @@
 			children = (
 				9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */,
 				9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */,
+				9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */,
 				9CF15DF420119FBE00585326 /* SGFFOutput */,
 				9CF15DF320119D0300585326 /* SGFFData */,
 				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
@@ -1832,8 +1833,6 @@
 				9C389ABE20106DB2003259FF /* SGFFTime.m */,
 				9C051BD42012575E00CBB22C /* SGFFLog.h */,
 				9C051BD52012575E00CBB22C /* SGFFLog.m */,
-				9CE6842E200DD12F007BD834 /* SGFFAudioPlayer.h */,
-				9CE6842F200DD12F007BD834 /* SGFFAudioPlayer.m */,
 				9C2534531FAB151500BBFA5C /* SGFFAudioDecoder.h */,
 				9C2534541FAB151500BBFA5C /* SGFFAudioDecoder.m */,
 				9C2534551FAB151500BBFA5C /* SGFFAudioFrame2.h */,
@@ -1892,6 +1891,15 @@
 				9CF52D06200F4EDE00950B81 /* SGFFVideoAVCodec.m */,
 			);
 			path = SGFFCodec;
+			sourceTree = "<group>";
+		};
+		9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				9CE6842E200DD12F007BD834 /* SGFFAudioPlayer.h */,
+				9CE6842F200DD12F007BD834 /* SGFFAudioPlayer.m */,
+			);
+			path = SGFFAudioPlayer;
 			sourceTree = "<group>";
 		};
 		9CE6F5172004D97C00D1F4C8 /* SGPlatform */ = {

@@ -24,6 +24,9 @@
 @property (nonatomic, weak) id <SGFFOutputRenderSource> renderSource;
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
 
+- (void)play;
+- (void)pause;
+
 @end
 
 
