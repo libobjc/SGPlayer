@@ -27,13 +27,14 @@
 {
     if (self = [super init])
     {
-        
+        NSLog(@"%s", __func__);
     }
     return self;
 }
 
 - (void)dealloc
 {
+    NSLog(@"%s", __func__);
     if (self.samples)
     {
         free(self.samples);
@@ -46,12 +47,12 @@
     self.length = length;
     if (self.bufferLength < self.length)
     {
-        if (self.bufferLength > 0 && self.samples != nil)
+        if (self.samples != nil)
         {
             free(self.samples);
         }
-        self.bufferLength = length;
-        self.samples = malloc((unsigned long)self.bufferLength);
+        self.bufferLength = self.length;
+        self.samples = malloc(self.bufferLength);
     }
     self.offset = 0;
 }
