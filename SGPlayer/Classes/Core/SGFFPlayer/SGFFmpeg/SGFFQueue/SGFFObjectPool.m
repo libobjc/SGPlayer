@@ -10,7 +10,7 @@
 
 @interface SGFFObjectPool ()
 
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, NSMutableSet <id <SGFFObjectPoolItem>> *> * pool;
 
 @end
@@ -31,7 +31,7 @@
 {
     if (self = [super init])
     {
-        self.coreLock = [[NSLock alloc] init];
+        self.coreLock = [[NSRecursiveLock alloc] init];
         self.pool = [NSMutableDictionary dictionary];
     }
     return self;

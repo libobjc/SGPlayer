@@ -40,7 +40,7 @@
 {
     if (self.videoFrame != videoFrame)
     {
-        [self.videoFrame unlock];
+        [self clear];
         self.videoFrame = videoFrame;
         [self.videoFrame lock];
     }
@@ -49,7 +49,11 @@
 - (void)clear
 {
     [super clear];
-    self.videoFrame = nil;
+    if (self.videoFrame)
+    {
+        [self.videoFrame unlock];
+        self.videoFrame = nil;
+    }
 }
 
 @end
