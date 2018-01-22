@@ -13,9 +13,10 @@
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
-    SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
-    [render updateVideoFrame:frame.videoFrame];
-    return render;
+    return nil;
+//    SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
+//    [render updateVideoFrame:frame.videoFrame];
+//    return render;
 }
 
 @end
