@@ -7,6 +7,7 @@
 //
 
 #import "SGFFAsyncCodec.h"
+#import "SGPlayerMacro.h"
 
 @interface SGFFAsyncCodec ()
 
@@ -114,16 +115,24 @@ static AVPacket flushPacket;
             {
                 @autoreleasepool
                 {
-                    id <SGFFFrame> frame = [self doDecode:packet];
-                    if (frame)
+                    NSError * error = nil;
+                    NSArray <id <SGFFFrame>> * frames = [self doDecode:packet error:&error];
+                    if (error)
                     {
-                        id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
-                        if (newFrame)
+                        SGPlayerLog(@"Decoder did Failed : %@", error);
+                    }
+                    else
+                    {
+                        for (id <SGFFFrame> frame in frames)
                         {
-                            id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
-                            if (outputRender)
+                            id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
+                            if (newFrame)
                             {
-                                [self.outputRenderQueue putObjectSync:outputRender];
+                                id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
+                                if (outputRender)
+                                {
+                                    [self.outputRenderQueue putObjectSync:outputRender];
+                                }
                             }
                         }
                     }
@@ -136,7 +145,7 @@ static AVPacket flushPacket;
 }
 
 - (void)doFlushCodec {}
-- (id <SGFFFrame>)doDecode:(AVPacket)packet {return nil;}
+- (NSArray <id<SGFFFrame>> *)doDecode:(AVPacket)packet error:(NSError * __autoreleasing *)error {return nil;}
 - (NSInteger)outputRenderQueueMaxCount {return 5;}
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}

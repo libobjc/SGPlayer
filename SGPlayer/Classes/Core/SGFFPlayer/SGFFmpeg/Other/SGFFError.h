@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, SGFFErrorCode)
     SGFFErrorCodeCodecAudioSendPacket,
     SGFFErrorCodeCodecVideoReceiveFrame,
     SGFFErrorCodeCodecAudioReceiveFrame,
+    SGFFErrorCodeCodecReceiveFrame,
     SGFFErrorCodeCodecOpen2,
     SGFFErrorCodeAuidoSwrInit,
 };

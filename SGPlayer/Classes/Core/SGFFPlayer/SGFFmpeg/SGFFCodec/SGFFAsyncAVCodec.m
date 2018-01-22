@@ -92,29 +92,41 @@
     }
 }
 
-- (id <SGFFFrame>)doDecode:(AVPacket)packet
+- (NSArray <id <SGFFFrame>> *)doDecode:(AVPacket)packet error:(NSError **)error
 {
     int result = avcodec_send_packet(self.codecContext, &packet);
-    if (result < 0 && result != AVERROR(EAGAIN) && result != AVERROR_EOF)
+    if (result < 0)
     {
         return nil;
     }
+    NSMutableArray * array = nil;
     while (result >= 0)
     {
-        result = avcodec_receive_frame(self.codecContext, self.decodedFrame);
+        id <SGFFFrame> frame = [self fetchFrame];
+        NSAssert(frame, @"Fecth frame failed");
+        result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)
         {
-            if (result != AVERROR(EAGAIN) && result != AVERROR_EOF)
-            {
-                continue;
+            if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
+                
+            } else {
+                * error = SGFFGetErrorCode(result, SGFFErrorCodeCodecReceiveFrame);
             }
+            [frame unlock];
             break;
         }
-        return [self frameWithDecodedFrame:self.decodedFrame];   
+        else
+        {
+            if (!array) {
+                array = [NSMutableArray array];
+            }
+            [frame fill];
+            [array addObject:frame];
+        }
     }
-    return nil;
+    return array;
 }
 
-- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame {return nil;}
+- (id <SGFFFrame>)fetchFrame {return nil;}
 
 @end

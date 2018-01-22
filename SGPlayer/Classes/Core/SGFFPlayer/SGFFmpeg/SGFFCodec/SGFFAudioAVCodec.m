@@ -25,13 +25,9 @@
     return 5;
 }
 
-- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame
+- (id <SGFFFrame>)fetchFrame
 {
-    if (decodedFrame->data[0])
-    {
-        return [[SGFFAudioFrame alloc] initWithAVFrame:decodedFrame timebase:self.timebase];
-    }
-    return nil;
+    return [[SGFFAudioFrame alloc] initWithTimebase:self.timebase];
 }
 
 @end

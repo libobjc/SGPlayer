@@ -21,6 +21,11 @@
 - (long long)duration {return 0;}
 - (long long)size {return 0;}
 
+- (void)lock {}
+- (void)unlock {}
+- (void)fill {}
+- (AVFrame *)coreFrame {return nil;}
+
 - (SGFFAudioFrame *)audioFrame
 {
     if ([self isKindOfClass:[SGFFAudioFrame class]])

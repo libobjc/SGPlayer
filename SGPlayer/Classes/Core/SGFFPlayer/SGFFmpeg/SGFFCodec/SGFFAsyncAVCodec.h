@@ -14,6 +14,6 @@
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 @property (nonatomic, assign, readonly) AVCodecContext * codecContext;
 
-- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame;
+- (id <SGFFFrame>)fetchFrame;
 
 @end

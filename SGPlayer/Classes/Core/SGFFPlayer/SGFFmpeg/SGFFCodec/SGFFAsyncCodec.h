@@ -23,7 +23,7 @@
 
 - (void)decodeThread;
 - (void)doFlushCodec;
-- (id <SGFFFrame>)doDecode:(AVPacket)packet;
+- (NSArray <id <SGFFFrame>> *)doDecode:(AVPacket)packet error:(NSError **)error;
 - (NSInteger)outputRenderQueueMaxCount;        // Default is 5.
 
 @end

@@ -13,6 +13,6 @@
 
 @interface SGFFAudioFrame (Factory)
 
-- (SGFFAudioFrame *)initWithAVFrame:(AVFrame *)frame timebase:(SGFFTimebase)timebase;
+- (SGFFAudioFrame *)initWithTimebase:(SGFFTimebase)timebase;
 
 @end

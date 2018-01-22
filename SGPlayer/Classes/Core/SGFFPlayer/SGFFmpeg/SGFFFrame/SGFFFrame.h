@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFTime.h"
+#import "avformat.h"
 
 @class SGFFAudioFrame;
 @protocol SGFFFrameUtil;
@@ -40,6 +41,10 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 
 @protocol SGFFFrameUtil <NSObject>
 
+- (void)lock;
+- (void)unlock;
+- (void)fill;
+- (AVFrame *)coreFrame;
 - (SGFFAudioFrame *)audioFrame;
 
 @end

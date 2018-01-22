@@ -24,7 +24,9 @@
     return 3;
 }
 
-- (id <SGFFFrame>)frameWithDecodedFrame:(AVFrame *)decodedFrame
+- (void)decodeThread {}
+
+- (id <SGFFFrame>)fetchFrame
 {
     return nil;
 }
