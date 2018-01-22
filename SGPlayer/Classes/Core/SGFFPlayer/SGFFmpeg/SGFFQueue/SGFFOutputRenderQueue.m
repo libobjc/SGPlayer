@@ -37,7 +37,6 @@
 - (void)putObjectSync:(id <SGFFOutputRender>)object
 {
     if (self.didDestoryed) {
-        [object unlock];
         return;
     }
     [self.condition lock];
@@ -46,7 +45,6 @@
         [self.condition wait];
         if (self.didDestoryed)
         {
-            [object unlock];
             [self.condition unlock];
             return;
         }
@@ -59,13 +57,11 @@
 - (void)putObjectAsync:(id <SGFFOutputRender>)object
 {
     if (self.didDestoryed) {
-        [object unlock];
         return;
     }
     [self.condition lock];
     if (self.objects.count >= self.maxCount)
     {
-        [object unlock];
         [self.condition unlock];
         return;
     }
@@ -76,6 +72,7 @@
 
 - (void)putObject:(id <SGFFOutputRender>)object
 {
+    [object lock];
     [self.objects addObject:object];
     self.duration += object.duration;
     self.size += object.size;

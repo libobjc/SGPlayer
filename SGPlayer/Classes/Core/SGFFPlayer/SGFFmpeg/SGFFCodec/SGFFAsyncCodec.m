@@ -132,6 +132,7 @@ static AVPacket flushPacket;
                                 if (outputRender)
                                 {
                                     [self.outputRenderQueue putObjectSync:outputRender];
+                                    [outputRender unlock];
                                 }
                             }
                             [frame unlock];
