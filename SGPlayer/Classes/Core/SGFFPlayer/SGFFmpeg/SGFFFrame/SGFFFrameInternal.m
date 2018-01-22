@@ -8,6 +8,7 @@
 
 #import "SGFFFrameInternal.h"
 #import "SGFFAudioFrame.h"
+#import "SGFFVideoFrame.h"
 
 @interface SGFFFrameInternal ()
 
@@ -35,6 +36,15 @@ SGFFObjectPoolItemInterface
     if ([self isKindOfClass:[SGFFAudioFrame class]])
     {
         return (SGFFAudioFrame *)self;
+    }
+    return nil;
+}
+
+- (SGFFVideoFrame *)videoFrame
+{
+    if ([self isKindOfClass:[SGFFVideoFrame class]])
+    {
+        return (SGFFVideoFrame *)self;
     }
     return nil;
 }

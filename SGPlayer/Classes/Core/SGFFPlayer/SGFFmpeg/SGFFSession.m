@@ -12,6 +12,7 @@
 #import "SGFFCodecManager.h"
 #import "SGFFOutputManager.h"
 #import "SGFFAudioOutput.h"
+#import "SGFFVideoOutput.h"
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
@@ -111,6 +112,8 @@
     self.outputManager = [[SGFFOutputManager alloc] init];
     self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
     self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
+    self.outputManager.videoOutput = [[SGFFVideoOutput alloc] init];
+    self.outputManager.videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
     [self.source read];
 }
 

@@ -12,6 +12,7 @@
 @interface SGFFOutputManager : NSObject
 
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
+@property (nonatomic, strong) id <SGFFOutput> videoOutput;
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
 

@@ -16,6 +16,8 @@
     {
         case SGFFFrameTypeAudio:
             return [self.audioOutput renderWithFrame:frame];
+        case SGFFFrameTypeVideo:
+            return [self.videoOutput renderWithFrame:frame];
         default:
             return nil;
     }

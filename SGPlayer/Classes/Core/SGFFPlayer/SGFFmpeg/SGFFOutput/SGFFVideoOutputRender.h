@@ -7,7 +7,11 @@
 //
 
 #import "SGFFOutputRenderInternal.h"
+#import "SGFFVideoFrame.h"
 
 @interface SGFFVideoOutputRender : SGFFOutputRenderInternal
+
+- (SGFFVideoFrame *)videoFrame;
+- (void)updateVideoFrame:(SGFFVideoFrame *)videoFrame;
 
 @end

@@ -16,6 +16,7 @@
 #import "avformat.h"
 
 @class SGFFAudioFrame;
+@class SGFFVideoFrame;
 @protocol SGFFFrameUtil;
 
 
@@ -45,6 +46,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 - (void)fill;
 - (AVFrame *)coreFrame;
 - (SGFFAudioFrame *)audioFrame;
+- (SGFFVideoFrame *)videoFrame;
 
 @end
 
