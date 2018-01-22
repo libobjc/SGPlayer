@@ -9,6 +9,12 @@
 #import "SGFFFrameInternal.h"
 #import "SGFFAudioFrame.h"
 
+@interface SGFFFrameInternal ()
+
+@property (nonatomic, assign) NSInteger lockingCount;
+
+@end
+
 @implementation SGFFFrameInternal
 
 - (SGFFFrameType)type
@@ -21,8 +27,6 @@
 - (long long)duration {return 0;}
 - (long long)size {return 0;}
 
-- (void)lock {}
-- (void)unlock {}
 - (void)fill {}
 - (AVFrame *)coreFrame {return nil;}
 
@@ -33,6 +37,21 @@
         return (SGFFAudioFrame *)self;
     }
     return nil;
+}
+
+- (void)lock
+{
+    self.lockingCount++;
+}
+
+- (void)unlock
+{
+    self.lockingCount--;
+    if (self.lockingCount <= 0)
+    {
+        self.lockingCount = 0;
+        [[SGFFObjectPool sharePool] comeback:self];
+    }
 }
 
 @end

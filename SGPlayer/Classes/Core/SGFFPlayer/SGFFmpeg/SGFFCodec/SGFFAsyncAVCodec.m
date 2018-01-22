@@ -11,7 +11,6 @@
 
 @interface SGFFAsyncAVCodec ()
 
-@property (nonatomic, assign) AVFrame * decodedFrame;
 @property (nonatomic, assign) AVCodecContext * codecContext;
 
 @end
@@ -73,14 +72,6 @@
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
-}
-
-- (void)decodeThread
-{
-    self.decodedFrame = av_frame_alloc();
-    [super decodeThread];
-    av_free(self.decodedFrame);
-    self.decodedFrame = nil;
 }
 
 - (void)doFlushCodec

@@ -8,6 +8,7 @@
 
 #import "SGFFAudioAVCodec.h"
 #import "SGFFAudioFrame.h"
+#import "SGFFObjectPool.h"
 
 @interface SGFFAudioAVCodec ()
 
@@ -27,7 +28,7 @@
 
 - (id <SGFFFrame>)fetchFrame
 {
-    SGFFAudioFrame * frame = [[SGFFAudioFrame alloc] init];
+    SGFFAudioFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFrame class]];
     frame.timebase = self.timebase;
     return frame;
 }

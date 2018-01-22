@@ -25,6 +25,7 @@
 {
     if (self = [super init])
     {
+        NSLog(@"%s", __func__);
         self.coreFrame = av_frame_alloc();
     }
     return self;
@@ -32,6 +33,7 @@
 
 - (void)dealloc
 {
+    NSLog(@"%s", __func__);
     if (self.coreFrame)
     {
         av_frame_free(&_coreFrame);
