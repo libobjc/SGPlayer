@@ -38,19 +38,18 @@
 
 - (void)updateVideoFrame:(SGFFVideoFrame *)videoFrame
 {
-    [videoFrame lock];
-    [self clear];
-    self.videoFrame = videoFrame;
+    if (self.videoFrame != videoFrame)
+    {
+        [self.videoFrame unlock];
+        self.videoFrame = videoFrame;
+        [self.videoFrame lock];
+    }
 }
 
 - (void)clear
 {
     [super clear];
-    if (self.videoFrame)
-    {
-        [self.videoFrame unlock];
-        self.videoFrame = nil;
-    }
+    self.videoFrame = nil;
 }
 
 @end
