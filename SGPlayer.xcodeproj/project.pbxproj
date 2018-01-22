@@ -526,6 +526,12 @@
 		9C2C55B02015D1D200131E15 /* SGFFPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55AC2015D1D200131E15 /* SGFFPacket.m */; };
 		9C2C55B12015D1D200131E15 /* SGFFPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55AC2015D1D200131E15 /* SGFFPacket.m */; };
 		9C2C55B22015D1D200131E15 /* SGFFPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55AC2015D1D200131E15 /* SGFFPacket.m */; };
+		9C2C55B52015D92100131E15 /* SGFFObjectQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55B32015D92100131E15 /* SGFFObjectQueue.h */; };
+		9C2C55B62015D92100131E15 /* SGFFObjectQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55B32015D92100131E15 /* SGFFObjectQueue.h */; };
+		9C2C55B72015D92100131E15 /* SGFFObjectQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55B32015D92100131E15 /* SGFFObjectQueue.h */; };
+		9C2C55B82015D92100131E15 /* SGFFObjectQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55B42015D92100131E15 /* SGFFObjectQueue.m */; };
+		9C2C55B92015D92100131E15 /* SGFFObjectQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55B42015D92100131E15 /* SGFFObjectQueue.m */; };
+		9C2C55BA2015D92100131E15 /* SGFFObjectQueue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55B42015D92100131E15 /* SGFFObjectQueue.m */; };
 		9C329AAA2005E3F800252B10 /* SGPlayerActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C329AA82005E3F800252B10 /* SGPlayerActivity.h */; };
 		9C329AAB2005E3F800252B10 /* SGPlayerActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C329AA82005E3F800252B10 /* SGPlayerActivity.h */; };
 		9C329AAC2005E3F800252B10 /* SGPlayerActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C329AA82005E3F800252B10 /* SGPlayerActivity.h */; };
@@ -1169,6 +1175,8 @@
 		9C2C55A22015C1E100131E15 /* SGFFVideoOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFVideoOutput.m; sourceTree = "<group>"; };
 		9C2C55AB2015D1D200131E15 /* SGFFPacket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFPacket.h; sourceTree = "<group>"; };
 		9C2C55AC2015D1D200131E15 /* SGFFPacket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFPacket.m; sourceTree = "<group>"; };
+		9C2C55B32015D92100131E15 /* SGFFObjectQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFObjectQueue.h; sourceTree = "<group>"; };
+		9C2C55B42015D92100131E15 /* SGFFObjectQueue.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFObjectQueue.m; sourceTree = "<group>"; };
 		9C329AA82005E3F800252B10 /* SGPlayerActivity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerActivity.h; sourceTree = "<group>"; };
 		9C329AA92005E3F800252B10 /* SGPlayerActivity.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerActivity.m; sourceTree = "<group>"; };
 		9C389AAD20104097003259FF /* SGFFStreamManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFStreamManager.h; sourceTree = "<group>"; };
@@ -2095,6 +2103,8 @@
 				9CF15DFA2011A10500585326 /* SGFFOutputRenderQueue.m */,
 				9C2C55912015911600131E15 /* SGFFObjectPool.h */,
 				9C2C55922015911600131E15 /* SGFFObjectPool.m */,
+				9C2C55B32015D92100131E15 /* SGFFObjectQueue.h */,
+				9C2C55B42015D92100131E15 /* SGFFObjectQueue.m */,
 			);
 			path = SGFFQueue;
 			sourceTree = "<group>";
@@ -2336,6 +2346,7 @@
 				9C5AB7021E88F0560021F460 /* SGGLProgramYUV420.h in Headers */,
 				9C8D4E73200E10BD00ED8A58 /* SGFFCodec.h in Headers */,
 				9C8D4E80200E1ACA00ED8A58 /* SGFFError.h in Headers */,
+				9C2C55B52015D92100131E15 /* SGFFObjectQueue.h in Headers */,
 				9C4793071E713B4900AD4289 /* SGGLProgram.h in Headers */,
 				9C2534CC1FAB151500BBFA5C /* avconfig.h in Headers */,
 				9CF15E172011B93600585326 /* SGFFOutputInternal.h in Headers */,
@@ -2430,6 +2441,7 @@
 				9C2536351FAB151500BBFA5C /* SGFFVideoFrame2.h in Headers */,
 				9C25351B1FAB151500BBFA5C /* hwcontext.h in Headers */,
 				9C2C55AE2015D1D200131E15 /* SGFFPacket.h in Headers */,
+				9C2C55B62015D92100131E15 /* SGFFObjectQueue.h in Headers */,
 				9CF15DF720119FE200585326 /* SGFFOutputRender.h in Headers */,
 				9C2535781FAB151500BBFA5C /* sha512.h in Headers */,
 				9C2535421FAB151500BBFA5C /* mastering_display_metadata.h in Headers */,
@@ -2711,6 +2723,7 @@
 				9C25359D1FAB151500BBFA5C /* version.h in Headers */,
 				9C329AAC2005E3F800252B10 /* SGPlayerActivity.h in Headers */,
 				9C2535371FAB151500BBFA5C /* lfg.h in Headers */,
+				9C2C55B72015D92100131E15 /* SGFFObjectQueue.h in Headers */,
 				9CF15E192011B93600585326 /* SGFFOutputInternal.h in Headers */,
 				9C2535341FAB151500BBFA5C /* intreadwrite.h in Headers */,
 				9C2C55952015911600131E15 /* SGFFObjectPool.h in Headers */,
@@ -3121,6 +3134,7 @@
 				9CE6842B200DCEE2007BD834 /* SGPlayerImp.m in Sources */,
 				9C2535EF1FAB151500BBFA5C /* SGFFAudioDecoder.m in Sources */,
 				9C2536071FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
+				9C2C55B82015D92100131E15 /* SGFFObjectQueue.m in Sources */,
 				9CF15E3A2011D15B00585326 /* SGFFOutputRenderInternal.m in Sources */,
 				9C2535FB1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
 				9C389AC220106DB2003259FF /* SGFFTime.m in Sources */,
@@ -3256,6 +3270,7 @@
 				9CF15E3B2011D15B00585326 /* SGFFOutputRenderInternal.m in Sources */,
 				9C2536081FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
 				9C2C55972015911600131E15 /* SGFFObjectPool.m in Sources */,
+				9C2C55B92015D92100131E15 /* SGFFObjectQueue.m in Sources */,
 				9C4792ED1E713B4900AD4289 /* SGGLModel.m in Sources */,
 				9C4792F31E713B4900AD4289 /* SGGLNormalModel.m in Sources */,
 				9C478F4A1E713AA800AD4289 /* SGPlayer+DisplayView.m in Sources */,
@@ -3344,6 +3359,7 @@
 				9C389AC420106DB2003259FF /* SGFFTime.m in Sources */,
 				9C25360F1FAB151500BBFA5C /* SGFFFramePool.m in Sources */,
 				9C25361B1FAB151500BBFA5C /* SGFFMetadata.m in Sources */,
+				9C2C55BA2015D92100131E15 /* SGFFObjectQueue.m in Sources */,
 				9CF15E142011AEBD00585326 /* SGFFOutputManager.m in Sources */,
 				9C2536091FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
 				9CF15E1C2011B93600585326 /* SGFFOutputInternal.m in Sources */,
