@@ -42,12 +42,12 @@
     [self.condition lock];
     while (self.frames.count >= self.maxCount)
     {
+        [self.condition wait];
         if (self.didDestoryed)
         {
             [self.condition unlock];
             return;
         }
-        [self.condition wait];
     }
     [self putFrame:frame];
     [self.condition signal];
@@ -82,12 +82,12 @@
     [self.condition lock];
     while (self.frames.count <= 0)
     {
+        [self.condition wait];
         if (self.didDestoryed)
         {
             [self.condition unlock];
             return nil;
         }
-        [self.condition wait];
     }
     id <SGFFFrame> frame = [self getFrame];
     [self.condition signal];

@@ -54,12 +54,12 @@
     AVPacket packet = [self getEmptyPacket];
     while (self.packets.count <= 0)
     {
+        [self.condition wait];
         if (self.didDestoryed)
         {
             [self.condition unlock];
             return packet;
         }
-        [self.condition wait];
     }
     packet = [self getPacket];
     [self.condition unlock];

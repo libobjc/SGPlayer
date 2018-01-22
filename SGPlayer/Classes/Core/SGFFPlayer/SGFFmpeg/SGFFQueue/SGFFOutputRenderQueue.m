@@ -43,13 +43,13 @@
     [self.condition lock];
     while (self.objects.count >= self.maxCount)
     {
+        [self.condition wait];
         if (self.didDestoryed)
         {
             [object unlock];
             [self.condition unlock];
             return;
         }
-        [self.condition wait];
     }
     [self putObject:object];
     [self.condition signal];
@@ -86,12 +86,12 @@
     [self.condition lock];
     while (self.objects.count <= 0)
     {
+        [self.condition wait];
         if (self.didDestoryed)
         {
             [self.condition unlock];
             return nil;
         }
-        [self.condition wait];
     }
     id <SGFFOutputRender> object = [self getObject];
     [self.condition signal];
