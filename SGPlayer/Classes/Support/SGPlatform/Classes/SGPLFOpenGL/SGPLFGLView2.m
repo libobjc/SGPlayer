@@ -6,7 +6,7 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGPLFGLView.h"
+#import "SGPLFGLView2.h"
 #import "SGPLFView.h"
 #import "SGPLFScreen.h"
 

@@ -8,7 +8,7 @@
 
 #import "SGPLFOpenGL.h"
 
-#import "SGPLFGLView.h"
+#import "SGPLFGLView2.h"
 
 #if SGPLATFORM_TARGET_OS_MAC
 
