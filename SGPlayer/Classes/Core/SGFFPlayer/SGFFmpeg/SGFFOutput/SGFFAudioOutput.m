@@ -82,7 +82,6 @@
     if (self = [super init])
     {
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
-        self.audioPlayer.volume = 0.1;
     }
     return self;
 }
