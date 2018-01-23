@@ -62,16 +62,16 @@
                                                       1);
     [self setupSwrContextBufferIfNeed:bufferSize];
     Byte * outputBuffer[2] = {(void *)self.swrContextBuffer, 0};
-    int numberOfFrames = swr_convert(self.swrContext,
-                                     outputBuffer,
-                                     audioFrame.numberOfSamples * ratio,
-                                     (const uint8_t **)audioFrame.data,
-                                     audioFrame.numberOfSamples);
+    int numberOfSamples = swr_convert(self.swrContext,
+                                      outputBuffer,
+                                      audioFrame.numberOfSamples * ratio,
+                                      (const uint8_t **)audioFrame.data,
+                                      audioFrame.numberOfSamples);
     
     SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
-    long long length = numberOfFrames * self.outputNumberOfChannels * sizeof(float);
+    long long length = numberOfSamples * self.outputNumberOfChannels * sizeof(float);
     [render updateSamples:self.swrContextBuffer length:length];
-    render.numberOfFrames = numberOfFrames;
+    render.numberOfSamples = numberOfSamples;
     render.numberOfChannels = self.outputNumberOfChannels;
     
     return render;
