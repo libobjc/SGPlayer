@@ -76,7 +76,7 @@
 #endif
 
 
-SGPLFGLView * SGPLFGLViewControllerGetGLView(SGPLFGLViewController * viewController)
+SGPLFGLView2 * SGPLFGLViewControllerGetGLView(SGPLFGLViewController * viewController)
 {
-    return (SGPLFGLView *)viewController.view;
+    return (SGPLFGLView2 *)viewController.view;
 }

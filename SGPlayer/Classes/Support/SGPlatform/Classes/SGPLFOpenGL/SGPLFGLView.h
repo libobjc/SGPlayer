@@ -14,11 +14,11 @@
 #if SGPLATFORM_TARGET_OS_MAC
 
 
-@interface SGPLFGLView : NSOpenGLView
+@interface SGPLFGLView2 : NSOpenGLView
 
 @end
 
-@protocol SGPLFGLViewDelegate <NSObject>
+@protocol SGPLFGLView2Delegate <NSObject>
 - (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect;
 @end
 
@@ -26,20 +26,20 @@
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
 
-typedef GLKView SGPLFGLView;
+typedef GLKView SGPLFGLView2;
 
-@protocol SGPLFGLViewDelegate <GLKViewDelegate>
-- (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect;
+@protocol SGPLFGLView2Delegate <GLKViewDelegate>
+- (void)glkView:(SGPLFGLView2 *)view drawInRect:(CGRect)rect;
 @end
 
 
 #endif
 
-void SGPLFGLViewDisplay(SGPLFGLView * view);
-void SGPLFGLViewSetDrawDelegate(SGPLFGLView * view, id <SGPLFGLViewDelegate> drawDelegate);
-void SGPLFGLViewSetContext(SGPLFGLView * view, SGPLFGLContext * context);
-SGPLFGLContext * SGPLFGLViewGetContext(SGPLFGLView * view);
-void SGPLFGLViewPrepareOpenGL(SGPLFGLView * view);
-void SGPLFGLViewFlushBuffer(SGPLFGLView * view);
-void SGPLFGLViewBindFrameBuffer(SGPLFGLView * view);
-SGPLFImage * SGPLFGLViewGetCurrentSnapshot(SGPLFGLView * view);
+void SGPLFGLViewDisplay(SGPLFGLView2 * view);
+void SGPLFGLViewSetDrawDelegate(SGPLFGLView2 * view, id <SGPLFGLView2Delegate> drawDelegate);
+void SGPLFGLViewSetContext(SGPLFGLView2 * view, SGPLFGLContext * context);
+SGPLFGLContext * SGPLFGLViewGetContext(SGPLFGLView2 * view);
+void SGPLFGLViewPrepareOpenGL(SGPLFGLView2 * view);
+void SGPLFGLViewFlushBuffer(SGPLFGLView2 * view);
+void SGPLFGLViewBindFrameBuffer(SGPLFGLView2 * view);
+SGPLFImage * SGPLFGLViewGetCurrentSnapshot(SGPLFGLView2 * view);

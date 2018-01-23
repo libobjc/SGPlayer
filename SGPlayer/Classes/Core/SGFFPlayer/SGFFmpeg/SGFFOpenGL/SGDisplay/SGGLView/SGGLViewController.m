@@ -71,7 +71,7 @@
 {
     [super viewDidLayoutSubviews];
     CGFloat scale = SGPLFScreenGetScale();
-    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
     self.distorionRenderer.viewportSize = CGSizeMake(CGRectGetWidth(glView.bounds) * scale, CGRectGetHeight(glView.bounds) * scale);
 }
 #endif
@@ -79,7 +79,7 @@
 - (void)setupOpenGL
 {
     self.openGLLock = [[NSLock alloc] init];
-    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
     SGPLFViewSetBackgroundColor(glView, [SGPLFColor blackColor]);
     
     SGPLFGLContext * context = SGPLFGLContextAllocInit();
@@ -132,7 +132,7 @@
     [self.openGLLock unlock];
 }
 
-- (void)glkView:(SGPLFGLView *)view drawInRect:(CGRect)rect
+- (void)glkView:(SGPLFGLView2 *)view drawInRect:(CGRect)rect
 {
     [self.openGLLock lock];
     SGPLFGLViewPrepareOpenGL(view);
@@ -149,7 +149,7 @@
             return;
         }
 #endif
-        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
         self.viewport = glView.bounds;
         [self drawOpenGL];
         [self.currentFrame didDraw];
@@ -288,7 +288,7 @@
     
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (videoType == SGVideoTypeVR && displayMode == SGDisplayModeBox) {
-        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
         SGPLFGLViewBindFrameBuffer(glView);
         [self.distorionRenderer afterDrawFrame];
     }
@@ -297,7 +297,7 @@
 
 - (void)reloadViewport
 {
-    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
     CGRect superviewFrame = glView.superview.bounds;
     CGFloat superviewAspect = superviewFrame.size.width / superviewFrame.size.height;
     
@@ -363,7 +363,7 @@
 - (SGPLFImage *)snapshot
 {
     if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
-        SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
         return SGPLFGLViewGetCurrentSnapshot(glView);
     } else {
         SGPLFImage * image = [self.currentFrame imageFromVideoFrame];
@@ -371,7 +371,7 @@
             return image;
         }
     }
-    SGPLFGLView * glView = SGPLFGLViewControllerGetGLView(self);
+    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
     return SGPLFGLViewGetCurrentSnapshot(glView);
 }
 

@@ -30,4 +30,4 @@ typedef GLKViewController SGPLFGLViewController;
 
 #endif
 
-SGPLFGLView * SGPLFGLViewControllerGetGLView(SGPLFGLViewController * viewController);
+SGPLFGLView2 * SGPLFGLViewControllerGetGLView(SGPLFGLViewController * viewController);

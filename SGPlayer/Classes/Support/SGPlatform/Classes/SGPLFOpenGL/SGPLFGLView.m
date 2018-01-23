@@ -11,7 +11,7 @@
 #import "SGPLFScreen.h"
 
 
-void SGPLFGLViewPrepareOpenGL(SGPLFGLView * view)
+void SGPLFGLViewPrepareOpenGL(SGPLFGLView2 * view)
 {
     SGPLFGLContext * context = SGPLFGLViewGetContext(view);
     SGPLGLContextSetCurrentContext(context);
@@ -72,37 +72,37 @@ void SGPLFGLViewFlushBuffer(SGPLFGLView * view)
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
 
-void SGPLFGLViewDisplay(SGPLFGLView * view)
+void SGPLFGLViewDisplay(SGPLFGLView2 * view)
 {
     [view display];
 }
 
-void SGPLFGLViewSetDrawDelegate(SGPLFGLView * view, id <SGPLFGLViewDelegate> drawDelegate)
+void SGPLFGLViewSetDrawDelegate(SGPLFGLView2 * view, id <SGPLFGLView2Delegate> drawDelegate)
 {
     view.delegate = drawDelegate;
 }
 
-void SGPLFGLViewSetContext(SGPLFGLView * view, SGPLFGLContext * context)
+void SGPLFGLViewSetContext(SGPLFGLView2 * view, SGPLFGLContext * context)
 {
     view.context = context;
 }
 
-SGPLFGLContext * SGPLFGLViewGetContext(SGPLFGLView * view)
+SGPLFGLContext * SGPLFGLViewGetContext(SGPLFGLView2 * view)
 {
     return view.context;
 }
 
-void SGPLFGLViewBindFrameBuffer(SGPLFGLView * view)
+void SGPLFGLViewBindFrameBuffer(SGPLFGLView2 * view)
 {
     [view bindDrawable];
 }
 
-SGPLFImage * SGPLFGLViewGetCurrentSnapshot(SGPLFGLView * view)
+SGPLFImage * SGPLFGLViewGetCurrentSnapshot(SGPLFGLView2 * view)
 {
     return view.snapshot;
 }
 
-void SGPLFGLViewFlushBuffer(SGPLFGLView * view)
+void SGPLFGLViewFlushBuffer(SGPLFGLView2 * view)
 {
     
 }
