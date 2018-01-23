@@ -20,10 +20,8 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 @property (nonatomic, weak) id <SGFFAudioPlayerDelegate> delegate;
 
 @property (nonatomic, assign) AUGraph graph;
-@property (nonatomic, assign) AUNode nodeForConverter;
 @property (nonatomic, assign) AUNode nodeForMixer;
 @property (nonatomic, assign) AUNode nodeForOutput;
-@property (nonatomic, assign) AudioUnit audioUnitForConverter;
 @property (nonatomic, assign) AudioUnit audioUnitForMixer;
 @property (nonatomic, assign) AudioUnit audioUnitForOutput;
 @property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
@@ -73,12 +71,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 {
     NewAUGraph(&_graph);
     
-    AudioComponentDescription descriptionForConverter;
-    descriptionForConverter.componentType = kAudioUnitType_FormatConverter;
-    descriptionForConverter.componentSubType = kAudioUnitSubType_AUConverter;
-    descriptionForConverter.componentManufacturer = kAudioUnitManufacturer_Apple;
-    AUGraphAddNode(self.graph, &descriptionForConverter, &_nodeForConverter);
-    
     AudioComponentDescription descriptionForMixer;
     descriptionForMixer.componentType = kAudioUnitType_Mixer;
 #if SGPLATFORM_TARGET_OS_MAC
@@ -87,7 +79,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     descriptionForMixer.componentSubType = kAudioUnitSubType_MultiChannelMixer;
 #endif
     descriptionForMixer.componentManufacturer = kAudioUnitManufacturer_Apple;
-    AUGraphAddNode(self.graph, &descriptionForMixer, &_nodeForMixer);
     
     AudioComponentDescription descriptionForOutput;
     descriptionForOutput.componentType = kAudioUnitType_Output;
@@ -97,30 +88,22 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     descriptionForOutput.componentSubType = kAudioUnitSubType_RemoteIO;
 #endif
     descriptionForOutput.componentManufacturer = kAudioUnitManufacturer_Apple;
+    
+    AUGraphAddNode(self.graph, &descriptionForMixer, &_nodeForMixer);
     AUGraphAddNode(self.graph, &descriptionForOutput, &_nodeForOutput);
-    
     AUGraphOpen(self.graph);
-    
-    AUGraphConnectNodeInput(self.graph, self.nodeForConverter, 0, self.nodeForMixer, 0);
     AUGraphConnectNodeInput(self.graph, self.nodeForMixer, 0, self.nodeForOutput, 0);
-    
-    AUGraphNodeInfo(self.graph, self.nodeForConverter, &descriptionForConverter, &_audioUnitForConverter);
     AUGraphNodeInfo(self.graph, self.nodeForMixer, &descriptionForMixer, &_audioUnitForMixer);
     AUGraphNodeInfo(self.graph, self.nodeForOutput, &descriptionForOutput, &_audioUnitForOutput);
     
-    AURenderCallbackStruct callbackForConverter;
-    callbackForConverter.inputProc = converterInputCallback;
-    callbackForConverter.inputProcRefCon = (__bridge void *)(self);
-    AUGraphSetNodeInputCallback(self.graph, self.nodeForConverter, 0, &callbackForConverter);
+    AURenderCallbackStruct callbackForMixer;
+    callbackForMixer.inputProc = mixerInputCallback;
+    callbackForMixer.inputProcRefCon = (__bridge void *)(self);
+    AUGraphSetNodeInputCallback(self.graph, self.nodeForMixer, 0, &callbackForMixer);
     AudioUnitAddRenderNotify(self.audioUnitForOutput, outputRenderCallback, (__bridge void *)(self));
     
     self.audioStreamBasicDescription = [SGFFAudioPlayer defaultAudioStreamBasicDescription];
     
-    AudioUnitSetProperty(self.audioUnitForConverter,
-                         kAudioUnitProperty_MaximumFramesPerSlice,
-                         kAudioUnitScope_Global, 0,
-                         &SGFFAudioPlayerMaximumFramesPerSlice,
-                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
@@ -132,7 +115,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 - (void)play
 {
-    [[AVAudioSession sharedInstance] setActive:YES error:nil];
     AUGraphStart(self.graph);
 }
 
@@ -153,16 +135,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 {
     _audioStreamBasicDescription = audioStreamBasicDescription;
     UInt32 audioStreamBasicDescriptionSize = sizeof(AudioStreamBasicDescription);
-    AudioUnitSetProperty(self.audioUnitForConverter,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Input, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForConverter,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Output, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_StreamFormat,
                          kAudioUnitScope_Input, 0,
@@ -171,6 +143,16 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_StreamFormat,
                          kAudioUnitScope_Output, 0,
+                         &_audioStreamBasicDescription,
+                         audioStreamBasicDescriptionSize);
+    AudioUnitSetProperty(self.audioUnitForOutput,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Input, 0,
+                         &_audioStreamBasicDescription,
+                         audioStreamBasicDescriptionSize);
+    AudioUnitSetProperty(self.audioUnitForOutput,
+                         kAudioUnitProperty_StreamFormat,
+                         kAudioUnitScope_Input, 0,
                          &_audioStreamBasicDescription,
                          audioStreamBasicDescriptionSize);
     if (self.outputData)
@@ -192,9 +174,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AudioUnitSetParameter(self.audioUnitForMixer,
                           param,
                           kAudioUnitScope_Input,
-                          0,
-                          volume,
-                          0);
+                          0, volume, 0);
 }
 
 - (int)sampleRate
@@ -207,7 +187,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     return (int)self.audioStreamBasicDescription.mChannelsPerFrame;
 }
 
-- (void)converterInputCallback:(AudioBufferList *)ioData inNumberFrames:(UInt32)inNumberFrames
+- (void)mixerInputCallback:(AudioBufferList *)ioData inNumberFrames:(UInt32)inNumberFrames
 {
     for (int i = 0; i < ioData->mNumberBuffers; i++)
     {
@@ -233,15 +213,15 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
 }
 
-OSStatus converterInputCallback(void * inRefCon,
-                                AudioUnitRenderActionFlags * ioActionFlags,
-                                const AudioTimeStamp * inTimeStamp,
-                                UInt32 inBusNumber,
-                                UInt32 inNumberFrames,
-                                AudioBufferList * ioData)
+OSStatus mixerInputCallback(void * inRefCon,
+                            AudioUnitRenderActionFlags * ioActionFlags,
+                            const AudioTimeStamp * inTimeStamp,
+                            UInt32 inBusNumber,
+                            UInt32 inNumberFrames,
+                            AudioBufferList * ioData)
 {
     SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
-    [obj converterInputCallback:ioData inNumberFrames:inNumberFrames];
+    [obj mixerInputCallback:ioData inNumberFrames:inNumberFrames];
     return noErr;
 }
 
