@@ -42,7 +42,7 @@
     self.currentRender = [self.renderSource outputFecthRender:self];
     if (self.currentRender)
     {
-        NSLog(@"%s", __func__);
+        NSLog(@"%s, %d, %d", __func__, self.currentRender.videoFrame.width, self.currentRender.videoFrame.height);
         [self.currentRender unlock];
         self.currentRender = nil;
     }

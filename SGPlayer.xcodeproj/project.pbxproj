@@ -1597,6 +1597,7 @@
 			children = (
 				9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */,
 				9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */,
+				9CB1F09C2017828A00102A69 /* SGFFGLView */,
 				9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */,
 				9CF15DF420119FBE00585326 /* SGFFOutput */,
 				9CF15DF320119D0300585326 /* SGFFData */,
@@ -1891,6 +1892,13 @@
 				9CF52D06200F4EDE00950B81 /* SGFFVideoAVCodec.m */,
 			);
 			path = SGFFCodec;
+			sourceTree = "<group>";
+		};
+		9CB1F09C2017828A00102A69 /* SGFFGLView */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = SGFFGLView;
 			sourceTree = "<group>";
 		};
 		9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */ = {
