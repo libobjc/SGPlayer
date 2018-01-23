@@ -32,13 +32,14 @@
 
 - (instancetype)initWithTarget:(id)target selector:(SEL)selector
 {
-    if (self = [super init]) {
-        self->_displayLink = NULL;
+    if (self = [super init])
+    {
+        _displayLink = nil;
         self.target = target;
         self.selector = selector;
-        CVDisplayLinkCreateWithActiveCGDisplays(&self->_displayLink);
-        CVDisplayLinkSetOutputCallback(self->_displayLink,
-                                       QCDisplayLinkCallback,
+        CVDisplayLinkCreateWithActiveCGDisplays(&_displayLink);
+        CVDisplayLinkSetOutputCallback(_displayLink,
+                                       displayLinkCallback,
                                        (__bridge void *)(self));
     }
     return self;
@@ -46,19 +47,21 @@
 
 - (void)setPaused:(BOOL)paused
 {
-    if (self->_displayLink) {
+    if (_displayLink)
+    {
         if (paused) {
-            CVDisplayLinkStop(self->_displayLink);
+            CVDisplayLinkStop(_displayLink);
         } else {
-            CVDisplayLinkStart(self->_displayLink);
+            CVDisplayLinkStart(_displayLink);
         }
     }
 }
 
 - (BOOL)paused
 {
-    if (self->_displayLink) {
-        return CVDisplayLinkIsRunning(self->_displayLink);
+    if (_displayLink)
+    {
+        return !CVDisplayLinkIsRunning(_displayLink);
     }
     return YES;
 }
@@ -71,9 +74,10 @@
 - (void)invalidate
 {
     self.paused = YES;
-    if (self->_displayLink) {
-        CVDisplayLinkRelease(self->_displayLink);
-        self->_displayLink = NULL;
+    if (_displayLink)
+    {
+        CVDisplayLinkRelease(_displayLink);
+        _displayLink = nil;
     }
 }
 
@@ -82,12 +86,12 @@
     [self invalidate];
 }
 
-static CVReturn QCDisplayLinkCallback(CVDisplayLinkRef displayLinkRef,
-                                           const CVTimeStamp *now,
-                                           const CVTimeStamp *outputTime,
-                                           CVOptionFlags flagsIn,
-                                           CVOptionFlags *flagsOut,
-                                           void   *displayLinkContext)
+static CVReturn displayLinkCallback(CVDisplayLinkRef displayLinkRef,
+                                    const CVTimeStamp * now,
+                                    const CVTimeStamp * outputTime,
+                                    CVOptionFlags flagsIn,
+                                    CVOptionFlags * flagsOut,
+                                    void * displayLinkContext)
 {
     SGPLFDisplayLink * displayLink = (__bridge SGPLFDisplayLink *)displayLinkContext;
     if ([displayLink.target respondsToSelector:displayLink.selector]) {
