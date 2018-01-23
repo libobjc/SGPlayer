@@ -19,11 +19,8 @@
 
 @interface SGFFAudioPlayer : NSObject
 
-+ (AudioStreamBasicDescription)defaultAudioStreamBasicDescription;
-
 - (instancetype)initWithDelegate:(id <SGFFAudioPlayerDelegate>)delegate;
 
-@property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
 @property (nonatomic, assign, readonly) int sampleRate;
 @property (nonatomic, assign, readonly) int numberOfChannels;
 

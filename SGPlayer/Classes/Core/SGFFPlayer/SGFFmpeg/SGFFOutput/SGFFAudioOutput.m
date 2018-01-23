@@ -10,20 +10,24 @@
 #import "SGFFAudioOutputRender.h"
 #import "SGFFAudioPlayer.h"
 #import "SGFFError.h"
-#import <Accelerate/Accelerate.h>
 #import "swscale.h"
 #import "swresample.h"
 
 @interface SGFFAudioOutput () <SGFFAudioPlayerDelegate>
 
-{
-    SwrContext * _swrContext;
-    void * _swrBuffer;
-    int _swrBufferSize;
-}
-
 @property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
+
+@property (nonatomic, assign) enum AVSampleFormat inputFormat;
+@property (nonatomic, assign) int inputSampleRate;
+@property (nonatomic, assign) int inputNumberOfChannels;
+@property (nonatomic, assign) int outputSampleRate;
+@property (nonatomic, assign) int outputNumberOfChannels;
+
+@property (nonatomic, assign) SwrContext * swrContext;
+@property (nonatomic, assign) float * swrContextBuffer;
+@property (nonatomic, assign) int swrContextBufferSize;
+@property (nonatomic, assign) NSError * swrContextError;
 
 @end
 
@@ -32,84 +36,43 @@
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFAudioFrame * audioFrame = frame.audioFrame;
-    if (audioFrame)
+    if (!audioFrame)
     {
-        if (!_swrContext)
-        {
-            _swrContext = swr_alloc_set_opts(NULL,
-                                              av_get_default_channel_layout(self.audioPlayer.numberOfChannels),
-                                              AV_SAMPLE_FMT_S16,
-                                              self.audioPlayer.sampleRate,
-                                              av_get_default_channel_layout(audioFrame.numberOfChannels),
-                                              audioFrame.format,
-                                              audioFrame.sampleRate,
-                                              0, NULL);
-            int result = swr_init(_swrContext);
-            NSError * error = SGFFGetError(result);
-            if (error || !_swrContext)
-            {
-                if (_swrContext)
-                {
-                    swr_free(&_swrContext);
-                    _swrContext = nil;
-                }
-            }
-        }
-        
-        long long numberOfFrames;
-        void * audioDataBuffer;
-        if (_swrContext)
-        {
-            const int channel = MAX(1, self.audioPlayer.numberOfChannels / audioFrame.numberOfChannels);
-            const int sample = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
-            const int ratio = sample * channel * 2;
-            const int bufferSize = av_samples_get_buffer_size(NULL,
-                                                              self.audioPlayer.numberOfChannels,
-                                                              (int)audioFrame.numberOfSamples * ratio,
-                                                              AV_SAMPLE_FMT_S16,
-                                                              1);
-            if (!_swrBuffer || _swrBufferSize < bufferSize)
-            {
-                _swrBufferSize = bufferSize;
-                _swrBuffer = realloc(_swrBuffer, _swrBufferSize);
-            }
-            Byte * outputBuffer[2] = {_swrBuffer, 0};
-            numberOfFrames = swr_convert(_swrContext,
-                                         outputBuffer,
-                                         (int)audioFrame.numberOfSamples * ratio,
-                                         (const uint8_t **)audioFrame.data,
-                                         (int)audioFrame.numberOfSamples);
-            NSError * error = SGFFGetError((int)numberOfFrames);
-            if (error)
-            {
-                NSLog(@"audio codec error : %@", error);
-                return nil;
-            }
-            audioDataBuffer = _swrBuffer;
-        }
-        else
-        {
-            if (audioFrame.format != AV_SAMPLE_FMT_S16)
-            {
-                NSLog(@"audio format error");
-                return nil;
-            }
-            audioDataBuffer = audioFrame.data;
-            numberOfFrames = audioFrame.numberOfSamples;
-        }
-        
-        SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
-        const NSUInteger numberOfElements = numberOfFrames * self.audioPlayer.numberOfChannels;
-        [render updateLength:numberOfElements * sizeof(float)];
-        
-        float scale = 1.0 / (float)INT16_MAX ;
-        vDSP_vflt16((SInt16 *)audioDataBuffer, 1, render.samples, 1, numberOfElements);
-        vDSP_vsmul(render.samples, 1, &scale, render.samples, 1, numberOfElements);
-        
-        NSLog(@"Frame Position : %f", SGFFTimebaseConvertToSeconds(frame.position, frame.timebase));
-        return render;
+        return nil;
     }
-    return nil;
+    
+    self.inputFormat = audioFrame.format;
+    self.inputSampleRate = audioFrame.sampleRate;
+    self.inputNumberOfChannels = audioFrame.numberOfChannels;
+    self.outputSampleRate = self.audioPlayer.sampleRate;
+    self.outputNumberOfChannels = self.audioPlayer.numberOfChannels;
+    
+    [self setupSwrContextIfNeed];
+    if (!self.swrContext)
+    {
+        return nil;
+    }
+    const int numberOfChannelsRatio = MAX(1, self.audioPlayer.numberOfChannels / audioFrame.numberOfChannels);
+    const int sampleRateRatio = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
+    const int ratio = sampleRateRatio * numberOfChannelsRatio * 2;
+    const int bufferSize = av_samples_get_buffer_size(NULL,
+                                                      self.outputNumberOfChannels,
+                                                      audioFrame.numberOfSamples * ratio,
+                                                      AV_SAMPLE_FMT_FLT,
+                                                      1);
+    [self setupSwrContextBufferIfNeed:bufferSize];
+    Byte * outputBuffer[2] = {(void *)self.swrContextBuffer, 0};
+    int numberOfFrames = swr_convert(self.swrContext,
+                                     outputBuffer,
+                                     audioFrame.numberOfSamples * ratio,
+                                     (const uint8_t **)audioFrame.data,
+                                     audioFrame.numberOfSamples);
+    
+    SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
+    long long length = numberOfFrames * self.outputNumberOfChannels * sizeof(float);
+    [render updateSamples:self.swrContextBuffer length:length];
+    
+    return render;
 }
 
 - (instancetype)init
@@ -119,6 +82,13 @@
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self clearSwrContext];
+    [self.currentRender unlock];
+    self.currentRender = nil;
 }
 
 - (void)play
@@ -131,21 +101,54 @@
     [self.audioPlayer pause];
 }
 
-- (void)dealloc
+- (void)setupSwrContextIfNeed
 {
-    if (_swrBuffer)
+    if (self.swrContextError || self.swrContext)
     {
-        free(_swrBuffer);
-        _swrBuffer = nil;
-        _swrBufferSize = 0;
+        return;
     }
-    if (_swrContext)
+    self.swrContext = swr_alloc_set_opts(NULL,
+                                         av_get_default_channel_layout(self.outputNumberOfChannels),
+                                         AV_SAMPLE_FMT_FLT,
+                                         self.outputSampleRate,
+                                         av_get_default_channel_layout(self.inputNumberOfChannels),
+                                         self.inputFormat,
+                                         self.inputSampleRate,
+                                         0, NULL);
+    int result = swr_init(_swrContext);
+    self.swrContextError = SGFFGetErrorCode(result, SGFFErrorCodeAuidoSwrInit);
+    if (self.swrContextError)
+    {
+        if (self.swrContext)
+        {
+            swr_free(&_swrContext);
+            self.swrContext = nil;
+        }
+    }
+}
+
+- (void)setupSwrContextBufferIfNeed:(int)size
+{
+    if (!self.swrContextBuffer || self.swrContextBufferSize < size)
+    {
+        self.swrContextBufferSize = size;
+        self.swrContextBuffer = realloc(self.swrContextBuffer, self.swrContextBufferSize);
+    }
+}
+
+- (void)clearSwrContext
+{
+    if (self.swrContextBuffer)
+    {
+        free(self.swrContextBuffer);
+        self.swrContextBuffer = nil;
+        self.swrContextBufferSize = 0;
+    }
+    if (self.swrContext)
     {
         swr_free(&_swrContext);
-        _swrContext = nil;
+        self.swrContext = nil;
     }
-    [self.currentRender unlock];
-    self.currentRender = nil;
 }
 
 

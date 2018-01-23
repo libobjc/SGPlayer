@@ -15,6 +15,6 @@
 @property (nonatomic, assign, readonly) long long length;
 @property (nonatomic, assign) long long offset;
 
-- (void)updateLength:(long long)length;
+- (void)updateSamples:(float *)samples length:(long long)length;
 
 @end

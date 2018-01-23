@@ -31,6 +31,7 @@ static int const max_chan = 2;
 @property (nonatomic, assign) AudioUnit audioUnitForConverter;
 @property (nonatomic, assign) AudioUnit audioUnitForMixer;
 @property (nonatomic, assign) AudioUnit audioUnitForOutput;
+@property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
 
 @end
 

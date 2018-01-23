@@ -42,7 +42,7 @@
     }
 }
 
-- (void)updateLength:(long long)length
+- (void)updateSamples:(float *)samples length:(long long)length
 {
     self.length = length;
     if (self.bufferLength < self.length)
@@ -54,6 +54,7 @@
         self.bufferLength = self.length;
         self.samples = malloc(self.bufferLength);
     }
+    memcpy(self.samples, samples, self.length);
     self.offset = 0;
 }
 
