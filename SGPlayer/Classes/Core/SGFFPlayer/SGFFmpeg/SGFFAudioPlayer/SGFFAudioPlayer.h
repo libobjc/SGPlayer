@@ -24,8 +24,8 @@
 - (instancetype)initWithDelegate:(id <SGFFAudioPlayerDelegate>)delegate;
 
 @property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
-- (Float64)sampleRate;
-- (UInt32)numberOfChannels;
+@property (nonatomic, assign, readonly) int sampleRate;
+@property (nonatomic, assign, readonly) int numberOfChannels;
 
 - (void)play;
 - (void)pause;

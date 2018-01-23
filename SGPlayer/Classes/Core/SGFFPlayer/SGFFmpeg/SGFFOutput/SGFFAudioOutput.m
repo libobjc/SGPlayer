@@ -61,7 +61,7 @@
         void * audioDataBuffer;
         if (_swrContext)
         {
-            const int channel = MAX(1, (int)self.audioPlayer.numberOfChannels / (int)audioFrame.numberOfChannels);
+            const int channel = MAX(1, self.audioPlayer.numberOfChannels / audioFrame.numberOfChannels);
             const int sample = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
             const int ratio = sample * channel * 2;
             const int bufferSize = av_samples_get_buffer_size(NULL,

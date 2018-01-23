@@ -13,9 +13,9 @@
 @property (nonatomic, assign, readonly) SGFFFrameType type;
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) enum AVSampleFormat format;
-@property (nonatomic, assign) long long numberOfSamples;
-@property (nonatomic, assign) long long sampleRate;
-@property (nonatomic, assign) long long numberOfChannels;
+@property (nonatomic, assign) int numberOfSamples;
+@property (nonatomic, assign) int sampleRate;
+@property (nonatomic, assign) int numberOfChannels;
 @property (nonatomic, assign) long long channelLayout;
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;

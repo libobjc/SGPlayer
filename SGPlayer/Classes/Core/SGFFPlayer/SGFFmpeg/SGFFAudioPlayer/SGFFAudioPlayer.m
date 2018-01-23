@@ -174,14 +174,14 @@ static int const max_chan = 2;
     _outData = (float *)calloc(max_frame_size * max_chan, sizeof(float));
 }
 
-- (Float64)sampleRate
+- (int)sampleRate
 {
-    return self.audioStreamBasicDescription.mSampleRate;
+    return (int)self.audioStreamBasicDescription.mSampleRate;
 }
 
-- (UInt32)numberOfChannels
+- (int)numberOfChannels
 {
-    return self.audioStreamBasicDescription.mChannelsPerFrame;
+    return (int)self.audioStreamBasicDescription.mChannelsPerFrame;
 }
 
 OSStatus converterInputCallback(void * inRefCon,
