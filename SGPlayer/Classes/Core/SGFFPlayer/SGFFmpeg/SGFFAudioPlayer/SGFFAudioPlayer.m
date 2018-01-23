@@ -116,6 +116,11 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     
     self.audioStreamBasicDescription = [SGFFAudioPlayer defaultAudioStreamBasicDescription];
     
+    AudioUnitSetProperty(self.audioUnitForConverter,
+                         kAudioUnitProperty_MaximumFramesPerSlice,
+                         kAudioUnitScope_Global, 0,
+                         &SGFFAudioPlayerMaximumFramesPerSlice,
+                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
@@ -127,6 +132,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 - (void)play
 {
+    [[AVAudioSession sharedInstance] setActive:YES error:nil];
     AUGraphStart(self.graph);
 }
 
@@ -203,6 +209,12 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
                    currentNumberOfChannels,
                    inNumberFrames);
     }
+    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
+}
+
+- (void)outputRenderCallback:(UInt32)inNumberFrames
+{
+    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
 }
 
 OSStatus converterInputCallback(void * inRefCon,
@@ -225,7 +237,10 @@ OSStatus outputRenderCallback(void * inRefCon,
                               AudioBufferList * ioData)
 {
     SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
-    NSLog(@"%@", obj);
+    if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
+    {
+        [obj outputRenderCallback:inNumberFrames];
+    }
     return noErr;
 }
 
