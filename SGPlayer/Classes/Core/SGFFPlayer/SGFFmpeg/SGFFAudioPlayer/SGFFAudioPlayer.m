@@ -181,6 +181,22 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     self.outputData = (float *)calloc(SGFFAudioPlayerMaximumFramesPerSlice * SGFFAudioPlayerMaximumChannels, sizeof(float));
 }
 
+- (void)setVolume:(float)volume
+{
+    AudioUnitParameterID param;
+#if SGPLATFORM_TARGET_OS_MAC
+    param = kStereoMixerParam_Volume;
+#elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+    param = kMultiChannelMixerParam_Volume;
+#endif
+    AudioUnitSetParameter(self.audioUnitForMixer,
+                          param,
+                          kAudioUnitScope_Input,
+                          0,
+                          volume,
+                          0);
+}
+
 - (int)sampleRate
 {
     return (int)self.audioStreamBasicDescription.mSampleRate;
