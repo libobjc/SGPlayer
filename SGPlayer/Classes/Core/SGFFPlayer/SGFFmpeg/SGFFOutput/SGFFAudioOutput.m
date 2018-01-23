@@ -88,6 +88,7 @@
 
 - (void)dealloc
 {
+    [self.audioPlayer stop];
     [self clearSwrContext];
     [self.currentRender unlock];
     self.currentRender = nil;
@@ -177,9 +178,9 @@
             
             const Byte * bytes = (Byte *)self.currentRender.samples + self.currentRender.offset;
             const NSUInteger bytesLeft = self.currentRender.length - self.currentRender.offset;
-            const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
-            const NSUInteger bytesToCopy = MIN(numberOfSamples * frameSizeOf, bytesLeft);
-            const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
+            const NSUInteger frameSize = numberOfChannels * sizeof(float);
+            const NSUInteger bytesToCopy = MIN(numberOfSamples * frameSize, bytesLeft);
+            const NSUInteger framesToCopy = bytesToCopy / frameSize;
             
             memcpy(outputData, bytes, bytesToCopy);
             numberOfSamples -= framesToCopy;

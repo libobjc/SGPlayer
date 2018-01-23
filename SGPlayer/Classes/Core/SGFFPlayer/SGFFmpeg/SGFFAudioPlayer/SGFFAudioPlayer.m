@@ -12,15 +12,10 @@
 #import <Accelerate/Accelerate.h>
 #import "SGPlatform.h"
 
-static int const max_frame_size = 4096;
-static int const max_chan = 2;
+static int const SGFFAudioPlayerMaximumFramesPerSlice = 4096;
+static int const SGFFAudioPlayerMaximumChannels = 2;
 
 @interface SGFFAudioPlayer ()
-
-{
-    @public
-    float * _outData;
-}
 
 @property (nonatomic, weak) id <SGFFAudioPlayerDelegate> delegate;
 
@@ -32,6 +27,7 @@ static int const max_chan = 2;
 @property (nonatomic, assign) AudioUnit audioUnitForMixer;
 @property (nonatomic, assign) AudioUnit audioUnitForOutput;
 @property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
+@property (nonatomic, assign) float * outputData;
 
 @end
 
@@ -43,7 +39,7 @@ static int const max_chan = 2;
     UInt32 floatByteSize                          = sizeof(float);
     audioStreamBasicDescription.mBitsPerChannel   = 8 * floatByteSize;
     audioStreamBasicDescription.mBytesPerFrame    = floatByteSize;
-    audioStreamBasicDescription.mChannelsPerFrame = 2;
+    audioStreamBasicDescription.mChannelsPerFrame = SGFFAudioPlayerMaximumChannels;
     audioStreamBasicDescription.mFormatFlags      = kAudioFormatFlagIsFloat|kAudioFormatFlagIsNonInterleaved;
     audioStreamBasicDescription.mFormatID         = kAudioFormatLinearPCM;
     audioStreamBasicDescription.mFramesPerPacket  = 1;
@@ -65,14 +61,11 @@ static int const max_chan = 2;
 
 - (void)dealloc
 {
-    AUGraphStop(self.graph);
-    AUGraphUninitialize(self.graph);
-    AUGraphClose(self.graph);
-    DisposeAUGraph(self.graph);
-    if (_outData)
+    [self stop];
+    if (self.outputData)
     {
-        free(_outData);
-        _outData = nil;
+        free(self.outputData);
+        self.outputData = nil;
     }
 }
 
@@ -123,12 +116,11 @@ static int const max_chan = 2;
     
     self.audioStreamBasicDescription = [SGFFAudioPlayer defaultAudioStreamBasicDescription];
     
-    UInt32 const maximumFramesPerSlice = 4096;
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
-                         &maximumFramesPerSlice,
-                         sizeof(maximumFramesPerSlice));
+                         &SGFFAudioPlayerMaximumFramesPerSlice,
+                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
     
     AUGraphInitialize(self.graph);
 }
@@ -141,6 +133,14 @@ static int const max_chan = 2;
 - (void)pause
 {
     AUGraphStop(self.graph);
+}
+
+- (void)stop
+{
+    AUGraphStop(self.graph);
+    AUGraphUninitialize(self.graph);
+    AUGraphClose(self.graph);
+    DisposeAUGraph(self.graph);
 }
 
 - (void)setAudioStreamBasicDescription:(AudioStreamBasicDescription)audioStreamBasicDescription
@@ -167,12 +167,12 @@ static int const max_chan = 2;
                          kAudioUnitScope_Output, 0,
                          &_audioStreamBasicDescription,
                          audioStreamBasicDescriptionSize);
-    if (_outData)
+    if (self.outputData)
     {
-        free(_outData);
-        _outData = nil;
+        free(self.outputData);
+        self.outputData = nil;
     }
-    _outData = (float *)calloc(max_frame_size * max_chan, sizeof(float));
+    self.outputData = (float *)calloc(SGFFAudioPlayerMaximumFramesPerSlice * SGFFAudioPlayerMaximumChannels, sizeof(float));
 }
 
 - (int)sampleRate
@@ -191,12 +191,12 @@ static int const max_chan = 2;
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
-    [self.delegate audioPlayer:self outputData:self->_outData numberOfSamples:inNumberFrames numberOfChannels:self.numberOfChannels];
+    [self.delegate audioPlayer:self outputData:self.outputData numberOfSamples:inNumberFrames numberOfChannels:self.numberOfChannels];
     for (int i = 0; i < ioData->mNumberBuffers; i++)
     {
         float zero = 0.0;
         int currentNumberOfChannels = ioData->mBuffers[i].mNumberChannels;
-        vDSP_vsadd(self->_outData + i,
+        vDSP_vsadd(self.outputData + i,
                    self.numberOfChannels,
                    &zero,
                    (float *)ioData->mBuffers[i].mData,
