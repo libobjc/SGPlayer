@@ -40,11 +40,10 @@
                                               av_get_default_channel_layout(self.audioPlayer.numberOfChannels),
                                               AV_SAMPLE_FMT_S16,
                                               self.audioPlayer.sampleRate,
-                                              av_get_default_channel_layout((int)audioFrame.numberOfChannels),
+                                              av_get_default_channel_layout(audioFrame.numberOfChannels),
                                               audioFrame.format,
-                                              (int)audioFrame.sampleRate,
-                                              0,
-                                              NULL);
+                                              audioFrame.sampleRate,
+                                              0, NULL);
             int result = swr_init(_swrContext);
             NSError * error = SGFFGetError(result);
             if (error || !_swrContext)
