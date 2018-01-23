@@ -132,6 +132,10 @@ static SGFFPacket * flushPacket;
                                     [self.outputRenderQueue putObjectSync:outputRender];
                                     [outputRender unlock];
                                 }
+                                if (newFrame != frame)
+                                {
+                                    [newFrame unlock];
+                                }
                             }
                             [frame unlock];
                         }
