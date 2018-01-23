@@ -156,11 +156,14 @@
 
 #pragma mark - SGAudioManagerDelegate
 
-- (void)audioManager:(SGFFAudioPlayer *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels
+- (void)audioPlayer:(SGFFAudioPlayer *)audioPlayer
+         outputData:(float *)outputData
+    numberOfSamples:(UInt32)numberOfSamples
+   numberOfChannels:(UInt32)numberOfChannels
 {
     @autoreleasepool
     {
-        while (numberOfFrames > 0)
+        while (numberOfSamples > 0)
         {
             if (!self.currentRender)
             {
@@ -168,18 +171,18 @@
             }
             if (!self.currentRender)
             {
-                memset(outputData, 0, numberOfFrames * numberOfChannels * sizeof(float));
+                memset(outputData, 0, numberOfSamples * numberOfChannels * sizeof(float));
                 return;
             }
             
             const Byte * bytes = (Byte *)self.currentRender.samples + self.currentRender.offset;
             const NSUInteger bytesLeft = self.currentRender.length - self.currentRender.offset;
             const NSUInteger frameSizeOf = numberOfChannels * sizeof(float);
-            const NSUInteger bytesToCopy = MIN(numberOfFrames * frameSizeOf, bytesLeft);
+            const NSUInteger bytesToCopy = MIN(numberOfSamples * frameSizeOf, bytesLeft);
             const NSUInteger framesToCopy = bytesToCopy / frameSizeOf;
             
             memcpy(outputData, bytes, bytesToCopy);
-            numberOfFrames -= framesToCopy;
+            numberOfSamples -= framesToCopy;
             outputData += framesToCopy * numberOfChannels;
             
             if (bytesToCopy < bytesLeft) {

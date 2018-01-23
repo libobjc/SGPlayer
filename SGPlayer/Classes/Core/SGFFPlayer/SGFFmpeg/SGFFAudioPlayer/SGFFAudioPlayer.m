@@ -185,54 +185,35 @@ static int const max_chan = 2;
     return (int)self.audioStreamBasicDescription.mChannelsPerFrame;
 }
 
-OSStatus converterInputCallback(void * inRefCon,
-                              AudioUnitRenderActionFlags * ioActionFlags,
-                              const AudioTimeStamp * inTimeStamp,
-                              UInt32 inBusNumber,
-                              UInt32 inNumberFrames,
-                              AudioBufferList * ioData)
+- (void)converterInputCallback:(AudioBufferList *)ioData inNumberFrames:(UInt32)inNumberFrames
 {
-    SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
-    
     for (int i = 0; i < ioData->mNumberBuffers; i++)
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
-    
-        [obj.delegate audioManager:obj outputData:obj->_outData numberOfFrames:inNumberFrames numberOfChannels:obj.numberOfChannels];
-        
-        UInt32 numBytesPerSample = obj.audioStreamBasicDescription.mBitsPerChannel / 8;
-        if (numBytesPerSample == 4) {
-            float zero = 0.0;
-            for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
-                int thisNumChannels = ioData->mBuffers[iBuffer].mNumberChannels;
-                for (int iChannel = 0; iChannel < thisNumChannels; iChannel++) {
-                    vDSP_vsadd(obj->_outData + iChannel,
-                               obj.numberOfChannels,
-                               &zero,
-                               (float *)ioData->mBuffers[iBuffer].mData,
-                               thisNumChannels,
-                               inNumberFrames);
-                }
-            }
-        }
-        else if (numBytesPerSample == 2)
-        {
-            float scale = (float)INT16_MAX;
-            vDSP_vsmul(obj->_outData, 1, &scale, obj->_outData, 1, inNumberFrames * obj.numberOfChannels);
-            
-            for (int iBuffer = 0; iBuffer < ioData->mNumberBuffers; iBuffer++) {
-                int thisNumChannels = ioData->mBuffers[iBuffer].mNumberChannels;
-                for (int iChannel = 0; iChannel < thisNumChannels; iChannel++) {
-                    vDSP_vfix16(obj->_outData + iChannel,
-                                obj.numberOfChannels,
-                                (SInt16 *)ioData->mBuffers[iBuffer].mData + iChannel,
-                                thisNumChannels,
-                                inNumberFrames);
-                }
-            }
-        }
-    
+    [self.delegate audioPlayer:self outputData:self->_outData numberOfSamples:inNumberFrames numberOfChannels:self.numberOfChannels];
+    for (int i = 0; i < ioData->mNumberBuffers; i++)
+    {
+        float zero = 0.0;
+        int currentNumberOfChannels = ioData->mBuffers[i].mNumberChannels;
+        vDSP_vsadd(self->_outData + i,
+                   self.numberOfChannels,
+                   &zero,
+                   (float *)ioData->mBuffers[i].mData,
+                   currentNumberOfChannels,
+                   inNumberFrames);
+    }
+}
+
+OSStatus converterInputCallback(void * inRefCon,
+                                AudioUnitRenderActionFlags * ioActionFlags,
+                                const AudioTimeStamp * inTimeStamp,
+                                UInt32 inBusNumber,
+                                UInt32 inNumberFrames,
+                                AudioBufferList * ioData)
+{
+    SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
+    [obj converterInputCallback:ioData inNumberFrames:inNumberFrames];
     return noErr;
 }
 

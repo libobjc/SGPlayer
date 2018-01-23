@@ -13,7 +13,10 @@
 
 @protocol SGFFAudioPlayerDelegate <NSObject>
 
-- (void)audioManager:(SGFFAudioPlayer *)audioManager outputData:(float *)outputData numberOfFrames:(UInt32)numberOfFrames numberOfChannels:(UInt32)numberOfChannels;
+- (void)audioPlayer:(SGFFAudioPlayer *)audioPlayer
+         outputData:(float *)outputData
+    numberOfSamples:(UInt32)numberOfSamples
+   numberOfChannels:(UInt32)numberOfChannels;
 
 @end
 
