@@ -11,8 +11,11 @@
 
 @interface SGFFAudioOutputRender : SGFFOutputRenderInternal
 
+@property (nonatomic, assign, readonly) enum AVSampleFormat format;
 @property (nonatomic, assign, readonly) float * samples;
 @property (nonatomic, assign, readonly) long long length;
+@property (nonatomic, assign) int numberOfFrames;
+@property (nonatomic, assign) int numberOfChannels;
 @property (nonatomic, assign) long long offset;
 
 - (void)updateSamples:(float *)samples length:(long long)length;

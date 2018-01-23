@@ -23,6 +23,11 @@
     return SGFFOutputRenderTypeAudio;
 }
 
+- (enum AVSampleFormat)format
+{
+    return AV_SAMPLE_FMT_FLT;
+}
+
 - (instancetype)init
 {
     if (self = [super init])
@@ -55,6 +60,8 @@
         self.samples = malloc(self.bufferLength);
     }
     memcpy(self.samples, samples, self.length);
+    self.numberOfFrames = 0;
+    self.numberOfChannels = 0;
     self.offset = 0;
 }
 
@@ -63,6 +70,8 @@
     [super clear];
     memset(self.samples, 0, self.bufferLength);
     self.length = 0;
+    self.numberOfFrames = 0;
+    self.numberOfChannels = 0;
     self.offset = 0;
 }
 

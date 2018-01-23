@@ -71,6 +71,8 @@
     SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
     long long length = numberOfFrames * self.outputNumberOfChannels * sizeof(float);
     [render updateSamples:self.swrContextBuffer length:length];
+    render.numberOfFrames = numberOfFrames;
+    render.numberOfChannels = self.outputNumberOfChannels;
     
     return render;
 }
