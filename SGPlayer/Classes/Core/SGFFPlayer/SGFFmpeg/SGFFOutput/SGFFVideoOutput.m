@@ -8,15 +8,44 @@
 
 #import "SGFFVideoOutput.h"
 #import "SGFFVideoOutputRender.h"
+#import "SGPlatform.h"
+
+@interface SGFFVideoOutput ()
+
+@property (nonatomic, strong) SGPLFDisplayLink * displayLink;
+@property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
+
+@end
 
 @implementation SGFFVideoOutput
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
-    return nil;
-//    SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
-//    [render updateVideoFrame:frame.videoFrame];
-//    return render;
+    SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
+    [render updateVideoFrame:frame.videoFrame];
+    return render;
+}
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction)];
+        [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+        self.displayLink.paused = NO;
+    }
+    return self;
+}
+
+- (void)displayLinkAction
+{
+    self.currentRender = [self.renderSource outputFecthRender:self];
+    if (self.currentRender)
+    {
+        NSLog(@"%s", __func__);
+        [self.currentRender unlock];
+        self.currentRender = nil;
+    }
 }
 
 @end
