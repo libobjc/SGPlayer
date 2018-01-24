@@ -7,7 +7,20 @@
 //
 
 #import "SGFFOutputInternal.h"
+#import "SGPLFView.h"
+
+@class SGFFVideoOutput;
+
+@protocol SGFFVideoOutputDelegate <NSObject>
+
+- (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output;
+
+@end
 
 @interface SGFFVideoOutput : SGFFOutputInternal
+
+@property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;
+
+- (SGPLFView *)displayView;
 
 @end

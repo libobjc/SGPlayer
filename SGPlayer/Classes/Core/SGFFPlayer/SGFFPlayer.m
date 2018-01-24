@@ -70,6 +70,7 @@
     }
     self.contentURL = contentURL;
     self.session = [[SGFFSession alloc] initWithContentURL:self.contentURL delegate:self];
+    self.session.view = self.playerView;
     [self.session open];
 }
 

@@ -7,8 +7,6 @@
 //
 
 #import "SGPLFGLView.h"
-#import "SGPLFView.h"
-#import "SGPLFScreen.h"
 
 
 #if SGPLATFORM_TARGET_OS_MAC
@@ -26,29 +24,7 @@
     return self.openGLContext;
 }
 
-- (SGPLFImage *)snapshot
-{
-    return SGPLFViewGetCurrentSnapshot(self);
-}
-
-- (void)bindDrawable
-{
-    
-}
-
-- (void)prepare
-{
-    SGPLGLContextSetCurrentContext(self.context);
-}
-
-- (void)display
-{
-    if ([self.drawDelegate respondsToSelector:@selector(glkView:drawInRect:)]) {
-        [self.drawDelegate glkView:self drawInRect:self.bounds];
-    }
-}
-
-- (void)flush
+- (void)present
 {
     [self.openGLContext flushBuffer];
 }
@@ -58,35 +34,37 @@
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
+
 @implementation SGPLFGLView
 
-- (SGPLFImage *)snapshot
++ (Class)layerClass
 {
-    return nil;
+    return [CAEAGLLayer class];
 }
 
-- (void)bindDrawable
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    
-}
-
-- (void)prepare
-{
-    SGPLGLContextSetCurrentContext(self.context);
-}
-
-- (void)display
-{
-    if ([self.drawDelegate respondsToSelector:@selector(glkView:drawInRect:)]) {
-        [self.drawDelegate glkView:self drawInRect:self.bounds];
+    if (self = [super initWithFrame:frame])
+    {
+        CAEAGLLayer * glLayer = (CAEAGLLayer *)self.layer;
+        glLayer.opaque = YES;
+        glLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking : @(NO),
+                                       kEAGLDrawablePropertyColorFormat : kEAGLColorFormatRGBA8};
     }
+    return self;
 }
 
-- (void)flush
+- (void)renderbufferStorage
 {
-    
+    [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
+}
+
+- (void)present
+{
+    [self.context presentRenderbuffer:GL_RENDERBUFFER];
 }
 
 @end
+
 
 #endif

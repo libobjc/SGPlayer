@@ -16,7 +16,7 @@
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate, SGFFVideoOutputDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -108,8 +108,10 @@
     self.outputManager = [[SGFFOutputManager alloc] init];
     self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
     self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
-    self.outputManager.videoOutput = [[SGFFVideoOutput alloc] init];
-    self.outputManager.videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
+    SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
+    videoOutput.delegate = self;
+    videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
+    self.outputManager.videoOutput = videoOutput;
     [self.source read];
     [self.outputManager.audioOutput play];
 }
@@ -167,6 +169,15 @@
 - (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
     return [self.outputManager renderWithFrame:frame];
+}
+
+
+#pragma mark - SGFFVideoOutputDelegate
+
+- (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output
+{
+    output.displayView.frame = self.view.bounds;
+    [self.view addSubview:output.displayView];
 }
 
 

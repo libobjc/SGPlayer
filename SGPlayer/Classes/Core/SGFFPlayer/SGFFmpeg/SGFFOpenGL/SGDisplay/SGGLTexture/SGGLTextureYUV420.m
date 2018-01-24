@@ -28,6 +28,45 @@ static GLuint gl_texture_ids[3];
     return self;
 }
 
+- (BOOL)updateTexture:(SGFFVideoOutputRender *)render
+{
+    const int frameWidth = render.videoFrame.width;
+    const int frameHeight = render.videoFrame.height;
+    
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    
+    const int widths[3]  = {
+        frameWidth,
+        frameWidth / 2,
+        frameWidth / 2
+    };
+    const int heights[3] = {
+        frameHeight,
+        frameHeight / 2,
+        frameHeight / 2
+    };
+    
+    for (SGYUVChannel channel = SGYUVChannelLuma; channel < SGYUVChannelCount; channel++)
+    {
+        glActiveTexture(GL_TEXTURE0 + channel);
+        glBindTexture(GL_TEXTURE_2D, gl_texture_ids[channel]);
+        glTexImage2D(GL_TEXTURE_2D,
+                     0,
+                     GL_LUMINANCE,
+                     widths[channel],
+                     heights[channel],
+                     0,
+                     GL_LUMINANCE,
+                     GL_UNSIGNED_BYTE,
+                     render.videoFrame.data[channel]);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    return YES;
+}
+
 - (BOOL)updateTextureWithGLFrame:(SGGLFrame *)glFrame aspect:(CGFloat *)aspect
 {
     SGFFAVYUVVideoFrame * videoFrame = [glFrame pixelBufferForYUV420];
