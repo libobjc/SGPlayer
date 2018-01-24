@@ -84,6 +84,34 @@
     }
 }
 
+- (SGGLViewport)viewport:(SGGLSize)renderSize displaySize:(SGGLSize)displaySize
+{
+    SGGLViewport viewport = {0, 0, displaySize.width, displaySize.height};
+    double renderAspect = (double)renderSize.width / renderSize.height;
+    double displayAspect = (double)displaySize.width / displaySize.height;
+    if (fabs(displayAspect - renderAspect) <= 0.0001)
+    {
+        
+    }
+    else if (displayAspect < renderAspect)
+    {
+        CGFloat height = displaySize.width / renderAspect;
+        viewport.x = 0;
+        viewport.y = (displaySize.height - height) / 2;
+        viewport.width = displaySize.width;
+        viewport.height = height;
+    }
+    else if (displayAspect > renderAspect)
+    {
+        CGFloat width = displaySize.height * renderAspect;
+        viewport.x = (displaySize.width - width) / 2;
+        viewport.y = 0;
+        viewport.width = width;
+        viewport.height = displaySize.height;
+    }
+    return viewport;
+}
+
 
 #pragma mark - SGGLViewDelegate
 
@@ -107,35 +135,9 @@
                     textureCoordLocation:self.program.texture_coord_location
                        textureRotateType:SGGLModelTextureRotateType0];
         [self.program updateMatrix:GLKMatrix4Identity];
-        
-        int viewport[4];
-        double renderAspect = (double)render.videoFrame.width / render.videoFrame.height;
-        double displayAspect = (double)self.glView.displaySize.width / self.glView.displaySize.height;
-        if (fabs(displayAspect - renderAspect) <= 0.0001)
-        {
-            viewport[0] = 0;
-            viewport[1] = 0;
-            viewport[2] = self.glView.displaySize.width;
-            viewport[3] = self.glView.displaySize.height;
-        }
-        else if (displayAspect < renderAspect)
-        {
-            CGFloat height = self.glView.displaySize.width / renderAspect;
-            viewport[0] = 0;
-            viewport[1] = (self.glView.displaySize.height - height) / 2;
-            viewport[2] = self.glView.displaySize.width;
-            viewport[3] = height;
-        }
-        else if (displayAspect > renderAspect)
-        {
-            CGFloat width = self.glView.displaySize.height * renderAspect;
-            viewport[0] = (self.glView.displaySize.width - width) / 2;
-            viewport[1] = 0;
-            viewport[2] = width;
-            viewport[3] = self.glView.displaySize.height;
-        }
-        glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-        
+        SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
+        SGGLViewport viewport = [self viewport:renderSize displaySize:self.glView.displaySize];
+        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
         glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
         [render unlock];
     }

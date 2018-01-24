@@ -30,7 +30,7 @@
         dispatch_sync(self.drawingQueue, ^{
             self.context = SGPLFGLContextAllocInit();
             SGPLGLContextSetCurrentContext(self.context);
-            glClearColor(0, 1, 0, 1);
+            glClearColor(0, 0, 0, 1);
         });
     }
     return self;

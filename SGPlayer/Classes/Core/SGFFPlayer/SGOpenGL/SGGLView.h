@@ -13,6 +13,13 @@ typedef struct SGGLSize {
     int height;
 } SGGLSize;
 
+typedef struct SGGLViewport {
+    int x;
+    int y;
+    int width;
+    int height;
+} SGGLViewport;
+
 @class SGGLView;
 
 @protocol SGGLViewDelegate <NSObject>
