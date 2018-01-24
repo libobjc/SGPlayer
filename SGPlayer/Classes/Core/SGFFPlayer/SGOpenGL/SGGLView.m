@@ -66,7 +66,7 @@
         SGPLGLContextSetCurrentContext(self.context);
         glBindFramebuffer(GL_FRAMEBUFFER, _displayFramebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        [self.delegate glViewDrawDisplay:self];
+        [self.delegate glView:self draw:self.displaySize];
         glBindRenderbuffer(GL_RENDERBUFFER, _displayRenderbuffer);
         [self present];
     });

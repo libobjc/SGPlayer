@@ -133,7 +133,7 @@
 
 #pragma mark - SGGLViewDelegate
 
-- (void)glViewDrawDisplay:(SGGLView *)glView
+- (void)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
     [self.coreLock lock];
     SGFFVideoOutputRender * render = self.currentRender;
@@ -154,7 +154,7 @@
                        textureRotateType:SGGLModelTextureRotateType0];
         [self.program updateMatrix:GLKMatrix4Identity];
         SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-        SGGLViewport viewport = [self viewport:renderSize displaySize:self.glView.displaySize];
+        SGGLViewport viewport = [self viewport:renderSize displaySize:size];
         glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
         glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
         [render unlock];

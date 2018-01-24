@@ -24,14 +24,13 @@ typedef struct SGGLViewport {
 
 @protocol SGGLViewDelegate <NSObject>
 
-- (void)glViewDrawDisplay:(SGGLView *)glView;
+- (void)glView:(SGGLView *)glView draw:(SGGLSize)size;
 
 @end
 
 @interface SGGLView : SGPLFGLView
 
 @property (nonatomic, weak) id <SGGLViewDelegate> delegate;
-@property (nonatomic, assign, readonly) SGGLSize displaySize;
 
 - (void)display;
 - (void)clear;
