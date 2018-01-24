@@ -16,6 +16,7 @@
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLProgramYUV420 * program;
 @property (nonatomic, strong) SGGLNormalModel * model;
@@ -38,15 +39,16 @@
 {
     if (self = [super init])
     {
+        self.coreLock = [[NSLock alloc] init];
+        self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction)];
+        self.displayLink.preferredFramesPerSecond = 25;
+        [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
+        self.displayLink.paused = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.glView = [[SGGLView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             self.glView.delegate = self;
             [self.delegate videoOutputDidChangeDisplayView:self];
         });
-        self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction)];
-        self.displayLink.preferredFramesPerSecond = 25;
-        [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-        self.displayLink.paused = NO;
     }
     return self;
 }
@@ -61,7 +63,9 @@
     SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
     if (render)
     {
+        [self.coreLock lock];
         [self.currentRender unlock];
+        [self.coreLock unlock];
         self.currentRender = render;
         [self.glView display];
     }
@@ -85,10 +89,16 @@
 
 - (void)glViewDrawDisplay:(SGGLView *)glView
 {
+    [self.coreLock lock];
     SGFFVideoOutputRender * render = self.currentRender;
-    if (render)
+    if (!render)
+    {
+        [self.coreLock unlock];
+    }
+    else
     {
         [render lock];
+        [self.coreLock unlock];
         [self setupOpenGLIfNeed];
         [self.program use];
         [self.program bindVariable];
