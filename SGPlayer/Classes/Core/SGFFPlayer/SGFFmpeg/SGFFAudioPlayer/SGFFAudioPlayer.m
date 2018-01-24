@@ -26,6 +26,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 @property (nonatomic, assign) AudioUnit audioUnitForOutput;
 @property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
 @property (nonatomic, assign) float * outputData;
+@property (nonatomic, strong) NSLock * coreLock;
 
 @end
 
@@ -52,6 +53,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     if (self = [super init])
     {
         self.delegate = delegate;
+        self.coreLock = [[NSLock alloc] init];
         [self setupAUGraph];
     }
     return self;
@@ -62,8 +64,10 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     [self stop];
     if (self.outputData)
     {
+        [self.coreLock lock];
         free(self.outputData);
         self.outputData = nil;
+        [self.coreLock unlock];
     }
 }
 
@@ -155,12 +159,14 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
                          kAudioUnitScope_Input, 0,
                          &_audioStreamBasicDescription,
                          audioStreamBasicDescriptionSize);
+    [self.coreLock lock];
     if (self.outputData)
     {
         free(self.outputData);
         self.outputData = nil;
     }
     self.outputData = (float *)calloc(SGFFAudioPlayerMaximumFramesPerSlice * SGFFAudioPlayerMaximumChannels, sizeof(float));
+    [self.coreLock unlock];
 }
 
 - (void)setVolume:(float)volume
@@ -193,6 +199,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
+    [self.coreLock lock];
     [self.delegate audioPlayer:self outputData:self.outputData numberOfSamples:inNumberFrames numberOfChannels:self.numberOfChannels];
     for (int i = 0; i < ioData->mNumberBuffers; i++)
     {
@@ -205,6 +212,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
                    currentNumberOfChannels,
                    inNumberFrames);
     }
+    [self.coreLock unlock];
     NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
 }
 
