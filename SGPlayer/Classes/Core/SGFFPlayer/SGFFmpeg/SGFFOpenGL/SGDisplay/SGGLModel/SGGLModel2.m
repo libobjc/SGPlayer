@@ -6,10 +6,10 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGGLModel.h"
+#import "SGGLModel2.h"
 #import "SGPlayerMacro.h"
 
-@implementation SGGLModel
+@implementation SGGLModel2
 
 + (instancetype)model
 {

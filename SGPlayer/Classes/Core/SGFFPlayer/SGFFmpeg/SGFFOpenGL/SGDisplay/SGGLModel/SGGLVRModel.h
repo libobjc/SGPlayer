@@ -6,8 +6,8 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGGLModel.h"
+#import "SGGLModel2.h"
 
-@interface SGGLVRModel : SGGLModel
+@interface SGGLVRModel : SGGLModel2
 
 @end

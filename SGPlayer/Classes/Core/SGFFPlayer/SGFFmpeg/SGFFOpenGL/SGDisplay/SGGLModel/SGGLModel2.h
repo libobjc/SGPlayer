@@ -15,7 +15,7 @@ typedef NS_ENUM(NSUInteger, SGGLModelTextureRotateType) {
     SGGLModelTextureRotateType270,
 };
 
-@interface SGGLModel : NSObject
+@interface SGGLModel2 : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
