@@ -53,6 +53,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self clearCurrentRender];
+}
+
 - (SGPLFView *)displayView
 {
     return self.glView;
@@ -63,9 +68,7 @@
     SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
     if (render)
     {
-        [self.coreLock lock];
-        [self.currentRender unlock];
-        [self.coreLock unlock];
+        [self clearCurrentRender];
         self.currentRender = render;
         [self.glView display];
     }
@@ -81,6 +84,17 @@
     }
     if (!self.model) {
         self.model = [SGGLNormalModel model];
+    }
+}
+
+- (void)clearCurrentRender
+{
+    if (self.currentRender)
+    {
+        [self.coreLock lock];
+        [self.currentRender unlock];
+        self.currentRender = nil;
+        [self.coreLock unlock];
     }
 }
 
