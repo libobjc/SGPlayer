@@ -14,7 +14,7 @@
 #import "SGGLTextureYUV420.h"
 #import "SGPlatform.h"
 
-@interface SGFFVideoOutput ()
+@interface SGFFVideoOutput () <SGGLViewDelegate>
 
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLProgramYUV420 * program;
@@ -40,6 +40,7 @@
     {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.glView = [[SGGLView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            self.glView.delegate = self;
             [self.delegate videoOutputDidChangeDisplayView:self];
         });
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction)];
@@ -57,51 +58,12 @@
 
 - (void)displayLinkAction
 {
-    self.currentRender = [self.renderSource outputFecthRender:self];
-    if (self.currentRender)
+    SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
+    if (render)
     {
-        SGFFVideoOutputRender * render = self.currentRender;
-        [self.glView display:^{
-            [self setupOpenGLIfNeed];
-            [self.program use];
-            [self.program bindVariable];
-            [self.texture updateTexture:render];
-            [self.model bindPositionLocation:self.program.position_location
-                        textureCoordLocation:self.program.texture_coord_location
-                           textureRotateType:SGGLModelTextureRotateType0];
-            [self.program updateMatrix:GLKMatrix4Identity];
-            
-            int viewport[4];
-            double renderAspect = (double)render.videoFrame.width / render.videoFrame.height;
-            double displayAspect = (double)self.glView.displaySize.width / self.glView.displaySize.height;
-            if (fabs(displayAspect - renderAspect) <= 0.0001)
-            {
-                viewport[0] = 0;
-                viewport[1] = 0;
-                viewport[2] = self.glView.displaySize.width;
-                viewport[3] = self.glView.displaySize.height;
-            }
-            else if (displayAspect < renderAspect)
-            {
-                CGFloat height = self.glView.displaySize.width / renderAspect;
-                viewport[0] = 0;
-                viewport[1] = (self.glView.displaySize.height - height) / 2;
-                viewport[2] = self.glView.displaySize.width;
-                viewport[3] = height;
-            }
-            else if (displayAspect > renderAspect)
-            {
-                CGFloat width = self.glView.displaySize.height * renderAspect;
-                viewport[0] = (self.glView.displaySize.width - width) / 2;
-                viewport[1] = 0;
-                viewport[2] = width;
-                viewport[3] = self.glView.displaySize.height;
-            }
-            glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-            
-            glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
-            [render unlock];
-        }];
+        [self.currentRender unlock];
+        self.currentRender = render;
+        [self.glView display];
     }
 }
 
@@ -115,6 +77,57 @@
     }
     if (!self.model) {
         self.model = [SGGLNormalModel model];
+    }
+}
+
+
+#pragma mark - SGGLViewDelegate
+
+- (void)glViewDrawDisplay:(SGGLView *)glView
+{
+    SGFFVideoOutputRender * render = self.currentRender;
+    if (render)
+    {
+        [render lock];
+        [self setupOpenGLIfNeed];
+        [self.program use];
+        [self.program bindVariable];
+        [self.texture updateTexture:render];
+        [self.model bindPositionLocation:self.program.position_location
+                    textureCoordLocation:self.program.texture_coord_location
+                       textureRotateType:SGGLModelTextureRotateType0];
+        [self.program updateMatrix:GLKMatrix4Identity];
+        
+        int viewport[4];
+        double renderAspect = (double)render.videoFrame.width / render.videoFrame.height;
+        double displayAspect = (double)self.glView.displaySize.width / self.glView.displaySize.height;
+        if (fabs(displayAspect - renderAspect) <= 0.0001)
+        {
+            viewport[0] = 0;
+            viewport[1] = 0;
+            viewport[2] = self.glView.displaySize.width;
+            viewport[3] = self.glView.displaySize.height;
+        }
+        else if (displayAspect < renderAspect)
+        {
+            CGFloat height = self.glView.displaySize.width / renderAspect;
+            viewport[0] = 0;
+            viewport[1] = (self.glView.displaySize.height - height) / 2;
+            viewport[2] = self.glView.displaySize.width;
+            viewport[3] = height;
+        }
+        else if (displayAspect > renderAspect)
+        {
+            CGFloat width = self.glView.displaySize.height * renderAspect;
+            viewport[0] = (self.glView.displaySize.width - width) / 2;
+            viewport[1] = 0;
+            viewport[2] = width;
+            viewport[3] = self.glView.displaySize.height;
+        }
+        glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+        
+        glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
+        [render unlock];
     }
 }
 

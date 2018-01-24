@@ -56,20 +56,17 @@
             [self destroyFramebuffer];
             [self setupFramebuffer];
         });
+        [self display];
     }
 }
 
-- (void)display:(void (^)(void))prepare
+- (void)display
 {
-    if (!prepare)
-    {
-        return;
-    }
     dispatch_async(self.drawingQueue, ^{
         SGPLGLContextSetCurrentContext(self.context);
         glBindFramebuffer(GL_FRAMEBUFFER, _displayFramebuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        prepare();
+        [self.delegate glViewDrawDisplay:self];
         glBindRenderbuffer(GL_RENDERBUFFER, _displayRenderbuffer);
         [self present];
     });

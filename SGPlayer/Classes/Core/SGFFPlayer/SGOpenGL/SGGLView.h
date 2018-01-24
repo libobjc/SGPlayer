@@ -13,11 +13,20 @@ typedef struct SGGLSize {
     int height;
 } SGGLSize;
 
+@class SGGLView;
+
+@protocol SGGLViewDelegate <NSObject>
+
+- (void)glViewDrawDisplay:(SGGLView *)glView;
+
+@end
+
 @interface SGGLView : SGPLFGLView
 
+@property (nonatomic, weak) id <SGGLViewDelegate> delegate;
 @property (nonatomic, assign, readonly) SGGLSize displaySize;
 
-- (void)display:(void(^)(void))prepare;
+- (void)display;
 - (void)clear;
 
 @end
