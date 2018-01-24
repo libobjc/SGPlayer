@@ -11,11 +11,11 @@
 @interface SGGLView ()
 
 {
-    CGSize _displaySize;
     GLuint _displayFramebuffer;
     GLuint _displayRenderbuffer;
 }
 
+@property (nonatomic, assign) SGGLSize displaySize;
 @property (nonatomic, strong) dispatch_queue_t drawingQueue;
 
 @end
@@ -46,9 +46,12 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    if (!CGSizeEqualToSize(self.bounds.size, _displaySize))
+    int width = CGRectGetWidth(self.bounds);
+    int height = CGRectGetHeight(self.bounds);
+    if (width != _displaySize.width || height != _displaySize.width)
     {
-        _displaySize = self.bounds.size;
+        SGGLSize displaySize = {width, height};
+        _displaySize = displaySize;
         dispatch_sync(self.drawingQueue, ^{
             [self destroyFramebuffer];
             [self setupFramebuffer];
@@ -83,7 +86,7 @@
 
 - (void)setupFramebuffer
 {
-    if (CGSizeEqualToSize(_displaySize, CGSizeZero))
+    if (_displaySize.width == 0 || _displaySize.height == 0)
     {
         return;
     }
@@ -95,7 +98,6 @@
     [self renderbufferStorage];
     glViewport(0, 0, (GLint)_displaySize.width, (GLint)_displaySize.height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _displayRenderbuffer);
-    [self present];
 }
 
 - (void)destroyFramebuffer

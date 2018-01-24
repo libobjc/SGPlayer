@@ -8,7 +8,14 @@
 
 #import "SGPLFGLView.h"
 
+typedef struct SGGLSize {
+    int width;
+    int height;
+} SGGLSize;
+
 @interface SGGLView : SGPLFGLView
+
+@property (nonatomic, assign, readonly) SGGLSize displaySize;
 
 - (void)display:(void(^)(void))prepare;
 - (void)clear;
