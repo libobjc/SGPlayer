@@ -125,10 +125,12 @@
 {
     if (_vertexShader_id) {
         glDeleteShader(_vertexShader_id);
+        _vertexShader_id=  0;
     }
     
     if (_fragmentShader_id) {
         glDeleteShader(_fragmentShader_id);
+        _fragmentShader_id = 0;
     }
 }
 
