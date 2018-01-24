@@ -8,7 +8,9 @@
 
 #import "SGFFVideoOutput.h"
 #import "SGFFVideoOutputRender.h"
+#import "SGGLDisplayLink.h"
 #import "SGGLView.h"
+#import "SGPlayerMacro.h"
 #import "SGGLProgramYUV420.h"
 #import "SGGLNormalModel.h"
 #import "SGGLTextureYUV420.h"
@@ -17,11 +19,11 @@
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLProgramYUV420 * program;
 @property (nonatomic, strong) SGGLNormalModel * model;
 @property (nonatomic, strong) SGGLTextureYUV420 * texture;
-@property (nonatomic, strong) SGPLFDisplayLink * displayLink;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
 @end
@@ -40,14 +42,15 @@
     if (self = [super init])
     {
         self.coreLock = [[NSLock alloc] init];
-        self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkAction)];
-        self.displayLink.preferredFramesPerSecond = 25;
-        [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
-        self.displayLink.paused = NO;
         dispatch_async(dispatch_get_main_queue(), ^{
             self.glView = [[SGGLView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
             self.glView.delegate = self;
             [self.delegate videoOutputDidChangeDisplayView:self];
+            SGWeakSelf
+            self.displayLink = [SGGLDisplayLink displayLinkWithCallback:^{
+                SGStrongSelf
+                [strongSelf displayLinkHandler];
+            }];
         });
     }
     return self;
@@ -55,6 +58,7 @@
 
 - (void)dealloc
 {
+    [self.displayLink invalidate];
     [self clearCurrentRender];
 }
 
@@ -63,7 +67,7 @@
     return self.glView;
 }
 
-- (void)displayLinkAction
+- (void)displayLinkHandler
 {
     SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
     if (render)

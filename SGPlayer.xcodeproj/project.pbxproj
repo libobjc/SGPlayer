@@ -738,6 +738,12 @@
 		9C5C6C9C20182A4800863EB5 /* SGGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6C9820182A4800863EB5 /* SGGLView.m */; };
 		9C5C6C9D20182A4800863EB5 /* SGGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6C9820182A4800863EB5 /* SGGLView.m */; };
 		9C5C6C9E20182A4800863EB5 /* SGGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6C9820182A4800863EB5 /* SGGLView.m */; };
+		9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */; };
+		9C5C6CAB2018952300863EB5 /* SGGLDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */; };
+		9C5C6CAC2018952300863EB5 /* SGGLDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */; };
+		9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
+		9C5C6CAE2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
+		9C5C6CAF2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
 		9C8D4E48200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
 		9C8D4E49200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
 		9C8D4E4A200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
@@ -1269,6 +1275,8 @@
 		9C5C6C8F2018272C00863EB5 /* SGFFGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFGLView.m; sourceTree = "<group>"; };
 		9C5C6C9720182A4800863EB5 /* SGGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLView.h; sourceTree = "<group>"; };
 		9C5C6C9820182A4800863EB5 /* SGGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLView.m; sourceTree = "<group>"; };
+		9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDisplayLink.h; sourceTree = "<group>"; };
+		9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLDisplayLink.m; sourceTree = "<group>"; };
 		9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFSession.h; sourceTree = "<group>"; };
 		9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFSession.m; sourceTree = "<group>"; };
 		9C8D4E5D200E0A1400ED8A58 /* SGFFSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFSource.h; sourceTree = "<group>"; };
@@ -1854,6 +1862,8 @@
 			children = (
 				9C5C6C9720182A4800863EB5 /* SGGLView.h */,
 				9C5C6C9820182A4800863EB5 /* SGGLView.m */,
+				9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */,
+				9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */,
 			);
 			path = SGOpenGL;
 			sourceTree = "<group>";
@@ -2319,6 +2329,7 @@
 				9C25347B1FAB151500BBFA5C /* dirac.h in Headers */,
 				9C2535411FAB151500BBFA5C /* mastering_display_metadata.h in Headers */,
 				9C2534B41FAB151500BBFA5C /* avio.h in Headers */,
+				9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */,
 				9C5AB6E21E88E8F20021F460 /* SGGLTextureNV12.h in Headers */,
 				9C478F4C1E713AA800AD4289 /* SGYUVTools.h in Headers */,
 				9C2535081FAB151500BBFA5C /* ffversion.h in Headers */,
@@ -2596,6 +2607,7 @@
 				9C25361D1FAB151500BBFA5C /* SGFFPacketQueue2.h in Headers */,
 				9C5AB6DB1E88E7980021F460 /* SGGLTexture.h in Headers */,
 				9C2535841FAB151500BBFA5C /* time.h in Headers */,
+				9C5C6CAB2018952300863EB5 /* SGGLDisplayLink.h in Headers */,
 				9CE68415200DA609007BD834 /* SGFFPlayerView.h in Headers */,
 				9C47933E1E713B5C00AD4289 /* SGMacAudioDevice.h in Headers */,
 				9C25352D1FAB151500BBFA5C /* imgutils.h in Headers */,
@@ -2784,6 +2796,7 @@
 				9C2535011FAB151500BBFA5C /* downmix_info.h in Headers */,
 				9C2535401FAB151500BBFA5C /* macros.h in Headers */,
 				9C2535641FAB151500BBFA5C /* random_seed.h in Headers */,
+				9C5C6CAC2018952300863EB5 /* SGGLDisplayLink.h in Headers */,
 				9C25361E1FAB151500BBFA5C /* SGFFPacketQueue2.h in Headers */,
 				9C2534831FAB151500BBFA5C /* dxva2.h in Headers */,
 				9C2534A71FAB151500BBFA5C /* avfiltergraph.h in Headers */,
@@ -3187,6 +3200,7 @@
 				9C478F661E713AC600AD4289 /* SGSensors.m in Sources */,
 				9CE6F56F2004D97D00D1F4C8 /* SGPLFGLViewController.m in Sources */,
 				9C478F141E713A3200AD4289 /* SGPlayerTrack.m in Sources */,
+				9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
 				9CF15E322011CF3200585326 /* SGFFFrameInternal.m in Sources */,
 				9C2C55A62015C1E100131E15 /* SGFFVideoOutput.m in Sources */,
 				9CE6F54F2004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
@@ -3240,6 +3254,7 @@
 				9C25362C1FAB151500BBFA5C /* SGFFTrack.m in Sources */,
 				9CF15E132011AEBD00585326 /* SGFFOutputManager.m in Sources */,
 				9C4793411E713B5C00AD4289 /* SGMacAudioSession.m in Sources */,
+				9C5C6CAE2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
 				9C2535F61FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */,
 				9C2536021FAB151500BBFA5C /* SGFFFormatContext2.m in Sources */,
 				9CF52CFB200F45D700950B81 /* SGFFStream.m in Sources */,
@@ -3360,6 +3375,7 @@
 				9C2536391FAB151500BBFA5C /* SGFFVideoFrame2.m in Sources */,
 				9C47932A1E713B4900AD4289 /* SGDistortionModel.m in Sources */,
 				9C2535FD1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
+				9C5C6CAF2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
 				9C8D4E85200E1ACA00ED8A58 /* SGFFError.m in Sources */,
 				9CE6F5452004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
 				9C2C55B22015D1D200131E15 /* SGFFPacket.m in Sources */,
