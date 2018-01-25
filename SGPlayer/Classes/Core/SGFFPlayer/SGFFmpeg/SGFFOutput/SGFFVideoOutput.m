@@ -14,7 +14,7 @@
 #import "SGGLViewport.h"
 #import "SGGLYUV420Program.h"
 #import "SGGLPlaneModel.h"
-#import "SGGLTextureYUV420.h"
+#import "SGGLTextureUploader.h"
 #import "SGPlatform.h"
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
@@ -24,7 +24,7 @@
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLYUV420Program * program;
 @property (nonatomic, strong) SGGLPlaneModel * model;
-@property (nonatomic, strong) SGGLTextureYUV420 * texture;
+@property (nonatomic, strong) SGGLTextureUploader * textureUploader;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
 @end
@@ -81,8 +81,8 @@
 
 - (void)setupOpenGLIfNeed
 {
-    if (!self.texture) {
-        self.texture = [[SGGLTextureYUV420 alloc] init];
+    if (!self.textureUploader) {
+        self.textureUploader = [[SGGLTextureUploader alloc] init];
     }
     if (!self.program) {
         self.program = [[SGGLYUV420Program alloc] init];
@@ -120,11 +120,11 @@
     [self setupOpenGLIfNeed];
     [self.program use];
     [self.program bindVariable];
-    [self.texture updateTexture:render];
+    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
+    [self.textureUploader upload:render.videoFrame.data size:renderSize];
     [self.model bindPosition_location:self.program.position_location
            textureCoordinate_location:self.program.textureCoordinate_location];
     [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     [SGGLViewport updateViewport:renderSize
                      displaySize:size
                             mode:SGGLViewportModeResizeAspect];

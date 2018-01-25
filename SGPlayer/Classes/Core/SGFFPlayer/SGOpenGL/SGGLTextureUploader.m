@@ -1,12 +1,13 @@
 //
-//  SGGLTextureYUV420.m
+//  SGGLTextureUploader.m
 //  SGPlayer
 //
-//  Created by Single on 2017/3/27.
-//  Copyright © 2017年 single. All rights reserved.
+//  Created by Single on 2018/1/25.
+//  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGGLTextureYUV420.h"
+#import "SGGLTextureUploader.h"
+#import "SGPLFOpenGL.h"
 
 static int gl_texture[3] =
 {
@@ -15,7 +16,7 @@ static int gl_texture[3] =
     GL_TEXTURE2,
 };
 
-@implementation SGGLTextureYUV420
+@implementation SGGLTextureUploader
 
 {
     GLuint _gl_texture_ids[3];
@@ -41,7 +42,7 @@ static int gl_texture[3] =
     }
 }
 
-- (void)upload:(uint8_t **)data size:(SGGLSize)size
+- (void)upload:(uint8_t * [3])data size:(SGGLSize)size;
 {
     static int count = 3;
     int widths[3]  = {size.width, size.width / 2, size.width / 2};
@@ -57,11 +58,6 @@ static int gl_texture[3] =
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
-}
-
-- (BOOL)updateTextureWithGLFrame:(SGGLFrame *)glFrame aspect:(CGFloat *)aspect
-{
-    return YES;
 }
 
 @end

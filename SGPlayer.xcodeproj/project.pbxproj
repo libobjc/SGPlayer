@@ -789,6 +789,12 @@
 		9C8D265C2019E1AC002770FA /* SGGLViewport.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26582019E1AC002770FA /* SGGLViewport.m */; };
 		9C8D265D2019E1AC002770FA /* SGGLViewport.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26582019E1AC002770FA /* SGGLViewport.m */; };
 		9C8D265E2019E1AC002770FA /* SGGLViewport.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26582019E1AC002770FA /* SGGLViewport.m */; };
+		9C8D26612019F297002770FA /* SGGLTextureUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D265F2019F297002770FA /* SGGLTextureUploader.h */; };
+		9C8D26622019F297002770FA /* SGGLTextureUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D265F2019F297002770FA /* SGGLTextureUploader.h */; };
+		9C8D26632019F297002770FA /* SGGLTextureUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D265F2019F297002770FA /* SGGLTextureUploader.h */; };
+		9C8D26642019F297002770FA /* SGGLTextureUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26602019F297002770FA /* SGGLTextureUploader.m */; };
+		9C8D26652019F297002770FA /* SGGLTextureUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26602019F297002770FA /* SGGLTextureUploader.m */; };
+		9C8D26662019F297002770FA /* SGGLTextureUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26602019F297002770FA /* SGGLTextureUploader.m */; };
 		9C8D4E48200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
 		9C8D4E49200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
 		9C8D4E4A200DFFC700ED8A58 /* SGFFSession.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */; };
@@ -1338,6 +1344,8 @@
 		9C8D26532019DC7F002770FA /* SGGLDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDefines.h; sourceTree = "<group>"; };
 		9C8D26572019E1AC002770FA /* SGGLViewport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLViewport.h; sourceTree = "<group>"; };
 		9C8D26582019E1AC002770FA /* SGGLViewport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLViewport.m; sourceTree = "<group>"; };
+		9C8D265F2019F297002770FA /* SGGLTextureUploader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLTextureUploader.h; sourceTree = "<group>"; };
+		9C8D26602019F297002770FA /* SGGLTextureUploader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLTextureUploader.m; sourceTree = "<group>"; };
 		9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFSession.h; sourceTree = "<group>"; };
 		9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFSession.m; sourceTree = "<group>"; };
 		9C8D4E5D200E0A1400ED8A58 /* SGFFSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFSource.h; sourceTree = "<group>"; };
@@ -1941,6 +1949,8 @@
 				9C1945002019C6A100184416 /* SGGLYUV420Program.m */,
 				9C1945072019D22800184416 /* SGGLNV12Program.h */,
 				9C1945082019D22800184416 /* SGGLNV12Program.m */,
+				9C8D265F2019F297002770FA /* SGGLTextureUploader.h */,
+				9C8D26602019F297002770FA /* SGGLTextureUploader.m */,
 			);
 			path = SGOpenGL;
 			sourceTree = "<group>";
@@ -2337,6 +2347,7 @@
 				9C2535111FAB151500BBFA5C /* frame.h in Headers */,
 				9C2534DE1FAB151500BBFA5C /* bswap.h in Headers */,
 				9C478F111E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
+				9C8D26612019F297002770FA /* SGGLTextureUploader.h in Headers */,
 				9C2535321FAB151500BBFA5C /* intreadwrite.h in Headers */,
 				9CF15DE520118E1100585326 /* SGFFAsyncCodec.h in Headers */,
 				9C478F0B1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
@@ -2720,6 +2731,7 @@
 				9C2535061FAB151500BBFA5C /* eval.h in Headers */,
 				9C2535361FAB151500BBFA5C /* lfg.h in Headers */,
 				9C8D265A2019E1AC002770FA /* SGGLViewport.h in Headers */,
+				9C8D26622019F297002770FA /* SGGLTextureUploader.h in Headers */,
 				9C25360B1FAB151500BBFA5C /* SGFFFramePool.h in Headers */,
 				9C2535F31FAB151500BBFA5C /* SGFFAudioFrame2.h in Headers */,
 				9C2535481FAB151500BBFA5C /* md5.h in Headers */,
@@ -2780,6 +2792,7 @@
 				9C0DFFDF200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h in Headers */,
 				9C8D265B2019E1AC002770FA /* SGGLViewport.h in Headers */,
 				9CF15DE720118E1100585326 /* SGFFAsyncCodec.h in Headers */,
+				9C8D26632019F297002770FA /* SGGLTextureUploader.h in Headers */,
 				9C2C55A52015C1E100131E15 /* SGFFVideoOutput.h in Headers */,
 				9C5AB6DC1E88E7980021F460 /* SGGLTexture.h in Headers */,
 				9C478F0D1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
@@ -3267,6 +3280,7 @@
 				9C2536071FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
 				9C2C55B82015D92100131E15 /* SGFFObjectQueue.m in Sources */,
 				9CF15E3A2011D15B00585326 /* SGFFOutputRenderInternal.m in Sources */,
+				9C8D26642019F297002770FA /* SGGLTextureUploader.m in Sources */,
 				9C2535FB1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
 				9C389AC220106DB2003259FF /* SGFFTime.m in Sources */,
 				9C47930A1E713B4900AD4289 /* SGGLProgram2.m in Sources */,
@@ -3427,6 +3441,7 @@
 				9C25361A1FAB151500BBFA5C /* SGFFMetadata.m in Sources */,
 				9C389AB320104097003259FF /* SGFFStreamManager.m in Sources */,
 				9C2536261FAB151500BBFA5C /* SGFFTools.m in Sources */,
+				9C8D26652019F297002770FA /* SGGLTextureUploader.m in Sources */,
 				9C1944ED2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9CE6F5602004D97D00D1F4C8 /* SGPLFGLContext.m in Sources */,
 				9C569F6E2008C3A6007A07FF /* SGPlayerBackgroundHandler.m in Sources */,
@@ -3451,6 +3466,7 @@
 				9C8D4E7D200E112700ED8A58 /* SGFFCodecManager.m in Sources */,
 				9CF15E242011BC5400585326 /* SGFFAudioFrame.m in Sources */,
 				9C5AB7071E88F0560021F460 /* SGGLProgramYUV420.m in Sources */,
+				9C8D26662019F297002770FA /* SGGLTextureUploader.m in Sources */,
 				9C2535F71FAB151500BBFA5C /* SGFFAudioFrame2.m in Sources */,
 				9CE6F5592004D97D00D1F4C8 /* SGPLFView.m in Sources */,
 				9C47930C1E713B4900AD4289 /* SGGLProgram2.m in Sources */,

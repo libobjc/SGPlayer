@@ -8,9 +8,10 @@
 
 #import "SGGLTexture.h"
 #import "SGFFVideoOutputRender.h"
+#import "SGGLDefines.h"
 
 @interface SGGLTextureYUV420 : SGGLTexture
 
-- (BOOL)updateTexture:(SGFFVideoOutputRender *)render;
+- (void)upload:(uint8_t **)data size:(SGGLSize)size;
 
 @end
