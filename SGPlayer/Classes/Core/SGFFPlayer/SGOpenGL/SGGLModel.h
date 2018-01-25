@@ -15,8 +15,8 @@
 
 @protocol SGGLModel <NSObject>
 
-- (void)bindPositionLocation:(GLint)positionLocation
-   textureCoordinateLocation:(GLint)textureCoordinateLocation;
+- (void)bindPosition_location:(GLint)position_location
+   textureCoordinate_location:(GLint)textureCoordinate_location;
 - (void)bindEmpty;
 - (void)draw;
 
