@@ -12,7 +12,7 @@
 #import "SGGLView.h"
 #import "SGPlayerMacro.h"
 #import "SGGLProgramYUV420.h"
-#import "SGGLNormalModel.h"
+#import "SGGLPlaneModel.h"
 #import "SGGLTextureYUV420.h"
 #import "SGPlatform.h"
 
@@ -22,7 +22,7 @@
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLProgramYUV420 * program;
-@property (nonatomic, strong) SGGLNormalModel * model;
+@property (nonatomic, strong) SGGLPlaneModel * model;
 @property (nonatomic, strong) SGGLTextureYUV420 * texture;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
@@ -87,7 +87,7 @@
         self.program = [SGGLProgramYUV420 program];
     }
     if (!self.model) {
-        self.model = [SGGLNormalModel model];
+        self.model = [[SGGLPlaneModel alloc] init];
     }
 }
 
@@ -149,13 +149,13 @@
     [self.program bindVariable];
     [self.texture updateTexture:render];
     [self.model bindPositionLocation:self.program.position_location
-                textureCoordLocation:self.program.texture_coord_location
-                   textureRotateType:SGGLModelTextureRotateType0];
+                textureCoordLocation:self.program.texture_coord_location];
     [self.program updateMatrix:GLKMatrix4Identity];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     SGGLViewport viewport = [self viewport:renderSize displaySize:size];
     glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
-    glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
+    [self.model draw];
+    [self.model bindEmpty];
     [render unlock];
 }
 

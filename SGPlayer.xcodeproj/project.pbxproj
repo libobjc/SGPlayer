@@ -103,6 +103,12 @@
 		9C0DFFFB200C74B00079D609 /* SGPlayerAudioInterruptHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0DFFDC200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.m */; };
 		9C0DFFFC200C74B00079D609 /* SGPLFGLContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5272004D97C00D1F4C8 /* SGPLFGLContext.m */; };
 		9C0DFFFF200C74B00079D609 /* SGPlayerBackgroundHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C569F672008C3A6007A07FF /* SGPlayerBackgroundHandler.h */; };
+		9C1944E120198CEC00184416 /* SGGLPlaneModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */; };
+		9C1944E220198CEC00184416 /* SGGLPlaneModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */; };
+		9C1944E320198CEC00184416 /* SGGLPlaneModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */; };
+		9C1944E420198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
+		9C1944E520198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
+		9C1944E620198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
 		9C25346F1FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534701FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534711FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
@@ -1043,6 +1049,8 @@
 		9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerAudioInterruptHandler.h; sourceTree = "<group>"; };
 		9C0DFFDC200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerAudioInterruptHandler.m; sourceTree = "<group>"; };
 		9C0DFFE5200C6C1A0079D609 /* SGPlayerDefinesPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerDefinesPrivate.h; sourceTree = "<group>"; };
+		9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLPlaneModel.h; sourceTree = "<group>"; };
+		9C1944E020198CEC00184416 /* SGGLPlaneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLPlaneModel.m; sourceTree = "<group>"; };
 		9C2533CB1FAB151400BBFA5C /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
 		9C2533CC1FAB151400BBFA5C /* avdct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avdct.h; sourceTree = "<group>"; };
 		9C2533CD1FAB151400BBFA5C /* avfft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avfft.h; sourceTree = "<group>"; };
@@ -1869,6 +1877,8 @@
 				9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */,
 				9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */,
 				9C6E514D2018C6C100C87C54 /* SGGLModel.h */,
+				9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */,
+				9C1944E020198CEC00184416 /* SGGLPlaneModel.m */,
 			);
 			path = SGOpenGL;
 			sourceTree = "<group>";
@@ -2346,6 +2356,7 @@
 				9CAAABE3201438C20016EEBC /* SGFFVideoOutputRender.h in Headers */,
 				9C25353B1FAB151500BBFA5C /* lzo.h in Headers */,
 				9C25356B1FAB151500BBFA5C /* replaygain.h in Headers */,
+				9C1944E120198CEC00184416 /* SGGLPlaneModel.h in Headers */,
 				9C051BD62012575E00CBB22C /* SGFFLog.h in Headers */,
 				9C4792E31E713B4900AD4289 /* SGDisplayView.h in Headers */,
 				9C25363A1FAB151500BBFA5C /* SGFFVideoToolBox.h in Headers */,
@@ -2469,6 +2480,7 @@
 				9C478F0C1E713A3200AD4289 /* SGPlayerDecoder.h in Headers */,
 				9C2534C11FAB151500BBFA5C /* aes_ctr.h in Headers */,
 				9C478F061E713A3200AD4289 /* SGPlayerAction.h in Headers */,
+				9C1944E220198CEC00184416 /* SGGLPlaneModel.h in Headers */,
 				9CAAABE4201438C20016EEBC /* SGFFVideoOutputRender.h in Headers */,
 				9C2534701FAB151500BBFA5C /* avcodec.h in Headers */,
 				9C25350F1FAB151500BBFA5C /* file.h in Headers */,
@@ -2793,6 +2805,7 @@
 				9C2535071FAB151500BBFA5C /* eval.h in Headers */,
 				9C2535701FAB151500BBFA5C /* ripemd.h in Headers */,
 				9C2535491FAB151500BBFA5C /* md5.h in Headers */,
+				9C1944E320198CEC00184416 /* SGGLPlaneModel.h in Headers */,
 				9C2534BF1FAB151500BBFA5C /* aes.h in Headers */,
 				9C2534B31FAB151500BBFA5C /* avformat.h in Headers */,
 				9CE68408200DA3BB007BD834 /* SGPlayerUtil.h in Headers */,
@@ -3196,6 +3209,7 @@
 				9CF52D02200F4ED100950B81 /* SGFFAudioAVCodec.m in Sources */,
 				9C25360D1FAB151500BBFA5C /* SGFFFramePool.m in Sources */,
 				9CF52D0A200F4EDE00950B81 /* SGFFVideoAVCodec.m in Sources */,
+				9C1944E420198CEC00184416 /* SGGLPlaneModel.m in Sources */,
 				9CF15E2A2011CD8C00585326 /* SGFFAudioOutputRender.m in Sources */,
 				9C569F6D2008C3A6007A07FF /* SGPlayerBackgroundHandler.m in Sources */,
 				9C329AAE2005E3F800252B10 /* SGPlayerActivity.m in Sources */,
@@ -3274,6 +3288,7 @@
 				9CF52D0B200F4EDE00950B81 /* SGFFVideoAVCodec.m in Sources */,
 				9C2536381FAB151500BBFA5C /* SGFFVideoFrame2.m in Sources */,
 				9C5AB6EE1E88E90B0021F460 /* SGGLTextureYUV420.m in Sources */,
+				9C1944E520198CEC00184416 /* SGGLPlaneModel.m in Sources */,
 				9C2535FC1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
 				9C4793291E713B4900AD4289 /* SGDistortionModel.m in Sources */,
 				9CF15DE920118E1100585326 /* SGFFAsyncCodec.m in Sources */,
@@ -3381,6 +3396,7 @@
 				9C5AB6F71E88EB720021F460 /* SGGLFrame.m in Sources */,
 				9CE6840E200DA3BB007BD834 /* SGPlayerUtil.m in Sources */,
 				9C2536391FAB151500BBFA5C /* SGFFVideoFrame2.m in Sources */,
+				9C1944E620198CEC00184416 /* SGGLPlaneModel.m in Sources */,
 				9C47932A1E713B4900AD4289 /* SGDistortionModel.m in Sources */,
 				9C2535FD1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
 				9C5C6CAF2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
