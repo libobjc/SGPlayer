@@ -140,25 +140,23 @@
     if (!render)
     {
         [self.coreLock unlock];
+        return;
     }
-    else
-    {
-        [render lock];
-        [self.coreLock unlock];
-        [self setupOpenGLIfNeed];
-        [self.program use];
-        [self.program bindVariable];
-        [self.texture updateTexture:render];
-        [self.model bindPositionLocation:self.program.position_location
-                    textureCoordLocation:self.program.texture_coord_location
-                       textureRotateType:SGGLModelTextureRotateType0];
-        [self.program updateMatrix:GLKMatrix4Identity];
-        SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-        SGGLViewport viewport = [self viewport:renderSize displaySize:size];
-        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
-        glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
-        [render unlock];
-    }
+    [render lock];
+    [self.coreLock unlock];
+    [self setupOpenGLIfNeed];
+    [self.program use];
+    [self.program bindVariable];
+    [self.texture updateTexture:render];
+    [self.model bindPositionLocation:self.program.position_location
+                textureCoordLocation:self.program.texture_coord_location
+                   textureRotateType:SGGLModelTextureRotateType0];
+    [self.program updateMatrix:GLKMatrix4Identity];
+    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
+    SGGLViewport viewport = [self viewport:renderSize displaySize:size];
+    glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    glDrawElements(GL_TRIANGLES, self.model.index_count, GL_UNSIGNED_SHORT, 0);
+    [render unlock];
 }
 
 @end
