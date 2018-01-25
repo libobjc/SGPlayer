@@ -133,6 +133,12 @@
 		9C1945042019C6A100184416 /* SGGLYUV420Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945002019C6A100184416 /* SGGLYUV420Program.m */; };
 		9C1945052019C6A100184416 /* SGGLYUV420Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945002019C6A100184416 /* SGGLYUV420Program.m */; };
 		9C1945062019C6A100184416 /* SGGLYUV420Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945002019C6A100184416 /* SGGLYUV420Program.m */; };
+		9C1945092019D22800184416 /* SGGLNV12Program.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1945072019D22800184416 /* SGGLNV12Program.h */; };
+		9C19450A2019D22800184416 /* SGGLNV12Program.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1945072019D22800184416 /* SGGLNV12Program.h */; };
+		9C19450B2019D22800184416 /* SGGLNV12Program.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1945072019D22800184416 /* SGGLNV12Program.h */; };
+		9C19450C2019D22800184416 /* SGGLNV12Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945082019D22800184416 /* SGGLNV12Program.m */; };
+		9C19450D2019D22800184416 /* SGGLNV12Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945082019D22800184416 /* SGGLNV12Program.m */; };
+		9C19450E2019D22800184416 /* SGGLNV12Program.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1945082019D22800184416 /* SGGLNV12Program.m */; };
 		9C25346F1FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534701FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534711FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
@@ -1083,6 +1089,8 @@
 		9C1944F82019C09D00184416 /* SGGLInternalProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLInternalProgram.m; sourceTree = "<group>"; };
 		9C1944FF2019C6A100184416 /* SGGLYUV420Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLYUV420Program.h; sourceTree = "<group>"; };
 		9C1945002019C6A100184416 /* SGGLYUV420Program.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLYUV420Program.m; sourceTree = "<group>"; };
+		9C1945072019D22800184416 /* SGGLNV12Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLNV12Program.h; sourceTree = "<group>"; };
+		9C1945082019D22800184416 /* SGGLNV12Program.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLNV12Program.m; sourceTree = "<group>"; };
 		9C2533CB1FAB151400BBFA5C /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
 		9C2533CC1FAB151400BBFA5C /* avdct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avdct.h; sourceTree = "<group>"; };
 		9C2533CD1FAB151400BBFA5C /* avfft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avfft.h; sourceTree = "<group>"; };
@@ -1919,6 +1927,8 @@
 				9C1944F82019C09D00184416 /* SGGLInternalProgram.m */,
 				9C1944FF2019C6A100184416 /* SGGLYUV420Program.h */,
 				9C1945002019C6A100184416 /* SGGLYUV420Program.m */,
+				9C1945072019D22800184416 /* SGGLNV12Program.h */,
+				9C1945082019D22800184416 /* SGGLNV12Program.m */,
 			);
 			path = SGOpenGL;
 			sourceTree = "<group>";
@@ -2293,6 +2303,7 @@
 				9CE6841D200DC9C0007BD834 /* SGAVPlayer.h in Headers */,
 				9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */,
 				9CEFA6DB1E7122BF00835CAB /* SGPlayer.h in Headers */,
+				9C1945092019D22800184416 /* SGGLNV12Program.h in Headers */,
 				9CE6F54B2004D97D00D1F4C8 /* SGPLFScreen.h in Headers */,
 				9CE6F5372004D97D00D1F4C8 /* SGPLFDisplayLink.h in Headers */,
 				9CE6F55B2004D97D00D1F4C8 /* SGPLFGLContext.h in Headers */,
@@ -2516,6 +2527,7 @@
 				9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
 				9C2534BE1FAB151500BBFA5C /* aes.h in Headers */,
 				9C25355D1FAB151500BBFA5C /* pixelutils.h in Headers */,
+				9C19450A2019D22800184416 /* SGGLNV12Program.h in Headers */,
 				9C5C6C9A20182A4800863EB5 /* SGGLView.h in Headers */,
 				9CF15E032011ADB500585326 /* SGFFOutput.h in Headers */,
 				9CE6F5302004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
@@ -2790,6 +2802,7 @@
 				9C2535731FAB151500BBFA5C /* samplefmt.h in Headers */,
 				9CF52D01200F4ED100950B81 /* SGFFAudioAVCodec.h in Headers */,
 				9CF52CF9200F45D700950B81 /* SGFFStream.h in Headers */,
+				9C19450B2019D22800184416 /* SGGLNV12Program.h in Headers */,
 				9C8D4E7A200E112700ED8A58 /* SGFFCodecManager.h in Headers */,
 				9CE6F56D2004D97D00D1F4C8 /* SGPLFGLViewController.h in Headers */,
 				9CAAABE5201438C20016EEBC /* SGFFVideoOutputRender.h in Headers */,
@@ -3265,6 +3278,7 @@
 				9C25360D1FAB151500BBFA5C /* SGFFFramePool.m in Sources */,
 				9CF52D0A200F4EDE00950B81 /* SGFFVideoAVCodec.m in Sources */,
 				9C1944E420198CEC00184416 /* SGGLPlaneModel.m in Sources */,
+				9C19450C2019D22800184416 /* SGGLNV12Program.m in Sources */,
 				9CF15E2A2011CD8C00585326 /* SGFFAudioOutputRender.m in Sources */,
 				9C569F6D2008C3A6007A07FF /* SGPlayerBackgroundHandler.m in Sources */,
 				9C329AAE2005E3F800252B10 /* SGPlayerActivity.m in Sources */,
@@ -3339,6 +3353,7 @@
 				9C2536021FAB151500BBFA5C /* SGFFFormatContext2.m in Sources */,
 				9CF52CFB200F45D700950B81 /* SGFFStream.m in Sources */,
 				9CE6F5502004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
+				9C19450D2019D22800184416 /* SGGLNV12Program.m in Sources */,
 				9CAAABE7201438C20016EEBC /* SGFFVideoOutputRender.m in Sources */,
 				9C5C6C9D20182A4800863EB5 /* SGGLView.m in Sources */,
 				9C478F0F1E713A3200AD4289 /* SGPlayerDecoder.m in Sources */,
@@ -3483,6 +3498,7 @@
 				9CF15E142011AEBD00585326 /* SGFFOutputManager.m in Sources */,
 				9C2536091FAB151500BBFA5C /* SGFFFrame2.m in Sources */,
 				9CF15E1C2011B93600585326 /* SGFFOutputInternal.m in Sources */,
+				9C19450E2019D22800184416 /* SGGLNV12Program.m in Sources */,
 				9CF15DEA20118E1100585326 /* SGFFAsyncCodec.m in Sources */,
 				9C478F161E713A3200AD4289 /* SGPlayerTrack.m in Sources */,
 				9CF15DF220118FB000585326 /* SGFFAsyncAVCodec.m in Sources */,
