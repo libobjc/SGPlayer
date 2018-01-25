@@ -109,6 +109,12 @@
 		9C1944E420198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
 		9C1944E520198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
 		9C1944E620198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
+		9C1944E92019A9AA00184416 /* SGGLSphereModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944E72019A9AA00184416 /* SGGLSphereModel.h */; };
+		9C1944EA2019A9AA00184416 /* SGGLSphereModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944E72019A9AA00184416 /* SGGLSphereModel.h */; };
+		9C1944EB2019A9AA00184416 /* SGGLSphereModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944E72019A9AA00184416 /* SGGLSphereModel.h */; };
+		9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
+		9C1944ED2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
+		9C1944EE2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
 		9C25346F1FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534701FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
 		9C2534711FAB151500BBFA5C /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2533CB1FAB151400BBFA5C /* avcodec.h */; };
@@ -1051,6 +1057,8 @@
 		9C0DFFE5200C6C1A0079D609 /* SGPlayerDefinesPrivate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerDefinesPrivate.h; sourceTree = "<group>"; };
 		9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLPlaneModel.h; sourceTree = "<group>"; };
 		9C1944E020198CEC00184416 /* SGGLPlaneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLPlaneModel.m; sourceTree = "<group>"; };
+		9C1944E72019A9AA00184416 /* SGGLSphereModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLSphereModel.h; sourceTree = "<group>"; };
+		9C1944E82019A9AA00184416 /* SGGLSphereModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLSphereModel.m; sourceTree = "<group>"; };
 		9C2533CB1FAB151400BBFA5C /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
 		9C2533CC1FAB151400BBFA5C /* avdct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avdct.h; sourceTree = "<group>"; };
 		9C2533CD1FAB151400BBFA5C /* avfft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avfft.h; sourceTree = "<group>"; };
@@ -1879,6 +1887,8 @@
 				9C6E514D2018C6C100C87C54 /* SGGLModel.h */,
 				9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */,
 				9C1944E020198CEC00184416 /* SGGLPlaneModel.m */,
+				9C1944E72019A9AA00184416 /* SGGLSphereModel.h */,
+				9C1944E82019A9AA00184416 /* SGGLSphereModel.m */,
 			);
 			path = SGOpenGL;
 			sourceTree = "<group>";
@@ -2266,6 +2276,7 @@
 				9CF15E022011ADB500585326 /* SGFFOutput.h in Headers */,
 				9CE6F5532004D97D00D1F4C8 /* SGPLFView.h in Headers */,
 				9CE68428200DCEDA007BD834 /* SGPlayerImp.h in Headers */,
+				9C1944E92019A9AA00184416 /* SGGLSphereModel.h in Headers */,
 				9CE6F56B2004D97D00D1F4C8 /* SGPLFGLViewController.h in Headers */,
 				9CE6F5632004D97D00D1F4C8 /* SGPLFGLView2.h in Headers */,
 				9C2536501FAB199500BBFA5C /* SGFFPlayer.h in Headers */,
@@ -2467,6 +2478,7 @@
 				9C25359C1FAB151500BBFA5C /* version.h in Headers */,
 				9C2534CA1FAB151500BBFA5C /* avassert.h in Headers */,
 				9C2534AF1FAB151500BBFA5C /* version.h in Headers */,
+				9C1944EA2019A9AA00184416 /* SGGLSphereModel.h in Headers */,
 				9C2534DC1FAB151500BBFA5C /* bprint.h in Headers */,
 				9C478F121E713A3200AD4289 /* SGPlayerTrack.h in Headers */,
 				9C2534BE1FAB151500BBFA5C /* aes.h in Headers */,
@@ -2763,6 +2775,7 @@
 				9C25357C1FAB151500BBFA5C /* stereo3d.h in Headers */,
 				9CE6F57D2004D97D00D1F4C8 /* SGPlatform.h in Headers */,
 				9C2534EF1FAB151500BBFA5C /* common.h in Headers */,
+				9C1944EB2019A9AA00184416 /* SGGLSphereModel.h in Headers */,
 				9C25357F1FAB151500BBFA5C /* tea.h in Headers */,
 				9C478F4E1E713AA800AD4289 /* SGYUVTools.h in Headers */,
 				9CE6842A200DCEDB007BD834 /* SGPlayerImp.h in Headers */,
@@ -3190,6 +3203,7 @@
 				9C389AC220106DB2003259FF /* SGFFTime.m in Sources */,
 				9C47930A1E713B4900AD4289 /* SGGLProgram.m in Sources */,
 				9C4793281E713B4900AD4289 /* SGDistortionModel.m in Sources */,
+				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C051BD92012575E00CBB22C /* SGFFLog.m in Sources */,
 				9CE68417200DA609007BD834 /* SGFFPlayerView.m in Sources */,
 				9C478F4F1E713AA800AD4289 /* SGYUVTools.m in Sources */,
@@ -3336,6 +3350,7 @@
 				9C25361A1FAB151500BBFA5C /* SGFFMetadata.m in Sources */,
 				9C389AB320104097003259FF /* SGFFStreamManager.m in Sources */,
 				9C2536261FAB151500BBFA5C /* SGFFTools.m in Sources */,
+				9C1944ED2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9CE6F5602004D97D00D1F4C8 /* SGPLFGLContext.m in Sources */,
 				9C569F6E2008C3A6007A07FF /* SGPlayerBackgroundHandler.m in Sources */,
 				9C478F611E713ABB00AD4289 /* SGMatrix.m in Sources */,
@@ -3396,6 +3411,7 @@
 				9C5AB6F71E88EB720021F460 /* SGGLFrame.m in Sources */,
 				9CE6840E200DA3BB007BD834 /* SGPlayerUtil.m in Sources */,
 				9C2536391FAB151500BBFA5C /* SGFFVideoFrame2.m in Sources */,
+				9C1944EE2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C1944E620198CEC00184416 /* SGGLPlaneModel.m in Sources */,
 				9C47932A1E713B4900AD4289 /* SGDistortionModel.m in Sources */,
 				9C2535FD1FAB151500BBFA5C /* SGFFDecoder.m in Sources */,
