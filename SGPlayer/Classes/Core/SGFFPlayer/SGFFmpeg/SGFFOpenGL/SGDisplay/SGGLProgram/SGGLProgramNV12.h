@@ -6,9 +6,9 @@
 //  Copyright © 2017年 single. All rights reserved.
 //
 
-#import "SGGLProgram.h"
+#import "SGGLProgram2.h"
 
-@interface SGGLProgramNV12 : SGGLProgram
+@interface SGGLProgramNV12 : SGGLProgram2
 
 + (instancetype)program;
 

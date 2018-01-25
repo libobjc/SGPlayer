@@ -13,6 +13,7 @@
 #import "SGPlayerMacro.h"
 #import "SGGLProgramYUV420.h"
 #import "SGGLPlaneModel.h"
+#import "SGGLSphereModel.h"
 #import "SGGLTextureYUV420.h"
 #import "SGPlatform.h"
 
@@ -22,7 +23,7 @@
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLProgramYUV420 * program;
-@property (nonatomic, strong) SGGLPlaneModel * model;
+@property (nonatomic, strong) SGGLSphereModel * model;
 @property (nonatomic, strong) SGGLTextureYUV420 * texture;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
@@ -87,7 +88,7 @@
         self.program = [SGGLProgramYUV420 program];
     }
     if (!self.model) {
-        self.model = [[SGGLPlaneModel alloc] init];
+        self.model = [[SGGLSphereModel alloc] init];
     }
 }
 

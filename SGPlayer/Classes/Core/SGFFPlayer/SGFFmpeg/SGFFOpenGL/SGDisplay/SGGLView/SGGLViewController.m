@@ -159,7 +159,7 @@
     [self.openGLLock unlock];
 }
 
-- (SGGLProgram *)chooseProgram
+- (SGGLProgram2 *)chooseProgram
 {
     switch (self.currentFrame.type) {
         case SGGLFrameTypeNV12:
@@ -235,7 +235,7 @@
     }
 #endif
     
-    SGGLProgram * program = [self chooseProgram];
+    SGGLProgram2 * program = [self chooseProgram];
     [program use];
     [program bindVariable];
     

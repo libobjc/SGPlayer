@@ -6,10 +6,10 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGGLProgram.h"
+#import "SGGLProgram2.h"
 #import "SGPlayerMacro.h"
 
-@interface SGGLProgram ()
+@interface SGGLProgram2 ()
 
 {
     GLuint _vertexShader_id;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation SGGLProgram
+@implementation SGGLProgram2
 
 + (instancetype)programWithVertexShader:(NSString *)vertexShader fragmentShader:(NSString *)fragmentShader
 {

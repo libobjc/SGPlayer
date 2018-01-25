@@ -8,7 +8,7 @@
 
 #import "SGPlatform.h"
 
-@interface SGGLProgram : NSObject
+@interface SGGLProgram2 : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
