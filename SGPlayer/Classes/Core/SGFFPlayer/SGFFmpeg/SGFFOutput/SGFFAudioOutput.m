@@ -88,7 +88,7 @@
 
 - (void)dealloc
 {
-    [self.audioPlayer stop];
+    [self.audioPlayer pause];
     [self clearSwrContext];
     [self.currentRender unlock];
     self.currentRender = nil;

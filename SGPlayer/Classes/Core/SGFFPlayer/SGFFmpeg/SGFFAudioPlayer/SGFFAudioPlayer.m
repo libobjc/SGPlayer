@@ -61,7 +61,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 - (void)dealloc
 {
-    [self stop];
+    [self destoryAUGraph];
     if (self.outputData)
     {
         [self.coreLock lock];
@@ -117,6 +117,14 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AUGraphInitialize(self.graph);
 }
 
+- (void)destoryAUGraph
+{
+    AUGraphStop(self.graph);
+    AUGraphUninitialize(self.graph);
+    AUGraphClose(self.graph);
+    DisposeAUGraph(self.graph);
+}
+
 - (void)play
 {
     AUGraphStart(self.graph);
@@ -125,14 +133,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 - (void)pause
 {
     AUGraphStop(self.graph);
-}
-
-- (void)stop
-{
-    AUGraphStop(self.graph);
-    AUGraphUninitialize(self.graph);
-    AUGraphClose(self.graph);
-    DisposeAUGraph(self.graph);
 }
 
 - (void)setAudioStreamBasicDescription:(AudioStreamBasicDescription)audioStreamBasicDescription

@@ -52,6 +52,25 @@
     return self;
 }
 
+- (void)dealloc
+{
+    if (_idOfIndexes)
+    {
+        glDeleteBuffers(1, &_idOfIndexes);
+        _idOfIndexes = 0;
+    }
+    if (_idOfVertices)
+    {
+        glDeleteBuffers(1, &_idOfVertices);
+        _idOfVertices = 0;
+    }
+    if (_idOfTextureCoordinates)
+    {
+        glDeleteBuffers(1, &_idOfTextureCoordinates);
+        _idOfTextureCoordinates = 0;
+    }
+}
+
 - (void)bindPositionLocation:(GLint)positionLocation textureCoordLocation:(GLint)textureCoordLocation
 {
     glBindBuffer(GL_ARRAY_BUFFER, _idOfVertices);
