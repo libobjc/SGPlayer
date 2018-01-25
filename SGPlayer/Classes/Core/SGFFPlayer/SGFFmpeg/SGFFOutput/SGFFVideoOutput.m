@@ -11,7 +11,7 @@
 #import "SGGLDisplayLink.h"
 #import "SGGLView.h"
 #import "SGPlayerMacro.h"
-#import "SGGLProgramYUV420.h"
+#import "SGGLYUV420Program.h"
 #import "SGGLPlaneModel.h"
 #import "SGGLTextureYUV420.h"
 #import "SGPlatform.h"
@@ -21,7 +21,7 @@
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLProgramYUV420 * program;
+@property (nonatomic, strong) SGGLYUV420Program * program;
 @property (nonatomic, strong) SGGLPlaneModel * model;
 @property (nonatomic, strong) SGGLTextureYUV420 * texture;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
@@ -84,7 +84,7 @@
         self.texture = [[SGGLTextureYUV420 alloc] init];
     }
     if (!self.program) {
-        self.program = [SGGLProgramYUV420 program];
+        self.program = [[SGGLYUV420Program alloc] init];
     }
     if (!self.model) {
         self.model = [[SGGLPlaneModel alloc] init];
@@ -149,8 +149,8 @@
     [self.program bindVariable];
     [self.texture updateTexture:render];
     [self.model bindPositionLocation:self.program.position_location
-           textureCoordinateLocation:self.program.texture_coord_location];
-    [self.program updateMatrix:GLKMatrix4Identity];
+           textureCoordinateLocation:self.program.texture_coordinate_location];
+    [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     SGGLViewport viewport = [self viewport:renderSize displaySize:size];
     glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
