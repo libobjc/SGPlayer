@@ -42,22 +42,34 @@ static int gl_texture[3] =
     }
 }
 
-- (void)upload:(uint8_t * [3])data size:(SGGLSize)size;
+- (BOOL)upload:(uint8_t **)data size:(SGGLSize)size type:(SGGLTextureType)type
 {
-    static int count = 3;
-    int widths[3]  = {size.width, size.width / 2, size.width / 2};
-    int heights[3] = {size.height, size.height / 2, size.height / 2};
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    for (int i = 0; i < count; i++)
+    switch (type)
     {
-        glActiveTexture(gl_texture[i]);
-        glBindTexture(GL_TEXTURE_2D, _gl_texture_ids[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, widths[i], heights[i], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[i]);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        case SGGLTextureTypeUnknown:
+            return NO;
+        case SGGLTextureTypeNV12:
+            return NO;
+        case SGGLTextureTypeYUV420P:
+        {
+            static int count = 3;
+            int widths[3]  = {size.width, size.width / 2, size.width / 2};
+            int heights[3] = {size.height, size.height / 2, size.height / 2};
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            for (int i = 0; i < count; i++)
+            {
+                glActiveTexture(gl_texture[i]);
+                glBindTexture(GL_TEXTURE_2D, _gl_texture_ids[i]);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, widths[i], heights[i], 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data[i]);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            }
+        }
+            return YES;
     }
+    return NO;
 }
 
 @end

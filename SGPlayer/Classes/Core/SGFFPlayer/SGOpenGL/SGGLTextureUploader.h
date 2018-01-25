@@ -9,8 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "SGGLDefines.h"
 
+typedef NS_ENUM(NSUInteger, SGGLTextureType)
+{
+    SGGLTextureTypeUnknown,
+    SGGLTextureTypeNV12,
+    SGGLTextureTypeYUV420P,
+};
+
 @interface SGGLTextureUploader : NSObject
 
-- (void)upload:(uint8_t * [3])data size:(SGGLSize)size;
+- (BOOL)upload:(uint8_t **)data size:(SGGLSize)size type:(SGGLTextureType)type;
 
 @end

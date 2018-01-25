@@ -121,7 +121,9 @@
     [self.program use];
     [self.program bindVariable];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-    [self.textureUploader upload:render.videoFrame.data size:renderSize];
+    [self.textureUploader upload:render.videoFrame.data
+                            size:renderSize
+                            type:SGGLTextureTypeYUV420P];
     [self.model bindPosition_location:self.program.position_location
            textureCoordinate_location:self.program.textureCoordinate_location];
     [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
