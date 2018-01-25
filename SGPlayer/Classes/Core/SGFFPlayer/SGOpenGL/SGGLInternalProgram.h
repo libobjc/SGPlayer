@@ -19,12 +19,12 @@
 
 #pragma mark - Override
 
-@property (nonatomic, assign, readonly) const char * vertex_shader_string;
-@property (nonatomic, assign, readonly) const char * fragment_shader_string;
+@property (nonatomic, assign, readonly) const char * vertexShaderString;
+@property (nonatomic, assign, readonly) const char * fragmentShaderString;
 
 @property (nonatomic, assign) GLint position_location;
-@property (nonatomic, assign) GLint texture_coordinate_location;
-@property (nonatomic, assign) GLint model_view_projection_location;
+@property (nonatomic, assign) GLint textureCoordinate_location;
+@property (nonatomic, assign) GLint modelViewProjectionMatrix_location;
 
 - (void)loadVariable;
 - (void)bindVariable;

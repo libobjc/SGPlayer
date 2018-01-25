@@ -19,11 +19,11 @@
         
         GLuint vertexShaderID;
         GLuint fragmentShaderID;
-        if (![self compileShader:&vertexShaderID type:GL_VERTEX_SHADER string:[self vertex_shader_string]])
+        if (![self compileShader:&vertexShaderID type:GL_VERTEX_SHADER string:[self vertexShaderString]])
         {
             SGPlayerLog(@"load vertex shader failure");
         }
-        if (![self compileShader:&fragmentShaderID type:GL_FRAGMENT_SHADER string:[self fragment_shader_string]])
+        if (![self compileShader:&fragmentShaderID type:GL_FRAGMENT_SHADER string:[self fragmentShaderString]])
         {
             SGPlayerLog(@"load fragment shader failure");
         }
@@ -56,7 +56,7 @@
 
 - (void)updateModelViewProjectionMatrix:(GLKMatrix4)matrix
 {
-    glUniformMatrix4fv(self.model_view_projection_location, 1, GL_FALSE, matrix.m);
+    glUniformMatrix4fv(self.modelViewProjectionMatrix_location, 1, GL_FALSE, matrix.m);
 }
 
 - (void)use
