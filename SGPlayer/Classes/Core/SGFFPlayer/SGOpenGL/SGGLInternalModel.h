@@ -11,11 +11,11 @@
 
 @interface SGGLInternalModel : NSObject <SGGLModel>
 
-- (GLushort *)dataOfIndexes;
-- (GLfloat *)dataOfVertices;
-- (GLfloat *)dataOfTextureCoordinates;
+- (GLushort *)indexes_data;
+- (GLfloat *)vertices_data;
+- (GLfloat *)textureCoordinates_data;
 
-- (int)numberOfIndexes;
-- (int)numberOfVertices;
+- (int)indexes_count;
+- (int)vertices_count;
 
 @end

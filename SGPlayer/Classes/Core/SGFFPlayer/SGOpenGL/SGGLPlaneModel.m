@@ -10,45 +10,45 @@
 
 @implementation SGGLPlaneModel
 
-- (GLushort *)dataOfIndexes
+- (GLushort *)indexes_data
 {
-    static GLushort dataOfIndexes[] =
+    static GLushort indexes_data[] =
     {
         0, 1, 2,
         0, 2, 3,
     };
-    return dataOfIndexes;
+    return indexes_data;
 }
 
-- (GLfloat *)dataOfVertices
+- (GLfloat *)vertices_data
 {
-    static GLfloat dataOfVertices[] =
+    static GLfloat vertices_data[] =
     {
         -1,  1, 0.0,
          1,  1, 0.0,
          1, -1, 0.0,
         -1, -1, 0.0,
     };
-    return dataOfVertices;
+    return vertices_data;
 }
-- (GLfloat *)dataOfTextureCoordinates
+- (GLfloat *)textureCoordinates_data
 {
-    static GLfloat dataOfTextureCoordinates[] =
+    static GLfloat textureCoordinates_data[] =
     {
         0.0, 0.0,
         1.0, 0.0,
         1.0, 1.0,
         0.0, 1.0,
     };
-    return dataOfTextureCoordinates;
+    return textureCoordinates_data;
 }
 
-- (int)numberOfIndexes
+- (int)indexes_count
 {
     return 6;
 }
 
-- (int)numberOfVertices
+- (int)vertices_count
 {
     return 4;
 }

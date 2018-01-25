@@ -8,15 +8,15 @@
 
 #import "SGGLSphereModel.h"
 
-static GLushort * dataOfIndexes = nil;
-static GLfloat * dataOfVertices = nil;
-static GLfloat * dataOfTextureCoordinates = nil;
+static GLushort * indexes_data = nil;
+static GLfloat * vertices_data = nil;
+static GLfloat * textureCoordinates_data = nil;
 
-static int const numberOfSlices = 200;
-static int const numberOfParallels = numberOfSlices / 2;
+static int const slices_count = 200;
+static int const parallels_count = slices_count / 2;
 
-static int const numberOfIndexes = numberOfSlices * numberOfParallels * 6;
-static int const numberOfVertices = (numberOfSlices + 1) * (numberOfParallels + 1);
+static int const indexes_count = slices_count * parallels_count * 6;
+static int const vertices_count = (slices_count + 1) * (parallels_count + 1);
 
 @implementation SGGLSphereModel
 
@@ -25,71 +25,71 @@ static int const numberOfVertices = (numberOfSlices + 1) * (numberOfParallels + 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        float const step = (2.0f * M_PI) / (float)numberOfSlices;
+        float const step = (2.0f * M_PI) / (float)slices_count;
         float const radius = 1.0f;
         
-        dataOfIndexes = malloc(sizeof(GLushort) * numberOfIndexes);
-        dataOfVertices = malloc(sizeof(GLfloat) * 3 * numberOfVertices);
-        dataOfTextureCoordinates = malloc(sizeof(GLfloat) * 2 * numberOfVertices);
+        indexes_data = malloc(sizeof(GLushort) * indexes_count);
+        vertices_data = malloc(sizeof(GLfloat) * 3 * vertices_count);
+        textureCoordinates_data = malloc(sizeof(GLfloat) * 2 * vertices_count);
         
         int runCount = 0;
-        for (int i = 0; i < numberOfParallels + 1; i++)
+        for (int i = 0; i < parallels_count + 1; i++)
         {
-            for (int j = 0; j < numberOfSlices + 1; j++)
+            for (int j = 0; j < slices_count + 1; j++)
             {
-                int vertex = (i * (numberOfSlices + 1) + j) * 3;
-                if (dataOfVertices)
+                int vertex = (i * (slices_count + 1) + j) * 3;
+                if (vertices_data)
                 {
-                    dataOfVertices[vertex + 0] = radius * sinf(step * (float)i) * cosf(step * (float)j);
-                    dataOfVertices[vertex + 1] = radius * cosf(step * (float)i);
-                    dataOfVertices[vertex + 2] = radius * sinf(step * (float)i) * sinf(step * (float)j);
+                    vertices_data[vertex + 0] = radius * sinf(step * (float)i) * cosf(step * (float)j);
+                    vertices_data[vertex + 1] = radius * cosf(step * (float)i);
+                    vertices_data[vertex + 2] = radius * sinf(step * (float)i) * sinf(step * (float)j);
                 }
-                if (dataOfTextureCoordinates)
+                if (textureCoordinates_data)
                 {
-                    int textureIndex = (i * (numberOfSlices + 1) + j) * 2;
-                    dataOfTextureCoordinates[textureIndex + 0] = (float)j / (float)numberOfSlices;
-                    dataOfTextureCoordinates[textureIndex + 1] = ((float)i / (float)numberOfParallels);
+                    int textureIndex = (i * (slices_count + 1) + j) * 2;
+                    textureCoordinates_data[textureIndex + 0] = (float)j / (float)slices_count;
+                    textureCoordinates_data[textureIndex + 1] = ((float)i / (float)parallels_count);
                 }
-                if (dataOfIndexes && i < numberOfParallels && j < numberOfSlices)
+                if (indexes_data && i < parallels_count && j < slices_count)
                 {
-                    dataOfIndexes[runCount++] = i * (numberOfSlices + 1) + j;
-                    dataOfIndexes[runCount++] = (i + 1) * (numberOfSlices + 1) + j;
-                    dataOfIndexes[runCount++] = (i + 1) * (numberOfSlices + 1) + (j + 1);
+                    indexes_data[runCount++] = i * (slices_count + 1) + j;
+                    indexes_data[runCount++] = (i + 1) * (slices_count + 1) + j;
+                    indexes_data[runCount++] = (i + 1) * (slices_count + 1) + (j + 1);
                     
-                    dataOfIndexes[runCount++] = i * (numberOfSlices + 1) + j;
-                    dataOfIndexes[runCount++] = (i + 1) * (numberOfSlices + 1) + (j + 1);
-                    dataOfIndexes[runCount++] = i * (numberOfSlices + 1) + (j + 1);
+                    indexes_data[runCount++] = i * (slices_count + 1) + j;
+                    indexes_data[runCount++] = (i + 1) * (slices_count + 1) + (j + 1);
+                    indexes_data[runCount++] = i * (slices_count + 1) + (j + 1);
                 }
             }
         }
     });
 }
 
-- (GLushort *)dataOfIndexes
+- (GLushort *)indexes_data
 {
     [SGGLSphereModel prepareData];
-    return dataOfIndexes;
+    return indexes_data;
 }
 
-- (GLfloat *)dataOfVertices
+- (GLfloat *)vertices_data
 {
     [SGGLSphereModel prepareData];
-    return dataOfVertices;
+    return vertices_data;
 }
-- (GLfloat *)dataOfTextureCoordinates
+- (GLfloat *)textureCoordinates_data
 {
     [SGGLSphereModel prepareData];
-    return dataOfTextureCoordinates;
+    return textureCoordinates_data;
 }
 
-- (int)numberOfIndexes
+- (int)indexes_count
 {
-    return numberOfIndexes;
+    return indexes_count;
 }
 
-- (int)numberOfVertices
+- (int)vertices_count
 {
-    return numberOfVertices;
+    return vertices_count;
 }
 
 @end
