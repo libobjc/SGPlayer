@@ -6,7 +6,7 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGGLYUV420Program.h"
+#import "SGGLYUV420PProgram.h"
 
 #define SG_GLES_STRINGIZE(x) #x
 
@@ -68,7 +68,7 @@ static const char fragment_shader_string[] = SG_GLES_STRINGIZE
  );
 #endif
 
-@implementation SGGLYUV420Program
+@implementation SGGLYUV420PProgram
 
 - (const char *)vertexShaderString
 {

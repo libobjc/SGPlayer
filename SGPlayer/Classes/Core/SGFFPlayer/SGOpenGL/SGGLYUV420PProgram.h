@@ -8,7 +8,7 @@
 
 #import "SGGLInternalProgram.h"
 
-@interface SGGLYUV420Program : SGGLInternalProgram
+@interface SGGLYUV420PProgram : SGGLInternalProgram
 
 @property (nonatomic, assign) GLint samplerY_location;
 @property (nonatomic, assign) GLint samplerU_location;

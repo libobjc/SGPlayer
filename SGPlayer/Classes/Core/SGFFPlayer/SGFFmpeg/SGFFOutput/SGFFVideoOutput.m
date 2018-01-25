@@ -8,22 +8,21 @@
 
 #import "SGFFVideoOutput.h"
 #import "SGFFVideoOutputRender.h"
-#import "SGGLDisplayLink.h"
-#import "SGGLView.h"
 #import "SGPlayerMacro.h"
+#import "SGGLView.h"
 #import "SGGLViewport.h"
-#import "SGGLYUV420Program.h"
 #import "SGGLPlaneModel.h"
+#import "SGGLDisplayLink.h"
+#import "SGGLYUV420PProgram.h"
 #import "SGGLTextureUploader.h"
-#import "SGPlatform.h"
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLYUV420Program * program;
 @property (nonatomic, strong) SGGLPlaneModel * model;
+@property (nonatomic, strong) SGGLDisplayLink * displayLink;
+@property (nonatomic, strong) SGGLYUV420PProgram * program;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
@@ -85,7 +84,7 @@
         self.textureUploader = [[SGGLTextureUploader alloc] init];
     }
     if (!self.program) {
-        self.program = [[SGGLYUV420Program alloc] init];
+        self.program = [[SGGLYUV420PProgram alloc] init];
     }
     if (!self.model) {
         self.model = [[SGGLPlaneModel alloc] init];
