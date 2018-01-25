@@ -149,7 +149,7 @@
     [self.program bindVariable];
     [self.texture updateTexture:render];
     [self.model bindPositionLocation:self.program.position_location
-                textureCoordLocation:self.program.texture_coord_location];
+           textureCoordinateLocation:self.program.texture_coord_location];
     [self.program updateMatrix:GLKMatrix4Identity];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     SGGLViewport viewport = [self viewport:renderSize displaySize:size];

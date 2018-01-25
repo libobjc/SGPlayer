@@ -71,15 +71,15 @@
     }
 }
 
-- (void)bindPositionLocation:(GLint)positionLocation textureCoordLocation:(GLint)textureCoordLocation
+- (void)bindPositionLocation:(GLint)positionLocation textureCoordinateLocation:(GLint)textureCoordinateLocation
 {
     glBindBuffer(GL_ARRAY_BUFFER, _idOfVertices);
     glEnableVertexAttribArray(positionLocation);
     glVertexAttribPointer(positionLocation, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), NULL);
     
     glBindBuffer(GL_ARRAY_BUFFER, _idOfTextureCoordinates);
-    glEnableVertexAttribArray(textureCoordLocation);
-    glVertexAttribPointer(textureCoordLocation, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*2, NULL);
+    glEnableVertexAttribArray(textureCoordinateLocation);
+    glVertexAttribPointer(textureCoordinateLocation, 2, GL_FLOAT, GL_FALSE, sizeof(GLfloat)*2, NULL);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _idOfIndexes);
 }
