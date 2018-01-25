@@ -7,18 +7,7 @@
 //
 
 #import "SGPLFGLView.h"
-
-typedef struct SGGLSize {
-    int width;
-    int height;
-} SGGLSize;
-
-typedef struct SGGLViewport {
-    int x;
-    int y;
-    int width;
-    int height;
-} SGGLViewport;
+#import "SGGLDefines.h"
 
 @class SGGLView;
 

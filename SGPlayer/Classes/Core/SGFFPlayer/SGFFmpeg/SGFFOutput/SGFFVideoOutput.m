@@ -11,6 +11,7 @@
 #import "SGGLDisplayLink.h"
 #import "SGGLView.h"
 #import "SGPlayerMacro.h"
+#import "SGGLViewport.h"
 #import "SGGLYUV420Program.h"
 #import "SGGLPlaneModel.h"
 #import "SGGLTextureYUV420.h"
@@ -102,34 +103,6 @@
     }
 }
 
-- (SGGLViewport)viewport:(SGGLSize)renderSize displaySize:(SGGLSize)displaySize
-{
-    SGGLViewport viewport = {0, 0, displaySize.width, displaySize.height};
-    double renderAspect = (double)renderSize.width / renderSize.height;
-    double displayAspect = (double)displaySize.width / displaySize.height;
-    if (fabs(displayAspect - renderAspect) <= 0.0001)
-    {
-        
-    }
-    else if (displayAspect < renderAspect)
-    {
-        CGFloat height = displaySize.width / renderAspect;
-        viewport.x = 0;
-        viewport.y = (displaySize.height - height) / 2;
-        viewport.width = displaySize.width;
-        viewport.height = height;
-    }
-    else if (displayAspect > renderAspect)
-    {
-        CGFloat width = displaySize.height * renderAspect;
-        viewport.x = (displaySize.width - width) / 2;
-        viewport.y = 0;
-        viewport.width = width;
-        viewport.height = displaySize.height;
-    }
-    return viewport;
-}
-
 
 #pragma mark - SGGLViewDelegate
 
@@ -152,8 +125,9 @@
            textureCoordinate_location:self.program.textureCoordinate_location];
     [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-    SGGLViewport viewport = [self viewport:renderSize displaySize:size];
-    glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    [SGGLViewport updateViewport:renderSize
+                     displaySize:size
+                            mode:SGGLViewportModeResizeAspect];
     [self.model draw];
     [self.model bindEmpty];
     [render unlock];
