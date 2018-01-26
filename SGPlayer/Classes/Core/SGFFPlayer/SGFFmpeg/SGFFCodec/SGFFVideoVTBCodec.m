@@ -16,7 +16,6 @@
 {
     VTDecompressionSessionRef _decompressionSession;
     CMFormatDescriptionRef _formatDescription;
-    CVImageBufferRef _outputImageBuffer;
 }
 
 @property (nonatomic, assign) BOOL shouldConvertNALSize3To4;
@@ -46,7 +45,8 @@
 
 - (void)close
 {
-    
+    [super close];
+    [self destoryDecompressionSession];
 }
 
 - (void)doFlushCodec
@@ -78,11 +78,6 @@
         CFRelease(sampleBuffer);
     }
     return result;
-}
-
-- (id <SGFFFrame>)fetchReuseFrame
-{
-    return nil;
 }
     
     

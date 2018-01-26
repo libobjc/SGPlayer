@@ -11,4 +11,6 @@
 
 @interface SGFFAsyncAVCodec : SGFFAsyncCodec
 
+- (__kindof id <SGFFFrame>)fetchReuseFrame;
+
 @end
