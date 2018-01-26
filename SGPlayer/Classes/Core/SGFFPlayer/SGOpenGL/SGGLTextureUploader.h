@@ -12,8 +12,8 @@
 typedef NS_ENUM(NSUInteger, SGGLTextureType)
 {
     SGGLTextureTypeUnknown,
-    SGGLTextureTypeNV12,
     SGGLTextureTypeYUV420P,
+    SGGLTextureTypeNV12,
 };
 
 @interface SGGLTextureUploader : NSObject

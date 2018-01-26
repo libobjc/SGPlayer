@@ -48,8 +48,6 @@ static int gl_texture[3] =
     {
         case SGGLTextureTypeUnknown:
             return NO;
-        case SGGLTextureTypeNV12:
-            return NO;
         case SGGLTextureTypeYUV420P:
         {
             static int count = 3;
@@ -68,6 +66,8 @@ static int gl_texture[3] =
             }
         }
             return YES;
+        case SGGLTextureTypeNV12:
+            return NO;
     }
     return NO;
 }
