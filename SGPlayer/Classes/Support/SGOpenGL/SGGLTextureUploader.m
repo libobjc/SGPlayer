@@ -87,7 +87,11 @@ static int gl_texture[3] =
         int widths[3]  = {size.width, size.width / 2, size.width / 2};
         int heights[3] = {size.height, size.height / 2, size.height / 2};
         int formats[3] = {GL_LUMINANCE, GL_LUMINANCE, GL_LUMINANCE};
-        return [self uploadWithData:data widths:widths heights:heights formats:formats count:count];
+        return [self uploadWithData:data
+                             widths:widths
+                            heights:heights
+                            formats:formats
+                              count:count];
     }
     else if (type == SGGLTextureTypeNV12)
     {
