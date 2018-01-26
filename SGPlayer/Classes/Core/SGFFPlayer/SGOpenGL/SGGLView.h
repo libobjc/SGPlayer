@@ -13,7 +13,7 @@
 
 @protocol SGGLViewDelegate <NSObject>
 
-- (void)glView:(SGGLView *)glView draw:(SGGLSize)size;
+- (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size;
 
 @end
 

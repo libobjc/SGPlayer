@@ -65,10 +65,14 @@
     dispatch_async(self.drawingQueue, ^{
         SGPLGLContextSetCurrentContext(self.context);
         glBindFramebuffer(GL_FRAMEBUFFER, _displayFramebuffer);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        [self.delegate glView:self draw:self.displaySize];
-        glBindRenderbuffer(GL_RENDERBUFFER, _displayRenderbuffer);
-        [self present];
+        BOOL success = [self.delegate glView:self draw:self.displaySize];
+        if (success)
+        {
+            glBindRenderbuffer(GL_RENDERBUFFER, _displayRenderbuffer);
+            [self present];
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindRenderbuffer(GL_RENDERBUFFER, 0);
     });
 }
 

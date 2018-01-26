@@ -105,35 +105,48 @@
 
 #pragma mark - SGGLViewDelegate
 
-- (void)glView:(SGGLView *)glView draw:(SGGLSize)size
+- (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
     [self.coreLock lock];
     SGFFVideoOutputRender * render = self.currentRender;
     if (!render)
     {
         [self.coreLock unlock];
-        return;
+        return NO;
     }
     [render lock];
     [self.coreLock unlock];
+    
     [self setupOpenGLIfNeed];
+    
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
     id <SGGLProgram> program = [self.programPool programWithType:SGGLProgramTypeYUV420P];
-    [program use];
-    [program bindVariable];
-    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-    [self.textureUploader upload:render.videoFrame.data
-                            size:renderSize
-                            type:SGGLTextureTypeYUV420P];
-    [model bindPosition_location:program.position_location
-      textureCoordinate_location:program.textureCoordinate_location];
-    [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-    [SGGLViewport updateViewport:renderSize
-                     displaySize:size
-                            mode:SGGLViewportModeResizeAspect];
-    [model draw];
-    [model bindEmpty];
-    [render unlock];
+    
+    if (!model || !program)
+    {
+        [render unlock];
+        return NO;
+    }
+    else
+    {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        [program use];
+        [program bindVariable];
+        SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
+        [self.textureUploader upload:render.videoFrame.data
+                                size:renderSize
+                                type:SGGLTextureTypeYUV420P];
+        [model bindPosition_location:program.position_location
+          textureCoordinate_location:program.textureCoordinate_location];
+        [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
+        [SGGLViewport updateViewport:renderSize
+                         displaySize:size
+                                mode:SGGLViewportModeResizeAspect];
+        [model draw];
+        [model bindEmpty];
+        [render unlock];
+        return YES;
+    }
 }
 
 @end
