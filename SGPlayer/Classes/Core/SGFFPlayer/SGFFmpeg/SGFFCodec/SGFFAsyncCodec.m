@@ -38,6 +38,7 @@ static SGFFPacket * flushPacket;
         dispatch_once(&onceToken, ^{
             flushPacket = [[SGFFPacket alloc] init];
         });
+        self.outputRenderQueueMaxCount = 5;
     }
     return self;
 }
@@ -150,7 +151,6 @@ static SGFFPacket * flushPacket;
 
 - (void)doFlushCodec {}
 - (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error {return nil;}
-- (NSInteger)outputRenderQueueMaxCount {return 5;}
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
 
