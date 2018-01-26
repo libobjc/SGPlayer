@@ -20,4 +20,29 @@
     return 3;
 }
 
+- (BOOL)open
+{
+    return NO;
+}
+
+- (void)close
+{
+    
+}
+
+- (void)doFlushCodec
+{
+    
+}
+
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error
+{
+    return nil;
+}
+
+- (id <SGFFFrame>)fetchReuseFrame
+{
+    return nil;
+}
+
 @end
