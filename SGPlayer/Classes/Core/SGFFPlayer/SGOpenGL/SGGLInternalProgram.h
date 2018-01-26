@@ -7,14 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPLFOpenGL.h"
+#import "SGGLProgram.h"
 
-@interface SGGLInternalProgram : NSObject
+@interface SGGLInternalProgram : NSObject <SGGLProgram>
 
 @property (nonatomic, assign, readonly) GLint programID;
-
-- (void)updateModelViewProjectionMatrix:(GLKMatrix4)matrix;
-- (void)use;
 
 
 #pragma mark - Override
@@ -27,6 +24,5 @@
 @property (nonatomic, assign) GLint modelViewProjectionMatrix_location;
 
 - (void)loadVariable;
-- (void)bindVariable;
 
 @end

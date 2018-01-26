@@ -12,8 +12,8 @@
 #import "SGGLView.h"
 #import "SGGLViewport.h"
 #import "SGGLModelPool.h"
+#import "SGGLProgramPool.h"
 #import "SGGLDisplayLink.h"
-#import "SGGLYUV420PProgram.h"
 #import "SGGLTextureUploader.h"
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
@@ -21,8 +21,8 @@
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
+@property (nonatomic, strong) SGGLProgramPool * programPool;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGGLYUV420PProgram * program;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
@@ -83,8 +83,8 @@
     if (!self.textureUploader) {
         self.textureUploader = [[SGGLTextureUploader alloc] init];
     }
-    if (!self.program) {
-        self.program = [[SGGLYUV420PProgram alloc] init];
+    if (!self.programPool) {
+        self.programPool = [[SGGLProgramPool alloc] init];
     }
     if (!self.modelPool) {
         self.modelPool = [[SGGLModelPool alloc] init];
@@ -118,15 +118,16 @@
     [self.coreLock unlock];
     [self setupOpenGLIfNeed];
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    [self.program use];
-    [self.program bindVariable];
+    id <SGGLProgram> program = [self.programPool programWithType:SGGLProgramTypeYUV420P];
+    [program use];
+    [program bindVariable];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     [self.textureUploader upload:render.videoFrame.data
                             size:renderSize
                             type:SGGLTextureTypeYUV420P];
-    [model bindPosition_location:self.program.position_location
-      textureCoordinate_location:self.program.textureCoordinate_location];
-    [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
+    [model bindPosition_location:program.position_location
+      textureCoordinate_location:program.textureCoordinate_location];
+    [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
     [SGGLViewport updateViewport:renderSize
                      displaySize:size
                             mode:SGGLViewportModeResizeAspect];
