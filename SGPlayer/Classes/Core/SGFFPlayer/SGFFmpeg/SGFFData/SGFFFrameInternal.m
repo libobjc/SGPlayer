@@ -28,7 +28,8 @@ SGFFObjectPoolItemInterface
 - (long long)duration {return 0;}
 - (long long)size {return 0;}
 
-- (void)fill {}
+- (void)fill {[self fillWithPacket:nil];}
+- (void)fillWithPacket:(AVPacket *)packet {}
 - (AVFrame *)coreFrame {return nil;}
 
 - (SGFFAudioFrame *)audioFrame

@@ -41,7 +41,7 @@
     }
 }
 
-- (void)fill
+- (void)fillWithPacket:(AVPacket *)packet
 {
     AVFrame * frame = self.coreFrame;
     if (frame)

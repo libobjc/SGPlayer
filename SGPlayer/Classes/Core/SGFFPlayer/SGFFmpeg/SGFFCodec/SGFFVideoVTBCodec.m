@@ -70,7 +70,7 @@
                     [frame updateDataType:SGFFVideoFrameDataTypeCVPixelBuffer];
                     [frame updateCorePixelBuffer:imageBuffer];
                     frame.timebase = self.timebase;
-                    [frame fill];
+                    [frame fillWithPacket:packet.corePacket];
                     result = @[frame];
                 }
             }

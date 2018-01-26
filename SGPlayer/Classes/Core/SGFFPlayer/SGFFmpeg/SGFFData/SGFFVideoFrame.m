@@ -48,7 +48,7 @@
     }
 }
 
-- (void)fill
+- (void)fillWithPacket:(AVPacket *)packet
 {
     switch (self.dataType)
     {
@@ -106,6 +106,20 @@
                     self.width  = (int)CVPixelBufferGetWidth(pixelBuffer);
                     self.height = (int)CVPixelBufferGetHeight(pixelBuffer);
                 }
+            }
+            if (packet)
+            {
+                if (packet->pts != AV_NOPTS_VALUE) {
+                    self.position = packet->pts;
+                } else {
+                    self.position = packet->dts;
+                }
+                self.duration = packet->duration;
+                self.size = packet->size;
+                self.bestEffortTimestamp = self.position;
+                self.packetPosition = packet->pos;
+                self.packetDuration = packet->duration;
+                self.packetSize = packet->size;
             }
         }
             break;

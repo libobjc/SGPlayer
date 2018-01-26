@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 @protocol SGFFFrameUtil <NSObject>
 
 - (void)fill;
+- (void)fillWithPacket:(AVPacket *)packet;
 - (AVFrame *)coreFrame;
 - (SGFFAudioFrame *)audioFrame;
 - (SGFFVideoFrame *)videoFrame;
