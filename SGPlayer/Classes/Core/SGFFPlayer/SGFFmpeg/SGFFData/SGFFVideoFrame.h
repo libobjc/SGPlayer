@@ -12,6 +12,7 @@
 
 typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 {
+    SGFFVideoFrameDataTypeUnknown,
     SGFFVideoFrameDataTypeAVFrame,
     SGFFVideoFrameDataTypeCVPixelBuffer,
 };
@@ -23,11 +24,11 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) enum AVPixelFormat format;
 @property (nonatomic, assign) enum AVPictureType pictureType;
-@property (nonatomic, assign)enum AVColorRange colorRange;
-@property (nonatomic, assign)enum AVColorPrimaries colorPrimaries;
-@property (nonatomic, assign)enum AVColorTransferCharacteristic colorTransferCharacteristic;
-@property (nonatomic, assign)enum AVColorSpace colorSpace;
-@property (nonatomic, assign)enum AVChromaLocation chromaLocation;
+@property (nonatomic, assign) enum AVColorRange colorRange;
+@property (nonatomic, assign) enum AVColorPrimaries colorPrimaries;
+@property (nonatomic, assign) enum AVColorTransferCharacteristic colorTransferCharacteristic;
+@property (nonatomic, assign) enum AVColorSpace colorSpace;
+@property (nonatomic, assign) enum AVChromaLocation chromaLocation;
 @property (nonatomic, assign) AVRational sampleAspectRatio;
 @property (nonatomic, assign) int width;
 @property (nonatomic, assign) int height;
