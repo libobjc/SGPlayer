@@ -7,6 +7,7 @@
 //
 
 #import "SGFFVideoFrame.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface SGFFVideoFrame ()
 
@@ -101,10 +102,14 @@
                 CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
                 if (CVPixelBufferIsPlanar(pixelBuffer)) {
                     int planes_count = (int)CVPixelBufferGetPlaneCount(pixelBuffer);
+                    void * data[8];
+                    int linesize[8];
                     for (int i = 0; i < planes_count; i++) {
-                        self.data[i] = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
-                        self.linesize[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
+                        data[i] = CVPixelBufferGetBaseAddressOfPlane(pixelBuffer, i);
+                        linesize[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(pixelBuffer, i);
                     }
+                    self.data = (uint8_t **)data;
+                    self.linesize = linesize;
                     self.width = (int)CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
                     self.height = (int)CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
                 } else {
@@ -171,11 +176,11 @@
 {
     if (corePixelBuffer)
     {
-        CFRetain(corePixelBuffer);
+        CVPixelBufferRetain(corePixelBuffer);
     }
     if (self.corePixelBuffer)
     {
-        CFRelease(self.corePixelBuffer);
+        CVPixelBufferRelease(self.corePixelBuffer);
     }
     self.corePixelBuffer = corePixelBuffer;
 }
