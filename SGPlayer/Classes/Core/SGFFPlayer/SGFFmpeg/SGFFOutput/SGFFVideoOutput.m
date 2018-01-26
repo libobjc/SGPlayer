@@ -11,7 +11,7 @@
 #import "SGPlayerMacro.h"
 #import "SGGLView.h"
 #import "SGGLViewport.h"
-#import "SGGLPlaneModel.h"
+#import "SGGLModelPool.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLYUV420PProgram.h"
 #import "SGGLTextureUploader.h"
@@ -20,7 +20,7 @@
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLPlaneModel * model;
+@property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLYUV420PProgram * program;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
@@ -86,8 +86,8 @@
     if (!self.program) {
         self.program = [[SGGLYUV420PProgram alloc] init];
     }
-    if (!self.model) {
-        self.model = [[SGGLPlaneModel alloc] init];
+    if (!self.modelPool) {
+        self.modelPool = [[SGGLModelPool alloc] init];
     }
 }
 
@@ -117,20 +117,21 @@
     [render lock];
     [self.coreLock unlock];
     [self setupOpenGLIfNeed];
+    id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
     [self.program use];
     [self.program bindVariable];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     [self.textureUploader upload:render.videoFrame.data
                             size:renderSize
                             type:SGGLTextureTypeYUV420P];
-    [self.model bindPosition_location:self.program.position_location
-           textureCoordinate_location:self.program.textureCoordinate_location];
+    [model bindPosition_location:self.program.position_location
+      textureCoordinate_location:self.program.textureCoordinate_location];
     [self.program updateModelViewProjectionMatrix:GLKMatrix4Identity];
     [SGGLViewport updateViewport:renderSize
                      displaySize:size
                             mode:SGGLViewportModeResizeAspect];
-    [self.model draw];
-    [self.model bindEmpty];
+    [model draw];
+    [model bindEmpty];
     [render unlock];
 }
 
