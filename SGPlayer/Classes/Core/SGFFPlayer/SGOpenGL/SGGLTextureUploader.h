@@ -18,6 +18,6 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 
 @interface SGGLTextureUploader : NSObject
 
-- (BOOL)upload:(uint8_t **)data size:(SGGLSize)size type:(SGGLTextureType)type;
+- (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size;
 
 @end
