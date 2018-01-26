@@ -213,12 +213,12 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
                    inNumberFrames);
     }
     [self.coreLock unlock];
-    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
+//    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
 }
 
 - (void)outputRenderCallback:(UInt32)inNumberFrames
 {
-    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
+//    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
 }
 
 OSStatus mixerInputCallback(void * inRefCon,

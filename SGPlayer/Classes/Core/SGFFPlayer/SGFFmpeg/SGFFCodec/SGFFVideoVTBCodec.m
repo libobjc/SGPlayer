@@ -63,7 +63,7 @@
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size];
     if (sampleBuffer != NULL)
     {
-        VTDecompressionSessionDecodeFrameWithOutputHandler(_decompressionSession, sampleBuffer, 0, nil, ^(OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef  _Nullable imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration) {
+        OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(_decompressionSession, sampleBuffer, 0, nil, ^(OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef  _Nullable imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration) {
             if (status == noErr)
             {
                 if (imageBuffer)
@@ -77,6 +77,10 @@
                 }
             }
         });
+        if (status == kVTInvalidSessionErr)
+        {
+            [self doFlushCodec];
+        }
         CFRelease(sampleBuffer);
     }
     return result;
