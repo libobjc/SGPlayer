@@ -76,36 +76,39 @@ static int gl_texture[3] =
     }
 }
 
-- (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size
+- (BOOL)uploadWithType:(SGGLTextureType)type
+                  data:(uint8_t **)data
+                  size:(SGGLSize)size
 {
     [self setupGLTextureIfNeed];
-    switch (type)
+    if (type == SGGLTextureTypeYUV420P)
     {
-        case SGGLTextureTypeUnknown:
-            return NO;
-        case SGGLTextureTypeYUV420P:
-        {
-            static int count = 3;
-            int widths[3]  = {size.width, size.width / 2, size.width / 2};
-            int heights[3] = {size.height, size.height / 2, size.height / 2};
-            int formats[3] = {GL_LUMINANCE, GL_LUMINANCE, GL_LUMINANCE};
-            [self uploadWithData:data widths:widths heights:heights formats:formats count:count];
-        }
-            return YES;
-        case SGGLTextureTypeNV12:
-        {
-            static int count = 2;
-            int widths[2]  = {size.width, size.width / 2};
-            int heights[2] = {size.height, size.height / 2};
-            int formats[2] = {GL_LUMINANCE, GL_LUMINANCE_ALPHA};
-            [self uploadWithData:data widths:widths heights:heights formats:formats count:count];
-        }
-            return NO;
+        static int count = 3;
+        int widths[3]  = {size.width, size.width / 2, size.width / 2};
+        int heights[3] = {size.height, size.height / 2, size.height / 2};
+        int formats[3] = {GL_LUMINANCE, GL_LUMINANCE, GL_LUMINANCE};
+        return [self uploadWithData:data widths:widths heights:heights formats:formats count:count];
+    }
+    else if (type == SGGLTextureTypeNV12)
+    {
+        static int count = 2;
+        int widths[2]  = {size.width, size.width / 2};
+        int heights[2] = {size.height, size.height / 2};
+        int formats[2] = {GL_LUMINANCE, GL_LUMINANCE_ALPHA};
+        return [self uploadWithData:data
+                             widths:widths
+                            heights:heights
+                            formats:formats
+                              count:count];
     }
     return NO;
 }
 
-- (void)uploadWithData:(uint8_t **)data widths:(int *)widths heights:(int *)heights formats:(int *)formats count:(int)count
+- (BOOL)uploadWithData:(uint8_t **)data
+                widths:(int *)widths
+               heights:(int *)heights
+               formats:(int *)formats
+                 count:(int)count
 {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     for (int i = 0; i < count; i++)
@@ -118,6 +121,7 @@ static int gl_texture[3] =
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
+    return YES;
 }
 
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
@@ -127,63 +131,67 @@ static int gl_texture[3] =
     {
         return NO;
     }
-    CVReturn result;
-    CVOpenGLESTextureRef lumaTexture;
-    CVOpenGLESTextureRef chromaTexture;
     CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
     GLsizei width = (int)CVPixelBufferGetWidth(pixelBuffer);
     GLsizei height = (int)CVPixelBufferGetHeight(pixelBuffer);
-    glActiveTexture(GL_TEXTURE0);
-    result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                          _openGLESTextureCache,
-                                                          pixelBuffer,
-                                                          NULL,
-                                                          GL_TEXTURE_2D,
-                                                          GL_RED_EXT,
-                                                          width,
-                                                          height,
-                                                          GL_RED_EXT,
-                                                          GL_UNSIGNED_BYTE,
-                                                          0,
-                                                          &lumaTexture);
-    if (result == kCVReturnSuccess)
+    OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
     {
-        glBindTexture(CVOpenGLESTextureGetTarget(lumaTexture), CVOpenGLESTextureGetName(lumaTexture));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        static int count = 2;
+        int widths[2]  = {width, width / 2};
+        int heights[2] = {height, height / 2};
+        int formats[2] = {GL_RED_EXT, GL_RG_EXT};
+        return [self uploadWithCVPixelBuffer:pixelBuffer
+                                      widths:widths
+                                     heights:heights
+                                     formats:formats
+                                       count:count];
     }
-    glActiveTexture(GL_TEXTURE1);
-    result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
-                                                          _openGLESTextureCache,
-                                                          pixelBuffer,
-                                                          NULL,
-                                                          GL_TEXTURE_2D,
-                                                          GL_RG_EXT,
-                                                          width / 2,
-                                                          height / 2,
-                                                          GL_RG_EXT,
-                                                          GL_UNSIGNED_BYTE,
-                                                          1,
-                                                          &chromaTexture);
-    if (result == kCVReturnSuccess)
+    return NO;
+}
+
+- (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
+                         widths:(int *)widths
+                        heights:(int *)heights
+                        formats:(int *)formats
+                          count:(int)count
+{
+    BOOL success = YES;
+    for (int i = 0; i < count; i++)
     {
-        glBindTexture(CVOpenGLESTextureGetTarget(chromaTexture), CVOpenGLESTextureGetName(chromaTexture));
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    }
-    if (lumaTexture)
-    {
-        CFRelease(lumaTexture);
-        lumaTexture = NULL;
-    }
-    if (chromaTexture)
-    {
-        CFRelease(chromaTexture);
-        chromaTexture = NULL;
+        CVReturn result;
+        CVOpenGLESTextureRef texture;
+        glActiveTexture(gl_texture[i]);
+        result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                              _openGLESTextureCache,
+                                                              pixelBuffer,
+                                                              NULL,
+                                                              GL_TEXTURE_2D,
+                                                              formats[i],
+                                                              widths[i],
+                                                              heights[i],
+                                                              formats[i],
+                                                              GL_UNSIGNED_BYTE,
+                                                              i,
+                                                              &texture);
+        if (result == kCVReturnSuccess)
+        {
+            glBindTexture(CVOpenGLESTextureGetTarget(texture), CVOpenGLESTextureGetName(texture));
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        }
+        if (texture)
+        {
+            CFRelease(texture);
+            texture = NULL;
+        }
+        if (result != kCVReturnSuccess)
+        {
+            success = NO;
+            break;
+        }
     }
     return YES;
 }

@@ -22,8 +22,20 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 
 - (instancetype)initWithGLContext:(SGPLFGLContext *)context;
 
-- (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size;
-- (void)uploadWithData:(uint8_t **)data widths:(int *)widths heights:(int *)heights formats:(int *)formats count:(int)count;
+- (BOOL)uploadWithType:(SGGLTextureType)type
+                  data:(uint8_t **)data
+                  size:(SGGLSize)size;
+- (BOOL)uploadWithData:(uint8_t **)data
+                widths:(int *)widths
+               heights:(int *)heights
+               formats:(int *)formats
+                 count:(int)count;
+
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
+                         widths:(int *)widths
+                        heights:(int *)heights
+                        formats:(int *)formats
+                          count:(int)count;
 
 @end
