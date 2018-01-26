@@ -90,6 +90,7 @@ static int gl_texture[3] =
         return [self uploadWithData:data
                              widths:widths
                             heights:heights
+                    internalFormats:formats
                             formats:formats
                               count:count];
     }
@@ -102,6 +103,7 @@ static int gl_texture[3] =
         return [self uploadWithData:data
                              widths:widths
                             heights:heights
+                    internalFormats:formats
                             formats:formats
                               count:count];
     }
@@ -111,6 +113,7 @@ static int gl_texture[3] =
 - (BOOL)uploadWithData:(uint8_t **)data
                 widths:(int *)widths
                heights:(int *)heights
+       internalFormats:(int *)internalFormats
                formats:(int *)formats
                  count:(int)count
 {
@@ -119,7 +122,7 @@ static int gl_texture[3] =
     {
         glActiveTexture(gl_texture[i]);
         glBindTexture(GL_TEXTURE_2D, _gl_texture_ids[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, formats[i], widths[i], heights[i], 0, formats[i], GL_UNSIGNED_BYTE, data[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[i], widths[i], heights[i], 0, formats[i], GL_UNSIGNED_BYTE, data[i]);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -148,6 +151,21 @@ static int gl_texture[3] =
         return [self uploadWithCVPixelBuffer:pixelBuffer
                                       widths:widths
                                      heights:heights
+                             internalFormats:formats
+                                     formats:formats
+                                       count:count];
+    }
+    else if (format == kCVPixelFormatType_32BGRA)
+    {
+        static int count = 1;
+        int widths[1]  = {width};
+        int heights[1] = {height};
+        int internalFormats[1] = {GL_RGBA};
+        int formats[1] = {GL_BGRA};
+        return [self uploadWithCVPixelBuffer:pixelBuffer
+                                      widths:widths
+                                     heights:heights
+                             internalFormats:internalFormats
                                      formats:formats
                                        count:count];
     }
@@ -157,6 +175,7 @@ static int gl_texture[3] =
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
                          widths:(int *)widths
                         heights:(int *)heights
+                internalFormats:(int *)internalFormats
                         formats:(int *)formats
                           count:(int)count
 {
@@ -172,7 +191,7 @@ static int gl_texture[3] =
                                                               pixelBuffer,
                                                               NULL,
                                                               GL_TEXTURE_2D,
-                                                              formats[i],
+                                                              internalFormats[i],
                                                               widths[i],
                                                               heights[i],
                                                               formats[i],

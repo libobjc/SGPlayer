@@ -28,6 +28,7 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 - (BOOL)uploadWithData:(uint8_t **)data
                 widths:(int *)widths
                heights:(int *)heights
+       internalFormats:(int *)internalFormats
                formats:(int *)formats
                  count:(int)count;
 
@@ -35,6 +36,7 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
                          widths:(int *)widths
                         heights:(int *)heights
+                internalFormats:(int *)internalFormats
                         formats:(int *)formats
                           count:(int)count;
 
