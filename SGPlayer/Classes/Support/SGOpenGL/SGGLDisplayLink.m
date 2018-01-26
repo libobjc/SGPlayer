@@ -29,6 +29,7 @@
     {
         self.callback = callback;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
+        self.displayLink.preferredFramesPerSecond = 25;
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     return self;
