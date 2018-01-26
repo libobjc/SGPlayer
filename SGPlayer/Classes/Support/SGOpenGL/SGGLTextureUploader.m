@@ -20,9 +20,11 @@ static int gl_texture[3] =
 
 {
     GLuint _gl_texture_ids[3];
+    CVOpenGLESTextureCacheRef _openGLESTextureCache;
 }
 
 @property (nonatomic, strong) SGPLFGLContext * context;
+@property (nonatomic, assign) BOOL setupOpenGLESTextureCacheFailed;
 
 @end
 
@@ -46,6 +48,12 @@ static int gl_texture[3] =
         _gl_texture_ids[1] = 0;
         _gl_texture_ids[1] = 0;
     }
+    if (_openGLESTextureCache)
+    {
+        CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
+        CFRelease(_openGLESTextureCache);
+        _openGLESTextureCache = NULL;
+    }
 }
 
 - (void)setupGLTextureIfNeed
@@ -53,6 +61,18 @@ static int gl_texture[3] =
     if (!_gl_texture_ids[0])
     {
         glGenTextures(3, _gl_texture_ids);
+    }
+}
+
+- (void)setupOpenGLESTextureCacheIfNeed
+{
+    if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed)
+    {
+        CVReturn result = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, self.context, NULL, &_openGLESTextureCache);
+        if (result != noErr)
+        {
+            self.setupOpenGLESTextureCacheFailed = YES;
+        }
     }
 }
 
@@ -102,7 +122,70 @@ static int gl_texture[3] =
 
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
-    return NO;
+    [self setupOpenGLESTextureCacheIfNeed];
+    if (!_openGLESTextureCache)
+    {
+        return NO;
+    }
+    CVReturn result;
+    CVOpenGLESTextureRef lumaTexture;
+    CVOpenGLESTextureRef chromaTexture;
+    CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
+    GLsizei width = (int)CVPixelBufferGetWidth(pixelBuffer);
+    GLsizei height = (int)CVPixelBufferGetHeight(pixelBuffer);
+    glActiveTexture(GL_TEXTURE0);
+    result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                          _openGLESTextureCache,
+                                                          pixelBuffer,
+                                                          NULL,
+                                                          GL_TEXTURE_2D,
+                                                          GL_RED_EXT,
+                                                          width,
+                                                          height,
+                                                          GL_RED_EXT,
+                                                          GL_UNSIGNED_BYTE,
+                                                          0,
+                                                          &lumaTexture);
+    if (result == kCVReturnSuccess)
+    {
+        glBindTexture(CVOpenGLESTextureGetTarget(lumaTexture), CVOpenGLESTextureGetName(lumaTexture));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    glActiveTexture(GL_TEXTURE1);
+    result = CVOpenGLESTextureCacheCreateTextureFromImage(kCFAllocatorDefault,
+                                                          _openGLESTextureCache,
+                                                          pixelBuffer,
+                                                          NULL,
+                                                          GL_TEXTURE_2D,
+                                                          GL_RG_EXT,
+                                                          width / 2,
+                                                          height / 2,
+                                                          GL_RG_EXT,
+                                                          GL_UNSIGNED_BYTE,
+                                                          1,
+                                                          &chromaTexture);
+    if (result == kCVReturnSuccess)
+    {
+        glBindTexture(CVOpenGLESTextureGetTarget(chromaTexture), CVOpenGLESTextureGetName(chromaTexture));
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    if (lumaTexture)
+    {
+        CFRelease(lumaTexture);
+        lumaTexture = NULL;
+    }
+    if (chromaTexture)
+    {
+        CFRelease(chromaTexture);
+        chromaTexture = NULL;
+    }
+    return YES;
 }
 
 @end
