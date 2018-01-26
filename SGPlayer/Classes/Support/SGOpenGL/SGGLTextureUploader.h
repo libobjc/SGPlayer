@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SGPLFGLContext.h"
 #import "SGGLDefines.h"
 
 typedef NS_ENUM(NSUInteger, SGGLTextureType)
@@ -18,6 +19,8 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 };
 
 @interface SGGLTextureUploader : NSObject
+
+- (instancetype)initWithGLContext:(SGPLFGLContext *)context;
 
 - (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size;
 - (void)uploadWithData:(uint8_t **)data widths:(int *)widths heights:(int *)heights formats:(int *)formats count:(int)count;

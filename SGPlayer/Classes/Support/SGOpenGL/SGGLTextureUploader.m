@@ -16,10 +16,25 @@ static int gl_texture[3] =
     GL_TEXTURE2,
 };
 
-@implementation SGGLTextureUploader
+@interface SGGLTextureUploader ()
 
 {
     GLuint _gl_texture_ids[3];
+}
+
+@property (nonatomic, strong) SGPLFGLContext * context;
+
+@end
+
+@implementation SGGLTextureUploader
+
+- (instancetype)initWithGLContext:(SGPLFGLContext *)context
+{
+    if (self = [super init])
+    {
+        self.context = context;
+    }
+    return self;
 }
 
 - (void)dealloc

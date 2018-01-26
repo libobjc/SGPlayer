@@ -93,7 +93,7 @@
 - (void)setupOpenGLIfNeed
 {
     if (!self.textureUploader) {
-        self.textureUploader = [[SGGLTextureUploader alloc] init];
+        self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
     }
     if (!self.programPool) {
         self.programPool = [[SGGLProgramPool alloc] init];
