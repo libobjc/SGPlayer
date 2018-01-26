@@ -93,7 +93,7 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        id <SGFFFrame> frame = [self fetchFrame];
+        id <SGFFFrame> frame = [self fetchReuseFrame];
         NSAssert(frame, @"Fecth frame failed");
         result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)
@@ -117,7 +117,5 @@
     }
     return array;
 }
-
-- (id <SGFFFrame>)fetchFrame {return nil;}
 
 @end

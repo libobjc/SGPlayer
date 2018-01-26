@@ -23,5 +23,6 @@
 
 - (void)doFlushCodec;
 - (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError **)error;
+- (id <SGFFFrame>)fetchReuseFrame;
 
 @end

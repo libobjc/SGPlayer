@@ -26,7 +26,7 @@
     return 5;
 }
 
-- (id <SGFFFrame>)fetchFrame
+- (id <SGFFFrame>)fetchReuseFrame
 {
     SGFFAudioFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFrame class]];
     frame.timebase = self.timebase;

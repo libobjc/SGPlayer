@@ -11,9 +11,4 @@
 
 @interface SGFFAsyncAVCodec : SGFFAsyncCodec
 
-@property (nonatomic, assign) AVCodecParameters * codecpar;
-@property (nonatomic, assign, readonly) AVCodecContext * codecContext;
-
-- (id <SGFFFrame>)fetchFrame;
-
 @end
