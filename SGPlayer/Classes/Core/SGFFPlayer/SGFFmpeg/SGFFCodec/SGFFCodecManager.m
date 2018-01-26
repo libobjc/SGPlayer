@@ -25,7 +25,8 @@
     {
         case AVMEDIA_TYPE_VIDEO:
         {
-            SGFFVideoAVCodec * videoCodec = [[SGFFVideoAVCodec alloc] init];
+            Class codecClass = stream->codecpar->codec_id == AV_CODEC_ID_H264 ? [SGFFVideoVTBCodec class] : [SGFFVideoAVCodec class];
+            SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
             videoCodec.timebase = SGFFTimebaseValidate(stream->time_base.num, stream->time_base.den, 1, 25000);
             videoCodec.codecpar = stream->codecpar;
             return videoCodec;
