@@ -60,9 +60,6 @@
         self.samples = malloc(self.bufferLength);
     }
     memcpy(self.samples, samples, self.length);
-    self.numberOfSamples = 0;
-    self.numberOfChannels = 0;
-    self.offset = 0;
 }
 
 - (void)clear
@@ -73,6 +70,9 @@
     self.numberOfSamples = 0;
     self.numberOfChannels = 0;
     self.offset = 0;
+    self.position = 0;
+    self.duration = 0;
+    self.size = 0;
 }
 
 @end

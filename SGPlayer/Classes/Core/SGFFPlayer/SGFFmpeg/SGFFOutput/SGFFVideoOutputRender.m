@@ -38,12 +38,18 @@
 
 - (void)updateVideoFrame:(SGFFVideoFrame *)videoFrame
 {
-    if (self.videoFrame != videoFrame)
+    if (videoFrame)
     {
-        [self clear];
-        self.videoFrame = videoFrame;
-        [self.videoFrame lock];
+        [videoFrame lock];
     }
+    if (self.videoFrame)
+    {
+        [self.videoFrame unlock];
+    }
+    self.videoFrame = videoFrame;
+    self.position = self.videoFrame.position;
+    self.duration = self.videoFrame.duration;
+    self.size = self.videoFrame.size;
 }
 
 - (void)clear
@@ -54,21 +60,9 @@
         [self.videoFrame unlock];
         self.videoFrame = nil;
     }
-}
-
-- (long long)position
-{
-    return self.videoFrame.position;
-}
-
-- (long long)duration
-{
-    return self.videoFrame.duration;
-}
-
-- (long long)size
-{
-    return self.videoFrame.size;
+    self.position = 0;
+    self.duration = 0;
+    self.size = 0;
 }
 
 @end

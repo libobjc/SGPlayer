@@ -73,6 +73,9 @@
     [render updateSamples:self.swrContextBuffer length:length];
     render.numberOfSamples = numberOfSamples;
     render.numberOfChannels = self.outputNumberOfChannels;
+    render.position = frame.position;
+    render.duration = frame.duration;
+    render.size = frame.size;
     
     return render;
 }
