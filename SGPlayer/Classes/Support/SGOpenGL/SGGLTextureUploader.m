@@ -160,6 +160,7 @@ static int gl_texture[3] =
                         formats:(int *)formats
                           count:(int)count
 {
+    CVPixelBufferRetain(pixelBuffer);
     BOOL success = YES;
     for (int i = 0; i < count; i++)
     {
@@ -197,6 +198,7 @@ static int gl_texture[3] =
             break;
         }
     }
+    CVPixelBufferRelease(pixelBuffer);
     return YES;
 }
 
