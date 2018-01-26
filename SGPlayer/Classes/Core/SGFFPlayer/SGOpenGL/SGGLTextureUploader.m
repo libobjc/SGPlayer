@@ -76,7 +76,7 @@ static int gl_texture[3] =
             {
                 glActiveTexture(gl_texture[i]);
                 glBindTexture(GL_TEXTURE_2D, _gl_texture_ids[i]);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, widths[i], heights[i], 0, format[i], GL_UNSIGNED_BYTE, data[i]);
+                glTexImage2D(GL_TEXTURE_2D, 0, format[i], widths[i], heights[i], 0, format[i], GL_UNSIGNED_BYTE, data[i]);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
