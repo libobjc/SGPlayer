@@ -11,32 +11,30 @@
 
 @implementation SGGLViewport
 
-+ (void)updateViewport:(SGGLSize)renderSize
-           displaySize:(SGGLSize)displaySize
-                  mode:(SGGLViewportMode)mode
++ (void)updateWithMode:(SGGLViewportMode)mode textureSize:(SGGLSize)textureSize layerSize:(SGGLSize)layerSize
 {
-    SGGLRect viewport = {0, 0, displaySize.width, displaySize.height};
-    double renderAspect = (double)renderSize.width / renderSize.height;
-    double displayAspect = (double)displaySize.width / displaySize.height;
+    SGGLRect viewport = {0, 0, layerSize.width, layerSize.height};
+    double renderAspect = (double)textureSize.width / textureSize.height;
+    double displayAspect = (double)layerSize.width / layerSize.height;
     if (fabs(displayAspect - renderAspect) <= 0.0001)
     {
         
     }
     else if (displayAspect < renderAspect)
     {
-        double height = displaySize.width / renderAspect;
+        double height = layerSize.width / renderAspect;
         viewport.x = 0;
-        viewport.y = (displaySize.height - height) / 2;
-        viewport.width = displaySize.width;
+        viewport.y = (layerSize.height - height) / 2;
+        viewport.width = layerSize.width;
         viewport.height = height;
     }
     else if (displayAspect > renderAspect)
     {
-        double width = displaySize.height * renderAspect;
-        viewport.x = (displaySize.width - width) / 2;
+        double width = layerSize.height * renderAspect;
+        viewport.x = (layerSize.width - width) / 2;
         viewport.y = 0;
         viewport.width = width;
-        viewport.height = displaySize.height;
+        viewport.height = layerSize.height;
     }
     glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
 }

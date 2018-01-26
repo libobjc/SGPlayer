@@ -121,8 +121,9 @@
     
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
     id <SGGLProgram> program = [self.programPool programWithType:SGGLProgramTypeYUV420P];
+    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     
-    if (!model || !program)
+    if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
     {
         [render unlock];
         return NO;
@@ -132,16 +133,10 @@
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         [program use];
         [program bindVariable];
-        SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
-        [self.textureUploader uploadWithType:SGGLTextureTypeYUV420P
-                                        data:render.videoFrame.data
-                                        size:renderSize];
-        [model bindPosition_location:program.position_location
-          textureCoordinate_location:program.textureCoordinate_location];
+        [self.textureUploader uploadWithType:SGGLTextureTypeYUV420P data:render.videoFrame.data size:renderSize];
+        [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
         [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-        [SGGLViewport updateViewport:renderSize
-                         displaySize:size
-                                mode:SGGLViewportModeResizeAspect];
+        [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size];
         [model draw];
         [model bindEmpty];
         [render unlock];
