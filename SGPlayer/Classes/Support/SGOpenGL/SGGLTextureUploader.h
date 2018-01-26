@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 @interface SGGLTextureUploader : NSObject
 
 - (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size;
+- (void)uploadWithData:(uint8_t **)data widths:(int *)widths heights:(int *)heights formats:(int *)formats count:(int)count;
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 
 @end
