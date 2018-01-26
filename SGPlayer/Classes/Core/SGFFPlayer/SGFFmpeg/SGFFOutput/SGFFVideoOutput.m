@@ -15,6 +15,7 @@
 #import "SGGLProgramPool.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLTextureUploader.h"
+#import "SGFFDefineMap.h"
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
@@ -120,7 +121,7 @@
     [self setupOpenGLIfNeed];
     
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGGLProgramTypeNV12];
+    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.videoFrame.format)];
     SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
     
     if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
@@ -133,7 +134,7 @@
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         [program use];
         [program bindVariable];
-        [self.textureUploader uploadWithType:SGGLTextureTypeNV12 data:render.videoFrame.data size:renderSize];
+        [self.textureUploader uploadWithType:SGFFDMTexture(render.videoFrame.format) data:render.videoFrame.data size:renderSize];
         [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
         [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
         [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size];

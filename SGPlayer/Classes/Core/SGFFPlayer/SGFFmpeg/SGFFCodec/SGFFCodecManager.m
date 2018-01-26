@@ -25,7 +25,7 @@
     {
         case AVMEDIA_TYPE_VIDEO:
         {
-            SGFFVideoVTBCodec * videoCodec = [[SGFFVideoVTBCodec alloc] init];
+            SGFFVideoAVCodec * videoCodec = [[SGFFVideoAVCodec alloc] init];
             videoCodec.timebase = SGFFTimebaseValidate(stream->time_base.num, stream->time_base.den, 1, 25000);
             videoCodec.codecpar = stream->codecpar;
             return videoCodec;
