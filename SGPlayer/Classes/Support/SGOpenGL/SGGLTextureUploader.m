@@ -22,15 +22,6 @@ static int gl_texture[3] =
     GLuint _gl_texture_ids[3];
 }
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        glGenTextures(3, _gl_texture_ids);
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     if (_gl_texture_ids[0])
@@ -42,8 +33,17 @@ static int gl_texture[3] =
     }
 }
 
+- (void)setupGLTextureIfNeed
+{
+    if (!_gl_texture_ids[0])
+    {
+        glGenTextures(3, _gl_texture_ids);
+    }
+}
+
 - (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size
 {
+    [self setupGLTextureIfNeed];
     switch (type)
     {
         case SGGLTextureTypeUnknown:
