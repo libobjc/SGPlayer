@@ -131,10 +131,23 @@
     }
     else
     {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         [program use];
         [program bindVariable];
-        [self.textureUploader uploadWithType:SGFFDMTexture(render.videoFrame.format) data:render.videoFrame.data size:renderSize];
+        BOOL success = NO;
+        if (render.videoFrame.corePixelBuffer)
+        {
+            success = [self.textureUploader uploadWithCVPixelBuffer:render.videoFrame.corePixelBuffer];
+        }
+        else if (render.videoFrame.coreFrame)
+        {
+            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.videoFrame.format) data:render.videoFrame.data size:renderSize];
+        }
+        if (!success)
+        {
+            [render unlock];
+            return NO;
+        }
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
         [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
         [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size];

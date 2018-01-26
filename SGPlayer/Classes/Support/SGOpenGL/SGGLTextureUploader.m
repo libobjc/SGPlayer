@@ -88,4 +88,9 @@ static int gl_texture[3] =
     return NO;
 }
 
+- (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
+{
+    return NO;
+}
+
 @end

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGGLDefines.h"
 
 typedef NS_ENUM(NSUInteger, SGGLTextureType)
@@ -19,5 +20,6 @@ typedef NS_ENUM(NSUInteger, SGGLTextureType)
 @interface SGGLTextureUploader : NSObject
 
 - (BOOL)uploadWithType:(SGGLTextureType)type data:(uint8_t **)data size:(SGGLSize)size;
+- (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer;
 
 @end
