@@ -59,7 +59,13 @@
 - (void)dealloc
 {
     [self.displayLink invalidate];
-    [self clearCurrentRender];
+    if (self.currentRender)
+    {
+        [self.coreLock lock];
+        [self.currentRender unlock];
+        self.currentRender = nil;
+        [self.coreLock unlock];
+    }
 }
 
 - (SGPLFView *)displayView
@@ -72,8 +78,13 @@
     SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
     if (render)
     {
-        [self clearCurrentRender];
-        self.currentRender = render;
+        [self.coreLock lock];
+        if (self.currentRender != render)
+        {
+            [self.currentRender unlock];
+            self.currentRender = render;
+        }
+        [self.coreLock unlock];
         [self.glView display];
     }
 }
@@ -88,17 +99,6 @@
     }
     if (!self.modelPool) {
         self.modelPool = [[SGGLModelPool alloc] init];
-    }
-}
-
-- (void)clearCurrentRender
-{
-    if (self.currentRender)
-    {
-        [self.coreLock lock];
-        [self.currentRender unlock];
-        self.currentRender = nil;
-        [self.coreLock unlock];
     }
 }
 

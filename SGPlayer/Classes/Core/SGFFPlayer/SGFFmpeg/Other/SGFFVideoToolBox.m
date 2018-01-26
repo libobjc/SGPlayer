@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, SGFFVideoToolBoxErrorCode) {
                 extradata[4] = 0xFF;
                 self.needConvertNALSize3To4 = YES;
             }
-            self->_format_description = CreateFormatDescription(kCMVideoCodecType_H264, _codec_context->width, _codec_context->height, extradata, extradata_size);
+            self->_format_description = CreateFormatDescription2(kCMVideoCodecType_H264, _codec_context->width, _codec_context->height, extradata, extradata_size);
             if (self->_format_description == NULL) {
                 error = [NSError errorWithDomain:@"create format description error" code:SGFFVideoToolBoxErrorCodeCreateFormatDescription userInfo:nil];
                 return error;
@@ -232,7 +232,7 @@ static void outputCallback(void * decompressionOutputRefCon, void * sourceFrameR
     }
 }
 
-static CMFormatDescriptionRef CreateFormatDescription(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)
+static CMFormatDescriptionRef CreateFormatDescription2(CMVideoCodecType codec_type, int width, int height, const uint8_t * extradata, int extradata_size)
 {
     CMFormatDescriptionRef format_description = NULL;
     OSStatus status;

@@ -106,6 +106,10 @@
 
 - (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer
 {
+    if (corePixelBuffer)
+    {
+        CFRetain(corePixelBuffer);
+    }
     if (self.corePixelBuffer)
     {
         CFRelease(self.corePixelBuffer);

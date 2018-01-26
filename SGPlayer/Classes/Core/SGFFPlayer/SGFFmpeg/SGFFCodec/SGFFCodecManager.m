@@ -7,6 +7,7 @@
 //
 
 #import "SGFFCodecManager.h"
+#import "SGFFVideoVTBCodec.h"
 #import "SGFFVideoAVCodec.h"
 #import "SGFFAudioAVCodec.h"
 #import "SGFFError.h"
@@ -24,7 +25,7 @@
     {
         case AVMEDIA_TYPE_VIDEO:
         {
-            SGFFVideoAVCodec * videoCodec = [[SGFFVideoAVCodec alloc] init];
+            SGFFVideoVTBCodec * videoCodec = [[SGFFVideoVTBCodec alloc] init];
             videoCodec.timebase = SGFFTimebaseValidate(stream->time_base.num, stream->time_base.den, 1, 25000);
             videoCodec.codecpar = stream->codecpar;
             return videoCodec;
