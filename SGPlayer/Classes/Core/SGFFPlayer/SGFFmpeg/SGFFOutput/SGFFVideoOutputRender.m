@@ -56,4 +56,19 @@
     }
 }
 
+- (long long)position
+{
+    return self.videoFrame.position;
+}
+
+- (long long)duration
+{
+    return self.videoFrame.duration;
+}
+
+- (long long)size
+{
+    return self.videoFrame.size;
+}
+
 @end
