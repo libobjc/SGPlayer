@@ -11,6 +11,10 @@
 
 @interface SGFFVideoOutputRender : SGFFOutputRenderInternal
 
+@property (nonatomic, assign) long long position;
+@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) long long size;
+
 - (SGFFVideoFrame *)videoFrame;
 - (void)updateVideoFrame:(SGFFVideoFrame *)videoFrame;
 

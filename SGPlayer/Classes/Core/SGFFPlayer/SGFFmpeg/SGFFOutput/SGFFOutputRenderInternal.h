@@ -11,8 +11,4 @@
 
 @interface SGFFOutputRenderInternal : NSObject <SGFFOutputRender>
 
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
-@property (nonatomic, assign) long long size;
-
 @end

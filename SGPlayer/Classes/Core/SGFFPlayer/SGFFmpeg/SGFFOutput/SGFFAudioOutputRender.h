@@ -14,6 +14,9 @@
 @property (nonatomic, assign, readonly) enum AVSampleFormat format;
 @property (nonatomic, assign, readonly) float * samples;
 @property (nonatomic, assign, readonly) long long length;
+@property (nonatomic, assign) long long position;
+@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) long long size;
 @property (nonatomic, assign) int numberOfSamples;
 @property (nonatomic, assign) int numberOfChannels;
 @property (nonatomic, assign) long long offset;

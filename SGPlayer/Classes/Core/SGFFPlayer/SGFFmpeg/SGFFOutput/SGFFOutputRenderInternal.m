@@ -21,6 +21,10 @@ SGFFObjectPoolItemInterface
     return SGFFOutputRenderTypeUnkonwn;
 }
 
+- (long long)position {return 0;}
+- (long long)duration {return 0;}
+- (long long)size {return 0;}
+
 SGFFObjectPoolItemLockingImplementation
 
 - (void)clear {}
