@@ -79,6 +79,12 @@
 {
     [object lock];
     [self.objects addObject:object];
+    if (self.shouldSortObjects)
+    {
+        [self.objects sortUsingComparator:^NSComparisonResult(id <SGFFObjectQueueItem> obj1, id <SGFFObjectQueueItem> obj2) {
+            return obj1.position < obj2.position ? NSOrderedAscending : NSOrderedDescending;
+        }];
+    }
     self.duration += object.duration;
     self.size += object.size;
 }

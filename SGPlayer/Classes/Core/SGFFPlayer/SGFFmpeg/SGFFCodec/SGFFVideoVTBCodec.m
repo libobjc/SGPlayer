@@ -38,7 +38,9 @@
 {
     if ([self setupDecompressionSession])
     {
-        return [super open];
+        BOOL success = [super open];
+        self.outputRenderQueue.shouldSortObjects = YES;
+        return success;
     }
     return NO;
 }

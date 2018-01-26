@@ -26,6 +26,8 @@
 - (instancetype)init;
 - (instancetype)initWithMaxCount:(NSInteger)maxCount;
 
+@property (nonatomic, assign) BOOL shouldSortObjects;
+
 - (NSInteger)count;
 - (long long)duration;
 - (long long)size;

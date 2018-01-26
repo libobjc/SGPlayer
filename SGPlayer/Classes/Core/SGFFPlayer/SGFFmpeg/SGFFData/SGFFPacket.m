@@ -43,6 +43,11 @@ SGFFObjectPoolItemLockingInterface
     if (self.corePacket)
     {
         self.streamIndex = self.corePacket->stream_index;
+        if (self.corePacket->pts != AV_NOPTS_VALUE) {
+            self.position = self.corePacket->pts;
+        } else {
+            self.position = self.corePacket->dts;
+        }
         self.position = self.corePacket->pts;
         self.duration = self.corePacket->duration;
         self.size = self.corePacket->size;
