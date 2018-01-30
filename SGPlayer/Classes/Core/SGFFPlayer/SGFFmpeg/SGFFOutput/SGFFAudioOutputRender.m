@@ -10,9 +10,11 @@
 
 @interface SGFFAudioOutputRender ()
 
-@property (nonatomic, assign) float * samples;
-@property (nonatomic, assign) long long length;
-@property (nonatomic, assign) long long bufferLength;
+{
+    void * internalData[SGFFAudioOutputRenderMaxChannelCount];
+    int internalLinesize[SGFFAudioOutputRenderMaxChannelCount];
+    int internalDataMallocSize[SGFFAudioOutputRenderMaxChannelCount];
+}
 
 @end
 
@@ -21,11 +23,6 @@
 - (SGFFOutputRenderType)type
 {
     return SGFFOutputRenderTypeAudio;
-}
-
-- (enum AVSampleFormat)format
-{
-    return AV_SAMPLE_FMT_FLT;
 }
 
 - (instancetype)init
@@ -40,39 +37,57 @@
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    if (self.samples)
+    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
     {
-        free(self.samples);
-        self.samples = nil;
+        if (internalData[i])
+        {
+            free(internalData[i]);
+            internalData[i] = NULL;
+        }
+        internalLinesize[i] = 0;
+        internalDataMallocSize[i] = 0;
     }
 }
 
-- (void)updateSamples:(float *)samples length:(long long)length
+- (void)updateData:(void **)data linesize:(int *)linesize
 {
-    self.length = length;
-    if (self.bufferLength < self.length)
+    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
     {
-        if (self.samples != nil)
+        internalLinesize[i] = linesize[i];
+        if (internalDataMallocSize[i] < linesize[i])
         {
-            free(self.samples);
+            internalDataMallocSize[i] = linesize[i];
+            internalData[i] = realloc(internalData[i], linesize[i]);
         }
-        self.bufferLength = self.length;
-        self.samples = malloc(self.bufferLength);
+        if (linesize[i] > 0)
+        {
+            memcpy(internalData[i], data[i], linesize[i]);
+        }
     }
-    memcpy(self.samples, samples, self.length);
 }
 
 - (void)clear
 {
     [super clear];
-    memset(self.samples, 0, self.bufferLength);
-    self.length = 0;
+    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    {
+        internalLinesize[i] = 0;
+    }
     self.numberOfSamples = 0;
     self.numberOfChannels = 0;
-    self.offset = 0;
     self.position = 0;
     self.duration = 0;
     self.size = 0;
+}
+
+- (void **)data
+{
+    return internalData;
+}
+
+- (int *)linesize
+{
+    return internalLinesize;
 }
 
 @end

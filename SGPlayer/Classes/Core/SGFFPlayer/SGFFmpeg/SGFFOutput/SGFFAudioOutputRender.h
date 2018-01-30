@@ -9,18 +9,19 @@
 #import "SGFFOutputRenderInternal.h"
 #import "SGFFAudioFrame.h"
 
+static int const SGFFAudioOutputRenderMaxChannelCount = 8;
+
 @interface SGFFAudioOutputRender : SGFFOutputRenderInternal
 
-@property (nonatomic, assign, readonly) enum AVSampleFormat format;
-@property (nonatomic, assign, readonly) float * samples;
-@property (nonatomic, assign, readonly) long long length;
+@property (nonatomic, assign) enum AVSampleFormat format;
+@property (nonatomic, assign) int numberOfSamples;
+@property (nonatomic, assign) int numberOfChannels;
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;
 @property (nonatomic, assign) long long size;
-@property (nonatomic, assign) int numberOfSamples;
-@property (nonatomic, assign) int numberOfChannels;
-@property (nonatomic, assign) long long offset;
+@property (nonatomic, assign, readonly) void ** data;
+@property (nonatomic, assign, readonly) int * linesize;
 
-- (void)updateSamples:(float *)samples length:(long long)length;
+- (void)updateData:(void **)data linesize:(int *)linesize;
 
 @end
