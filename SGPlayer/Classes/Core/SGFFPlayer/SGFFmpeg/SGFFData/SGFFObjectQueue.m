@@ -183,28 +183,32 @@
         return [self getObject];
     }
     NSLog(@"start : %f, %f", current / 12800.f, expect / 12800.f);
+    if (current > expect)
+    {
+        current = -1;
+    }
     id <SGFFObjectQueueItem> object = nil;
     while (self.objects.firstObject)
     {
-        long long firstPosition = self.objects.firstObject.position;
-        long long oldInterval = llabs(current - expect);
-        long long newInterval = llabs(firstPosition - expect);
-        if (newInterval <= oldInterval)
+        long long first = self.objects.firstObject.position;
+        if (first <= expect)
         {
-            if (object)
+            if (first > current)
             {
-                [object unlock];
+                if (object)
+                {
+                    [object unlock];
+                }
+                object = [self getObject];
+                NSLog(@"get   : %f", object.position / 12800.f);
             }
-            object = [self getObject];
-            current = object.position;
-            NSLog(@"get   : %f", object.position / 12800.f);
-        }
-        else if (firstPosition < current && firstPosition < expect)
-        {
-            id <SGFFObjectQueueItem> object = [self getObject];
-            NSLog(@"drop  : %f", object.position / 12800.f);
-            [object unlock];
-            [self.condition signal];
+            else
+            {
+                id <SGFFObjectQueueItem> object = [self getObject];
+                NSLog(@"drop  : %f", object.position / 12800.f);
+                [object unlock];
+                [self.condition signal];
+            }
         }
         else
         {
