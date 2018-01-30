@@ -7,7 +7,7 @@
 //
 
 #import "SGFFOutputRenderInternal.h"
-#import "SGFFAudioFrame.h"
+#import "avformat.h"
 
 static int const SGFFAudioOutputRenderMaxChannelCount = 8;
 
@@ -16,6 +16,7 @@ static int const SGFFAudioOutputRenderMaxChannelCount = 8;
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) int numberOfSamples;
 @property (nonatomic, assign) int numberOfChannels;
+@property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;
 @property (nonatomic, assign) long long size;

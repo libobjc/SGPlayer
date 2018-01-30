@@ -28,7 +28,12 @@ SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def)
     }
 }
 
-double SGFFTimebaseConvertToSeconds(long long timestamp, SGFFTimebase timebase)
+double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase)
 {
     return (double)timestamp * timebase.num / timebase.den;
+}
+
+long long SGFFSecondsConvertToTimestamp(double seconds, SGFFTimebase timebase)
+{
+    return seconds * timebase.den / timebase.num;
 }

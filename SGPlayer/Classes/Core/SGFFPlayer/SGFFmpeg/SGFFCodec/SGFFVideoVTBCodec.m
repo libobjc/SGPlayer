@@ -80,7 +80,7 @@
         if (status == kVTInvalidSessionErr)
         {
             [self doFlushCodec];
-            [NSThread sleepForTimeInterval:SGFFTimebaseConvertToSeconds(packet.duration, self.timebase)];
+            [NSThread sleepForTimeInterval:SGFFTimestampConvertToSeconds(packet.duration, self.timebase)];
         }
         CFRelease(sampleBuffer);
     }

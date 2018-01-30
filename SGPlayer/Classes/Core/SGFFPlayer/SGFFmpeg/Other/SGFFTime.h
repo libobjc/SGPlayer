@@ -13,6 +13,12 @@ typedef struct SGFFTimebase {
     int den;
 } SGFFTimebase;
 
+typedef struct SGFFTime {
+    long long timestamp;
+    SGFFTimebase timebase;
+} SGFFTime;
+
 SGFFTimebase SGFFTimebaseIdentity(void);
 SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);
-double SGFFTimebaseConvertToSeconds(long long timestamp, SGFFTimebase timebase);
+double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase);
+long long SGFFSecondsConvertToTimestamp(double seconds, SGFFTimebase timebase);

@@ -146,7 +146,7 @@
     }
     else if (codec == self.streamManager.currentAudioStream.codec)
     {
-        if (SGFFTimebaseConvertToSeconds(codec.duration, codec.timebase) > 10)
+        if (SGFFTimestampConvertToSeconds(codec.duration, codec.timebase) > 10)
         {
             shouldPaused = YES;
         }
