@@ -204,21 +204,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     return (int)self.audioStreamBasicDescription.mChannelsPerFrame;
 }
 
-- (void)inputCallback:(AudioBufferList *)ioData inNumberFrames:(UInt32)inNumberFrames
-{
-    for (int i = 0; i < ioData->mNumberBuffers; i++)
-    {
-        memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
-    }
-    [self.delegate audioPlayer:self ioData:ioData numberOfSamples:inNumberFrames numberOfChannels:self.numberOfChannels];
-//    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
-}
-
-- (void)outputRenderCallback:(UInt32)inNumberFrames
-{
-//    NSLog(@"%s, %f", __func__, [NSDate date].timeIntervalSince1970);
-}
-
 OSStatus inputCallback(void * inRefCon,
                        AudioUnitRenderActionFlags * ioActionFlags,
                        const AudioTimeStamp * inTimeStamp,
@@ -227,7 +212,11 @@ OSStatus inputCallback(void * inRefCon,
                        AudioBufferList * ioData)
 {
     SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
-    [obj inputCallback:ioData inNumberFrames:inNumberFrames];
+    for (int i = 0; i < ioData->mNumberBuffers; i++)
+    {
+        memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
+    }
+    [obj.delegate audioPlayerShouldInputData:obj ioData:ioData numberOfSamples:inNumberFrames numberOfChannels:obj.numberOfChannels];
     return noErr;
 }
 
@@ -239,9 +228,19 @@ OSStatus outputRenderCallback(void * inRefCon,
                               AudioBufferList * ioData)
 {
     SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
-    if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
+    if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
     {
-        [obj outputRenderCallback:inNumberFrames];
+        if ([obj.delegate respondsToSelector:@selector(audioPlayerWillRenderSample:sampleTime:)])
+        {
+            [obj.delegate audioPlayerWillRenderSample:obj sampleTime:inTimeStamp->mSampleTime];
+        }
+    }
+    else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
+    {
+        if ([obj.delegate respondsToSelector:@selector(audioPlayerDidRenderSample:sampleTime:)])
+        {
+            [obj.delegate audioPlayerDidRenderSample:obj sampleTime:inTimeStamp->mSampleTime];
+        }
     }
     return noErr;
 }

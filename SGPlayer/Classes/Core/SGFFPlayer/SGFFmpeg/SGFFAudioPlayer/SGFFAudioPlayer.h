@@ -13,10 +13,10 @@
 
 @protocol SGFFAudioPlayerDelegate <NSObject>
 
-- (void)audioPlayer:(SGFFAudioPlayer *)audioPlayer
-             ioData:(AudioBufferList *)ioData
-    numberOfSamples:(UInt32)numberOfSamples
-   numberOfChannels:(UInt32)numberOfChannels;
+- (void)audioPlayerShouldInputData:(SGFFAudioPlayer *)audioPlayer ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples numberOfChannels:(UInt32)numberOfChannels;
+@optional
+- (void)audioPlayerWillRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTime:(Float64)sampleTime;
+- (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTime:(Float64)sampleTime;
 
 @end
 

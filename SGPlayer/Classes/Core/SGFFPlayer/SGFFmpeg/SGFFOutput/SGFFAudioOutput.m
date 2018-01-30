@@ -179,48 +179,42 @@
 
 #pragma mark - SGAudioManagerDelegate
 
-- (void)audioPlayer:(SGFFAudioPlayer *)audioPlayer
-             ioData:(AudioBufferList *)ioData
-    numberOfSamples:(UInt32)numberOfSamples
-   numberOfChannels:(UInt32)numberOfChannels
+- (void)audioPlayerShouldInputData:(SGFFAudioPlayer *)audioPlayer ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples numberOfChannels:(UInt32)numberOfChannels
 {
-    @autoreleasepool
+    NSUInteger ioDataWriteOffset = 0;
+    while (numberOfSamples > 0)
     {
-        NSUInteger ioDataWriteOffset = 0;
-        while (numberOfSamples > 0)
+        if (!self.currentRender)
         {
-            if (!self.currentRender)
+            self.currentRender = [self.renderSource outputFecthRender:self];
+        }
+        if (!self.currentRender)
+        {
+            return;
+        }
+        
+        long long residueLinesize = self.currentRender.linesize[0] - self.currentRenderReadOffset;
+        long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
+        long long framesToCopy = bytesToCopy / sizeof(float);
+        
+        for (int i = 0; i < ioData->mNumberBuffers && i < numberOfChannels; i++)
+        {
+            if (self.currentRender.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
             {
-                self.currentRender = [self.renderSource outputFecthRender:self];
+                Byte * bytes = (Byte *)self.currentRender.data[i] + self.currentRenderReadOffset;
+                memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
-            if (!self.currentRender)
-            {
-                return;
-            }
-            
-            long long residueLinesize = self.currentRender.linesize[0] - self.currentRenderReadOffset;
-            long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
-            long long framesToCopy = bytesToCopy / sizeof(float);
-            
-            for (int i = 0; i < ioData->mNumberBuffers && i < numberOfChannels; i++)
-            {
-                if (self.currentRender.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
-                {
-                    Byte * bytes = (Byte *)self.currentRender.data[i] + self.currentRenderReadOffset;
-                    memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
-                }
-            }
-            
-            numberOfSamples -= framesToCopy;
-            ioDataWriteOffset += bytesToCopy;
-            
-            if (bytesToCopy < residueLinesize) {
-                self.currentRenderReadOffset += bytesToCopy;
-            } else {
-                [self.currentRender unlock];
-                self.currentRender = nil;
-                self.currentRenderReadOffset = 0;
-            }
+        }
+        
+        numberOfSamples -= framesToCopy;
+        ioDataWriteOffset += bytesToCopy;
+        
+        if (bytesToCopy < residueLinesize) {
+            self.currentRenderReadOffset += bytesToCopy;
+        } else {
+            [self.currentRender unlock];
+            self.currentRender = nil;
+            self.currentRenderReadOffset = 0;
         }
     }
 }
