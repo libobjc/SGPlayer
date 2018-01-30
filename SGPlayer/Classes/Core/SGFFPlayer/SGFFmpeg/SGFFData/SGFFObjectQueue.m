@@ -16,6 +16,8 @@
 
 @property (nonatomic, strong) NSCondition * condition;
 @property (nonatomic, strong) NSMutableArray <id <SGFFObjectQueueItem>> * objects;
+@property (nonatomic, strong) __kindof id <SGFFObjectQueueItem> puttingObject;
+@property (nonatomic, strong) __kindof id <SGFFObjectQueueItem> cancelPutObject;
 
 @property (nonatomic, assign) BOOL didDestoryed;
 
@@ -47,15 +49,24 @@
     [self.condition lock];
     while (self.objects.count >= self.maxCount)
     {
+        self.puttingObject = object;
         [self.condition wait];
+        self.puttingObject = nil;
         if (self.didDestoryed)
         {
             [self.condition unlock];
             return;
         }
     }
-    [self putObject:object];
-    [self.condition signal];
+    if (object == self.cancelPutObject)
+    {
+        self.cancelPutObject = nil;
+    }
+    else
+    {
+        [self putObject:object];
+        [self.condition signal];
+    }
     [self.condition unlock];
 }
 
@@ -228,6 +239,10 @@
     [self.objects removeAllObjects];
     self.size = 0;
     self.duration = 0;
+    if (self.puttingObject)
+    {
+        self.cancelPutObject = self.puttingObject;
+    }
     [self.condition broadcast];
     [self.condition unlock];
 }
