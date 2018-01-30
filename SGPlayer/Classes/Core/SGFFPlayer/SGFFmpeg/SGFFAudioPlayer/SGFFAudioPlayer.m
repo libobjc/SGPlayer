@@ -230,16 +230,16 @@ OSStatus outputRenderCallback(void * inRefCon,
     SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
     if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioPlayerWillRenderSample:sampleTime:)])
+        if ([obj.delegate respondsToSelector:@selector(audioPlayerWillRenderSample:sampleTimestamp:)])
         {
-            [obj.delegate audioPlayerWillRenderSample:obj sampleTime:inTimeStamp->mSampleTime];
+            [obj.delegate audioPlayerWillRenderSample:obj sampleTimestamp:inTimeStamp];
         }
     }
     else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioPlayerDidRenderSample:sampleTime:)])
+        if ([obj.delegate respondsToSelector:@selector(audioPlayerDidRenderSample:sampleTimestamp:)])
         {
-            [obj.delegate audioPlayerDidRenderSample:obj sampleTime:inTimeStamp->mSampleTime];
+            [obj.delegate audioPlayerDidRenderSample:obj sampleTimestamp:inTimeStamp];
         }
     }
     return noErr;

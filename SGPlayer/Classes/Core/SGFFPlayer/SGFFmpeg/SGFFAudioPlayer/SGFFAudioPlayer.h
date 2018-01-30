@@ -15,8 +15,8 @@
 
 - (void)audioPlayerShouldInputData:(SGFFAudioPlayer *)audioPlayer ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples numberOfChannels:(UInt32)numberOfChannels;
 @optional
-- (void)audioPlayerWillRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTime:(Float64)sampleTime;
-- (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTime:(Float64)sampleTime;
+- (void)audioPlayerWillRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp * )sampleTimestamp;
+- (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp * )sampleTimestamp;
 
 @end
 
