@@ -136,7 +136,10 @@
     }
     id <SGFFObjectQueueItem> object = [self getObjectCurrentPosition:currentPosition
                                                       expectPosition:expectPosition];
-    [self.condition signal];
+    if (object)
+    {
+        [self.condition signal];
+    }
     [self.condition unlock];
     return object;
 }
@@ -160,6 +163,19 @@
 - (__kindof id <SGFFObjectQueueItem>)getObjectCurrentPosition:(long long)currentPosition
                                                expectPosition:(long long)expectPosition
 {
+    while (self.objects.firstObject)
+    {
+        BOOL shouldDrop = self.objects.firstObject.position <= currentPosition && self.objects.firstObject.position < expectPosition;
+        if (shouldDrop)
+        {
+            id <SGFFObjectQueueItem> object = [self getObject];
+            [object unlock];
+        }
+        else
+        {
+            break;
+        }
+    }
     id <SGFFObjectQueueItem> object = nil;
     while (self.objects.firstObject)
     {
