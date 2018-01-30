@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFOutput.h"
 
-@interface SGFFSyncClock : NSObject <SGFFOutputRenderDelegate>
+@interface SGFFSyncClock : NSObject
 
 @end

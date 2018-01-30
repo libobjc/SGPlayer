@@ -10,9 +10,4 @@
 
 @implementation SGFFSyncClock
 
-- (void)outputDidUpdateCurrentTime:(id <SGFFOutput>)output
-{
-    NSLog(@"%f", SGFFTimeGetSeconds(output.currentTime));
-}
-
 @end

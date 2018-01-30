@@ -264,10 +264,6 @@
         self.currentPostPosition = self.currentPreparePosition;
         self.currentPostDuration = self.currentPrepareDuration;
         self.currentPostPositionTimsstamp = CACurrentMediaTime();
-        if ([self.renderDelegate respondsToSelector:@selector(outputDidUpdateCurrentTime:)])
-        {
-            [self.renderDelegate outputDidUpdateCurrentTime:self];
-        }
     }
 }
 

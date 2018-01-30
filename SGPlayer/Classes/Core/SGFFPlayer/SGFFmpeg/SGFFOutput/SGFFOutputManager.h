@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFSyncClock.h"
+#import "SGFFOutput.h"
 
 @interface SGFFOutputManager : NSObject
 
-@property (nonatomic, strong) SGFFSyncClock * syncClock;
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;
 
