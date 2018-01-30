@@ -8,6 +8,12 @@
 
 #import "SGFFTime.h"
 
+SGFFTime SGFFTimeIdentity(void)
+{
+    static SGFFTime time = {0, {1, 1}};
+    return time;
+}
+
 SGFFTimebase SGFFTimebaseIdentity(void)
 {
     static SGFFTimebase timebase = {1, 1};
@@ -26,6 +32,11 @@ SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def)
         SGFFTimebase timebase = {num_def, den_def};
         return timebase;
     }
+}
+
+double SGFFTimeGetSeconds(SGFFTime time)
+{
+    return SGFFTimestampConvertToSeconds(time.timestamp, time.timebase);
 }
 
 double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase)

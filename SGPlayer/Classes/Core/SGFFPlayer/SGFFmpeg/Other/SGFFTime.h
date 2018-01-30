@@ -18,7 +18,9 @@ typedef struct SGFFTime {
     SGFFTimebase timebase;
 } SGFFTime;
 
+SGFFTime SGFFTimeIdentity(void);
 SGFFTimebase SGFFTimebaseIdentity(void);
 SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);
+double SGFFTimeGetSeconds(SGFFTime time);
 double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase);
 long long SGFFSecondsConvertToTimestamp(double seconds, SGFFTimebase timebase);
