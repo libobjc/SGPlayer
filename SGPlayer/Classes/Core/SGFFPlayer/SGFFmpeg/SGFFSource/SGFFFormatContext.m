@@ -109,21 +109,21 @@ static int formatContextInterruptCallback(void * ctx)
 {
     if (self.state == SGFFSourceStatePaused)
     {
-        self.state = SGFFSourceStateSeeking;
         self.seekingTimestamp = timestamp * AV_TIME_BASE;
+        self.state = SGFFSourceStateSeeking;
         [self.readCondition lock];
         [self.readCondition signal];
         [self.readCondition unlock];
     }
     else if (self.state == SGFFSourceStateReading)
     {
-        self.state = SGFFSourceStateSeeking;
         self.seekingTimestamp = timestamp * AV_TIME_BASE;
+        self.state = SGFFSourceStateSeeking;
     }
     else if (self.state == SGFFSourceStateFinished)
     {
-        self.state = SGFFSourceStateSeeking;
         self.seekingTimestamp = timestamp * AV_TIME_BASE;
+        self.state = SGFFSourceStateSeeking;
         [self startReadThread];
     }
 }
@@ -234,11 +234,8 @@ static int formatContextInterruptCallback(void * ctx)
         }
         else if (self.state == SGFFSourceStateSeeking)
         {
-            if (self.seekingTimestamp > 0)
-            {
-                av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-                self.seekingTimestamp = 0;
-            }
+            av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
+            self.seekingTimestamp = 0;
             self.state = SGFFSourceStateReading;
             [self.delegate sourceDidFinishedSeeking:self];
             continue;
