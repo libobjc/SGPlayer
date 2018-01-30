@@ -12,6 +12,10 @@
 
 + (instancetype)displayLinkWithCallback:(void (^)(void))callback;
 
+@property(nonatomic, assign, readonly) NSTimeInterval timestamp;
+@property(nonatomic, assign, readonly) NSTimeInterval duration;
+@property(nonatomic, assign, readonly) NSTimeInterval nextVSyncTimestamp;
+
 - (void)invalidate;
 
 @end

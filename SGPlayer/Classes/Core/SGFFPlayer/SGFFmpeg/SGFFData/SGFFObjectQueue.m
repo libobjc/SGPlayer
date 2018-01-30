@@ -121,6 +121,63 @@
     return object;
 }
 
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncCurrentPosition:(long long)currentPosition
+                                                   expectPosition:(long long)expectPosition
+{
+    [self.condition lock];
+    while (self.objects.count <= 0)
+    {
+        [self.condition wait];
+        if (self.didDestoryed)
+        {
+            [self.condition unlock];
+            return nil;
+        }
+    }
+    id <SGFFObjectQueueItem> object = [self getObjectCurrentPosition:currentPosition
+                                                      expectPosition:expectPosition];
+    [self.condition signal];
+    [self.condition unlock];
+    return object;
+}
+
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncCurrentPosition:(long long)currentPosition
+                                                    expectPosition:(long long)expectPosition
+{
+    [self.condition lock];
+    if (self.objects.count <= 0 || self.didDestoryed)
+    {
+        [self.condition unlock];
+        return nil;
+    }
+    id <SGFFObjectQueueItem> object = [self getObjectCurrentPosition:currentPosition
+                                                      expectPosition:expectPosition];
+    [self.condition signal];
+    [self.condition unlock];
+    return object;
+}
+
+- (__kindof id <SGFFObjectQueueItem>)getObjectCurrentPosition:(long long)currentPosition
+                                               expectPosition:(long long)expectPosition
+{
+    id <SGFFObjectQueueItem> object = nil;
+    while (self.objects.firstObject)
+    {
+        long long oldInterval = llabs(currentPosition - expectPosition);
+        long long newInterval = llabs(self.objects.firstObject.position - expectPosition);
+        if (newInterval <= oldInterval)
+        {
+            object = [self getObject];
+            currentPosition = object.position;
+        }
+        else
+        {
+            break;
+        }
+    }
+    return object;
+}
+
 - (__kindof id <SGFFObjectQueueItem>)getObject
 {
     if (!self.objects.firstObject) {

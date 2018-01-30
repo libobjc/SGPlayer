@@ -13,4 +13,6 @@
 
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 
+- (long long)calculateVideoPositionWithTimebase:(SGFFTimebase)timebase nextVSyncTimestamp:(NSTimeInterval)nextVSyncTimestamp;
+
 @end

@@ -36,6 +36,10 @@
 - (void)putObjectAsync:(__kindof id <SGFFObjectQueueItem>)object;
 - (__kindof id <SGFFObjectQueueItem>)getObjectSync;
 - (__kindof id <SGFFObjectQueueItem>)getObjectAsync;
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncCurrentPosition:(long long)currentPosition
+                                                   expectPosition:(long long)expectPosition;
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncCurrentPosition:(long long)currentPosition
+                                                    expectPosition:(long long)expectPosition;
 
 - (void)flush;
 - (void)destroy;

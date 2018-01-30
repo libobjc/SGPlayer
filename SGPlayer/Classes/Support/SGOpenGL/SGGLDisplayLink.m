@@ -29,7 +29,6 @@
     {
         self.callback = callback;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
-        self.displayLink.preferredFramesPerSecond = 25;
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     return self;
@@ -38,6 +37,21 @@
 - (void)dealloc
 {
     [self invalidate];
+}
+
+- (NSTimeInterval)timestamp
+{
+    return self.displayLink.timestamp;
+}
+
+- (NSTimeInterval)duration
+{
+    return self.displayLink.duration;
+}
+
+- (NSTimeInterval)nextVSyncTimestamp
+{
+    return self.displayLink.timestamp + self.displayLink.duration;
 }
 
 - (void)displayLinkHandler

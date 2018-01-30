@@ -7,7 +7,16 @@
 //
 
 #import "SGFFOutputSync.h"
+#import <AVFoundation/AVFoundation.h>
 
 @implementation SGFFOutputSync
+
+- (long long)calculateVideoPositionWithTimebase:(SGFFTimebase)timebase nextVSyncTimestamp:(NSTimeInterval)nextVSyncTimestamp
+{
+    SGFFTime audioTime = [self.audioOutput currentTime];
+    NSTimeInterval position = SGFFTimeGetSeconds(audioTime);
+    NSTimeInterval interval = MAX(nextVSyncTimestamp - CACurrentMediaTime(), 0);
+    return SGFFSecondsConvertToTimestamp(position + interval, timebase);
+}
 
 @end

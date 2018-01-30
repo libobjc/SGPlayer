@@ -76,7 +76,19 @@
 
 - (void)displayLinkHandler
 {
-    SGFFVideoOutputRender * render = [self.renderSource outputFecthRender:self];
+    SGFFVideoOutputRender * render = nil;
+    if (self.currentRender)
+    {
+        long long position = [self.sync calculateVideoPositionWithTimebase:self.currentRender.timebase
+                                                        nextVSyncTimestamp:self.displayLink.nextVSyncTimestamp];
+        render = [self.renderSource outputFecthRender:self
+                                      currentPosition:self.currentRender.position
+                                       expectPosition:position];
+    }
+    else
+    {
+        render = [self.renderSource outputFecthRender:self];
+    }
     if (render)
     {
         [self.coreLock lock];

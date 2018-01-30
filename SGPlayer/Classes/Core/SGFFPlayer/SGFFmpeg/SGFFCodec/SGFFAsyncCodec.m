@@ -94,6 +94,19 @@ static SGFFPacket * flushPacket;
     return outputRender;
 }
 
+- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output
+                           currentPosition:(long long)currentPosition
+                            expectPosition:(long long)expectPosition
+{
+    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncCurrentPosition:currentPosition
+                                                                                expectPosition:expectPosition];
+    if (outputRender)
+    {
+        [self.capacityDelegate codecDidChangeCapacity:self];
+    }
+    return outputRender;
+}
+
 - (void)decodeThread
 {
     self.state = SGFFCodecStateDecoding;
