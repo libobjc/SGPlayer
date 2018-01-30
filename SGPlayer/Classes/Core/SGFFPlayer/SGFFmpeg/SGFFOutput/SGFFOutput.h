@@ -36,9 +36,7 @@
 @protocol SGFFOutputRenderSource <NSObject>
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output;
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
-                           currentPosition:(long long)currentPosition
-                            expectPosition:(long long)expectPosition;
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
 
 @end
 

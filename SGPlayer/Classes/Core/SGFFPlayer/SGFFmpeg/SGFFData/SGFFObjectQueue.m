@@ -171,6 +171,88 @@
     return object;
 }
 
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+{
+    [self.condition lock];
+    while (self.objects.count <= 0)
+    {
+        [self.condition wait];
+        if (self.didDestoryed)
+        {
+            [self.condition unlock];
+            return nil;
+        }
+    }
+    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler];
+    if (object)
+    {
+        [self.condition signal];
+    }
+    [self.condition unlock];
+    return object;
+}
+
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+{
+    [self.condition lock];
+    if (self.objects.count <= 0 || self.didDestoryed)
+    {
+        [self.condition unlock];
+        return nil;
+    }
+    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler];
+    if (object)
+    {
+        [self.condition signal];
+    }
+    [self.condition unlock];
+    return object;
+}
+
+- (__kindof id <SGFFObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+{
+    if (!positionHandler)
+    {
+        return [self getObject];
+    }
+    long long current = 0;
+    long long expect = 0;
+    if (!positionHandler(&current, &expect))
+    {
+        return [self getObject];
+    }
+    NSLog(@"start : %f, %f", current / 12800.f, expect / 12800.f);
+    id <SGFFObjectQueueItem> object = nil;
+    while (self.objects.firstObject)
+    {
+        long long firstPosition = self.objects.firstObject.position;
+        long long oldInterval = llabs(current - expect);
+        long long newInterval = llabs(firstPosition - expect);
+        if (newInterval <= oldInterval)
+        {
+            if (object)
+            {
+                [object unlock];
+            }
+            object = [self getObject];
+            current = object.position;
+            NSLog(@"get   : %f", object.position / 12800.f);
+        }
+        else if (firstPosition < current && firstPosition < expect)
+        {
+            id <SGFFObjectQueueItem> object = [self getObject];
+            NSLog(@"drop  : %f", object.position / 12800.f);
+            [object unlock];
+        }
+        else
+        {
+            break;
+        }
+    }
+    NSLog(@"end   : %f", object.position / 12800.f);
+    return object;
+}
+
 - (__kindof id <SGFFObjectQueueItem>)getObjectCurrentPosition:(long long)currentPosition
                                                expectPosition:(long long)expectPosition
 {

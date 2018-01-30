@@ -94,12 +94,9 @@ static SGFFPacket * flushPacket;
     return outputRender;
 }
 
-- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output
-                           currentPosition:(long long)currentPosition
-                            expectPosition:(long long)expectPosition
+- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
 {
-    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncCurrentPosition:currentPosition
-                                                                                expectPosition:expectPosition];
+    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncWithPositionHandler:positionHandler];
     if (outputRender)
     {
         [self.capacityDelegate codecDidChangeCapacity:self];

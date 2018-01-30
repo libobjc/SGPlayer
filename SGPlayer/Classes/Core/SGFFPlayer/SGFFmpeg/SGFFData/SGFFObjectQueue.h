@@ -38,10 +38,8 @@
 - (__kindof id <SGFFObjectQueueItem>)getObjectSync;
 - (__kindof id <SGFFObjectQueueItem>)getObjectAsync;
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectSyncCurrentPosition:(long long)currentPosition
-                                                   expectPosition:(long long)expectPosition;
-- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncCurrentPosition:(long long)currentPosition
-                                                    expectPosition:(long long)expectPosition;
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
 
 - (void)flush;
 - (void)destroy;
