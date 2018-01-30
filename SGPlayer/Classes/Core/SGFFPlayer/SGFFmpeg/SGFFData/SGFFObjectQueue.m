@@ -167,6 +167,10 @@
         long long newInterval = llabs(self.objects.firstObject.position - expectPosition);
         if (newInterval <= oldInterval)
         {
+            if (object)
+            {
+                [object unlock];
+            }
             object = [self getObject];
             currentPosition = object.position;
         }
