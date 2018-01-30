@@ -163,24 +163,13 @@
 - (__kindof id <SGFFObjectQueueItem>)getObjectCurrentPosition:(long long)currentPosition
                                                expectPosition:(long long)expectPosition
 {
-    while (self.objects.firstObject)
-    {
-        BOOL shouldDrop = self.objects.firstObject.position <= currentPosition && self.objects.firstObject.position < expectPosition;
-        if (shouldDrop)
-        {
-            id <SGFFObjectQueueItem> object = [self getObject];
-            [object unlock];
-        }
-        else
-        {
-            break;
-        }
-    }
+    NSLog(@"start : %f, %f", currentPosition / 12800.f, expectPosition / 12800.f);
     id <SGFFObjectQueueItem> object = nil;
     while (self.objects.firstObject)
     {
+        long long firstPosition = self.objects.firstObject.position;
         long long oldInterval = llabs(currentPosition - expectPosition);
-        long long newInterval = llabs(self.objects.firstObject.position - expectPosition);
+        long long newInterval = llabs(firstPosition - expectPosition);
         if (newInterval <= oldInterval)
         {
             if (object)
@@ -189,12 +178,20 @@
             }
             object = [self getObject];
             currentPosition = object.position;
+            NSLog(@"get   : %f", object.position / 12800.f);
+        }
+        else if (firstPosition < currentPosition && firstPosition < expectPosition)
+        {
+            id <SGFFObjectQueueItem> object = [self getObject];
+            NSLog(@"drop  : %f", object.position / 12800.f);
+            [object unlock];
         }
         else
         {
             break;
         }
     }
+    NSLog(@"end   : %f", object.position / 12800.f);
     return object;
 }
 
