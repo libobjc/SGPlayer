@@ -13,6 +13,7 @@
 #import "SGFFOutputManager.h"
 #import "SGFFAudioOutput.h"
 #import "SGFFVideoOutput.h"
+#import "SGFFOutputSync.h"
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
@@ -25,6 +26,7 @@
 @property (nonatomic, strong) SGFFStreamManager * streamManager;
 @property (nonatomic, strong) SGFFCodecManager * codecManager;
 @property (nonatomic, strong) SGFFOutputManager * outputManager;
+@property (nonatomic, strong) SGFFOutputSync * outputSync;
 
 
 @end
@@ -105,10 +107,13 @@
 
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
+    self.outputSync = [[SGFFOutputSync alloc] init];
     self.outputManager = [[SGFFOutputManager alloc] init];
     self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
     self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
+    self.outputSync.audioOutput = self.outputManager.audioOutput;
     SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
+    videoOutput.sync = self.outputSync;
     videoOutput.delegate = self;
     videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
     self.outputManager.videoOutput = videoOutput;

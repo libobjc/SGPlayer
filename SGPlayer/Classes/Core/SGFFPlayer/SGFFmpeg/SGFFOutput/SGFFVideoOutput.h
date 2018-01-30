@@ -8,6 +8,7 @@
 
 #import "SGFFOutputInternal.h"
 #import "SGPLFView.h"
+#import "SGFFOutputSync.h"
 
 @class SGFFVideoOutput;
 
@@ -20,6 +21,7 @@
 @interface SGFFVideoOutput : SGFFOutputInternal
 
 @property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;
+@property (nonatomic, weak) SGFFOutputSync * sync;
 
 - (SGPLFView *)displayView;
 
