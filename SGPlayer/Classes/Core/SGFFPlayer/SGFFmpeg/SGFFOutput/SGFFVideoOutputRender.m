@@ -47,6 +47,7 @@
         [self.videoFrame unlock];
     }
     self.videoFrame = videoFrame;
+    self.timebase = self.videoFrame.timebase;
     self.position = self.videoFrame.position;
     self.duration = self.videoFrame.duration;
     self.size = self.videoFrame.size;
@@ -60,6 +61,7 @@
         [self.videoFrame unlock];
         self.videoFrame = nil;
     }
+    self.timebase = SGFFTimebaseIdentity();
     self.position = 0;
     self.duration = 0;
     self.size = 0;
