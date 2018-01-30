@@ -106,10 +106,13 @@
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
     self.outputManager = [[SGFFOutputManager alloc] init];
+    self.outputManager.syncClock = [[SGFFSyncClock alloc] init];
     self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
+    self.outputManager.audioOutput.renderDelegate = self.outputManager.syncClock;
     self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
     SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
     videoOutput.delegate = self;
+    videoOutput.renderDelegate = self.outputManager.syncClock;
     videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
     self.outputManager.videoOutput = videoOutput;
     [self.source read];

@@ -96,6 +96,7 @@
 {
     if (self = [super init])
     {
+        self.currentTimebase = SGFFTimebaseIdentity();
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
     }
     return self;
@@ -124,7 +125,11 @@
 {
     long long position = self.currentPostPosition;
     long long duration = self.currentPostDuration;
-    long long interval = SGFFSecondsConvertToTimestamp(CACurrentMediaTime() - self.currentPostPositionTimsstamp, self.currentTimebase);
+    long long interval = 0;
+    if (self.currentPostPositionTimsstamp > 0)
+    {
+        interval = SGFFSecondsConvertToTimestamp(CACurrentMediaTime() - self.currentPostPositionTimsstamp, self.currentTimebase);
+    }
     SGFFTime time =
     {
         position + MIN(interval, duration),
@@ -259,6 +264,10 @@
         self.currentPostPosition = self.currentPreparePosition;
         self.currentPostDuration = self.currentPrepareDuration;
         self.currentPostPositionTimsstamp = CACurrentMediaTime();
+        if ([self.renderDelegate respondsToSelector:@selector(outputDidUpdateCurrentTime:)])
+        {
+            [self.renderDelegate outputDidUpdateCurrentTime:self];
+        }
     }
 }
 
