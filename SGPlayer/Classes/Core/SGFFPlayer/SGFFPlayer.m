@@ -9,7 +9,8 @@
 #import "SGFFPlayer.h"
 #import "SGFFSession.h"
 #import "SGFFPlayerView.h"
-#import "SGFFAudioPlayer.h"
+#import "SGFFAudioOutput.h"
+#import "SGFFVideoOutput.h"
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
@@ -20,7 +21,7 @@
 #import "SGPlayerAudioInterruptHandler.h"
 
 
-@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate>
+@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate, SGFFVideoOutputDelegate>
 
 @property (nonatomic, assign) NSInteger tagInternal;
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
@@ -69,8 +70,16 @@
         return;
     }
     self.contentURL = contentURL;
-    self.session = [[SGFFSession alloc] initWithContentURL:self.contentURL delegate:self];
-    self.session.view = self.playerView;
+    SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
+    configuration.audioOutput = [[SGFFAudioOutput alloc] init];
+    SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
+    videoOutput.delegate = self;
+    videoOutput.referenceOutput = configuration.audioOutput;
+    configuration.videoOutput = videoOutput;
+    [configuration.audioOutput play];
+    self.session = [SGFFSession sessionWithContentURL:self.contentURL
+                                             delegate:self
+                                        configuration:configuration];
     [self.session open];
 }
 
@@ -269,6 +278,15 @@
 - (void)session:(SGFFSession *)session didFailed:(NSError *)error
 {
     
+}
+
+
+#pragma mark - SGFFVideoOutputDelegate
+
+- (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output
+{
+    output.displayView.frame = self.playerView.bounds;
+    [self.playerView addSubview:output.displayView];
 }
 
 @end

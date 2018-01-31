@@ -10,30 +10,37 @@
 #import "SGFFFormatContext.h"
 #import "SGFFStreamManager.h"
 #import "SGFFCodecManager.h"
-#import "SGFFOutputManager.h"
-#import "SGFFAudioOutput.h"
-#import "SGFFVideoOutput.h"
-#import "SGFFOutputSync.h"
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate, SGFFVideoOutputDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
+@property (nonatomic, strong) SGFFSessionConfiguration * configuration;
+@property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
 @property (nonatomic, strong) SGFFStreamManager * streamManager;
 @property (nonatomic, strong) SGFFCodecManager * codecManager;
-@property (nonatomic, strong) SGFFOutputManager * outputManager;
-@property (nonatomic, strong) SGFFOutputSync * outputSync;
 
 
 @end
 
 @implementation SGFFSession
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSessionDelegate>)delegate
++ (instancetype)sessionWithContentURL:(NSURL *)contentURL
+                             delegate:(id <SGFFSessionDelegate>)delegate
+                        configuration:(SGFFSessionConfiguration *)configuration
+{
+    return [[self alloc] initWithContentURL:contentURL
+                                   delegate:delegate
+                              configuration:configuration];
+}
+
+- (instancetype)initWithContentURL:(NSURL *)contentURL
+                          delegate:(id <SGFFSessionDelegate>)delegate
+                     configuration:(SGFFSessionConfiguration *)configuration
 {
     if (self = [super init])
     {
@@ -43,9 +50,9 @@
             av_register_all();
             avformat_network_init();
         });
-        
         self.contentURL = contentURL;
         self.delegate = delegate;
+        self.configuration = configuration;
     }
     return self;
 }
@@ -107,18 +114,9 @@
 
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
 {
-    self.outputSync = [[SGFFOutputSync alloc] init];
-    self.outputManager = [[SGFFOutputManager alloc] init];
-    self.outputManager.audioOutput = [[SGFFAudioOutput alloc] init];
-    self.outputManager.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
-    self.outputSync.audioOutput = self.outputManager.audioOutput;
-    SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
-    videoOutput.sync = self.outputSync;
-    videoOutput.delegate = self;
-    videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
-    self.outputManager.videoOutput = videoOutput;
+    self.configuration.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
+    self.configuration.videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
     [self.source read];
-    [self.outputManager.audioOutput play];
 }
 
 - (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager
@@ -173,16 +171,15 @@
 
 - (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
-    return [self.outputManager renderWithFrame:frame];
-}
-
-
-#pragma mark - SGFFVideoOutputDelegate
-
-- (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output
-{
-    output.displayView.frame = self.view.bounds;
-    [self.view addSubview:output.displayView];
+    switch (frame.type)
+    {
+        case SGFFFrameTypeAudio:
+            return [self.configuration.audioOutput renderWithFrame:frame];
+        case SGFFFrameTypeVideo:
+            return [self.configuration.videoOutput renderWithFrame:frame];
+        default:
+            return nil;
+    }
 }
 
 

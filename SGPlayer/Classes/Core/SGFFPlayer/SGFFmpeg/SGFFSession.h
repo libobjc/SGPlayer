@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPLFView.h"
+#import "SGFFSessionConfiguration.h"
 
 @class SGFFSession;
 
@@ -19,10 +19,14 @@
 
 @interface SGFFSession : NSObject
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSessionDelegate>)delegate;
++ (instancetype)sessionWithContentURL:(NSURL *)contentURL
+                             delegate:(id <SGFFSessionDelegate>)delegate
+                        configuration:(SGFFSessionConfiguration *)configuration;
 
-@property (nonatomic, strong) SGPLFView * view;
-@property (nonatomic, copy) NSError * error;
+@property (nonatomic, copy, readonly) NSURL * contentURL;
+@property (nonatomic, weak, readonly) id <SGFFSessionDelegate> delegate;
+@property (nonatomic, strong, readonly) SGFFSessionConfiguration * configuration;
+@property (nonatomic, copy, readonly) NSError * error;
 
 - (void)open;
 - (void)close;
