@@ -27,4 +27,6 @@
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t ** data;
 
+@property (nonatomic, assign, readonly) AVFrame * coreFrame;
+
 @end

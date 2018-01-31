@@ -11,9 +11,7 @@
 
 @interface SGFFVideoFrame ()
 
-@property (nonatomic, assign) SGFFVideoFrameDataType dataType;
 @property (nonatomic, assign) AVFrame * coreFrame;
-@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
 SGFFObjectPoolItemInterface
 
@@ -138,15 +136,11 @@ SGFFFramePointerCoversionImplementation
 
 - (void)clear
 {
-    if (self.coreFrame)
+    if (_coreFrame)
     {
-        av_frame_unref(self.coreFrame);
+        av_frame_unref(_coreFrame);
     }
-    if (self.corePixelBuffer)
-    {
-        CFRelease(self.corePixelBuffer);
-        self.corePixelBuffer = nil;
-    }
+    self.corePixelBuffer = NULL;
     self.dataType = SGFFVideoFrameDataTypeUnknown;
     self.format = AV_PIX_FMT_NONE;
     self.pictureType = AV_PICTURE_TYPE_NONE;
@@ -171,29 +165,26 @@ SGFFFramePointerCoversionImplementation
     self.linesize = NULL;
 }
 
-- (void)updateDataType:(SGFFVideoFrameDataType)dataType
+- (void)setDataType:(SGFFVideoFrameDataType)dataType
 {
-    self.dataType = dataType;
-    if (self.dataType == SGFFVideoFrameDataTypeAVFrame)
+    _dataType = dataType;
+    if (_dataType == SGFFVideoFrameDataTypeAVFrame && !_coreFrame)
     {
-        if (!self.coreFrame)
-        {
-            self.coreFrame = av_frame_alloc();
-        }
+        _coreFrame = av_frame_alloc();
     }
 }
 
-- (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer
+- (void)setCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer
 {
     if (corePixelBuffer)
     {
         CVPixelBufferRetain(corePixelBuffer);
     }
-    if (self.corePixelBuffer)
+    if (_corePixelBuffer)
     {
-        CVPixelBufferRelease(self.corePixelBuffer);
+        CVPixelBufferRelease(_corePixelBuffer);
     }
-    self.corePixelBuffer = corePixelBuffer;
+    _corePixelBuffer = corePixelBuffer;
 }
 
 @end

@@ -69,8 +69,8 @@
                 if (imageBuffer)
                 {
                     SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
-                    [frame updateDataType:SGFFVideoFrameDataTypeCVPixelBuffer];
-                    [frame updateCorePixelBuffer:imageBuffer];
+                    frame.dataType = SGFFVideoFrameDataTypeCVPixelBuffer;
+                    frame.corePixelBuffer = imageBuffer;
                     frame.timebase = self.timebase;
                     [frame fillWithPacket:packet.corePacket];
                     result = @[frame];

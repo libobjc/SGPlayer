@@ -44,11 +44,8 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 @property (nonatomic, assign) uint8_t ** data;
 @property (nonatomic, assign) int * linesize;
 
-
-- (SGFFVideoFrameDataType)dataType;
-- (void)updateDataType:(SGFFVideoFrameDataType)dataType;
-- (AVFrame *)coreFrame;
-- (CVPixelBufferRef)corePixelBuffer;
-- (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer;
+@property (nonatomic, assign) SGFFVideoFrameDataType dataType;
+@property (nonatomic, assign, readonly) AVFrame * coreFrame;
+@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
 @end
