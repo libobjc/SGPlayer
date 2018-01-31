@@ -15,9 +15,14 @@
 @property (nonatomic, assign) AVFrame * coreFrame;
 @property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
+SGFFObjectPoolItemInterface
+
 @end
 
 @implementation SGFFVideoFrame
+
+SGFFObjectPoolItemLockingImplementation
+SGFFFramePointerCoversionImplementation
 
 - (SGFFFrameType)type
 {
@@ -46,6 +51,11 @@
         CVPixelBufferRelease(self.corePixelBuffer);
         self.corePixelBuffer = nil;
     }
+}
+
+- (void)fill
+{
+    [self fillWithPacket:NULL];
 }
 
 - (void)fillWithPacket:(AVPacket *)packet
@@ -128,7 +138,6 @@
 
 - (void)clear
 {
-    [super clear];
     if (self.coreFrame)
     {
         av_frame_unref(self.coreFrame);

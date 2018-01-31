@@ -6,8 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFrameInternal.h"
+#import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SGFFFrame.h"
 
 
 typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
@@ -18,10 +19,13 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 };
 
 
-@interface SGFFVideoFrame : SGFFFrameInternal
+@interface SGFFVideoFrame : NSObject <SGFFFrame>
 
-@property (nonatomic, assign, readonly) SGFFFrameType type;
 @property (nonatomic, assign) SGFFTimebase timebase;
+@property (nonatomic, assign) long long position;
+@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) long long size;
+
 @property (nonatomic, assign) enum AVPixelFormat format;
 @property (nonatomic, assign) enum AVPictureType pictureType;
 @property (nonatomic, assign) enum AVColorRange colorRange;
@@ -33,9 +37,6 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 @property (nonatomic, assign) int width;
 @property (nonatomic, assign) int height;
 @property (nonatomic, assign) BOOL keyFrame;
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
-@property (nonatomic, assign) long long size;
 @property (nonatomic, assign) long long bestEffortTimestamp;
 @property (nonatomic, assign) long long packetPosition;
 @property (nonatomic, assign) long long packetDuration;

@@ -12,9 +12,14 @@
 
 @property (nonatomic, assign) AVFrame * coreFrame;
 
+SGFFObjectPoolItemInterface
+
 @end
 
 @implementation SGFFAudioFrame
+
+SGFFObjectPoolItemLockingImplementation
+SGFFFramePointerCoversionImplementation
 
 - (SGFFFrameType)type
 {
@@ -41,6 +46,11 @@
     }
 }
 
+- (void)fill
+{
+    [self fillWithPacket:NULL];
+}
+
 - (void)fillWithPacket:(AVPacket *)packet
 {
     AVFrame * frame = self.coreFrame;
@@ -64,7 +74,6 @@
 
 - (void)clear
 {
-    [super clear];
     self.timebase = SGFFTimebaseIdentity();
     self.format = AV_SAMPLE_FMT_NONE;
     self.numberOfSamples = 0;

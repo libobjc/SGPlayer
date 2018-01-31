@@ -12,6 +12,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFObjectPool.h"
+#import "SGFFObjectQueue.h"
 #import "SGFFTime.h"
 #import "avformat.h"
 
@@ -29,7 +30,7 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 };
 
 
-@protocol SGFFFrame <NSObject, SGFFFrameUtil, SGFFObjectPoolItem>
+@protocol SGFFFrame <NSObject, SGFFObjectPoolItem, SGFFObjectQueueItem>
 
 - (SGFFFrameType)type;
 
@@ -38,18 +39,34 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 - (long long)duration;
 - (long long)size;
 
-@end
-
-
-@protocol SGFFFrameUtil <NSObject>
+- (SGFFAudioFrame *)audioFrame;
+- (SGFFVideoFrame *)videoFrame;
+- (AVFrame *)coreFrame;
 
 - (void)fill;
 - (void)fillWithPacket:(AVPacket *)packet;
-- (AVFrame *)coreFrame;
-- (SGFFAudioFrame *)audioFrame;
-- (SGFFVideoFrame *)videoFrame;
 
 @end
+
+
+#define SGFFFramePointerCoversionImplementation \
+- (SGFFAudioFrame *)audioFrame \
+{ \
+    if (self.type == SGFFFrameTypeAudio) \
+    { \
+        return (SGFFAudioFrame *)self; \
+    } \
+    return nil; \
+} \
+ \
+- (SGFFVideoFrame *)videoFrame \
+{ \
+    if (self.type == SGFFFrameTypeVideo) \
+    { \
+        return (SGFFVideoFrame *)self; \
+    } \
+    return nil; \
+} \
 
 
 #endif /* SGFFFrame_h */

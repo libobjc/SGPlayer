@@ -6,20 +6,21 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFrameInternal.h"
+#import <Foundation/Foundation.h>
+#import "SGFFFrame.h"
 
-@interface SGFFAudioFrame : SGFFFrameInternal
+@interface SGFFAudioFrame : NSObject <SGFFFrame>
 
-@property (nonatomic, assign, readonly) SGFFFrameType type;
 @property (nonatomic, assign) SGFFTimebase timebase;
+@property (nonatomic, assign) long long position;
+@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) long long size;
+
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) int numberOfSamples;
 @property (nonatomic, assign) int sampleRate;
 @property (nonatomic, assign) int numberOfChannels;
 @property (nonatomic, assign) long long channelLayout;
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
-@property (nonatomic, assign) long long size;
 @property (nonatomic, assign) long long bestEffortTimestamp;
 @property (nonatomic, assign) long long packetPosition;
 @property (nonatomic, assign) long long packetDuration;
