@@ -29,7 +29,7 @@
 - (__kindof id <SGFFFrame>)fetchReuseFrame
 {
     SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
-    frame.dataType = SGFFVideoFrameDataTypeAVFrame;
+    [frame updateDataType:SGFFVideoFrameDataTypeAVFrame];
     frame.timebase = self.timebase;
     return frame;
 }

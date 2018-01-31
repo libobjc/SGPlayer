@@ -21,9 +21,11 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 
 @interface SGFFVideoFrame : NSObject <SGFFFrame>
 
+- (SGFFVideoFrameDataType)dataType;
 - (AVFrame *)coreFrame;
-@property (nonatomic, assign) SGFFVideoFrameDataType dataType;
-@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
+- (CVPixelBufferRef)corePixelBuffer;
+- (void)updateDataType:(SGFFVideoFrameDataType)dataType;
+- (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer;
 
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) long long position;
