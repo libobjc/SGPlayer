@@ -15,6 +15,7 @@
 #import "SGFFObjectQueue.h"
 #import "SGFFTime.h"
 
+
 typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
 {
     SGFFOutputRenderTypeUnkonwn,

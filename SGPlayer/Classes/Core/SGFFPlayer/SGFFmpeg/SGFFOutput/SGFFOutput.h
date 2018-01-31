@@ -39,6 +39,7 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 
 @end
 
+
 @protocol SGFFOutputRenderSource <NSObject>
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output;
