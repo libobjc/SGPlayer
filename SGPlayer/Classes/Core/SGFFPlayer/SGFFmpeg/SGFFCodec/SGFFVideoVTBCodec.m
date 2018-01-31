@@ -53,6 +53,7 @@
 
 - (void)doFlushCodec
 {
+    [super doFlushCodec];
     [self destoryDecompressionSession];
     [self setupDecompressionSession];
 }

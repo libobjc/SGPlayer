@@ -161,7 +161,7 @@ static SGFFPacket * flushPacket;
     }
 }
 
-- (void)doFlushCodec {}
+- (void)doFlushCodec {[self.outputRenderQueue flush];}
 - (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error {return nil;}
 - (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
