@@ -11,6 +11,8 @@
 
 @interface SGFFAudioFrame : NSObject <SGFFFrame>
 
+- (AVFrame *)coreFrame;
+
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;
@@ -26,7 +28,5 @@
 @property (nonatomic, assign) long long packetDuration;
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t ** data;
-
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
 @end

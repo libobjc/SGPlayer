@@ -187,8 +187,7 @@ static int formatContextInterruptCallback(void * ctx)
     for (int i = 0; i < _formatContext->nb_streams; i++)
     {
         SGFFStream * stream = [[SGFFStream alloc] init];
-        stream.index = i;
-        stream.stream = _formatContext->streams[i];
+        stream.coreStream = _formatContext->streams[i];
         [streams addObject:stream];
     }
     self.streams = [streams copy];

@@ -11,7 +11,7 @@
 
 @interface SGFFVideoFrame ()
 
-@property (nonatomic, assign) AVFrame * coreFrame;
+@property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
 SGFFObjectPoolItemInterface
 

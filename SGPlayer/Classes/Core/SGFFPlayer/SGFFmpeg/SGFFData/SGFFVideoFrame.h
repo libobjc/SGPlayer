@@ -21,6 +21,10 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 
 @interface SGFFVideoFrame : NSObject <SGFFFrame>
 
+- (AVFrame *)coreFrame;
+@property (nonatomic, assign) SGFFVideoFrameDataType dataType;
+@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
+
 @property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;
@@ -43,9 +47,5 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t ** data;
 @property (nonatomic, assign) int * linesize;
-
-@property (nonatomic, assign) SGFFVideoFrameDataType dataType;
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
 @end

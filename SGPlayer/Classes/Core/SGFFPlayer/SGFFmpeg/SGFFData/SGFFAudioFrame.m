@@ -10,7 +10,7 @@
 
 @interface SGFFAudioFrame ()
 
-@property (nonatomic, assign) AVFrame * coreFrame;
+@property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
 SGFFObjectPoolItemInterface
 
@@ -31,7 +31,7 @@ SGFFFramePointerCoversionImplementation
     if (self = [super init])
     {
         NSLog(@"%s", __func__);
-        self.coreFrame = av_frame_alloc();
+        _coreFrame = av_frame_alloc();
     }
     return self;
 }
@@ -39,10 +39,10 @@ SGFFFramePointerCoversionImplementation
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    if (self.coreFrame)
+    if (_coreFrame)
     {
         av_frame_free(&_coreFrame);
-        self.coreFrame = nil;
+        _coreFrame = NULL;
     }
 }
 
@@ -88,9 +88,9 @@ SGFFFramePointerCoversionImplementation
     self.packetDuration = 0;
     self.packetSize = 0;
     self.data = nil;
-    if (self.coreFrame)
+    if (_coreFrame)
     {
-        av_frame_unref(self.coreFrame);
+        av_frame_unref(_coreFrame);
     }
 }
 

@@ -131,7 +131,7 @@
     {
         self.codecManager = [[SGFFCodecManager alloc] init];
     }
-    id <SGFFCodec> codec = [self.codecManager codecForStream:stream.stream];
+    id <SGFFCodec> codec = [self.codecManager codecForStream:stream.coreStream];
     codec.capacityDelegate = self;
     codec.processingDelegate = self;
     return codec;

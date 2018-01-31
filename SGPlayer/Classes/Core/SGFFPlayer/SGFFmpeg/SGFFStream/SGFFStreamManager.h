@@ -37,6 +37,7 @@
 - (void)open;
 - (void)flush;
 - (void)close;
+
 - (BOOL)putPacket:(SGFFPacket *)packet;
 
 - (long long)size;

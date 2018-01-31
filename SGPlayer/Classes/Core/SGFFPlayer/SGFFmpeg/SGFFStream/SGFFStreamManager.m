@@ -43,7 +43,7 @@
     NSMutableArray <SGFFStream *> * subtitleStreams = [NSMutableArray array];
     for (SGFFStream * obj in self.streams)
     {
-        switch (obj.stream->codecpar->codec_type)
+        switch (obj.coreStream->codecpar->codec_type)
         {
             case AVMEDIA_TYPE_VIDEO:
                 [videoStreams addObject:obj];
@@ -101,7 +101,7 @@
 {
     for (SGFFStream * obj in self.streams)
     {
-        if (obj.index == packet.streamIndex)
+        if (obj.coreStream->index == packet.corePacket->stream_index)
         {
             return [obj putPacket:packet];
         }
@@ -121,7 +121,7 @@
 
 - (BOOL)selectStream:(SGFFStream *)stream
 {
-    switch (stream.stream->codecpar->codec_type)
+    switch (stream.coreStream->codecpar->codec_type)
     {
         case AVMEDIA_TYPE_VIDEO:
             return [self selectStream:stream ref:&_currentAudioStream];

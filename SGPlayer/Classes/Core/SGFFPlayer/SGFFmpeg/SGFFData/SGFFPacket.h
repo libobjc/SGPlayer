@@ -13,13 +13,12 @@
 
 @interface SGFFPacket : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
-@property (nonatomic, assign) int streamIndex;
+- (AVPacket *)corePacket;
 
 @property (nonatomic, assign) long long position;
 @property (nonatomic, assign) long long duration;
 @property (nonatomic, assign) long long size;
 
 - (void)fill;
-- (AVPacket *)corePacket;
 
 @end
