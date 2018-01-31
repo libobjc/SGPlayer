@@ -19,8 +19,8 @@
 
 @interface SGFFVideoOutput : SGFFOutputInternal
 
-@property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;
 @property (nonatomic, weak) id <SGFFOutput> referenceOutput;
+@property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;
 
 - (SGPLFView *)displayView;
 

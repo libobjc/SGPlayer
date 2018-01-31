@@ -44,7 +44,7 @@
     {
         self.coreLock = [[NSLock alloc] init];
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.glView = [[SGGLView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
             self.glView.delegate = self;
             [self.delegate videoOutputDidChangeDisplayView:self];
             SGWeakSelf
@@ -67,6 +67,10 @@
         self.currentRender = nil;
         [self.coreLock unlock];
     }
+    SGGLView * glView = self.glView;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [glView removeFromSuperview];
+    });
 }
 
 - (SGPLFView *)displayView
