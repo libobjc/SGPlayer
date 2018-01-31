@@ -39,15 +39,15 @@ SGFFFramePointerCoversionImplementation
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    if (self.coreFrame)
+    if (_coreFrame)
     {
         av_frame_free(&_coreFrame);
-        self.coreFrame = nil;
+        _coreFrame = NULL;
     }
-    if (self.corePixelBuffer)
+    if (_corePixelBuffer)
     {
-        CVPixelBufferRelease(self.corePixelBuffer);
-        self.corePixelBuffer = nil;
+        CVPixelBufferRelease(_corePixelBuffer);
+        _corePixelBuffer = NULL;
     }
 }
 
@@ -140,7 +140,11 @@ SGFFFramePointerCoversionImplementation
     {
         av_frame_unref(_coreFrame);
     }
-    self.corePixelBuffer = NULL;
+    if (_corePixelBuffer)
+    {
+        CVPixelBufferRelease(_corePixelBuffer);
+        _corePixelBuffer = NULL;
+    }
     self.dataType = SGFFVideoFrameDataTypeUnknown;
     self.format = AV_PIX_FMT_NONE;
     self.pictureType = AV_PICTURE_TYPE_NONE;
@@ -183,6 +187,7 @@ SGFFFramePointerCoversionImplementation
     if (_corePixelBuffer)
     {
         CVPixelBufferRelease(_corePixelBuffer);
+        _corePixelBuffer = NULL;
     }
     _corePixelBuffer = corePixelBuffer;
 }
