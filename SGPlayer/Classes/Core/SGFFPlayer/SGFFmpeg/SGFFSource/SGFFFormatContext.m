@@ -49,6 +49,7 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
 @property (nonatomic, strong) NSCondition * readCondition;
 @property (nonatomic, assign) long long seekingTimestamp;
+@property (nonatomic, copy) void(^seekingCompletionHandler)(BOOL);
 
 @end
 
@@ -135,6 +136,7 @@ static int formatContextInterruptCallback(void * ctx)
     if (self.state == SGFFSourceStatePaused)
     {
         self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
         [self.readCondition lock];
         [self.readCondition signal];
@@ -143,11 +145,13 @@ static int formatContextInterruptCallback(void * ctx)
     else if (self.state == SGFFSourceStateReading)
     {
         self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
     }
     else if (self.state == SGFFSourceStateFinished)
     {
         self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
         [self startReadThread];
     }
@@ -289,11 +293,16 @@ static int formatContextInterruptCallback(void * ctx)
         else if (self.state == SGFFSourceStateSeeking)
         {
             av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-            self.seekingTimestamp = 0;
             for (SGFFStream * obj in self.streams)
             {
                 [obj flush];
             }
+            if (self.seekingCompletionHandler)
+            {
+                self.seekingCompletionHandler(YES);
+            }
+            self.seekingTimestamp = 0;
+            self.seekingCompletionHandler = nil;
             self.state = SGFFSourceStateReading;
             continue;
         }

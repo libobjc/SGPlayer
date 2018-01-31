@@ -45,6 +45,21 @@
     return render;
 }
 
+- (SGFFTime)currentTime
+{
+    SGFFTime time =
+    {
+        self.currentRender.position,
+        self.currentRender.timebase,
+    };
+    return time;
+}
+
+- (void)flush
+{
+    
+}
+
 - (instancetype)init
 {
     if (self = [super init])
@@ -78,16 +93,6 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [glView removeFromSuperview];
     });
-}
-
-- (SGFFTime)currentTime
-{
-    SGFFTime time =
-    {
-        self.currentRender.position,
-        self.currentRender.timebase,
-    };
-    return time;
 }
 
 - (SGPLFView *)displayView

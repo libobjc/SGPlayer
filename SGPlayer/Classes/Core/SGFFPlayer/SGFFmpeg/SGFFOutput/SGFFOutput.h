@@ -37,6 +37,8 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
 - (SGFFTime)currentTime;
 
+- (void)flush;
+
 @end
 
 

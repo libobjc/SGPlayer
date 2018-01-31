@@ -75,7 +75,10 @@
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
+    SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
+        SGStrongSelf
+        [strongSelf.configuration.videoOutput flush];
         if (completionHandler)
         {
             completionHandler(success);

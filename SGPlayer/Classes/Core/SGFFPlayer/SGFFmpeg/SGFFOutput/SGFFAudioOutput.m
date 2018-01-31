@@ -99,6 +99,28 @@
     return render;
 }
 
+- (SGFFTime)currentTime
+{
+    long long position = self.currentPostPosition;
+    long long duration = self.currentPostDuration;
+    long long interval = 0;
+    if (self.currentPostPositionTimsstamp > 0)
+    {
+        interval = SGFFSecondsConvertToTimestamp(CACurrentMediaTime() - self.currentPostPositionTimsstamp, self.currentTimebase);
+    }
+    SGFFTime time =
+    {
+        position + MIN(interval, duration),
+        self.currentTimebase,
+    };
+    return time;
+}
+
+- (void)flush
+{
+    
+}
+
 - (instancetype)init
 {
     if (self = [super init])
@@ -126,23 +148,6 @@
 - (void)pause
 {
     [self.audioPlayer pause];
-}
-
-- (SGFFTime)currentTime
-{
-    long long position = self.currentPostPosition;
-    long long duration = self.currentPostDuration;
-    long long interval = 0;
-    if (self.currentPostPositionTimsstamp > 0)
-    {
-        interval = SGFFSecondsConvertToTimestamp(CACurrentMediaTime() - self.currentPostPositionTimsstamp, self.currentTimebase);
-    }
-    SGFFTime time =
-    {
-        position + MIN(interval, duration),
-        self.currentTimebase,
-    };
-    return time;
 }
 
 - (void)setupSwrContextIfNeed
