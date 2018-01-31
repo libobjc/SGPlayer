@@ -57,7 +57,13 @@
 
 - (void)flush
 {
-    
+    [self.coreLock lock];
+    if (self.currentRender)
+    {
+        [self.currentRender unlock];
+        self.currentRender = nil;
+    }
+    [self.coreLock unlock];
 }
 
 - (instancetype)init
@@ -82,13 +88,13 @@
 - (void)dealloc
 {
     [self.displayLink invalidate];
+    [self.coreLock lock];
     if (self.currentRender)
     {
-        [self.coreLock lock];
         [self.currentRender unlock];
         self.currentRender = nil;
-        [self.coreLock unlock];
     }
+    [self.coreLock unlock];
     SGGLView * glView = self.glView;
     dispatch_async(dispatch_get_main_queue(), ^{
         [glView removeFromSuperview];
@@ -102,6 +108,7 @@
 
 - (void)displayLinkHandler
 {
+    [self.coreLock lock];
     SGFFVideoOutputRender * render = nil;
     if (self.currentRender)
     {
@@ -122,15 +129,14 @@
     }
     if (render)
     {
-        [self.coreLock lock];
         if (self.currentRender != render)
         {
             [self.currentRender unlock];
             self.currentRender = render;
         }
-        [self.coreLock unlock];
         [self.glView display];
     }
+    [self.coreLock unlock];
 }
 
 - (void)setupOpenGLIfNeed
