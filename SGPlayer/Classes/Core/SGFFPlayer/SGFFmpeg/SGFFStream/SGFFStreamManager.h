@@ -14,9 +14,9 @@
 
 @protocol SGFFStreamManagerDelegate <NSObject>
 
+- (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream;
 - (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager;
 - (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager;
-- (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream;
 
 @end
 
