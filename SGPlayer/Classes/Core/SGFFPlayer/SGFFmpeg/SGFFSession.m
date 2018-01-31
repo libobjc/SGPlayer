@@ -8,14 +8,13 @@
 
 #import "SGFFSession.h"
 #import "SGFFFormatContext.h"
-#import "SGFFStreamManager.h"
 #import "SGFFAudioAVCodec.h"
 #import "SGFFVideoAVCodec.h"
 #import "SGFFVideoVTBCodec.h"
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFStreamManagerDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -23,7 +22,6 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
-@property (nonatomic, strong) SGFFStreamManager * streamManager;
 
 @end
 
@@ -66,7 +64,6 @@
 - (void)close
 {
     [self.source close];
-    [self.streamManager close];
 }
 
 - (void)seekToTime:(NSTimeInterval)timestamp
@@ -87,32 +84,7 @@
 
 #pragma mark - SGFFSourceDelegate
 
-- (void)sourceDidOpened:(id <SGFFSource>)source
-{
-    self.streamManager = [[SGFFStreamManager alloc] initWithStreams:self.source.streams delegate:self];
-    [self.streamManager open];
-}
-
-- (void)sourceDidFailed:(id <SGFFSource>)source
-{
-    self.error = source.error;
-    [self callbackForError];
-}
-
-- (void)sourceDidFinishedSeeking:(id <SGFFSource>)source
-{
-    [self.streamManager flush];
-}
-
-- (void)source:(id <SGFFSource>)source didOutputPacket:(SGFFPacket *)packet
-{
-    [self.streamManager putPacket:packet];
-}
-
-
-#pragma mark - SGFFStreamManagerDelegate
-
-- (id <SGFFCodec>)streamManager:(SGFFStreamManager *)streamManager codecForStream:(SGFFStream *)stream
+- (id <SGFFCodec>)source:(id <SGFFSource>)source codecForStream:(SGFFStream *)stream
 {
     id <SGFFCodec> codec = nil;
     switch (stream.coreStream->codecpar->codec_type)
@@ -160,16 +132,16 @@
     return codec;
 }
 
-- (void)streamManagerDidOpened:(SGFFStreamManager *)streamManager
+- (void)sourceDidOpened:(id <SGFFSource>)source
 {
-    self.configuration.audioOutput.renderSource = self.streamManager.currentAudioStream.codec;
-    self.configuration.videoOutput.renderSource = self.streamManager.currentVideoStream.codec;
+    self.configuration.audioOutput.renderSource = self.source.currentAudioStream.codec;
+    self.configuration.videoOutput.renderSource = self.source.currentVideoStream.codec;
     [self.source read];
 }
 
-- (void)streamManagerDidFailed:(SGFFStreamManager *)streamManager
+- (void)sourceDidFailed:(id <SGFFSource>)source
 {
-    self.error = streamManager.error;
+    self.error = source.error;
     [self callbackForError];
 }
 
@@ -179,11 +151,11 @@
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
 {
     BOOL shouldPaused = NO;
-    if (self.streamManager.size > 15 * 1024 * 1024)
+    if (self.source.size > 15 * 1024 * 1024)
     {
         shouldPaused = YES;
     }
-    else if (codec == self.streamManager.currentAudioStream.codec)
+    else if (codec == self.source.currentAudioStream.codec)
     {
         if (SGFFTimestampConvertToSeconds(codec.duration, codec.timebase) > 10)
         {

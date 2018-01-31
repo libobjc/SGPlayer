@@ -37,11 +37,20 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 
 - (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate;
 
+@property (nonatomic, copy, readonly) NSURL * contentURL;
+@property (nonatomic, weak, readonly) id <SGFFSourceDelegate> delegate;
+
 - (SGFFSourceState)state;
-- (NSURL *)contentURL;
-- (id <SGFFSourceDelegate>)delegate;
+- (long long)size;
 - (NSError *)error;
+
 - (NSArray <SGFFStream *> *)streams;
+- (NSArray <SGFFStream *> *)audioStreams;
+- (NSArray <SGFFStream *> *)videoStreams;
+- (NSArray <SGFFStream *> *)subtitleStreams;
+- (SGFFStream *)currentAudioStream;
+- (SGFFStream *)currentVideoStream;
+- (SGFFStream *)currentSubtitleStream;
 
 - (void)open;
 - (void)read;
@@ -49,17 +58,16 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)resume;
 - (void)close;
 
-- (void)seekToTime:(NSTimeInterval)timestamp;
+- (void)seekToTime:(NSTimeInterval)time;
 
 @end
 
 
 @protocol SGFFSourceDelegate <NSObject>
 
+- (id <SGFFCodec>)source:(id <SGFFSource>)source codecForStream:(SGFFStream *)stream;
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
-- (void)sourceDidFinishedSeeking:(id <SGFFSource>)source;
-- (void)source:(id <SGFFSource>)source didOutputPacket:(SGFFPacket *)packet;
 
 @end
 
