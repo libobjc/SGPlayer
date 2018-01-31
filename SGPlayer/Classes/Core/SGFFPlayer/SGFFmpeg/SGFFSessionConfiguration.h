@@ -7,11 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGFFSource.h"
 #import "SGFFCodec.h"
 #import "SGFFFilter.h"
 #import "SGFFOutput.h"
 
 @interface SGFFSessionConfiguration : NSObject
+
+@property (nonatomic, strong) id <SGFFSource> source;
 
 @property (nonatomic, assign) BOOL enableVideoToolBox;
 @property (nonatomic, strong) id <SGFFCodec> customAudioCodec;

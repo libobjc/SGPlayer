@@ -31,6 +31,6 @@
 - (void)open;
 - (void)close;
 
-- (void)seekToTime:(NSTimeInterval)timestamp;
+- (void)seekToTime:(NSTimeInterval)time;
 
 @end

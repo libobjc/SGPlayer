@@ -57,7 +57,14 @@
 
 - (void)open
 {
-    self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
+    if (self.configuration.source)
+    {
+        self.source = self.configuration.source;
+    }
+    else
+    {
+        self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
+    }
     [self.source open];
 }
 
@@ -66,9 +73,9 @@
     [self.source close];
 }
 
-- (void)seekToTime:(NSTimeInterval)timestamp
+- (void)seekToTime:(NSTimeInterval)time
 {
-    [self.source seekToTime:timestamp];
+    [self.source seekToTime:time];
 }
 
 
@@ -76,7 +83,8 @@
 
 - (void)callbackForError
 {
-    if ([self.delegate respondsToSelector:@selector(session:didFailed:)]) {
+    if ([self.delegate respondsToSelector:@selector(session:didFailed:)])
+    {
         [self.delegate session:self didFailed:self.error];
     }
 }
@@ -155,9 +163,18 @@
     {
         shouldPaused = YES;
     }
-    else if (codec == self.source.currentAudioStream.codec)
+    else
     {
-        if (SGFFTimestampConvertToSeconds(codec.duration, codec.timebase) > 10)
+        id <SGFFCodec> mainCodec = nil;
+        if (self.source.currentAudioStream)
+        {
+            mainCodec = self.source.currentAudioStream.codec;
+        }
+        else if (self.source.currentVideoStream)
+        {
+            mainCodec = self.source.currentVideoStream.codec;
+        }
+        if (mainCodec && SGFFTimestampConvertToSeconds(mainCodec.duration, mainCodec.timebase) > 10)
         {
             shouldPaused = YES;
         }
