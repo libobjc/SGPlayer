@@ -12,12 +12,10 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
-#import "SGFFSync.h"
 #import "SGFFOutputRender.h"
 
 
 @protocol SGFFOutput;
-@protocol SGFFOutputRenderDelegate;
 @protocol SGFFOutputRenderSource;
 
 
@@ -27,9 +25,6 @@
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
 - (SGFFTime)currentTime;
-
-- (void)play;
-- (void)pause;
 
 @end
 

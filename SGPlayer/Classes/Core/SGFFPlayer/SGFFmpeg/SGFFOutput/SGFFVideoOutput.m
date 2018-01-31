@@ -31,6 +31,8 @@
 
 @implementation SGFFVideoOutput
 
+@synthesize renderSource = _renderSource;
+
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
@@ -71,6 +73,16 @@
     dispatch_async(dispatch_get_main_queue(), ^{
         [glView removeFromSuperview];
     });
+}
+
+- (SGFFTime)currentTime
+{
+    SGFFTime time =
+    {
+        self.currentRender.position,
+        self.currentRender.timebase,
+    };
+    return time;
 }
 
 - (SGPLFView *)displayView

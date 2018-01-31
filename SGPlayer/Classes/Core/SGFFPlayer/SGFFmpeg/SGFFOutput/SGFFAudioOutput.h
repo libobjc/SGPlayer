@@ -6,8 +6,12 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFOutputInternal.h"
+#import <Foundation/Foundation.h>
+#import "SGFFOutput.h"
 
-@interface SGFFAudioOutput : SGFFOutputInternal
+@interface SGFFAudioOutput : NSObject <SGFFOutput>
+
+- (void)play;
+- (void)pause;
 
 @end

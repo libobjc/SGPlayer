@@ -6,7 +6,8 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFOutputInternal.h"
+#import <Foundation/Foundation.h>
+#import "SGFFOutput.h"
 #import "SGPLFView.h"
 
 @class SGFFVideoOutput;
@@ -17,7 +18,7 @@
 
 @end
 
-@interface SGFFVideoOutput : SGFFOutputInternal
+@interface SGFFVideoOutput : NSObject <SGFFOutput>
 
 @property (nonatomic, weak) id <SGFFOutput> referenceOutput;
 @property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;

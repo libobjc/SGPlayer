@@ -46,6 +46,8 @@
 
 @implementation SGFFAudioOutput
 
+@synthesize renderSource = _renderSource;
+
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFAudioFrame * audioFrame = frame.audioFrame;

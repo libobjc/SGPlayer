@@ -35,6 +35,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGFFSession * session;
+@property (nonatomic, strong) SGFFAudioOutput * audioOutput;
+@property (nonatomic, strong) SGFFVideoOutput * videoOutput;
 @property (nonatomic, strong) SGFFPlayerView * playerView;
 
 @end
@@ -69,14 +71,16 @@
     if (contentURL == nil) {
         return;
     }
+    self.audioOutput = [[SGFFAudioOutput alloc] init];
+    [self.audioOutput play];
+    self.videoOutput = [[SGFFVideoOutput alloc] init];
+    self.videoOutput.delegate = self;
+    self.videoOutput.referenceOutput = self.audioOutput;
+    
     self.contentURL = contentURL;
     SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
-    configuration.audioOutput = [[SGFFAudioOutput alloc] init];
-    SGFFVideoOutput * videoOutput = [[SGFFVideoOutput alloc] init];
-    videoOutput.delegate = self;
-    videoOutput.referenceOutput = configuration.audioOutput;
-    configuration.videoOutput = videoOutput;
-    [configuration.audioOutput play];
+    configuration.audioOutput = self.audioOutput;
+    configuration.videoOutput = self.videoOutput;
     self.session = [SGFFSession sessionWithContentURL:self.contentURL
                                              delegate:self
                                         configuration:configuration];
@@ -285,8 +289,8 @@
 
 - (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output
 {
-    output.displayView.frame = self.playerView.bounds;
-    [self.playerView addSubview:output.displayView];
+    self.videoOutput.displayView.frame = self.playerView.bounds;
+    [self.playerView addSubview:self.videoOutput.displayView];
 }
 
 @end
