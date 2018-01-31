@@ -42,12 +42,13 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 @protocol SGFFCodec <NSObject, SGFFOutputRenderSource>
 
-+ (SGFFCodecType)type;
+- (SGFFCodecType)type;
 
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
 @property (nonatomic, weak) id <SGFFCodecCapacityDelegate> capacityDelegate;
 @property (nonatomic, weak) id <SGFFCodecProcessingDelegate> processingDelegate;
+
 - (SGFFCodecState)state;
 
 - (SGFFTimebase)timebase;
@@ -57,6 +58,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 - (BOOL)open;
 - (void)flush;
 - (void)close;
+
 - (BOOL)putPacket:(SGFFPacket *)packet;
 
 @end

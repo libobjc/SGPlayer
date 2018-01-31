@@ -16,7 +16,7 @@
 
 @implementation SGFFAudioAVCodec
 
-+ (SGFFCodecType)type
+- (SGFFCodecType)type
 {
     return SGFFCodecTypeAudio;
 }

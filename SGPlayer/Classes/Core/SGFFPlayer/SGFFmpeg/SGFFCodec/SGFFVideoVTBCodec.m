@@ -24,7 +24,7 @@
 
 @implementation SGFFVideoVTBCodec
 
-+ (SGFFCodecType)type
+- (SGFFCodecType)type
 {
     return SGFFCodecTypeVideo;
 }

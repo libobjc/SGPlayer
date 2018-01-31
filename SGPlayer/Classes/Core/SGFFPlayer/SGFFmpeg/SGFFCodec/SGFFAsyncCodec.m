@@ -27,7 +27,7 @@
 @synthesize capacityDelegate = _capacityDelegate;
 @synthesize processingDelegate = _processingDelegate;
 
-+ (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
+- (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
 
 static SGFFPacket * flushPacket;
 

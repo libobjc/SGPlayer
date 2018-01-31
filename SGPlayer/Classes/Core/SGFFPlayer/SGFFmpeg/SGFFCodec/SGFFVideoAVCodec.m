@@ -16,7 +16,7 @@
 
 @implementation SGFFVideoAVCodec
 
-+ (SGFFCodecType)type
+- (SGFFCodecType)type
 {
     return SGFFCodecTypeVideo;
 }
