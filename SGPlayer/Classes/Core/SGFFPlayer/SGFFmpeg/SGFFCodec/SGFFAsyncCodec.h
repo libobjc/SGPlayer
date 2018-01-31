@@ -12,14 +12,9 @@
 
 @interface SGFFAsyncCodec : NSObject <SGFFCodec>
 
-@property (nonatomic, assign) SGFFTimebase timebase;
-
 @property (nonatomic, strong, readonly) SGFFObjectQueue * packetQueue;
 @property (nonatomic, strong, readonly) SGFFObjectQueue * outputRenderQueue;
 @property (nonatomic, assign) NSInteger outputRenderQueueMaxCount;               // Default is 5.
-
-@property (nonatomic, strong, readonly) NSOperationQueue * operationQueue;
-@property (nonatomic, strong, readonly) NSInvocationOperation * decodeOperation;
 
 - (void)doFlushCodec;
 - (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError **)error;

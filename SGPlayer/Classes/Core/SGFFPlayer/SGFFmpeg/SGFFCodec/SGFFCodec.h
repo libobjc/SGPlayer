@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (SGFFCodecType)type;
 
+@property (nonatomic, assign) SGFFTimebase timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
 @property (nonatomic, weak) id <SGFFCodecCapacityDelegate> capacityDelegate;
@@ -51,7 +52,6 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (SGFFCodecState)state;
 
-- (SGFFTimebase)timebase;
 - (long long)duration;
 - (long long)size;
 

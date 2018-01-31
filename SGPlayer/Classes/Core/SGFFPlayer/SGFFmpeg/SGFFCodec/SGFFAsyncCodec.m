@@ -23,6 +23,7 @@
 
 @implementation SGFFAsyncCodec
 
+@synthesize timebase = _timebase;
 @synthesize codecpar = _codecpar;
 @synthesize capacityDelegate = _capacityDelegate;
 @synthesize processingDelegate = _processingDelegate;
