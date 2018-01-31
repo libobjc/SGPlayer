@@ -36,7 +36,7 @@
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
-    [render updateVideoFrame:frame.videoFrame];
+    [render updateCoreVideoFrame:frame.videoFrame];
     return render;
 }
 
@@ -154,8 +154,8 @@
     [self setupOpenGLIfNeed];
     
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.videoFrame.format)];
-    SGGLSize renderSize = {render.videoFrame.width, render.videoFrame.height};
+    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.coreVideoFrame.format)];
+    SGGLSize renderSize = {render.coreVideoFrame.width, render.coreVideoFrame.height};
     
     if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
     {
@@ -167,13 +167,13 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-        if (render.videoFrame.corePixelBuffer)
+        if (render.coreVideoFrame.corePixelBuffer)
         {
-            success = [self.textureUploader uploadWithCVPixelBuffer:render.videoFrame.corePixelBuffer];
+            success = [self.textureUploader uploadWithCVPixelBuffer:render.coreVideoFrame.corePixelBuffer];
         }
-        else if (render.videoFrame.coreFrame)
+        else if (render.coreVideoFrame.coreFrame)
         {
-            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.videoFrame.format) data:render.videoFrame.data size:renderSize];
+            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.coreVideoFrame.format) data:render.coreVideoFrame.data size:renderSize];
         }
         if (!success)
         {

@@ -10,16 +10,15 @@
 
 @interface SGFFVideoOutputRender ()
 
-@property (nonatomic, strong) SGFFVideoFrame * videoFrame;
+@property (nonatomic, strong) SGFFVideoFrame * coreVideoFrame;
+
+SGFFObjectPoolItemInterface
 
 @end
 
 @implementation SGFFVideoOutputRender
 
-- (SGFFOutputRenderType)type
-{
-    return SGFFOutputRenderTypeVideo;
-}
+SGFFObjectPoolItemLockingImplementation
 
 - (instancetype)init
 {
@@ -36,30 +35,29 @@
     [self clear];
 }
 
-- (void)updateVideoFrame:(SGFFVideoFrame *)videoFrame
+- (void)updateCoreVideoFrame:(SGFFVideoFrame *)coreVideoFrame
 {
-    if (videoFrame)
+    if (coreVideoFrame)
     {
-        [videoFrame lock];
+        [coreVideoFrame lock];
     }
-    if (self.videoFrame)
+    if (self.coreVideoFrame)
     {
-        [self.videoFrame unlock];
+        [self.coreVideoFrame unlock];
     }
-    self.videoFrame = videoFrame;
-    self.timebase = self.videoFrame.timebase;
-    self.position = self.videoFrame.position;
-    self.duration = self.videoFrame.duration;
-    self.size = self.videoFrame.size;
+    self.coreVideoFrame = coreVideoFrame;
+    self.timebase = self.coreVideoFrame.timebase;
+    self.position = self.coreVideoFrame.position;
+    self.duration = self.coreVideoFrame.duration;
+    self.size = self.coreVideoFrame.size;
 }
 
 - (void)clear
 {
-    [super clear];
-    if (self.videoFrame)
+    if (self.coreVideoFrame)
     {
-        [self.videoFrame unlock];
-        self.videoFrame = nil;
+        [self.coreVideoFrame unlock];
+        self.coreVideoFrame = nil;
     }
     self.timebase = SGFFTimebaseIdentity();
     self.position = 0;

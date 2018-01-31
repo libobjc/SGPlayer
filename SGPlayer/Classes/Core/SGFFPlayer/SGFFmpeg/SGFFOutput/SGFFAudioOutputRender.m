@@ -16,14 +16,13 @@
     int internalDataMallocSize[SGFFAudioOutputRenderMaxChannelCount];
 }
 
+SGFFObjectPoolItemInterface
+
 @end
 
 @implementation SGFFAudioOutputRender
 
-- (SGFFOutputRenderType)type
-{
-    return SGFFOutputRenderTypeAudio;
-}
+SGFFObjectPoolItemLockingImplementation
 
 - (instancetype)init
 {
@@ -68,7 +67,6 @@
 
 - (void)clear
 {
-    [super clear];
     for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
     {
         internalLinesize[i] = 0;
