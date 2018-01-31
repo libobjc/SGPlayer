@@ -858,6 +858,9 @@
 		9CB62C022021950200A9AD6B /* SGFFSessionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */; };
 		9CB62C032021950200A9AD6B /* SGFFSessionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */; };
 		9CB62C042021950200A9AD6B /* SGFFSessionConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */; };
+		9CB62C072021BF6600A9AD6B /* SGFFFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CB62C062021BF6600A9AD6B /* SGFFFilter.h */; };
+		9CB62C082021BF6600A9AD6B /* SGFFFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CB62C062021BF6600A9AD6B /* SGFFFilter.h */; };
+		9CB62C092021BF6600A9AD6B /* SGFFFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CB62C062021BF6600A9AD6B /* SGFFFilter.h */; };
 		9CCC5F0E200C9B7100E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0D200C9B7000E833DA /* UIKit.framework */; };
 		9CCC5F10200C9B7700E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F0F200C9B7700E833DA /* Foundation.framework */; };
 		9CCC5F12200C9B7B00E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */; };
@@ -1364,6 +1367,7 @@
 		9CB1F09E20178B0D00102A69 /* SGPLFGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFGLView.h; sourceTree = "<group>"; };
 		9CB62BFD2021950200A9AD6B /* SGFFSessionConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFSessionConfiguration.h; sourceTree = "<group>"; };
 		9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFSessionConfiguration.m; sourceTree = "<group>"; };
+		9CB62C062021BF6600A9AD6B /* SGFFFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFFilter.h; sourceTree = "<group>"; };
 		9CCC5F0D200C9B7000E833DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F0F200C9B7700E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F11200C9B7B00E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS11.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -1734,6 +1738,7 @@
 				9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */,
 				9CF15DF420119FBE00585326 /* SGFFOutput */,
 				9CF15DF320119D0300585326 /* SGFFData */,
+				9CB62C052021BF5000A9AD6B /* SGFFFilter */,
 				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
 				9C389AAC20103DCA003259FF /* SGFFStream */,
 				9C8D4E69200E101D00ED8A58 /* SGFFCodec */,
@@ -2043,6 +2048,14 @@
 				9C4792BD1E713B4900AD4289 /* SGDisplay */,
 			);
 			path = SGFFDiscard;
+			sourceTree = "<group>";
+		};
+		9CB62C052021BF5000A9AD6B /* SGFFFilter */ = {
+			isa = PBXGroup;
+			children = (
+				9CB62C062021BF6600A9AD6B /* SGFFFilter.h */,
+			);
+			path = SGFFFilter;
 			sourceTree = "<group>";
 		};
 		9CBD0BA7201625010094CFC7 /* SGFFAudioPlayer */ = {
@@ -2370,6 +2383,7 @@
 				9C2534901FAB151500BBFA5C /* vda.h in Headers */,
 				9C25352C1FAB151500BBFA5C /* imgutils.h in Headers */,
 				9C5AB68E1E88B2AD0021F460 /* SGGLViewController.h in Headers */,
+				9CB62C072021BF6600A9AD6B /* SGFFFilter.h in Headers */,
 				9C1D222A201B1DA2005147FB /* SGFFDefineMap.h in Headers */,
 				9C2534F01FAB151500BBFA5C /* cpu.h in Headers */,
 				9CE68406200DA3BB007BD834 /* SGPlayerUtil.h in Headers */,
@@ -2628,6 +2642,7 @@
 				9CF52CF8200F45D700950B81 /* SGFFStream.h in Headers */,
 				9C2535391FAB151500BBFA5C /* log.h in Headers */,
 				9C2536111FAB151500BBFA5C /* SGFFFrameQueue2.h in Headers */,
+				9CB62C082021BF6600A9AD6B /* SGFFFilter.h in Headers */,
 				9CE6F55C2004D97D00D1F4C8 /* SGPLFGLContext.h in Headers */,
 				9C2535691FAB151500BBFA5C /* rc4.h in Headers */,
 				9C25347C1FAB151500BBFA5C /* dirac.h in Headers */,
@@ -2936,6 +2951,7 @@
 				9C1D220F201AC83F005147FB /* SGGLModelPool.h in Headers */,
 				9C2535041FAB151500BBFA5C /* error.h in Headers */,
 				9C2534C81FAB151500BBFA5C /* audio_fifo.h in Headers */,
+				9CB62C092021BF6600A9AD6B /* SGFFFilter.h in Headers */,
 				9C2535311FAB151500BBFA5C /* intfloat.h in Headers */,
 				9C4792F71E713B4900AD4289 /* SGGLVRModel.h in Headers */,
 				9C25350A1FAB151500BBFA5C /* ffversion.h in Headers */,
