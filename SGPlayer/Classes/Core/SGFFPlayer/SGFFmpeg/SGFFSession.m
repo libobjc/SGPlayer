@@ -73,9 +73,14 @@
     [self.source close];
 }
 
-- (void)seekToTime:(NSTimeInterval)time
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    [self.source seekToTime:time];
+    [self.source seekToTime:time completionHandler:^(BOOL success) {
+        if (completionHandler)
+        {
+            completionHandler(success);
+        }
+    }];
 }
 
 

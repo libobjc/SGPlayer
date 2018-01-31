@@ -31,6 +31,6 @@
 - (void)open;
 - (void)close;
 
-- (void)seekToTime:(NSTimeInterval)time;
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end

@@ -156,7 +156,7 @@
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    [self.session seekToTime:time];
+    [self.session seekToTime:time completionHandler:completionHandler];
     
 //    if (!self.seekEnable || !self.decoder.prepareToDecode) {
 //        if (completionHandler) {

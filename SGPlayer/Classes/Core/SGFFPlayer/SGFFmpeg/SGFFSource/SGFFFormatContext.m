@@ -130,7 +130,7 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
-- (void)seekToTime:(NSTimeInterval)time
+- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
     if (self.state == SGFFSourceStatePaused)
     {
@@ -152,7 +152,6 @@ static int formatContextInterruptCallback(void * ctx)
         [self startReadThread];
     }
 }
-
 
 #pragma mark - Thread
 
