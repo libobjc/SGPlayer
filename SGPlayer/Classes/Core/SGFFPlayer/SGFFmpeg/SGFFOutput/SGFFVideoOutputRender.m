@@ -20,6 +20,11 @@ SGFFObjectPoolItemInterface
 
 SGFFObjectPoolItemLockingImplementation
 
+- (SGFFOutputRenderType)type
+{
+    return SGFFOutputRenderTypeVideo;
+}
+
 - (instancetype)init
 {
     if (self = [super init])

@@ -33,6 +33,11 @@
 
 @synthesize renderSource = _renderSource;
 
+- (SGFFOutputType)type
+{
+    return SGFFOutputTypeVideo;
+}
+
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];

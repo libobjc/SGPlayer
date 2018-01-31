@@ -48,6 +48,11 @@
 
 @synthesize renderSource = _renderSource;
 
+- (SGFFOutputType)type
+{
+    return SGFFOutputTypeAudio;
+}
+
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
 {
     SGFFAudioFrame * audioFrame = frame.audioFrame;

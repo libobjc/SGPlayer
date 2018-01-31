@@ -15,8 +15,18 @@
 #import "SGFFObjectQueue.h"
 #import "SGFFTime.h"
 
+typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
+{
+    SGFFOutputRenderTypeUnkonwn,
+    SGFFOutputRenderTypeVideo,
+    SGFFOutputRenderTypeAudio,
+    SGFFOutputRenderTypeSubtitle,
+};
+
 
 @protocol SGFFOutputRender <NSObject, SGFFObjectPoolItem, SGFFObjectQueueItem>
+
+- (SGFFOutputRenderType)type;
 
 - (SGFFTimebase)timebase;
 - (long long)position;

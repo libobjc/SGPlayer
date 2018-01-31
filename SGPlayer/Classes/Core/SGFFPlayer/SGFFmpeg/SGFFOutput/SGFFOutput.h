@@ -19,7 +19,18 @@
 @protocol SGFFOutputRenderSource;
 
 
+typedef NS_ENUM(NSUInteger, SGFFOutputType)
+{
+    SGFFOutputTypeUnkonwn,
+    SGFFOutputTypeVideo,
+    SGFFOutputTypeAudio,
+    SGFFOutputTypeSubtitle,
+};
+
+
 @protocol SGFFOutput <NSObject>
+
+- (SGFFOutputType)type;
 
 @property (nonatomic, weak) id <SGFFOutputRenderSource> renderSource;
 

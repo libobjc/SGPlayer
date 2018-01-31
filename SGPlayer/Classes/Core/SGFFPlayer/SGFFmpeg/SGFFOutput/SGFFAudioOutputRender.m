@@ -22,6 +22,11 @@ SGFFObjectPoolItemInterface
 
 @implementation SGFFAudioOutputRender
 
+- (SGFFOutputRenderType)type
+{
+    return SGFFOutputRenderTypeAudio;
+}
+
 SGFFObjectPoolItemLockingImplementation
 
 - (instancetype)init

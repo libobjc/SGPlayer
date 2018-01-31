@@ -171,7 +171,7 @@
 
 - (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
 {
-    switch (frame.type)
+    switch ([frame.class type])
     {
         case SGFFFrameTypeAudio:
             return [self.configuration.audioOutput renderWithFrame:frame];
