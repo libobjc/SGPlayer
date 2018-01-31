@@ -57,9 +57,9 @@
 
 - (void)open
 {
-    if (self.configuration.source)
+    if (self.configuration.customSource)
     {
-        self.source = self.configuration.source;
+        self.source = self.configuration.customSource;
     }
     else
     {
@@ -121,7 +121,7 @@
             else
             {
                 Class codecClass = [SGFFVideoAVCodec class];
-                if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
+                if (self.configuration.videoCodecVideoToolBoxEnable && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
                 {
                     codecClass = [SGFFVideoVTBCodec class];
                 }
@@ -195,10 +195,10 @@
     switch (frame.type)
     {
         case SGFFFrameTypeAudio:
-            filters = self.configuration.audioFilters;
+            filters = self.configuration.customAudioFilters;
             break;
         case SGFFFrameTypeVideo:
-            filters = self.configuration.videoFilters;
+            filters = self.configuration.customVideoFilters;
             break;
         default:
             break;

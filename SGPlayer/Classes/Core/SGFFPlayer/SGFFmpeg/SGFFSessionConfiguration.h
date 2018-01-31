@@ -14,14 +14,14 @@
 
 @interface SGFFSessionConfiguration : NSObject
 
-@property (nonatomic, strong) id <SGFFSource> source;
+@property (nonatomic, strong) id <SGFFSource> customSource;
 
-@property (nonatomic, assign) BOOL enableVideoToolBox;
 @property (nonatomic, strong) id <SGFFCodec> customAudioCodec;
 @property (nonatomic, strong) id <SGFFCodec> customVideoCodec;
+@property (nonatomic, assign) BOOL videoCodecVideoToolBoxEnable;
 
-@property (nonatomic, strong) NSArray <id <SGFFFilter>> * audioFilters;
-@property (nonatomic, strong) NSArray <id <SGFFFilter>> * videoFilters;
+@property (nonatomic, strong) NSArray <id <SGFFFilter>> * customAudioFilters;
+@property (nonatomic, strong) NSArray <id <SGFFFilter>> * customVideoFilters;
 
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;
