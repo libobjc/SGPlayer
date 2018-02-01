@@ -226,7 +226,7 @@
     }
 }
 
-- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
 {
     switch (output.type)
     {
