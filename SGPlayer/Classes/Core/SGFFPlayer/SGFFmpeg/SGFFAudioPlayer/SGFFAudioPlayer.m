@@ -18,6 +18,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 @interface SGFFAudioPlayer ()
 
 @property (nonatomic, weak) id <SGFFAudioPlayerDelegate> delegate;
+@property (nonatomic, assign) BOOL running;
 
 @property (nonatomic, assign) AUGraph graph;
 @property (nonatomic, assign) AUNode nodeForTimePitch;
@@ -136,12 +137,20 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 - (void)play
 {
-    AUGraphStart(self.graph);
+    if (!self.running)
+    {
+        self.running = YES;
+        AUGraphStart(self.graph);
+    }
 }
 
 - (void)pause
 {
-    AUGraphStop(self.graph);
+    if (self.running)
+    {
+        self.running = NO;
+        AUGraphStop(self.graph);
+    }
 }
 
 - (void)setAudioStreamBasicDescription:(AudioStreamBasicDescription)audioStreamBasicDescription

@@ -25,8 +25,10 @@
 - (instancetype)initWithDelegate:(id <SGFFAudioPlayerDelegate>)delegate;
 
 @property (nonatomic, assign) float volume;
-@property (nonatomic, assign, readonly) int sampleRate;
-@property (nonatomic, assign, readonly) int numberOfChannels;
+
+- (int)sampleRate;
+- (int)numberOfChannels;
+- (BOOL)running;
 
 - (void)play;
 - (void)pause;
