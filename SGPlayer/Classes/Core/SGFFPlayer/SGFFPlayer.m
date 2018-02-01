@@ -68,19 +68,20 @@
 - (void)replaceWithContentURL:(NSURL *)contentURL
 {
     [self clean];
-    if (contentURL == nil) {
+    if (contentURL == nil)
+    {
         return;
     }
+    self.contentURL = contentURL;
+    
+    SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
     self.audioOutput = [[SGFFAudioOutput alloc] init];
-    [self.audioOutput play];
     self.videoOutput = [[SGFFVideoOutput alloc] init];
     self.videoOutput.delegate = self;
-    self.videoOutput.referenceOutput = self.audioOutput;
-    
-    self.contentURL = contentURL;
-    SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
+    self.videoOutput.keyOutput = self.audioOutput;
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
+    
     self.session = [SGFFSession sessionWithContentURL:self.contentURL
                                              delegate:self
                                         configuration:configuration];
@@ -96,8 +97,9 @@
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
-            if (ABS(self.currentTime - self.duration) < 0.1) {
-//                [self.session seekToTime:0];
+            if (ABS(self.currentTime - self.duration) < 0.1)
+            {
+                [self.session seekToTime:0 completionHandler:nil];
             }
             break;
         case SGPlayerPlaybackStateFailed:
@@ -107,7 +109,15 @@
             break;
     }
     self.playbackState = SGPlayerPlaybackStatePlaying;
-//    [self.decoder resume];
+}
+
+- (void)playOrPause
+{
+    if (_playbackState == SGPlayerPlaybackStatePlaying && _loadState == SGPlayerLoadStatePlayable) {
+        [self.audioOutput play];
+    } else {
+        [self.audioOutput pause];
+    }
 }
 
 - (void)pause
@@ -193,6 +203,7 @@
     {
         SGPlayerPlaybackState previous = _playbackState;
         _playbackState = playbackState;
+        [self playOrPause];
         [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
     }
 }
@@ -203,6 +214,7 @@
     {
         SGPlayerLoadState previous = _loadState;
         _loadState = loadState;
+        [self playOrPause];
         [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
     }
 }
@@ -296,7 +308,12 @@
 
 - (void)sessionDidChangeCapacity:(SGFFSession *)session
 {
-    NSLog(@"%f, %lld", self.session.loadedDuration, self.session.loadedSize);
+    if (session.loadedDuration >= self.minimumPlayableDuration) {
+        self.loadState = SGPlayerLoadStatePlayable;
+    } else {
+        self.loadState = SGPlayerLoadStateLoading;
+    }
+    NSLog(@"%f, %lld", session.loadedDuration, session.loadedSize);
 }
 
 

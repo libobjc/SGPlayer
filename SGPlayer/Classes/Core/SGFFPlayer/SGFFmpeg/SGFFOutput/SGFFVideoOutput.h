@@ -20,7 +20,7 @@
 
 @interface SGFFVideoOutput : NSObject <SGFFOutput>
 
-@property (nonatomic, weak) id <SGFFOutput> referenceOutput;
+@property (nonatomic, weak) id <SGFFOutput> keyOutput;
 @property (nonatomic, weak) id <SGFFVideoOutputDelegate> delegate;
 
 - (SGPLFView *)displayView;

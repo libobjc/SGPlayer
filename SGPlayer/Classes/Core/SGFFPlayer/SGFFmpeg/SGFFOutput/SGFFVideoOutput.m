@@ -115,7 +115,7 @@
         SGWeakSelf
         render = [self.renderSource outputFecthRender:self positionHandler:^BOOL(long long * current, long long * expect) {
             SGStrongSelf
-            SGFFTime time = [strongSelf.referenceOutput currentTime];
+            SGFFTime time = [strongSelf.keyOutput currentTime];
             NSTimeInterval position = SGFFTimeGetSeconds(time);
             NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = SGFFSecondsConvertToTimestamp(position + interval, strongSelf.currentRender.timebase);
