@@ -182,10 +182,10 @@
     switch (frame.type)
     {
         case SGFFFrameTypeAudio:
-            filters = self.configuration.customAudioFilters;
+            filters = self.configuration.audioFilters;
             break;
         case SGFFFrameTypeVideo:
-            filters = self.configuration.customVideoFilters;
+            filters = self.configuration.videoFilters;
             break;
         default:
             break;

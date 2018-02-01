@@ -16,8 +16,8 @@
 
 @property (nonatomic, assign) BOOL enableVideoToolBox;
 
-@property (nonatomic, strong) NSArray <id <SGFFFilter>> * customAudioFilters;
-@property (nonatomic, strong) NSArray <id <SGFFFilter>> * customVideoFilters;
+@property (nonatomic, strong) NSArray <id <SGFFFilter>> * audioFilters;
+@property (nonatomic, strong) NSArray <id <SGFFFilter>> * videoFilters;
 
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;
