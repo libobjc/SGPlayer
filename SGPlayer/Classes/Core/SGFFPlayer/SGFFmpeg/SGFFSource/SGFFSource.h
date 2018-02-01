@@ -60,6 +60,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)resume;
 - (void)close;
 
+- (BOOL)seekable;
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler;
 
 @end

@@ -73,6 +73,11 @@
     [self.source close];
 }
 
+- (BOOL)seekable
+{
+    return self.source.seekable;
+}
+
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
     SGWeakSelf

@@ -42,6 +42,7 @@
 - (void)read;
 - (void)close;
 
+- (BOOL)seekable;
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end

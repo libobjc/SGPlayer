@@ -162,6 +162,24 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
+- (BOOL)seekable
+{
+    if (!_formatContext)
+    {
+        return NO;
+    }
+    BOOL seekable = YES;
+    if (_formatContext->pb)
+    {
+        seekable = _formatContext->pb->seekable;
+    }
+    if (seekable && self.duration > 0)
+    {
+        return YES;
+    }
+    return NO;
+}
+
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
     if (self.state == SGFFSourceStatePaused)
