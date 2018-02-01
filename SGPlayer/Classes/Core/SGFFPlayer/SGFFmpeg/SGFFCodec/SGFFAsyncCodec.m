@@ -85,7 +85,7 @@ static SGFFPacket * flushPacket;
     return YES;
 }
 
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
+- (id <SGFFOutputRender>)getOutputRender
 {
     id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsync];
     if (outputRender)
@@ -95,7 +95,7 @@ static SGFFPacket * flushPacket;
     return outputRender;
 }
 
-- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long *, long long *))positionHandler
 {
     id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncWithPositionHandler:positionHandler];
     if (outputRender)

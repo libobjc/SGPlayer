@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGFFCodec.h"
 #import "SGFFPacket.h"
+#import "SGFFOutputRender.h"
 
 @interface SGFFStream : NSObject
 
@@ -20,5 +21,7 @@
 - (void)close;
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
+- (id <SGFFOutputRender>)getOutputRender;
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long * current, long long * expect))positionHandler;
 
 @end

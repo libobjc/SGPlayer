@@ -49,4 +49,14 @@
     return NO;
 }
 
+- (id <SGFFOutputRender>)getOutputRender
+{
+    return [self.codec getOutputRender];
+}
+
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long * current, long long * expect))positionHandler
+{
+    return [self.codec getOutputRenderWithPositionHandler:positionHandler];
+}
+
 @end

@@ -12,8 +12,8 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
-#import "SGFFOutput.h"
 #import "SGFFPacket.h"
+#import "SGFFOutputRender.h"
 
 @protocol SGFFCodec;
 @protocol SGFFCodecCapacityDelegate;
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 };
 
 
-@protocol SGFFCodec <NSObject, SGFFOutputRenderSource>
+@protocol SGFFCodec <NSObject>
 
 - (SGFFCodecType)type;
 
@@ -60,6 +60,8 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 - (void)close;
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
+- (id <SGFFOutputRender>)getOutputRender;
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long * current, long long * expect))positionHandler;
 
 @end
 

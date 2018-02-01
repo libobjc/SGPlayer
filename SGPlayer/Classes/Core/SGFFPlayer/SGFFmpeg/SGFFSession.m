@@ -14,7 +14,7 @@
 #import "SGPlayerMacro.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate, SGFFOutputRenderSource>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -150,8 +150,8 @@
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
-    self.configuration.audioOutput.renderSource = self.source.currentAudioStream.codec;
-    self.configuration.videoOutput.renderSource = self.source.currentVideoStream.codec;
+    self.configuration.audioOutput.renderSource = self;
+    self.configuration.videoOutput.renderSource = self;
     [self.source read];
 }
 
@@ -226,6 +226,35 @@
             return [self.configuration.audioOutput renderWithFrame:frame];
         case SGFFFrameTypeVideo:
             return [self.configuration.videoOutput renderWithFrame:frame];
+        default:
+            return nil;
+    }
+}
+
+
+#pragma mark - SGFFOutputRenderSource
+
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
+{
+    switch (output.type)
+    {
+        case SGFFOutputTypeAudio:
+            return [self.source.currentAudioStream getOutputRender];
+        case SGFFOutputTypeVideo:
+            return [self.source.currentVideoStream getOutputRender];
+        default:
+            return nil;
+    }
+}
+
+- (id <SGFFOutputRender>)outputFecthRender:(id<SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
+{
+    switch (output.type)
+    {
+        case SGFFOutputTypeAudio:
+            return [self.source.currentAudioStream getOutputRenderWithPositionHandler:positionHandler];
+        case SGFFOutputTypeVideo:
+            return [self.source.currentVideoStream getOutputRenderWithPositionHandler:positionHandler];
         default:
             return nil;
     }
