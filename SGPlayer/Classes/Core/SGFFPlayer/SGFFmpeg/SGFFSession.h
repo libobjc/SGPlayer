@@ -11,6 +11,18 @@
 
 @class SGFFSession;
 
+
+typedef NS_ENUM(NSUInteger, SGFFSessionState)
+{
+    SGFFSessionStateIdle,
+    SGFFSessionStateOpened,
+    SGFFSessionStateReading,
+    SGFFSessionStateClosed,
+    SGFFSessionStateFinished,
+    SGFFSessionStateFailed,
+};
+
+
 @protocol SGFFSessionDelegate <NSObject>
 
 - (void)sessionDidOpened:(SGFFSession *)session;
@@ -22,6 +34,7 @@
 
 @end
 
+
 @interface SGFFSession : NSObject
 
 + (instancetype)sessionWithContentURL:(NSURL *)contentURL
@@ -32,17 +45,20 @@
 - (id <SGFFSessionDelegate>)delegate;
 - (SGFFSessionConfiguration *)configuration;
 
+- (SGFFSessionState)state;
 - (NSTimeInterval)duration;
 - (NSTimeInterval)loadedDuration;
 - (long long)loadedSize;
-
 - (NSError *)error;
+
+- (BOOL)videoEnable;
+- (BOOL)audioEnable;
+- (BOOL)seekEnable;
 
 - (void)open;
 - (void)read;
 - (void)close;
 
-- (BOOL)seekable;
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end

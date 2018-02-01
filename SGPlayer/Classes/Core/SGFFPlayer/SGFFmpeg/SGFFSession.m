@@ -20,6 +20,8 @@
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGFFSessionConfiguration * configuration;
+
+@property (nonatomic, assign) SGFFSessionState state;
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
@@ -53,33 +55,45 @@
         self.delegate = delegate;
         self.delegateQueue = dispatch_queue_create("SGFFSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
         self.configuration = configuration;
+        self.state = SGFFSessionStateIdle;
     }
     return self;
 }
 
 - (void)open
 {
+    self.state = SGFFSessionStateReading;
     self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
     [self.source open];
 }
 
 - (void)read
 {
+    self.state = SGFFSessionStateReading;
     [self.source read];
 }
 
 - (void)close
 {
+    self.state = SGFFSessionStateClosed;
     [self.source close];
-}
-
-- (BOOL)seekable
-{
-    return self.source.seekable;
 }
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
+    switch (self.state)
+    {
+        case SGFFSessionStateIdle:
+        case SGFFSessionStateClosed:
+        case SGFFSessionStateFailed:
+            return;
+        case SGFFSessionStateFinished:
+            self.state = SGFFSessionStateReading;
+            break;
+        case SGFFSessionStateOpened:
+        case SGFFSessionStateReading:
+            break;
+    }
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
         SGStrongSelf
@@ -107,6 +121,21 @@
 - (long long)loadedSize
 {
     return self.source.loadedSize;
+}
+
+- (BOOL)videoEnable
+{
+    return self.source.currentVideoStream != nil;
+}
+
+- (BOOL)audioEnable
+{
+    return self.source.currentAudioStream != nil;
+}
+
+- (BOOL)seekEnable
+{
+    return self.source.seekable;
 }
 
 
@@ -150,6 +179,7 @@
 {
     self.configuration.audioOutput.renderSource = self;
     self.configuration.videoOutput.renderSource = self;
+    self.state = SGFFSessionStateOpened;
     if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)]) {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidOpened:self];
@@ -160,6 +190,7 @@
 - (void)sourceDidFailed:(id <SGFFSource>)source
 {
     self.error = source.error;
+    self.state = SGFFSessionStateFailed;
     if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)]) {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidFailed:self];
@@ -169,6 +200,7 @@
 
 - (void)sourceDidFinished:(id<SGFFSource>)source
 {
+    self.state = SGFFSessionStateFinished;
     if ([self.delegate respondsToSelector:@selector(sessionDidFinished:)]) {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidFinished:self];
