@@ -279,9 +279,24 @@
 
 #pragma mark - SGFFSessionDelegate
 
-- (void)session:(SGFFSession *)session didFailed:(NSError *)error
+- (void)sessionDidOpened:(SGFFSession *)session
+{
+    [self.session read];
+}
+
+- (void)sessionDidFailed:(SGFFSession *)session
 {
     
+}
+
+- (void)sessionDidFinished:(SGFFSession *)session
+{
+    
+}
+
+- (void)sessionDidChangeCapacity:(SGFFSession *)session
+{
+    NSLog(@"%f, %lld", self.session.loadedDuration, self.session.loadedSize);
 }
 
 

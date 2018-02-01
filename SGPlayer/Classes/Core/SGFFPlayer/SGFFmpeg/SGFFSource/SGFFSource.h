@@ -41,7 +41,9 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 @property (nonatomic, weak, readonly) id <SGFFSourceDelegate> delegate;
 
 - (SGFFSourceState)state;
-- (long long)size;
+- (NSTimeInterval)duration;
+- (NSTimeInterval)loadedDuration;
+- (long long)loadedSize;
 - (NSError *)error;
 
 - (NSArray <SGFFStream *> *)streams;
@@ -68,6 +70,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (id <SGFFCodec>)source:(id <SGFFSource>)source codecForStream:(SGFFStream *)stream;
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
+- (void)sourceDidFinished:(id <SGFFSource>)source;
 
 @end
 

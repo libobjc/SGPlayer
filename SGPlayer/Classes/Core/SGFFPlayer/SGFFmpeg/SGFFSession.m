@@ -18,6 +18,7 @@
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGFFSessionConfiguration * configuration;
 @property (nonatomic, copy) NSError * error;
 
@@ -50,6 +51,7 @@
         });
         self.contentURL = contentURL;
         self.delegate = delegate;
+        self.delegateQueue = dispatch_queue_create("SGFFSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
         self.configuration = configuration;
     }
     return self;
@@ -59,6 +61,11 @@
 {
     self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
     [self.source open];
+}
+
+- (void)read
+{
+    [self.source read];
 }
 
 - (void)close
@@ -80,14 +87,21 @@
 }
 
 
-#pragma mark - Callback
+#pragma mark - Setter/Getter
 
-- (void)callbackForError
+- (NSTimeInterval)duration
 {
-    if ([self.delegate respondsToSelector:@selector(session:didFailed:)])
-    {
-        [self.delegate session:self didFailed:self.error];
-    }
+    return self.source.duration;
+}
+
+- (NSTimeInterval)loadedDuration
+{
+    return self.source.loadedDuration;
+}
+
+- (long long)loadedSize
+{
+    return self.source.loadedSize;
 }
 
 
@@ -131,13 +145,30 @@
 {
     self.configuration.audioOutput.renderSource = self;
     self.configuration.videoOutput.renderSource = self;
-    [self.source read];
+    if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)]) {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidOpened:self];
+        });
+    }
 }
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
 {
     self.error = source.error;
-    [self callbackForError];
+    if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)]) {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidFailed:self];
+        });
+    }
+}
+
+- (void)sourceDidFinished:(id<SGFFSource>)source
+{
+    if ([self.delegate respondsToSelector:@selector(sessionDidFinished:)]) {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidFinished:self];
+        });
+    }
 }
 
 
@@ -146,7 +177,7 @@
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
 {
     BOOL shouldPaused = NO;
-    if (self.source.size > 15 * 1024 * 1024)
+    if (self.source.loadedSize > 15 * 1024 * 1024)
     {
         shouldPaused = YES;
     }
@@ -170,6 +201,11 @@
         [self.source pause];
     } else {
         [self.source resume];
+    }
+    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)]) {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidChangeCapacity:self];
+        });
     }
 }
 

@@ -68,14 +68,45 @@ static int formatContextInterruptCallback(void * ctx)
 
 #pragma mark - Setter/Getter
 
-- (long long)size
+- (NSTimeInterval)duration
+{
+    if (!_formatContext)
+    {
+        return 0;
+    }
+    int64_t duration = _formatContext->duration;
+    if (duration < 0)
+    {
+        return 0;
+    }
+    return (NSTimeInterval)duration / AV_TIME_BASE;
+}
+
+- (NSTimeInterval)loadedDuration
+{
+    if (self.currentAudioStream)
+    {
+        long long duration = self.currentAudioStream.codec.duration;
+        SGFFTimebase timebase = self.currentAudioStream.codec.timebase;
+        return SGFFTimestampConvertToSeconds(duration, timebase);
+    }
+    else if (self.currentVideoStream)
+    {
+        long long duration = self.currentVideoStream.codec.duration;
+        SGFFTimebase timebase = self.currentVideoStream.codec.timebase;
+        return SGFFTimestampConvertToSeconds(duration, timebase);
+    }
+    return 0;
+}
+
+- (long long)loadedSize
 {
     long long bufferedSize = 0;
     for (SGFFStream * obj in self.streams)
     {
         bufferedSize += obj.codec.size;
     }
-    return 0;
+    return bufferedSize;
 }
 
 
@@ -314,6 +345,9 @@ static int formatContextInterruptCallback(void * ctx)
             {
                 self.state = SGFFSourceStateFinished;
                 [packet unlock];
+                if ([self.delegate respondsToSelector:@selector(sourceDidFinished:)]) {
+                    [self.delegate sourceDidFinished:self];
+                }
                 break;
             }
             [packet fill];

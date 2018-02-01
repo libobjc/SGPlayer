@@ -13,7 +13,12 @@
 
 @protocol SGFFSessionDelegate <NSObject>
 
-- (void)session:(SGFFSession *)session didFailed:(NSError *)error;
+- (void)sessionDidOpened:(SGFFSession *)session;
+- (void)sessionDidFailed:(SGFFSession *)session;
+- (void)sessionDidFinished:(SGFFSession *)session;
+
+@optional
+- (void)sessionDidChangeCapacity:(SGFFSession *)session;
 
 @end
 
@@ -23,12 +28,18 @@
                              delegate:(id <SGFFSessionDelegate>)delegate
                         configuration:(SGFFSessionConfiguration *)configuration;
 
-@property (nonatomic, copy, readonly) NSURL * contentURL;
-@property (nonatomic, weak, readonly) id <SGFFSessionDelegate> delegate;
-@property (nonatomic, strong, readonly) SGFFSessionConfiguration * configuration;
-@property (nonatomic, copy, readonly) NSError * error;
+- (NSURL *)contentURL;
+- (id <SGFFSessionDelegate>)delegate;
+- (SGFFSessionConfiguration *)configuration;
+
+- (NSTimeInterval)duration;
+- (NSTimeInterval)loadedDuration;
+- (long long)loadedSize;
+
+- (NSError *)error;
 
 - (void)open;
+- (void)read;
 - (void)close;
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL success))completionHandler;

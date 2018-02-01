@@ -182,15 +182,12 @@
     {
         return [self getObject];
     }
-    NSLog(@"start : %f, %f", current / 12800.f, expect / 12800.f);
     id <SGFFObjectQueueItem> object = nil;
     long long first = self.objects.firstObject.position;
     if (first <= expect || current < 0)
     {
         object = [self getObject];
-        NSLog(@"get   : %f", object.position / 12800.f);
     }
-    NSLog(@"end   : %f", object.position / 12800.f);
     return object;
 }
 
