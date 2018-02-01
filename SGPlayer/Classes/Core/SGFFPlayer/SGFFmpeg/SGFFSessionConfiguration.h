@@ -14,11 +14,7 @@
 
 @interface SGFFSessionConfiguration : NSObject
 
-@property (nonatomic, strong) id <SGFFSource> customSource;
-
-@property (nonatomic, strong) id <SGFFCodec> customAudioCodec;
-@property (nonatomic, strong) id <SGFFCodec> customVideoCodec;
-@property (nonatomic, assign) BOOL videoCodecVideoToolBoxEnable;
+@property (nonatomic, assign) BOOL enableVideoToolBox;
 
 @property (nonatomic, strong) NSArray <id <SGFFFilter>> * customAudioFilters;
 @property (nonatomic, strong) NSArray <id <SGFFFilter>> * customVideoFilters;

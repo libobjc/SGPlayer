@@ -57,14 +57,7 @@
 
 - (void)open
 {
-    if (self.configuration.customSource)
-    {
-        self.source = self.configuration.customSource;
-    }
-    else
-    {
-        self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
-    }
+    self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
     [self.source open];
 }
 
@@ -107,37 +100,23 @@
     {
         case AVMEDIA_TYPE_AUDIO:
         {
-            if (self.configuration.customAudioCodec)
-            {
-                codec = self.configuration.customAudioCodec;
-            }
-            else
-            {
-                SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
-                audioCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 44100);
-                audioCodec.codecpar = stream.coreStream->codecpar;
-                codec = audioCodec;
-            }
+            SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
+            audioCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 44100);
+            audioCodec.codecpar = stream.coreStream->codecpar;
+            codec = audioCodec;
         }
             break;
         case AVMEDIA_TYPE_VIDEO:
         {
-            if (self.configuration.customVideoCodec)
+            Class codecClass = [SGFFVideoAVCodec class];
+            if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
             {
-                codec = self.configuration.customVideoCodec;
+                codecClass = [SGFFVideoVTBCodec class];
             }
-            else
-            {
-                Class codecClass = [SGFFVideoAVCodec class];
-                if (self.configuration.videoCodecVideoToolBoxEnable && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
-                {
-                    codecClass = [SGFFVideoVTBCodec class];
-                }
-                SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
-                videoCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 25000);
-                videoCodec.codecpar = stream.coreStream->codecpar;
-                codec = videoCodec;
-            }
+            SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
+            videoCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 25000);
+            videoCodec.codecpar = stream.coreStream->codecpar;
+            codec = videoCodec;
         }
             break;
         default:
