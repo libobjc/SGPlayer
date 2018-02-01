@@ -141,7 +141,7 @@
 }
 
 
-#pragma marl - SGFFCodecCapacityDelegate
+#pragma mark - SGFFCodecCapacityDelegate
 
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
 {
@@ -218,9 +218,9 @@
     switch (output.type)
     {
         case SGFFOutputTypeAudio:
-            return [self.source.currentAudioStream getOutputRender];
+            return [self.source.currentAudioStream.codec getOutputRender];
         case SGFFOutputTypeVideo:
-            return [self.source.currentVideoStream getOutputRender];
+            return [self.source.currentVideoStream.codec getOutputRender];
         default:
             return nil;
     }
@@ -231,9 +231,9 @@
     switch (output.type)
     {
         case SGFFOutputTypeAudio:
-            return [self.source.currentAudioStream getOutputRenderWithPositionHandler:positionHandler];
+            return [self.source.currentAudioStream.codec getOutputRenderWithPositionHandler:positionHandler];
         case SGFFOutputTypeVideo:
-            return [self.source.currentVideoStream getOutputRenderWithPositionHandler:positionHandler];
+            return [self.source.currentVideoStream.codec getOutputRenderWithPositionHandler:positionHandler];
         default:
             return nil;
     }

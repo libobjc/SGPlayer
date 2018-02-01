@@ -21,7 +21,5 @@
 - (void)close;
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
-- (id <SGFFOutputRender>)getOutputRender;
-- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long * current, long long * expect))positionHandler;
 
 @end
