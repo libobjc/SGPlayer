@@ -19,3 +19,9 @@ framework/
 SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS
 SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS
 SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS
+
+demo/build
+demo/Build
+demo/index
+demo/DerivedData
+Vendors/

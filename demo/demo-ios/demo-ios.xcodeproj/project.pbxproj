@@ -7,18 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		401E599220298D050073FC78 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401E599120298D050073FC78 /* ViewController.swift */; };
+		401E599520298D050073FC78 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 401E599320298D050073FC78 /* Main.storyboard */; };
+		401E599720298D050073FC78 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 401E599620298D050073FC78 /* Assets.xcassets */; };
+		401E599A20298D050073FC78 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 401E599820298D050073FC78 /* LaunchScreen.storyboard */; };
+		401E59A320298E550073FC78 /* PlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401E59A020298E550073FC78 /* PlayerViewController.swift */; };
+		401E59A8202997690073FC78 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */; };
+		401E59A92029976B0073FC78 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */; };
+		401E59AB202997710073FC78 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */; };
+		401E59AC202997760073FC78 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBD1E78F14700F2CFD1 /* libbz2.tbd */; };
+		401E59AD202997760073FC78 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBB1E78F14300F2CFD1 /* libz.tbd */; };
+		401E59AE202997760073FC78 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */; };
+		401E59B3202998D90073FC78 /* SGAVPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401E59B2202998D90073FC78 /* SGAVPlayer.framework */; };
+		401E59B520299A9C0073FC78 /* PlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 401E59B420299A9C0073FC78 /* PlayerViewController.xib */; };
+		401E59B62029AF7B0073FC78 /* SGAVPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401E59B2202998D90073FC78 /* SGAVPlayer.framework */; };
+		401E59B72029B0430073FC78 /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD441E79538500959FDA /* google-help-vr.mp4 */; };
+		401E59B82029B0430073FC78 /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD451E79538500959FDA /* i-see-fire.mp4 */; };
+		401E59B92029B0D00073FC78 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401E598F20298D050073FC78 /* AppDelegate.swift */; };
+		40355C89202AF42A0012C64C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B971E78EC9F00F2CFD1 /* main.m */; };
+		40355C8C202AF4C10012C64C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40355C8A202AF4C10012C64C /* Main.storyboard */; };
 		9C02F6511E79293A00932489 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C02F64F1E79293A00932489 /* PlayerViewController.m */; };
 		9C02F6521E79293A00932489 /* PlayerViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9C02F6501E79293A00932489 /* PlayerViewController.xib */; };
-		9C329AA62005E11500252B10 /* SGAVPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C329AA72005E11500252B10 /* SGAVPlayer.framework */; };
 		9C36DD461E79538500959FDA /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD441E79538500959FDA /* google-help-vr.mp4 */; };
 		9C36DD471E79538500959FDA /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD451E79538500959FDA /* i-see-fire.mp4 */; };
 		9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */; };
 		9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */; };
 		9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */; };
-		9C886B981E78EC9F00F2CFD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B971E78EC9F00F2CFD1 /* main.m */; };
 		9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */; };
 		9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */; };
-		9C886BA11E78EC9F00F2CFD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C886B9F1E78EC9F00F2CFD1 /* Main.storyboard */; };
 		9C886BA31E78EC9F00F2CFD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C886BA21E78EC9F00F2CFD1 /* Assets.xcassets */; };
 		9C886BA61E78EC9F00F2CFD1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C886BA41E78EC9F00F2CFD1 /* LaunchScreen.storyboard */; };
 		9C886BBA1E78F13E00F2CFD1 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */; };
@@ -27,45 +43,59 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		401E598D20298D050073FC78 /* demo-ios-swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "demo-ios-swift.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		401E598F20298D050073FC78 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		401E599120298D050073FC78 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		401E599420298D050073FC78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		401E599620298D050073FC78 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		401E599920298D050073FC78 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		401E599B20298D050073FC78 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		401E59A020298E550073FC78 /* PlayerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayerViewController.swift; sourceTree = "<group>"; };
+		401E59B2202998D90073FC78 /* SGAVPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGAVPlayer.framework; path = "../Build/Products/Debug-iphonesimulator/SGAVPlayer.framework"; sourceTree = "<group>"; };
+		401E59B420299A9C0073FC78 /* PlayerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayerViewController.xib; sourceTree = "<group>"; };
+		40355C8B202AF4C10012C64C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C02F64E1E79293A00932489 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
 		9C02F64F1E79293A00932489 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
 		9C02F6501E79293A00932489 /* PlayerViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PlayerViewController.xib; sourceTree = "<group>"; };
-		9C2167151E7F81B800272348 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-eihmyibiajxgvzgpltouukszknss/Build/Products/Debug-iphoneos/SGPlatform.framework"; sourceTree = "<group>"; };
-		9C329AA52005DF4A00252B10 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C329AA72005E11500252B10 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C36DD441E79538500959FDA /* google-help-vr.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "google-help-vr.mp4"; path = "../../demo-assset/google-help-vr.mp4"; sourceTree = "<group>"; };
 		9C36DD451E79538500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
 		9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		9C4032C41FAB1188005AEB36 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C886B931E78EC9F00F2CFD1 /* SGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C886B971E78EC9F00F2CFD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9C886B991E78EC9F00F2CFD1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9C886B9C1E78EC9F00F2CFD1 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		9C886BA01E78EC9F00F2CFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C886BA21E78EC9F00F2CFD1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C886BA51E78EC9F00F2CFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9C886BA71E78EC9F00F2CFD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9C886BAF1E78ECE500F2CFD1 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = "../../build/Debug-iphoneos/SGPlayer.framework"; sourceTree = "<group>"; };
-		9C886BB11E78ED0100F2CFD1 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-eihmyibiajxgvzgpltouukszknss/Build/Products/Debug-iphoneos/SGPlayer.framework"; sourceTree = "<group>"; };
 		9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		9C886BBB1E78F14300F2CFD1 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C886BBD1E78F14700F2CFD1 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
-		9C9824A41FAB073B00142215 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C9824AE1FAB10B100142215 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CA86E851E87575000E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug-iphonesimulator/SGPlatform.framework"; sourceTree = "<group>"; };
-		9CA86E891E8757B500E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../Vendors/SGPlatform/build/Debug-iphoneos/SGPlatform.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		401E598A20298D050073FC78 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				401E59B3202998D90073FC78 /* SGAVPlayer.framework in Frameworks */,
+				401E59AE202997760073FC78 /* libiconv.tbd in Frameworks */,
+				401E59A8202997690073FC78 /* CoreMedia.framework in Frameworks */,
+				401E59A92029976B0073FC78 /* AudioToolbox.framework in Frameworks */,
+				401E59AB202997710073FC78 /* VideoToolbox.framework in Frameworks */,
+				401E59AC202997760073FC78 /* libbz2.tbd in Frameworks */,
+				401E59AD202997760073FC78 /* libz.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9C886B901E78EC9F00F2CFD1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C329AA62005E11500252B10 /* SGAVPlayer.framework in Frameworks */,
+				401E59B62029AF7B0073FC78 /* SGAVPlayer.framework in Frameworks */,
 				9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */,
 				9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */,
@@ -78,10 +108,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		401E598E20298D050073FC78 /* demo-ios-swift */ = {
+			isa = PBXGroup;
+			children = (
+				401E598F20298D050073FC78 /* AppDelegate.swift */,
+				401E599120298D050073FC78 /* ViewController.swift */,
+				401E59A020298E550073FC78 /* PlayerViewController.swift */,
+				401E59B420299A9C0073FC78 /* PlayerViewController.xib */,
+				401E599620298D050073FC78 /* Assets.xcassets */,
+				401E599320298D050073FC78 /* Main.storyboard */,
+				401E599820298D050073FC78 /* LaunchScreen.storyboard */,
+				401E599B20298D050073FC78 /* Info.plist */,
+			);
+			path = "demo-ios-swift";
+			sourceTree = "<group>";
+		};
 		9C886B8A1E78EC9F00F2CFD1 = {
 			isa = PBXGroup;
 			children = (
 				9C886B951E78EC9F00F2CFD1 /* demo-ios */,
+				401E598E20298D050073FC78 /* demo-ios-swift */,
 				9C886B941E78EC9F00F2CFD1 /* Products */,
 				9C886BAE1E78ECE500F2CFD1 /* Frameworks */,
 			);
@@ -91,6 +137,7 @@
 			isa = PBXGroup;
 			children = (
 				9C886B931E78EC9F00F2CFD1 /* SGPlayer.app */,
+				401E598D20298D050073FC78 /* demo-ios-swift.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -105,9 +152,9 @@
 				9C02F64E1E79293A00932489 /* PlayerViewController.h */,
 				9C02F64F1E79293A00932489 /* PlayerViewController.m */,
 				9C02F6501E79293A00932489 /* PlayerViewController.xib */,
-				9C886B9F1E78EC9F00F2CFD1 /* Main.storyboard */,
 				9C886BA21E78EC9F00F2CFD1 /* Assets.xcassets */,
 				9C886BA41E78EC9F00F2CFD1 /* LaunchScreen.storyboard */,
+				40355C8A202AF4C10012C64C /* Main.storyboard */,
 				9C886BA71E78EC9F00F2CFD1 /* Info.plist */,
 				9C886B961E78EC9F00F2CFD1 /* Supporting Files */,
 			);
@@ -127,22 +174,13 @@
 		9C886BAE1E78ECE500F2CFD1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9C329AA72005E11500252B10 /* SGAVPlayer.framework */,
-				9C329AA52005DF4A00252B10 /* SGAVPlayer.framework */,
-				9C4032C41FAB1188005AEB36 /* SGPlayer.framework */,
-				9C9824AE1FAB10B100142215 /* SGPlayer.framework */,
-				9C9824A41FAB073B00142215 /* SGPlayer.framework */,
+				401E59B2202998D90073FC78 /* SGAVPlayer.framework */,
 				9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */,
 				9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */,
 				9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */,
-				9CA86E891E8757B500E4A8B1 /* SGPlatform.framework */,
-				9CA86E851E87575000E4A8B1 /* SGPlatform.framework */,
-				9C2167151E7F81B800272348 /* SGPlatform.framework */,
 				9C886BBD1E78F14700F2CFD1 /* libbz2.tbd */,
 				9C886BBB1E78F14300F2CFD1 /* libz.tbd */,
 				9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */,
-				9C886BB11E78ED0100F2CFD1 /* SGPlayer.framework */,
-				9C886BAF1E78ECE500F2CFD1 /* SGPlayer.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -150,6 +188,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		401E598C20298D050073FC78 /* demo-ios-swift */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 401E599C20298D050073FC78 /* Build configuration list for PBXNativeTarget "demo-ios-swift" */;
+			buildPhases = (
+				401E598920298D050073FC78 /* Sources */,
+				401E598A20298D050073FC78 /* Frameworks */,
+				401E598B20298D050073FC78 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "demo-ios-swift";
+			productName = "demo-ios-swift";
+			productReference = 401E598D20298D050073FC78 /* demo-ios-swift.app */;
+			productType = "com.apple.product-type.application";
+		};
 		9C886B921E78EC9F00F2CFD1 /* demo-ios */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9C886BAA1E78EC9F00F2CFD1 /* Build configuration list for PBXNativeTarget "demo-ios" */;
@@ -173,12 +228,17 @@
 		9C886B8B1E78EC9F00F2CFD1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0930;
 				LastUpgradeCheck = 0900;
 				ORGANIZATIONNAME = single;
 				TargetAttributes = {
+					401E598C20298D050073FC78 = {
+						CreatedOnToolsVersion = 9.3;
+						ProvisioningStyle = Automatic;
+					};
 					9C886B921E78EC9F00F2CFD1 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 79WDBYQ4TC;
+						LastSwiftMigration = 0930;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -202,11 +262,25 @@
 			projectRoot = "";
 			targets = (
 				9C886B921E78EC9F00F2CFD1 /* demo-ios */,
+				401E598C20298D050073FC78 /* demo-ios-swift */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		401E598B20298D050073FC78 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				401E59B72029B0430073FC78 /* google-help-vr.mp4 in Resources */,
+				401E59B82029B0430073FC78 /* i-see-fire.mp4 in Resources */,
+				401E599A20298D050073FC78 /* LaunchScreen.storyboard in Resources */,
+				401E59B520299A9C0073FC78 /* PlayerViewController.xib in Resources */,
+				401E599720298D050073FC78 /* Assets.xcassets in Resources */,
+				401E599520298D050073FC78 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9C886B911E78EC9F00F2CFD1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -214,7 +288,7 @@
 				9C886BA61E78EC9F00F2CFD1 /* LaunchScreen.storyboard in Resources */,
 				9C886BA31E78EC9F00F2CFD1 /* Assets.xcassets in Resources */,
 				9C36DD461E79538500959FDA /* google-help-vr.mp4 in Resources */,
-				9C886BA11E78EC9F00F2CFD1 /* Main.storyboard in Resources */,
+				40355C8C202AF4C10012C64C /* Main.storyboard in Resources */,
 				9C02F6521E79293A00932489 /* PlayerViewController.xib in Resources */,
 				9C36DD471E79538500959FDA /* i-see-fire.mp4 in Resources */,
 			);
@@ -223,24 +297,50 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		401E598920298D050073FC78 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				401E59B92029B0D00073FC78 /* AppDelegate.swift in Sources */,
+				401E599220298D050073FC78 /* ViewController.swift in Sources */,
+				401E59A320298E550073FC78 /* PlayerViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9C886B8F1E78EC9F00F2CFD1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40355C89202AF42A0012C64C /* main.m in Sources */,
 				9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */,
 				9C02F6511E79293A00932489 /* PlayerViewController.m in Sources */,
 				9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */,
-				9C886B981E78EC9F00F2CFD1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		9C886B9F1E78EC9F00F2CFD1 /* Main.storyboard */ = {
+		401E599320298D050073FC78 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				9C886BA01E78EC9F00F2CFD1 /* Base */,
+				401E599420298D050073FC78 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		401E599820298D050073FC78 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				401E599920298D050073FC78 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		40355C8A202AF4C10012C64C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				40355C8B202AF4C10012C64C /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -256,6 +356,55 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		401E599D20298D050073FC78 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				INFOPLIST_FILE = "demo-ios-swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ru.iptvportal.demo-ios-swift";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		401E599E20298D050073FC78 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				INFOPLIST_FILE = "demo-ios-swift/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "ru.iptvportal.demo-ios-swift";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
 		9C886BA81E78EC9F00F2CFD1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -360,7 +509,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 79WDBYQ4TC;
+				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -370,6 +520,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-ios";
 				PRODUCT_NAME = SGPlayer;
+				SWIFT_OBJC_BRIDGING_HEADER = "demo-ios-swift/demo-ios-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -377,7 +530,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 79WDBYQ4TC;
+				CLANG_ENABLE_MODULES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -387,12 +541,23 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-ios";
 				PRODUCT_NAME = SGPlayer;
+				SWIFT_OBJC_BRIDGING_HEADER = "demo-ios-swift/demo-ios-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		401E599C20298D050073FC78 /* Build configuration list for PBXNativeTarget "demo-ios-swift" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				401E599D20298D050073FC78 /* Debug */,
+				401E599E20298D050073FC78 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		9C886B8E1E78EC9F00F2CFD1 /* Build configuration list for PBXProject "demo-ios" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
