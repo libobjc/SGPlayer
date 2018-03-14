@@ -17,7 +17,7 @@ do_lib_ffmpeg () {
     echo "download lib ffmpeg..."
     curl -o "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip" $LIB_FFMPEG_DOWNLOAD_URL
     echo "unzip lib ffmpeg..."
-    unzip "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip" -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/
+    unzip "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip" -d "$ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/"
     echo "clean temp file..."
     rm -rf "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip"
     echo "download lib ffmpeg done."
