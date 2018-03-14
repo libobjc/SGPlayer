@@ -10,16 +10,16 @@ LIB_FFMPEG_FILE_NAME_MACOS="lib-macOS"
 LIB_FFMPEG_FILE_NAME_TVOS="lib-tvOS"
 
 do_lib_ffmpeg () {
-  if [ -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/$LIB_FFMPEG_FILE_NAME ]; then
+  if [ -d "$ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/$LIB_FFMPEG_FILE_NAME" ]; then
     echo "lib ffmpeg exist."
   else
     LIB_FFMPEG_DOWNLOAD_URL="http://omw595ki7.bkt.clouddn.com/ffmpeg2/$LIB_FFMPEG_FILE_NAME.zip"
     echo "download lib ffmpeg..."
-    curl -o $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip $LIB_FFMPEG_DOWNLOAD_URL
+    curl -o "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip" $LIB_FFMPEG_DOWNLOAD_URL
     echo "unzip lib ffmpeg..."
-    unzip $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/
+    unzip "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip" -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/
     echo "clean temp file..."
-    rm -rf $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip
+    rm -rf "$ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip"
     echo "download lib ffmpeg done."
   fi
 }
