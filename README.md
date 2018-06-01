@@ -193,3 +193,9 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // continu
 - Twitter : CoderSingle
 - Weibo : 程序员Single
 - QQ Group : 616349536
+
+
+## You want more?
+
+- [KTVHTTPCache](https://github.com/ChangbaDevs/KTVHTTPCache) - A smart media cache framework.
+- [KTVVideoProcess](https://github.com/ChangbaDevs/KTVVideoProcess) - A High-Performance video effects processing framework.
