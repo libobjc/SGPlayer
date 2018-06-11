@@ -139,7 +139,7 @@
     [self.coreLock unlock];
 }
 
-- (void)setupOpenGLIfNeed
+- (void)setupOpenGLIfNeeded
 {
     if (!self.textureUploader) {
         self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
@@ -167,7 +167,7 @@
     [render lock];
     [self.coreLock unlock];
     
-    [self setupOpenGLIfNeed];
+    [self setupOpenGLIfNeeded];
     
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
     id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.coreVideoFrame.format)];

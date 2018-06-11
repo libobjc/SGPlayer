@@ -56,7 +56,7 @@ static int gl_texture[3] =
     }
 }
 
-- (void)setupGLTextureIfNeed
+- (void)setupGLTextureIfNeeded
 {
     if (!_gl_texture_ids[0])
     {
@@ -64,7 +64,7 @@ static int gl_texture[3] =
     }
 }
 
-- (void)setupOpenGLESTextureCacheIfNeed
+- (void)setupOpenGLESTextureCacheIfNeeded
 {
     if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed)
     {
@@ -80,7 +80,7 @@ static int gl_texture[3] =
                   data:(uint8_t **)data
                   size:(SGGLSize)size
 {
-    [self setupGLTextureIfNeed];
+    [self setupGLTextureIfNeeded];
     if (type == SGGLTextureTypeYUV420P)
     {
         static int count = 3;
@@ -133,7 +133,7 @@ static int gl_texture[3] =
 
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
-    [self setupOpenGLESTextureCacheIfNeed];
+    [self setupOpenGLESTextureCacheIfNeeded];
     if (!_openGLESTextureCache)
     {
         return NO;

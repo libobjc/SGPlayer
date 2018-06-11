@@ -67,7 +67,7 @@
     self.outputSampleRate = self.audioPlayer.sampleRate;
     self.outputNumberOfChannels = self.audioPlayer.numberOfChannels;
     
-    [self setupSwrContextIfNeed];
+    [self setupSwrContextIfNeeded];
     if (!_swrContext)
     {
         return nil;
@@ -78,7 +78,7 @@
     const int bufferSize = av_samples_get_buffer_size(NULL, 1,
                                                       audioFrame.numberOfSamples * ratio,
                                                       AV_SAMPLE_FMT_FLTP, 1);
-    [self setupSwrContextBufferIfNeed:bufferSize];
+    [self setupSwrContextBufferIfNeeded:bufferSize];
     int numberOfSamples = swr_convert(_swrContext,
                                       (uint8_t **)_swrContextBufferData,
                                       audioFrame.numberOfSamples * ratio,
@@ -150,7 +150,7 @@
     [self.audioPlayer pause];
 }
 
-- (void)setupSwrContextIfNeed
+- (void)setupSwrContextIfNeeded
 {
     if (self.swrContextError || _swrContext)
     {
@@ -176,7 +176,7 @@
     }
 }
 
-- (void)setupSwrContextBufferIfNeed:(int)bufferSize
+- (void)setupSwrContextBufferIfNeeded:(int)bufferSize
 {
     for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
     {
