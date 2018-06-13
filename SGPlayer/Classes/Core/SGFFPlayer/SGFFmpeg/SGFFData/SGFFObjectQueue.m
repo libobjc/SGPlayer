@@ -97,7 +97,7 @@
             return CMTimeCompare(obj1.position, obj2.position) < 0 ? NSOrderedAscending : NSOrderedDescending;
         }];
     }
-    NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invaild.");
+    NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
     self.duration = CMTimeAdd(self.duration, object.duration);
     self.size += object.size;
 }

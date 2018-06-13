@@ -111,7 +111,7 @@
         render = [self.renderSource outputFecthRender:self positionHandler:^BOOL(CMTime * current, CMTime * expect) {
             SGStrongSelf
             CMTime time = [strongSelf.keyOutput currentTime];
-            NSAssert(CMTIME_IS_VALID(time), @"Key time is invaild.");
+            NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
             * current = strongSelf.currentRender.position;
