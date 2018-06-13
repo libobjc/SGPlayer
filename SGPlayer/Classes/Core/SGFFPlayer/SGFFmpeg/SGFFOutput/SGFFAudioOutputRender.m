@@ -78,8 +78,8 @@ SGFFObjectPoolItemLockingImplementation
     }
     self.numberOfSamples = 0;
     self.numberOfChannels = 0;
-    self.position = 0;
-    self.duration = 0;
+    self.position = kCMTimeZero;
+    self.duration = kCMTimeZero;
     self.size = 0;
 }
 

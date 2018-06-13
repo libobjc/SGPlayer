@@ -2,25 +2,18 @@
 //  SGFFTime.h
 //  SGPlayer
 //
-//  Created by Single on 2018/1/18.
-//  Copyright © 2018年 single. All rights reserved.
+//  Created by Single on 2018/6/13.
+//  Copyright © 2018 single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
-typedef struct SGFFTimebase {
-    int num;
-    int den;
-} SGFFTimebase;
+CMTime SGFFTimeValidate(CMTime time, CMTime defaultTime);
+CMTime SGFFTimeMultiply(CMTime time, int64_t multiplier);
+CMTime SGFFTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor);
+CMTime SGFFTimeMakeWithSeconds(Float64 seconds);
 
-typedef struct SGFFTime {
-    long long timestamp;
-    SGFFTimebase timebase;
-} SGFFTime;
+@interface SGFFTime : NSObject
 
-SGFFTime SGFFTimeIdentity(void);
-SGFFTimebase SGFFTimebaseIdentity(void);
-SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def);
-double SGFFTimeGetSeconds(SGFFTime time);
-double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase);
-long long SGFFSecondsConvertToTimestamp(double seconds, SGFFTimebase timebase);
+@end

@@ -30,7 +30,6 @@
 {
     SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
     [frame updateDataType:SGFFVideoFrameDataTypeAVFrame];
-    frame.timebase = self.timebase;
     return frame;
 }
 

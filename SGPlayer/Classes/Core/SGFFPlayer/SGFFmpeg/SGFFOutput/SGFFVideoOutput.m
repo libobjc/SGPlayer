@@ -45,14 +45,9 @@
     return render;
 }
 
-- (SGFFTime)currentTime
+- (CMTime)currentTime
 {
-    SGFFTime time =
-    {
-        self.currentRender.position,
-        self.currentRender.timebase,
-    };
-    return time;
+    return self.currentRender.position;
 }
 
 - (void)flush
@@ -113,12 +108,12 @@
     if (self.currentRender)
     {
         SGWeakSelf
-        render = [self.renderSource outputFecthRender:self positionHandler:^BOOL(long long * current, long long * expect) {
+        render = [self.renderSource outputFecthRender:self positionHandler:^BOOL(CMTime * current, CMTime * expect) {
             SGStrongSelf
-            SGFFTime time = [strongSelf.keyOutput currentTime];
-            NSTimeInterval position = SGFFTimeGetSeconds(time);
+            CMTime time = [strongSelf.keyOutput currentTime];
+            NSAssert(CMTIME_IS_VALID(time), @"Key time is invaild.");
             NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = SGFFSecondsConvertToTimestamp(position + interval, strongSelf.currentRender.timebase);
+            * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
             * current = strongSelf.currentRender.position;
             return YES;
         }];

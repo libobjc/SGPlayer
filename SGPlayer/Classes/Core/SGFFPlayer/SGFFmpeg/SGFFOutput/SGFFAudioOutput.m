@@ -10,7 +10,7 @@
 #import "SGFFAudioOutputRender.h"
 #import "SGFFAudioPlayer.h"
 #import "SGFFAudioFrame.h"
-#import <AVFoundation/AVFoundation.h>
+#import "SGFFTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
 #import "swresample.h"
@@ -27,12 +27,11 @@
 @property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
 @property (nonatomic, assign) long long currentRenderReadOffset;
-@property (nonatomic, assign) long long currentPreparePosition;
-@property (nonatomic, assign) long long currentPrepareDuration;
-@property (nonatomic, assign) long long currentPostPosition;
-@property (nonatomic, assign) long long currentPostDuration;
+@property (nonatomic, assign) CMTime currentPreparePosition;
+@property (nonatomic, assign) CMTime currentPrepareDuration;
+@property (nonatomic, assign) CMTime currentPostPosition;
+@property (nonatomic, assign) CMTime currentPostDuration;
 @property (nonatomic, assign) double currentPostPositionTimsstamp;
-@property (nonatomic, assign) SGFFTimebase currentTimebase;
 
 @property (nonatomic, assign) enum AVSampleFormat inputFormat;
 @property (nonatomic, assign) int inputSampleRate;
@@ -90,7 +89,6 @@
     render.format = AV_SAMPLE_FMT_FLTP;
     render.numberOfSamples = numberOfSamples;
     render.numberOfChannels = self.outputNumberOfChannels;
-    render.timebase = frame.timebase;
     render.position = frame.position;
     render.duration = frame.duration;
     render.size = frame.size;
@@ -99,21 +97,22 @@
     return render;
 }
 
-- (SGFFTime)currentTime
+- (CMTime)currentTime
 {
-    long long position = self.currentPostPosition;
-    long long duration = self.currentPostDuration;
-    long long interval = 0;
-    if (self.currentPostPositionTimsstamp > 0)
+    CMTime position = self.currentPostPosition;
+    CMTime duration = self.currentPostDuration;
+    CMTime interval = kCMTimeZero;
+    double currentPostPositionTimsstamp = self.currentPostPositionTimsstamp;
+    double timestamp = 0;
+    if (currentPostPositionTimsstamp > 0)
     {
-        interval = SGFFSecondsConvertToTimestamp(CACurrentMediaTime() - self.currentPostPositionTimsstamp, self.currentTimebase);
+        timestamp = CACurrentMediaTime() - currentPostPositionTimsstamp;
+        interval = SGFFTimeMakeWithSeconds(timestamp);
     }
-    SGFFTime time =
-    {
-        position + MIN(interval, duration),
-        self.currentTimebase,
-    };
-    return time;
+    CMTime delta = CMTimeMinimum(interval, duration);
+    CMTime result = CMTimeAdd(position, delta);
+//    NSLog(@"audio time : %@", [NSValue valueWithCMTime:result]);
+    return result;
 }
 
 - (void)flush
@@ -125,8 +124,11 @@
 {
     if (self = [super init])
     {
-        self.currentTimebase = SGFFTimebaseIdentity();
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
+        self.currentPreparePosition = kCMTimeZero;
+        self.currentPrepareDuration = kCMTimeZero;
+        self.currentPostPosition = kCMTimeZero;
+        self.currentPostDuration = kCMTimeZero;
     }
     return self;
 }
@@ -247,11 +249,12 @@
         
         if (ioDataWriteOffset == 0)
         {
-            self.currentPrepareDuration = 0;
-            self.currentTimebase = self.currentRender.timebase;
-            self.currentPreparePosition = self.currentRender.position + self.currentRender.duration * self.currentRenderReadOffset / self.currentRender.linesize[0];
+            self.currentPrepareDuration = kCMTimeZero;
+            CMTime duration = SGFFTimeMultiplyByRatio(self.currentRender.duration, self.currentRenderReadOffset, self.currentRender.linesize[0]);
+            self.currentPreparePosition = CMTimeAdd(self.currentRender.position, duration);
         }
-        self.currentPrepareDuration += self.currentRender.duration * bytesToCopy / self.currentRender.linesize[0];
+        CMTime duration = SGFFTimeMultiplyByRatio(self.currentRender.duration, bytesToCopy, self.currentRender.linesize[0]);
+        self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
         
         numberOfSamples -= framesToCopy;
         ioDataWriteOffset += bytesToCopy;
@@ -271,7 +274,7 @@
 
 - (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp *)sampleTimestamp
 {
-    if (self.currentPostPosition != self.currentPreparePosition)
+    if (CMTimeCompare(self.currentPostPosition, self.currentPreparePosition) != 0)
     {
         self.currentPostPosition = self.currentPreparePosition;
         self.currentPostDuration = self.currentPrepareDuration;

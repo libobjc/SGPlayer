@@ -29,7 +29,6 @@
 - (__kindof id <SGFFFrame>)fetchReuseFrame
 {
     SGFFAudioFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFrame class]];
-    frame.timebase = self.timebase;
     return frame;
 }
 

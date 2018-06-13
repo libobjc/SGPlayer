@@ -7,12 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 
 @protocol SGFFObjectQueueItem <NSObject>
 
-- (long long)position;
-- (long long)duration;
+- (CMTime)position;
+- (CMTime)duration;
 - (long long)size;
 
 - (void)lock;
@@ -29,7 +30,7 @@
 @property (nonatomic, assign) BOOL shouldSortObjects;
 
 - (NSInteger)count;
-- (long long)duration;
+- (CMTime)duration;
 - (long long)size;
 
 - (void)putObjectSync:(__kindof id <SGFFObjectQueueItem>)object;
@@ -38,8 +39,8 @@
 - (__kindof id <SGFFObjectQueueItem>)getObjectSync;
 - (__kindof id <SGFFObjectQueueItem>)getObjectAsync;
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
-- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler;
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler;
 
 - (void)flush;
 - (void)destroy;

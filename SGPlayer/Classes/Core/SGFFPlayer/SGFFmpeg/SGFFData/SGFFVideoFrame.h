@@ -27,9 +27,8 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 - (void)updateDataType:(SGFFVideoFrameDataType)dataType;
 - (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer;
 
-@property (nonatomic, assign) SGFFTimebase timebase;
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) CMTime position;
+@property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) long long size;
 
 @property (nonatomic, assign) enum AVPixelFormat format;

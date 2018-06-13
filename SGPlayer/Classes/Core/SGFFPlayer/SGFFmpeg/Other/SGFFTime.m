@@ -2,49 +2,44 @@
 //  SGFFTime.m
 //  SGPlayer
 //
-//  Created by Single on 2018/1/18.
-//  Copyright © 2018年 single. All rights reserved.
+//  Created by Single on 2018/6/13.
+//  Copyright © 2018 single. All rights reserved.
 //
 
 #import "SGFFTime.h"
 
-SGFFTime SGFFTimeIdentity(void)
+CMTime SGFFTimeValidate(CMTime time, CMTime defaultTime)
 {
-    static SGFFTime time = {0, {1, 1}};
+    if (CMTIME_IS_INVALID(defaultTime))
+    {
+        return time;
+    }
+    if (CMTIME_IS_INVALID(time))
+    {
+        return defaultTime;
+    }
+    if (CMTimeCompare(time, kCMTimeZero) <= 0)
+    {
+        return defaultTime;
+    }
     return time;
 }
 
-SGFFTimebase SGFFTimebaseIdentity(void)
+CMTime SGFFTimeMultiply(CMTime time, int64_t multiplier)
 {
-    static SGFFTimebase timebase = {1, 1};
-    return timebase;
+    return CMTimeMake(time.value * multiplier, time.timescale);
 }
 
-SGFFTimebase SGFFTimebaseValidate(int num, int den, int num_def, int den_def)
+CMTime SGFFTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor)
 {
-    if (num > 0 && den > 0)
-    {
-        SGFFTimebase timebase = {num, den};
-        return timebase;
-    }
-    else
-    {
-        SGFFTimebase timebase = {num_def, den_def};
-        return timebase;
-    }
+    return CMTimeMake(time.value * multiplier / divisor, time.timescale);
 }
 
-double SGFFTimeGetSeconds(SGFFTime time)
+CMTime SGFFTimeMakeWithSeconds(Float64 seconds)
 {
-    return SGFFTimestampConvertToSeconds(time.timestamp, time.timebase);
+    return CMTimeMakeWithSeconds(seconds, 10000);
 }
 
-double SGFFTimestampConvertToSeconds(long long timestamp, SGFFTimebase timebase)
-{
-    return (double)timestamp * timebase.num / timebase.den;
-}
+@implementation SGFFTime
 
-long long SGFFSecondsConvertToTimestamp(double seconds, SGFFTimebase timebase)
-{
-    return seconds * timebase.den / timebase.num;
-}
+@end

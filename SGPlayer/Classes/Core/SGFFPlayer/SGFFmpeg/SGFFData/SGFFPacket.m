@@ -24,6 +24,9 @@ SGFFObjectPoolItemLockingInterface
     {
         NSLog(@"%s", __func__);
         _corePacket = av_packet_alloc();
+        _position = kCMTimeZero;
+        _duration = kCMTimeZero;
+        _size = 0;
     }
     return self;
 }
@@ -38,18 +41,17 @@ SGFFObjectPoolItemLockingInterface
     }
 }
 
-- (void)fill
+- (void)fillWithTimebase:(CMTime)timebase
 {
     if (_corePacket)
     {
         if (_corePacket->pts != AV_NOPTS_VALUE) {
-            self.position = _corePacket->pts;
+            _position = SGFFTimeMultiply(timebase, _corePacket->pts);
         } else {
-            self.position = _corePacket->dts;
+            _position = SGFFTimeMultiply(timebase, _corePacket->dts);
         }
-        self.position = _corePacket->pts;
-        self.duration = _corePacket->duration;
-        self.size = _corePacket->size;
+        _duration = SGFFTimeMultiply(timebase, _corePacket->duration);
+        _size = _corePacket->size;
     }
 }
 
@@ -57,9 +59,9 @@ SGFFObjectPoolItemLockingImplementation
 
 - (void)clear
 {
-    self.position = 0;
-    self.duration = 0;
-    self.size = 0;
+    _position = kCMTimeZero;
+    _duration = kCMTimeZero;
+    _size = 0;
     if (_corePacket)
     {
         av_packet_unref(_corePacket);

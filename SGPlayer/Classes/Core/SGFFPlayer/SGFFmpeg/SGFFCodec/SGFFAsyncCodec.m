@@ -95,7 +95,7 @@ static SGFFPacket * flushPacket;
     return outputRender;
 }
 
-- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long *, long long *))positionHandler
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(CMTime *, CMTime *))positionHandler
 {
     id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncWithPositionHandler:positionHandler];
     if (outputRender)
@@ -163,7 +163,7 @@ static SGFFPacket * flushPacket;
 
 - (void)doFlushCodec {[self.outputRenderQueue flush];}
 - (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error {return nil;}
-- (long long)duration {return self.packetQueue.duration + self.outputRenderQueue.duration;}
+- (CMTime)duration {return CMTimeAdd(self.packetQueue.duration, self.outputRenderQueue.duration);}
 - (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
 
 @end

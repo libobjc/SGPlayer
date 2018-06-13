@@ -41,8 +41,8 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 @property (nonatomic, weak, readonly) id <SGFFSourceDelegate> delegate;
 
 - (SGFFSourceState)state;
-- (NSTimeInterval)duration;
-- (NSTimeInterval)loadedDuration;
+- (CMTime)duration;
+- (CMTime)loadedDuration;
 - (long long)loadedSize;
 - (NSError *)error;
 
@@ -61,7 +61,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)close;
 
 - (BOOL)seekable;
-- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler;
+- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler;
 
 @end
 

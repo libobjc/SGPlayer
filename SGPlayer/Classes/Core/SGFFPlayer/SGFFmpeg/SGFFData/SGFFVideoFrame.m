@@ -7,7 +7,7 @@
 //
 
 #import "SGFFVideoFrame.h"
-#import <AVFoundation/AVFoundation.h>
+#import "SGFFTime.h"
 
 @interface SGFFVideoFrame ()
 
@@ -49,12 +49,12 @@ SGFFFramePointerCoversionImplementation
     [self updateCorePixelBuffer:NULL];
 }
 
-- (void)fill
+- (void)fillWithTimebase:(CMTime)timebase
 {
-    [self fillWithPacket:NULL];
+    [self fillWithTimebase:timebase packet:NULL];
 }
 
-- (void)fillWithPacket:(AVPacket *)packet
+- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
     switch (self.dataType)
     {
@@ -62,9 +62,13 @@ SGFFFramePointerCoversionImplementation
             break;
         case SGFFVideoFrameDataTypeAVFrame:
         {
-            AVFrame * frame = self.coreFrame;
+            AVFrame * frame = _coreFrame;
             if (frame)
             {
+                self.position = SGFFTimeMultiply(timebase, av_frame_get_best_effort_timestamp(frame));
+                self.duration = SGFFTimeMultiply(timebase, av_frame_get_pkt_duration(frame));
+                self.size = av_frame_get_pkt_size(frame);
+                
                 self.format = frame->format;
                 self.pictureType = frame->pict_type;
                 self.colorRange = frame->color_range;
@@ -76,9 +80,6 @@ SGFFFramePointerCoversionImplementation
                 self.width = frame->width;
                 self.height = frame->height;
                 self.keyFrame = frame->key_frame;
-                self.position = av_frame_get_best_effort_timestamp(frame);
-                self.duration = av_frame_get_pkt_duration(frame);
-                self.size = av_frame_get_pkt_size(frame);
                 self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(frame);
                 self.packetPosition = av_frame_get_pkt_pos(frame);
                 self.packetDuration = av_frame_get_pkt_duration(frame);
@@ -115,17 +116,17 @@ SGFFFramePointerCoversionImplementation
             }
             if (packet)
             {
-                if (packet->pts != AV_NOPTS_VALUE) {
-                    self.position = packet->pts;
-                } else {
-                    self.position = packet->dts;
+                int64_t timestamp = packet.corePacket->pts;
+                if (packet.corePacket->pts == AV_NOPTS_VALUE) {
+                    timestamp = packet.corePacket->dts;
                 }
-                self.duration = packet->duration;
-                self.size = packet->size;
-                self.bestEffortTimestamp = self.position;
-                self.packetPosition = packet->pos;
-                self.packetDuration = packet->duration;
-                self.packetSize = packet->size;
+                self.position = SGFFTimeMultiply(timebase, timestamp);
+                self.duration = SGFFTimeMultiply(timebase, packet.corePacket->duration);
+                self.size = packet.corePacket->size;
+                self.bestEffortTimestamp = timestamp;
+                self.packetPosition = packet.corePacket->pos;
+                self.packetDuration = packet.corePacket->duration;
+                self.packetSize = packet.corePacket->size;
             }
         }
             break;
@@ -152,8 +153,8 @@ SGFFFramePointerCoversionImplementation
     self.width = 0;
     self.height = 0;
     self.keyFrame = 0;
-    self.position = 0;
-    self.duration = 0;
+    self.position = kCMTimeZero;
+    self.duration = kCMTimeZero;
     self.size = 0;
     self.bestEffortTimestamp = 0;
     self.packetPosition = 0;

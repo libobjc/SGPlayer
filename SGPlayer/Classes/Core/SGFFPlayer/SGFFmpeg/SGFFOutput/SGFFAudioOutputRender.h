@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGFFOutputRender.h"
 #import "avformat.h"
 
@@ -14,9 +15,8 @@ static int const SGFFAudioOutputRenderMaxChannelCount = 8;
 
 @interface SGFFAudioOutputRender : NSObject <SGFFOutputRender>
 
-@property (nonatomic, assign) SGFFTimebase timebase;
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) CMTime position;
+@property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) long long size;
 
 @property (nonatomic, assign) enum AVSampleFormat format;

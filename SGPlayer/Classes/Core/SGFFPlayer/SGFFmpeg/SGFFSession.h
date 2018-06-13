@@ -46,8 +46,8 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 - (SGFFSessionConfiguration *)configuration;
 
 - (SGFFSessionState)state;
-- (NSTimeInterval)duration;
-- (NSTimeInterval)loadedDuration;
+- (CMTime)duration;
+- (CMTime)loadedDuration;
 - (long long)loadedSize;
 - (NSError *)error;
 
@@ -59,6 +59,6 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 - (void)read;
 - (void)close;
 
-- (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL success))completionHandler;
+- (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end

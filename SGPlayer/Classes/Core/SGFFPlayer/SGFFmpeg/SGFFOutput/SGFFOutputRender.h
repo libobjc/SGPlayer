@@ -11,9 +11,9 @@
 
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
-#import "SGFFTime.h"
 
 
 typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
@@ -29,9 +29,8 @@ typedef NS_ENUM(NSUInteger, SGFFOutputRenderType)
 
 - (SGFFOutputRenderType)type;
 
-- (SGFFTimebase)timebase;
-- (long long)position;
-- (long long)duration;
+- (CMTime)position;
+- (CMTime)duration;
 - (long long)size;
 
 @end

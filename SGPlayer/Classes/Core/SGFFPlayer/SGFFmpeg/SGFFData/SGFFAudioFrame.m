@@ -7,6 +7,7 @@
 //
 
 #import "SGFFAudioFrame.h"
+#import "SGFFTime.h"
 
 @interface SGFFAudioFrame ()
 
@@ -46,24 +47,25 @@ SGFFFramePointerCoversionImplementation
     }
 }
 
-- (void)fill
+- (void)fillWithTimebase:(CMTime)timebase
 {
-    [self fillWithPacket:NULL];
+    [self fillWithTimebase:timebase packet:NULL];
 }
 
-- (void)fillWithPacket:(AVPacket *)packet
+- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
-    AVFrame * frame = self.coreFrame;
+    AVFrame * frame = _coreFrame;
     if (frame)
     {
+        self.position = SGFFTimeMultiply(timebase, av_frame_get_best_effort_timestamp(frame));
+        self.duration = SGFFTimeMultiply(timebase, av_frame_get_pkt_duration(frame));
+        self.size = av_frame_get_pkt_size(frame);
+        
         self.format = frame->format;
         self.numberOfSamples = frame->nb_samples;
         self.sampleRate = av_frame_get_sample_rate(frame);
         self.numberOfChannels = av_frame_get_channels(frame);
         self.channelLayout = av_frame_get_channel_layout(frame);
-        self.position = av_frame_get_best_effort_timestamp(frame);
-        self.duration = av_frame_get_pkt_duration(frame);
-        self.size = av_frame_get_pkt_size(frame);
         self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(frame);
         self.packetPosition = av_frame_get_pkt_pos(frame);
         self.packetDuration = av_frame_get_pkt_duration(frame);
@@ -74,15 +76,15 @@ SGFFFramePointerCoversionImplementation
 
 - (void)clear
 {
-    self.timebase = SGFFTimebaseIdentity();
+    self.position = kCMTimeZero;
+    self.duration = kCMTimeZero;
+    self.size = 0;
+    
     self.format = AV_SAMPLE_FMT_NONE;
     self.numberOfSamples = 0;
     self.sampleRate = 0;
     self.numberOfChannels = 0;
     self.channelLayout = 0;
-    self.position = 0;
-    self.duration = 0;
-    self.size = 0;
     self.bestEffortTimestamp = 0;
     self.packetPosition = 0;
     self.packetDuration = 0;

@@ -11,10 +11,10 @@
 
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
-#import "SGFFTime.h"
-#import "avformat.h"
+#import "SGFFPacket.h"
 
 @class SGFFAudioFrame;
 @class SGFFVideoFrame;
@@ -34,17 +34,16 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 
 - (SGFFFrameType)type;
 
-- (SGFFTimebase)timebase;
-- (long long)position;
-- (long long)duration;
+- (CMTime)position;
+- (CMTime)duration;
 - (long long)size;
 
 - (SGFFAudioFrame *)audioFrame;
 - (SGFFVideoFrame *)videoFrame;
 - (AVFrame *)coreFrame;
 
-- (void)fill;
-- (void)fillWithPacket:(AVPacket *)packet;
+- (void)fillWithTimebase:(CMTime)timebase;
+- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet;
 
 @end
 

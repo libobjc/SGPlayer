@@ -11,6 +11,7 @@
 
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGFFFrame.h"
 #import "SGFFPacket.h"
 #import "SGFFOutputRender.h"
@@ -44,7 +45,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (SGFFCodecType)type;
 
-@property (nonatomic, assign) SGFFTimebase timebase;
+@property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
 @property (nonatomic, weak) id <SGFFCodecCapacityDelegate> capacityDelegate;
@@ -52,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (SGFFCodecState)state;
 
-- (long long)duration;
+- (CMTime)duration;
 - (long long)size;
 
 - (BOOL)open;
@@ -61,7 +62,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
 - (id <SGFFOutputRender>)getOutputRender;
-- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(long long * current, long long * expect))positionHandler;
+- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(CMTime * current, CMTime * expect))positionHandler;
 
 @end
 

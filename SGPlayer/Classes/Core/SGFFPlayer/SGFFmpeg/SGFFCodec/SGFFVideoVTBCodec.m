@@ -72,8 +72,7 @@
                     SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
                     [frame updateDataType:SGFFVideoFrameDataTypeCVPixelBuffer];
                     [frame updateCorePixelBuffer:imageBuffer];
-                    frame.timebase = self.timebase;
-                    [frame fillWithPacket:packet.corePacket];
+                    [frame fillWithTimebase:self.timebase packet:packet];
                     result = @[frame];
                 }
             }
@@ -81,7 +80,7 @@
         if (status == kVTInvalidSessionErr)
         {
             [self doFlushCodec];
-            [NSThread sleepForTimeInterval:SGFFTimestampConvertToSeconds(packet.duration, self.timebase)];
+            [NSThread sleepForTimeInterval:0.01];
         }
         CFRelease(sampleBuffer);
     }

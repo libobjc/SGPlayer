@@ -17,7 +17,7 @@
 
 @implementation SGFFAsyncAVCodec
 
-+ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(AVRational)timebase
++ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(CMTime)timebase
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
     if (!codecContext)
@@ -32,7 +32,7 @@
         avcodec_free_context(&codecContext);
         return nil;
     }
-    av_codec_set_pkt_timebase(codecContext, timebase);
+    av_codec_set_pkt_timebase(codecContext, (AVRational){(int)timebase.value, (int)timebase.timescale});
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -55,8 +55,7 @@
 
 - (BOOL)open
 {
-    AVRational timebase = {self.timebase.num, self.timebase.den};
-    self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:timebase];
+    self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
     if (self.codecContext)
     {
         return [super open];
@@ -111,7 +110,7 @@
             if (!array) {
                 array = [NSMutableArray array];
             }
-            [frame fill];
+            [frame fillWithTimebase:self.timebase];
             [array addObject:frame];
         }
     }

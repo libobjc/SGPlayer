@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 @property (nonatomic, weak) id <SGFFOutputRenderSource> renderSource;
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
-- (SGFFTime)currentTime;
+- (CMTime)currentTime;
 
 - (void)flush;
 
@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 @protocol SGFFOutputRenderSource <NSObject>
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output;
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler;
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler;
 
 @end
 

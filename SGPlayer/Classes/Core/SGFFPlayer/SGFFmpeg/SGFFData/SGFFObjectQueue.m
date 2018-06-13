@@ -11,7 +11,7 @@
 @interface SGFFObjectQueue ()
 
 @property (nonatomic, assign) NSInteger maxCount;
-@property (nonatomic, assign) long long duration;
+@property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) long long size;
 
 @property (nonatomic, strong) NSCondition * condition;
@@ -35,6 +35,7 @@
     if (self = [super init])
     {
         self.maxCount = maxCount;
+        self.duration = kCMTimeZero;
         self.objects = [NSMutableArray array];
         self.condition = [[NSCondition alloc] init];
     }
@@ -93,10 +94,11 @@
     if (self.shouldSortObjects)
     {
         [self.objects sortUsingComparator:^NSComparisonResult(id <SGFFObjectQueueItem> obj1, id <SGFFObjectQueueItem> obj2) {
-            return obj1.position < obj2.position ? NSOrderedAscending : NSOrderedDescending;
+            return CMTimeCompare(obj1.position, obj2.position) < 0 ? NSOrderedAscending : NSOrderedDescending;
         }];
     }
-    self.duration += object.duration;
+//    NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invaild.");
+    self.duration = CMTimeAdd(self.duration, object.duration);
     self.size += object.size;
 }
 
@@ -132,7 +134,7 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
 {
     [self.condition lock];
     while (self.objects.count <= 0)
@@ -153,7 +155,7 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)
@@ -170,21 +172,21 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(long long * current, long long * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
 {
     if (!positionHandler)
     {
         return [self getObject];
     }
-    long long current = 0;
-    long long expect = 0;
+    CMTime current = kCMTimeZero;
+    CMTime expect = kCMTimeZero;
     if (!positionHandler(&current, &expect))
     {
         return [self getObject];
     }
     id <SGFFObjectQueueItem> object = nil;
-    long long first = self.objects.firstObject.position;
-    if (first <= expect || current < 0)
+    CMTime first = self.objects.firstObject.position;
+    if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
     {
         object = [self getObject];
     }
@@ -198,9 +200,9 @@
     }
     id <SGFFObjectQueueItem> object = self.objects.firstObject;
     [self.objects removeObjectAtIndex:0];
-    self.duration -= object.duration;
-    if (self.duration < 0 || self.count <= 0) {
-        self.duration = 0;
+    self.duration = CMTimeSubtract(self.duration, object.duration);
+    if (CMTimeCompare(self.duration, kCMTimeZero) < 0 || self.count <= 0) {
+        self.duration = kCMTimeZero;
     }
     self.size -= object.size;
     if (self.size <= 0 || self.count <= 0) {
@@ -223,7 +225,7 @@
     }
     [self.objects removeAllObjects];
     self.size = 0;
-    self.duration = 0;
+    self.duration = kCMTimeZero;
     if (self.puttingObject)
     {
         self.cancelPutObject = self.puttingObject;

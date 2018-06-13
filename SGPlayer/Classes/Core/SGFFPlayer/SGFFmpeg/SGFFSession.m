@@ -12,6 +12,7 @@
 #import "SGFFVideoAVCodec.h"
 #import "SGFFVideoVTBCodec.h"
 #import "SGPlayerMacro.h"
+#import "SGFFTime.h"
 #import "SGFFLog.h"
 
 @interface SGFFSession () <SGFFSourceDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate, SGFFOutputRenderSource>
@@ -79,7 +80,7 @@
     [self.source close];
 }
 
-- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
+- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
     switch (self.state)
     {
@@ -108,12 +109,12 @@
 
 #pragma mark - Setter/Getter
 
-- (NSTimeInterval)duration
+- (CMTime)duration
 {
     return self.source.duration;
 }
 
-- (NSTimeInterval)loadedDuration
+- (CMTime)loadedDuration
 {
     return self.source.loadedDuration;
 }
@@ -149,7 +150,8 @@
         case AVMEDIA_TYPE_AUDIO:
         {
             SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
-            audioCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 44100);
+            
+            audioCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
             audioCodec.codecpar = stream.coreStream->codecpar;
             codec = audioCodec;
         }
@@ -162,7 +164,7 @@
                 codecClass = [SGFFVideoVTBCodec class];
             }
             SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
-            videoCodec.timebase = SGFFTimebaseValidate(stream.coreStream->time_base.num, stream.coreStream->time_base.den, 1, 25000);
+            videoCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
             videoCodec.codecpar = stream.coreStream->codecpar;
             codec = videoCodec;
         }
@@ -229,7 +231,7 @@
         {
             mainCodec = self.source.currentVideoStream.codec;
         }
-        if (mainCodec && SGFFTimestampConvertToSeconds(mainCodec.duration, mainCodec.timebase) > 10)
+        if (mainCodec && CMTimeGetSeconds(mainCodec.duration) > 10)
         {
             shouldPaused = YES;
         }
@@ -299,7 +301,7 @@
     }
 }
 
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL (^)(long long *, long long *))positionHandler
+- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL (^)(CMTime *, CMTime *))positionHandler
 {
     switch (output.type)
     {

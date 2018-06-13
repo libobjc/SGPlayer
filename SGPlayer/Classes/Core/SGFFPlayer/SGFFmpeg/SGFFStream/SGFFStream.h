@@ -16,6 +16,8 @@
 @property (nonatomic, assign) AVStream * coreStream;
 @property (nonatomic, strong) id <SGFFCodec> codec;
 
+@property (nonatomic, assign, readonly) CMTime timebase;
+
 - (BOOL)open;
 - (void)flush;
 - (void)close;

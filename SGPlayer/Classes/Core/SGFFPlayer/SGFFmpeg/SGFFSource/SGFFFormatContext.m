@@ -68,35 +68,32 @@ static int formatContextInterruptCallback(void * ctx)
 
 #pragma mark - Setter/Getter
 
-- (NSTimeInterval)duration
+- (CMTime)duration
 {
     if (!_formatContext)
     {
-        return 0;
+        return kCMTimeZero;
     }
     int64_t duration = _formatContext->duration;
     if (duration < 0)
     {
-        return 0;
+        return kCMTimeZero;
     }
-    return (NSTimeInterval)duration / AV_TIME_BASE;
+    return CMTimeMake(duration, AV_TIME_BASE);
 }
 
-- (NSTimeInterval)loadedDuration
+- (CMTime)loadedDuration
 {
     if (self.currentAudioStream)
     {
-        long long duration = self.currentAudioStream.codec.duration;
-        SGFFTimebase timebase = self.currentAudioStream.codec.timebase;
-        return SGFFTimestampConvertToSeconds(duration, timebase);
+        CMTime ret = self.currentAudioStream.codec.duration;
+        return ret;
     }
     else if (self.currentVideoStream)
     {
-        long long duration = self.currentVideoStream.codec.duration;
-        SGFFTimebase timebase = self.currentVideoStream.codec.timebase;
-        return SGFFTimestampConvertToSeconds(duration, timebase);
+        return self.currentVideoStream.codec.duration;
     }
-    return 0;
+    return kCMTimeZero;
 }
 
 - (long long)loadedSize
@@ -173,18 +170,18 @@ static int formatContextInterruptCallback(void * ctx)
     {
         seekable = _formatContext->pb->seekable;
     }
-    if (seekable && self.duration > 0)
+    if (seekable && CMTimeCompare(self.duration, kCMTimeZero) > 0)
     {
         return YES;
     }
     return NO;
 }
 
-- (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
+- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
     if (self.state == SGFFSourceStatePaused)
     {
-        self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
         self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
         [self.readCondition lock];
@@ -193,13 +190,13 @@ static int formatContextInterruptCallback(void * ctx)
     }
     else if (self.state == SGFFSourceStateReading)
     {
-        self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
         self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
     }
     else if (self.state == SGFFSourceStateFinished)
     {
-        self.seekingTimestamp = time * AV_TIME_BASE;
+        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
         self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
         [self startReadThread];
@@ -368,11 +365,11 @@ static int formatContextInterruptCallback(void * ctx)
                 }
                 break;
             }
-            [packet fill];
             for (SGFFStream * obj in self.streams)
             {
                 if (obj.coreStream->index == packet.corePacket->stream_index)
                 {
+                    [packet fillWithTimebase:obj.timebase];
                     [obj putPacket:packet];
                 }
             }

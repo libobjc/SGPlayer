@@ -51,7 +51,6 @@ SGFFObjectPoolItemLockingImplementation
         [self.coreVideoFrame unlock];
     }
     self.coreVideoFrame = coreVideoFrame;
-    self.timebase = self.coreVideoFrame.timebase;
     self.position = self.coreVideoFrame.position;
     self.duration = self.coreVideoFrame.duration;
     self.size = self.coreVideoFrame.size;
@@ -64,9 +63,8 @@ SGFFObjectPoolItemLockingImplementation
         [self.coreVideoFrame unlock];
         self.coreVideoFrame = nil;
     }
-    self.timebase = SGFFTimebaseIdentity();
-    self.position = 0;
-    self.duration = 0;
+    self.position = kCMTimeZero;
+    self.duration = kCMTimeZero;
     self.size = 0;
 }
 

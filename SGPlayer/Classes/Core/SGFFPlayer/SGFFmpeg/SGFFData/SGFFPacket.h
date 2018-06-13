@@ -9,16 +9,17 @@
 #import <Foundation/Foundation.h>
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
+#import "SGFFTime.h"
 #import "avformat.h"
 
 @interface SGFFPacket : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
 - (AVPacket *)corePacket;
 
-@property (nonatomic, assign) long long position;
-@property (nonatomic, assign) long long duration;
-@property (nonatomic, assign) long long size;
+@property (nonatomic, assign, readonly) CMTime position;
+@property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign, readonly) long long size;
 
-- (void)fill;
+- (void)fillWithTimebase:(CMTime)timebase;
 
 @end

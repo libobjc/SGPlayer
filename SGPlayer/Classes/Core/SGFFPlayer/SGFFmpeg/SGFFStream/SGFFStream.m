@@ -49,4 +49,13 @@
     return NO;
 }
 
+- (CMTime)timebase
+{
+    if (self.coreStream)
+    {
+        return CMTimeMake(self.coreStream->time_base.num, self.coreStream->time_base.den);
+    }
+    return kCMTimeZero;
+}
+
 @end

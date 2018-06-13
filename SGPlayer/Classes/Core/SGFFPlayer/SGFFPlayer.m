@@ -99,7 +99,7 @@
         case SGPlayerPlaybackStateFinished:
             if (ABS(self.currentTime - self.duration) < 0.1)
             {
-                [self.session seekToTime:0 completionHandler:nil];
+                [self.session seekToTime:kCMTimeZero completionHandler:nil];
             }
             break;
         case SGPlayerPlaybackStateFailed:
@@ -166,7 +166,7 @@
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    [self.session seekToTime:time completionHandler:completionHandler];
+    [self.session seekToTime:CMTimeMakeWithSeconds(time, 10000) completionHandler:completionHandler];
     
 //    if (!self.seekEnable || !self.decoder.prepareToDecode) {
 //        if (completionHandler) {
@@ -308,12 +308,12 @@
 
 - (void)sessionDidChangeCapacity:(SGFFSession *)session
 {
-    if (session.loadedDuration >= self.minimumPlayableDuration) {
+    Float64 duration = CMTimeGetSeconds(session.loadedDuration);
+    if (duration >= self.minimumPlayableDuration) {
         self.loadState = SGPlayerLoadStatePlayable;
     } else {
         self.loadState = SGPlayerLoadStateLoading;
     }
-    NSLog(@"%f, %lld", session.loadedDuration, session.loadedSize);
 }
 
 
