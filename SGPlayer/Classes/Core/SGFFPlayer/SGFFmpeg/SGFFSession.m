@@ -253,21 +253,21 @@
 
 - (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingFrame:(id <SGFFFrame>)frame
 {
-    NSArray <id <SGFFFilter>> * filters = nil;
+    id <SGFFFilter> filter = nil;
     switch (frame.type)
     {
         case SGFFFrameTypeAudio:
-            filters = self.configuration.audioFilters;
+            filter = self.configuration.audioFilter;
             break;
         case SGFFFrameTypeVideo:
-            filters = self.configuration.videoFilters;
+            filter = self.configuration.videoFilter;
             break;
         default:
             break;
     }
-    for (id <SGFFFilter> obj in filters)
+    if (filter)
     {
-        frame = [obj processingFrame:frame];
+        frame = [filter processingFrame:frame];
     }
     return frame;
 }
