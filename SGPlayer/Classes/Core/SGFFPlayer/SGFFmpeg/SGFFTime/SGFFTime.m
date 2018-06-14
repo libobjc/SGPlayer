@@ -39,7 +39,3 @@ CMTime SGFFTimeMakeWithSeconds(Float64 seconds)
 {
     return CMTimeMakeWithSeconds(seconds, 10000);
 }
-
-@implementation SGFFTime
-
-@end

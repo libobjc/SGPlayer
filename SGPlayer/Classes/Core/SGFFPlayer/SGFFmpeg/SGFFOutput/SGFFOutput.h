@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
 #import "SGFFOutputRender.h"
+#import "SGFFTimeSynchronizer.h"
 
 
 @protocol SGFFOutput;
@@ -32,6 +33,7 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 
 - (SGFFOutputType)type;
 
+@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
 @property (nonatomic, weak) id <SGFFOutputRenderSource> renderSource;
 
 - (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;

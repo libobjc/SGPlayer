@@ -13,7 +13,3 @@ CMTime SGFFTimeValidate(CMTime time, CMTime defaultTime);
 CMTime SGFFTimeMultiply(CMTime time, int64_t multiplier);
 CMTime SGFFTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor);
 CMTime SGFFTimeMakeWithSeconds(Float64 seconds);
-
-@interface SGFFTime : NSObject
-
-@end

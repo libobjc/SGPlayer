@@ -26,6 +26,7 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
+@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
 
 @end
 
@@ -179,6 +180,9 @@
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
+    self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
+    self.configuration.audioOutput.timeSynchronizer = self.timeSynchronizer;
+    self.configuration.videoOutput.timeSynchronizer = self.timeSynchronizer;
     self.configuration.audioOutput.renderSource = self;
     self.configuration.videoOutput.renderSource = self;
     self.state = SGFFSessionStateOpened;

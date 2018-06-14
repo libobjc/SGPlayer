@@ -29,9 +29,6 @@
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
-@property (nonatomic, assign) CMTime currentPostPosition;
-@property (nonatomic, assign) CMTime currentPostDuration;
-@property (nonatomic, assign) double currentPostPositionTimsstamp;
 
 @property (nonatomic, assign) enum AVSampleFormat inputFormat;
 @property (nonatomic, assign) int inputSampleRate;
@@ -45,6 +42,7 @@
 
 @implementation SGFFAudioOutput
 
+@synthesize timeSynchronizer = _timeSynchronizer;
 @synthesize renderSource = _renderSource;
 
 - (SGFFOutputType)type
@@ -99,20 +97,7 @@
 
 - (CMTime)currentTime
 {
-    CMTime position = self.currentPostPosition;
-    CMTime duration = self.currentPostDuration;
-    CMTime interval = kCMTimeZero;
-    double currentPostPositionTimsstamp = self.currentPostPositionTimsstamp;
-    double timestamp = 0;
-    if (currentPostPositionTimsstamp > 0)
-    {
-        timestamp = CACurrentMediaTime() - currentPostPositionTimsstamp;
-        interval = SGFFTimeMakeWithSeconds(timestamp);
-    }
-    CMTime delta = CMTimeMinimum(interval, duration);
-    CMTime result = CMTimeAdd(position, delta);
-//    NSLog(@"audio time : %@", [NSValue valueWithCMTime:result]);
-    return result;
+    return self.timeSynchronizer.position;
 }
 
 - (void)flush
@@ -127,8 +112,6 @@
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
         self.currentPreparePosition = kCMTimeZero;
         self.currentPrepareDuration = kCMTimeZero;
-        self.currentPostPosition = kCMTimeZero;
-        self.currentPostDuration = kCMTimeZero;
     }
     return self;
 }
@@ -274,12 +257,7 @@
 
 - (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp *)sampleTimestamp
 {
-    if (CMTimeCompare(self.currentPostPosition, self.currentPreparePosition) != 0)
-    {
-        self.currentPostPosition = self.currentPreparePosition;
-        self.currentPostDuration = self.currentPrepareDuration;
-        self.currentPostPositionTimsstamp = CACurrentMediaTime();
-    }
+    [self.timeSynchronizer postPosition:self.currentPreparePosition duration:self.currentPrepareDuration];
 }
 
 @end

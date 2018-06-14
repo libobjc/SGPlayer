@@ -78,7 +78,6 @@
     self.audioOutput = [[SGFFAudioOutput alloc] init];
     self.videoOutput = [[SGFFVideoOutput alloc] init];
     self.videoOutput.delegate = self;
-    self.videoOutput.keyOutput = self.audioOutput;
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     
