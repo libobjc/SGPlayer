@@ -15,5 +15,6 @@
 @property (nonatomic, assign, readonly) CMTime position;
 
 - (void)postPosition:(CMTime)position duration:(CMTime)duration;
+- (void)flush;
 
 @end

@@ -99,6 +99,7 @@
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
         SGStrongSelf
+        [strongSelf.timeSynchronizer flush];;
         [strongSelf.configuration.videoOutput flush];
         if (completionHandler)
         {

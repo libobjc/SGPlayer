@@ -165,7 +165,18 @@
 
 - (void)seekToTime:(NSTimeInterval)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    [self.session seekToTime:CMTimeMakeWithSeconds(time, 10000) completionHandler:completionHandler];
+    SGWeakSelf
+    [self.session seekToTime:CMTimeMakeWithSeconds(time, 10000) completionHandler:^(BOOL success) {
+        SGStrongSelf
+        if (strongSelf.playbackState == SGPlayerPlaybackStateFinished)
+        {
+            strongSelf.playbackState = SGPlayerPlaybackStatePlaying;
+        }
+        if (completionHandler)
+        {
+            completionHandler(success);
+        }
+    }];
     
 //    if (!self.seekEnable || !self.decoder.prepareToDecode) {
 //        if (completionHandler) {
@@ -307,11 +318,23 @@
 
 - (void)sessionDidChangeCapacity:(SGFFSession *)session
 {
-    Float64 duration = CMTimeGetSeconds(session.loadedDuration);
-    if (duration >= self.minimumPlayableDuration) {
-        self.loadState = SGPlayerLoadStatePlayable;
-    } else {
-        self.loadState = SGPlayerLoadStateLoading;
+    if (self.session.state == SGFFSessionStateFinished)
+    {
+        if (CMTimeCompare(session.loadedDuration, kCMTimeZero) > 0) {
+            self.loadState = SGPlayerLoadStatePlayable;
+        } else {
+            self.loadState = SGPlayerLoadStateIdle;
+            self.playbackState = SGPlayerPlaybackStateFinished;
+        }
+    }
+    else
+    {
+        Float64 duration = CMTimeGetSeconds(session.loadedDuration);
+        if (duration >= self.minimumPlayableDuration) {
+            self.loadState = SGPlayerLoadStatePlayable;
+        } else {
+            self.loadState = SGPlayerLoadStateLoading;
+        }
     }
 }
 

@@ -23,9 +23,7 @@
     if (self = [super init])
     {
         _rate = CMTimeMake(1, 1);
-        _postPosition = kCMTimeZero;
-        _postDuration = kCMTimeZero;
-        _postMediaTime = kCMTimeZero;
+        [self flush];
     }
     return self;
 }
@@ -35,6 +33,13 @@
     self.postPosition = position;
     self.postDuration = duration;
     self.postMediaTime = SGFFTimeMakeWithSeconds(CACurrentMediaTime());
+}
+
+- (void)flush
+{
+    self.postPosition = kCMTimeZero;
+    self.postDuration = kCMTimeZero;
+    self.postMediaTime = kCMTimeZero;
 }
 
 - (CMTime)position
