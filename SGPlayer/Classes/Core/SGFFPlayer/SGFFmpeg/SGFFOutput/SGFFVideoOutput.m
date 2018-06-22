@@ -195,7 +195,7 @@
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
         [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-        [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size];
+        [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size scale:glView.glScale];
         [model draw];
         [model bindEmpty];
         [render unlock];

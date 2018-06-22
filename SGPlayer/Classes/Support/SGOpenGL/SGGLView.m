@@ -15,6 +15,7 @@
     GLuint _displayRenderbuffer;
 }
 
+@property (nonatomic, assign) SGGLSize layerSize;
 @property (nonatomic, assign) SGGLSize displaySize;
 @property (nonatomic, strong) dispatch_queue_t drawingQueue;
 
@@ -46,12 +47,17 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    int width = CGRectGetWidth(self.bounds);
-    int height = CGRectGetHeight(self.bounds);
-    if (width != _displaySize.width || height != _displaySize.width)
+    SGGLSize layerSize = {CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)};
+    self.layerSize = layerSize;
+    [self resetupFrameBufferIfNeeded];
+}
+
+- (void)resetupFrameBufferIfNeeded
+{
+    if (self.layerSize.width != self.displaySize.width ||
+        self.layerSize.height != self.displaySize.width)
     {
-        SGGLSize displaySize = {width, height};
-        _displaySize = displaySize;
+        self.displaySize = self.layerSize;
         dispatch_sync(self.drawingQueue, ^{
             [self destroyFramebuffer];
             [self setupFramebuffer];
@@ -65,6 +71,7 @@
     dispatch_async(self.drawingQueue, ^{
         SGPLGLContextSetCurrentContext(self.context);
         glBindFramebuffer(GL_FRAMEBUFFER, _displayFramebuffer);
+        glViewport(0, 0, self.displaySize.width * self.glScale, self.displaySize.height * self.glScale);
         BOOL success = [self.delegate glView:self draw:self.displaySize];
         if (success)
         {
@@ -87,7 +94,8 @@
 
 - (void)setupFramebuffer
 {
-    if (_displaySize.width == 0 || _displaySize.height == 0)
+    if (self.displaySize.width == 0 ||
+        self.displaySize.height == 0)
     {
         return;
     }
@@ -97,7 +105,6 @@
     glGenRenderbuffers(1, &_displayRenderbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, _displayRenderbuffer);
     [self renderbufferStorage];
-    glViewport(0, 0, (GLint)_displaySize.width, (GLint)_displaySize.height);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, _displayRenderbuffer);
 }
 

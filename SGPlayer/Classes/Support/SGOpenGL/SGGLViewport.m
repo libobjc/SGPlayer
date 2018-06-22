@@ -11,7 +11,7 @@
 
 @implementation SGGLViewport
 
-+ (void)updateWithMode:(SGGLViewportMode)mode textureSize:(SGGLSize)textureSize layerSize:(SGGLSize)layerSize
++ (void)updateWithMode:(SGGLViewportMode)mode textureSize:(SGGLSize)textureSize layerSize:(SGGLSize)layerSize scale:(double)scale
 {
     SGGLRect viewport = {0, 0, layerSize.width, layerSize.height};
     double renderAspect = (double)textureSize.width / textureSize.height;
@@ -36,7 +36,7 @@
         viewport.width = width;
         viewport.height = layerSize.height;
     }
-    glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    glViewport(viewport.x * scale, viewport.y * scale, viewport.width * scale, viewport.height * scale);
 }
 
 @end

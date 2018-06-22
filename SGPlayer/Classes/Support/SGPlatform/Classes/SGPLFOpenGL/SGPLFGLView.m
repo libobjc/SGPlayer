@@ -46,17 +46,23 @@
 {
     if (self = [super initWithFrame:frame])
     {
-        CAEAGLLayer * glLayer = (CAEAGLLayer *)self.layer;
-        glLayer.opaque = YES;
-        glLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking : @(NO),
-                                       kEAGLDrawablePropertyColorFormat : kEAGLColorFormatRGBA8};
+        self.glScale = 1.0f;
+        if ([self respondsToSelector:@selector(setContentScaleFactor:)])
+        {
+            self.contentScaleFactor = [[UIScreen mainScreen] scale];
+            self.glScale = self.contentScaleFactor;
+        }
+        
+        self.glLayer = (CAEAGLLayer *)self.layer;
+        self.glLayer.opaque = YES;
+        self.glLayer.drawableProperties = @{kEAGLDrawablePropertyRetainedBacking : @(NO), kEAGLDrawablePropertyColorFormat : kEAGLColorFormatRGBA8};
     }
     return self;
 }
 
 - (void)renderbufferStorage
 {
-    [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer *)self.layer];
+    [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:self.glLayer];
 }
 
 - (void)present
