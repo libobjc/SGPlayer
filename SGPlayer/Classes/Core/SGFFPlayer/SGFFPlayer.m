@@ -11,6 +11,7 @@
 #import "SGFFPlayerView.h"
 #import "SGFFAudioOutput.h"
 #import "SGFFVideoOutput.h"
+#import "SGFFRenderView.h"
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
@@ -21,7 +22,7 @@
 #import "SGPlayerAudioInterruptHandler.h"
 
 
-@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate, SGFFVideoOutputDelegate>
+@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate, SGFFOutputDelegate>
 
 @property (nonatomic, assign) NSInteger tagInternal;
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
@@ -37,7 +38,7 @@
 @property (nonatomic, strong) SGFFSession * session;
 @property (nonatomic, strong) SGFFAudioOutput * audioOutput;
 @property (nonatomic, strong) SGFFVideoOutput * videoOutput;
-@property (nonatomic, strong) SGFFPlayerView * playerView;
+@property (nonatomic, strong) SGFFRenderView * videoRenderView;
 
 @end
 
@@ -50,10 +51,10 @@
         self.tagInternal = [SGPlayerUtil globalPlayerTag];
         self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
         self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
-        self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
+        self.backgroundMode = SGPlayerBackgroundModeContinue;
         self.minimumPlayableDuration = 2.f;
         
-        self.playerView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
+        self.videoRenderView = [[SGFFRenderView alloc] initWithFrame:CGRectZero];
     }
     return self;
 }
@@ -256,9 +257,8 @@
 
 - (SGPLFView *)view
 {
-    return self.playerView;
+    return self.videoRenderView;
 }
-
 
 #pragma mark - clean
 
@@ -290,14 +290,12 @@
     [self callbackForTimes];
 }
 
-
 #pragma mark - Callback
 
 - (void)callbackForTimes
 {
     
 }
-
 
 #pragma mark - SGFFSessionDelegate
 
@@ -338,13 +336,11 @@
     }
 }
 
+#pragma mark - SGFFOutputDelegate
 
-#pragma mark - SGFFVideoOutputDelegate
-
-- (void)videoOutputDidChangeDisplayView:(SGFFVideoOutput *)output
+- (void)output:(id <SGFFOutput>)output hasNewRneder:(id <SGFFOutputRender>)render
 {
-    self.videoOutput.displayView.frame = self.playerView.bounds;
-    [self.playerView addSubview:self.videoOutput.displayView];
+    [self.videoRenderView prensentRender:render];
 }
 
 @end

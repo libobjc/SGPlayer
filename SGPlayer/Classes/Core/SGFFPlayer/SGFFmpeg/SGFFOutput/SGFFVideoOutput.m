@@ -9,22 +9,12 @@
 #import "SGFFVideoOutput.h"
 #import "SGFFVideoOutputRender.h"
 #import "SGPlayerMacro.h"
-#import "SGGLView.h"
-#import "SGGLViewport.h"
-#import "SGGLModelPool.h"
-#import "SGGLProgramPool.h"
 #import "SGGLDisplayLink.h"
-#import "SGGLTextureUploader.h"
-#import "SGFFDefineMap.h"
 
-@interface SGFFVideoOutput () <SGGLViewDelegate>
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLModelPool * modelPool;
-@property (nonatomic, strong) SGGLProgramPool * programPool;
+@interface SGFFVideoOutput ()
+
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGGLTextureUploader * textureUploader;
 @property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
 
 @end
@@ -32,6 +22,7 @@
 @implementation SGFFVideoOutput
 
 @synthesize timeSynchronizer = _timeSynchronizer;
+@synthesize delegate = _delegate;
 @synthesize renderSource = _renderSource;
 
 - (SGFFOutputType)type
@@ -46,37 +37,16 @@
     return render;
 }
 
-- (CMTime)currentTime
-{
-    return self.currentRender.position;
-}
-
-- (void)flush
-{
-    [self.coreLock lock];
-    if (self.currentRender)
-    {
-        [self.currentRender unlock];
-        self.currentRender = nil;
-    }
-    [self.coreLock unlock];
-}
-
 - (instancetype)init
 {
     if (self = [super init])
     {
-        self.coreLock = [[NSLock alloc] init];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
-            self.glView.delegate = self;
-            [self.delegate videoOutputDidChangeDisplayView:self];
-            SGWeakSelf
-            self.displayLink = [SGGLDisplayLink displayLinkWithCallback:^{
-                SGStrongSelf
-                [strongSelf displayLinkHandler];
-            }];
-        });
+        [self flush];
+        SGWeakSelf
+        self.displayLink = [SGGLDisplayLink displayLinkWithCallback:^{
+            SGStrongSelf
+            [strongSelf displayLinkHandler];
+        }];
     }
     return self;
 }
@@ -84,27 +54,22 @@
 - (void)dealloc
 {
     [self.displayLink invalidate];
-    [self.coreLock lock];
-    if (self.currentRender)
-    {
-        [self.currentRender unlock];
-        self.currentRender = nil;
-    }
-    [self.coreLock unlock];
-    SGGLView * glView = self.glView;
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [glView removeFromSuperview];
-    });
+    [self flush];
 }
 
-- (SGPLFView *)displayView
+- (CMTime)currentTime
 {
-    return self.glView;
+    return self.currentRender.position;
+}
+
+- (void)flush
+{
+    [self.currentRender unlock];
+    self.currentRender = nil;
 }
 
 - (void)displayLinkHandler
 {
-    [self.coreLock lock];
     SGFFVideoOutputRender * render = nil;
     if (self.currentRender)
     {
@@ -115,7 +80,7 @@
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
-            * current = strongSelf.currentRender.position;
+            * current = strongSelf.currentTime;
             return YES;
         }];
     }
@@ -123,83 +88,13 @@
     {
         render = [self.renderSource outputFecthRender:self];
     }
-    if (render)
+    if (render != self.currentRender)
     {
-        if (self.currentRender != render)
-        {
-            [self.currentRender unlock];
-            self.currentRender = render;
+        [self.currentRender unlock];
+        self.currentRender = render;
+        if ([self.delegate respondsToSelector:@selector(output:hasNewRneder:)]) {
+            [self.delegate output:self hasNewRneder:self.currentRender];
         }
-        [self.glView display];
-    }
-    [self.coreLock unlock];
-}
-
-- (void)setupOpenGLIfNeeded
-{
-    if (!self.textureUploader) {
-        self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
-    }
-    if (!self.programPool) {
-        self.programPool = [[SGGLProgramPool alloc] init];
-    }
-    if (!self.modelPool) {
-        self.modelPool = [[SGGLModelPool alloc] init];
-    }
-}
-
-
-#pragma mark - SGGLViewDelegate
-
-- (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
-{
-    [self.coreLock lock];
-    SGFFVideoOutputRender * render = self.currentRender;
-    if (!render)
-    {
-        [self.coreLock unlock];
-        return NO;
-    }
-    [render lock];
-    [self.coreLock unlock];
-    
-    [self setupOpenGLIfNeeded];
-    
-    id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.coreVideoFrame.format)];
-    SGGLSize renderSize = {render.coreVideoFrame.width, render.coreVideoFrame.height};
-    
-    if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
-    {
-        [render unlock];
-        return NO;
-    }
-    else
-    {
-        [program use];
-        [program bindVariable];
-        BOOL success = NO;
-        if (render.coreVideoFrame.corePixelBuffer)
-        {
-            success = [self.textureUploader uploadWithCVPixelBuffer:render.coreVideoFrame.corePixelBuffer];
-        }
-        else if (render.coreVideoFrame.coreFrame)
-        {
-            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.coreVideoFrame.format) data:render.coreVideoFrame.data size:renderSize];
-        }
-        if (!success)
-        {
-            [render unlock];
-            return NO;
-        }
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
-        [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-        [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size scale:glView.glScale];
-        [model draw];
-        [model bindEmpty];
-        [render unlock];
-        return YES;
     }
 }
 
