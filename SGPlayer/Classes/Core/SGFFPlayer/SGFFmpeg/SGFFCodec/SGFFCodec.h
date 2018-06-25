@@ -45,6 +45,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 - (SGFFCodecType)type;
 
+@property (nonatomic, assign) int index;
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 

@@ -26,6 +26,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
+@property (nonatomic, strong) id <SGFFCodec> audioCodec;
+@property (nonatomic, strong) id <SGFFCodec> videoCodec;
 @property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
 
 @end
@@ -99,6 +101,8 @@
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
         SGStrongSelf
+        [self.audioCodec flush];
+        [self.videoCodec flush];
         [strongSelf.timeSynchronizer flush];;
         [strongSelf.configuration.videoOutput flush];
         if (completionHandler)
@@ -118,22 +122,30 @@
 
 - (CMTime)loadedDuration
 {
-    return self.source.loadedDuration;
+    if (self.audioCodec)
+    {
+        return self.audioCodec.duration;
+    }
+    else if (self.videoCodec)
+    {
+        return self.videoCodec.duration;
+    }
+    return kCMTimeZero;
 }
 
 - (long long)loadedSize
 {
-    return self.source.loadedSize;
+    return MAX(self.audioCodec.size, self.videoCodec.size);
 }
 
 - (BOOL)videoEnable
 {
-    return self.source.currentVideoStream != nil;
+    return self.videoCodec != nil;
 }
 
 - (BOOL)audioEnable
 {
-    return self.source.currentAudioStream != nil;
+    return self.audioCodec != nil;
 }
 
 - (BOOL)seekEnable
@@ -144,43 +156,69 @@
 
 #pragma mark - SGFFSourceDelegate
 
-- (id <SGFFCodec>)source:(id <SGFFSource>)source codecForStream:(SGFFStream *)stream
+- (void)source:(id <SGFFSource>)source hasNewPacket:(SGFFPacket *)packet
 {
-    id <SGFFCodec> codec = nil;
-    switch (stream.coreStream->codecpar->codec_type)
+    if (packet.index == self.audioCodec.index)
     {
-        case AVMEDIA_TYPE_AUDIO:
-        {
-            SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
-            
-            audioCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
-            audioCodec.codecpar = stream.coreStream->codecpar;
-            codec = audioCodec;
-        }
-            break;
-        case AVMEDIA_TYPE_VIDEO:
-        {
-            Class codecClass = [SGFFVideoAVCodec class];
-            if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
-            {
-                codecClass = [SGFFVideoVTBCodec class];
-            }
-            SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
-            videoCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
-            videoCodec.codecpar = stream.coreStream->codecpar;
-            codec = videoCodec;
-        }
-            break;
-        default:
-            break;
+        [packet fillWithTimebase:self.audioCodec.timebase];
+        [self.audioCodec putPacket:packet];
     }
-    codec.capacityDelegate = self;
-    codec.processingDelegate = self;
-    return codec;
+    else if (packet.index == self.videoCodec.index)
+    {
+        [packet fillWithTimebase:self.videoCodec.timebase];
+        [self.videoCodec putPacket:packet];
+    }
 }
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
+    for (SGFFStream * stream in source.streams)
+    {
+        switch (stream.mediaType)
+        {
+            case SGMediaTypeAudio:
+            {
+                if (!self.audioCodec)
+                {
+                    SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
+                    audioCodec.index = stream.index;
+                    audioCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
+                    audioCodec.codecpar = stream.coreStream->codecpar;
+                    if ([audioCodec open])
+                    {
+                        self.audioCodec = audioCodec;
+                    }
+                }
+            }
+                break;
+            case SGMediaTypeVideo:
+            {
+                if (!self.videoCodec)
+                {
+                    Class codecClass = [SGFFVideoAVCodec class];
+                    if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
+                    {
+                        codecClass = [SGFFVideoVTBCodec class];
+                    }
+                    SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
+                    videoCodec.index = stream.index;
+                    videoCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
+                    videoCodec.codecpar = stream.coreStream->codecpar;
+                    if ([videoCodec open])
+                    {
+                        self.videoCodec = videoCodec;
+                    }
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    }
+    self.audioCodec.capacityDelegate = self;
+    self.audioCodec.processingDelegate = self;
+    self.videoCodec.capacityDelegate = self;
+    self.videoCodec.processingDelegate = self;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.configuration.audioOutput.timeSynchronizer = self.timeSynchronizer;
     self.configuration.videoOutput.timeSynchronizer = self.timeSynchronizer;
@@ -221,20 +259,16 @@
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
 {
     BOOL shouldPaused = NO;
-    if (self.source.loadedSize > 15 * 1024 * 1024)
+    if (MIN(self.audioCodec.size, self.videoCodec.size) > 15 * 1024 * 1024)
     {
         shouldPaused = YES;
     }
     else
     {
-        id <SGFFCodec> mainCodec = nil;
-        if (self.source.currentAudioStream)
+        id <SGFFCodec> mainCodec = self.audioCodec;
+        if (!mainCodec)
         {
-            mainCodec = self.source.currentAudioStream.codec;
-        }
-        else if (self.source.currentVideoStream)
-        {
-            mainCodec = self.source.currentVideoStream.codec;
+            mainCodec = self.videoCodec;
         }
         if (mainCodec && CMTimeGetSeconds(mainCodec.duration) > 10)
         {
@@ -290,7 +324,6 @@
     }
 }
 
-
 #pragma mark - SGFFOutputRenderSource
 
 - (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
@@ -298,9 +331,9 @@
     switch (output.type)
     {
         case SGFFOutputTypeAudio:
-            return [self.source.currentAudioStream.codec getOutputRender];
+            return [self.audioCodec getOutputRender];
         case SGFFOutputTypeVideo:
-            return [self.source.currentVideoStream.codec getOutputRender];
+            return [self.videoCodec getOutputRender];
         default:
             return nil;
     }
@@ -311,13 +344,12 @@
     switch (output.type)
     {
         case SGFFOutputTypeAudio:
-            return [self.source.currentAudioStream.codec getOutputRenderWithPositionHandler:positionHandler];
+            return [self.audioCodec getOutputRenderWithPositionHandler:positionHandler];
         case SGFFOutputTypeVideo:
-            return [self.source.currentVideoStream.codec getOutputRenderWithPositionHandler:positionHandler];
+            return [self.videoCodec getOutputRenderWithPositionHandler:positionHandler];
         default:
             return nil;
     }
 }
-
 
 @end

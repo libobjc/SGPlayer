@@ -14,8 +14,9 @@
 
 @interface SGFFPacket : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
-- (AVPacket *)corePacket;
+@property (nonatomic, assign, readonly) AVPacket * corePacket;
 
+@property (nonatomic, assign, readonly) int index;
 @property (nonatomic, assign, readonly) CMTime position;
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) long long size;

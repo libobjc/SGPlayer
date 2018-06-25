@@ -40,9 +40,7 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSArray <SGFFStream *> * videoStreams;
 @property (nonatomic, strong) NSArray <SGFFStream *> * audioStreams;
 @property (nonatomic, strong) NSArray <SGFFStream *> * subtitleStreams;
-@property (nonatomic, strong) SGFFStream * currentVideoStream;
-@property (nonatomic, strong) SGFFStream * currentAudioStream;
-@property (nonatomic, strong) SGFFStream * currentSubtitleStream;
+@property (nonatomic, strong) NSArray <SGFFStream *> * otherStreams;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openOperation;
@@ -65,7 +63,6 @@ static int formatContextInterruptCallback(void * ctx)
     return self;
 }
 
-
 #pragma mark - Setter/Getter
 
 - (CMTime)duration
@@ -81,31 +78,6 @@ static int formatContextInterruptCallback(void * ctx)
     }
     return CMTimeMake(duration, AV_TIME_BASE);
 }
-
-- (CMTime)loadedDuration
-{
-    if (self.currentAudioStream)
-    {
-        CMTime ret = self.currentAudioStream.codec.duration;
-        return ret;
-    }
-    else if (self.currentVideoStream)
-    {
-        return self.currentVideoStream.codec.duration;
-    }
-    return kCMTimeZero;
-}
-
-- (long long)loadedSize
-{
-    long long bufferedSize = 0;
-    for (SGFFStream * obj in self.streams)
-    {
-        bufferedSize += obj.codec.size;
-    }
-    return bufferedSize;
-}
-
 
 #pragma mark - Interface
 
@@ -152,10 +124,6 @@ static int formatContextInterruptCallback(void * ctx)
     {
         avformat_close_input(&_formatContext);
         _formatContext = NULL;
-    }
-    for (SGFFStream * obj in self.streams)
-    {
-        [obj close];
     }
 }
 
@@ -238,7 +206,8 @@ static int formatContextInterruptCallback(void * ctx)
     self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatOpenInput);
     if (self.error)
     {
-        if (_formatContext) {
+        if (_formatContext)
+        {
             avformat_free_context(_formatContext);
         }
         [self callbackForError];
@@ -249,7 +218,8 @@ static int formatContextInterruptCallback(void * ctx)
     self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatFindStreamInfo);
     if (self.error)
     {
-        if (_formatContext) {
+        if (_formatContext)
+        {
             avformat_close_input(&_formatContext);
             avformat_free_context(_formatContext);
         }
@@ -261,6 +231,7 @@ static int formatContextInterruptCallback(void * ctx)
     NSMutableArray <SGFFStream *> * audioStreams = [NSMutableArray array];
     NSMutableArray <SGFFStream *> * videoStreams = [NSMutableArray array];
     NSMutableArray <SGFFStream *> * subtitleStreams = [NSMutableArray array];
+    NSMutableArray <SGFFStream *> * otherStreams = [NSMutableArray array];
     for (int i = 0; i < _formatContext->nb_streams; i++)
     {
         SGFFStream * obj = [[SGFFStream alloc] init];
@@ -278,6 +249,7 @@ static int formatContextInterruptCallback(void * ctx)
                 [subtitleStreams addObject:obj];
                 break;
             default:
+                [otherStreams addObject:obj];
                 break;
         }
     }
@@ -285,15 +257,13 @@ static int formatContextInterruptCallback(void * ctx)
     self.audioStreams = [audioStreams copy];
     self.videoStreams = [videoStreams copy];
     self.subtitleStreams = [subtitleStreams copy];
+    self.otherStreams = [otherStreams copy];
     
-    [self selectStreams:self.audioStreams ref:&_currentAudioStream];
-    [self selectStreams:self.videoStreams ref:&_currentVideoStream];
-    [self selectStreams:self.subtitleStreams ref:&_currentSubtitleStream];
-    
-    if (self.currentAudioStream || self.currentVideoStream)
+    if (self.audioStreams.count > 0 || self.videoStreams.count > 0)
     {
         self.state = SGFFSourceStateOpened;
-        if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)]) {
+        if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)])
+        {
             [self.delegate sourceDidOpened:self];
         }
     }
@@ -320,9 +290,9 @@ static int formatContextInterruptCallback(void * ctx)
 {
     while (YES)
     {
-        if (self.state == SGFFSourceStateFinished
-            || self.state == SGFFSourceStateClosed
-            || self.state == SGFFSourceStateFailed)
+        if (self.state == SGFFSourceStateFinished ||
+            self.state == SGFFSourceStateClosed ||
+            self.state == SGFFSourceStateFailed)
         {
             break;
         }
@@ -339,10 +309,6 @@ static int formatContextInterruptCallback(void * ctx)
         else if (self.state == SGFFSourceStateSeeking)
         {
             av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-            for (SGFFStream * obj in self.streams)
-            {
-                [obj flush];
-            }
             if (self.seekingCompletionHandler)
             {
                 self.seekingCompletionHandler(YES);
@@ -365,73 +331,20 @@ static int formatContextInterruptCallback(void * ctx)
                 }
                 break;
             }
-            for (SGFFStream * obj in self.streams)
-            {
-                if (obj.coreStream->index == packet.corePacket->stream_index)
-                {
-                    [packet fillWithTimebase:obj.timebase];
-                    [obj putPacket:packet];
-                }
-            }
+            [self.delegate source:self hasNewPacket:packet];
             [packet unlock];
             continue;
         }
     }
 }
 
-
-#pragma mark - Open Streams
-
-- (BOOL)selectStream:(SGFFStream *)stream
-{
-    switch (stream.coreStream->codecpar->codec_type)
-    {
-        case AVMEDIA_TYPE_VIDEO:
-            return [self selectStream:stream ref:&_currentAudioStream];
-        case AVMEDIA_TYPE_AUDIO:
-            return [self selectStream:stream ref:&_currentAudioStream];
-        case AVMEDIA_TYPE_SUBTITLE:
-            return [self selectStream:stream ref:&_currentSubtitleStream];
-        default:
-            return NO;
-    }
-    return NO;
-}
-
-- (BOOL)selectStreams:(NSArray <SGFFStream *> *)streams ref:(SGFFStream * __strong *)streamRef
-{
-    for (SGFFStream * obj in streams)
-    {
-        BOOL result = [self selectStream:obj ref:streamRef];
-        if (result) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (BOOL)selectStream:(SGFFStream *)stream ref:(SGFFStream * __strong *)streamRef
-{
-    if ([self.delegate respondsToSelector:@selector(source:codecForStream:)])
-    {
-        stream.codec = [self.delegate source:self codecForStream:stream];
-        if ([stream open])
-        {
-            [(* streamRef) close];
-            * streamRef = stream;
-            return YES;
-        }
-    }
-    return NO;
-}
-
-
 #pragma mark - Callback
 
 - (void)callbackForError
 {
     self.state = SGFFSourceStateFailed;
-    if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)]) {
+    if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)])
+    {
         [self.delegate sourceDidFailed:self];
     }
 }

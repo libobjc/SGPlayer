@@ -7,21 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFCodec.h"
-#import "SGFFPacket.h"
-#import "SGFFOutputRender.h"
+#import <AVFoundation/AVFoundation.h>
+#import "avformat.h"
+#import "SGDefines.h"
 
 @interface SGFFStream : NSObject
 
 @property (nonatomic, assign) AVStream * coreStream;
-@property (nonatomic, strong) id <SGFFCodec> codec;
 
+@property (nonatomic, assign, readonly) SGMediaType mediaType;
+@property (nonatomic, assign, readonly) int index;
 @property (nonatomic, assign, readonly) CMTime timebase;
-
-- (BOOL)open;
-- (void)flush;
-- (void)close;
-
-- (BOOL)putPacket:(SGFFPacket *)packet;
 
 @end

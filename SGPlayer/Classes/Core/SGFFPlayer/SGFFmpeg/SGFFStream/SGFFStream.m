@@ -7,46 +7,26 @@
 //
 
 #import "SGFFStream.h"
-
-@interface SGFFStream ()
-
-@end
+#import "SGFFDefineMap.h"
 
 @implementation SGFFStream
 
-- (BOOL)open
+- (SGMediaType)mediaType
 {
-    if (self.codec)
+    if (self.coreStream)
     {
-        return [self.codec open];
+        return SGFFMediaType(self.coreStream->codecpar->codec_type);
     }
-    return NO;
+    return SGMediaTypeUnknown;
 }
 
-- (void)flush
+- (int)index
 {
-    if (self.codec)
+    if (self.coreStream)
     {
-        [self.codec flush];
+        return self.coreStream->index;
     }
-}
-
-- (void)close
-{
-    if (self.codec)
-    {
-        [self.codec close];
-        self.codec = nil;
-    }
-}
-
-- (BOOL)putPacket:(SGFFPacket *)packet
-{
-    if (self.codec)
-    {
-        return [self.codec putPacket:packet];
-    }
-    return NO;
+    return -1;
 }
 
 - (CMTime)timebase

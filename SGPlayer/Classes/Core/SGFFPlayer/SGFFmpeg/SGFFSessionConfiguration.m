@@ -10,4 +10,13 @@
 
 @implementation SGFFSessionConfiguration
 
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.enableVideoToolBox = YES;
+    }
+    return self;
+}
+
 @end

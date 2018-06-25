@@ -88,7 +88,7 @@
     {
         render = [self.renderSource outputFecthRender:self];
     }
-    if (render != self.currentRender)
+    if (render && render != self.currentRender)
     {
         [self.currentRender unlock];
         self.currentRender = render;

@@ -12,8 +12,6 @@
 
 SGFFObjectPoolItemLockingInterface
 
-@property (nonatomic, assign, readonly) AVPacket * corePacket;
-
 @end
 
 @implementation SGFFPacket
@@ -39,6 +37,11 @@ SGFFObjectPoolItemLockingInterface
         av_packet_free(&_corePacket);
         _corePacket = nil;
     }
+}
+
+- (int)index
+{
+    return _corePacket->stream_index;
 }
 
 - (void)fillWithTimebase:(CMTime)timebase

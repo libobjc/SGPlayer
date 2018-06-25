@@ -8,6 +8,18 @@
 
 #import "SGFFDefineMap.h"
 
+SGMediaType SGFFMediaType(enum AVMediaType mediaType)
+{
+    if (mediaType == AVMEDIA_TYPE_AUDIO) {
+        return SGMediaTypeAudio;
+    } else if (mediaType == AVMEDIA_TYPE_VIDEO) {
+        return SGMediaTypeVideo;
+    } else if (mediaType == AVMEDIA_TYPE_SUBTITLE) {
+        return SGMediaTypeSubtitle;
+    }
+    return SGMediaTypeUnknown;
+}
+
 SGGLProgramType SGFFDMProgram(enum AVPixelFormat format)
 {
     if (format == AV_PIX_FMT_YUV420P) {

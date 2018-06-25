@@ -42,17 +42,13 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 
 - (SGFFSourceState)state;
 - (CMTime)duration;
-- (CMTime)loadedDuration;
-- (long long)loadedSize;
 - (NSError *)error;
 
 - (NSArray <SGFFStream *> *)streams;
 - (NSArray <SGFFStream *> *)audioStreams;
 - (NSArray <SGFFStream *> *)videoStreams;
 - (NSArray <SGFFStream *> *)subtitleStreams;
-- (SGFFStream *)currentAudioStream;
-- (SGFFStream *)currentVideoStream;
-- (SGFFStream *)currentSubtitleStream;
+- (NSArray <SGFFStream *> *)otherStreams;
 
 - (void)open;
 - (void)read;
@@ -68,7 +64,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 
 @protocol SGFFSourceDelegate <NSObject>
 
-- (id <SGFFCodec>)source:(id <SGFFSource>)source codecForStream:(SGFFStream *)stream;
+- (void)source:(id <SGFFSource>)source hasNewPacket:(SGFFPacket *)packet;
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
 - (void)sourceDidFinished:(id <SGFFSource>)source;
