@@ -10,4 +10,6 @@
 
 @interface SGFFPlayerView : SGPLFView
 
+@property (nonatomic, strong) SGPLFView * view;
+
 @end

@@ -15,7 +15,7 @@
 #import "SGFFTime.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecCapacityDelegate, SGFFCodecProcessingDelegate, SGFFOutputRenderSource>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecDelegate, SGFFOutputDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -28,6 +28,8 @@
 @property (nonatomic, strong) id <SGFFSource> source;
 @property (nonatomic, strong) id <SGFFCodec> audioCodec;
 @property (nonatomic, strong) id <SGFFCodec> videoCodec;
+@property (nonatomic, strong) id <SGFFOutput> audioOutput;
+@property (nonatomic, strong) id <SGFFOutput> videoOutput;
 @property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
 
 @end
@@ -59,6 +61,8 @@
         self.delegate = delegate;
         self.delegateQueue = dispatch_queue_create("SGFFSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
         self.configuration = configuration;
+        self.audioOutput = self.configuration.audioOutput;
+        self.videoOutput = self.configuration.videoOutput;
         self.state = SGFFSessionStateIdle;
     }
     return self;
@@ -81,6 +85,10 @@
 {
     self.state = SGFFSessionStateClosed;
     [self.source close];
+    [self.audioCodec close];
+    [self.videoCodec close];
+    [self.audioOutput close];
+    [self.videoOutput close];
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
@@ -103,6 +111,8 @@
         SGStrongSelf
         [self.audioCodec flush];
         [self.videoCodec flush];
+        [self.audioOutput flush];
+        [self.videoOutput flush];
         [strongSelf.timeSynchronizer flush];;
         [strongSelf.configuration.videoOutput flush];
         if (completionHandler)
@@ -112,6 +122,46 @@
     }];
 }
 
+- (void)updateCapacity
+{
+    CMTime duration = kCMTimeZero;
+    long long size = 0;
+    
+    if (self.audioCodec && self.audioOutput)
+    {
+        duration = CMTimeAdd(self.audioCodec.duration, self.audioOutput.duration);
+        size = self.audioCodec.size + self.audioOutput.size;
+    }
+    else if (self.videoCodec && self.videoOutput)
+    {
+        duration = CMTimeAdd(self.videoCodec.duration, self.videoOutput.duration);
+        size = self.videoCodec.size + self.videoOutput.size;
+    }
+    else
+    {
+        return;
+    }
+    
+    BOOL shouldPaused = NO;
+    if (size > 15 * 1024 * 1024)
+    {
+        shouldPaused = YES;
+    }
+    else if (CMTimeCompare(duration, CMTimeMake(10, 1)) > 0)
+    {
+        shouldPaused = YES;
+    }
+    if (shouldPaused) {
+        [self.source pause];
+    } else {
+        [self.source resume];
+    }
+    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)]) {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidChangeCapacity:self];
+        });
+    }
+}
 
 #pragma mark - Setter/Getter
 
@@ -122,20 +172,20 @@
 
 - (CMTime)loadedDuration
 {
-    if (self.audioCodec)
+    if (self.audioCodec && self.audioOutput)
     {
-        return self.audioCodec.duration;
+        return CMTimeAdd(self.audioCodec.duration, self.audioOutput.duration);
     }
-    else if (self.videoCodec)
+    else if (self.videoCodec && self.videoOutput)
     {
-        return self.videoCodec.duration;
+        return CMTimeAdd(self.videoCodec.duration, self.videoOutput.duration);
     }
     return kCMTimeZero;
 }
 
 - (long long)loadedSize
 {
-    return MAX(self.audioCodec.size, self.videoCodec.size);
+    return self.audioCodec.size + self.audioOutput.size + self.videoCodec.size + self.videoOutput.size;
 }
 
 - (BOOL)videoEnable
@@ -152,7 +202,6 @@
 {
     return self.source.seekable;
 }
-
 
 #pragma mark - SGFFSourceDelegate
 
@@ -215,15 +264,13 @@
                 break;
         }
     }
-    self.audioCodec.capacityDelegate = self;
-    self.audioCodec.processingDelegate = self;
-    self.videoCodec.capacityDelegate = self;
-    self.videoCodec.processingDelegate = self;
+
+    self.audioCodec.delegate = self;
+    self.videoCodec.delegate = self;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.configuration.audioOutput.timeSynchronizer = self.timeSynchronizer;
     self.configuration.videoOutput.timeSynchronizer = self.timeSynchronizer;
-    self.configuration.audioOutput.renderSource = self;
-    self.configuration.videoOutput.renderSource = self;
+
     self.state = SGFFSessionStateOpened;
     if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)]) {
         dispatch_async(self.delegateQueue, ^{
@@ -253,103 +300,46 @@
     }
 }
 
-
-#pragma mark - SGFFCodecCapacityDelegate
+#pragma mark - SGFFCodecDelegate
 
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
 {
-    BOOL shouldPaused = NO;
-    if (MIN(self.audioCodec.size, self.videoCodec.size) > 15 * 1024 * 1024)
+    [self updateCapacity];
+}
+
+- (void)codec:(id <SGFFCodec>)codec hasNewFrame:(id <SGFFFrame>)frame
+{
+    if (codec == self.audioCodec)
     {
-        shouldPaused = YES;
+        [self.audioOutput putFrame:frame];
     }
-    else
+    else if (codec == self.videoCodec)
     {
-        id <SGFFCodec> mainCodec = self.audioCodec;
-        if (!mainCodec)
-        {
-            mainCodec = self.videoCodec;
+        [self.videoOutput putFrame:frame];
+    }
+}
+
+#pragma mark - SGFFOutputDelegate
+
+- (void)outputDidChangeCapacity:(id <SGFFOutput>)output
+{
+    if (output == self.audioOutput)
+    {
+        if (self.audioOutput.count >= 5) {
+            [self.audioCodec pause];
+        } else {
+            [self.audioCodec resume];
         }
-        if (mainCodec && CMTimeGetSeconds(mainCodec.duration) > 10)
-        {
-            shouldPaused = YES;
+    }
+    else if (output == self.videoOutput)
+    {
+        if (self.videoOutput.count >= 3) {
+            [self.videoCodec pause];
+        } else {
+            [self.videoCodec resume];
         }
     }
-    if (shouldPaused) {
-        [self.source pause];
-    } else {
-        [self.source resume];
-    }
-    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)]) {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidChangeCapacity:self];
-        });
-    }
-}
-
-
-#pragma mark - SGFFCodecProcessingDelegate
-
-- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingFrame:(id <SGFFFrame>)frame
-{
-    id <SGFFFilter> filter = nil;
-    switch (frame.type)
-    {
-        case SGFFFrameTypeAudio:
-            filter = self.configuration.audioFilter;
-            break;
-        case SGFFFrameTypeVideo:
-            filter = self.configuration.videoFilter;
-            break;
-        default:
-            break;
-    }
-    if (filter)
-    {
-        frame = [filter processingFrame:frame];
-    }
-    return frame;
-}
-
-- (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame
-{
-    switch (frame.type)
-    {
-        case SGFFFrameTypeAudio:
-            return [self.configuration.audioOutput renderWithFrame:frame];
-        case SGFFFrameTypeVideo:
-            return [self.configuration.videoOutput renderWithFrame:frame];
-        default:
-            return nil;
-    }
-}
-
-#pragma mark - SGFFOutputRenderSource
-
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output
-{
-    switch (output.type)
-    {
-        case SGFFOutputTypeAudio:
-            return [self.audioCodec getOutputRender];
-        case SGFFOutputTypeVideo:
-            return [self.videoCodec getOutputRender];
-        default:
-            return nil;
-    }
-}
-
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL (^)(CMTime *, CMTime *))positionHandler
-{
-    switch (output.type)
-    {
-        case SGFFOutputTypeAudio:
-            return [self.audioCodec getOutputRenderWithPositionHandler:positionHandler];
-        case SGFFOutputTypeVideo:
-            return [self.videoCodec getOutputRenderWithPositionHandler:positionHandler];
-        default:
-            return nil;
-    }
+    [self updateCapacity];
 }
 
 @end

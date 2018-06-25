@@ -24,9 +24,9 @@
 
 @implementation SGFFVideoVTBCodec
 
-- (SGFFCodecType)type
+- (SGMediaType)mediaType
 {
-    return SGFFCodecTypeVideo;
+    return SGMediaTypeVideo;
 }
 
 - (NSInteger)outputRenderQueueMaxCount
@@ -39,7 +39,6 @@
     if ([self setupDecompressionSession])
     {
         BOOL success = [super open];
-        self.outputRenderQueue.shouldSortObjects = YES;
         return success;
     }
     return NO;

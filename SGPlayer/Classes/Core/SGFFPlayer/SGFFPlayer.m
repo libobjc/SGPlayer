@@ -11,7 +11,7 @@
 #import "SGFFPlayerView.h"
 #import "SGFFAudioOutput.h"
 #import "SGFFVideoOutput.h"
-#import "SGFFRenderView.h"
+#import "SGFFPlayerView.h"
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
@@ -22,7 +22,7 @@
 #import "SGPlayerAudioInterruptHandler.h"
 
 
-@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate, SGFFOutputDelegate>
+@interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate>
 
 @property (nonatomic, assign) NSInteger tagInternal;
 @property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
@@ -38,7 +38,7 @@
 @property (nonatomic, strong) SGFFSession * session;
 @property (nonatomic, strong) SGFFAudioOutput * audioOutput;
 @property (nonatomic, strong) SGFFVideoOutput * videoOutput;
-@property (nonatomic, strong) SGFFRenderView * videoRenderView;
+@property (nonatomic, strong) SGFFPlayerView * displayView;
 
 @end
 
@@ -54,7 +54,7 @@
         self.backgroundMode = SGPlayerBackgroundModeContinue;
         self.minimumPlayableDuration = 2.f;
         
-        self.videoRenderView = [[SGFFRenderView alloc] initWithFrame:CGRectZero];
+        self.displayView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
     }
     return self;
 }
@@ -78,9 +78,9 @@
     SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
     self.audioOutput = [[SGFFAudioOutput alloc] init];
     self.videoOutput = [[SGFFVideoOutput alloc] init];
-    self.videoOutput.delegate = self;
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
+    self.displayView.view = self.videoOutput.displayView;
     
     self.session = [SGFFSession sessionWithContentURL:self.contentURL
                                              delegate:self
@@ -257,7 +257,7 @@
 
 - (SGPLFView *)view
 {
-    return self.videoRenderView;
+    return self.displayView;
 }
 
 #pragma mark - clean
@@ -334,13 +334,6 @@
             self.loadState = SGPlayerLoadStateLoading;
         }
     }
-}
-
-#pragma mark - SGFFOutputDelegate
-
-- (void)output:(id <SGFFOutput>)output hasNewRneder:(id <SGFFOutputRender>)render
-{
-    [self.videoRenderView prensentRender:render];
 }
 
 @end

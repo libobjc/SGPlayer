@@ -13,11 +13,9 @@
 
 @property (nonatomic, assign) SGFFCodecState state;
 
-@property (nonatomic, strong) SGFFObjectQueue * packetQueue;
-@property (nonatomic, strong) SGFFObjectQueue * outputRenderQueue;
-
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
+@property (nonatomic, strong) NSCondition * decodeCondition;
 
 @end
 
@@ -26,10 +24,12 @@
 @synthesize index = _index;
 @synthesize timebase = _timebase;
 @synthesize codecpar = _codecpar;
-@synthesize capacityDelegate = _capacityDelegate;
-@synthesize processingDelegate = _processingDelegate;
+@synthesize delegate = _delegate;
 
-- (SGFFCodecType)type {return SGFFCodecTypeUnknown;}
+- (SGMediaType)mediaType
+{
+    return SGMediaTypeUnknown;
+}
 
 static SGFFPacket * flushPacket;
 
@@ -41,7 +41,6 @@ static SGFFPacket * flushPacket;
         dispatch_once(&onceToken, ^{
             flushPacket = [[SGFFPacket alloc] init];
         });
-        self.outputRenderQueueMaxCount = 5;
     }
     return self;
 }
@@ -49,8 +48,7 @@ static SGFFPacket * flushPacket;
 - (BOOL)open
 {
     self.state = SGFFCodecStateOpening;
-    self.packetQueue = [[SGFFObjectQueue alloc] init];
-    self.outputRenderQueue = [[SGFFObjectQueue alloc] initWithMaxCount:self.outputRenderQueueMaxCount];
+    _packetQueue = [[SGFFObjectQueue alloc] init];
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
     self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -62,19 +60,42 @@ static SGFFPacket * flushPacket;
     return YES;
 }
 
+- (void)pause
+{
+    if (self.state == SGFFCodecStateDecoding)
+    {
+        self.state = SGFFCodecStatePaused;
+    }
+}
+
+- (void)resume
+{
+    if (self.state == SGFFCodecStatePaused)
+    {
+        self.state = SGFFCodecStateDecoding;
+        [self.decodeCondition lock];
+        [self.decodeCondition broadcast];
+        [self.decodeCondition unlock];
+    }
+}
+
 - (void)flush
 {
     [self.packetQueue flush];
-    [self.outputRenderQueue flush];
     [self.packetQueue putObjectSync:flushPacket];
-    [self.capacityDelegate codecDidChangeCapacity:self];
+    [self.decodeCondition lock];
+    [self.decodeCondition broadcast];
+    [self.decodeCondition unlock];
+    [self.delegate codecDidChangeCapacity:self];
 }
 
 - (void)close
 {
     self.state = SGFFCodecStateClosed;
     [self.packetQueue destroy];
-    [self.outputRenderQueue destroy];
+    [self.decodeCondition lock];
+    [self.decodeCondition broadcast];
+    [self.decodeCondition unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
 }
@@ -82,28 +103,23 @@ static SGFFPacket * flushPacket;
 - (BOOL)putPacket:(SGFFPacket *)packet
 {
     [self.packetQueue putObjectSync:packet];
-    [self.capacityDelegate codecDidChangeCapacity:self];
+    [self.delegate codecDidChangeCapacity:self];
     return YES;
 }
 
-- (id <SGFFOutputRender>)getOutputRender
+- (NSUInteger)count
 {
-    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsync];
-    if (outputRender)
-    {
-        [self.capacityDelegate codecDidChangeCapacity:self];
-    }
-    return outputRender;
+    return self.packetQueue.count;
 }
 
-- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(CMTime *, CMTime *))positionHandler
+- (CMTime)duration
 {
-    id <SGFFOutputRender> outputRender = [self.outputRenderQueue getObjectAsyncWithPositionHandler:positionHandler];
-    if (outputRender)
-    {
-        [self.capacityDelegate codecDidChangeCapacity:self];
-    }
-    return outputRender;
+    return self.packetQueue.duration;
+}
+
+- (long long)size
+{
+    return self.packetQueue.size;
 }
 
 - (void)decodeThread
@@ -115,6 +131,16 @@ static SGFFPacket * flushPacket;
             || self.state == SGFFCodecStateFailed)
         {
             break;
+        }
+        else if (self.state == SGFFCodecStatePaused)
+        {
+            [self.decodeCondition lock];
+            if (self.state == SGFFCodecStatePaused)
+            {
+                [self.decodeCondition wait];
+            }
+            [self.decodeCondition unlock];
+            continue;
         }
         else if (self.state == SGFFCodecStateDecoding)
         {
@@ -137,34 +163,27 @@ static SGFFPacket * flushPacket;
                     {
                         for (id <SGFFFrame> frame in frames)
                         {
-                            id <SGFFFrame> newFrame = [self.processingDelegate codec:self processingFrame:frame];
-                            if (newFrame)
-                            {
-                                id <SGFFOutputRender> outputRender = [self.processingDelegate codec:self processingOutputRender:newFrame];
-                                if (outputRender)
-                                {
-                                    [self.outputRenderQueue putObjectSync:outputRender];
-                                    [outputRender unlock];
-                                }
-                                if (newFrame != frame)
-                                {
-                                    [newFrame unlock];
-                                }
-                            }
+                            [self.delegate codec:self hasNewFrame:frame];
                             [frame unlock];
                         }
                     }
                     [packet unlock];
                 }
+                [self.delegate codecDidChangeCapacity:self];
             }
             continue;
         }
     }
 }
 
-- (void)doFlushCodec {[self.outputRenderQueue flush];}
-- (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error {return nil;}
-- (CMTime)duration {return CMTimeAdd(self.packetQueue.duration, self.outputRenderQueue.duration);}
-- (long long)size {return self.packetQueue.size + self.outputRenderQueue.size;}
+- (void)doFlushCodec
+{
+    
+}
+
+- (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error
+{
+    return nil;
+}
 
 @end

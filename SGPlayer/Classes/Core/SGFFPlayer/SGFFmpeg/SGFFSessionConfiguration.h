@@ -9,15 +9,11 @@
 #import <Foundation/Foundation.h>
 #import "SGFFSource.h"
 #import "SGFFCodec.h"
-#import "SGFFFilter.h"
 #import "SGFFOutput.h"
 
 @interface SGFFSessionConfiguration : NSObject
 
 @property (nonatomic, assign) BOOL enableVideoToolBox;
-
-@property (nonatomic, strong) id <SGFFFilter> audioFilter;
-@property (nonatomic, strong) id <SGFFFilter> videoFilter;
 
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;

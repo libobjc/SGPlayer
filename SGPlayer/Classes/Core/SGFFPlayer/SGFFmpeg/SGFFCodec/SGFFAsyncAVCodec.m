@@ -117,6 +117,9 @@
     return array;
 }
 
-- (__kindof id <SGFFFrame>)fetchReuseFrame {return nil;}
+- (__kindof id <SGFFFrame>)fetchReuseFrame
+{
+    return nil;
+}
 
 @end

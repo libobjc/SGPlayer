@@ -7,7 +7,10 @@
 //
 
 #import "SGFFOutput.h"
+#import "SGPlatform.h"
 
 @interface SGFFVideoOutput : NSObject <SGFFOutput>
+
+- (SGPLFView *)displayView;
 
 @end

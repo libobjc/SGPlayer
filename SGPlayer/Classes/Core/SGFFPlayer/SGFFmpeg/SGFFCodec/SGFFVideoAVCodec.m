@@ -16,14 +16,9 @@
 
 @implementation SGFFVideoAVCodec
 
-- (SGFFCodecType)type
+- (SGMediaType)mediaType
 {
-    return SGFFCodecTypeVideo;
-}
-
-- (NSInteger)outputRenderQueueMaxCount
-{
-    return 3;
+    return SGMediaTypeVideo;
 }
 
 - (__kindof id <SGFFFrame>)fetchReuseFrame

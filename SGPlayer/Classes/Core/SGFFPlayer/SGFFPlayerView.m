@@ -10,4 +10,17 @@
 
 @implementation SGFFPlayerView
 
+- (void)setView:(SGPLFView *)view
+{
+    _view = view;
+    _view.frame = self.bounds;
+    [self addSubview:_view];
+}
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.view.frame = self.bounds;
+}
+
 @end

@@ -18,7 +18,6 @@
 
 @protocol SGFFOutput;
 @protocol SGFFOutputDelegate;
-@protocol SGFFOutputRenderSource;
 
 
 typedef NS_ENUM(NSUInteger, SGFFOutputType)
@@ -35,28 +34,24 @@ typedef NS_ENUM(NSUInteger, SGFFOutputType)
 - (SGFFOutputType)type;
 
 @property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
-@property (nonatomic, weak) id <SGFFOutputDelegate> delegate;
-@property (nonatomic, weak) id <SGFFOutputRenderSource> renderSource;
 
-- (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame;
-- (CMTime)currentTime;
+@property (nonatomic, weak) id <SGFFOutputDelegate> delegate;
+
+- (NSUInteger)count;
+- (CMTime)duration;
+- (long long)size;
 
 - (void)flush;
+- (void)close;
+
+- (void)putFrame:(id <SGFFFrame>)frame;
 
 @end
 
 
 @protocol SGFFOutputDelegate <NSObject>
 
-- (void)output:(id <SGFFOutput>)output hasNewRneder:(id <SGFFOutputRender>)render;
-
-@end
-
-
-@protocol SGFFOutputRenderSource <NSObject>
-
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output;
-- (id <SGFFOutputRender>)outputFecthRender:(id <SGFFOutput>)output positionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler;
+- (void)outputDidChangeCapacity:(id <SGFFOutput>)output;
 
 @end
 

@@ -12,22 +12,12 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import "SGDefines.h"
 #import "SGFFFrame.h"
 #import "SGFFPacket.h"
-#import "SGFFOutputRender.h"
 
 @protocol SGFFCodec;
-@protocol SGFFCodecCapacityDelegate;
-@protocol SGFFCodecProcessingDelegate;
-
-
-typedef NS_ENUM(NSUInteger, SGFFCodecType)
-{
-    SGFFCodecTypeUnknown,
-    SGFFCodecTypeVideo,
-    SGFFCodecTypeAudio,
-    SGFFCodecTypeSubtitle,
-};
+@protocol SGFFCodecDelegate;
 
 
 typedef NS_ENUM(NSUInteger, SGFFCodecState)
@@ -36,6 +26,7 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
     SGFFCodecStateOpening,
     SGFFCodecStateOpened,
     SGFFCodecStateDecoding,
+    SGFFCodecStatePaused,
     SGFFCodecStateClosed,
     SGFFCodecStateFailed,
 };
@@ -43,42 +34,35 @@ typedef NS_ENUM(NSUInteger, SGFFCodecState)
 
 @protocol SGFFCodec <NSObject>
 
-- (SGFFCodecType)type;
+- (SGMediaType)mediaType;
 
 @property (nonatomic, assign) int index;
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
-@property (nonatomic, weak) id <SGFFCodecCapacityDelegate> capacityDelegate;
-@property (nonatomic, weak) id <SGFFCodecProcessingDelegate> processingDelegate;
+@property (nonatomic, weak) id <SGFFCodecDelegate> delegate;
 
 - (SGFFCodecState)state;
 
+- (NSUInteger)count;
 - (CMTime)duration;
 - (long long)size;
 
 - (BOOL)open;
+- (void)pause;
+- (void)resume;
 - (void)flush;
 - (void)close;
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
-- (id <SGFFOutputRender>)getOutputRender;
-- (id <SGFFOutputRender>)getOutputRenderWithPositionHandler:(BOOL (^)(CMTime * current, CMTime * expect))positionHandler;
 
 @end
 
 
-@protocol SGFFCodecCapacityDelegate <NSObject>
+@protocol SGFFCodecDelegate <NSObject>
 
 - (void)codecDidChangeCapacity:(id <SGFFCodec>)codec;
-
-@end
-
-
-@protocol SGFFCodecProcessingDelegate <NSObject>
-
-- (id <SGFFFrame>)codec:(id <SGFFCodec>)codec processingFrame:(id <SGFFFrame>)frame;
-- (id <SGFFOutputRender>)codec:(id <SGFFCodec>)codec processingOutputRender:(id <SGFFFrame>)frame;
+- (void)codec:(id <SGFFCodec>)codec hasNewFrame:(id <SGFFFrame>)frame;
 
 @end
 

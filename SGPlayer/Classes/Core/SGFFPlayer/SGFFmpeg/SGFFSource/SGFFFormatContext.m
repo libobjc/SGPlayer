@@ -107,7 +107,7 @@ static int formatContextInterruptCallback(void * ctx)
     {
         self.state = SGFFSourceStateReading;
         [self.readCondition lock];
-        [self.readCondition signal];
+        [self.readCondition broadcast];
         [self.readCondition unlock];
     }
 }

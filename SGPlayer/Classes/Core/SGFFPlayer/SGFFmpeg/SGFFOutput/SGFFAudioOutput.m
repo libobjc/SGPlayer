@@ -25,6 +25,7 @@
 }
 
 @property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
+@property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
@@ -43,19 +44,54 @@
 @implementation SGFFAudioOutput
 
 @synthesize timeSynchronizer = _timeSynchronizer;
-@synthesize renderSource = _renderSource;
+@synthesize delegate = _delegate;
 
 - (SGFFOutputType)type
 {
     return SGFFOutputTypeAudio;
 }
 
-- (id <SGFFOutputRender>)renderWithFrame:(id <SGFFFrame>)frame
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.frameQueue = [[SGFFObjectQueue alloc] initWithMaxCount:3];
+        self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
+        self.currentPreparePosition = kCMTimeZero;
+        self.currentPrepareDuration = kCMTimeZero;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [self.audioPlayer pause];
+    [self close];
+}
+
+- (void)flush
+{
+    [self.frameQueue flush];
+    [self.currentRender unlock];
+    self.currentRender = nil;
+    self.currentRenderReadOffset = 0;
+}
+
+- (void)close
+{
+    [self.frameQueue destroy];
+    [self.currentRender unlock];
+    self.currentRender = nil;
+    self.currentRenderReadOffset = 0;
+    [self clearSwrContext];
+}
+
+- (void)putFrame:(id <SGFFFrame>)frame
 {
     SGFFAudioFrame * audioFrame = frame.audioFrame;
     if (!audioFrame)
     {
-        return nil;
+        return;
     }
     
     self.inputFormat = audioFrame.format;
@@ -67,7 +103,7 @@
     [self setupSwrContextIfNeeded];
     if (!_swrContext)
     {
-        return nil;
+        return;
     }
     const int numberOfChannelsRatio = MAX(1, self.audioPlayer.numberOfChannels / audioFrame.numberOfChannels);
     const int sampleRateRatio = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
@@ -91,38 +127,24 @@
     render.duration = frame.duration;
     render.size = frame.size;
     [render updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
-    
-    return render;
+    [self.frameQueue putObjectSync:render];
+    [self.delegate outputDidChangeCapacity:self];
+    [render unlock];
 }
 
-- (CMTime)currentTime
+- (NSUInteger)count
 {
-    return self.timeSynchronizer.position;
+    return self.frameQueue.count;
 }
 
-- (void)flush
+- (CMTime)duration
 {
-    
+    return self.frameQueue.duration;
 }
 
-- (instancetype)init
+- (long long)size
 {
-    if (self = [super init])
-    {
-        self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
-        self.currentPreparePosition = kCMTimeZero;
-        self.currentPrepareDuration = kCMTimeZero;
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    [self.audioPlayer pause];
-    [self clearSwrContext];
-    [self.currentRender unlock];
-    self.currentRender = nil;
-    self.currentRenderReadOffset = 0;
+    return self.frameQueue.size;
 }
 
 - (void)play
@@ -210,7 +232,8 @@
     {
         if (!self.currentRender)
         {
-            self.currentRender = [self.renderSource outputFecthRender:self];
+            self.currentRender = [self.frameQueue getObjectAsync];
+            [self.delegate outputDidChangeCapacity:self];
         }
         if (!self.currentRender)
         {
