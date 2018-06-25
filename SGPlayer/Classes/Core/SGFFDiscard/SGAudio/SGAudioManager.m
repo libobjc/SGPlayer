@@ -128,7 +128,7 @@ SGAudioOutputContext;
 - (BOOL)setupAudioUnit
 {
     OSStatus result;
-    UInt32 audioStreamBasicDescriptionSize = sizeof(AudioStreamBasicDescription);;
+    UInt32 audioStreamBasicDescriptionSize = sizeof(AudioStreamBasicDescription);
     
     self.outputContext = (SGAudioOutputContext *)malloc(sizeof(SGAudioOutputContext));
     memset(self.outputContext, 0, sizeof(SGAudioOutputContext));
