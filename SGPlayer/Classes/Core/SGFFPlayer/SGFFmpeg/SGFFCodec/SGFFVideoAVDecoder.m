@@ -102,13 +102,18 @@
 
 - (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
+    NSArray <__kindof SGFFFrame *> * result = nil;
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (self.applicationState == UIApplicationStateBackground)
     {
-        return nil;
+        SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
+        frame.position = packet.position;
+        frame.duration = packet.duration;
+        frame.size = packet.size;
+        result = @[frame];
+        return result;
     }
 #endif
-    __block NSArray <__kindof SGFFFrame *> * result = nil;
     int64_t timestamp = packet.corePacket->pts;
     if (packet.corePacket->pts == AV_NOPTS_VALUE)
     {
