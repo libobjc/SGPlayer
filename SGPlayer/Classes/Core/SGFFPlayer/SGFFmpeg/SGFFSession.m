@@ -71,20 +71,22 @@
 - (void)open
 {
     self.state = SGFFSessionStateReading;
-    self.source = [[SGFFFormatContext alloc] initWithContentURL:self.contentURL delegate:self];
-    [self.source open];
+    self.source = [[SGFFFormatContext alloc] init];
+    self.source.URL = self.contentURL;
+    self.source.delegate = self;
+    [self.source openStreams];
 }
 
 - (void)read
 {
     self.state = SGFFSessionStateReading;
-    [self.source read];
+    [self.source startReading];
 }
 
 - (void)close
 {
     self.state = SGFFSessionStateClosed;
-    [self.source close];
+    [self.source stopReading];
     [self.audioCodec close];
     [self.videoCodec close];
     [self.audioOutput close];
@@ -152,9 +154,9 @@
         shouldPaused = YES;
     }
     if (shouldPaused) {
-        [self.source pause];
+        [self.source pauseReading];
     } else {
-        [self.source resume];
+        [self.source resumeReading];
     }
     if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)]) {
         dispatch_async(self.delegateQueue, ^{

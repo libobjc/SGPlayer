@@ -9,15 +9,12 @@
 #ifndef SGFFSource_h
 #define SGFFSource_h
 
-
 #import <Foundation/Foundation.h>
 #import "SGFFStream.h"
 #import "SGFFPacket.h"
 
-
 @protocol SGFFSource;
 @protocol SGFFSourceDelegate;
-
 
 typedef NS_ENUM(NSUInteger, SGFFSourceState)
 {
@@ -32,13 +29,10 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
     SGFFSourceStateFailed,
 };
 
-
 @protocol SGFFSource <NSObject>
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate;
-
-@property (nonatomic, copy, readonly) NSURL * contentURL;
-@property (nonatomic, weak, readonly) id <SGFFSourceDelegate> delegate;
+@property (nonatomic, copy) NSURL * URL;
+@property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
 
 - (SGFFSourceState)state;
 - (CMTime)duration;
@@ -50,17 +44,17 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (NSArray <SGFFStream *> *)subtitleStreams;
 - (NSArray <SGFFStream *> *)otherStreams;
 
-- (void)open;
-- (void)read;
-- (void)pause;
-- (void)resume;
-- (void)close;
+- (void)openStreams;
+
+- (void)startReading;
+- (void)pauseReading;
+- (void)resumeReading;
+- (void)stopReading;
 
 - (BOOL)seekable;
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler;
 
 @end
-
 
 @protocol SGFFSourceDelegate <NSObject>
 
@@ -70,6 +64,5 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (void)sourceDidFinished:(id <SGFFSource>)source;
 
 @end
-
 
 #endif /* SGFFSource_h */

@@ -11,9 +11,9 @@
 #import "SGFFError.h"
 #import "avformat.h"
 
-static int formatContextInterruptCallback(void * ctx)
+static int SGFFFormatContextInterruptHandler(void * context)
 {
-    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)ctx;
+    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)context;
     switch (obj.state)
     {
         case SGFFSourceStateFinished:
@@ -27,12 +27,8 @@ static int formatContextInterruptCallback(void * ctx)
 
 @interface SGFFFormatContext ()
 
-{
-    AVFormatContext * _formatContext;
-}
+@property (nonatomic, assign) AVFormatContext * formatContext;
 
-@property (nonatomic, copy) NSURL * contentURL;
-@property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
 @property (nonatomic, assign) SGFFSourceState state;
 @property (nonatomic, copy) NSError * error;
 
@@ -43,9 +39,10 @@ static int formatContextInterruptCallback(void * ctx)
 @property (nonatomic, strong) NSArray <SGFFStream *> * otherStreams;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * openOperation;
-@property (nonatomic, strong) NSInvocationOperation * readOperation;
-@property (nonatomic, strong) NSCondition * readCondition;
+@property (nonatomic, strong) NSInvocationOperation * openStreamsOperation;
+@property (nonatomic, strong) NSInvocationOperation * readingOperation;
+@property (nonatomic, strong) NSCondition * readingCondition;
+
 @property (nonatomic, assign) long long seekingTimestamp;
 @property (nonatomic, copy) void(^seekingCompletionHandler)(BOOL);
 
@@ -53,25 +50,18 @@ static int formatContextInterruptCallback(void * ctx)
 
 @implementation SGFFFormatContext
 
-- (instancetype)initWithContentURL:(NSURL *)contentURL delegate:(id <SGFFSourceDelegate>)delegate
-{
-    if (self = [super init])
-    {
-        self.contentURL = contentURL;
-        self.delegate = delegate;
-    }
-    return self;
-}
+@synthesize URL = _URL;
+@synthesize delegate = _delegate;
 
 #pragma mark - Setter/Getter
 
 - (CMTime)duration
 {
-    if (!_formatContext)
+    if (!self.formatContext)
     {
         return kCMTimeZero;
     }
-    int64_t duration = _formatContext->duration;
+    int64_t duration = self.formatContext->duration;
     if (duration < 0)
     {
         return kCMTimeZero;
@@ -81,19 +71,19 @@ static int formatContextInterruptCallback(void * ctx)
 
 #pragma mark - Interface
 
-- (void)open
+- (void)openStreams
 {
     self.state = SGFFSourceStateOpening;
-    [self startOpenThread];
+    [self startOpenStreamsThread];
 }
 
-- (void)read
+- (void)startReading
 {
     self.state = SGFFSourceStateReading;
-    [self startReadThread];
+    [self startReadingThread];
 }
 
-- (void)pause
+- (void)pauseReading
 {
     if (self.state == SGFFSourceStateReading)
     {
@@ -101,42 +91,44 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
-- (void)resume
+- (void)resumeReading
 {
     if (self.state == SGFFSourceStatePaused)
     {
         self.state = SGFFSourceStateReading;
-        [self.readCondition lock];
-        [self.readCondition broadcast];
-        [self.readCondition unlock];
+        [self.readingCondition lock];
+        [self.readingCondition broadcast];
+        [self.readingCondition unlock];
     }
 }
 
-- (void)close
+- (void)stopReading
 {
     self.state = SGFFSourceStateClosed;
-    [self.readCondition lock];
-    [self.readCondition broadcast];
-    [self.readCondition unlock];
+    [self.readingCondition lock];
+    [self.readingCondition broadcast];
+    [self.readingCondition unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
-    if (_formatContext)
+    if (self.formatContext)
     {
         avformat_close_input(&_formatContext);
-        _formatContext = NULL;
+        self.formatContext = NULL;
     }
 }
+
+#pragma mark - Seeking
 
 - (BOOL)seekable
 {
-    if (!_formatContext)
+    if (!self.formatContext)
     {
         return NO;
     }
     BOOL seekable = YES;
-    if (_formatContext->pb)
+    if (self.formatContext->pb)
     {
-        seekable = _formatContext->pb->seekable;
+        seekable = self.formatContext->pb->seekable;
     }
     if (seekable && CMTimeCompare(self.duration, kCMTimeZero) > 0)
     {
@@ -147,33 +139,32 @@ static int formatContextInterruptCallback(void * ctx)
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    if (self.state == SGFFSourceStatePaused)
-    {
+    void (^seek)(void) = ^{
         self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
         self.seekingCompletionHandler = completionHandler;
         self.state = SGFFSourceStateSeeking;
-        [self.readCondition lock];
-        [self.readCondition signal];
-        [self.readCondition unlock];
+    };
+    if (self.state == SGFFSourceStatePaused)
+    {
+        seek();
+        [self.readingCondition lock];
+        [self.readingCondition broadcast];
+        [self.readingCondition unlock];
     }
     else if (self.state == SGFFSourceStateReading)
     {
-        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
-        self.seekingCompletionHandler = completionHandler;
-        self.state = SGFFSourceStateSeeking;
+        seek();
     }
     else if (self.state == SGFFSourceStateFinished)
     {
-        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
-        self.seekingCompletionHandler = completionHandler;
-        self.state = SGFFSourceStateSeeking;
-        [self startReadThread];
+        seek();
+        [self startReadingThread];
     }
 }
 
-#pragma mark - Thread
+#pragma mark - Open
 
-- (void)startOpenThread
+- (void)startOpenStreamsThread
 {
     if (!self.operationQueue)
     {
@@ -181,47 +172,47 @@ static int formatContextInterruptCallback(void * ctx)
         self.operationQueue.maxConcurrentOperationCount = 2;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
-    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
-    self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.operationQueue addOperation:self.openOperation];
+    self.openStreamsOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openStreamsThread) object:nil];
+    self.openStreamsOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.openStreamsOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.openStreamsOperation];
 }
 
-- (void)openThread
+- (void)openStreamsThread
 {
-    _formatContext = avformat_alloc_context();
+    self.formatContext = avformat_alloc_context();
     
-    if (!_formatContext)
+    if (!self.formatContext)
     {
         self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
         [self callbackForError];
         return;
     }
     
-    _formatContext->interrupt_callback.callback = formatContextInterruptCallback;
-    _formatContext->interrupt_callback.opaque = (__bridge void *)self;
+    self.formatContext->interrupt_callback.callback = SGFFFormatContextInterruptHandler;
+    self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
     
-    NSString * contentURLString = self.contentURL.absoluteString;
-    int reslut = avformat_open_input(&_formatContext, contentURLString.UTF8String, NULL, NULL);
+    NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;
+    int reslut = avformat_open_input(&_formatContext, URLString.UTF8String, NULL, NULL);
     self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatOpenInput);
     if (self.error)
     {
-        if (_formatContext)
+        if (self.formatContext)
         {
-            avformat_free_context(_formatContext);
+            avformat_free_context(self.formatContext);
         }
         [self callbackForError];
         return;
     }
     
-    reslut = avformat_find_stream_info(_formatContext, NULL);
+    reslut = avformat_find_stream_info(self.formatContext, NULL);
     self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatFindStreamInfo);
     if (self.error)
     {
-        if (_formatContext)
+        if (self.formatContext)
         {
             avformat_close_input(&_formatContext);
-            avformat_free_context(_formatContext);
+            avformat_free_context(self.formatContext);
         }
         [self callbackForError];
         return;
@@ -232,10 +223,10 @@ static int formatContextInterruptCallback(void * ctx)
     NSMutableArray <SGFFStream *> * videoStreams = [NSMutableArray array];
     NSMutableArray <SGFFStream *> * subtitleStreams = [NSMutableArray array];
     NSMutableArray <SGFFStream *> * otherStreams = [NSMutableArray array];
-    for (int i = 0; i < _formatContext->nb_streams; i++)
+    for (int i = 0; i < self.formatContext->nb_streams; i++)
     {
         SGFFStream * obj = [[SGFFStream alloc] init];
-        obj.coreStream = _formatContext->streams[i];
+        obj.coreStream = self.formatContext->streams[i];
         [streams addObject:obj];
         switch (obj.coreStream->codecpar->codec_type)
         {
@@ -273,20 +264,22 @@ static int formatContextInterruptCallback(void * ctx)
     }
 }
 
-- (void)startReadThread
+#pragma mark - Reading
+
+- (void)startReadingThread
 {
-    if (!self.readCondition)
+    if (!self.readingCondition)
     {
-        self.readCondition = [[NSCondition alloc] init];
+        self.readingCondition = [[NSCondition alloc] init];
     }
-    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
-    self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.readOperation addDependency:self.openOperation];
-    [self.operationQueue addOperation:self.readOperation];
+    self.readingOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readingThread) object:nil];
+    self.readingOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.readingOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.readingOperation addDependency:self.openStreamsOperation];
+    [self.operationQueue addOperation:self.readingOperation];
 }
 
-- (void)readThread
+- (void)readingThread
 {
     while (YES)
     {
@@ -298,35 +291,44 @@ static int formatContextInterruptCallback(void * ctx)
         }
         else if (self.state == SGFFSourceStatePaused)
         {
-            [self.readCondition lock];
+            [self.readingCondition lock];
             if (self.state == SGFFSourceStatePaused)
             {
-                [self.readCondition wait];
+                [self.readingCondition wait];
             }
-            [self.readCondition unlock];
+            [self.readingCondition unlock];
             continue;
         }
         else if (self.state == SGFFSourceStateSeeking)
         {
-            av_seek_frame(_formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-            if (self.seekingCompletionHandler)
+            int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
+            if (self.state == SGFFSourceStateSeeking)
             {
-                self.seekingCompletionHandler(YES);
+                if (self.seekingCompletionHandler)
+                {
+                    self.seekingCompletionHandler(success >= 0);
+                }
+                self.seekingTimestamp = 0;
+                self.seekingCompletionHandler = nil;
+                self.state = SGFFSourceStateReading;
             }
-            self.seekingTimestamp = 0;
-            self.seekingCompletionHandler = nil;
-            self.state = SGFFSourceStateReading;
+            else
+            {
+                self.seekingTimestamp = 0;
+                self.seekingCompletionHandler = nil;
+            }
             continue;
         }
         else if (self.state == SGFFSourceStateReading)
         {
             SGFFPacket * packet = [[SGFFObjectPool sharePool] objectWithClass:[SGFFPacket class]];
-            int readResult = av_read_frame(_formatContext, packet.corePacket);
+            int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
             {
                 self.state = SGFFSourceStateFinished;
                 [packet unlock];
-                if ([self.delegate respondsToSelector:@selector(sourceDidFinished:)]) {
+                if ([self.delegate respondsToSelector:@selector(sourceDidFinished:)])
+                {
                     [self.delegate sourceDidFinished:self];
                 }
                 break;
