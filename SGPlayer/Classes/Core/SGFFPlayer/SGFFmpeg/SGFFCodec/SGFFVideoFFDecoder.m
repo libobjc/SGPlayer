@@ -21,7 +21,7 @@
     return SGMediaTypeVideo;
 }
 
-- (__kindof id <SGFFFrame>)fetchReuseFrame
+- (__kindof id <SGFFFrame>)nextReuseFrame
 {
     SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
     [frame updateDataType:SGFFVideoFrameDataTypeAVFrame];

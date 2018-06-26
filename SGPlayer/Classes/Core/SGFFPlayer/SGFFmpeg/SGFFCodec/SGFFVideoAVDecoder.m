@@ -29,35 +29,29 @@
     return SGMediaTypeVideo;
 }
 
-- (NSInteger)outputRenderQueueMaxCount
-{
-    return 3;
-}
-
-- (BOOL)open
+- (BOOL)startDecoding
 {
     if ([self setupDecompressionSession])
     {
-        BOOL success = [super open];
-        return success;
+        return [super startDecoding];
     }
     return NO;
 }
 
-- (void)close
+- (void)stopDecoding
 {
-    [super close];
+    [super stopDecoding];
     [self destoryDecompressionSession];
 }
 
-- (void)doFlushCodec
+- (void)doFlush
 {
-    [super doFlushCodec];
+    [super doFlush];
     [self destoryDecompressionSession];
     [self setupDecompressionSession];
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
 {
     __block NSArray <id <SGFFFrame>> * result = nil;
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size];
@@ -78,14 +72,13 @@
         });
         if (status == kVTInvalidSessionErr)
         {
-            [self doFlushCodec];
+            [self doFlush];
             [NSThread sleepForTimeInterval:0.01];
         }
         CFRelease(sampleBuffer);
     }
     return result;
 }
-    
     
 #pragma mark - VideoToolbox
 

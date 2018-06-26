@@ -20,11 +20,9 @@
 typedef NS_ENUM(NSUInteger, SGFFDecoderState)
 {
     SGFFDecoderStateIdle,
-    SGFFDecoderStateOpening,
-    SGFFDecoderStateOpened,
     SGFFDecoderStateDecoding,
     SGFFDecoderStatePaused,
-    SGFFDecoderStateClosed,
+    SGFFDecoderStateStoped,
     SGFFDecoderStateFailed,
 };
 
@@ -43,13 +41,13 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderState)
 - (long long)size;
 - (NSUInteger)count;
 
-- (BOOL)open;
-- (void)pause;
-- (void)resume;
-- (void)flush;
-- (void)close;
+- (BOOL)startDecoding;
+- (void)pauseDecoding;
+- (void)resumeDecoding;
+- (void)stopDecoding;
 
 - (BOOL)putPacket:(SGFFPacket *)packet;
+- (void)flush;
 
 @end
 

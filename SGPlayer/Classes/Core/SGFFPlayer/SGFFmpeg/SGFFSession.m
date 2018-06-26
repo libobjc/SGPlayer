@@ -87,8 +87,8 @@
 {
     self.state = SGFFSessionStateClosed;
     [self.source stopReading];
-    [self.audioDecoder close];
-    [self.videoDecoder close];
+    [self.audioDecoder stopDecoding];
+    [self.videoDecoder stopDecoding];
     [self.audioOutput close];
     [self.videoOutput close];
 }
@@ -235,7 +235,7 @@
                     audioDecoder.index = stream.index;
                     audioDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
                     audioDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([audioDecoder open])
+                    if ([audioDecoder startDecoding])
                     {
                         self.audioDecoder = audioDecoder;
                     }
@@ -255,7 +255,7 @@
                     videoDecoder.index = stream.index;
                     videoDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
                     videoDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([videoDecoder open])
+                    if ([videoDecoder startDecoding])
                     {
                         self.videoDecoder = videoDecoder;
                     }
@@ -328,17 +328,17 @@
     if (output == self.audioOutput)
     {
         if (self.audioOutput.count >= 5) {
-            [self.audioDecoder pause];
+            [self.audioDecoder pauseDecoding];
         } else {
-            [self.audioDecoder resume];
+            [self.audioDecoder resumeDecoding];
         }
     }
     else if (output == self.videoOutput)
     {
         if (self.videoOutput.count >= 3) {
-            [self.videoDecoder pause];
+            [self.videoDecoder pauseDecoding];
         } else {
-            [self.videoDecoder resume];
+            [self.videoDecoder resumeDecoding];
         }
     }
     [self updateCapacity];

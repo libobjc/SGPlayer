@@ -7,15 +7,14 @@
 //
 
 #import "SGFFAsyncDecoder.h"
-#import "SGPlayerMacro.h"
 
 @interface SGFFAsyncDecoder ()
 
 @property (nonatomic, assign) SGFFDecoderState state;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * decodeOperation;
-@property (nonatomic, strong) NSCondition * decodeCondition;
+@property (nonatomic, strong) NSInvocationOperation * decodingOperation;
+@property (nonatomic, strong) NSCondition * decodingCondition;
 
 @end
 
@@ -41,26 +40,18 @@ static SGFFPacket * flushPacket;
         dispatch_once(&onceToken, ^{
             flushPacket = [[SGFFPacket alloc] init];
         });
+        _packetQueue = [[SGFFObjectQueue alloc] init];
     }
     return self;
 }
 
-- (BOOL)open
+- (BOOL)startDecoding
 {
-    self.state = SGFFDecoderStateOpening;
-    _packetQueue = [[SGFFObjectQueue alloc] init];
-    self.operationQueue = [[NSOperationQueue alloc] init];
-    self.operationQueue.maxConcurrentOperationCount = 1;
-    self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeThread) object:nil];
-    self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.operationQueue addOperation:self.decodeOperation];
-    
+    [self startDecodingThread];
     return YES;
 }
 
-- (void)pause
+- (void)pauseDecoding
 {
     if (self.state == SGFFDecoderStateDecoding)
     {
@@ -68,34 +59,24 @@ static SGFFPacket * flushPacket;
     }
 }
 
-- (void)resume
+- (void)resumeDecoding
 {
     if (self.state == SGFFDecoderStatePaused)
     {
         self.state = SGFFDecoderStateDecoding;
-        [self.decodeCondition lock];
-        [self.decodeCondition broadcast];
-        [self.decodeCondition unlock];
+        [self.decodingCondition lock];
+        [self.decodingCondition broadcast];
+        [self.decodingCondition unlock];
     }
 }
 
-- (void)flush
+- (void)stopDecoding
 {
-    [self.packetQueue flush];
-    [self.packetQueue putObjectSync:flushPacket];
-    [self.decodeCondition lock];
-    [self.decodeCondition broadcast];
-    [self.decodeCondition unlock];
-    [self.delegate decoderDidChangeCapacity:self];
-}
-
-- (void)close
-{
-    self.state = SGFFDecoderStateClosed;
+    self.state = SGFFDecoderStateStoped;
     [self.packetQueue destroy];
-    [self.decodeCondition lock];
-    [self.decodeCondition broadcast];
-    [self.decodeCondition unlock];
+    [self.decodingCondition lock];
+    [self.decodingCondition broadcast];
+    [self.decodingCondition unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
 }
@@ -107,9 +88,14 @@ static SGFFPacket * flushPacket;
     return YES;
 }
 
-- (NSUInteger)count
+- (void)flush
 {
-    return self.packetQueue.count;
+    [self.packetQueue flush];
+    [self.packetQueue putObjectSync:flushPacket];
+    [self.decodingCondition lock];
+    [self.decodingCondition broadcast];
+    [self.decodingCondition unlock];
+    [self.delegate decoderDidChangeCapacity:self];
 }
 
 - (CMTime)duration
@@ -122,24 +108,43 @@ static SGFFPacket * flushPacket;
     return self.packetQueue.size;
 }
 
-- (void)decodeThread
+- (NSUInteger)count
+{
+    return self.packetQueue.count;
+}
+
+- (void)startDecodingThread
+{
+    if (!self.operationQueue)
+    {
+        self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.maxConcurrentOperationCount = 1;
+        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    }
+    self.decodingOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodingThread) object:nil];
+    self.decodingOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.decodingOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.decodingOperation];
+}
+
+- (void)decodingThread
 {
     self.state = SGFFDecoderStateDecoding;
     while (YES)
     {
-        if (self.state == SGFFDecoderStateClosed
-            || self.state == SGFFDecoderStateFailed)
+        if (self.state == SGFFDecoderStateStoped ||
+            self.state == SGFFDecoderStateFailed)
         {
             break;
         }
         else if (self.state == SGFFDecoderStatePaused)
         {
-            [self.decodeCondition lock];
+            [self.decodingCondition lock];
             if (self.state == SGFFDecoderStatePaused)
             {
-                [self.decodeCondition wait];
+                [self.decodingCondition wait];
             }
-            [self.decodeCondition unlock];
+            [self.decodingCondition unlock];
             continue;
         }
         else if (self.state == SGFFDecoderStateDecoding)
@@ -147,28 +152,17 @@ static SGFFPacket * flushPacket;
             SGFFPacket * packet = [self.packetQueue getObjectSync];
             if (packet == flushPacket)
             {
-                [self doFlushCodec];
+                [self doFlush];
             }
             else if (packet)
             {
-                @autoreleasepool
+                NSArray <id <SGFFFrame>> * frames = [self doDecode:packet];
+                for (id <SGFFFrame> frame in frames)
                 {
-                    NSError * error = nil;
-                    NSArray <id <SGFFFrame>> * frames = [self doDecode:packet error:&error];
-                    if (error)
-                    {
-                        SGPlayerLog(@"Decoder did Failed : %@", error);
-                    }
-                    else
-                    {
-                        for (id <SGFFFrame> frame in frames)
-                        {
-                            [self.delegate decoder:self hasNewFrame:frame];
-                            [frame unlock];
-                        }
-                    }
-                    [packet unlock];
+                    [self.delegate decoder:self hasNewFrame:frame];
+                    [frame unlock];
                 }
+                [packet unlock];
                 [self.delegate decoderDidChangeCapacity:self];
             }
             continue;
@@ -176,12 +170,12 @@ static SGFFPacket * flushPacket;
     }
 }
 
-- (void)doFlushCodec
+- (void)doFlush
 {
     
 }
 
-- (NSArray <id<SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
 {
     return nil;
 }

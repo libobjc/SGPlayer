@@ -13,7 +13,7 @@
 
 @property (nonatomic, strong, readonly) SGFFObjectQueue * packetQueue;
 
-- (void)doFlushCodec;
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError **)error;
+- (void)doFlush;
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet;
 
 @end

@@ -8,6 +8,7 @@
 
 #import "SGFFAsyncFFDecoder.h"
 #import "SGFFError.h"
+#import "SGPlayerMacro.h"
 
 @interface SGFFAsyncFFDecoder ()
 
@@ -53,19 +54,19 @@
     return codecContext;
 }
 
-- (BOOL)open
+- (BOOL)startDecoding
 {
     self.codecContext = [SGFFAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
     if (self.codecContext)
     {
-        return [super open];
+        return [super startDecoding];
     }
     return NO;
 }
 
-- (void)close
+- (void)stopDecoding
 {
-    [super close];
+    [super stopDecoding];
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);
@@ -73,16 +74,16 @@
     }
 }
 
-- (void)doFlushCodec
+- (void)doFlush
 {
-    [super doFlushCodec];
+    [super doFlush];
     if (self.codecContext)
     {
         avcodec_flush_buffers(self.codecContext);
     }
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet error:(NSError * __autoreleasing *)error
+- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)
@@ -92,7 +93,7 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        id <SGFFFrame> frame = [self fetchReuseFrame];
+        id <SGFFFrame> frame = [self nextReuseFrame];
         NSAssert(frame, @"Fecth frame failed");
         result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)
@@ -100,7 +101,7 @@
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
                 
             } else {
-                * error = SGFFGetErrorCode(result, SGFFErrorCodeCodecReceiveFrame);
+                SGPlayerLog(@"Error : %@", SGFFGetErrorCode(result, SGFFErrorCodeCodecReceiveFrame));
             }
             [frame unlock];
             break;
@@ -117,7 +118,7 @@
     return array;
 }
 
-- (__kindof id <SGFFFrame>)fetchReuseFrame
+- (__kindof id <SGFFFrame>)nextReuseFrame
 {
     return nil;
 }
