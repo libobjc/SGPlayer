@@ -23,10 +23,6 @@
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) long long size;
 
-- (SGFFAudioFrame *)audioFrame;
-- (SGFFVideoFrame *)videoFrame;
-- (AVFrame *)coreFrame;
-
 - (void)fillWithTimebase:(CMTime)timebase;
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet;
 

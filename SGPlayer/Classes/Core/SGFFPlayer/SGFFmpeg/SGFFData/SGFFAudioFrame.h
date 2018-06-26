@@ -6,9 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFrame.h"
+#import "SGFFFFFrame.h"
 
-@interface SGFFAudioFrame : SGFFFrame
+@interface SGFFAudioFrame : SGFFFFFrame
 
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) int numberOfSamples;

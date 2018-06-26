@@ -8,7 +8,7 @@
 
 #import "SGFFVideoAVDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
-#import "SGFFVideoFrame.h"
+#import "SGFFVideoAVFrame.h"
 #import "SGFFObjectPool.h"
 
 @interface SGFFVideoAVDecoder ()
@@ -62,9 +62,8 @@
             {
                 if (imageBuffer)
                 {
-                    SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
-                    [frame updateDataType:SGFFVideoFrameDataTypeCVPixelBuffer];
-                    [frame updateCorePixelBuffer:imageBuffer];
+                    SGFFVideoAVFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoAVFrame class]];
+                    frame.corePixelBuffer = imageBuffer;
                     [frame fillWithTimebase:self.timebase packet:packet];
                     result = @[frame];
                 }

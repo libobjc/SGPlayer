@@ -93,7 +93,7 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        __kindof SGFFFrame * frame = [self nextReuseFrame];
+        SGFFFFFrame * frame = [self nextReuseFrame];
         NSAssert(frame, @"Fecth frame failed");
         result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)

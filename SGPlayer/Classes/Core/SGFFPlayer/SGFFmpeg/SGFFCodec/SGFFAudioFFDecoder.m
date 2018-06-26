@@ -21,7 +21,7 @@
     return SGMediaTypeAudio;
 }
 
-- (__kindof SGFFFrame *)nextReuseFrame
+- (SGFFFFFrame *)nextReuseFrame
 {
     SGFFAudioFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFrame class]];
     return frame;

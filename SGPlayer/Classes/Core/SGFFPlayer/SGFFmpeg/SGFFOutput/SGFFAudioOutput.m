@@ -87,11 +87,11 @@
 
 - (void)putFrame:(__kindof SGFFFrame *)frame
 {
-    SGFFAudioFrame * audioFrame = frame.audioFrame;
-    if (!audioFrame)
+    if (![frame isKindOfClass:[SGFFAudioFrame class]])
     {
         return;
     }
+    SGFFAudioFrame * audioFrame = frame;
     
     self.inputFormat = audioFrame.format;
     self.inputSampleRate = audioFrame.sampleRate;

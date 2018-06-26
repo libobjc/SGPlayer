@@ -6,21 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFrame.h"
+#import "SGFFFFFrame.h"
 
-typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
-{
-    SGFFVideoFrameDataTypeUnknown,
-    SGFFVideoFrameDataTypeAVFrame,
-    SGFFVideoFrameDataTypeCVPixelBuffer,
-};
-
-@interface SGFFVideoFrame : SGFFFrame
-
-- (SGFFVideoFrameDataType)dataType;
-- (CVPixelBufferRef)corePixelBuffer;
-- (void)updateDataType:(SGFFVideoFrameDataType)dataType;
-- (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer;
+@interface SGFFVideoFrame : SGFFFFFrame
 
 @property (nonatomic, assign) enum AVPixelFormat format;
 @property (nonatomic, assign) enum AVPictureType pictureType;

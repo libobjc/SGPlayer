@@ -79,8 +79,14 @@
 
 - (void)putFrame:(__kindof SGFFFrame *)frame
 {
+    if (![frame isKindOfClass:[SGFFVideoFrame class]])
+    {
+        return;
+    }
+    SGFFVideoFrame * videoFrame = frame;
+    
     SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
-    [render updateCoreVideoFrame:frame.videoFrame];
+    [render updateCoreVideoFrame:videoFrame];
     [self.frameQueue putObjectSync:render];
     [self.delegate outputDidChangeCapacity:self];
     [render unlock];
@@ -170,13 +176,13 @@
         return NO;
     }
     [render lock];
-    
+
     [self setupOpenGLIfNeeded];
-    
+
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
     id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.coreVideoFrame.format)];
     SGGLSize renderSize = {render.coreVideoFrame.width, render.coreVideoFrame.height};
-    
+
     if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
     {
         [render unlock];
@@ -187,11 +193,12 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-        if (render.coreVideoFrame.corePixelBuffer)
-        {
-            success = [self.textureUploader uploadWithCVPixelBuffer:render.coreVideoFrame.corePixelBuffer];
-        }
-        else if (render.coreVideoFrame.coreFrame)
+//        if (render.coreVideoFrame.corePixelBuffer)
+//        {
+//            success = [self.textureUploader uploadWithCVPixelBuffer:render.coreVideoFrame.corePixelBuffer];
+//        }
+//        else
+            if (render.coreVideoFrame.coreFrame)
         {
             success = [self.textureUploader uploadWithType:SGFFDMTexture(render.coreVideoFrame.format) data:render.coreVideoFrame.data size:renderSize];
         }
@@ -209,6 +216,7 @@
         [render unlock];
         return YES;
     }
+    return YES;
 }
 
 @end

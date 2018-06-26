@@ -23,32 +23,9 @@ SGFFObjectPoolItemImplementation
     return SGMediaTypeUnknown;
 }
 
-- (SGFFAudioFrame *)audioFrame
-{
-    if (self.mediaType == SGMediaTypeAudio)
-    {
-        return (SGFFAudioFrame *)self;
-    }
-    return nil;
-}
-
-- (SGFFVideoFrame *)videoFrame
-{
-    if (self.mediaType == SGMediaTypeVideo)
-    {
-        return (SGFFVideoFrame *)self;
-    }
-    return nil;
-}
-
-- (AVFrame *)coreFrame
-{
-    return NULL;
-}
-
 - (void)fillWithTimebase:(CMTime)timebase
 {
-    
+    [self fillWithTimebase:timebase packet:NULL];
 }
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet

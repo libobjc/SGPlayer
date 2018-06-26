@@ -11,10 +11,6 @@
 
 @interface SGFFVideoFrame ()
 
-@property (nonatomic, assign, readonly) SGFFVideoFrameDataType dataType;
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-@property (nonatomic, assign, readonly) CVPixelBufferRef corePixelBuffer;
-
 @end
 
 @implementation SGFFVideoFrame
@@ -36,130 +32,35 @@
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    if (_coreFrame)
-    {
-        av_frame_free(&_coreFrame);
-        _coreFrame = NULL;
-    }
-    [self updateCorePixelBuffer:NULL];
-}
-
-- (void)fillWithTimebase:(CMTime)timebase
-{
-    [self fillWithTimebase:timebase packet:NULL];
 }
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
-    switch (self.dataType)
-    {
-        case SGFFVideoFrameDataTypeUnknown:
-            break;
-        case SGFFVideoFrameDataTypeAVFrame:
-        {
-            AVFrame * frame = _coreFrame;
-            if (frame)
-            {
-                self.position = SGFFTimeMultiply(timebase, av_frame_get_best_effort_timestamp(frame));
-                self.duration = SGFFTimeMultiply(timebase, av_frame_get_pkt_duration(frame));
-                self.size = av_frame_get_pkt_size(frame);
-                
-                self.format = frame->format;
-                self.pictureType = frame->pict_type;
-                self.colorRange = frame->color_range;
-                self.colorPrimaries = frame->color_primaries;
-                self.colorTransferCharacteristic = frame->color_trc;
-                self.colorSpace = frame->colorspace;
-                self.chromaLocation = frame->chroma_location;
-                self.sampleAspectRatio = frame->sample_aspect_ratio;
-                self.width = frame->width;
-                self.height = frame->height;
-                self.keyFrame = frame->key_frame;
-                self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(frame);
-                self.packetPosition = av_frame_get_pkt_pos(frame);
-                self.packetDuration = av_frame_get_pkt_duration(frame);
-                self.packetSize = av_frame_get_pkt_size(frame);
-                self.data = frame->data;
-                self.linesize = frame->linesize;
-            }
-        }
-            break;
-        case SGFFVideoFrameDataTypeCVPixelBuffer:
-        {
-            CVPixelBufferRef pixelBuffer = self.corePixelBuffer;
-            if (pixelBuffer)
-            {
-                OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
-                if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-                    self.format = AV_PIX_FMT_NV12;
-                } else if (format == kCVPixelFormatType_420YpCbCr8Planar) {
-                    self.format = AV_PIX_FMT_YUV420P;
-                } else if (format == kCVPixelFormatType_422YpCbCr8) {
-                    self.format = AV_PIX_FMT_UYVY422;
-                } else if (format == kCVPixelFormatType_32BGRA) {
-                    self.format = AV_PIX_FMT_BGRA;
-                } else {
-                    self.format = AV_PIX_FMT_NONE;
-                }
-                if (CVPixelBufferIsPlanar(pixelBuffer)) {
-                    self.width = (int)CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
-                    self.height = (int)CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-                } else {
-                    self.width  = (int)CVPixelBufferGetWidth(pixelBuffer);
-                    self.height = (int)CVPixelBufferGetHeight(pixelBuffer);
-                }
-            }
-            if (packet)
-            {
-                int64_t timestamp = packet.corePacket->pts;
-                if (packet.corePacket->pts == AV_NOPTS_VALUE) {
-                    timestamp = packet.corePacket->dts;
-                }
-                self.position = SGFFTimeMultiply(timebase, timestamp);
-                self.duration = SGFFTimeMultiply(timebase, packet.corePacket->duration);
-                self.size = packet.corePacket->size;
-                self.bestEffortTimestamp = timestamp;
-                self.packetPosition = packet.corePacket->pos;
-                self.packetDuration = packet.corePacket->duration;
-                self.packetSize = packet.corePacket->size;
-            }
-        }
-            break;
-    }
-}
-
-- (void)updateDataType:(SGFFVideoFrameDataType)dataType
-{
-    _dataType = dataType;
-    if (_dataType == SGFFVideoFrameDataTypeAVFrame && !_coreFrame)
-    {
-        _coreFrame = av_frame_alloc();
-    }
-}
-
-- (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer
-{
-    if (corePixelBuffer)
-    {
-        CVPixelBufferRetain(corePixelBuffer);
-    }
-    if (_corePixelBuffer)
-    {
-        CVPixelBufferRelease(_corePixelBuffer);
-    }
-    _corePixelBuffer = corePixelBuffer;
+    [super fillWithTimebase:timebase packet:packet];
+    
+    self.format = self.coreFrame->format;
+    self.pictureType = self.coreFrame->pict_type;
+    self.colorRange = self.coreFrame->color_range;
+    self.colorPrimaries = self.coreFrame->color_primaries;
+    self.colorTransferCharacteristic = self.coreFrame->color_trc;
+    self.colorSpace = self.coreFrame->colorspace;
+    self.chromaLocation = self.coreFrame->chroma_location;
+    self.sampleAspectRatio = self.coreFrame->sample_aspect_ratio;
+    self.width = self.coreFrame->width;
+    self.height = self.coreFrame->height;
+    self.keyFrame = self.coreFrame->key_frame;
+    self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(self.coreFrame);
+    self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
+    self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
+    self.packetSize = av_frame_get_pkt_size(self.coreFrame);
+    self.data = self.coreFrame->data;
+    self.linesize = self.coreFrame->linesize;
 }
 
 - (void)clear
 {
     [super clear];
     
-    if (_coreFrame)
-    {
-        av_frame_unref(_coreFrame);
-    }
-    [self updateCorePixelBuffer:NULL];
-    [self updateDataType:SGFFVideoFrameDataTypeUnknown];
     self.format = AV_PIX_FMT_NONE;
     self.pictureType = AV_PICTURE_TYPE_NONE;
     self.colorRange = AVCOL_RANGE_UNSPECIFIED;

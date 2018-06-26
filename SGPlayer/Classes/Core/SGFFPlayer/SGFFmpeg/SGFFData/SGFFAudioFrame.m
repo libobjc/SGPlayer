@@ -11,8 +11,6 @@
 
 @interface SGFFAudioFrame ()
 
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-
 @end
 
 @implementation SGFFAudioFrame
@@ -27,7 +25,6 @@
     if (self = [super init])
     {
         NSLog(@"%s", __func__);
-        _coreFrame = av_frame_alloc();
     }
     return self;
 }
@@ -35,38 +32,22 @@
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    if (_coreFrame)
-    {
-        av_frame_free(&_coreFrame);
-        _coreFrame = NULL;
-    }
-}
-
-- (void)fillWithTimebase:(CMTime)timebase
-{
-    [self fillWithTimebase:timebase packet:NULL];
 }
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
-    AVFrame * frame = _coreFrame;
-    if (frame)
-    {
-        self.position = SGFFTimeMultiply(timebase, av_frame_get_best_effort_timestamp(frame));
-        self.duration = SGFFTimeMultiply(timebase, av_frame_get_pkt_duration(frame));
-        self.size = av_frame_get_pkt_size(frame);
-        
-        self.format = frame->format;
-        self.numberOfSamples = frame->nb_samples;
-        self.sampleRate = av_frame_get_sample_rate(frame);
-        self.numberOfChannels = av_frame_get_channels(frame);
-        self.channelLayout = av_frame_get_channel_layout(frame);
-        self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(frame);
-        self.packetPosition = av_frame_get_pkt_pos(frame);
-        self.packetDuration = av_frame_get_pkt_duration(frame);
-        self.packetSize = av_frame_get_pkt_size(frame);
-        self.data = frame->data;
-    }
+    [super fillWithTimebase:timebase packet:packet];
+    
+    self.format = self.coreFrame->format;
+    self.numberOfSamples = self.coreFrame->nb_samples;
+    self.sampleRate = av_frame_get_sample_rate(self.coreFrame);
+    self.numberOfChannels = av_frame_get_channels(self.coreFrame);
+    self.channelLayout = av_frame_get_channel_layout(self.coreFrame);
+    self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(self.coreFrame);
+    self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
+    self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
+    self.packetSize = av_frame_get_pkt_size(self.coreFrame);
+    self.data = self.coreFrame->data;
 }
 
 - (void)clear
@@ -83,10 +64,6 @@
     self.packetDuration = 0;
     self.packetSize = 0;
     self.data = nil;
-    if (_coreFrame)
-    {
-        av_frame_unref(_coreFrame);
-    }
 }
 
 @end
