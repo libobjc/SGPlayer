@@ -88,6 +88,7 @@
     SGFFVideoFrame * videoFrame = frame;
     
     [self.frameQueue putObjectSync:videoFrame];
+    [self.delegate outputDidChangeCapacity:self];
 }
 
 - (void)flush
@@ -210,9 +211,8 @@
         [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size scale:glView.glScale];
         [model draw];
         [model bindEmpty];
-        [frame unlock];
-        return YES;
     }
+    [frame unlock];
     return YES;
 }
 

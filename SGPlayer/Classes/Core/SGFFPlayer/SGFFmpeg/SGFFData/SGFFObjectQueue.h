@@ -26,9 +26,9 @@
 
 @property (nonatomic, assign) BOOL shouldSortObjects;
 
-- (NSInteger)count;
 - (CMTime)duration;
 - (long long)size;
+- (NSUInteger)count;
 
 - (void)putObjectSync:(__kindof id <SGFFObjectQueueItem>)object;
 - (void)putObjectAsync:(__kindof id <SGFFObjectQueueItem>)object;

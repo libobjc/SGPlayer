@@ -14,7 +14,7 @@
 {
     if (self = [super init])
     {
-        self.enableVideoToolBox = NO;
+        self.enableVideoToolBox = YES;
     }
     return self;
 }

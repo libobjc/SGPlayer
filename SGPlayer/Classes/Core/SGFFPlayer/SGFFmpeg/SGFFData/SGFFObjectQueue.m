@@ -211,7 +211,7 @@
     return object;
 }
 
-- (NSInteger)count
+- (NSUInteger)count
 {
     return self.objects.count;
 }
