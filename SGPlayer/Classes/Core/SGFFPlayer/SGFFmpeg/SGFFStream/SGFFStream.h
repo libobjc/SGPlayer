@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
-#import "avformat.h"
 #import "SGDefines.h"
+#import "SGFFTime.h"
+#import "avformat.h"
 
 @interface SGFFStream : NSObject
 
 @property (nonatomic, assign) AVStream * coreStream;
 
-@property (nonatomic, assign, readonly) SGMediaType mediaType;
-@property (nonatomic, assign, readonly) int index;
-@property (nonatomic, assign, readonly) CMTime timebase;
+- (SGMediaType)mediaType;
+- (int)index;
+- (CMTime)timebase;
 
 @end

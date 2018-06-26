@@ -185,7 +185,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     if (!self.formatContext)
     {
         self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
-        [self callbackForError];
+        [self callbackForFailed];
         return;
     }
     
@@ -201,7 +201,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
         {
             avformat_free_context(self.formatContext);
         }
-        [self callbackForError];
+        [self callbackForFailed];
         return;
     }
     
@@ -214,7 +214,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
             avformat_close_input(&_formatContext);
             avformat_free_context(self.formatContext);
         }
-        [self callbackForError];
+        [self callbackForFailed];
         return;
     }
     
@@ -260,7 +260,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     }
     else
     {
-        [self callbackForError];
+        [self callbackForFailed];
     }
 }
 
@@ -342,7 +342,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 #pragma mark - Callback
 
-- (void)callbackForError
+- (void)callbackForFailed
 {
     self.state = SGFFSourceStateFailed;
     if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)])
