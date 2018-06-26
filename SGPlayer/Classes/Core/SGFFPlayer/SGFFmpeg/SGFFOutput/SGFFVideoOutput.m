@@ -23,7 +23,8 @@
 
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGFFVideoFrame * currentRender;
+@property (nonatomic, strong) SGFFVideoFrame * currentFrame;
+
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
@@ -74,8 +75,8 @@
 - (void)stop
 {
     [self.frameQueue destroy];
-    [self.currentRender unlock];
-    self.currentRender = nil;
+    [self.currentFrame unlock];
+    self.currentFrame = nil;
 }
 
 - (void)putFrame:(__kindof SGFFFrame *)frame
@@ -91,8 +92,8 @@
 
 - (void)flush
 {
-    [self.currentRender unlock];
-    self.currentRender = nil;
+    [self.currentFrame unlock];
+    self.currentFrame = nil;
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -124,7 +125,7 @@
 - (void)displayLinkHandler
 {
     SGFFVideoFrame * render = nil;
-    if (self.currentRender)
+    if (self.currentFrame)
     {
         SGWeakSelf
         render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
@@ -133,7 +134,7 @@
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
-            * current = strongSelf.currentRender.position;
+            * current = strongSelf.currentFrame.position;
             return YES;
         }];
     }
@@ -141,11 +142,11 @@
     {
         render = [self.frameQueue getObjectAsync];
     }
-    if (render && render != self.currentRender)
+    if (render && render != self.currentFrame)
     {
         [self.delegate outputDidChangeCapacity:self];
-        [self.currentRender unlock];
-        self.currentRender = render;
+        [self.currentFrame unlock];
+        self.currentFrame = render;
         [self.glView display];
     }
 }
@@ -167,22 +168,22 @@
 
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
-    SGFFVideoFrame * render = self.currentRender;
-    if (!render)
+    SGFFVideoFrame * frame = self.currentFrame;
+    if (!frame)
     {
         return NO;
     }
-    [render lock];
+    [frame lock];
 
     [self setupOpenGLIfNeeded];
 
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.format)];
-    SGGLSize renderSize = {render.width, render.height};
+    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(frame.format)];
+    SGGLSize renderSize = {frame.width, frame.height};
 
     if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
     {
-        [render unlock];
+        [frame unlock];
         return NO;
     }
     else
@@ -190,17 +191,17 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-        if ([render isKindOfClass:[SGFFVideoFFFrame class]])
+        if ([frame isKindOfClass:[SGFFVideoFFFrame class]])
         {
-            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.format) data:render.data size:renderSize];
+            success = [self.textureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:renderSize];
         }
-        else if ([render isKindOfClass:[SGFFVideoAVFrame class]])
+        else if ([frame isKindOfClass:[SGFFVideoAVFrame class]])
         {
-            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)render).corePixelBuffer];
+            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)frame).corePixelBuffer];
         }
         if (!success)
         {
-            [render unlock];
+            [frame unlock];
             return NO;
         }
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -209,7 +210,7 @@
         [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size scale:glView.glScale];
         [model draw];
         [model bindEmpty];
-        [render unlock];
+        [frame unlock];
         return YES;
     }
     return YES;
