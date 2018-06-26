@@ -1748,20 +1748,10 @@
 				9CF15DF420119FBE00585326 /* SGFFOutput */,
 				9CF15DF320119D0300585326 /* SGFFData */,
 				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
-				9C389AAC20103DCA003259FF /* SGFFStream */,
 				9C8D4E69200E101D00ED8A58 /* SGFFCodec */,
 				9C8D4E4E200E019700ED8A58 /* Other */,
 			);
 			path = SGFFmpeg;
-			sourceTree = "<group>";
-		};
-		9C389AAC20103DCA003259FF /* SGFFStream */ = {
-			isa = PBXGroup;
-			children = (
-				9CF52CF5200F45D700950B81 /* SGFFStream.h */,
-				9CF52CF6200F45D700950B81 /* SGFFStream.m */,
-			);
-			path = SGFFStream;
 			sourceTree = "<group>";
 		};
 		9C44AE952004A1130052E3B9 /* Support */ = {
@@ -2215,6 +2205,8 @@
 		9CF15DF320119D0300585326 /* SGFFData */ = {
 			isa = PBXGroup;
 			children = (
+				9CF52CF5200F45D700950B81 /* SGFFStream.h */,
+				9CF52CF6200F45D700950B81 /* SGFFStream.m */,
 				9C2C55AB2015D1D200131E15 /* SGFFPacket.h */,
 				9C2C55AC2015D1D200131E15 /* SGFFPacket.m */,
 				9C389ACB20108C2E003259FF /* SGFFFrame.h */,
