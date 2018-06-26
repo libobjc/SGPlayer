@@ -55,7 +55,7 @@
 {
     if (self = [super init])
     {
-        self.frameQueue = [[SGFFObjectQueue alloc] initWithMaxCount:3];
+        self.frameQueue = [[SGFFObjectQueue alloc] init];
         self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
         self.currentPreparePosition = kCMTimeZero;
         self.currentPrepareDuration = kCMTimeZero;
@@ -133,10 +133,11 @@
 
 - (void)flush
 {
-    [self.frameQueue flush];
     [self.currentRender unlock];
     self.currentRender = nil;
     self.currentRenderReadOffset = 0;
+    [self.frameQueue flush];
+    [self.delegate outputDidChangeCapacity:self];
 }
 
 - (void)play

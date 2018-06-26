@@ -63,6 +63,8 @@
         self.configuration = configuration;
         self.audioOutput = self.configuration.audioOutput;
         self.videoOutput = self.configuration.videoOutput;
+        self.audioOutput.delegate = self;
+        self.videoOutput.delegate = self;
         self.state = SGFFSessionStateIdle;
     }
     return self;

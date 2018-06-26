@@ -121,6 +121,10 @@ static SGFFPacket * flushPacket;
         self.operationQueue.maxConcurrentOperationCount = 1;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
+    if (!self.decodingCondition)
+    {
+        self.decodingCondition = [[NSCondition alloc] init];
+    }
     self.decodingOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodingThread) object:nil];
     self.decodingOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodingOperation.qualityOfService = NSQualityOfServiceUserInteractive;

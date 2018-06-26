@@ -88,9 +88,10 @@
 
 - (void)flush
 {
-    [self.frameQueue flush];
     [self.currentRender unlock];
     self.currentRender = nil;
+    [self.frameQueue flush];
+    [self.delegate outputDidChangeCapacity:self];
 }
 
 #pragma mark - Setter/Getter
