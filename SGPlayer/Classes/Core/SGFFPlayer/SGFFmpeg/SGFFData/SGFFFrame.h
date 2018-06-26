@@ -12,9 +12,6 @@
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
 
-@class SGFFAudioFrame;
-@class SGFFVideoFrame;
-
 @interface SGFFFrame : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
 - (SGMediaType)mediaType;
@@ -22,8 +19,5 @@
 @property (nonatomic, assign) CMTime position;
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) long long size;
-
-- (void)fillWithTimebase:(CMTime)timebase;
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet;
 
 @end

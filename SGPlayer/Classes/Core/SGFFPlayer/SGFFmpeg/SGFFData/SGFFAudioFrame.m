@@ -34,22 +34,6 @@
     NSLog(@"%s", __func__);
 }
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
-{
-    [super fillWithTimebase:timebase packet:packet];
-    
-    self.format = self.coreFrame->format;
-    self.numberOfSamples = self.coreFrame->nb_samples;
-    self.sampleRate = av_frame_get_sample_rate(self.coreFrame);
-    self.numberOfChannels = av_frame_get_channels(self.coreFrame);
-    self.channelLayout = av_frame_get_channel_layout(self.coreFrame);
-    self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(self.coreFrame);
-    self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
-    self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
-    self.packetSize = av_frame_get_pkt_size(self.coreFrame);
-    self.data = self.coreFrame->data;
-}
-
 - (void)clear
 {
     [super clear];

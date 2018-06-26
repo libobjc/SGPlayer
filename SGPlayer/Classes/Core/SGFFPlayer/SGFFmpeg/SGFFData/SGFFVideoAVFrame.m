@@ -17,8 +17,6 @@
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
-    [super fillWithTimebase:timebase packet:packet];
-    
     CVPixelBufferRef pixelBuffer = self.corePixelBuffer;
     if (pixelBuffer)
     {

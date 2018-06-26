@@ -9,6 +9,8 @@
 #import "SGFFAsyncFFDecoder.h"
 #import "SGFFError.h"
 #import "SGPlayerMacro.h"
+#import "SGFFAudioFFFrame.h"
+#import "SGFFVideoFFFrame.h"
 
 @interface SGFFAsyncFFDecoder ()
 
@@ -93,9 +95,18 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        SGFFFFFrame * frame = [self nextReuseFrame];
+        SGFFFrame * frame = [self nextReuseFrame];
+        AVFrame * coreFrame = NULL;
+        if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
+        {
+            coreFrame = ((SGFFAudioFFFrame *)frame).coreFrame;
+        }
+        else if ([frame isKindOfClass:[SGFFVideoFFFrame class]])
+        {
+            coreFrame = ((SGFFVideoFFFrame *)frame).coreFrame;
+        }
         NSAssert(frame, @"Fecth frame failed");
-        result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
+        result = avcodec_receive_frame(self.codecContext, coreFrame);
         if (result < 0)
         {
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
@@ -111,14 +122,21 @@
             if (!array) {
                 array = [NSMutableArray array];
             }
-            [frame fillWithTimebase:self.timebase];
+            if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
+            {
+                [(SGFFAudioFFFrame *)frame fillWithTimebase:self.timebase packet:packet];
+            }
+            else if ([frame isKindOfClass:[SGFFVideoFFFrame class]])
+            {
+                [(SGFFVideoFFFrame *)frame fillWithTimebase:self.timebase packet:packet];
+            }
             [array addObject:frame];
         }
     }
     return array;
 }
 
-- (__kindof SGFFFrame *)nextReuseFrame
+- (SGFFFrame *)nextReuseFrame
 {
     return nil;
 }

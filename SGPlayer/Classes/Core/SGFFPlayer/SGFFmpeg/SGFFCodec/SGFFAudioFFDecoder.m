@@ -7,7 +7,7 @@
 //
 
 #import "SGFFAudioFFDecoder.h"
-#import "SGFFAudioFrame.h"
+#import "SGFFAudioFFFrame.h"
 #import "SGFFObjectPool.h"
 
 @interface SGFFAudioFFDecoder ()
@@ -21,9 +21,9 @@
     return SGMediaTypeAudio;
 }
 
-- (SGFFFFFrame *)nextReuseFrame
+- (SGFFFrame *)nextReuseFrame
 {
-    SGFFAudioFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFrame class]];
+    SGFFAudioFFFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioFFFrame class]];
     return frame;
 }
 

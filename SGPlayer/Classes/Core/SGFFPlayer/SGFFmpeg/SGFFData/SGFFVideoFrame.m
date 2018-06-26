@@ -34,29 +34,6 @@
     NSLog(@"%s", __func__);
 }
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
-{
-    [super fillWithTimebase:timebase packet:packet];
-    
-    self.format = self.coreFrame->format;
-    self.pictureType = self.coreFrame->pict_type;
-    self.colorRange = self.coreFrame->color_range;
-    self.colorPrimaries = self.coreFrame->color_primaries;
-    self.colorTransferCharacteristic = self.coreFrame->color_trc;
-    self.colorSpace = self.coreFrame->colorspace;
-    self.chromaLocation = self.coreFrame->chroma_location;
-    self.sampleAspectRatio = self.coreFrame->sample_aspect_ratio;
-    self.width = self.coreFrame->width;
-    self.height = self.coreFrame->height;
-    self.keyFrame = self.coreFrame->key_frame;
-    self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(self.coreFrame);
-    self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
-    self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
-    self.packetSize = av_frame_get_pkt_size(self.coreFrame);
-    self.data = self.coreFrame->data;
-    self.linesize = self.coreFrame->linesize;
-}
-
 - (void)clear
 {
     [super clear];

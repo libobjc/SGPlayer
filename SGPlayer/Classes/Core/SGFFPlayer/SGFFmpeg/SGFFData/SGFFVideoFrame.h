@@ -6,9 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFFFrame.h"
+#import "SGFFFrame.h"
 
-@interface SGFFVideoFrame : SGFFFFFrame
+@interface SGFFVideoFrame : SGFFFrame
 
 @property (nonatomic, assign) enum AVPixelFormat format;
 @property (nonatomic, assign) enum AVPictureType pictureType;

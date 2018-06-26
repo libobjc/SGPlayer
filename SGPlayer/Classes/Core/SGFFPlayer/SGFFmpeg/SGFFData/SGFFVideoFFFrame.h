@@ -1,5 +1,5 @@
 //
-//  SGFFVideoAVFrame.h
+//  SGFFVideoFFFrame.h
 //  SGPlayer
 //
 //  Created by Single on 2018/6/26.
@@ -8,9 +8,9 @@
 
 #import "SGFFVideoFrame.h"
 
-@interface SGFFVideoAVFrame : SGFFVideoFrame
+@interface SGFFVideoFFFrame : SGFFVideoFrame
 
-@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
+@property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet;
 

@@ -23,16 +23,6 @@ SGFFObjectPoolItemImplementation
     return SGMediaTypeUnknown;
 }
 
-- (void)fillWithTimebase:(CMTime)timebase
-{
-    [self fillWithTimebase:timebase packet:NULL];
-}
-
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
-{
-    
-}
-
 - (void)clear
 {
     self.position = kCMTimeZero;

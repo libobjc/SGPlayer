@@ -16,6 +16,8 @@
 #import "SGGLProgramPool.h"
 #import "SGGLTextureUploader.h"
 #import "SGFFDefineMap.h"
+#import "SGFFVideoAVFrame.h"
+#import "SGFFVideoFFFrame.h"
 
 
 @interface SGFFVideoOutput () <SGGLViewDelegate>
@@ -193,14 +195,13 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-//        if (render.coreVideoFrame.corePixelBuffer)
-//        {
-//            success = [self.textureUploader uploadWithCVPixelBuffer:render.coreVideoFrame.corePixelBuffer];
-//        }
-//        else
-            if (render.coreVideoFrame.coreFrame)
+        if ([render.coreVideoFrame isKindOfClass:[SGFFVideoFFFrame class]])
         {
             success = [self.textureUploader uploadWithType:SGFFDMTexture(render.coreVideoFrame.format) data:render.coreVideoFrame.data size:renderSize];
+        }
+        else if ([render.coreVideoFrame isKindOfClass:[SGFFVideoAVFrame class]])
+        {
+            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)render.coreVideoFrame).corePixelBuffer];
         }
         if (!success)
         {
