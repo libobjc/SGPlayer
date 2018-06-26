@@ -20,6 +20,7 @@
     CMFormatDescriptionRef _formatDescription;
 }
 
+@property (nonatomic, assign) BOOL shouldFlush;
 @property (nonatomic, assign) BOOL shouldConvertNALSize3To4;
 @property (nonatomic, assign) OSStatus decodingStatus;
 @property (nonatomic, assign) CVPixelBufferRef decodingPixelBuffer;
@@ -102,18 +103,33 @@
 
 - (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
-    NSArray <__kindof SGFFFrame *> * result = nil;
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (self.applicationState == UIApplicationStateBackground)
     {
+        self.shouldFlush = YES;
         SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
         frame.position = packet.position;
         frame.duration = packet.duration;
         frame.size = packet.size;
-        result = @[frame];
-        return result;
+        return @[frame];
     }
 #endif
+    if (self.shouldFlush)
+    {
+        self.shouldFlush = NO;
+        [self doFlush];
+    }
+    SGFFVideoFrame * frame = [self decodeInternal:packet];
+    if (frame)
+    {
+        return @[frame];
+    }
+    return nil;
+}
+
+- (SGFFVideoFrame *)decodeInternal:(SGFFPacket *)packet
+{
+    SGFFVideoFrame * ret = nil;
     int64_t timestamp = packet.corePacket->pts;
     if (packet.corePacket->pts == AV_NOPTS_VALUE)
     {
@@ -142,7 +158,7 @@
                 SGFFVideoAVFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoAVFrame class]];
                 frame.corePixelBuffer = self.decodingPixelBuffer;
                 [frame fillWithTimebase:self.timebase packet:packet];
-                result = @[frame];
+                ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;
             }
@@ -153,7 +169,7 @@
         [self doFlush];
     }
     CFRelease(sampleBuffer);
-    return result;
+    return ret;
 }
     
 #pragma mark - VideoToolbox
@@ -285,12 +301,14 @@ static CMSampleBufferRef CreateSampleBuffer(CMFormatDescriptionRef formatDescrip
     if (blockBuffer)
     {
         CFRelease(blockBuffer);
+        blockBuffer = NULL;
     }
     if (status != noErr)
     {
-        if (!sampleBuffer)
+        if (sampleBuffer)
         {
             CFRelease(sampleBuffer);
+            sampleBuffer = NULL;
         }
         return NULL;
     }
