@@ -309,7 +309,7 @@
     [self updateCapacity];
 }
 
-- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(id <SGFFFrame>)frame
+- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFFFrame *)frame
 {
     if (decoder == self.audioDecoder)
     {

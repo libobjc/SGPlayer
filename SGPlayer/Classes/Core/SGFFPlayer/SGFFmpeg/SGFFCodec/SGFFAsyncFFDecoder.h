@@ -11,6 +11,6 @@
 
 @interface SGFFAsyncFFDecoder : SGFFAsyncDecoder
 
-- (__kindof id <SGFFFrame>)nextReuseFrame;
+- (__kindof SGFFFrame *)nextReuseFrame;
 
 @end

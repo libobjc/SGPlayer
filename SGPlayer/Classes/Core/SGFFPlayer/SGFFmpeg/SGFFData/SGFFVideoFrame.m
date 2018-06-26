@@ -15,18 +15,13 @@
 @property (nonatomic, assign, readonly) AVFrame * coreFrame;
 @property (nonatomic, assign, readonly) CVPixelBufferRef corePixelBuffer;
 
-SGFFObjectPoolItemInterface
-
 @end
 
 @implementation SGFFVideoFrame
 
-SGFFObjectPoolItemLockingImplementation
-SGFFFramePointerCoversionImplementation
-
-- (SGFFFrameType)type
+- (SGMediaType)mediaType
 {
-    return SGFFFrameTypeVideo;
+    return SGMediaTypeVideo;
 }
 
 - (instancetype)init
@@ -133,37 +128,6 @@ SGFFFramePointerCoversionImplementation
     }
 }
 
-- (void)clear
-{
-    if (_coreFrame)
-    {
-        av_frame_unref(_coreFrame);
-    }
-    [self updateCorePixelBuffer:NULL];
-    [self updateDataType:SGFFVideoFrameDataTypeUnknown];
-    self.format = AV_PIX_FMT_NONE;
-    self.pictureType = AV_PICTURE_TYPE_NONE;
-    self.colorRange = AVCOL_RANGE_UNSPECIFIED;
-    self.colorPrimaries = AVCOL_PRI_RESERVED0;
-    self.colorTransferCharacteristic = AVCOL_TRC_RESERVED0;
-    self.colorSpace = AVCOL_SPC_RGB;
-    self.chromaLocation = AVCHROMA_LOC_UNSPECIFIED;
-    AVRational rational = {1, 1};
-    self.sampleAspectRatio = rational;
-    self.width = 0;
-    self.height = 0;
-    self.keyFrame = 0;
-    self.position = kCMTimeZero;
-    self.duration = kCMTimeZero;
-    self.size = 0;
-    self.bestEffortTimestamp = 0;
-    self.packetPosition = 0;
-    self.packetDuration = 0;
-    self.packetSize = 0;
-    self.data = NULL;
-    self.linesize = NULL;
-}
-
 - (void)updateDataType:(SGFFVideoFrameDataType)dataType
 {
     _dataType = dataType;
@@ -184,6 +148,36 @@ SGFFFramePointerCoversionImplementation
         CVPixelBufferRelease(_corePixelBuffer);
     }
     _corePixelBuffer = corePixelBuffer;
+}
+
+- (void)clear
+{
+    [super clear];
+    
+    if (_coreFrame)
+    {
+        av_frame_unref(_coreFrame);
+    }
+    [self updateCorePixelBuffer:NULL];
+    [self updateDataType:SGFFVideoFrameDataTypeUnknown];
+    self.format = AV_PIX_FMT_NONE;
+    self.pictureType = AV_PICTURE_TYPE_NONE;
+    self.colorRange = AVCOL_RANGE_UNSPECIFIED;
+    self.colorPrimaries = AVCOL_PRI_RESERVED0;
+    self.colorTransferCharacteristic = AVCOL_TRC_RESERVED0;
+    self.colorSpace = AVCOL_SPC_RGB;
+    self.chromaLocation = AVCHROMA_LOC_UNSPECIFIED;
+    AVRational rational = {1, 1};
+    self.sampleAspectRatio = rational;
+    self.width = 0;
+    self.height = 0;
+    self.keyFrame = 0;
+    self.bestEffortTimestamp = 0;
+    self.packetPosition = 0;
+    self.packetDuration = 0;
+    self.packetSize = 0;
+    self.data = NULL;
+    self.linesize = NULL;
 }
 
 @end

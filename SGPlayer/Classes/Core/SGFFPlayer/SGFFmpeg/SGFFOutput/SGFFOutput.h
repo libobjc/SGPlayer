@@ -32,7 +32,7 @@
 - (void)start;
 - (void)stop;
 
-- (void)putFrame:(id <SGFFFrame>)frame;
+- (void)putFrame:(__kindof SGFFFrame *)frame;
 - (void)flush;
 
 @end

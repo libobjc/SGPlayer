@@ -34,10 +34,8 @@
 #define SGFFObjectPoolItemLockingImplementation SGFFObjectPoolItemImplementation
 
 
-@protocol SGFFObjectPoolItem <NSObject>
+@protocol SGFFObjectPoolItem <NSObject, NSLocking>
 
-- (void)lock;
-- (void)unlock;
 - (void)clear;
 
 @end

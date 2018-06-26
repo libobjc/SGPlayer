@@ -51,9 +51,9 @@
     [self setupDecompressionSession];
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
+- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
-    __block NSArray <id <SGFFFrame>> * result = nil;
+    __block NSArray <__kindof SGFFFrame *> * result = nil;
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size];
     if (sampleBuffer != NULL)
     {

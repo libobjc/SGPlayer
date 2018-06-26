@@ -6,38 +6,22 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#ifndef SGFFFrame_h
-#define SGFFFrame_h
-
-
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
+#import "SGDefines.h"
+#import "SGFFPacket.h"
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
-#import "SGFFPacket.h"
-#import "SGDefines.h"
 
 @class SGFFAudioFrame;
 @class SGFFVideoFrame;
-@protocol SGFFFrameUtil;
 
+@interface SGFFFrame : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>
 
-typedef NS_ENUM(NSUInteger, SGFFFrameType)
-{
-    SGFFFrameTypeUnkonwn,
-    SGFFFrameTypeVideo,
-    SGFFFrameTypeAudio,
-    SGFFFrameTypeSubtitle,
-};
+- (SGMediaType)mediaType;
 
-
-@protocol SGFFFrame <NSObject, SGFFObjectPoolItem, SGFFObjectQueueItem>
-
-- (SGFFFrameType)type;
-
-- (CMTime)position;
-- (CMTime)duration;
-- (long long)size;
+@property (nonatomic, assign) CMTime position;
+@property (nonatomic, assign) CMTime duration;
+@property (nonatomic, assign) long long size;
 
 - (SGFFAudioFrame *)audioFrame;
 - (SGFFVideoFrame *)videoFrame;
@@ -47,26 +31,3 @@ typedef NS_ENUM(NSUInteger, SGFFFrameType)
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet;
 
 @end
-
-
-#define SGFFFramePointerCoversionImplementation \
-- (SGFFAudioFrame *)audioFrame \
-{ \
-    if (self.type == SGFFFrameTypeAudio) \
-    { \
-        return (SGFFAudioFrame *)self; \
-    } \
-    return nil; \
-} \
- \
-- (SGFFVideoFrame *)videoFrame \
-{ \
-    if (self.type == SGFFFrameTypeVideo) \
-    { \
-        return (SGFFVideoFrame *)self; \
-    } \
-    return nil; \
-} \
-
-
-#endif /* SGFFFrame_h */

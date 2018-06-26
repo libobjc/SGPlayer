@@ -85,7 +85,7 @@
     [self clearSwrContext];
 }
 
-- (void)putFrame:(id <SGFFFrame>)frame
+- (void)putFrame:(__kindof SGFFFrame *)frame
 {
     SGFFAudioFrame * audioFrame = frame.audioFrame;
     if (!audioFrame)

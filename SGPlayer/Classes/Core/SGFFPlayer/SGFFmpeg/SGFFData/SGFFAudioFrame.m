@@ -13,18 +13,13 @@
 
 @property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
-SGFFObjectPoolItemInterface
-
 @end
 
 @implementation SGFFAudioFrame
 
-SGFFObjectPoolItemLockingImplementation
-SGFFFramePointerCoversionImplementation
-
-- (SGFFFrameType)type
+- (SGMediaType)mediaType
 {
-    return SGFFFrameTypeAudio;
+    return SGMediaTypeAudio;
 }
 
 - (instancetype)init
@@ -76,10 +71,8 @@ SGFFFramePointerCoversionImplementation
 
 - (void)clear
 {
-    self.position = kCMTimeZero;
-    self.duration = kCMTimeZero;
-    self.size = 0;
-    
+    [super clear];
+
     self.format = AV_SAMPLE_FMT_NONE;
     self.numberOfSamples = 0;
     self.sampleRate = 0;

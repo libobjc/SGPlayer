@@ -16,6 +16,8 @@ SGFFObjectPoolItemLockingInterface
 
 @implementation SGFFPacket
 
+SGFFObjectPoolItemLockingImplementation
+
 - (instancetype)init
 {
     if (self = [super init])
@@ -57,8 +59,6 @@ SGFFObjectPoolItemLockingInterface
         _size = _corePacket->size;
     }
 }
-
-SGFFObjectPoolItemLockingImplementation
 
 - (void)clear
 {

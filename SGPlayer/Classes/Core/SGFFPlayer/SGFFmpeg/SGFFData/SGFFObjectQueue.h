@@ -10,14 +10,11 @@
 #import <AVFoundation/AVFoundation.h>
 
 
-@protocol SGFFObjectQueueItem <NSObject>
+@protocol SGFFObjectQueueItem <NSObject, NSLocking>
 
 - (CMTime)position;
 - (CMTime)duration;
 - (long long)size;
-
-- (void)lock;
-- (void)unlock;
 
 @end
 

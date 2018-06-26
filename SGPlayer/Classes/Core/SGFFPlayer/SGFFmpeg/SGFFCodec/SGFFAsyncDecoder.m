@@ -155,8 +155,8 @@ static SGFFPacket * flushPacket;
             }
             else if (packet)
             {
-                NSArray <id <SGFFFrame>> * frames = [self doDecode:packet];
-                for (id <SGFFFrame> frame in frames)
+                NSArray <__kindof SGFFFrame *> * frames = [self doDecode:packet];
+                for (__kindof SGFFFrame * frame in frames)
                 {
                     [self.delegate decoder:self hasNewFrame:frame];
                     [frame unlock];
@@ -174,7 +174,7 @@ static SGFFPacket * flushPacket;
     
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
+- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
     return nil;
 }

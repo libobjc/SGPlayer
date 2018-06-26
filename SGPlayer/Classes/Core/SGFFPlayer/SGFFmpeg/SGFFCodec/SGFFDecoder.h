@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderState)
 @protocol SGFFDecoderDelegate <NSObject>
 
 - (void)decoderDidChangeCapacity:(id <SGFFDecoder>)decoder;
-- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(id <SGFFFrame>)frame;
+- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFFFrame *)frame;
 
 @end
 

@@ -14,6 +14,6 @@
 @property (nonatomic, strong, readonly) SGFFObjectQueue * packetQueue;
 
 - (void)doFlush;
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet;
+- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet;
 
 @end

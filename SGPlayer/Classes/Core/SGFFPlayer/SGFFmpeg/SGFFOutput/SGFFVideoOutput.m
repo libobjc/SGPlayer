@@ -77,7 +77,7 @@
     self.currentRender = nil;
 }
 
-- (void)putFrame:(id <SGFFFrame>)frame
+- (void)putFrame:(__kindof SGFFFrame *)frame
 {
     SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
     [render updateCoreVideoFrame:frame.videoFrame];

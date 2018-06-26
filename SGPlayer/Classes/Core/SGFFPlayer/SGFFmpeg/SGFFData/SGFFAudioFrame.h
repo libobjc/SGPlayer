@@ -6,16 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "SGFFFrame.h"
 
-@interface SGFFAudioFrame : NSObject <SGFFFrame>
-
-- (AVFrame *)coreFrame;
-
-@property (nonatomic, assign) CMTime position;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) long long size;
+@interface SGFFAudioFrame : SGFFFrame
 
 @property (nonatomic, assign) enum AVSampleFormat format;
 @property (nonatomic, assign) int numberOfSamples;

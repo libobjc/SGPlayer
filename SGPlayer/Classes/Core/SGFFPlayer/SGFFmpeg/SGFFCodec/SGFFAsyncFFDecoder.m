@@ -83,7 +83,7 @@
     }
 }
 
-- (NSArray <id <SGFFFrame>> *)doDecode:(SGFFPacket *)packet
+- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)
@@ -93,7 +93,7 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        id <SGFFFrame> frame = [self nextReuseFrame];
+        __kindof SGFFFrame * frame = [self nextReuseFrame];
         NSAssert(frame, @"Fecth frame failed");
         result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)
@@ -118,7 +118,7 @@
     return array;
 }
 
-- (__kindof id <SGFFFrame>)nextReuseFrame
+- (__kindof SGFFFrame *)nextReuseFrame
 {
     return nil;
 }

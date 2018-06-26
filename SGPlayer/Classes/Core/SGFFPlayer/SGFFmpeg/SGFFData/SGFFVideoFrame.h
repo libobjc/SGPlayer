@@ -6,10 +6,7 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
 #import "SGFFFrame.h"
-
 
 typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
 {
@@ -18,18 +15,12 @@ typedef NS_ENUM(NSUInteger, SGFFVideoFrameDataType)
     SGFFVideoFrameDataTypeCVPixelBuffer,
 };
 
-
-@interface SGFFVideoFrame : NSObject <SGFFFrame>
+@interface SGFFVideoFrame : SGFFFrame
 
 - (SGFFVideoFrameDataType)dataType;
-- (AVFrame *)coreFrame;
 - (CVPixelBufferRef)corePixelBuffer;
 - (void)updateDataType:(SGFFVideoFrameDataType)dataType;
 - (void)updateCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer;
-
-@property (nonatomic, assign) CMTime position;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) long long size;
 
 @property (nonatomic, assign) enum AVPixelFormat format;
 @property (nonatomic, assign) enum AVPictureType pictureType;
