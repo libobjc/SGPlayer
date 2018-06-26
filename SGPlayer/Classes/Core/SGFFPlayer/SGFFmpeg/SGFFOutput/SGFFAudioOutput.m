@@ -43,12 +43,12 @@
 
 @implementation SGFFAudioOutput
 
-@synthesize timeSynchronizer = _timeSynchronizer;
 @synthesize delegate = _delegate;
+@synthesize timeSynchronizer = _timeSynchronizer;
 
-- (SGFFOutputType)type
+- (SGMediaType)mediaType
 {
-    return SGFFOutputTypeAudio;
+    return SGMediaTypeAudio;
 }
 
 - (instancetype)init
@@ -66,18 +66,17 @@
 - (void)dealloc
 {
     [self.audioPlayer pause];
-    [self close];
+    [self stop];
 }
 
-- (void)flush
+#pragma mark - Interface
+
+- (void)start
 {
-    [self.frameQueue flush];
-    [self.currentRender unlock];
-    self.currentRender = nil;
-    self.currentRenderReadOffset = 0;
+    
 }
 
-- (void)close
+- (void)stop
 {
     [self.frameQueue destroy];
     [self.currentRender unlock];
@@ -132,19 +131,12 @@
     [render unlock];
 }
 
-- (NSUInteger)count
+- (void)flush
 {
-    return self.frameQueue.count;
-}
-
-- (CMTime)duration
-{
-    return self.frameQueue.duration;
-}
-
-- (long long)size
-{
-    return self.frameQueue.size;
+    [self.frameQueue flush];
+    [self.currentRender unlock];
+    self.currentRender = nil;
+    self.currentRenderReadOffset = 0;
 }
 
 - (void)play
@@ -156,6 +148,25 @@
 {
     [self.audioPlayer pause];
 }
+
+#pragma mark - Setter/Getter
+
+- (CMTime)duration
+{
+    return self.frameQueue.duration;
+}
+
+- (long long)size
+{
+    return self.frameQueue.size;
+}
+
+- (NSUInteger)count
+{
+    return self.frameQueue.count;
+}
+
+#pragma mark - swr
 
 - (void)setupSwrContextIfNeeded
 {
@@ -221,7 +232,6 @@
         _swrContext = nil;
     }
 }
-
 
 #pragma mark - SGAudioManagerDelegate
 

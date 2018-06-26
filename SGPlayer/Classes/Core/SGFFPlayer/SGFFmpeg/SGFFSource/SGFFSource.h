@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 @property (nonatomic, weak) id <SGFFSourceDelegate> delegate;
 
 - (SGFFSourceState)state;
+
 - (CMTime)duration;
 - (NSError *)error;
 

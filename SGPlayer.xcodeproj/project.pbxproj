@@ -2211,6 +2211,11 @@
 		9CF15DF320119D0300585326 /* SGFFData */ = {
 			isa = PBXGroup;
 			children = (
+				9CF15DF520119FE200585326 /* SGFFOutputRender.h */,
+				9CF15E252011CD8C00585326 /* SGFFAudioOutputRender.h */,
+				9CF15E262011CD8C00585326 /* SGFFAudioOutputRender.m */,
+				9CAAABE1201438C20016EEBC /* SGFFVideoOutputRender.h */,
+				9CAAABE2201438C20016EEBC /* SGFFVideoOutputRender.m */,
 				9C2C55AB2015D1D200131E15 /* SGFFPacket.h */,
 				9C2C55AC2015D1D200131E15 /* SGFFPacket.m */,
 				9C389ACB20108C2E003259FF /* SGFFFrame.h */,
@@ -2234,11 +2239,6 @@
 				9CF15E062011AE0700585326 /* SGFFAudioOutput.m */,
 				9C2C55A12015C1E100131E15 /* SGFFVideoOutput.h */,
 				9C2C55A22015C1E100131E15 /* SGFFVideoOutput.m */,
-				9CF15DF520119FE200585326 /* SGFFOutputRender.h */,
-				9CF15E252011CD8C00585326 /* SGFFAudioOutputRender.h */,
-				9CF15E262011CD8C00585326 /* SGFFAudioOutputRender.m */,
-				9CAAABE1201438C20016EEBC /* SGFFVideoOutputRender.h */,
-				9CAAABE2201438C20016EEBC /* SGFFVideoOutputRender.m */,
 			);
 			path = SGFFOutput;
 			sourceTree = "<group>";

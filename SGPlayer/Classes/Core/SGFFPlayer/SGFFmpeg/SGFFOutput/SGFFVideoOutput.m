@@ -32,12 +32,12 @@
 
 @implementation SGFFVideoOutput
 
-@synthesize timeSynchronizer = _timeSynchronizer;
 @synthesize delegate = _delegate;
+@synthesize timeSynchronizer = _timeSynchronizer;
 
-- (SGFFOutputType)type
+- (SGMediaType)mediaType
 {
-    return SGFFOutputTypeVideo;
+    return SGMediaTypeVideo;
 }
 
 - (instancetype)init
@@ -60,17 +60,17 @@
 - (void)dealloc
 {
     [self.displayLink invalidate];
-    [self close];
+    [self stop];
 }
 
-- (void)flush
+#pragma mark - Interface
+
+- (void)start
 {
-    [self.frameQueue flush];
-    [self.currentRender unlock];
-    self.currentRender = nil;
+    
 }
 
-- (void)close
+- (void)stop
 {
     [self.frameQueue destroy];
     [self.currentRender unlock];
@@ -85,6 +85,15 @@
     [self.delegate outputDidChangeCapacity:self];
     [render unlock];
 }
+
+- (void)flush
+{
+    [self.frameQueue flush];
+    [self.currentRender unlock];
+    self.currentRender = nil;
+}
+
+#pragma mark - Setter/Getter
 
 - (NSUInteger)count
 {
@@ -105,6 +114,8 @@
 {
     return self.glView;
 }
+
+#pragma mark - Renderer
 
 - (void)displayLinkHandler
 {

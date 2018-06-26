@@ -9,51 +9,38 @@
 #ifndef SGFFOutput_h
 #define SGFFOutput_h
 
-
 #import <Foundation/Foundation.h>
+#import "SGDefines.h"
 #import "SGFFFrame.h"
 #import "SGFFOutputRender.h"
 #import "SGFFTimeSynchronizer.h"
 
-
 @protocol SGFFOutput;
 @protocol SGFFOutputDelegate;
 
-
-typedef NS_ENUM(NSUInteger, SGFFOutputType)
-{
-    SGFFOutputTypeUnkonwn,
-    SGFFOutputTypeVideo,
-    SGFFOutputTypeAudio,
-    SGFFOutputTypeSubtitle,
-};
-
-
 @protocol SGFFOutput <NSObject>
 
-- (SGFFOutputType)type;
-
-@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
+- (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGFFOutputDelegate> delegate;
+@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
 
-- (NSUInteger)count;
 - (CMTime)duration;
 - (long long)size;
+- (NSUInteger)count;
 
-- (void)flush;
-- (void)close;
+- (void)start;
+- (void)stop;
 
 - (void)putFrame:(id <SGFFFrame>)frame;
+- (void)flush;
 
 @end
-
 
 @protocol SGFFOutputDelegate <NSObject>
 
 - (void)outputDidChangeCapacity:(id <SGFFOutput>)output;
 
 @end
-
 
 #endif /* SGFFOutput_h */

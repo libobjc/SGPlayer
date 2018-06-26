@@ -89,8 +89,8 @@
     [self.source stopReading];
     [self.audioDecoder stopDecoding];
     [self.videoDecoder stopDecoding];
-    [self.audioOutput close];
-    [self.videoOutput close];
+    [self.audioOutput stop];
+    [self.videoOutput stop];
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
