@@ -1,17 +1,17 @@
 //
-//  SGFFAsyncCodec.m
+//  SGFFAsyncDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAsyncCodec.h"
+#import "SGFFAsyncDecoder.h"
 #import "SGPlayerMacro.h"
 
-@interface SGFFAsyncCodec ()
+@interface SGFFAsyncDecoder ()
 
-@property (nonatomic, assign) SGFFCodecState state;
+@property (nonatomic, assign) SGFFDecoderState state;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation SGFFAsyncCodec
+@implementation SGFFAsyncDecoder
 
 @synthesize index = _index;
 @synthesize timebase = _timebase;
@@ -47,7 +47,7 @@ static SGFFPacket * flushPacket;
 
 - (BOOL)open
 {
-    self.state = SGFFCodecStateOpening;
+    self.state = SGFFDecoderStateOpening;
     _packetQueue = [[SGFFObjectQueue alloc] init];
     self.operationQueue = [[NSOperationQueue alloc] init];
     self.operationQueue.maxConcurrentOperationCount = 1;
@@ -62,17 +62,17 @@ static SGFFPacket * flushPacket;
 
 - (void)pause
 {
-    if (self.state == SGFFCodecStateDecoding)
+    if (self.state == SGFFDecoderStateDecoding)
     {
-        self.state = SGFFCodecStatePaused;
+        self.state = SGFFDecoderStatePaused;
     }
 }
 
 - (void)resume
 {
-    if (self.state == SGFFCodecStatePaused)
+    if (self.state == SGFFDecoderStatePaused)
     {
-        self.state = SGFFCodecStateDecoding;
+        self.state = SGFFDecoderStateDecoding;
         [self.decodeCondition lock];
         [self.decodeCondition broadcast];
         [self.decodeCondition unlock];
@@ -86,12 +86,12 @@ static SGFFPacket * flushPacket;
     [self.decodeCondition lock];
     [self.decodeCondition broadcast];
     [self.decodeCondition unlock];
-    [self.delegate codecDidChangeCapacity:self];
+    [self.delegate decoderDidChangeCapacity:self];
 }
 
 - (void)close
 {
-    self.state = SGFFCodecStateClosed;
+    self.state = SGFFDecoderStateClosed;
     [self.packetQueue destroy];
     [self.decodeCondition lock];
     [self.decodeCondition broadcast];
@@ -103,7 +103,7 @@ static SGFFPacket * flushPacket;
 - (BOOL)putPacket:(SGFFPacket *)packet
 {
     [self.packetQueue putObjectSync:packet];
-    [self.delegate codecDidChangeCapacity:self];
+    [self.delegate decoderDidChangeCapacity:self];
     return YES;
 }
 
@@ -124,25 +124,25 @@ static SGFFPacket * flushPacket;
 
 - (void)decodeThread
 {
-    self.state = SGFFCodecStateDecoding;
+    self.state = SGFFDecoderStateDecoding;
     while (YES)
     {
-        if (self.state == SGFFCodecStateClosed
-            || self.state == SGFFCodecStateFailed)
+        if (self.state == SGFFDecoderStateClosed
+            || self.state == SGFFDecoderStateFailed)
         {
             break;
         }
-        else if (self.state == SGFFCodecStatePaused)
+        else if (self.state == SGFFDecoderStatePaused)
         {
             [self.decodeCondition lock];
-            if (self.state == SGFFCodecStatePaused)
+            if (self.state == SGFFDecoderStatePaused)
             {
                 [self.decodeCondition wait];
             }
             [self.decodeCondition unlock];
             continue;
         }
-        else if (self.state == SGFFCodecStateDecoding)
+        else if (self.state == SGFFDecoderStateDecoding)
         {
             SGFFPacket * packet = [self.packetQueue getObjectSync];
             if (packet == flushPacket)
@@ -163,13 +163,13 @@ static SGFFPacket * flushPacket;
                     {
                         for (id <SGFFFrame> frame in frames)
                         {
-                            [self.delegate codec:self hasNewFrame:frame];
+                            [self.delegate decoder:self hasNewFrame:frame];
                             [frame unlock];
                         }
                     }
                     [packet unlock];
                 }
-                [self.delegate codecDidChangeCapacity:self];
+                [self.delegate decoderDidChangeCapacity:self];
             }
             continue;
         }

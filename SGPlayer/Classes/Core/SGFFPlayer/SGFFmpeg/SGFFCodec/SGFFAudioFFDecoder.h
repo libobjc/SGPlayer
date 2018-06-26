@@ -1,13 +1,13 @@
 //
-//  SGFFVideoAVCodec.h
+//  SGFFAudioFFDecoder.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAsyncAVCodec.h"
+#import "SGFFAsyncFFDecoder.h"
 
-@interface SGFFVideoAVCodec : SGFFAsyncAVCodec
+@interface SGFFAudioFFDecoder : SGFFAsyncFFDecoder
 
 @end

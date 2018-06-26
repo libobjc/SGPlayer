@@ -15,6 +15,7 @@
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
 #import "SGFFPacket.h"
+#import "SGDefines.h"
 
 @class SGFFAudioFrame;
 @class SGFFVideoFrame;

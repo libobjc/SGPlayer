@@ -8,14 +8,14 @@
 
 #import "SGFFSession.h"
 #import "SGFFFormatContext.h"
-#import "SGFFAudioAVCodec.h"
-#import "SGFFVideoAVCodec.h"
-#import "SGFFVideoVTBCodec.h"
+#import "SGFFAudioFFDecoder.h"
+#import "SGFFVideoFFDecoder.h"
+#import "SGFFVideoAVDecoder.h"
 #import "SGPlayerMacro.h"
 #import "SGFFTime.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFCodecDelegate, SGFFOutputDelegate>
+@interface SGFFSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
 
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
@@ -26,8 +26,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) id <SGFFSource> source;
-@property (nonatomic, strong) id <SGFFCodec> audioCodec;
-@property (nonatomic, strong) id <SGFFCodec> videoCodec;
+@property (nonatomic, strong) id <SGFFDecoder> audioDecoder;
+@property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;
 @property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
@@ -87,8 +87,8 @@
 {
     self.state = SGFFSessionStateClosed;
     [self.source stopReading];
-    [self.audioCodec close];
-    [self.videoCodec close];
+    [self.audioDecoder close];
+    [self.videoDecoder close];
     [self.audioOutput close];
     [self.videoOutput close];
 }
@@ -111,8 +111,8 @@
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
         SGStrongSelf
-        [self.audioCodec flush];
-        [self.videoCodec flush];
+        [self.audioDecoder flush];
+        [self.videoDecoder flush];
         [self.audioOutput flush];
         [self.videoOutput flush];
         [strongSelf.timeSynchronizer flush];;
@@ -129,15 +129,15 @@
     CMTime duration = kCMTimeZero;
     long long size = 0;
     
-    if (self.audioCodec && self.audioOutput)
+    if (self.audioDecoder && self.audioOutput)
     {
-        duration = CMTimeAdd(self.audioCodec.duration, self.audioOutput.duration);
-        size = self.audioCodec.size + self.audioOutput.size;
+        duration = CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
+        size = self.audioDecoder.size + self.audioOutput.size;
     }
-    else if (self.videoCodec && self.videoOutput)
+    else if (self.videoDecoder && self.videoOutput)
     {
-        duration = CMTimeAdd(self.videoCodec.duration, self.videoOutput.duration);
-        size = self.videoCodec.size + self.videoOutput.size;
+        duration = CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
+        size = self.videoDecoder.size + self.videoOutput.size;
     }
     else
     {
@@ -174,30 +174,30 @@
 
 - (CMTime)loadedDuration
 {
-    if (self.audioCodec && self.audioOutput)
+    if (self.audioDecoder && self.audioOutput)
     {
-        return CMTimeAdd(self.audioCodec.duration, self.audioOutput.duration);
+        return CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
     }
-    else if (self.videoCodec && self.videoOutput)
+    else if (self.videoDecoder && self.videoOutput)
     {
-        return CMTimeAdd(self.videoCodec.duration, self.videoOutput.duration);
+        return CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
     }
     return kCMTimeZero;
 }
 
 - (long long)loadedSize
 {
-    return self.audioCodec.size + self.audioOutput.size + self.videoCodec.size + self.videoOutput.size;
+    return self.audioDecoder.size + self.audioOutput.size + self.videoDecoder.size + self.videoOutput.size;
 }
 
 - (BOOL)videoEnable
 {
-    return self.videoCodec != nil;
+    return self.videoDecoder != nil;
 }
 
 - (BOOL)audioEnable
 {
-    return self.audioCodec != nil;
+    return self.audioDecoder != nil;
 }
 
 - (BOOL)seekEnable
@@ -209,15 +209,15 @@
 
 - (void)source:(id <SGFFSource>)source hasNewPacket:(SGFFPacket *)packet
 {
-    if (packet.index == self.audioCodec.index)
+    if (packet.index == self.audioDecoder.index)
     {
-        [packet fillWithTimebase:self.audioCodec.timebase];
-        [self.audioCodec putPacket:packet];
+        [packet fillWithTimebase:self.audioDecoder.timebase];
+        [self.audioDecoder putPacket:packet];
     }
-    else if (packet.index == self.videoCodec.index)
+    else if (packet.index == self.videoDecoder.index)
     {
-        [packet fillWithTimebase:self.videoCodec.timebase];
-        [self.videoCodec putPacket:packet];
+        [packet fillWithTimebase:self.videoDecoder.timebase];
+        [self.videoDecoder putPacket:packet];
     }
 }
 
@@ -229,35 +229,35 @@
         {
             case SGMediaTypeAudio:
             {
-                if (!self.audioCodec)
+                if (!self.audioDecoder)
                 {
-                    SGFFAudioAVCodec * audioCodec = [[SGFFAudioAVCodec alloc] init];
-                    audioCodec.index = stream.index;
-                    audioCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
-                    audioCodec.codecpar = stream.coreStream->codecpar;
-                    if ([audioCodec open])
+                    SGFFAudioFFDecoder * audioDecoder = [[SGFFAudioFFDecoder alloc] init];
+                    audioDecoder.index = stream.index;
+                    audioDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
+                    audioDecoder.codecpar = stream.coreStream->codecpar;
+                    if ([audioDecoder open])
                     {
-                        self.audioCodec = audioCodec;
+                        self.audioDecoder = audioDecoder;
                     }
                 }
             }
                 break;
             case SGMediaTypeVideo:
             {
-                if (!self.videoCodec)
+                if (!self.videoDecoder)
                 {
-                    Class codecClass = [SGFFVideoAVCodec class];
+                    Class codecClass = [SGFFVideoFFDecoder class];
                     if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
                     {
-                        codecClass = [SGFFVideoVTBCodec class];
+                        codecClass = [SGFFVideoAVDecoder class];
                     }
-                    SGFFAsyncCodec * videoCodec = [[codecClass alloc] init];
-                    videoCodec.index = stream.index;
-                    videoCodec.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
-                    videoCodec.codecpar = stream.coreStream->codecpar;
-                    if ([videoCodec open])
+                    SGFFAsyncDecoder * videoDecoder = [[codecClass alloc] init];
+                    videoDecoder.index = stream.index;
+                    videoDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
+                    videoDecoder.codecpar = stream.coreStream->codecpar;
+                    if ([videoDecoder open])
                     {
-                        self.videoCodec = videoCodec;
+                        self.videoDecoder = videoDecoder;
                     }
                 }
             }
@@ -267,8 +267,8 @@
         }
     }
 
-    self.audioCodec.delegate = self;
-    self.videoCodec.delegate = self;
+    self.audioDecoder.delegate = self;
+    self.videoDecoder.delegate = self;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.configuration.audioOutput.timeSynchronizer = self.timeSynchronizer;
     self.configuration.videoOutput.timeSynchronizer = self.timeSynchronizer;
@@ -302,20 +302,20 @@
     }
 }
 
-#pragma mark - SGFFCodecDelegate
+#pragma mark - SGFFDecoderDelegate
 
-- (void)codecDidChangeCapacity:(id <SGFFCodec>)codec
+- (void)decoderDidChangeCapacity:(id <SGFFDecoder>)decoder
 {
     [self updateCapacity];
 }
 
-- (void)codec:(id <SGFFCodec>)codec hasNewFrame:(id <SGFFFrame>)frame
+- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(id <SGFFFrame>)frame
 {
-    if (codec == self.audioCodec)
+    if (decoder == self.audioDecoder)
     {
         [self.audioOutput putFrame:frame];
     }
-    else if (codec == self.videoCodec)
+    else if (decoder == self.videoDecoder)
     {
         [self.videoOutput putFrame:frame];
     }
@@ -328,17 +328,17 @@
     if (output == self.audioOutput)
     {
         if (self.audioOutput.count >= 5) {
-            [self.audioCodec pause];
+            [self.audioDecoder pause];
         } else {
-            [self.audioCodec resume];
+            [self.audioDecoder resume];
         }
     }
     else if (output == self.videoOutput)
     {
         if (self.videoOutput.count >= 3) {
-            [self.videoCodec pause];
+            [self.videoDecoder pause];
         } else {
-            [self.videoCodec resume];
+            [self.videoDecoder resume];
         }
     }
     [self updateCapacity];

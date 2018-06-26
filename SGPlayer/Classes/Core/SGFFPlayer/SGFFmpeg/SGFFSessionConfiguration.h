@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFSource.h"
-#import "SGFFCodec.h"
 #import "SGFFOutput.h"
 
 @interface SGFFSessionConfiguration : NSObject

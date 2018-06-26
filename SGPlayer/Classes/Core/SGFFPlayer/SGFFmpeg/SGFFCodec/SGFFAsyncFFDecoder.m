@@ -1,21 +1,21 @@
 //
-//  SGFFAsyncAVCodec.m
+//  SGFFAsyncFFDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAsyncAVCodec.h"
+#import "SGFFAsyncFFDecoder.h"
 #import "SGFFError.h"
 
-@interface SGFFAsyncAVCodec ()
+@interface SGFFAsyncFFDecoder ()
 
 @property (nonatomic, assign) AVCodecContext * codecContext;
 
 @end
 
-@implementation SGFFAsyncAVCodec
+@implementation SGFFAsyncFFDecoder
 
 + (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(CMTime)timebase
 {
@@ -55,7 +55,7 @@
 
 - (BOOL)open
 {
-    self.codecContext = [SGFFAsyncAVCodec ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
+    self.codecContext = [SGFFAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
     if (self.codecContext)
     {
         return [super open];

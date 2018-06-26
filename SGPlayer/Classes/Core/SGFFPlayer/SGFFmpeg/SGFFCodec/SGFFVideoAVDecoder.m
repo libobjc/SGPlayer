@@ -1,17 +1,17 @@
 //
-//  SGFFVideoVTBCodec.m
+//  SGFFVideoAVDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/26.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFVideoVTBCodec.h"
+#import "SGFFVideoAVDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
 #import "SGFFVideoFrame.h"
 #import "SGFFObjectPool.h"
 
-@interface SGFFVideoVTBCodec ()
+@interface SGFFVideoAVDecoder ()
 
 {
     VTDecompressionSessionRef _decompressionSession;
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation SGFFVideoVTBCodec
+@implementation SGFFVideoAVDecoder
 
 - (SGMediaType)mediaType
 {
