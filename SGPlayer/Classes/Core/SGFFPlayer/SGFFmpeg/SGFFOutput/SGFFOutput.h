@@ -12,7 +12,6 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 #import "SGFFFrame.h"
-#import "SGFFOutputRender.h"
 #import "SGFFTimeSynchronizer.h"
 
 @protocol SGFFOutput;

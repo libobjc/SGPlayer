@@ -7,7 +7,6 @@
 //
 
 #import "SGGLTexture.h"
-#import "SGFFVideoOutputRender.h"
 #import "SGGLDefines.h"
 
 @interface SGGLTextureYUV420 : SGGLTexture

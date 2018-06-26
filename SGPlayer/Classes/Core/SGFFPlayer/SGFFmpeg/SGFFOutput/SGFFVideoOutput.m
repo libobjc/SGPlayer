@@ -7,7 +7,6 @@
 //
 
 #import "SGFFVideoOutput.h"
-#import "SGFFVideoOutputRender.h"
 #import "SGPlayerMacro.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLView.h"
@@ -24,7 +23,7 @@
 
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGFFVideoOutputRender * currentRender;
+@property (nonatomic, strong) SGFFVideoFrame * currentRender;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
@@ -87,11 +86,7 @@
     }
     SGFFVideoFrame * videoFrame = frame;
     
-    SGFFVideoOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoOutputRender class]];
-    [render updateCoreVideoFrame:videoFrame];
-    [self.frameQueue putObjectSync:render];
-    [self.delegate outputDidChangeCapacity:self];
-    [render unlock];
+    [self.frameQueue putObjectSync:videoFrame];
 }
 
 - (void)flush
@@ -128,7 +123,7 @@
 
 - (void)displayLinkHandler
 {
-    SGFFVideoOutputRender * render = nil;
+    SGFFVideoFrame * render = nil;
     if (self.currentRender)
     {
         SGWeakSelf
@@ -172,7 +167,7 @@
 
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
-    SGFFVideoOutputRender * render = self.currentRender;
+    SGFFVideoFrame * render = self.currentRender;
     if (!render)
     {
         return NO;
@@ -182,8 +177,8 @@
     [self setupOpenGLIfNeeded];
 
     id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.coreVideoFrame.format)];
-    SGGLSize renderSize = {render.coreVideoFrame.width, render.coreVideoFrame.height};
+    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(render.format)];
+    SGGLSize renderSize = {render.width, render.height};
 
     if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
     {
@@ -195,13 +190,13 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-        if ([render.coreVideoFrame isKindOfClass:[SGFFVideoFFFrame class]])
+        if ([render isKindOfClass:[SGFFVideoFFFrame class]])
         {
-            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.coreVideoFrame.format) data:render.coreVideoFrame.data size:renderSize];
+            success = [self.textureUploader uploadWithType:SGFFDMTexture(render.format) data:render.data size:renderSize];
         }
-        else if ([render.coreVideoFrame isKindOfClass:[SGFFVideoAVFrame class]])
+        else if ([render isKindOfClass:[SGFFVideoAVFrame class]])
         {
-            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)render.coreVideoFrame).corePixelBuffer];
+            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)render).corePixelBuffer];
         }
         if (!success)
         {
