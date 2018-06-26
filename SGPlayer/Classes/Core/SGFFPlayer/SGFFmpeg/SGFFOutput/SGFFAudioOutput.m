@@ -7,9 +7,8 @@
 //
 
 #import "SGFFAudioOutput.h"
-#import "SGFFAudioOutputRender.h"
 #import "SGFFAudioPlayer.h"
-#import "SGFFAudioFrame.h"
+#import "SGFFAudioBufferFrame.h"
 #import "SGFFTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
@@ -19,14 +18,14 @@
 
 {
     SwrContext * _swrContext;
-    void * _swrContextBufferData[SGFFAudioOutputRenderMaxChannelCount];
-    int _swrContextBufferLinesize[SGFFAudioOutputRenderMaxChannelCount];
-    int _swrContextBufferMallocSize[SGFFAudioOutputRenderMaxChannelCount];
+    void * _swrContextBufferData[SGFFAudioFrameMaxChannelCount];
+    int _swrContextBufferLinesize[SGFFAudioFrameMaxChannelCount];
+    int _swrContextBufferMallocSize[SGFFAudioFrameMaxChannelCount];
 }
 
 @property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
-@property (nonatomic, strong) SGFFAudioOutputRender * currentRender;
+@property (nonatomic, strong) SGFFAudioFrame * currentFrame;
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
@@ -79,8 +78,8 @@
 - (void)stop
 {
     [self.frameQueue destroy];
-    [self.currentRender unlock];
-    self.currentRender = nil;
+    [self.currentFrame unlock];
+    self.currentFrame = nil;
     self.currentRenderReadOffset = 0;
     [self clearSwrContext];
 }
@@ -118,23 +117,29 @@
                                       audioFrame.numberOfSamples);
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
     
-    SGFFAudioOutputRender * render = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioOutputRender class]];
-    render.format = AV_SAMPLE_FMT_FLTP;
-    render.numberOfSamples = numberOfSamples;
-    render.numberOfChannels = self.outputNumberOfChannels;
-    render.position = frame.position;
-    render.duration = frame.duration;
-    render.size = frame.size;
-    [render updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
-    [self.frameQueue putObjectSync:render];
+    SGFFAudioBufferFrame * result = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioBufferFrame class]];
+    result.position = audioFrame.position;
+    result.duration = audioFrame.duration;
+    result.size = audioFrame.size;
+    result.format = AV_SAMPLE_FMT_FLTP;
+    result.numberOfSamples = numberOfSamples;
+    result.sampleRate = self.outputSampleRate;
+    result.numberOfChannels = self.outputNumberOfChannels;
+    result.channelLayout = audioFrame.channelLayout;
+    result.bestEffortTimestamp = audioFrame.bestEffortTimestamp;
+    result.packetPosition = audioFrame.packetPosition;
+    result.packetDuration = audioFrame.packetDuration;
+    result.packetSize = audioFrame.packetSize;
+    [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
+    [self.frameQueue putObjectSync:result];
     [self.delegate outputDidChangeCapacity:self];
-    [render unlock];
+    [result unlock];
 }
 
 - (void)flush
 {
-    [self.currentRender unlock];
-    self.currentRender = nil;
+    [self.currentFrame unlock];
+    self.currentFrame = nil;
     self.currentRenderReadOffset = 0;
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -197,7 +202,7 @@
 
 - (void)setupSwrContextBufferIfNeeded:(int)bufferSize
 {
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         if (_swrContextBufferMallocSize[i] < bufferSize)
         {
@@ -209,7 +214,7 @@
 
 - (void)updateSwrContextBufferLinsize:(int)linesize
 {
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         _swrContextBufferLinesize[i] = (i < self.outputNumberOfChannels) ? linesize : 0;
     }
@@ -217,7 +222,7 @@
 
 - (void)clearSwrContext
 {
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         if (_swrContextBufferData[i])
         {
@@ -241,25 +246,25 @@
     NSUInteger ioDataWriteOffset = 0;
     while (numberOfSamples > 0)
     {
-        if (!self.currentRender)
+        if (!self.currentFrame)
         {
-            self.currentRender = [self.frameQueue getObjectAsync];
+            self.currentFrame = [self.frameQueue getObjectAsync];
             [self.delegate outputDidChangeCapacity:self];
         }
-        if (!self.currentRender)
+        if (!self.currentFrame)
         {
             return;
         }
         
-        long long residueLinesize = self.currentRender.linesize[0] - self.currentRenderReadOffset;
+        long long residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
         long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
         long long framesToCopy = bytesToCopy / sizeof(float);
         
         for (int i = 0; i < ioData->mNumberBuffers && i < numberOfChannels; i++)
         {
-            if (self.currentRender.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
+            if (self.currentFrame.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
             {
-                Byte * bytes = (Byte *)self.currentRender.data[i] + self.currentRenderReadOffset;
+                Byte * bytes = (Byte *)self.currentFrame.data[i] + self.currentRenderReadOffset;
                 memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
         }
@@ -267,10 +272,10 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPrepareDuration = kCMTimeZero;
-            CMTime duration = SGFFTimeMultiplyByRatio(self.currentRender.duration, self.currentRenderReadOffset, self.currentRender.linesize[0]);
-            self.currentPreparePosition = CMTimeAdd(self.currentRender.position, duration);
+            CMTime duration = SGFFTimeMultiplyByRatio(self.currentFrame.duration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            self.currentPreparePosition = CMTimeAdd(self.currentFrame.position, duration);
         }
-        CMTime duration = SGFFTimeMultiplyByRatio(self.currentRender.duration, bytesToCopy, self.currentRender.linesize[0]);
+        CMTime duration = SGFFTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
         self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
         
         numberOfSamples -= framesToCopy;
@@ -282,8 +287,8 @@
         }
         else
         {
-            [self.currentRender unlock];
-            self.currentRender = nil;
+            [self.currentFrame unlock];
+            self.currentFrame = nil;
             self.currentRenderReadOffset = 0;
         }
     }

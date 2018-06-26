@@ -1,33 +1,24 @@
 //
-//  SGFFAudioOutputRender.m
+//  SGFFAudioBufferFrame.m
 //  SGPlayer
 //
-//  Created by Single on 2018/1/19.
-//  Copyright © 2018年 single. All rights reserved.
+//  Created by Single on 2018/6/26.
+//  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFFAudioOutputRender.h"
+#import "SGFFAudioBufferFrame.h"
 
-@interface SGFFAudioOutputRender ()
+@interface SGFFAudioBufferFrame ()
 
 {
-    void * internalData[SGFFAudioOutputRenderMaxChannelCount];
-    int internalLinesize[SGFFAudioOutputRenderMaxChannelCount];
-    int internalDataMallocSize[SGFFAudioOutputRenderMaxChannelCount];
+    uint8_t * internalData[SGFFAudioFrameMaxChannelCount];
+    int internalLinesize[SGFFAudioFrameMaxChannelCount];
+    int internalDataMallocSize[SGFFAudioFrameMaxChannelCount];
 }
-
-SGFFObjectPoolItemInterface
 
 @end
 
-@implementation SGFFAudioOutputRender
-
-- (SGFFOutputRenderType)type
-{
-    return SGFFOutputRenderTypeAudio;
-}
-
-SGFFObjectPoolItemLockingImplementation
+@implementation SGFFAudioBufferFrame
 
 - (instancetype)init
 {
@@ -41,7 +32,7 @@ SGFFObjectPoolItemLockingImplementation
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         if (internalData[i])
         {
@@ -55,7 +46,7 @@ SGFFObjectPoolItemLockingImplementation
 
 - (void)updateData:(void **)data linesize:(int *)linesize
 {
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         internalLinesize[i] = linesize[i];
         if (internalDataMallocSize[i] < linesize[i])
@@ -72,18 +63,15 @@ SGFFObjectPoolItemLockingImplementation
 
 - (void)clear
 {
-    for (int i = 0; i < SGFFAudioOutputRenderMaxChannelCount; i++)
+    [super clear];
+    
+    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
         internalLinesize[i] = 0;
     }
-    self.numberOfSamples = 0;
-    self.numberOfChannels = 0;
-    self.position = kCMTimeZero;
-    self.duration = kCMTimeZero;
-    self.size = 0;
 }
 
-- (void **)data
+- (uint8_t **)data
 {
     return internalData;
 }

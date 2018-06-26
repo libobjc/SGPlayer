@@ -8,6 +8,8 @@
 
 #import "SGFFFrame.h"
 
+static int const SGFFAudioFrameMaxChannelCount = 8;
+
 @interface SGFFAudioFrame : SGFFFrame
 
 @property (nonatomic, assign) enum AVSampleFormat format;
@@ -20,5 +22,6 @@
 @property (nonatomic, assign) long long packetDuration;
 @property (nonatomic, assign) long long packetSize;
 @property (nonatomic, assign) uint8_t ** data;
+@property (nonatomic, assign) int * linesize;
 
 @end

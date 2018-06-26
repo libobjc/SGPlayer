@@ -7,11 +7,6 @@
 //
 
 #import "SGFFAudioFrame.h"
-#import "SGFFTime.h"
-
-@interface SGFFAudioFrame ()
-
-@end
 
 @implementation SGFFAudioFrame
 
