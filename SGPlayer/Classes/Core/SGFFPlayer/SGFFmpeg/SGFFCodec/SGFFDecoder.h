@@ -23,7 +23,6 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderState)
     SGFFDecoderStateDecoding,
     SGFFDecoderStatePaused,
     SGFFDecoderStateStoped,
-    SGFFDecoderStateFailed,
 };
 
 @protocol SGFFDecoder <NSObject>

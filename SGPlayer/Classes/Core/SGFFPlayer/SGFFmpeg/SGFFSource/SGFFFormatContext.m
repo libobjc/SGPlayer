@@ -17,7 +17,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     switch (obj.state)
     {
         case SGFFSourceStateFinished:
-        case SGFFSourceStateClosed:
+        case SGFFSourceStateStoped:
         case SGFFSourceStateFailed:
             return YES;
         default:
@@ -104,7 +104,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 - (void)stopReading
 {
-    self.state = SGFFSourceStateClosed;
+    self.state = SGFFSourceStateStoped;
     [self.readingCondition lock];
     [self.readingCondition broadcast];
     [self.readingCondition unlock];
@@ -284,7 +284,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     while (YES)
     {
         if (self.state == SGFFSourceStateFinished ||
-            self.state == SGFFSourceStateClosed ||
+            self.state == SGFFSourceStateStoped ||
             self.state == SGFFSourceStateFailed)
         {
             break;

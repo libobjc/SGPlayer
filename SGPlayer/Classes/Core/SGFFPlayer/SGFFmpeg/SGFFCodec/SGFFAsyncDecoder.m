@@ -132,8 +132,7 @@ static SGFFPacket * flushPacket;
     self.state = SGFFDecoderStateDecoding;
     while (YES)
     {
-        if (self.state == SGFFDecoderStateStoped ||
-            self.state == SGFFDecoderStateFailed)
+        if (self.state == SGFFDecoderStateStoped)
         {
             break;
         }
