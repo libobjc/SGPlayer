@@ -10,6 +10,8 @@
 #import <VideoToolbox/VideoToolbox.h>
 #import "SGFFVideoAVFrame.h"
 #import "SGFFObjectPool.h"
+#import <UIKit/UIKit.h>
+#import "SGPlatform.h"
 
 @interface SGFFVideoAVDecoder ()
 
@@ -19,6 +21,12 @@
 }
 
 @property (nonatomic, assign) BOOL shouldConvertNALSize3To4;
+@property (nonatomic, assign) OSStatus decodingStatus;
+@property (nonatomic, assign) CVPixelBufferRef decodingPixelBuffer;
+
+#if SGPLATFORM_TARGET_OS_IPHONE
+@property (nonatomic, assign) UIApplicationState applicationState;
+#endif
 
 @end
 
@@ -28,6 +36,47 @@
 {
     return SGMediaTypeVideo;
 }
+
+#if SGPLATFORM_TARGET_OS_IPHONE
+
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)applicationWillEnterForeground:(NSNotification *)notification
+{
+    self.applicationState = [UIApplication sharedApplication].applicationState;
+}
+
+- (void)applicationDidEnterBackground:(NSNotification *)notification
+{
+    self.applicationState = [UIApplication sharedApplication].applicationState;
+}
+
+- (void)applicationWillResignActive:(NSNotification *)notification
+{
+    self.applicationState = [UIApplication sharedApplication].applicationState;
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)notification
+{
+    self.applicationState = [UIApplication sharedApplication].applicationState;
+}
+
+#endif
 
 - (BOOL)startDecoding
 {
@@ -53,29 +102,52 @@
 
 - (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
 {
-    __block NSArray <__kindof SGFFFrame *> * result = nil;
-    CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size];
-    if (sampleBuffer != NULL)
+#if SGPLATFORM_TARGET_OS_IPHONE
+    if (self.applicationState == UIApplicationStateBackground)
     {
-        OSStatus status = VTDecompressionSessionDecodeFrameWithOutputHandler(_decompressionSession, sampleBuffer, 0, nil, ^(OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef  _Nullable imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration) {
-            if (status == noErr)
-            {
-                if (imageBuffer)
-                {
-                    SGFFVideoAVFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoAVFrame class]];
-                    frame.corePixelBuffer = imageBuffer;
-                    [frame fillWithTimebase:self.timebase packet:packet];
-                    result = @[frame];
-                }
-            }
-        });
-        if (status == kVTInvalidSessionErr)
-        {
-            [self doFlush];
-            [NSThread sleepForTimeInterval:0.01];
-        }
-        CFRelease(sampleBuffer);
+        return nil;
     }
+#endif
+    __block NSArray <__kindof SGFFFrame *> * result = nil;
+    int64_t timestamp = packet.corePacket->pts;
+    if (packet.corePacket->pts == AV_NOPTS_VALUE)
+    {
+        timestamp = packet.corePacket->dts;
+    }
+    CMSampleTimingInfo timingInfo =
+    {
+        SGFFTimeMultiply(self.timebase, packet.corePacket->duration),
+        SGFFTimeMultiply(self.timebase, timestamp),
+        SGFFTimeMultiply(self.timebase, packet.corePacket->dts),
+    };
+    CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size timingInfo:timingInfo];
+    if (!sampleBuffer)
+    {
+        return nil;
+    }
+    OSStatus status = VTDecompressionSessionDecodeFrame(_decompressionSession, sampleBuffer, 0, NULL, 0);
+    if (status == noErr)
+    {
+        VTDecompressionSessionWaitForAsynchronousFrames(_decompressionSession);
+        status = self.decodingStatus;
+        if (status == noErr)
+        {
+            if (self.decodingPixelBuffer)
+            {
+                SGFFVideoAVFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoAVFrame class]];
+                frame.corePixelBuffer = self.decodingPixelBuffer;
+                [frame fillWithTimebase:self.timebase packet:packet];
+                result = @[frame];
+                CFRelease(self.decodingPixelBuffer);
+                self.decodingPixelBuffer = NULL;
+            }
+        }
+    }
+    if (status == kVTInvalidSessionErr)
+    {
+        [self doFlush];
+    }
+    CFRelease(sampleBuffer);
     return result;
 }
     
@@ -112,11 +184,16 @@
         NSDictionary * destinationImageBufferAttributes = @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
                                                             (NSString *)kCVPixelBufferWidthKey : @(self.codecpar->width),
                                                             (NSString *)kCVPixelBufferHeightKey : @(self.codecpar->height)};
+        
+        VTDecompressionOutputCallbackRecord outputCallbackRecord;
+        outputCallbackRecord.decompressionOutputCallback = SGFFVideoAVDecoderOutputCallback;
+        outputCallbackRecord.decompressionOutputRefCon = (__bridge void *)self;
+        
         OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault,
                                                        _formatDescription,
                                                        NULL,
                                                        (__bridge CFDictionaryRef)destinationImageBufferAttributes,
-                                                       NULL,
+                                                       &outputCallbackRecord,
                                                        &_decompressionSession);
         if (status != noErr)
         {
@@ -145,7 +222,7 @@
     self.shouldConvertNALSize3To4 = NO;
 }
 
-- (CMSampleBufferRef)sampleBufferFromData:(void *)data size:(size_t)size
+- (CMSampleBufferRef)sampleBufferFromData:(void *)data size:(size_t)size timingInfo:(CMSampleTimingInfo)timingInfo
 {
     CMSampleBufferRef sampleBuffer = NULL;
     if (self.shouldConvertNALSize3To4)
@@ -166,17 +243,31 @@
             }
             uint8_t * demux_buffer = NULL;
             int demux_size = avio_close_dyn_buf(io_context, &demux_buffer);
-            sampleBuffer = CreateSampleBuffer(_formatDescription, demux_buffer, demux_size);
+            sampleBuffer = CreateSampleBuffer(_formatDescription, timingInfo, demux_buffer, demux_size);
         }
     }
     else
     {
-        sampleBuffer = CreateSampleBuffer(_formatDescription, data, size);
+        sampleBuffer = CreateSampleBuffer(_formatDescription, timingInfo, data, size);
     }
     return sampleBuffer;
 }
 
-static CMSampleBufferRef CreateSampleBuffer(CMFormatDescriptionRef formatDescription, void * data, size_t size)
+static void SGFFVideoAVDecoderOutputCallback(void * decompressionOutputRefCon, void * sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)
+{
+    @autoreleasepool
+    {
+        SGFFVideoAVDecoder * decoder = (__bridge SGFFVideoAVDecoder *)decompressionOutputRefCon;
+        decoder.decodingStatus = status;
+        decoder.decodingPixelBuffer = imageBuffer;
+        if (imageBuffer != NULL)
+        {
+            CVPixelBufferRetain(imageBuffer);
+        }
+    }
+}
+
+static CMSampleBufferRef CreateSampleBuffer(CMFormatDescriptionRef formatDescription, CMSampleTimingInfo timingInfo, void * data, size_t size)
 {
     OSStatus status;
     CMBlockBufferRef blockBuffer = NULL;
@@ -184,7 +275,7 @@ static CMSampleBufferRef CreateSampleBuffer(CMFormatDescriptionRef formatDescrip
     status = CMBlockBufferCreateWithMemoryBlock(NULL, data, size, kCFAllocatorNull, NULL, 0, size, FALSE, &blockBuffer);
     if (status == noErr)
     {
-        status = CMSampleBufferCreate(NULL, blockBuffer, TRUE, 0, 0, formatDescription, 1, 0, NULL, 0, NULL, &sampleBuffer);
+        status = CMSampleBufferCreate(NULL, blockBuffer, TRUE, 0, 0, formatDescription, 1, 1, &timingInfo, 0, NULL, &sampleBuffer);
     }
     if (blockBuffer)
     {

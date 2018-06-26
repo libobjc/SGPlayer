@@ -18,7 +18,6 @@
 #import "SGFFVideoAVFrame.h"
 #import "SGFFVideoFFFrame.h"
 
-
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
@@ -148,7 +147,14 @@
         [self.delegate outputDidChangeCapacity:self];
         [self.currentFrame unlock];
         self.currentFrame = render;
+#if SGPLATFORM_TARGET_OS_IPHONE
+        if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+        {
+            [self.glView display];
+        }
+#else
         [self.glView display];
+#endif
     }
 }
 
