@@ -9,6 +9,7 @@
 #import "SGFFVideoOutput.h"
 #import "SGPlayerMacro.h"
 #import "SGGLDisplayLink.h"
+#import "SGGLTimer.h"
 #import "SGGLView.h"
 #import "SGGLViewport.h"
 #import "SGGLModelPool.h"
@@ -21,13 +22,15 @@
 @interface SGFFVideoOutput () <SGGLViewDelegate>
 
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
-@property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGFFVideoFrame * currentFrame;
 
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
+
+@property (nonatomic, strong) SGGLDisplayLink * renderDisplayLink;
+@property (nonatomic, strong) SGGLTimer * dropTimer;
 
 @end
 
@@ -50,17 +53,23 @@
         self.frameQueue = [[SGFFObjectQueue alloc] init];
         self.frameQueue.shouldSortObjects = YES;
         SGWeakSelf
-        self.displayLink = [SGGLDisplayLink displayLinkWithCallback:^{
+        self.renderDisplayLink = [SGGLDisplayLink displayLinkWithHandler:^{
             SGStrongSelf
-            [strongSelf displayLinkHandler];
+            [strongSelf renderDisplayLinkHandler];
         }];
+        self.dropTimer = [SGGLTimer timerWithTimeInterval:0.03 handler:^{
+            SGStrongSelf
+            [strongSelf dropTimerHandler];
+        }];
+        self.dropTimer.fireDate = [NSDate distantPast];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self.displayLink invalidate];
+    [self.renderDisplayLink invalidate];
+    [self.dropTimer invalidate];
     [self stop];
 }
 
@@ -122,8 +131,10 @@
 
 #pragma mark - Renderer
 
-- (void)displayLinkHandler
+- (void)renderDisplayLinkHandler
 {
+//    NSLog(@"Display : %ld", [UIApplication sharedApplication].applicationState);
+    
     SGFFVideoFrame * render = nil;
     if (self.currentFrame)
     {
@@ -132,7 +143,7 @@
             SGStrongSelf
             CMTime time = strongSelf.timeSynchronizer.position;
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
-            NSTimeInterval interval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
+            NSTimeInterval interval = MAX(strongSelf.renderDisplayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
             * current = strongSelf.currentFrame.position;
             return YES;
@@ -156,6 +167,11 @@
         [self.glView display];
 #endif
     }
+}
+
+- (void)dropTimerHandler
+{
+//    NSLog(@"Timer   : %ld, %d", [UIApplication sharedApplication].applicationState, self.renderDisplayLink.paused);
 }
 
 - (void)setupOpenGLIfNeeded

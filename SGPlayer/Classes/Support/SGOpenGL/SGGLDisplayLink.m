@@ -11,23 +11,23 @@
 
 @interface SGGLDisplayLink ()
 
-@property (nonatomic, copy) void(^callback)(void);
+@property (nonatomic, copy) void(^handler)(void);
 @property (nonatomic, strong) SGPLFDisplayLink * displayLink;
 
 @end
 
 @implementation SGGLDisplayLink
 
-+ (instancetype)displayLinkWithCallback:(void (^)(void))callback
++ (instancetype)displayLinkWithHandler:(void (^)(void))handler;
 {
-    return [[SGGLDisplayLink alloc] initWithCallback:callback];
+    return [[SGGLDisplayLink alloc] initWithHandler:handler];
 }
 
-- (instancetype)initWithCallback:(void (^)(void))callback
+- (instancetype)initWithHandler:(void (^)(void))handler
 {
     if (self = [super init])
     {
-        self.callback = callback;
+        self.handler = handler;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
@@ -37,6 +37,19 @@
 - (void)dealloc
 {
     [self invalidate];
+}
+
+- (void)displayLinkHandler
+{
+    if (self.handler)
+    {
+        self.handler();
+    }
+}
+
+- (BOOL)paused
+{
+    return self.displayLink.isPaused;
 }
 
 - (NSTimeInterval)timestamp
@@ -52,11 +65,6 @@
 - (NSTimeInterval)nextVSyncTimestamp
 {
     return self.displayLink.timestamp + self.displayLink.duration;
-}
-
-- (void)displayLinkHandler
-{
-    self.callback();
 }
 
 - (void)invalidate
