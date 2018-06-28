@@ -81,6 +81,7 @@
 - (void)stop
 {
     [self.audioPlayer pause];
+    self.audioPlayer = nil;
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
