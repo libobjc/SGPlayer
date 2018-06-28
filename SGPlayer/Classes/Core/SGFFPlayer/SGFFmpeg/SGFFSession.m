@@ -118,7 +118,7 @@
         [self.audioOutput flush];
         [self.videoOutput flush];
         [strongSelf.timeSynchronizer flush];;
-        [strongSelf.configuration.videoOutput flush];
+        [strongSelf.videoOutput flush];
         if (completionHandler)
         {
             completionHandler(success);
@@ -272,8 +272,10 @@
     self.audioDecoder.delegate = self;
     self.videoDecoder.delegate = self;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
-    self.configuration.audioOutput.timeSynchronizer = self.timeSynchronizer;
-    self.configuration.videoOutput.timeSynchronizer = self.timeSynchronizer;
+    self.audioOutput.timeSynchronizer = self.timeSynchronizer;
+    self.videoOutput.timeSynchronizer = self.timeSynchronizer;
+    [self.audioOutput start];
+    [self.videoOutput start];
 
     self.state = SGFFSessionStateOpened;
     if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)]) {
