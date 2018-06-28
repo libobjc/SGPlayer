@@ -24,13 +24,12 @@
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGFFVideoFrame * currentFrame;
 
+@property (nonatomic, strong) SGGLDisplayLink * displayLink;
+@property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
-
-@property (nonatomic, strong) SGGLDisplayLink * renderDisplayLink;
-@property (nonatomic, strong) SGGLTimer * dropTimer;
 
 @end
 
@@ -48,28 +47,25 @@
 {
     if (self = [super init])
     {
-        self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
-        self.glView.delegate = self;
         self.frameQueue = [[SGFFObjectQueue alloc] init];
         self.frameQueue.shouldSortObjects = YES;
+        self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
+        self.glView.delegate = self;
+        self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
-        self.renderDisplayLink = [SGGLDisplayLink displayLinkWithHandler:^{
+        self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
             SGStrongSelf
-            [strongSelf renderDisplayLinkHandler];
+            [strongSelf renderTimerHandler];
         }];
-        self.dropTimer = [SGGLTimer timerWithTimeInterval:0.03 handler:^{
-            SGStrongSelf
-            [strongSelf dropTimerHandler];
-        }];
-        self.dropTimer.fireDate = [NSDate distantPast];
+        self.renderTimer.fireDate = [NSDate distantPast];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self.renderDisplayLink invalidate];
-    [self.dropTimer invalidate];
+    [self.renderTimer invalidate];
+    [self.displayLink invalidate];
     [self stop];
 }
 
@@ -129,22 +125,20 @@
     return self.glView;
 }
 
-#pragma mark - Renderer
+#pragma mark - Render
 
-- (void)renderDisplayLinkHandler
+- (void)renderTimerHandler
 {
-//    NSLog(@"Display : %ld", [UIApplication sharedApplication].applicationState);
-    
     SGFFVideoFrame * render = nil;
     if (self.currentFrame)
     {
         SGWeakSelf
         render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
             SGStrongSelf
-            CMTime time = strongSelf.timeSynchronizer.position;
-            NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
-            NSTimeInterval interval = MAX(strongSelf.renderDisplayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = CMTimeAdd(time, SGFFTimeMakeWithSeconds(interval));
+            CMTime keyTime = strongSelf.timeSynchronizer.position;
+            NSAssert(CMTIME_IS_VALID(keyTime), @"Key time is invalid.");
+            NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
+            * expect = CMTimeAdd(keyTime, SGFFTimeMakeWithSeconds(nextVSyncInterval));
             * current = strongSelf.currentFrame.position;
             return YES;
         }];
@@ -167,11 +161,6 @@
         [self.glView display];
 #endif
     }
-}
-
-- (void)dropTimerHandler
-{
-//    NSLog(@"Timer   : %ld, %d", [UIApplication sharedApplication].applicationState, self.renderDisplayLink.paused);
 }
 
 - (void)setupOpenGLIfNeeded

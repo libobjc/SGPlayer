@@ -14,9 +14,9 @@
 
 @property(nonatomic, assign, readonly) BOOL paused;
 
-@property(nonatomic, assign, readonly) NSTimeInterval timestamp;
-@property(nonatomic, assign, readonly) NSTimeInterval duration;
-@property(nonatomic, assign, readonly) NSTimeInterval nextVSyncTimestamp;
+@property (nonatomic, assign, readonly) NSTimeInterval timestamp;
+@property (nonatomic, assign, readonly) NSTimeInterval duration;
+@property (nonatomic, assign, readonly) NSTimeInterval nextVSyncTimestamp;
 
 - (void)invalidate;
 
