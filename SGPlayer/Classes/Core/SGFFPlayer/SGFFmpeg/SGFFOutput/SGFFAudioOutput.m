@@ -55,7 +55,8 @@
     if (self = [super init])
     {
         self.frameQueue = [[SGFFObjectQueue alloc] init];
-        self.audioPlayer = [[SGFFAudioPlayer alloc] initWithDelegate:self];
+        self.audioPlayer = [[SGFFAudioPlayer alloc] init];
+        self.audioPlayer.delegate = self;
         self.currentPreparePosition = kCMTimeZero;
         self.currentPrepareDuration = kCMTimeZero;
     }
@@ -95,16 +96,16 @@
     self.inputFormat = audioFrame.format;
     self.inputSampleRate = audioFrame.sampleRate;
     self.inputNumberOfChannels = audioFrame.numberOfChannels;
-    self.outputSampleRate = self.audioPlayer.sampleRate;
-    self.outputNumberOfChannels = self.audioPlayer.numberOfChannels;
+    self.outputSampleRate = self.audioPlayer.asbd.mSampleRate;
+    self.outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
     
     [self setupSwrContextIfNeeded];
     if (!_swrContext)
     {
         return;
     }
-    const int numberOfChannelsRatio = MAX(1, self.audioPlayer.numberOfChannels / audioFrame.numberOfChannels);
-    const int sampleRateRatio = MAX(1, self.audioPlayer.sampleRate / audioFrame.sampleRate);
+    const int numberOfChannelsRatio = MAX(1, self.outputNumberOfChannels / audioFrame.numberOfChannels);
+    const int sampleRateRatio = MAX(1, self.outputSampleRate / audioFrame.sampleRate);
     const int ratio = sampleRateRatio * numberOfChannelsRatio;
     const int bufferSize = av_samples_get_buffer_size(NULL, 1,
                                                       audioFrame.numberOfSamples * ratio,

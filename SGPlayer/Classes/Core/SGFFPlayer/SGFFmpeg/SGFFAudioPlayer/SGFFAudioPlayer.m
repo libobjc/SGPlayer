@@ -17,9 +17,6 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 @interface SGFFAudioPlayer ()
 
-@property (nonatomic, weak) id <SGFFAudioPlayerDelegate> delegate;
-@property (nonatomic, assign) BOOL running;
-
 @property (nonatomic, assign) AUGraph graph;
 @property (nonatomic, assign) AUNode nodeForTimePitch;
 @property (nonatomic, assign) AUNode nodeForMixer;
@@ -27,13 +24,12 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 @property (nonatomic, assign) AudioUnit audioUnitForTimePitch;
 @property (nonatomic, assign) AudioUnit audioUnitForMixer;
 @property (nonatomic, assign) AudioUnit audioUnitForOutput;
-@property (nonatomic, assign) AudioStreamBasicDescription audioStreamBasicDescription;
 
 @end
 
 @implementation SGFFAudioPlayer
 
-+ (AudioStreamBasicDescription)defaultAudioStreamBasicDescription
++ (AudioStreamBasicDescription)defaultASBD
 {
     AudioStreamBasicDescription audioStreamBasicDescription;
     UInt32 floatByteSize                          = sizeof(float);
@@ -48,22 +44,23 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     return audioStreamBasicDescription;
 }
 
-- (instancetype)initWithDelegate:(id<SGFFAudioPlayerDelegate>)delegate
+- (instancetype)init
 {
     if (self = [super init])
     {
-        self.delegate = delegate;
-        [self setupAUGraph];
+        [self setup];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self destoryAUGraph];
+    [self destory];
 }
 
-- (void)setupAUGraph
+#pragma mark - Setup/Destory
+
+- (void)setup
 {
     NewAUGraph(&_graph);
     
@@ -122,12 +119,26 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AUGraphSetNodeInputCallback(self.graph, self.nodeForTimePitch, 0, &inputCallbackStruct);
     AudioUnitAddRenderNotify(self.audioUnitForOutput, outputRenderCallback, (__bridge void *)(self));
     
-    self.audioStreamBasicDescription = [SGFFAudioPlayer defaultAudioStreamBasicDescription];
-    
+    NSError * error;
+    if (![self setAsbd:[SGFFAudioPlayer defaultASBD] error:&error])
+    {
+       _error = error;
+        [self callbackForFailed];
+    }
+    if (![self setVolume:1.0 error:&error])
+    {
+        _error = error;
+        [self callbackForFailed];
+    }
+    if (![self setRate:1.0 error:&error])
+    {
+        _error = error;
+        [self callbackForFailed];
+    }
     AUGraphInitialize(self.graph);
 }
 
-- (void)destoryAUGraph
+- (void)destory
 {
     AUGraphStop(self.graph);
     AUGraphUninitialize(self.graph);
@@ -135,61 +146,29 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     DisposeAUGraph(self.graph);
 }
 
+#pragma mark - Interface
+
 - (void)play
 {
-    if (!self.running)
+    if (!self.playing)
     {
-        self.running = YES;
+        _playing = YES;
         AUGraphStart(self.graph);
     }
 }
 
 - (void)pause
 {
-    if (self.running)
+    if (self.playing)
     {
-        self.running = NO;
+        _playing = NO;
         AUGraphStop(self.graph);
     }
 }
 
-- (void)setAudioStreamBasicDescription:(AudioStreamBasicDescription)audioStreamBasicDescription
-{
-    _audioStreamBasicDescription = audioStreamBasicDescription;
-    UInt32 audioStreamBasicDescriptionSize = sizeof(AudioStreamBasicDescription);
-    AudioUnitSetProperty(self.audioUnitForTimePitch,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Input, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForTimePitch,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Output, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForMixer,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Input, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForMixer,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Output, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForOutput,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Input, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-    AudioUnitSetProperty(self.audioUnitForOutput,
-                         kAudioUnitProperty_StreamFormat,
-                         kAudioUnitScope_Input, 0,
-                         &_audioStreamBasicDescription,
-                         audioStreamBasicDescriptionSize);
-}
+#pragma mark - Setter/Getter
 
-- (void)setVolume:(float)volume
+- (BOOL)setVolume:(float)volume error:(NSError **)error
 {
     AudioUnitParameterID param;
 #if SGPLATFORM_TARGET_OS_MAC
@@ -197,20 +176,87 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     param = kMultiChannelMixerParam_Volume;
 #endif
-    AudioUnitSetParameter(self.audioUnitForMixer,
-                          param,
-                          kAudioUnitScope_Input,
-                          0, volume, 0);
+    OSStatus status = AudioUnitSetParameter(self.audioUnitForMixer, param, kAudioUnitScope_Global, 0, volume, 0);
+    if (status != noErr)
+    {
+        * error = [NSError errorWithDomain:@"Volume-Mixer-Global" code:status userInfo:nil];
+        return NO;
+    }
+    _volume = volume;
+    return YES;
 }
 
-- (int)sampleRate
+- (BOOL)setRate:(float)rate error:(NSError **)error
 {
-    return (int)self.audioStreamBasicDescription.mSampleRate;
+    OSStatus status = AudioUnitSetParameter(self.audioUnitForTimePitch, kNewTimePitchParam_Rate, kAudioUnitScope_Global, 0, rate, 0);
+    if (status != noErr)
+    {
+        * error = [NSError errorWithDomain:@"Rate-TimePitch-Global" code:status userInfo:nil];
+        return NO;
+    }
+    _rate = rate;
+    return YES;
 }
 
-- (int)numberOfChannels
+- (BOOL)setAsbd:(AudioStreamBasicDescription)asbd error:(NSError **)error
 {
-    return (int)self.audioStreamBasicDescription.mChannelsPerFrame;
+    OSStatus status = noErr;
+    UInt32 size = sizeof(AudioStreamBasicDescription);
+    status = AudioUnitSetProperty(self.audioUnitForTimePitch, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, size);
+    if (status != noErr)
+    {
+        [self asbdRollback];
+        * error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Input" code:status userInfo:nil];
+        return NO;
+    }
+    status = AudioUnitSetProperty(self.audioUnitForTimePitch, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &asbd, size);
+    if (status != noErr)
+    {
+        [self asbdRollback];
+        * error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Output" code:status userInfo:nil];
+        return NO;
+    }
+    status = AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, size);
+    if (status != noErr)
+    {
+        [self asbdRollback];
+        * error = [NSError errorWithDomain:@"StreamForamt-Mixer-Input" code:status userInfo:nil];
+        return NO;
+    }
+    status = AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &asbd, size);
+    if (status != noErr)
+    {
+        [self asbdRollback];
+        * error = [NSError errorWithDomain:@"StreamForamt-Mixer-Output" code:status userInfo:nil];
+        return NO;
+    }
+    status = AudioUnitSetProperty(self.audioUnitForOutput, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, size);
+    if (status != noErr)
+    {
+        [self asbdRollback];
+        * error = [NSError errorWithDomain:@"StreamForamt-Ouput-Input" code:status userInfo:nil];
+        return NO;
+    }
+    _asbd = asbd;
+    return YES;
+}
+
+- (void)asbdRollback
+{
+    UInt32 size = sizeof(AudioStreamBasicDescription);
+    AudioUnitSetProperty(self.audioUnitForTimePitch, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &_asbd, size);
+    AudioUnitSetProperty(self.audioUnitForTimePitch, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &_asbd, size);
+    AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &_asbd, size);
+    AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &_asbd, size);
+    AudioUnitSetProperty(self.audioUnitForOutput, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &_asbd, size);
+    AudioUnitSetProperty(self.audioUnitForOutput, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &_asbd, size);
+}
+
+#pragma mark - Callback
+
+- (void)callbackForFailed
+{
+    
 }
 
 OSStatus inputCallback(void * inRefCon,
@@ -225,7 +271,7 @@ OSStatus inputCallback(void * inRefCon,
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
-    [obj.delegate audioPlayerShouldInputData:obj ioData:ioData numberOfSamples:inNumberFrames numberOfChannels:obj.numberOfChannels];
+    [obj.delegate audioPlayerShouldInputData:obj ioData:ioData numberOfSamples:inNumberFrames numberOfChannels:obj.asbd.mChannelsPerFrame];
     return noErr;
 }
 
