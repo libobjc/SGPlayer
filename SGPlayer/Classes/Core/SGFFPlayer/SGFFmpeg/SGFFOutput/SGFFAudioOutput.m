@@ -31,14 +31,15 @@
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
 
+@property (nonatomic, assign) SwrContext * swrContext;
+@property (nonatomic, assign) NSError * swrContextError;
+
 @property (nonatomic, assign) enum AVSampleFormat inputFormat;
+@property (nonatomic, assign) enum AVSampleFormat outputFormat;
 @property (nonatomic, assign) int inputSampleRate;
 @property (nonatomic, assign) int inputNumberOfChannels;
 @property (nonatomic, assign) int outputSampleRate;
 @property (nonatomic, assign) int outputNumberOfChannels;
-
-@property (nonatomic, assign) SwrContext * swrContext;
-@property (nonatomic, assign) NSError * swrContextError;
 
 @end
 
@@ -88,7 +89,8 @@
     self.currentPrepareDuration = kCMTimeZero;
     [self unlock];
     [self.frameQueue destroy];
-    [self clearSwrContext];
+    [self destorySwrContextBuffer];
+    [self destorySwrContext];
 }
 
 - (void)putFrame:(__kindof SGFFFrame *)frame
@@ -99,23 +101,39 @@
     }
     SGFFAudioFrame * audioFrame = frame;
     
-    self.inputFormat = audioFrame.format;
-    self.inputSampleRate = audioFrame.sampleRate;
-    self.inputNumberOfChannels = audioFrame.numberOfChannels;
-    self.outputSampleRate = self.audioPlayer.asbd.mSampleRate;
-    self.outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
+    enum AVSampleFormat inputFormat = audioFrame.format;
+    enum AVSampleFormat outputFormat = AV_SAMPLE_FMT_FLTP;
+    int inputSampleRate = audioFrame.sampleRate;
+    int inputNumberOfChannels = audioFrame.numberOfChannels;
+    int outputSampleRate = self.audioPlayer.asbd.mSampleRate;
+    int outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
     
-    [self setupSwrContextIfNeeded];
+    if (self.inputFormat != inputFormat ||
+        self.outputFormat != outputFormat ||
+        self.inputSampleRate != inputSampleRate ||
+        self.outputSampleRate != outputSampleRate ||
+        self.inputNumberOfChannels != inputNumberOfChannels ||
+        self.outputNumberOfChannels != outputNumberOfChannels)
+    {
+        self.inputFormat = inputFormat;
+        self.outputFormat = outputFormat;
+        self.inputSampleRate = inputSampleRate;
+        self.outputSampleRate = outputSampleRate;
+        self.inputNumberOfChannels = inputNumberOfChannels;
+        self.outputNumberOfChannels = outputNumberOfChannels;
+        
+        [self destorySwrContext];
+        [self setupSwrContext];
+    }
+    
     if (!self.swrContext)
     {
         return;
     }
-    const int numberOfChannelsRatio = MAX(1, self.outputNumberOfChannels / audioFrame.numberOfChannels);
-    const int sampleRateRatio = MAX(1, self.outputSampleRate / audioFrame.sampleRate);
+    const int numberOfChannelsRatio = MAX(1, self.outputNumberOfChannels / self.inputNumberOfChannels);
+    const int sampleRateRatio = MAX(1, self.outputSampleRate / self.inputSampleRate);
     const int ratio = sampleRateRatio * numberOfChannelsRatio;
-    const int bufferSize = av_samples_get_buffer_size(NULL, 1,
-                                                      audioFrame.numberOfSamples * ratio,
-                                                      AV_SAMPLE_FMT_FLTP, 1);
+    const int bufferSize = av_samples_get_buffer_size(NULL, 1, audioFrame.numberOfSamples * ratio, self.outputFormat, 1);
     [self setupSwrContextBufferIfNeeded:bufferSize];
     int numberOfSamples = swr_convert(self.swrContext,
                                       (uint8_t **)_swrContextBufferData,
@@ -190,29 +208,34 @@
 
 #pragma mark - swr
 
-- (void)setupSwrContextIfNeeded
+- (void)setupSwrContext
 {
     if (self.swrContextError || self.swrContext)
     {
         return;
     }
     self.swrContext = swr_alloc_set_opts(NULL,
-                                     av_get_default_channel_layout(self.outputNumberOfChannels),
-                                     AV_SAMPLE_FMT_FLTP,
-                                     self.outputSampleRate,
-                                     av_get_default_channel_layout(self.inputNumberOfChannels),
-                                     self.inputFormat,
-                                     self.inputSampleRate,
-                                     0, NULL);
+                                         av_get_default_channel_layout(self.outputNumberOfChannels),
+                                         self.outputFormat,
+                                         self.outputSampleRate,
+                                         av_get_default_channel_layout(self.inputNumberOfChannels),
+                                         self.inputFormat,
+                                         self.inputSampleRate,
+                                         0, NULL);
     int result = swr_init(self.swrContext);
     self.swrContextError = SGFFGetErrorCode(result, SGFFErrorCodeAuidoSwrInit);
     if (self.swrContextError)
     {
-        if (self.swrContext)
-        {
-            swr_free(&_swrContext);
-            self.swrContext = nil;
-        }
+        [self destorySwrContext];
+    }
+}
+
+- (void)destorySwrContext
+{
+    if (self.swrContext)
+    {
+        swr_free(&_swrContext);
+        self.swrContext = nil;
     }
 }
 
@@ -236,7 +259,7 @@
     }
 }
 
-- (void)clearSwrContext
+- (void)destorySwrContextBuffer
 {
     for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
     {
@@ -247,11 +270,6 @@
         }
         _swrContextBufferLinesize[i] = 0;
         _swrContextBufferMallocSize[i] = 0;
-    }
-    if (self.swrContext)
-    {
-        swr_free(&_swrContext);
-        self.swrContext = nil;
     }
 }
 
