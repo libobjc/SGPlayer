@@ -105,11 +105,6 @@
 
 #pragma mark - Setter/Getter
 
-- (NSUInteger)count
-{
-    return self.frameQueue.count;
-}
-
 - (CMTime)duration
 {
     return self.frameQueue.duration;
@@ -118,6 +113,16 @@
 - (long long)size
 {
     return self.frameQueue.size;
+}
+
+- (NSUInteger)count
+{
+    return self.frameQueue.count;
+}
+
+- (NSUInteger)maxCount
+{
+    return 3;
 }
 
 - (SGPLFView *)displayView

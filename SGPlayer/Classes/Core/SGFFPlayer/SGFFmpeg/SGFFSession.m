@@ -331,7 +331,7 @@
 {
     if (output == self.audioOutput)
     {
-        if (self.audioOutput.count >= 5) {
+        if (self.audioOutput.count >= self.audioOutput.maxCount) {
             [self.audioDecoder pauseDecoding];
         } else {
             [self.audioDecoder resumeDecoding];
@@ -339,7 +339,7 @@
     }
     else if (output == self.videoOutput)
     {
-        if (self.videoOutput.count >= 3) {
+        if (self.videoOutput.count >= self.videoOutput.maxCount) {
             [self.videoDecoder pauseDecoding];
         } else {
             [self.videoDecoder resumeDecoding];

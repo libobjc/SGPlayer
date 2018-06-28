@@ -27,6 +27,7 @@
 - (CMTime)duration;
 - (long long)size;
 - (NSUInteger)count;
+- (NSUInteger)maxCount;
 
 - (void)start;
 - (void)stop;

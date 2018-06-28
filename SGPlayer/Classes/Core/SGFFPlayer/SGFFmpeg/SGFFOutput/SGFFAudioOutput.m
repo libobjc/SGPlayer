@@ -172,6 +172,11 @@
     return self.frameQueue.count;
 }
 
+- (NSUInteger)maxCount
+{
+    return 5;
+}
+
 #pragma mark - swr
 
 - (void)setupSwrContextIfNeeded
