@@ -58,6 +58,7 @@
 - (void)clear
 {
     [super clear];
+    
     if (_coreFrame)
     {
         av_frame_unref(_coreFrame);

@@ -71,6 +71,8 @@
 
 - (void)clear
 {
+    [super clear];
+    
     self.corePixelBuffer = NULL;
 }
 

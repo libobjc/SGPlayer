@@ -18,8 +18,9 @@
 #import "SGFFVideoAVFrame.h"
 #import "SGFFVideoFFFrame.h"
 
-@interface SGFFVideoOutput () <SGGLViewDelegate>
+@interface SGFFVideoOutput () <SGGLViewDelegate, NSLocking>
 
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGFFVideoFrame * currentFrame;
 
@@ -87,8 +88,10 @@
 - (void)stop
 {
     [self.frameQueue destroy];
+    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
+    [self unlock];
 }
 
 - (void)putFrame:(__kindof SGFFFrame *)frame
@@ -104,8 +107,10 @@
 
 - (void)flush
 {
+    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
+    [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -136,6 +141,7 @@
 
 - (void)renderTimerHandler
 {
+    [self lock];
     SGWeakSelf
     SGFFVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
@@ -150,37 +156,57 @@
         }
         return NO;
     } drop:YES];
-    if (render && render != self.currentFrame)
+    if (!render)
     {
-        [self.delegate outputDidChangeCapacity:self];
+        [self unlock];
+        return;
+    }
+    BOOL drawing = NO;
+    if (render != self.currentFrame)
+    {
         [self.currentFrame unlock];
         self.currentFrame = render;
-#if SGPLATFORM_TARGET_OS_IPHONE
-        if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
-        {
-            [self.glView display];
-        }
-#else
-        [self.glView display];
-#endif
+        drawing = YES;
     }
+    [self unlock];
+    if (drawing)
+    {
+        [self draw];
+    }
+    [self.delegate outputDidChangeCapacity:self];
 }
 
-#pragma mark - SGGLViewDelegate
+#pragma mark - SGGLView
+
+- (void)draw
+{
+#if SGPLATFORM_TARGET_OS_IPHONE
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
+    {
+        [self.glView display];
+    }
+#else
+    [self.glView display];
+#endif
+}
 
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
+    [self lock];
     SGFFVideoFrame * frame = self.currentFrame;
     if (!frame)
     {
+        [self unlock];
         return NO;
     }
     if (![frame isKindOfClass:[SGFFVideoFFFrame class]] &&
         ![frame isKindOfClass:[SGFFVideoAVFrame class]])
     {
+        [self unlock];
         return NO;
     }
     [frame lock];
+    [self unlock];
 
     if (!self.textureUploader)
     {
@@ -231,6 +257,22 @@
     }
     [frame unlock];
     return YES;
+}
+
+#pragma mark - NSLocking
+
+- (void)lock
+{
+    if (!self.coreLock)
+    {
+        self.coreLock = [[NSLock alloc] init];
+    }
+    [self.coreLock lock];
+}
+
+- (void)unlock
+{
+    [self.coreLock unlock];
 }
 
 @end
