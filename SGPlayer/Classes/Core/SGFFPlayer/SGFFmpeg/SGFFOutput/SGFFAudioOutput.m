@@ -57,10 +57,8 @@
 {
     if (self = [super init])
     {
-        self.frameQueue = [[SGFFObjectQueue alloc] init];
-        self.currentRenderReadOffset = 0;
-        self.currentPreparePosition = kCMTimeZero;
-        self.currentPrepareDuration = kCMTimeZero;
+        self.audioPlayer = [[SGFFAudioStreamPlayer alloc] init];
+        self.audioPlayer.delegate = self;
     }
     return self;
 }
@@ -74,14 +72,15 @@
 
 - (void)start
 {
-    self.audioPlayer = [[SGFFAudioStreamPlayer alloc] init];
-    self.audioPlayer.delegate = self;
+    self.frameQueue = [[SGFFObjectQueue alloc] init];
+    self.currentRenderReadOffset = 0;
+    self.currentPreparePosition = kCMTimeZero;
+    self.currentPrepareDuration = kCMTimeZero;
 }
 
 - (void)stop
 {
     [self.audioPlayer pause];
-    self.audioPlayer = nil;
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
@@ -205,6 +204,35 @@
 - (NSUInteger)maxCount
 {
     return 5;
+}
+
+- (NSError *)error
+{
+    if (self.audioPlayer.error)
+    {
+        return self.audioPlayer.error;
+    }
+    return self.swrContextError;
+}
+
+- (void)setVolume:(float)volume
+{
+    [self.audioPlayer setVolume:volume error:nil];
+}
+
+- (float)volume
+{
+    return self.audioPlayer.volume;
+}
+
+- (void)setRate:(CMTime)rate
+{
+    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:nil];
+}
+
+- (CMTime)rate
+{
+    return SGFFTimeMakeWithSeconds(self.audioPlayer.rate);
 }
 
 #pragma mark - swr

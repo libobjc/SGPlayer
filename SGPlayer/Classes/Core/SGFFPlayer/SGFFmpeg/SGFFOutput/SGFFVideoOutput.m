@@ -50,9 +50,6 @@
         self.rate = CMTimeMake(1, 1);
         self.mode = SGDisplayModePlane;
         
-        self.frameQueue = [[SGFFObjectQueue alloc] init];
-        self.frameQueue.shouldSortObjects = YES;
-        
         self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
         self.glView.delegate = self;
         _view = self.glView;
@@ -81,6 +78,8 @@
 
 - (void)start
 {
+    self.frameQueue = [[SGFFObjectQueue alloc] init];
+    self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
     self.renderTimer.fireDate = [NSDate distantPast];
 }

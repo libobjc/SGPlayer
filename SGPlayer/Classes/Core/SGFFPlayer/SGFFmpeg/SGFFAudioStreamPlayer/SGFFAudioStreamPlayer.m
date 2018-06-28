@@ -173,7 +173,7 @@ static int const SGFFAudioStreamPlayerMaximumChannels = 2;
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     param = kMultiChannelMixerParam_Volume;
 #endif
-    OSStatus status = AudioUnitSetParameter(self.audioUnitForMixer, param, kAudioUnitScope_Global, 0, volume, 0);
+    OSStatus status = AudioUnitSetParameter(self.audioUnitForMixer, param, kAudioUnitScope_Input, 0, volume, 0);
     if (status != noErr)
     {
         * error = [NSError errorWithDomain:@"Volume-Mixer-Global" code:status userInfo:nil];

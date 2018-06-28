@@ -10,6 +10,11 @@
 
 @interface SGFFAudioOutput : NSObject <SGFFOutput>
 
+@property (nonatomic, copy, readonly) NSError * error;
+
+@property (nonatomic, assign) float volume;
+@property (nonatomic, assign) CMTime rate;
+
 - (void)play;
 - (void)pause;
 
