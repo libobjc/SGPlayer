@@ -15,3 +15,10 @@ typedef NS_ENUM(NSUInteger, SGMediaType)
     SGMediaTypeVideo,
     SGMediaTypeSubtitle,
 };
+
+typedef NS_ENUM(NSUInteger, SGDisplayMode)
+{
+    SGDisplayModePlane,
+    SGDisplayModeVR,
+    SGDisplayModeVRBox,
+};

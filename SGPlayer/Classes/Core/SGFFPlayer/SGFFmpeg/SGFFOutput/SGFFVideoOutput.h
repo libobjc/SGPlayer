@@ -11,8 +11,9 @@
 
 @interface SGFFVideoOutput : NSObject <SGFFOutput>
 
-@property (nonatomic, assign) CMTime rate;
+@property (nonatomic, strong, readonly) SGPLFView * view;
 
-- (SGPLFView *)displayView;
+@property (nonatomic, assign) CMTime rate;
+@property (nonatomic, assign) SGDisplayMode mode;       // Default is SGDisplayModePlane.
 
 @end

@@ -80,7 +80,7 @@
     self.videoOutput = [[SGFFVideoOutput alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
-    self.displayView.view = self.videoOutput.displayView;
+    self.displayView.view = self.videoOutput.view;
     
     self.session = [SGFFSession sessionWithContentURL:self.contentURL
                                              delegate:self

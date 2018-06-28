@@ -47,6 +47,11 @@
     }
 }
 
+- (void)setPaused:(BOOL)paused
+{
+    self.displayLink.paused = paused;
+}
+
 - (BOOL)paused
 {
     return self.displayLink.isPaused;
