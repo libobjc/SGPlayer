@@ -185,11 +185,16 @@
         return [self getObject];
     }
     id <SGFFObjectQueueItem> object = nil;
-    CMTime first = self.objects.firstObject.position;
-    if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
-    {
-        object = [self getObject];
-    }
+    do {
+        CMTime first = self.objects.firstObject.position;
+        if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
+        {
+            [object unlock];
+            object = [self getObject];
+            continue;
+        }
+        break;
+    } while (drop);
     return object;
 }
 
