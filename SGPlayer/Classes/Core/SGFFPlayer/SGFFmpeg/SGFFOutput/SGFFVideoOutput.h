@@ -11,6 +11,8 @@
 
 @interface SGFFVideoOutput : NSObject <SGFFOutput>
 
+@property (nonatomic, assign) CMTime rate;
+
 - (SGPLFView *)displayView;
 
 @end

@@ -301,7 +301,7 @@
 
 - (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp *)sampleTimestamp
 {
-    [self.timeSynchronizer postPosition:self.currentPreparePosition duration:self.currentPrepareDuration];
+    [self.timeSynchronizer updateKeyPosition:self.currentPreparePosition keyDuration:self.currentPrepareDuration];
 }
 
 @end

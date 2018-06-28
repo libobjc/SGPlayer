@@ -47,6 +47,7 @@
 {
     if (self = [super init])
     {
+        self.rate = CMTimeMake(1, 1);
         self.frameQueue = [[SGFFObjectQueue alloc] init];
         self.frameQueue.shouldSortObjects = YES;
         self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
@@ -139,10 +140,10 @@
         SGStrongSelf
         if (strongSelf.currentFrame)
         {
-            CMTime keyTime = strongSelf.timeSynchronizer.position;
-            NSAssert(CMTIME_IS_VALID(keyTime), @"Key time is invalid.");
+            CMTime position = [strongSelf.timeSynchronizer realPositionWithRate:self.rate];
+            NSAssert(CMTIME_IS_VALID(position), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = CMTimeAdd(keyTime, SGFFTimeMakeWithSeconds(nextVSyncInterval));
+            * expect = CMTimeAdd(position, SGFFTimeMakeWithSeconds(nextVSyncInterval));
             * current = strongSelf.currentFrame.position;
             return YES;
         }
