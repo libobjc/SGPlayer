@@ -1,5 +1,5 @@
 //
-//  SGFFAudioPlayer.h
+//  SGFFAudioStreamPlayer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
@@ -9,21 +9,23 @@
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
 
-@class SGFFAudioPlayer;
+@class SGFFAudioStreamPlayer;
 
-@protocol SGFFAudioPlayerDelegate <NSObject>
+@protocol SGFFAudioStreamPlayerDelegate <NSObject>
 
-- (void)audioPlayerShouldInputData:(SGFFAudioPlayer *)audioPlayer ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples numberOfChannels:(UInt32)numberOfChannels;
+- (void)audioPlayer:(SGFFAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples;
+
 @optional
-- (void)audioPlayerWillRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp * )sampleTimestamp;
-- (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp * )sampleTimestamp;
+- (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer prepareSample:(const AudioTimeStamp *)timestamp;
+- (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp;
+- (void)audioStreamPlayerDidFailed:(SGFFAudioStreamPlayer *)audioDataPlayer;
 
 @end
 
-@interface SGFFAudioPlayer : NSObject
+@interface SGFFAudioStreamPlayer : NSObject
 
 @property (nonatomic, copy, readonly) NSError * error;
-@property (nonatomic, weak) id <SGFFAudioPlayerDelegate> delegate;
+@property (nonatomic, weak) id <SGFFAudioStreamPlayerDelegate> delegate;
 
 /**
  *  Volume.

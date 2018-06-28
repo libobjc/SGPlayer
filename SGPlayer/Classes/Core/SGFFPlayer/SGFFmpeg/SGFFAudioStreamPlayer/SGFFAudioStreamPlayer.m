@@ -1,21 +1,18 @@
 //
-//  SGFFAudioPlayer.m
+//  SGFFAudioStreamPlayer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAudioPlayer.h"
-#import <AudioToolbox/AudioToolbox.h>
-#import <AVFoundation/AVFoundation.h>
-#import <Accelerate/Accelerate.h>
+#import "SGFFAudioStreamPlayer.h"
 #import "SGPlatform.h"
 
-static int const SGFFAudioPlayerMaximumFramesPerSlice = 4096;
-static int const SGFFAudioPlayerMaximumChannels = 2;
+static int const SGFFAudioStreamPlayerMaximumFramesPerSlice = 4096;
+static int const SGFFAudioStreamPlayerMaximumChannels = 2;
 
-@interface SGFFAudioPlayer ()
+@interface SGFFAudioStreamPlayer ()
 
 @property (nonatomic, assign) AUGraph graph;
 @property (nonatomic, assign) AUNode nodeForTimePitch;
@@ -27,7 +24,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 @end
 
-@implementation SGFFAudioPlayer
+@implementation SGFFAudioStreamPlayer
 
 + (AudioStreamBasicDescription)defaultASBD
 {
@@ -35,7 +32,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     UInt32 floatByteSize                          = sizeof(float);
     audioStreamBasicDescription.mBitsPerChannel   = 8 * floatByteSize;
     audioStreamBasicDescription.mBytesPerFrame    = floatByteSize;
-    audioStreamBasicDescription.mChannelsPerFrame = SGFFAudioPlayerMaximumChannels;
+    audioStreamBasicDescription.mChannelsPerFrame = SGFFAudioStreamPlayerMaximumChannels;
     audioStreamBasicDescription.mFormatFlags      = kAudioFormatFlagIsFloat | kAudioFormatFlagIsNonInterleaved;
     audioStreamBasicDescription.mFormatID         = kAudioFormatLinearPCM;
     audioStreamBasicDescription.mFramesPerPacket  = 1;
@@ -100,18 +97,18 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AudioUnitSetProperty(self.audioUnitForTimePitch,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
-                         &SGFFAudioPlayerMaximumFramesPerSlice,
-                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
+                         &SGFFAudioStreamPlayerMaximumFramesPerSlice,
+                         sizeof(SGFFAudioStreamPlayerMaximumFramesPerSlice));
     AudioUnitSetProperty(self.audioUnitForMixer,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
-                         &SGFFAudioPlayerMaximumFramesPerSlice,
-                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
+                         &SGFFAudioStreamPlayerMaximumFramesPerSlice,
+                         sizeof(SGFFAudioStreamPlayerMaximumFramesPerSlice));
     AudioUnitSetProperty(self.audioUnitForOutput,
                          kAudioUnitProperty_MaximumFramesPerSlice,
                          kAudioUnitScope_Global, 0,
-                         &SGFFAudioPlayerMaximumFramesPerSlice,
-                         sizeof(SGFFAudioPlayerMaximumFramesPerSlice));
+                         &SGFFAudioStreamPlayerMaximumFramesPerSlice,
+                         sizeof(SGFFAudioStreamPlayerMaximumFramesPerSlice));
     
     AURenderCallbackStruct inputCallbackStruct;
     inputCallbackStruct.inputProc = inputCallback;
@@ -120,7 +117,7 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
     AudioUnitAddRenderNotify(self.audioUnitForOutput, outputRenderCallback, (__bridge void *)(self));
     
     NSError * error;
-    if (![self setAsbd:[SGFFAudioPlayer defaultASBD] error:&error])
+    if (![self setAsbd:[SGFFAudioStreamPlayer defaultASBD] error:&error])
     {
        _error = error;
         [self callbackForFailed];
@@ -256,7 +253,10 @@ static int const SGFFAudioPlayerMaximumChannels = 2;
 
 - (void)callbackForFailed
 {
-    
+    if ([self.delegate respondsToSelector:@selector(audioStreamPlayerDidFailed:)])
+    {
+        [self.delegate audioStreamPlayerDidFailed:self];
+    }
 }
 
 OSStatus inputCallback(void * inRefCon,
@@ -266,12 +266,12 @@ OSStatus inputCallback(void * inRefCon,
                        UInt32 inNumberFrames,
                        AudioBufferList * ioData)
 {
-    SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
+    SGFFAudioStreamPlayer * obj = (__bridge SGFFAudioStreamPlayer *)inRefCon;
     for (int i = 0; i < ioData->mNumberBuffers; i++)
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
-    [obj.delegate audioPlayerShouldInputData:obj ioData:ioData numberOfSamples:inNumberFrames numberOfChannels:obj.asbd.mChannelsPerFrame];
+    [obj.delegate audioPlayer:obj inputSample:inTimeStamp ioData:ioData numberOfSamples:inNumberFrames];
     return noErr;
 }
 
@@ -282,19 +282,19 @@ OSStatus outputRenderCallback(void * inRefCon,
                               UInt32 inNumberFrames,
                               AudioBufferList * ioData)
 {
-    SGFFAudioPlayer * obj = (__bridge SGFFAudioPlayer *)inRefCon;
+    SGFFAudioStreamPlayer * obj = (__bridge SGFFAudioStreamPlayer *)inRefCon;
     if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioPlayerWillRenderSample:sampleTimestamp:)])
+        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:prepareSample:)])
         {
-            [obj.delegate audioPlayerWillRenderSample:obj sampleTimestamp:inTimeStamp];
+            [obj.delegate audioStreamPlayer:obj prepareSample:inTimeStamp];
         }
     }
     else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioPlayerDidRenderSample:sampleTimestamp:)])
+        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postSample:)])
         {
-            [obj.delegate audioPlayerDidRenderSample:obj sampleTimestamp:inTimeStamp];
+            [obj.delegate audioStreamPlayer:obj postSample:inTimeStamp];
         }
     }
     return noErr;

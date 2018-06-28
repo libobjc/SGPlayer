@@ -7,14 +7,14 @@
 //
 
 #import "SGFFAudioOutput.h"
-#import "SGFFAudioPlayer.h"
+#import "SGFFAudioStreamPlayer.h"
 #import "SGFFAudioBufferFrame.h"
 #import "SGFFTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
 #import "swresample.h"
 
-@interface SGFFAudioOutput () <SGFFAudioPlayerDelegate>
+@interface SGFFAudioOutput () <SGFFAudioStreamPlayerDelegate>
 
 {
     SwrContext * _swrContext;
@@ -23,7 +23,7 @@
     int _swrContextBufferMallocSize[SGFFAudioFrameMaxChannelCount];
 }
 
-@property (nonatomic, strong) SGFFAudioPlayer * audioPlayer;
+@property (nonatomic, strong) SGFFAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 @property (nonatomic, strong) SGFFAudioFrame * currentFrame;
 @property (nonatomic, assign) long long currentRenderReadOffset;
@@ -55,8 +55,6 @@
     if (self = [super init])
     {
         self.frameQueue = [[SGFFObjectQueue alloc] init];
-        self.audioPlayer = [[SGFFAudioPlayer alloc] init];
-        self.audioPlayer.delegate = self;
         self.currentPreparePosition = kCMTimeZero;
         self.currentPrepareDuration = kCMTimeZero;
     }
@@ -65,7 +63,6 @@
 
 - (void)dealloc
 {
-    [self.audioPlayer pause];
     [self stop];
 }
 
@@ -73,11 +70,13 @@
 
 - (void)start
 {
-    
+    self.audioPlayer = [[SGFFAudioStreamPlayer alloc] init];
+    self.audioPlayer.delegate = self;
 }
 
 - (void)stop
 {
+    [self.audioPlayer pause];
     [self.frameQueue destroy];
     [self.currentFrame unlock];
     self.currentFrame = nil;
@@ -245,9 +244,9 @@
     }
 }
 
-#pragma mark - SGAudioManagerDelegate
+#pragma mark - SGFFAudioStreamPlayerDelegate
 
-- (void)audioPlayerShouldInputData:(SGFFAudioPlayer *)audioPlayer ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples numberOfChannels:(UInt32)numberOfChannels
+- (void)audioPlayer:(SGFFAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
 {
     NSUInteger ioDataWriteOffset = 0;
     while (numberOfSamples > 0)
@@ -266,7 +265,7 @@
         long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
         long long framesToCopy = bytesToCopy / sizeof(float);
         
-        for (int i = 0; i < ioData->mNumberBuffers && i < numberOfChannels; i++)
+        for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.numberOfChannels; i++)
         {
             if (self.currentFrame.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
             {
@@ -300,7 +299,7 @@
     }
 }
 
-- (void)audioPlayerDidRenderSample:(SGFFAudioPlayer *)audioPlayer sampleTimestamp:(const AudioTimeStamp *)sampleTimestamp
+- (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self.timeSynchronizer updateKeyPosition:self.currentPreparePosition keyDuration:self.currentPrepareDuration];
 }
