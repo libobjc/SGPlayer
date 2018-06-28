@@ -134,7 +134,7 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
 {
     [self.condition lock];
     while (self.objects.count <= 0)
@@ -146,7 +146,7 @@
             return nil;
         }
     }
-    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler];
+    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler drop:drop];
     if (object)
     {
         [self.condition signal];
@@ -155,7 +155,7 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)
@@ -163,7 +163,7 @@
         [self.condition unlock];
         return nil;
     }
-    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler];
+    id <SGFFObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler drop:drop];
     if (object)
     {
         [self.condition signal];
@@ -172,7 +172,7 @@
     return object;
 }
 
-- (__kindof id <SGFFObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler
+- (__kindof id <SGFFObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
 {
     if (!positionHandler)
     {

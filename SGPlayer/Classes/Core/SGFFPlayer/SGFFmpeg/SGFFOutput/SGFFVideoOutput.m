@@ -129,24 +129,20 @@
 
 - (void)renderTimerHandler
 {
-    SGFFVideoFrame * render = nil;
-    if (self.currentFrame)
-    {
-        SGWeakSelf
-        render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
-            SGStrongSelf
+    SGWeakSelf
+    SGFFVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
+        SGStrongSelf
+        if (strongSelf.currentFrame)
+        {
             CMTime keyTime = strongSelf.timeSynchronizer.position;
             NSAssert(CMTIME_IS_VALID(keyTime), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(keyTime, SGFFTimeMakeWithSeconds(nextVSyncInterval));
             * current = strongSelf.currentFrame.position;
             return YES;
-        }];
-    }
-    else
-    {
-        render = [self.frameQueue getObjectAsync];
-    }
+        }
+        return NO;
+    } drop:YES];
     if (render && render != self.currentFrame)
     {
         [self.delegate outputDidChangeCapacity:self];
