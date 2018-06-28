@@ -14,17 +14,18 @@
 #import "swscale.h"
 #import "swresample.h"
 
-@interface SGFFAudioOutput () <SGFFAudioStreamPlayerDelegate>
+@interface SGFFAudioOutput () <SGFFAudioStreamPlayerDelegate, NSLocking>
 
 {
-    SwrContext * _swrContext;
     void * _swrContextBufferData[SGFFAudioFrameMaxChannelCount];
     int _swrContextBufferLinesize[SGFFAudioFrameMaxChannelCount];
     int _swrContextBufferMallocSize[SGFFAudioFrameMaxChannelCount];
 }
 
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGFFAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
+
 @property (nonatomic, strong) SGFFAudioFrame * currentFrame;
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
@@ -36,6 +37,7 @@
 @property (nonatomic, assign) int outputSampleRate;
 @property (nonatomic, assign) int outputNumberOfChannels;
 
+@property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
 
 @end
@@ -55,6 +57,7 @@
     if (self = [super init])
     {
         self.frameQueue = [[SGFFObjectQueue alloc] init];
+        self.currentRenderReadOffset = 0;
         self.currentPreparePosition = kCMTimeZero;
         self.currentPrepareDuration = kCMTimeZero;
     }
@@ -77,10 +80,14 @@
 - (void)stop
 {
     [self.audioPlayer pause];
-    [self.frameQueue destroy];
+    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.currentRenderReadOffset = 0;
+    self.currentPreparePosition = kCMTimeZero;
+    self.currentPrepareDuration = kCMTimeZero;
+    [self unlock];
+    [self.frameQueue destroy];
     [self clearSwrContext];
 }
 
@@ -99,7 +106,7 @@
     self.outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
     
     [self setupSwrContextIfNeeded];
-    if (!_swrContext)
+    if (!self.swrContext)
     {
         return;
     }
@@ -110,7 +117,7 @@
                                                       audioFrame.numberOfSamples * ratio,
                                                       AV_SAMPLE_FMT_FLTP, 1);
     [self setupSwrContextBufferIfNeeded:bufferSize];
-    int numberOfSamples = swr_convert(_swrContext,
+    int numberOfSamples = swr_convert(self.swrContext,
                                       (uint8_t **)_swrContextBufferData,
                                       audioFrame.numberOfSamples * ratio,
                                       (const uint8_t **)audioFrame.data,
@@ -138,9 +145,13 @@
 
 - (void)flush
 {
+    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.currentRenderReadOffset = 0;
+    self.currentPreparePosition = kCMTimeZero;
+    self.currentPrepareDuration = kCMTimeZero;
+    [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -181,11 +192,11 @@
 
 - (void)setupSwrContextIfNeeded
 {
-    if (self.swrContextError || _swrContext)
+    if (self.swrContextError || self.swrContext)
     {
         return;
     }
-    _swrContext = swr_alloc_set_opts(NULL,
+    self.swrContext = swr_alloc_set_opts(NULL,
                                      av_get_default_channel_layout(self.outputNumberOfChannels),
                                      AV_SAMPLE_FMT_FLTP,
                                      self.outputSampleRate,
@@ -193,14 +204,14 @@
                                      self.inputFormat,
                                      self.inputSampleRate,
                                      0, NULL);
-    int result = swr_init(_swrContext);
+    int result = swr_init(self.swrContext);
     self.swrContextError = SGFFGetErrorCode(result, SGFFErrorCodeAuidoSwrInit);
     if (self.swrContextError)
     {
-        if (_swrContext)
+        if (self.swrContext)
         {
             swr_free(&_swrContext);
-            _swrContext = nil;
+            self.swrContext = nil;
         }
     }
 }
@@ -237,10 +248,10 @@
         _swrContextBufferLinesize[i] = 0;
         _swrContextBufferMallocSize[i] = 0;
     }
-    if (_swrContext)
+    if (self.swrContext)
     {
         swr_free(&_swrContext);
-        _swrContext = nil;
+        self.swrContext = nil;
     }
 }
 
@@ -248,17 +259,19 @@
 
 - (void)audioPlayer:(SGFFAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
 {
+    BOOL hasNewFrame = NO;
+    [self lock];
     NSUInteger ioDataWriteOffset = 0;
     while (numberOfSamples > 0)
     {
         if (!self.currentFrame)
         {
             self.currentFrame = [self.frameQueue getObjectAsync];
-            [self.delegate outputDidChangeCapacity:self];
+            hasNewFrame = YES;
         }
         if (!self.currentFrame)
         {
-            return;
+            break;
         }
         
         long long residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
@@ -297,11 +310,34 @@
             self.currentRenderReadOffset = 0;
         }
     }
+    [self unlock];
+    if (hasNewFrame)
+    {
+        [self.delegate outputDidChangeCapacity:self];
+    }
 }
 
 - (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
+    [self lock];
     [self.timeSynchronizer updateKeyPosition:self.currentPreparePosition keyDuration:self.currentPrepareDuration];
+    [self unlock];
+}
+
+#pragma mark - NSLocking
+
+- (void)lock
+{
+    if (!self.coreLock)
+    {
+        self.coreLock = [[NSLock alloc] init];
+    }
+    [self.coreLock lock];
+}
+
+- (void)unlock
+{
+    [self.coreLock unlock];
 }
 
 @end
