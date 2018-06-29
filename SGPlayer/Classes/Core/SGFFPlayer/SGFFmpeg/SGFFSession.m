@@ -19,9 +19,6 @@
 
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
-@property (nonatomic, assign) SGFFSessionState state;
-@property (nonatomic, copy) NSError * error;
-
 @property (nonatomic, strong) id <SGFFSource> source;
 @property (nonatomic, strong) id <SGFFDecoder> audioDecoder;
 @property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
@@ -32,6 +29,8 @@
 @end
 
 @implementation SGFFSession
+
+@synthesize state = _state;
 
 - (instancetype)init
 {
@@ -78,6 +77,11 @@
     [self.videoOutput stop];
 }
 
+- (BOOL)seekEnable
+{
+    return self.source.seekable;
+}
+
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
     switch (self.state)
@@ -96,11 +100,9 @@
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
         SGStrongSelf
-        [self.audioDecoder flush];
-        [self.videoDecoder flush];
-        [self.audioOutput flush];
-        [self.videoOutput flush];
-        [strongSelf.timeSynchronizer flush];;
+        [strongSelf.audioDecoder flush];
+        [strongSelf.videoDecoder flush];
+        [strongSelf.audioOutput flush];
         [strongSelf.videoOutput flush];
         if (completionHandler)
         {
@@ -157,27 +159,37 @@
     return self.source.duration;
 }
 
-- (CMTime)loadedDuration
+- (CMTime)currentTime
+{
+    return self.timeSynchronizer.position;
+}
+
+- (CMTime)audioLoadedDuration
 {
     if (self.audioDecoder && self.audioOutput)
     {
         return CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
     }
-    else if (self.videoDecoder && self.videoOutput)
+    return kCMTimeZero;
+}
+
+- (CMTime)videoLoadedDuration
+{
+    if (self.videoDecoder && self.videoOutput)
     {
         return CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
     }
     return kCMTimeZero;
 }
 
-- (long long)loadedSize
+- (long long)audioLoadedSize
 {
-    return self.audioDecoder.size + self.audioOutput.size + self.videoDecoder.size + self.videoOutput.size;
+    return self.audioDecoder.size + self.audioOutput.size;
 }
 
-- (BOOL)videoEnable
+- (long long)videoLoadedSize
 {
-    return self.videoDecoder != nil;
+    return self.videoDecoder.size + self.videoOutput.size;
 }
 
 - (BOOL)audioEnable
@@ -185,9 +197,21 @@
     return self.audioDecoder != nil;
 }
 
-- (BOOL)seekEnable
+- (BOOL)videoEnable
 {
-    return self.source.seekable;
+    return self.videoDecoder != nil;
+}
+
+- (void)setState:(SGFFSessionState)state
+{
+    if (_state != state)
+    {
+        _state = state;
+        if ([self.delegate respondsToSelector:@selector(sessionDidChangeState:)])
+        {
+            [self.delegate sessionDidChangeState:self];
+        }
+    }
 }
 
 #pragma mark - SGFFSourceDelegate
@@ -270,7 +294,7 @@
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
 {
-    self.error = source.error;
+    _error = source.error;
     self.state = SGFFSessionStateFailed;
     if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)]) {
         dispatch_async(self.delegateQueue, ^{

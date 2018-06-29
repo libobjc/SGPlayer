@@ -315,11 +315,22 @@
     
 }
 
+- (void)sessionDidChangeState:(SGFFSession *)session
+{
+    
+}
+
 - (void)sessionDidChangeCapacity:(SGFFSession *)session
 {
+    CMTime loadedDuration = kCMTimeZero;
+    if (self.session.audioEnable) {
+        loadedDuration = self.session.audioLoadedDuration;
+    } else if (self.session.videoEnable) {
+        loadedDuration = self.session.videoLoadedDuration;
+    }
     if (self.session.state == SGFFSessionStateFinished)
     {
-        if (CMTimeCompare(session.loadedDuration, kCMTimeZero) > 0) {
+        if (CMTimeCompare(loadedDuration, kCMTimeZero) > 0) {
             self.loadState = SGPlayerLoadStatePlayable;
         } else {
             self.loadState = SGPlayerLoadStateIdle;
@@ -328,8 +339,8 @@
     }
     else
     {
-        Float64 duration = CMTimeGetSeconds(session.loadedDuration);
-        if (duration >= self.minimumPlayableDuration) {
+        Float64 seconds = CMTimeGetSeconds(loadedDuration);
+        if (seconds >= self.minimumPlayableDuration) {
             self.loadState = SGPlayerLoadStatePlayable;
         } else {
             self.loadState = SGPlayerLoadStateLoading;

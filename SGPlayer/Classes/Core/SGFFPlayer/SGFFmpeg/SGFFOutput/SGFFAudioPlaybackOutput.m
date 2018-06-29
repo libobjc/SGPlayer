@@ -30,6 +30,7 @@
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
+@property (nonatomic, assign) BOOL didUpdateTimeSynchronizer;
 
 @property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
@@ -76,6 +77,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
+    self.didUpdateTimeSynchronizer = NO;
 }
 
 - (void)stop
@@ -87,6 +89,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
+    self.didUpdateTimeSynchronizer = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -156,6 +159,10 @@
     result.packetDuration = audioFrame.packetDuration;
     result.packetSize = audioFrame.packetSize;
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
+    if (!self.didUpdateTimeSynchronizer && self.frameQueue.count == 0)
+    {
+        [self.timeSynchronizer updatePosition:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+    }
     [self.frameQueue putObjectSync:result];
     [self.delegate outputDidChangeCapacity:self];
     [result unlock];
@@ -169,8 +176,10 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
+    self.didUpdateTimeSynchronizer = NO;
     [self unlock];
     [self.frameQueue flush];
+    [self.timeSynchronizer flush];
     [self.delegate outputDidChangeCapacity:self];
 }
 
@@ -367,6 +376,7 @@
 - (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
+    self.didUpdateTimeSynchronizer = YES;
     [self.timeSynchronizer updatePosition:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
