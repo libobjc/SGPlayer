@@ -46,23 +46,4 @@ typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)
 };
 
 
-@protocol SGPlayer <NSObject>
-
-- (NSInteger)tag;
-- (NSURL *)contentURL;
-- (SGPlayerPlaybackState)playbackState;
-- (SGPlayerLoadState)loadState;
-- (NSTimeInterval)duration;
-- (NSTimeInterval)currentTime;
-- (NSTimeInterval)loadedTime;
-- (NSError *)error;
-- (SGPlayerBackgroundMode)backgroundMode;
-- (NSTimeInterval)minimumPlayableDuration;
-- (void)play;
-- (void)pause;
-- (void)stop;
-
-@end
-
-
 #endif /* SGPlayerDefines_h */

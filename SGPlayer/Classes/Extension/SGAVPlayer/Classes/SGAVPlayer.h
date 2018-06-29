@@ -12,16 +12,14 @@
 FOUNDATION_EXPORT double SGAVPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
 #import <SGAVPlayer/SGPlayerDefines.h>
-#import <SGAVPlayer/SGPlayerAction.h>
 #import <SGAVPlayer/SGPlatform.h>
 #else
 #import "SGPlayerDefines.h"
-#import "SGPlayerAction.h"
 #import "SGPlatform.h"
 #endif
 
 
-@interface SGAVPlayer : NSObject <SGPlayer>
+@interface SGAVPlayer : NSObject
 
 @property (nonatomic, assign, readonly) NSInteger tag;
 

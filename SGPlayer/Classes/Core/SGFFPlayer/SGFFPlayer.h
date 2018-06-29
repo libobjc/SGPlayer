@@ -7,36 +7,50 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 #import "SGPlayerDefines.h"
-#import "SGPlayerAction.h"
 #import "SGFFPlayerView.h"
 
+@class SGFFPlayer;
 
-@interface SGFFPlayer : NSObject <SGPlayer>
+@protocol SGFFPlayerDelegate <NSObject>
+
+- (void)playerDidChangePlaybackState:(SGFFPlayer *)player;
+- (void)playerDidChangePlayableState:(SGFFPlayer *)player;
+
+- (void)playerDidChangePlaybackTime:(SGFFPlayer *)player;
+- (void)playerDidChangePlayableTime:(SGFFPlayer *)player;
+
+@end
+
+@interface SGFFPlayer : NSObject
 
 @property (nonatomic, assign, readonly) NSInteger tag;
+
+@property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 
 @property (nonatomic, copy, readonly) NSURL * contentURL;
 - (void)replaceWithContentURL:(NSURL *)contentURL;
 
 @property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
-@property (nonatomic, assign, readonly) SGPlayerLoadState loadState;
+@property (nonatomic, assign, readonly) SGPlayerLoadState playableState;
 
-@property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, assign, readonly) NSTimeInterval currentTime;
-@property (nonatomic, assign, readonly) NSTimeInterval loadedTime;
+@property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign, readonly) CMTime playbackTime;
+@property (nonatomic, assign, readonly) CMTime playableTime;
 @property (nonatomic, copy, readonly) NSError * error;
 
 @property (nonatomic, strong, readonly) SGFFPlayerView * view;
 @property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
-@property (nonatomic, assign) NSTimeInterval minimumPlayableDuration;       // Default is 2s.
 
 - (void)play;
 - (void)pause;
 - (void)stop;
+- (void)interrupt;
 
-- (void)seekToTime:(NSTimeInterval)time;
-- (void)seekToTime:(NSTimeInterval)time completionHandler:(void(^)(BOOL finished))completionHandler;
+- (BOOL)seekable;
+- (void)seekToTime:(CMTime)time;
+- (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL finished))completionHandler;
 
 @end

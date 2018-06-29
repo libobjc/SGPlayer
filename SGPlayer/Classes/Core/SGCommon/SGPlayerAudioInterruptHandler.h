@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayerDefinesPrivate.h"
+#import "SGFFPlayer.h"
 
 @interface SGPlayerAudioInterruptHandler : NSObject
 
-+ (instancetype)audioInterruptHandlerWithPlayer:(id <SGPlayer, SGPlayerPrivate>)player;
++ (instancetype)audioInterruptHandlerWithPlayer:(SGFFPlayer *)player;
 
 @end

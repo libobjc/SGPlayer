@@ -12,7 +12,6 @@
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
-#import "SGPlayerCallback.h"
 #import "SGPlayerActivity.h"
 #import "SGPlayerDefinesPrivate.h"
 #import "SGPlayerBackgroundHandler.h"
@@ -54,8 +53,8 @@
     if (self = [super init])
     {
         self.tagInternal = [SGPlayerUtil globalPlayerTag];
-        self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
-        self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
+//        self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
+//        self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
         self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
         self.minimumPlayableDuration = 2.f;
 
@@ -66,7 +65,7 @@
 
 - (void)dealloc
 {
-    [SGPlayerActivity resignActive:self];
+//    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
 }
 
@@ -87,7 +86,7 @@
 
 - (void)play
 {
-    [SGPlayerActivity becomeActive:self];
+//    [SGPlayerActivity becomeActive:self];
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
@@ -112,7 +111,7 @@
 
 - (void)pause
 {
-    [SGPlayerActivity resignActive:self];
+//    [SGPlayerActivity resignActive:self];
     [self.player pause];
     switch (self.playbackState) {
         case SGPlayerPlaybackStateStopped:
@@ -127,7 +126,7 @@
 
 - (void)interrupt
 {
-    [SGPlayerActivity resignActive:self];
+//    [SGPlayerActivity resignActive:self];
     [self.player pause];
     switch (self.playbackState) {
         case SGPlayerPlaybackStateStopped:
@@ -142,7 +141,7 @@
 
 - (void)stop
 {
-    [SGPlayerActivity resignActive:self];
+//    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [self cleanProperty];
     [self cleanTimes];
@@ -193,9 +192,9 @@
 {
     if (_playbackState != playbackState)
     {
-        SGPlayerPlaybackState previous = _playbackState;
-        _playbackState = playbackState;
-        [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
+//        SGPlayerPlaybackState previous = _playbackState;
+//        _playbackState = playbackState;
+//        [SGPlayerCallback callbackForPlaybackState:self current:_playbackState previous:previous];
     }
 }
 
@@ -203,9 +202,9 @@
 {
     if (_loadState != loadState)
     {
-        SGPlayerLoadState previous = _loadState;
-        _loadState = loadState;
-        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
+//        SGPlayerLoadState previous = _loadState;
+//        _loadState = loadState;
+//        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
     }
 }
 
@@ -336,7 +335,7 @@
                     }
                     self.error = error;
                     self.playbackState = SGPlayerPlaybackStateFailed;
-                    [SGPlayerCallback callbackForError:self error:error];
+//                    [SGPlayerCallback callbackForError:self error:error];
                 }
                     break;
             }
@@ -442,7 +441,7 @@
 
 - (void)clean
 {
-    [SGPlayerActivity resignActive:self];
+//    [SGPlayerActivity resignActive:self];
     [self cleanPlayer];
     [self cleanProperty];
     [self cleanTimes];
@@ -466,10 +465,10 @@
     _callbackLoadedTime = loadedTime;
     
     if (shouldCallbackCurrentTime) {
-        [SGPlayerCallback callbackForCurrentTime:self current:currentTime duration:duration];
+//        [SGPlayerCallback callbackForCurrentTime:self current:currentTime duration:duration];
     }
     if (shouldCallbackLoadedTime) {
-        [SGPlayerCallback callbackForLoadedTime:self current:loadedTime duration:duration];
+//        [SGPlayerCallback callbackForLoadedTime:self current:loadedTime duration:duration];
     }
 }
 

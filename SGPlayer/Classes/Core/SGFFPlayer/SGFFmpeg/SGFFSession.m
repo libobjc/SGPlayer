@@ -96,9 +96,14 @@
 
 #pragma mark - Seek
 
-- (BOOL)seekEnable
+- (BOOL)seekable
 {
-    return self.source.seekable;
+    if (self.state == SGFFSessionStateFinished ||
+        self.state == SGFFSessionStateReading)
+    {
+        return self.source.seekable;
+    }
+    return NO;
 }
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler

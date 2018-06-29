@@ -10,7 +10,7 @@
 #import <SGPlayer/SGPlayer.h>
 //#import <SGAVPlayer/SGAVPlayer.h>
 
-@interface PlayerViewController ()
+@interface PlayerViewController () <SGFFPlayerDelegate>
 
 @property (nonatomic, strong) SGFFPlayer * player;
 @property (nonatomic, strong) SGFFPlayer * player2;
@@ -35,24 +35,14 @@
     NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
     self.player = [[SGFFPlayer alloc] init];
-    [self sg_registerNotificationForPlayer:self.player
-                       playbackStateAction:@selector(playbackStateAction:)
-                           loadStateAction:@selector(loadStateAction:)
-                        currentTimeAction:@selector(currentTimeAction:)
-                              loadedAction:@selector(loadedTimeAction:)
-                               errorAction:@selector(errorAction:)];
+    self.player.delegate = self;
     [self.view insertSubview:self.player.view atIndex:0];
     [self.player replaceWithContentURL:contentURL];
     
     
     
     self.player2 = [[SGFFPlayer alloc] init];
-    [self sg_registerNotificationForPlayer:self.player2
-                       playbackStateAction:@selector(playbackStateAction:)
-                           loadStateAction:@selector(loadStateAction:)
-                         currentTimeAction:@selector(currentTimeAction:)
-                              loadedAction:@selector(loadedTimeAction:)
-                               errorAction:@selector(errorAction:)];
+    self.player2.delegate = self;
     [self.view insertSubview:self.player2.view atIndex:0];
     [self.player2 replaceWithContentURL:contentURL2];
 }
@@ -89,16 +79,16 @@
 - (IBAction)progressTouchUp:(id)sender
 {
     self.progressSilderTouching = NO;
-    [self.player seekToTime:60 * self.progressSilder.value];
-    [self.player2 seekToTime:60 * self.progressSilder.value];
+    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
+    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+    [self.player seekToTime:time];
+    [self.player2 seekToTime:time2];
 }
 
-- (void)playbackStateAction:(NSNotification *)notification
+- (void)playerDidChangePlaybackState:(SGFFPlayer *)player
 {
-    SGPlaybackStateModel * playbackStateModel = [notification.userInfo sg_playbackStateModel];
-    
     NSString * text;
-    switch (playbackStateModel.current) {
+    switch (player.playbackState) {
         case SGPlayerPlaybackStateIdle:
             text = @"Idle";
             break;
@@ -122,61 +112,44 @@
             break;
         case SGPlayerPlaybackStateFailed:
             text = @"Failed";
+            NSLog(@"%s, %@", __func__, player.error);
             break;
     }
     self.stateLabel.text = text;
     
-    NSLog(@"%s, %ld", __func__, playbackStateModel.current);
+    NSLog(@"%s, %ld", __func__, player.playbackState);
 }
 
-- (void)loadStateAction:(NSNotification *)notification
+- (void)playerDidChangePlayableState:(SGFFPlayer *)player
 {
-    SGPlaybackStateModel * loadStateModel = [notification.userInfo sg_playbackStateModel];
+    NSLog(@"%s, %ld", __func__, player.playableState);
     
-    NSLog(@"%s, %ld", __func__, loadStateModel.current);
-    
-    if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player.playbackState == SGPlayerLoadStateIdle) {
-        [self.player play];
-    }
-    if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player2.playbackState == SGPlayerLoadStateIdle) {
-        [self.player2 play];
+    if (player.playableState == SGPlayerLoadStatePlayable && player.playbackState == SGPlayerLoadStateIdle)
+    {
+        [player play];
     }
 }
 
-- (void)currentTimeAction:(NSNotification *)notification
+- (void)playerDidChangePlaybackTime:(SGFFPlayer *)player
 {
-    SGTimeModel * currentTimeModel = [notification.userInfo sg_currentTimeModel];
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.playbackTime));
     
-    NSLog(@"%s, %f", __func__, currentTimeModel.current);
-    
-    if (!self.progressSilderTouching) {
-        self.progressSilder.value = currentTimeModel.percent;
+    if (!self.progressSilderTouching)
+    {
+        self.progressSilder.value = CMTimeGetSeconds(player.playbackTime) / CMTimeGetSeconds(player.duration);
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:currentTimeModel.current];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:currentTimeModel.duration];
+    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.playbackTime)];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
 
-- (void)loadedTimeAction:(NSNotification *)notification
+- (void)playerDidChangePlayableTime:(SGFFPlayer *)player
 {
-    SGTimeModel * loadedTimeModel = [notification.userInfo sg_loadedTimeModel];
-    NSLog(@"%s, %f", __func__, loadedTimeModel.current);
-}
-
-- (void)errorAction:(NSNotification *)notification
-{
-    NSError * error = [notification.userInfo sg_error];
-    NSLog(@"%s, %@", __func__, error);
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.playableTime));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
 {
     return [NSString stringWithFormat:@"%ld:%.2ld", (long)seconds / 60, (long)seconds % 60];
-}
-
-- (void)dealloc
-{
-    [self sg_removeNotificationForPlayer:self.player];
-    [self sg_removeNotificationForPlayer:self.player2];
 }
 
 @end
