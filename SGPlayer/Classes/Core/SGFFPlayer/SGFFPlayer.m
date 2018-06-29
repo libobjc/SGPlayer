@@ -322,12 +322,7 @@
 
 - (void)sessionDidChangeCapacity:(SGFFSession *)session
 {
-    CMTime loadedDuration = kCMTimeZero;
-    if (self.session.audioEnable) {
-        loadedDuration = self.session.audioLoadedDuration;
-    } else if (self.session.videoEnable) {
-        loadedDuration = self.session.videoLoadedDuration;
-    }
+    CMTime loadedDuration = self.session.loadedDuration;
     if (self.session.state == SGFFSessionStateFinished)
     {
         if (CMTimeCompare(loadedDuration, kCMTimeZero) > 0) {

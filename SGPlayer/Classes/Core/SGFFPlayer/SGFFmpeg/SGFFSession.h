@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFSessionConfiguration.h"
+#import "SGDefines.h"
 
 typedef NS_ENUM(NSUInteger, SGFFSessionState)
 {
@@ -45,6 +46,12 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
  */
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime currentTime;
+
+- (CMTime)loadedDuration;       // Main media type is Audio.
+- (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType;
+
+- (long long)loadedSize;        // Main media type is Audio.
+- (long long)loadedSizeWithMainMediaType:(SGMediaType)mainMediaType;
 
 /**
  *  Audio.

@@ -48,10 +48,15 @@
     return self;
 }
 
+#pragma mark - Streams
+
 - (void)openStreams
 {
+    self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.audioOutput = self.configuration.audioOutput;
     self.videoOutput = self.configuration.videoOutput;
+    self.audioOutput.timeSynchronizer = self.timeSynchronizer;
+    self.videoOutput.timeSynchronizer = self.timeSynchronizer;
     self.audioOutput.delegate = self;
     self.videoOutput.delegate = self;
     self.state = SGFFSessionStateReading;
@@ -76,6 +81,8 @@
     [self.audioOutput stop];
     [self.videoOutput stop];
 }
+
+#pragma mark - Seek
 
 - (BOOL)seekEnable
 {
@@ -111,47 +118,6 @@
     }];
 }
 
-- (void)updateCapacity
-{
-    CMTime duration = kCMTimeZero;
-    long long size = 0;
-    
-    if (self.audioDecoder && self.audioOutput)
-    {
-        duration = CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
-        size = self.audioDecoder.size + self.audioOutput.size;
-    }
-    else if (self.videoDecoder && self.videoOutput)
-    {
-        duration = CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
-        size = self.videoDecoder.size + self.videoOutput.size;
-    }
-    else
-    {
-        return;
-    }
-    
-    BOOL shouldPaused = NO;
-    if (size > 15 * 1024 * 1024)
-    {
-        shouldPaused = YES;
-    }
-    else if (CMTimeCompare(duration, CMTimeMake(10, 1)) > 0)
-    {
-        shouldPaused = YES;
-    }
-    if (shouldPaused) {
-        [self.source pauseReading];
-    } else {
-        [self.source resumeReading];
-    }
-    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)]) {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidChangeCapacity:self];
-        });
-    }
-}
-
 #pragma mark - Setter/Getter
 
 - (CMTime)duration
@@ -162,6 +128,64 @@
 - (CMTime)currentTime
 {
     return self.timeSynchronizer.position;
+}
+
+- (CMTime)loadedDuration
+{
+    return [self loadedDurationWithMainMediaType:SGMediaTypeAudio];
+}
+
+- (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType
+{
+    if (self.audioEnable && !self.videoEnable)
+    {
+        return self.audioLoadedDuration;
+    }
+    else if (!self.audioEnable && self.videoEnable)
+    {
+        return self.videoLoadedDuration;
+    }
+    else if (self.audioEnable && self.videoEnable)
+    {
+        if (mainMediaType == SGMediaTypeAudio)
+        {
+            return self.audioLoadedDuration;
+        }
+        else if (mainMediaType == SGMediaTypeVideo)
+        {
+            return self.videoLoadedDuration;
+        }
+    }
+    return kCMTimeZero;
+}
+
+- (long long)loadedSize
+{
+    return [self loadedSizeWithMainMediaType:SGMediaTypeAudio];
+}
+
+- (long long)loadedSizeWithMainMediaType:(SGMediaType)mainMediaType
+{
+    if (self.audioEnable && !self.videoEnable)
+    {
+        return self.audioLoadedSize;
+    }
+    else if (!self.audioEnable && self.videoEnable)
+    {
+        return self.videoLoadedSize;
+    }
+    else if (self.audioEnable && self.videoEnable)
+    {
+        if (mainMediaType == SGMediaTypeAudio)
+        {
+            return self.audioLoadedSize;
+        }
+        else if (mainMediaType == SGMediaTypeVideo)
+        {
+            return self.videoLoadedSize;
+        }
+    }
+    return 0;
 }
 
 - (CMTime)audioLoadedDuration
@@ -209,8 +233,54 @@
         _state = state;
         if ([self.delegate respondsToSelector:@selector(sessionDidChangeState:)])
         {
-            [self.delegate sessionDidChangeState:self];
+            dispatch_async(self.delegateQueue, ^{
+                [self.delegate sessionDidChangeState:self];
+            });
         }
+    }
+}
+
+#pragma mark - Capacity
+
+- (void)updateCapacity
+{
+    CMTime duration = kCMTimeZero;
+    long long size = 0;
+    
+    if (self.audioDecoder && self.audioOutput)
+    {
+        duration = CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
+        size = self.audioDecoder.size + self.audioOutput.size;
+    }
+    else if (self.videoDecoder && self.videoOutput)
+    {
+        duration = CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
+        size = self.videoDecoder.size + self.videoOutput.size;
+    }
+    else
+    {
+        return;
+    }
+    
+    BOOL shouldPaused = NO;
+    if (size > 15 * 1024 * 1024)
+    {
+        shouldPaused = YES;
+    }
+    else if (CMTimeCompare(duration, CMTimeMake(10, 1)) > 0)
+    {
+        shouldPaused = YES;
+    }
+    if (shouldPaused) {
+        [self.source pauseReading];
+    } else {
+        [self.source resumeReading];
+    }
+    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)])
+    {
+        dispatch_async(self.delegateQueue, ^{
+            [self.delegate sessionDidChangeCapacity:self];
+        });
     }
 }
 
@@ -275,17 +345,13 @@
                 break;
         }
     }
-
     self.audioDecoder.delegate = self;
     self.videoDecoder.delegate = self;
-    self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
-    self.audioOutput.timeSynchronizer = self.timeSynchronizer;
-    self.videoOutput.timeSynchronizer = self.timeSynchronizer;
     [self.audioOutput start];
     [self.videoOutput start];
-
     self.state = SGFFSessionStateOpened;
-    if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)]) {
+    if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)])
+    {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidOpened:self];
         });
@@ -296,7 +362,8 @@
 {
     _error = source.error;
     self.state = SGFFSessionStateFailed;
-    if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)]) {
+    if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)])
+    {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidFailed:self];
         });
@@ -306,7 +373,8 @@
 - (void)sourceDidFinished:(id<SGFFSource>)source
 {
     self.state = SGFFSessionStateFinished;
-    if ([self.delegate respondsToSelector:@selector(sessionDidFinished:)]) {
+    if ([self.delegate respondsToSelector:@selector(sessionDidFinished:)])
+    {
         dispatch_async(self.delegateQueue, ^{
             [self.delegate sessionDidFinished:self];
         });
