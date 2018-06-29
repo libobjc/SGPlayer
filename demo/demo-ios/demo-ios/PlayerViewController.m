@@ -13,6 +13,7 @@
 @interface PlayerViewController ()
 
 @property (nonatomic, strong) SGFFPlayer * player;
+@property (nonatomic, strong) SGFFPlayer * player2;
 
 @property (weak, nonatomic) IBOutlet UILabel * stateLabel;
 @property (weak, nonatomic) IBOutlet UISlider * progressSilder;
@@ -30,6 +31,9 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
+    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
+    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+    
     self.player = [[SGFFPlayer alloc] init];
     [self sg_registerNotificationForPlayer:self.player
                        playbackStateAction:@selector(playbackStateAction:)
@@ -38,16 +42,26 @@
                               loadedAction:@selector(loadedTimeAction:)
                                errorAction:@selector(errorAction:)];
     [self.view insertSubview:self.player.view atIndex:0];
-    
-    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-//    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     [self.player replaceWithContentURL:contentURL];
+    
+    
+    
+    self.player2 = [[SGFFPlayer alloc] init];
+    [self sg_registerNotificationForPlayer:self.player2
+                       playbackStateAction:@selector(playbackStateAction:)
+                           loadStateAction:@selector(loadStateAction:)
+                         currentTimeAction:@selector(currentTimeAction:)
+                              loadedAction:@selector(loadedTimeAction:)
+                               errorAction:@selector(errorAction:)];
+    [self.view insertSubview:self.player2.view atIndex:0];
+    [self.player2 replaceWithContentURL:contentURL2];
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    self.player.view.frame = self.view.bounds;
+    self.player.view.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
+    self.player2.view.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) / 2, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
 }
 
 - (IBAction)back:(id)sender
@@ -58,11 +72,13 @@
 - (IBAction)play:(id)sender
 {
     [self.player play];
+    [self.player2 play];
 }
 
 - (IBAction)pause:(id)sender
 {
     [self.player pause];
+    [self.player2 pause];
 }
 
 - (IBAction)progressTouchDown:(id)sender
@@ -74,6 +90,7 @@
 {
     self.progressSilderTouching = NO;
     [self.player seekToTime:60 * self.progressSilder.value];
+    [self.player2 seekToTime:60 * self.progressSilder.value];
 }
 
 - (void)playbackStateAction:(NSNotification *)notification
@@ -121,6 +138,9 @@
     if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player.playbackState == SGPlayerLoadStateIdle) {
         [self.player play];
     }
+    if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player2.playbackState == SGPlayerLoadStateIdle) {
+        [self.player2 play];
+    }
 }
 
 - (void)currentTimeAction:(NSNotification *)notification
@@ -156,6 +176,7 @@
 - (void)dealloc
 {
     [self sg_removeNotificationForPlayer:self.player];
+    [self sg_removeNotificationForPlayer:self.player2];
 }
 
 @end
