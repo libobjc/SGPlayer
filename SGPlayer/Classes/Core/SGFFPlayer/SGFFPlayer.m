@@ -300,24 +300,12 @@
 
 #pragma mark - SGFFSessionDelegate
 
-- (void)sessionDidOpened:(SGFFSession *)session
-{
-    [self.session startReading];
-}
-
-- (void)sessionDidFailed:(SGFFSession *)session
-{
-    
-}
-
-- (void)sessionDidFinished:(SGFFSession *)session
-{
-    
-}
-
 - (void)sessionDidChangeState:(SGFFSession *)session
 {
-    
+    if (session.state == SGFFSourceStateOpened)
+    {
+        [self.session startReading];
+    }
 }
 
 - (void)sessionDidChangeCapacity:(SGFFSession *)session

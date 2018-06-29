@@ -52,6 +52,11 @@
 
 - (void)openStreams
 {
+    if (self.state != SGFFSessionStateIdle)
+    {
+        return;
+    }
+    self.state = SGFFSessionStateOpening;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.audioOutput = self.configuration.audioOutput;
     self.videoOutput = self.configuration.videoOutput;
@@ -59,7 +64,6 @@
     self.videoOutput.timeSynchronizer = self.timeSynchronizer;
     self.audioOutput.delegate = self;
     self.videoOutput.delegate = self;
-    self.state = SGFFSessionStateReading;
     self.source = [[SGFFFormatContext alloc] init];
     self.source.URL = self.URL;
     self.source.delegate = self;
@@ -68,12 +72,20 @@
 
 - (void)startReading
 {
+    if (self.state != SGFFSessionStateOpened)
+    {
+        return;
+    }
     self.state = SGFFSessionStateReading;
     [self.source startReading];
 }
 
 - (void)closeStreams
 {
+    if (self.state == SGFFSessionStateClosed)
+    {
+        return;
+    }
     self.state = SGFFSessionStateClosed;
     [self.source stopReading];
     [self.audioDecoder stopDecoding];
@@ -94,13 +106,18 @@
     switch (self.state)
     {
         case SGFFSessionStateIdle:
+        case SGFFSessionStateOpening:
+        case SGFFSessionStateOpened:
         case SGFFSessionStateClosed:
         case SGFFSessionStateFailed:
+            if (completionHandler)
+            {
+                completionHandler(NO);
+            }
             return;
         case SGFFSessionStateFinished:
             self.state = SGFFSessionStateReading;
             break;
-        case SGFFSessionStateOpened:
         case SGFFSessionStateReading:
             break;
     }
@@ -350,35 +367,17 @@
     [self.audioOutput start];
     [self.videoOutput start];
     self.state = SGFFSessionStateOpened;
-    if ([self.delegate respondsToSelector:@selector(sessionDidOpened:)])
-    {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidOpened:self];
-        });
-    }
 }
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
 {
     _error = source.error;
     self.state = SGFFSessionStateFailed;
-    if ([self.delegate respondsToSelector:@selector(sessionDidFailed:)])
-    {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidFailed:self];
-        });
-    }
 }
 
 - (void)sourceDidFinished:(id<SGFFSource>)source
 {
     self.state = SGFFSessionStateFinished;
-    if ([self.delegate respondsToSelector:@selector(sessionDidFinished:)])
-    {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidFinished:self];
-        });
-    }
 }
 
 #pragma mark - SGFFDecoderDelegate

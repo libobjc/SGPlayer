@@ -13,6 +13,7 @@
 typedef NS_ENUM(NSUInteger, SGFFSessionState)
 {
     SGFFSessionStateIdle,
+    SGFFSessionStateOpening,
     SGFFSessionStateOpened,
     SGFFSessionStateReading,
     SGFFSessionStateClosed,
@@ -24,9 +25,6 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 
 @protocol SGFFSessionDelegate <NSObject>
 
-- (void)sessionDidOpened:(SGFFSession *)session;
-- (void)sessionDidFailed:(SGFFSession *)session;
-- (void)sessionDidFinished:(SGFFSession *)session;
 - (void)sessionDidChangeState:(SGFFSession *)session;
 - (void)sessionDidChangeCapacity:(SGFFSession *)session;
 

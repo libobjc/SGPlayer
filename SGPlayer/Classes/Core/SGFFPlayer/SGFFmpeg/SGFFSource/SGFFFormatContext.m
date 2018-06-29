@@ -11,20 +11,6 @@
 #import "SGFFError.h"
 #import "avformat.h"
 
-static int SGFFFormatContextInterruptHandler(void * context)
-{
-    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)context;
-    switch (obj.state)
-    {
-        case SGFFSourceStateFinished:
-        case SGFFSourceStateStoped:
-        case SGFFSourceStateFailed:
-            return YES;
-        default:
-            return NO;
-    }
-}
-
 @interface SGFFFormatContext ()
 
 @property (nonatomic, assign) AVFormatContext * formatContext;
@@ -43,8 +29,9 @@ static int SGFFFormatContextInterruptHandler(void * context)
 @property (nonatomic, strong) NSInvocationOperation * readingOperation;
 @property (nonatomic, strong) NSCondition * readingCondition;
 
+@property (nonatomic, assign) long long seekTimestamp;
 @property (nonatomic, assign) long long seekingTimestamp;
-@property (nonatomic, copy) void(^seekingCompletionHandler)(BOOL);
+@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL);
 
 @end
 
@@ -52,6 +39,25 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 @synthesize URL = _URL;
 @synthesize delegate = _delegate;
+
+static int SGFFFormatContextInterruptHandler(void * context)
+{
+    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)context;
+    switch (obj.state)
+    {
+        case SGFFSourceStateFinished:
+        case SGFFSourceStateStoped:
+        case SGFFSourceStateFailed:
+            return YES;
+        case SGFFSourceStateSeeking:
+            if (obj.seekTimestamp != obj.seekingTimestamp)
+            {
+                return YES;
+            }
+        default:
+            return NO;
+    }
+}
 
 #pragma mark - Setter/Getter
 
@@ -139,25 +145,37 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 - (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
-    void (^seek)(void) = ^{
-        self.seekingTimestamp = time.value * AV_TIME_BASE / time.timescale;
-        self.seekingCompletionHandler = completionHandler;
-        self.state = SGFFSourceStateSeeking;
-    };
+    switch (self.state)
+    {
+        case SGFFSourceStateIdle:
+        case SGFFSourceStateOpening:
+        case SGFFSourceStateOpened:
+        case SGFFSourceStateStoped:
+        case SGFFSourceStateFailed:
+            if (completionHandler)
+            {
+                completionHandler(NO);
+            }
+            return;
+        case SGFFSourceStateReading:
+        case SGFFSourceStatePaused:
+        case SGFFSourceStateSeeking:
+        case SGFFSourceStateFinished:
+            break;
+    }
+    self.seekTimestamp = time.value * AV_TIME_BASE / time.timescale;
+    self.seekingTimestamp = 0;
+    self.seekCompletionHandler = completionHandler;
+    self.state = SGFFSourceStateSeeking;
+    NSLog(@"调用 seek......");
     if (self.state == SGFFSourceStatePaused)
     {
-        seek();
         [self.readingCondition lock];
         [self.readingCondition broadcast];
         [self.readingCondition unlock];
     }
-    else if (self.state == SGFFSourceStateReading)
-    {
-        seek();
-    }
     else if (self.state == SGFFSourceStateFinished)
     {
-        seek();
         [self startReadingThread];
     }
 }
@@ -301,21 +319,33 @@ static int SGFFFormatContextInterruptHandler(void * context)
         }
         else if (self.state == SGFFSourceStateSeeking)
         {
-            int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-            if (self.state == SGFFSourceStateSeeking)
+            while (YES)
             {
-                if (self.seekingCompletionHandler)
+                NSLog(@"做 seek......");
+                self.seekingTimestamp = self.seekTimestamp;
+                int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
+                if (self.state == SGFFSourceStateSeeking)
                 {
-                    self.seekingCompletionHandler(success >= 0);
+                    if (self.seekTimestamp != self.seekingTimestamp)
+                    {
+                        continue;
+                    }
+                    if (self.seekCompletionHandler)
+                    {
+                        self.seekCompletionHandler(success >= 0);
+                    }
+                    self.seekTimestamp = 0;
+                    self.seekingTimestamp = 0;
+                    self.seekCompletionHandler = nil;
+                    self.state = SGFFSourceStateReading;
                 }
-                self.seekingTimestamp = 0;
-                self.seekingCompletionHandler = nil;
-                self.state = SGFFSourceStateReading;
-            }
-            else
-            {
-                self.seekingTimestamp = 0;
-                self.seekingCompletionHandler = nil;
+                else
+                {
+                    self.seekTimestamp = 0;
+                    self.seekingTimestamp = 0;
+                    self.seekCompletionHandler = nil;
+                }
+                break;
             }
             continue;
         }
