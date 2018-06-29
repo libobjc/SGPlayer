@@ -164,17 +164,16 @@ static int SGFFFormatContextInterruptHandler(void * context)
             break;
     }
     self.seekTimestamp = time.value * AV_TIME_BASE / time.timescale;
-    self.seekingTimestamp = 0;
     self.seekCompletionHandler = completionHandler;
+    SGFFSourceState state = self.state;
     self.state = SGFFSourceStateSeeking;
-    NSLog(@"调用 seek......");
-    if (self.state == SGFFSourceStatePaused)
+    if (state == SGFFSourceStatePaused)
     {
         [self.readingCondition lock];
         [self.readingCondition broadcast];
         [self.readingCondition unlock];
     }
-    else if (self.state == SGFFSourceStateFinished)
+    else if (state == SGFFSourceStateFinished)
     {
         [self startReadingThread];
     }
