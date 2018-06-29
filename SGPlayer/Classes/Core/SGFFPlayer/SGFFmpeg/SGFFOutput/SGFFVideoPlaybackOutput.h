@@ -1,5 +1,5 @@
 //
-//  SGFFVideoOutput.h
+//  SGFFVideoPlaybackOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
@@ -9,7 +9,7 @@
 #import "SGFFOutput.h"
 #import "SGPlatform.h"
 
-@interface SGFFVideoOutput : NSObject <SGFFOutput>
+@interface SGFFVideoPlaybackOutput : NSObject <SGFFOutput>
 
 @property (nonatomic, strong, readonly) SGPLFView * view;
 

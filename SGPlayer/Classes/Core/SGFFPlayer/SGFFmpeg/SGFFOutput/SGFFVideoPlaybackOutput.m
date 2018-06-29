@@ -1,12 +1,12 @@
 //
-//  SGFFVideoOutput.m
+//  SGFFVideoPlaybackOutput.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFVideoOutput.h"
+#import "SGFFVideoPlaybackOutput.h"
 #import "SGPlayerMacro.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLTimer.h"
@@ -18,7 +18,7 @@
 #import "SGFFVideoAVFrame.h"
 #import "SGFFVideoFFFrame.h"
 
-@interface SGFFVideoOutput () <SGGLViewDelegate, NSLocking>
+@interface SGFFVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
@@ -33,7 +33,7 @@
 
 @end
 
-@implementation SGFFVideoOutput
+@implementation SGFFVideoPlaybackOutput
 
 @synthesize delegate = _delegate;
 @synthesize timeSynchronizer = _timeSynchronizer;

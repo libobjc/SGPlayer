@@ -1,5 +1,5 @@
 //
-//  SGFFAudioOutput.h
+//  SGFFAudioPlaybackOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
@@ -8,7 +8,7 @@
 
 #import "SGFFOutput.h"
 
-@interface SGFFAudioOutput : NSObject <SGFFOutput>
+@interface SGFFAudioPlaybackOutput : NSObject <SGFFOutput>
 
 @property (nonatomic, copy, readonly) NSError * error;
 

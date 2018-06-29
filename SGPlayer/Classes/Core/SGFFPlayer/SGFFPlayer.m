@@ -9,8 +9,8 @@
 #import "SGFFPlayer.h"
 #import "SGFFSession.h"
 #import "SGFFPlayerView.h"
-#import "SGFFAudioOutput.h"
-#import "SGFFVideoOutput.h"
+#import "SGFFAudioPlaybackOutput.h"
+#import "SGFFVideoPlaybackOutput.h"
 #import "SGFFPlayerView.h"
 
 #import "SGPlayerMacro.h"
@@ -36,8 +36,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGFFSession * session;
-@property (nonatomic, strong) SGFFAudioOutput * audioOutput;
-@property (nonatomic, strong) SGFFVideoOutput * videoOutput;
+@property (nonatomic, strong) SGFFAudioPlaybackOutput * audioOutput;
+@property (nonatomic, strong) SGFFVideoPlaybackOutput * videoOutput;
 @property (nonatomic, strong) SGFFPlayerView * displayView;
 
 @end
@@ -76,8 +76,8 @@
     self.contentURL = contentURL;
     
     SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
-    self.audioOutput = [[SGFFAudioOutput alloc] init];
-    self.videoOutput = [[SGFFVideoOutput alloc] init];
+    self.audioOutput = [[SGFFAudioPlaybackOutput alloc] init];
+    self.videoOutput = [[SGFFVideoPlaybackOutput alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     self.displayView.view = self.videoOutput.view;
