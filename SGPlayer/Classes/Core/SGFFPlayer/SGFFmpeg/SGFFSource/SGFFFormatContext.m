@@ -186,7 +186,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     if (!self.operationQueue)
     {
         self.operationQueue = [[NSOperationQueue alloc] init];
-        self.operationQueue.maxConcurrentOperationCount = 2;
+        self.operationQueue.maxConcurrentOperationCount = 1;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
     self.openStreamsOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openStreamsThread) object:nil];
@@ -320,7 +320,6 @@ static int SGFFFormatContextInterruptHandler(void * context)
         {
             while (YES)
             {
-                NSLog(@"做 seek......");
                 self.seekingTimestamp = self.seekTimestamp;
                 int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
                 if (self.state == SGFFSourceStateSeeking)
