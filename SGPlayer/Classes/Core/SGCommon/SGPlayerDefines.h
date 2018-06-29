@@ -32,11 +32,11 @@ typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
     SGPlayerPlaybackStateFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGPlayerLoadState)
+typedef NS_ENUM(NSUInteger, SGPlayerPlayableState)
 {
-    SGPlayerLoadStateIdle,
-    SGPlayerLoadStateLoading,
-    SGPlayerLoadStatePlayable,
+    SGPlayerPlayableStateIdle,
+    SGPlayerPlayableStateLoading,
+    SGPlayerPlayableStatePlayable,
 };
 
 typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)

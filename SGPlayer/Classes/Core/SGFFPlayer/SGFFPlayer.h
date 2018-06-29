@@ -34,11 +34,12 @@
 - (void)replaceWithContentURL:(NSURL *)contentURL;
 
 @property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
-@property (nonatomic, assign, readonly) SGPlayerLoadState playableState;
+@property (nonatomic, assign, readonly) SGPlayerPlayableState playableState;
 
-@property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime playbackTime;
 @property (nonatomic, assign, readonly) CMTime playableTime;
+
+@property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, copy, readonly) NSError * error;
 
 @property (nonatomic, strong, readonly) SGFFPlayerView * view;

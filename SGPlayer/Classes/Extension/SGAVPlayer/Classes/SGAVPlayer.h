@@ -27,7 +27,7 @@ FOUNDATION_EXPORT const unsigned char SGAVPlayerVersionString[];
 - (void)replaceWithContentURL:(NSURL *)contentURL;
 
 @property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
-@property (nonatomic, assign, readonly) SGPlayerLoadState loadState;
+@property (nonatomic, assign, readonly) SGPlayerPlayableState loadState;
 
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 @property (nonatomic, assign, readonly) NSTimeInterval currentTime;

@@ -108,7 +108,7 @@
     
     NSLog(@"%s, %ld", __func__, loadStateModel.current);
     
-    if (loadStateModel.current == SGPlayerLoadStatePlayable && self.player.playbackState == SGPlayerLoadStateIdle) {
+    if (loadStateModel.current == SGPlayerPlayableStatePlayable && self.player.playbackState == SGPlayerPlayableStateIdle) {
         [self.player play];
     }
 }

@@ -107,7 +107,7 @@
 
 - (void)playOrPause
 {
-    if (self.playbackState == SGPlayerPlaybackStatePlaying && self.playableState == SGPlayerLoadStatePlayable) {
+    if (self.playbackState == SGPlayerPlaybackStatePlaying && self.playableState == SGPlayerPlayableStatePlayable) {
         [self.audioOutput play];
     } else {
         [self.audioOutput pause];
@@ -206,7 +206,7 @@
     }
 }
 
-- (void)setPlayableState:(SGPlayerLoadState)playableState
+- (void)setPlayableState:(SGPlayerPlayableState)playableState
 {
     if (_playableState != playableState)
     {
@@ -293,18 +293,18 @@
     if (self.session.state == SGFFSessionStateFinished)
     {
         if (CMTimeCompare(loadedDuration, kCMTimeZero) > 0) {
-            self.playableState = SGPlayerLoadStatePlayable;
+            self.playableState = SGPlayerPlayableStatePlayable;
         } else {
-            self.playableState = SGPlayerLoadStateIdle;
+            self.playableState = SGPlayerPlayableStateIdle;
             self.playbackState = SGPlayerPlaybackStateFinished;
         }
     }
     else
     {
         if (CMTimeCompare(loadedDuration, kCMTimeZero) > 0) {
-            self.playableState = SGPlayerLoadStatePlayable;
+            self.playableState = SGPlayerPlayableStatePlayable;
         } else {
-            self.playableState = SGPlayerLoadStateLoading;
+            self.playableState = SGPlayerPlayableStateLoading;
         }
     }
 }

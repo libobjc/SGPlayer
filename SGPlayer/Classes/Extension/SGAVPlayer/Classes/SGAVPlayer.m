@@ -33,7 +33,7 @@
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
-@property (nonatomic, assign) SGPlayerLoadState loadState;
+@property (nonatomic, assign) SGPlayerPlayableState loadState;
 @property (nonatomic, assign) NSTimeInterval loadedTime;
 @property (nonatomic, copy) NSError * error;
 
@@ -198,11 +198,11 @@
     }
 }
 
-- (void)setLoadState:(SGPlayerLoadState)loadState
+- (void)setLoadState:(SGPlayerPlayableState)loadState
 {
     if (_loadState != loadState)
     {
-//        SGPlayerLoadState previous = _loadState;
+//        SGPlayerPlayableState previous = _loadState;
 //        _loadState = loadState;
 //        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
     }
@@ -274,7 +274,7 @@
 
 - (void)reloadLoadState
 {
-    SGPlayerLoadState loadState = SGPlayerLoadStateIdle;
+    SGPlayerPlayableState loadState = SGPlayerPlayableStateIdle;
     if (self.playerItem != nil || self.playerItem.status != AVPlayerItemStatusFailed)
     {
         NSTimeInterval duration = self.duration;
@@ -287,12 +287,12 @@
         NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
         
         if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
-            loadState = SGPlayerLoadStatePlayable;
+            loadState = SGPlayerPlayableStatePlayable;
             if (self.playbackState == SGPlayerPlaybackStatePlaying) {
                 [self.player play];
             }
         } else {
-            loadState = SGPlayerLoadStateLoading;
+            loadState = SGPlayerPlayableStateLoading;
             if (self.playbackState == SGPlayerPlaybackStatePlaying) {
                 [self.player pause];
             }
@@ -431,7 +431,7 @@
     self.contentURL = nil;
     self.loadedTime = 0;
     self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
-    self.loadState = SGPlayerLoadStateIdle;
+    self.loadState = SGPlayerPlayableStateIdle;
 }
 
 - (void)cleanTimes
