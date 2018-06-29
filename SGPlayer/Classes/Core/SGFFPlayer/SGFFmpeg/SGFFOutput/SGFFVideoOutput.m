@@ -47,7 +47,6 @@
 {
     if (self = [super init])
     {
-        self.rate = CMTimeMake(1, 1);
         self.mode = SGDisplayModePlane;
         
         self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
@@ -146,7 +145,7 @@
         SGStrongSelf
         if (strongSelf.currentFrame)
         {
-            CMTime position = [strongSelf.timeSynchronizer realPositionWithRate:self.rate];
+            CMTime position = strongSelf.timeSynchronizer.position;
             NSAssert(CMTIME_IS_VALID(position), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(position, SGFFTimeMakeWithSeconds(nextVSyncInterval));

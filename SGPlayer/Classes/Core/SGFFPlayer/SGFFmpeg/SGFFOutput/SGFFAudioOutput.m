@@ -367,7 +367,7 @@
 - (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    [self.timeSynchronizer updateKeyPosition:self.currentPreparePosition keyDuration:self.currentPrepareDuration];
+    [self.timeSynchronizer updatePosition:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
 

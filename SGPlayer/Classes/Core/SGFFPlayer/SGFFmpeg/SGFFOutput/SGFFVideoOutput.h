@@ -13,7 +13,6 @@
 
 @property (nonatomic, strong, readonly) SGPLFView * view;
 
-@property (nonatomic, assign) CMTime rate;
 @property (nonatomic, assign) SGDisplayMode mode;       // Default is SGDisplayModePlane.
 
 @end

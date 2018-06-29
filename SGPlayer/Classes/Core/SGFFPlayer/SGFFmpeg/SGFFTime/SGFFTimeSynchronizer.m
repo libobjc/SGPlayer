@@ -12,6 +12,7 @@
 
 @property (nonatomic, assign) CMTime keyPosition;
 @property (nonatomic, assign) CMTime keyDuration;
+@property (nonatomic, assign) CMTime keyRate;
 @property (nonatomic, assign) CMTime keyMediaTime;
 
 @end
@@ -27,7 +28,7 @@
     return self;
 }
 
-- (CMTime)realPositionWithRate:(CMTime)rate
+- (CMTime)position
 {
     if (CMTIME_IS_INVALID(self.keyDuration))
     {
@@ -39,16 +40,17 @@
     }
     CMTime mediaTime = SGFFTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
-    interval = CMTimeMake(interval.value * rate.value, interval.timescale * rate.timescale);
+    interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
     interval = CMTimeMinimum(self.keyDuration, interval);
     CMTime position = CMTimeAdd(self.keyPosition, interval);
     return position;
 }
 
-- (void)updateKeyPosition:(CMTime)keyPosition keyDuration:(CMTime)keyDuration
+- (void)updatePosition:(CMTime)position duration:(CMTime)duration rate:(CMTime)rate
 {
-    self.keyPosition = keyPosition;
-    self.keyDuration = keyDuration;
+    self.keyPosition = position;
+    self.keyDuration = duration;
+    self.keyRate = rate;
     self.keyMediaTime = SGFFTimeMakeWithSeconds(CACurrentMediaTime());
 }
 

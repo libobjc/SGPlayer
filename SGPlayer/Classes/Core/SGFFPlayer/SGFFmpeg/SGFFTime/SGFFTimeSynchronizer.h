@@ -11,10 +11,9 @@
 
 @interface SGFFTimeSynchronizer : NSObject
 
-- (CMTime)realPositionWithRate:(CMTime)rate;
+@property (nonatomic, assign, readonly) CMTime position;
 
-- (void)updateKeyPosition:(CMTime)keyPosition keyDuration:(CMTime)keyDuration;
-
+- (void)updatePosition:(CMTime)position duration:(CMTime)duration rate:(CMTime)rate;
 - (void)flush;
 
 @end
