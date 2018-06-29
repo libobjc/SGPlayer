@@ -17,10 +17,7 @@
 
 @interface SGFFSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
 
-@property (nonatomic, copy) NSURL * contentURL;
-@property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
-@property (nonatomic, strong) SGFFSessionConfiguration * configuration;
 
 @property (nonatomic, assign) SGFFSessionState state;
 @property (nonatomic, copy) NSError * error;
@@ -36,18 +33,7 @@
 
 @implementation SGFFSession
 
-+ (instancetype)sessionWithContentURL:(NSURL *)contentURL
-                             delegate:(id <SGFFSessionDelegate>)delegate
-                        configuration:(SGFFSessionConfiguration *)configuration
-{
-    return [[self alloc] initWithContentURL:contentURL
-                                   delegate:delegate
-                              configuration:configuration];
-}
-
-- (instancetype)initWithContentURL:(NSURL *)contentURL
-                          delegate:(id <SGFFSessionDelegate>)delegate
-                     configuration:(SGFFSessionConfiguration *)configuration
+- (instancetype)init
 {
     if (self = [super init])
     {
@@ -57,35 +43,32 @@
             av_register_all();
             avformat_network_init();
         });
-        self.contentURL = contentURL;
-        self.delegate = delegate;
         self.delegateQueue = dispatch_queue_create("SGFFSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
-        self.configuration = configuration;
-        self.audioOutput = self.configuration.audioOutput;
-        self.videoOutput = self.configuration.videoOutput;
-        self.audioOutput.delegate = self;
-        self.videoOutput.delegate = self;
         self.state = SGFFSessionStateIdle;
     }
     return self;
 }
 
-- (void)open
+- (void)openStreams
 {
+    self.audioOutput = self.configuration.audioOutput;
+    self.videoOutput = self.configuration.videoOutput;
+    self.audioOutput.delegate = self;
+    self.videoOutput.delegate = self;
     self.state = SGFFSessionStateReading;
     self.source = [[SGFFFormatContext alloc] init];
-    self.source.URL = self.contentURL;
+    self.source.URL = self.URL;
     self.source.delegate = self;
     [self.source openStreams];
 }
 
-- (void)read
+- (void)startReading
 {
     self.state = SGFFSessionStateReading;
     [self.source startReading];
 }
 
-- (void)close
+- (void)closeStreams
 {
     self.state = SGFFSessionStateClosed;
     [self.source stopReading];

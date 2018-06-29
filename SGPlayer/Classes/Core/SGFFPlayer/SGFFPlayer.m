@@ -82,10 +82,11 @@
     configuration.videoOutput = self.videoOutput;
     self.displayView.view = self.videoOutput.view;
     
-    self.session = [SGFFSession sessionWithContentURL:self.contentURL
-                                             delegate:self
-                                        configuration:configuration];
-    [self.session open];
+    self.session = [[SGFFSession alloc] init];
+    self.session.URL = self.contentURL;
+    self.session.delegate = self;
+    self.session.configuration = configuration;
+    [self.session openStreams];
 }
 
 
@@ -275,7 +276,7 @@
 {
     if (self.session)
     {
-        [self.session close];
+        [self.session closeStreams];
         self.session = nil;
     }
 }
@@ -301,7 +302,7 @@
 
 - (void)sessionDidOpened:(SGFFSession *)session
 {
-    [self.session read];
+    [self.session startReading];
 }
 
 - (void)sessionDidFailed:(SGFFSession *)session

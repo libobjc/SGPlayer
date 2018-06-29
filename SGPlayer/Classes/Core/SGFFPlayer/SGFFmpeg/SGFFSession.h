@@ -9,9 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGFFSessionConfiguration.h"
 
-@class SGFFSession;
-
-
 typedef NS_ENUM(NSUInteger, SGFFSessionState)
 {
     SGFFSessionStateIdle,
@@ -22,6 +19,7 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
     SGFFSessionStateFailed,
 };
 
+@class SGFFSession;
 
 @protocol SGFFSessionDelegate <NSObject>
 
@@ -34,16 +32,11 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 
 @end
 
-
 @interface SGFFSession : NSObject
 
-+ (instancetype)sessionWithContentURL:(NSURL *)contentURL
-                             delegate:(id <SGFFSessionDelegate>)delegate
-                        configuration:(SGFFSessionConfiguration *)configuration;
-
-- (NSURL *)contentURL;
-- (id <SGFFSessionDelegate>)delegate;
-- (SGFFSessionConfiguration *)configuration;
+@property (nonatomic, copy) NSURL * URL;
+@property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
+@property (nonatomic, strong) SGFFSessionConfiguration * configuration;
 
 - (SGFFSessionState)state;
 - (CMTime)duration;
@@ -55,9 +48,9 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 - (BOOL)audioEnable;
 - (BOOL)seekEnable;
 
-- (void)open;
-- (void)read;
-- (void)close;
+- (void)openStreams;
+- (void)startReading;
+- (void)closeStreams;
 
 - (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
 
