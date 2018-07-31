@@ -33,7 +33,7 @@
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackState;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
-@property (nonatomic, assign) SGPlayerPlayableState loadState;
+@property (nonatomic, assign) SGPlayerLoadingState loadState;
 @property (nonatomic, assign) NSTimeInterval loadedTime;
 @property (nonatomic, copy) NSError * error;
 
@@ -136,7 +136,7 @@
         default:
             break;
     }
-    self.playbackState = SGPlayerPlaybackStateInterrupted;
+//    self.playbackState = SGPlayerPlaybackStateInterrupted;
 }
 
 - (void)stop
@@ -172,7 +172,7 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 SGStrongSelf
                 strongSelf.playbackState = strongSelf.playbackStateBeforSeeking;
-                strongSelf.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
+                strongSelf.playbackStateBeforSeeking = SGPlayerPlaybackStateNone;
                 if (strongSelf.playbackState == SGPlayerPlaybackStatePlaying) {
                     [strongSelf.player play];
                 }
@@ -198,11 +198,11 @@
     }
 }
 
-- (void)setLoadState:(SGPlayerPlayableState)loadState
+- (void)setLoadState:(SGPlayerLoadingState)loadState
 {
     if (_loadState != loadState)
     {
-//        SGPlayerPlayableState previous = _loadState;
+//        SGPlayerLoadingState previous = _loadState;
 //        _loadState = loadState;
 //        [SGPlayerCallback callbackForLoadState:self current:_loadState previous:previous];
     }
@@ -274,31 +274,31 @@
 
 - (void)reloadLoadState
 {
-    SGPlayerPlayableState loadState = SGPlayerPlayableStateIdle;
-    if (self.playerItem != nil || self.playerItem.status != AVPlayerItemStatusFailed)
-    {
-        NSTimeInterval duration = self.duration;
-        NSTimeInterval currentTime = self.currentTime;
-        NSTimeInterval loadedTime = self.loadedTime;
-        
-        NSTimeInterval errorInterval = 0.1;
-        NSTimeInterval loadedInterval = loadedTime - currentTime;
-        NSTimeInterval residue = duration - currentTime - errorInterval;
-        NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
-        
-        if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
-            loadState = SGPlayerPlayableStatePlayable;
-            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
-                [self.player play];
-            }
-        } else {
-            loadState = SGPlayerPlayableStateLoading;
-            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
-                [self.player pause];
-            }
-        }
-    }
-    self.loadState = loadState;
+//    SGPlayerLoadingState loadState = SGPlayerLoadingStateNone;
+//    if (self.playerItem != nil || self.playerItem.status != AVPlayerItemStatusFailed)
+//    {
+//        NSTimeInterval duration = self.duration;
+//        NSTimeInterval currentTime = self.currentTime;
+//        NSTimeInterval loadedTime = self.loadedTime;
+//        
+//        NSTimeInterval errorInterval = 0.1;
+//        NSTimeInterval loadedInterval = loadedTime - currentTime;
+//        NSTimeInterval residue = duration - currentTime - errorInterval;
+//        NSTimeInterval minimumPlayableDuration = MIN(self.minimumPlayableDuration, residue);
+//        
+//        if (loadedInterval > 0 && loadedInterval >= minimumPlayableDuration) {
+//            loadState = SGPlayerLoadingStatePlayable;
+//            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+//                [self.player play];
+//            }
+//        } else {
+//            loadState = SGPlayerLoadingStateLoading;
+//            if (self.playbackState == SGPlayerPlaybackStatePlaying) {
+//                [self.player pause];
+//            }
+//        }
+//    }
+//    self.loadState = loadState;
 }
 
 
@@ -430,8 +430,8 @@
     self.error = nil;
     self.contentURL = nil;
     self.loadedTime = 0;
-    self.playbackStateBeforSeeking = SGPlayerPlaybackStateIdle;
-    self.loadState = SGPlayerPlayableStateIdle;
+    self.playbackStateBeforSeeking = SGPlayerPlaybackStateNone;
+    self.loadState = SGPlayerLoadingStateNone;
 }
 
 - (void)cleanTimes
@@ -445,7 +445,7 @@
     [self cleanPlayer];
     [self cleanProperty];
     [self cleanTimes];
-    self.playbackState = SGPlayerPlaybackStateIdle;
+    self.playbackState = SGPlayerPlaybackStateNone;
 }
 
 

@@ -72,7 +72,7 @@
     
     NSString * text;
     switch (playbackStateModel.current) {
-        case SGPlayerPlaybackStateIdle:
+        case SGPlayerPlaybackStateNone:
             text = @"Idle";
             break;
         case SGPlayerPlaybackStatePlaying:
@@ -108,7 +108,7 @@
     
     NSLog(@"%s, %ld", __func__, loadStateModel.current);
     
-    if (loadStateModel.current == SGPlayerPlayableStatePlayable && self.player.playbackState == SGPlayerPlayableStateIdle) {
+    if (loadStateModel.current == SGPlayerLoadingStatePlayable && self.player.playbackState == SGPlayerLoadingStateNone) {
         [self.player play];
     }
 }

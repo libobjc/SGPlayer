@@ -89,7 +89,7 @@
 {
     NSString * text;
     switch (player.playbackState) {
-        case SGPlayerPlaybackStateIdle:
+        case SGPlayerPlaybackStateNone:
             text = @"Idle";
             break;
         case SGPlayerPlaybackStatePlaying:
@@ -100,9 +100,6 @@
             break;
         case SGPlayerPlaybackStatePaused:
             text = @"Paused";
-            break;
-        case SGPlayerPlaybackStateInterrupted:
-            text = @"Interrupted";
             break;
         case SGPlayerPlaybackStateStopped:
             text = @"Stopped";
@@ -120,14 +117,14 @@
     NSLog(@"%s, %ld", __func__, player.playbackState);
 }
 
-- (void)playerDidChangePlayableState:(SGFFPlayer *)player
+- (void)playerDidChangeLoadingState:(SGFFPlayer *)player
 {
-    NSLog(@"%s, %ld", __func__, player.playableState);
+    NSLog(@"%s, %ld", __func__, player.loadingState);
     
-    if (player.playableState == SGPlayerPlayableStatePlayable && player.playbackState == SGPlayerPlayableStateIdle)
-    {
-        [player play];
-    }
+//    if (player.loadingState == SGPlayerLoadingStatePlayable && player.playbackState == SGPlayerLoadingStateNone)
+//    {
+//        [player play];
+//    }
 }
 
 - (void)playerDidChangePlaybackTime:(SGFFPlayer *)player
@@ -142,9 +139,9 @@
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
 
-- (void)playerDidChangePlayableTime:(SGFFPlayer *)player
+- (void)playerDidChangeLoadedTime:(SGFFPlayer *)player
 {
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.playableTime));
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.loadedTime));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

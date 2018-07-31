@@ -79,10 +79,10 @@
         {
             if (option & AVAudioSessionInterruptionOptionShouldResume)
             {
-                if (self.player.playbackState == SGPlayerPlaybackStateInterrupted)
-                {
-                    [self.player play];
-                }
+//                if (self.player.playbackState == SGPlayerPlaybackStateInterrupted)
+//                {
+//                    [self.player play];
+//                }
             }
         }
             break;

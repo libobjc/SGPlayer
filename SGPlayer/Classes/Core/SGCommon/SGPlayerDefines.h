@@ -22,21 +22,23 @@
 
 typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
 {
-    SGPlayerPlaybackStateIdle,
+    SGPlayerPlaybackStateNone,
     SGPlayerPlaybackStatePlaying,
     SGPlayerPlaybackStateSeeking,
     SGPlayerPlaybackStatePaused,
-    SGPlayerPlaybackStateInterrupted,
     SGPlayerPlaybackStateStopped,
     SGPlayerPlaybackStateFinished,
     SGPlayerPlaybackStateFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGPlayerPlayableState)
+typedef NS_ENUM(NSUInteger, SGPlayerLoadingState)
 {
-    SGPlayerPlayableStateIdle,
-    SGPlayerPlayableStateLoading,
-    SGPlayerPlayableStatePlayable,
+    SGPlayerLoadingStateNone,
+    SGPlayerLoadingStateLoading,
+    SGPlayerLoadingStatePaused,
+    SGPlayerLoadingStateStoped,
+    SGPlayerLoadingStateFinished,
+    SGPlayerLoadingStateFailed,
 };
 
 typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)

@@ -17,10 +17,9 @@
 @protocol SGFFPlayerDelegate <NSObject>
 
 - (void)playerDidChangePlaybackState:(SGFFPlayer *)player;
-- (void)playerDidChangePlayableState:(SGFFPlayer *)player;
-
 - (void)playerDidChangePlaybackTime:(SGFFPlayer *)player;
-- (void)playerDidChangePlayableTime:(SGFFPlayer *)player;
+- (void)playerDidChangeLoadingState:(SGFFPlayer *)player;
+- (void)playerDidChangeLoadedTime:(SGFFPlayer *)player;
 
 @end
 
@@ -34,10 +33,10 @@
 - (void)replaceWithContentURL:(NSURL *)contentURL;
 
 @property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
-@property (nonatomic, assign, readonly) SGPlayerPlayableState playableState;
+@property (nonatomic, assign, readonly) SGPlayerLoadingState loadingState;
 
 @property (nonatomic, assign, readonly) CMTime playbackTime;
-@property (nonatomic, assign, readonly) CMTime playableTime;
+@property (nonatomic, assign, readonly) CMTime loadedTime;
 
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, copy, readonly) NSError * error;
