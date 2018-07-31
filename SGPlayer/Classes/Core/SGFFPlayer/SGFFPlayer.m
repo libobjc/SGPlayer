@@ -263,7 +263,7 @@
     }
     [self playOrPause];
     if (self.session.state == SGFFSessionStateFinished &&
-        CMTimeCompare(self.session.loadedDuration, kCMTimeZero))
+        CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
     {
         self.playbackState = SGPlayerPlaybackStateFinished;
     }
