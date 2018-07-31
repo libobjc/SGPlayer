@@ -190,9 +190,11 @@
                 break;
         }
         [self playOrPause];
-        if ([self.delegate respondsToSelector:@selector(playerDidChangePlaybackState:)])
+        if ([self.delegate respondsToSelector:@selector(player:didChangePlaybackState:)])
         {
-            [self.delegate playerDidChangePlaybackState:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate player:self didChangePlaybackState:playbackState];
+            });
         }
     }
     [self unlock];
@@ -204,9 +206,11 @@
     if (_loadingState != loadingState)
     {
         _loadingState = loadingState;
-        if ([self.delegate respondsToSelector:@selector(playerDidChangeLoadingState:)])
+        if ([self.delegate respondsToSelector:@selector(player:didChangeLoadingState:)])
         {
-            [self.delegate playerDidChangeLoadingState:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate player:self didChangeLoadingState:loadingState];
+            });
         }
     }
     [self unlock];
