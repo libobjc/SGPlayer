@@ -25,7 +25,8 @@
 
 @interface SGFFPlayer : NSObject
 
-@property (nonatomic, assign, readonly) NSInteger tag;
+@property (nonatomic, assign) NSInteger tag;
+@property (nonatomic, strong) id object;
 
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 
@@ -42,7 +43,6 @@
 @property (nonatomic, copy, readonly) NSError * error;
 
 @property (nonatomic, strong, readonly) SGFFPlayerView * view;
-@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;
 
 - (void)play;
 - (void)pause;

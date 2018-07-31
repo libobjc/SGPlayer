@@ -33,7 +33,7 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-+ (instancetype)backgroundHandlerWithPlayer:(id <SGPlayer>)player
++ (instancetype)backgroundHandlerWithPlayer:(SGFFPlayer *)player
 {
     return nil;
 }
@@ -70,30 +70,30 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 - (void)applicationWillEnterForeground:(NSNotification *)notification
 {
     lastWillEnterForegroundTimeInterval = [NSDate date].timeIntervalSince1970;
-    if (self.shouldAutoPlay)
-    {
-        self.shouldAutoPlay = NO;
-        if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
-        {
-            if (self.player.playbackState == SGPlayerPlaybackStatePaused)
-            {
-                [self.player play];
-            }
-        }
-    }
+//    if (self.shouldAutoPlay)
+//    {
+//        self.shouldAutoPlay = NO;
+//        if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+//        {
+//            if (self.player.playbackState == SGPlayerPlaybackStatePaused)
+//            {
+//                [self.player play];
+//            }
+//        }
+//    }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     lastDidEnterBackgroundTimeInterval = [NSDate date].timeIntervalSince1970;
-    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
-    {
-        if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
-        {
-            self.shouldAutoPlay = YES;
-            [self.player pause];
-        }
-    }
+//    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+//    {
+//        if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
+//        {
+//            self.shouldAutoPlay = YES;
+//            [self.player pause];
+//        }
+//    }
 }
 
 #endif

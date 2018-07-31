@@ -23,10 +23,6 @@
 
 @interface SGFFPlayer () <SGPlayerPrivate, SGFFSessionDelegate>
 
-@property (nonatomic, assign) NSInteger tagInternal;
-@property (nonatomic, strong) SGPlayerBackgroundHandler * backgroundHandler;
-@property (nonatomic, strong) SGPlayerAudioInterruptHandler * audioInterruptHandler;
-
 @property (nonatomic, copy) NSURL * contentURL;
 @property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
 @property (nonatomic, copy) NSError * error;
@@ -47,11 +43,6 @@
 {
     if (self = [super init])
     {
-        self.tagInternal = [SGPlayerUtil globalPlayerTag];
-        self.backgroundHandler = [SGPlayerBackgroundHandler backgroundHandlerWithPlayer:self];
-        self.audioInterruptHandler = [SGPlayerAudioInterruptHandler audioInterruptHandlerWithPlayer:self];
-        self.backgroundMode = SGPlayerBackgroundModeContinue;
-        
         self.displayView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
     }
     return self;
@@ -219,11 +210,6 @@
             });
         }
     }
-}
-
-- (NSInteger)tag
-{
-    return self.tagInternal;
 }
 
 - (SGPLFView *)view
