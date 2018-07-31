@@ -27,7 +27,7 @@
 @property (nonatomic, strong) SGFFAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGFFVideoPlaybackOutput * videoOutput;
 @property (nonatomic, strong) SGFFPlayerView * displayView;
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 
 @end
 
@@ -275,7 +275,7 @@
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSLock alloc] init];
+        self.coreLock = [[NSRecursiveLock alloc] init];
     }
     [self.coreLock lock];
 }
