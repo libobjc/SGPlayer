@@ -70,7 +70,7 @@
                 NSTimeInterval lastWillEnterForegroundTimeInterval = [SGPlayerBackgroundHandler lastWillEnterForegroundTimeInterval];
                 if (timeInterval - lastWillEnterForegroundTimeInterval > 1.5)
                 {
-                    [self.player interrupt];
+//                    [self.player interrupt];
                 }
             }
         }

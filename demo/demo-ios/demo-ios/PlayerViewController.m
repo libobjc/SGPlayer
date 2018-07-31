@@ -37,14 +37,15 @@
     self.player = [[SGFFPlayer alloc] init];
     self.player.delegate = self;
     [self.view insertSubview:self.player.view atIndex:0];
-    [self.player replaceWithContentURL:contentURL];
-    
-    
+    [self.player replaceWithURL:contentURL];
     
     self.player2 = [[SGFFPlayer alloc] init];
     self.player2.delegate = self;
     [self.view insertSubview:self.player2.view atIndex:0];
-    [self.player2 replaceWithContentURL:contentURL2];
+    [self.player2 replaceWithURL:contentURL2];
+    
+    [self.player play];
+    [self.player2 play];
 }
 
 - (void)viewDidLayoutSubviews
@@ -87,6 +88,7 @@
 
 - (void)playerDidChangePlaybackState:(SGFFPlayer *)player
 {
+    NSLog(@"%s, %ld", __func__, player.playbackState);
     NSString * text;
     switch (player.playbackState) {
         case SGPlayerPlaybackStateNone:
@@ -112,31 +114,30 @@
             NSLog(@"%s, %@", __func__, player.error);
             break;
     }
-    self.stateLabel.text = text;
-    
-    NSLog(@"%s, %ld", __func__, player.playbackState);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.stateLabel.text = text;
+    });
 }
 
 - (void)playerDidChangeLoadingState:(SGFFPlayer *)player
 {
     NSLog(@"%s, %ld", __func__, player.loadingState);
-    
-//    if (player.loadingState == SGPlayerLoadingStatePlayable && player.playbackState == SGPlayerLoadingStateNone)
-//    {
-//        [player play];
-//    }
 }
 
 - (void)playerDidChangePlaybackTime:(SGFFPlayer *)player
 {
     NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.playbackTime));
-    
-    if (!self.progressSilderTouching)
-    {
-        self.progressSilder.value = CMTimeGetSeconds(player.playbackTime) / CMTimeGetSeconds(player.duration);
-    }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.playbackTime)];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
+    CGFloat progress = CMTimeGetSeconds(player.playbackTime) / CMTimeGetSeconds(player.duration);
+    CGFloat playbackTime = CMTimeGetSeconds(player.playbackTime);
+    CGFloat duration = CMTimeGetSeconds(player.duration);
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if (!self.progressSilderTouching)
+        {
+            self.progressSilder.value = progress;
+        }
+        self.currentTimeLabel.text = [self timeStringFromSeconds:playbackTime];
+        self.totalTimeLabel.text = [self timeStringFromSeconds:duration];
+    });
 }
 
 - (void)playerDidChangeLoadedTime:(SGFFPlayer *)player

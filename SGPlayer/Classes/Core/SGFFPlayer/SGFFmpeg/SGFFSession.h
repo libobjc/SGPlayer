@@ -68,14 +68,14 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
 /**
  *  Streams.
  */
-- (void)openStreams;
-- (void)startReading;
-- (void)closeStreams;
+- (void)open;
+- (void)read;
+- (void)close;
 
 /**
  *  Seek.
  */
 - (BOOL)seekable;
-- (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end

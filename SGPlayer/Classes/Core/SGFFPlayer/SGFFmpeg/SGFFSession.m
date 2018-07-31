@@ -50,7 +50,7 @@
 
 #pragma mark - Streams
 
-- (void)openStreams
+- (void)open
 {
     if (self.state != SGFFSessionStateIdle)
     {
@@ -70,7 +70,7 @@
     [self.source openStreams];
 }
 
-- (void)startReading
+- (void)read
 {
     if (self.state != SGFFSessionStateOpened)
     {
@@ -80,7 +80,7 @@
     [self.source startReading];
 }
 
-- (void)closeStreams
+- (void)close
 {
     if (self.state == SGFFSessionStateClosed)
     {
@@ -106,7 +106,7 @@
     return NO;
 }
 
-- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
     switch (self.state)
     {
@@ -115,11 +115,7 @@
         case SGFFSessionStateOpened:
         case SGFFSessionStateClosed:
         case SGFFSessionStateFailed:
-            if (completionHandler)
-            {
-                completionHandler(NO);
-            }
-            return;
+            return NO;
         case SGFFSessionStateFinished:
             self.state = SGFFSessionStateReading;
             break;
@@ -138,6 +134,7 @@
             completionHandler(success);
         }
     }];
+    return YES;
 }
 
 #pragma mark - Setter/Getter

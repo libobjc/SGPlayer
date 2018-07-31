@@ -30,8 +30,8 @@
 
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 
-@property (nonatomic, copy, readonly) NSURL * contentURL;
-- (void)replaceWithContentURL:(NSURL *)contentURL;
+@property (nonatomic, copy, readonly) NSURL * URL;
+- (void)replaceWithURL:(NSURL *)URL;
 
 @property (nonatomic, assign, readonly) SGPlayerPlaybackState playbackState;
 @property (nonatomic, assign, readonly) SGPlayerLoadingState loadingState;
@@ -47,10 +47,9 @@
 - (void)play;
 - (void)pause;
 - (void)stop;
-- (void)interrupt;
 
 - (BOOL)seekable;
-- (void)seekToTime:(CMTime)time;
-- (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL finished))completionHandler;
+- (BOOL)seekToTime:(CMTime)time;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end
