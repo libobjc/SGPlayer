@@ -7,14 +7,14 @@
 //
 
 #import "SGFFAudioPlaybackOutput.h"
-#import "SGFFAudioStreamPlayer.h"
+#import "SGAudioStreamPlayer.h"
 #import "SGFFAudioBufferFrame.h"
 #import "SGTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
 #import "swresample.h"
 
-@interface SGFFAudioPlaybackOutput () <SGFFAudioStreamPlayerDelegate, NSLocking>
+@interface SGFFAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
 
 {
     void * _swrContextBufferData[SGFFAudioFrameMaxChannelCount];
@@ -23,7 +23,7 @@
 }
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGFFAudioStreamPlayer * audioPlayer;
+@property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGFFObjectQueue * frameQueue;
 
 @property (nonatomic, strong) SGFFAudioFrame * currentFrame;
@@ -58,7 +58,7 @@
 {
     if (self = [super init])
     {
-        self.audioPlayer = [[SGFFAudioStreamPlayer alloc] init];
+        self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
     return self;
@@ -311,9 +311,9 @@
     }
 }
 
-#pragma mark - SGFFAudioStreamPlayerDelegate
+#pragma mark - SGAudioStreamPlayerDelegate
 
-- (void)audioPlayer:(SGFFAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
+- (void)audioPlayer:(SGAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
 {
     BOOL hasNewFrame = NO;
     [self lock];
@@ -373,7 +373,7 @@
     }
 }
 
-- (void)audioStreamPlayer:(SGFFAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
     self.didUpdateTimeSynchronizer = YES;

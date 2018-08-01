@@ -884,12 +884,12 @@
 		9CE6842B200DCEE2007BD834 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
 		9CE6842C200DCEE2007BD834 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
 		9CE6842D200DCEE3007BD834 /* SGPlayerImp.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C478EF81E713A3200AD4289 /* SGPlayerImp.m */; };
-		9CE68430200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGFFAudioStreamPlayer.h */; };
-		9CE68431200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGFFAudioStreamPlayer.h */; };
-		9CE68432200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGFFAudioStreamPlayer.h */; };
-		9CE68433200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGFFAudioStreamPlayer.m */; };
-		9CE68434200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGFFAudioStreamPlayer.m */; };
-		9CE68435200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGFFAudioStreamPlayer.m */; };
+		9CE68430200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */; };
+		9CE68431200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */; };
+		9CE68432200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */; };
+		9CE68433200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */; };
+		9CE68434200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */; };
+		9CE68435200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */; };
 		9CE6F52F2004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F5302004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; };
 		9CE6F5312004D97D00D1F4C8 /* SGPLFColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */; };
@@ -1323,8 +1323,8 @@
 		9CCC5F19200C9B9400E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F1D200C9BA200E833DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		9CE6842E200DD12F007BD834 /* SGFFAudioStreamPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFFAudioStreamPlayer.h; sourceTree = "<group>"; };
-		9CE6842F200DD12F007BD834 /* SGFFAudioStreamPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFFAudioStreamPlayer.m; sourceTree = "<group>"; };
+		9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioStreamPlayer.h; sourceTree = "<group>"; };
+		9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioStreamPlayer.m; sourceTree = "<group>"; };
 		9CE6F4FF2004D62600D1F4C8 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFColor.h; sourceTree = "<group>"; };
 		9CE6F51B2004D97C00D1F4C8 /* SGPLFColor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPLFColor.m; sourceTree = "<group>"; };
@@ -1682,7 +1682,7 @@
 			children = (
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
 				9C5C98F820D26B350089C112 /* SGTime */,
-				9CBD0BA7201625010094CFC7 /* SGFFAudioStreamPlayer */,
+				9CBD0BA7201625010094CFC7 /* SGAudio */,
 				9CF15DF420119FBE00585326 /* SGFFOutput */,
 				9CF15DF320119D0300585326 /* SGFFData */,
 				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
@@ -1973,13 +1973,13 @@
 			path = SGFFDiscard;
 			sourceTree = "<group>";
 		};
-		9CBD0BA7201625010094CFC7 /* SGFFAudioStreamPlayer */ = {
+		9CBD0BA7201625010094CFC7 /* SGAudio */ = {
 			isa = PBXGroup;
 			children = (
-				9CE6842E200DD12F007BD834 /* SGFFAudioStreamPlayer.h */,
-				9CE6842F200DD12F007BD834 /* SGFFAudioStreamPlayer.m */,
+				9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */,
+				9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */,
 			);
-			path = SGFFAudioStreamPlayer;
+			path = SGAudio;
 			sourceTree = "<group>";
 		};
 		9CE6F5172004D97C00D1F4C8 /* SGPlatform */ = {
@@ -2386,7 +2386,7 @@
 				9C2C55AD2015D1D200131E15 /* SGFFPacket.h in Headers */,
 				9C478F5D1E713ABB00AD4289 /* SGMatrix.h in Headers */,
 				9C2535501FAB151500BBFA5C /* murmur3.h in Headers */,
-				9CE68430200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */,
+				9CE68430200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */,
 				9C25355F1FAB151500BBFA5C /* pixfmt.h in Headers */,
 				9C5AB6EA1E88E90B0021F460 /* SGGLTextureYUV420.h in Headers */,
 				9C2535231FAB151500BBFA5C /* hwcontext_qsv.h in Headers */,
@@ -2575,7 +2575,7 @@
 				9C47933E1E713B5C00AD4289 /* SGMacAudioDevice.h in Headers */,
 				9C1D222B201B1DA2005147FB /* SGFFDefineMap.h in Headers */,
 				9C25352D1FAB151500BBFA5C /* imgutils.h in Headers */,
-				9CE68431200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */,
+				9CE68431200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */,
 				9CF15E202011BC5400585326 /* SGFFAudioFrame.h in Headers */,
 				9C2535961FAB151500BBFA5C /* xtea.h in Headers */,
 				9C2534EE1FAB151500BBFA5C /* common.h in Headers */,
@@ -2729,7 +2729,7 @@
 				9C2536001FAB151500BBFA5C /* SGFFFormatContext2.h in Headers */,
 				9C25355B1FAB151500BBFA5C /* pixdesc.h in Headers */,
 				9C2534A11FAB151500BBFA5C /* xvmc.h in Headers */,
-				9CE68432200DD12F007BD834 /* SGFFAudioStreamPlayer.h in Headers */,
+				9CE68432200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */,
 				9C2535581FAB151500BBFA5C /* parseutils.h in Headers */,
 				9C478F591E713ABB00AD4289 /* SGFingerRotation.h in Headers */,
 				9C8D4E65200E0ACC00ED8A58 /* SGFFFormatContext.h in Headers */,
@@ -3131,7 +3131,7 @@
 				9C2536131FAB151500BBFA5C /* SGFFFrameQueue2.m in Sources */,
 				9C4793371E713B5400AD4289 /* SGAudioManager.m in Sources */,
 				9C1D2210201AC83F005147FB /* SGGLModelPool.m in Sources */,
-				9CE68433200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */,
+				9CE68433200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
 				9CF52CFA200F45D700950B81 /* SGFFStream.m in Sources */,
 				9C2536531FAB199500BBFA5C /* SGPlayer.m in Sources */,
 				9C4792F21E713B4900AD4289 /* SGGLNormalModel.m in Sources */,
@@ -3202,7 +3202,7 @@
 				9C4792E71E713B4900AD4289 /* SGDisplayView.m in Sources */,
 				9C4793381E713B5400AD4289 /* SGAudioManager.m in Sources */,
 				9CA0F56820E0E24000501478 /* SGDefines.m in Sources */,
-				9CE68434200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */,
+				9CE68434200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
 				9C1944F52019AC4000184416 /* SGGLInternalModel.m in Sources */,
 				9C1D2211201AC83F005147FB /* SGGLModelPool.m in Sources */,
 				9CE6842C200DCEE2007BD834 /* SGPlayerImp.m in Sources */,
@@ -3337,7 +3337,7 @@
 				9CE6F5512004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
 				9CB1F0A120178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9C1D222F201B1DA3005147FB /* SGFFDefineMap.m in Sources */,
-				9CE68435200DD12F007BD834 /* SGFFAudioStreamPlayer.m in Sources */,
+				9CE68435200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
 				9CE6F5612004D97D00D1F4C8 /* SGPLFGLContext.m in Sources */,
 				9C051BDB2012575E00CBB22C /* SGFFLog.m in Sources */,
 				9C3FB66F20E32EA5003442EE /* SGGLTimer.m in Sources */,
