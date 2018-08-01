@@ -1,13 +1,13 @@
 //
-//  SGPlayerMacro.h
+//  SGMacro.h
 //  SGPlayer
 //
 //  Created by Single on 16/6/29.
 //  Copyright © 2016年 single. All rights reserved.
 //
 
-#ifndef SGPlayerMacro_h
-#define SGPlayerMacro_h
+#ifndef SGMacro_h
+#define SGMacro_h
 
 #import <Foundation/Foundation.h>
 

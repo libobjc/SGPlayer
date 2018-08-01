@@ -7,7 +7,7 @@
 //
 
 #import "SGGLInternalProgram.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 @implementation SGGLInternalProgram
 

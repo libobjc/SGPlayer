@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "avformat.h"
 
 typedef NS_ENUM(NSUInteger, SGFFDecoderErrorCode) {

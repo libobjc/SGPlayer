@@ -8,7 +8,7 @@
 
 #import "SGDistortionRenderer.h"
 #import "SGDistortionModel.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 #define SG_GLES_STRINGIZE(x) #x
 

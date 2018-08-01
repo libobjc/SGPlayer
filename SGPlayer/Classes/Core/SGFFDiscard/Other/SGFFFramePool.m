@@ -7,7 +7,7 @@
 //
 
 #import "SGFFFramePool.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 @interface SGFFFramePool () <SGFFFrameDelegate>
 

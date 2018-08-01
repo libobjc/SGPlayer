@@ -26,7 +26,7 @@
 		9C0D000D200C74B00079D609 /* SGPLFView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5232004D97C00D1F4C8 /* SGPLFView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C0D000E200C74B00079D609 /* SGPlayerAudioInterruptHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */; };
 		9C0D000F200C74B00079D609 /* SGActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C329AA82005E3F800252B10 /* SGActivity.h */; };
-		9C0D0010200C74B00079D609 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
+		9C0D0010200C74B00079D609 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9C0D0012200C74B00079D609 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C0D0014200C74B00079D609 /* SGAudioManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4793321E713B5400AD4289 /* SGAudioManager.h */; };
 		9C0D001E200C74B20079D609 /* SGPLFDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F51D2004D97C00D1F4C8 /* SGPLFDisplayLink.m */; };
@@ -55,7 +55,7 @@
 		9C0D003E200C74B20079D609 /* SGPLFView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5232004D97C00D1F4C8 /* SGPLFView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C0D003F200C74B20079D609 /* SGPlayerAudioInterruptHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */; };
 		9C0D0040200C74B20079D609 /* SGActivity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C329AA82005E3F800252B10 /* SGActivity.h */; };
-		9C0D0041200C74B20079D609 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
+		9C0D0041200C74B20079D609 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9C0D0043200C74B20079D609 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C0D0045200C74B20079D609 /* SGAudioManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4793321E713B5400AD4289 /* SGAudioManager.h */; };
 		9C0DFFDD200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */; };
@@ -981,10 +981,10 @@
 		9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F57C2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
 		9CE6F57D2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
-		9CE6F5A22004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
-		9CE6F5A32004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
-		9CE6F5A42004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
-		9CE6F5A52004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */; };
+		9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
+		9CE6F5A32004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
+		9CE6F5A42004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
+		9CE6F5A52004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9CE6F5A82004ED9100D1F4C8 /* SGAudioManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4793321E713B5400AD4289 /* SGAudioManager.h */; };
 		9CE6F5A92004ED9400D1F4C8 /* SGAudioManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4793331E713B5400AD4289 /* SGAudioManager.m */; };
 		9CF15DE520118E1100585326 /* SGFFAsyncDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15DE320118E1100585326 /* SGFFAsyncDecoder.h */; };
@@ -1360,7 +1360,7 @@
 		9CE6F52C2004D97C00D1F4C8 /* SGPLFOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFOpenGL.h; sourceTree = "<group>"; };
 		9CE6F52D2004D97C00D1F4C8 /* SGPLFTargets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFTargets.h; sourceTree = "<group>"; };
 		9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlatform.h; sourceTree = "<group>"; };
-		9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayerMacro.h; sourceTree = "<group>"; };
+		9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGMacro.h; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CEFA6EA1E7125C800835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1975,6 +1975,10 @@
 		9CB1F09C2017828A00102A69 /* SGFFDiscard */ = {
 			isa = PBXGroup;
 			children = (
+				9C569F672008C3A6007A07FF /* SGPlayerBackgroundHandler.h */,
+				9C569F682008C3A6007A07FF /* SGPlayerBackgroundHandler.m */,
+				9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */,
+				9C0DFFDC200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.m */,
 				9C478EF71E713A3200AD4289 /* SGPlayerImp.h */,
 				9C478EF81E713A3200AD4289 /* SGPlayerImp.m */,
 				9C478EFD1E713A3200AD4289 /* SGPlayerTrack.h */,
@@ -2056,13 +2060,9 @@
 		9CE6F5912004E37600D1F4C8 /* SGCommon */ = {
 			isa = PBXGroup;
 			children = (
-				9CE6F5A12004E7ED00D1F4C8 /* SGPlayerMacro.h */,
+				9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */,
 				9C329AA82005E3F800252B10 /* SGActivity.h */,
 				9C329AA92005E3F800252B10 /* SGActivity.m */,
-				9C569F672008C3A6007A07FF /* SGPlayerBackgroundHandler.h */,
-				9C569F682008C3A6007A07FF /* SGPlayerBackgroundHandler.m */,
-				9C0DFFDB200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h */,
-				9C0DFFDC200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.m */,
 				9CE68404200DA3BB007BD834 /* SGPlayerUtil.h */,
 				9CE68405200DA3BB007BD834 /* SGPlayerUtil.m */,
 			);
@@ -2163,7 +2163,7 @@
 				9C0D003E200C74B20079D609 /* SGPLFView.h in Headers */,
 				9C0D003F200C74B20079D609 /* SGPlayerAudioInterruptHandler.h in Headers */,
 				9C0D0040200C74B20079D609 /* SGActivity.h in Headers */,
-				9C0D0041200C74B20079D609 /* SGPlayerMacro.h in Headers */,
+				9C0D0041200C74B20079D609 /* SGMacro.h in Headers */,
 				9C0D0043200C74B20079D609 /* SGPlatform.h in Headers */,
 				9C0D0045200C74B20079D609 /* SGAudioManager.h in Headers */,
 			);
@@ -2188,7 +2188,7 @@
 				9C0D000D200C74B00079D609 /* SGPLFView.h in Headers */,
 				9C0D000E200C74B00079D609 /* SGPlayerAudioInterruptHandler.h in Headers */,
 				9C0D000F200C74B00079D609 /* SGActivity.h in Headers */,
-				9C0D0010200C74B00079D609 /* SGPlayerMacro.h in Headers */,
+				9C0D0010200C74B00079D609 /* SGMacro.h in Headers */,
 				9C0D0012200C74B00079D609 /* SGPlatform.h in Headers */,
 				9C0D0014200C74B00079D609 /* SGAudioManager.h in Headers */,
 			);
@@ -2213,7 +2213,7 @@
 				9CE6F5562004D97D00D1F4C8 /* SGPLFView.h in Headers */,
 				9C0DFFE0200C5BFD0079D609 /* SGPlayerAudioInterruptHandler.h in Headers */,
 				9C329AAD2005E3F800252B10 /* SGActivity.h in Headers */,
-				9CE6F5A52004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
+				9CE6F5A52004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9C569F662008B849007A07FF /* SGPlatform.h in Headers */,
 				9CE6F5A82004ED9100D1F4C8 /* SGAudioManager.h in Headers */,
 			);
@@ -2314,7 +2314,7 @@
 				9CF15DED20118FB000585326 /* SGFFAsyncFFDecoder.h in Headers */,
 				9C2534781FAB151500BBFA5C /* d3d11va.h in Headers */,
 				9C2534961FAB151500BBFA5C /* version.h in Headers */,
-				9CE6F5A22004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
+				9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9C2535831FAB151500BBFA5C /* time.h in Headers */,
 				9C25347B1FAB151500BBFA5C /* dirac.h in Headers */,
 				9C2535411FAB151500BBFA5C /* mastering_display_metadata.h in Headers */,
@@ -2514,7 +2514,7 @@
 				9CF15E082011AE0700585326 /* SGFFAudioPlaybackOutput.h in Headers */,
 				9CE6F56C2004D97D00D1F4C8 /* SGPLFGLViewController.h in Headers */,
 				9C2534D91FAB151500BBFA5C /* blowfish.h in Headers */,
-				9CE6F5A32004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
+				9CE6F5A32004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9CF52CF8200F45D700950B81 /* SGFFStream.h in Headers */,
 				9C2535391FAB151500BBFA5C /* log.h in Headers */,
 				9C2536111FAB151500BBFA5C /* SGFFFrameQueue2.h in Headers */,
@@ -2745,7 +2745,7 @@
 				9C25357F1FAB151500BBFA5C /* tea.h in Headers */,
 				9C478F4E1E713AA800AD4289 /* SGYUVTools.h in Headers */,
 				9CE6842A200DCEDB007BD834 /* SGPlayerImp.h in Headers */,
-				9CE6F5A42004E7ED00D1F4C8 /* SGPlayerMacro.h in Headers */,
+				9CE6F5A42004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9C2536061FAB151500BBFA5C /* SGFFFrame2.h in Headers */,
 				9C25359D1FAB151500BBFA5C /* version.h in Headers */,
 				9C329AAC2005E3F800252B10 /* SGActivity.h in Headers */,

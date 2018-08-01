@@ -11,7 +11,7 @@
 #import "SGFFAudioFFDecoder.h"
 #import "SGFFVideoFFDecoder.h"
 #import "SGFFVideoAVDecoder.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGFFTime.h"
 #import "SGFFLog.h"
 

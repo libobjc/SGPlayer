@@ -7,7 +7,7 @@
 //
 
 #import "SGGLViewController.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGGLFrame.h"
 #import "SGGLProgramNV12.h"
 #import "SGGLProgramYUV420.h"

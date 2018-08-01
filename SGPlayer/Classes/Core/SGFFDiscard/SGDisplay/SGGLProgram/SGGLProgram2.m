@@ -7,7 +7,7 @@
 //
 
 #import "SGGLProgram2.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 @interface SGGLProgram2 ()
 

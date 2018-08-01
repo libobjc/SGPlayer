@@ -7,7 +7,7 @@
 //
 
 #import "SGDisplayView.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGGLViewController.h"
 #import "SGGLFrame.h"
 #import "SGFingerRotation.h"

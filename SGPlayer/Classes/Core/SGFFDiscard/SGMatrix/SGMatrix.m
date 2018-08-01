@@ -7,7 +7,7 @@
 //
 
 #import "SGMatrix.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 #if SGPLATFORM_TARGET_OS_IPHONE
 #import "SGSensors.h"

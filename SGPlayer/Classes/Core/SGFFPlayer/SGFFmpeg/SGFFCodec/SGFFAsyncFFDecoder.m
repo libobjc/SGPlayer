@@ -8,7 +8,7 @@
 
 #import "SGFFAsyncFFDecoder.h"
 #import "SGFFError.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGFFAudioFFFrame.h"
 #import "SGFFVideoFFFrame.h"
 

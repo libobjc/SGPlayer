@@ -7,7 +7,7 @@
 //
 
 #import "SGFFLog.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 
 void SGFFLogCallback(void * context, int level, const char * format, va_list args)

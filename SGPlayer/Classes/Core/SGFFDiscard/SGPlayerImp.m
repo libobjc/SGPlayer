@@ -7,7 +7,7 @@
 //
 
 #import "SGPlayerImp.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 //#import "SGPlayerNotification.h"
 #import "SGDisplayView.h"
 //#import "SGAVPlayer.h"

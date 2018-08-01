@@ -8,7 +8,7 @@
 
 #import "SGPlatform.h"
 #import "SGGLTextureNV12.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGYUVTools.h"
 
 #if SGPLATFORM_TARGET_OS_MAC

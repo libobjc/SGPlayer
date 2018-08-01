@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
 #import "SGDefines.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 
 #if SGPLATFORM_TARGET_OS_MAC
 #import "SGMacAudioSession.h"

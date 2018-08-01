@@ -11,7 +11,7 @@
 #import "SGFFAudioPlaybackOutput.h"
 #import "SGFFVideoPlaybackOutput.h"
 
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGPlayerUtil.h"
 #import "SGActivity.h"
 

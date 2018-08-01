@@ -10,7 +10,7 @@
 #import "SGFFFrameQueue2.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import <Accelerate/Accelerate.h>
 #import "swscale.h"
 #import "swresample.h"

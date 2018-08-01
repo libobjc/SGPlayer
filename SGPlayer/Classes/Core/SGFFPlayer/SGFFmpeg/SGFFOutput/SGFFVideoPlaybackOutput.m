@@ -7,7 +7,7 @@
 //
 
 #import "SGFFVideoPlaybackOutput.h"
-#import "SGPlayerMacro.h"
+#import "SGMacro.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLTimer.h"
 #import "SGGLView.h"
