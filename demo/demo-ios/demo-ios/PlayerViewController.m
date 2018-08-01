@@ -95,30 +95,30 @@
     [self.player2 seekToTime:time2];
 }
 
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlayerPlaybackState)playbackState
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)playbackState
 {
     NSLog(@"%s, %ld", __func__, playbackState);
     NSString * text;
     switch (playbackState) {
-        case SGPlayerPlaybackStateNone:
+        case SGPlaybackStateNone:
             text = @"Idle";
             break;
-        case SGPlayerPlaybackStatePlaying:
+        case SGPlaybackStatePlaying:
             text = @"Playing";
             break;
-        case SGPlayerPlaybackStateSeeking:
+        case SGPlaybackStateSeeking:
             text = @"Seeking";
             break;
-        case SGPlayerPlaybackStatePaused:
+        case SGPlaybackStatePaused:
             text = @"Paused";
             break;
-        case SGPlayerPlaybackStateStopped:
+        case SGPlaybackStateStopped:
             text = @"Stopped";
             break;
-        case SGPlayerPlaybackStateFinished:
+        case SGPlaybackStateFinished:
             text = @"Finished";
             break;
-        case SGPlayerPlaybackStateFailed:
+        case SGPlaybackStateFailed:
             text = @"Failed";
             NSLog(@"%s, %@", __func__, player.error);
             break;
@@ -126,7 +126,7 @@
     self.stateLabel.text = text;
 }
 
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGPlayerLoadingState)loadingState
+- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState
 {
     NSLog(@"%s, %ld", __func__, loadingState);
 }

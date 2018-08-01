@@ -19,7 +19,7 @@
 
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
 
-@property (nonatomic, assign) SGPlayerPlaybackState playbackStateBeforSeeking;
+@property (nonatomic, assign) SGPlaybackState playbackStateBeforSeeking;
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGFFSession * session;
@@ -80,20 +80,20 @@
     [SGPlayerActivity becomeActive:self];
     switch (self.playbackState)
     {
-        case SGPlayerPlaybackStateFinished:
+        case SGPlaybackStateFinished:
             if (self.session.state == SGFFSessionStateFinished &&
                 CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
             {
                 [self.session seekToTime:kCMTimeZero completionHandler:nil];
             }
             break;
-        case SGPlayerPlaybackStateFailed:
+        case SGPlaybackStateFailed:
             [self replaceWithURL:self.URL];
             break;
         default:
             break;
     }
-    self.playbackState = SGPlayerPlaybackStatePlaying;
+    self.playbackState = SGPlaybackStatePlaying;
     [self unlock];
 }
 
@@ -103,14 +103,14 @@
     [SGPlayerActivity resignActive:self];
     switch (self.playbackState)
     {
-        case SGPlayerPlaybackStateStopped:
-        case SGPlayerPlaybackStateFinished:
-        case SGPlayerPlaybackStateFailed:
+        case SGPlaybackStateStopped:
+        case SGPlaybackStateFinished:
+        case SGPlaybackStateFailed:
             return;
         default:
             break;
     }
-    self.playbackState = SGPlayerPlaybackStatePaused;
+    self.playbackState = SGPlaybackStatePaused;
     [self unlock];
 }
 
@@ -119,7 +119,7 @@
     [self lock];
     [SGPlayerActivity resignActive:self];
     [self closeSession];
-    self.playbackState = SGPlayerPlaybackStateStopped;
+    self.playbackState = SGPlaybackStateStopped;
     [self unlock];
 }
 
@@ -163,14 +163,14 @@
 - (void)playOrPause
 {
     [self lock];
-    if (self.playbackState != SGPlayerPlaybackStatePlaying)
+    if (self.playbackState != SGPlaybackStatePlaying)
     {
         [self.audioOutput pause];
         [self unlock];
         return;
     }
-    if (self.loadingState != SGPlayerLoadingStateLoading &&
-        self.loadingState != SGPlayerLoadingStateFinished)
+    if (self.loadingState != SGLoadingStateLoading &&
+        self.loadingState != SGLoadingStateFinished)
     {
         [self.audioOutput pause];
         [self unlock];
@@ -189,7 +189,7 @@
 - (void)startSeeking
 {
     [self lock];
-    self.playbackState = SGPlayerPlaybackStateSeeking;
+    self.playbackState = SGPlaybackStateSeeking;
     [self unlock];
 }
 
@@ -218,16 +218,16 @@
     }
 }
 
-- (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
+- (void)setPlaybackState:(SGPlaybackState)playbackState
 {
     [self lock];
     if (_playbackState != playbackState)
     {
-        SGPlayerPlaybackState previousState = _playbackState;
+        SGPlaybackState previousState = _playbackState;
         _playbackState = playbackState;
         switch (_playbackState)
         {
-            case SGPlayerPlaybackStateSeeking:
+            case SGPlaybackStateSeeking:
                 self.playbackStateBeforSeeking = previousState;
                 break;
             default:
@@ -235,8 +235,8 @@
         }
         switch (previousState)
         {
-            case SGPlayerPlaybackStateSeeking:
-                self.playbackStateBeforSeeking = SGPlayerPlaybackStateNone;
+            case SGPlaybackStateSeeking:
+                self.playbackStateBeforSeeking = SGPlaybackStateNone;
                 break;
             default:
                 break;
@@ -252,7 +252,7 @@
     [self unlock];
 }
 
-- (void)setLoadingState:(SGPlayerLoadingState)loadingState
+- (void)setLoadingState:(SGLoadingState)loadingState
 {
     [self lock];
     if (_loadingState != loadingState)
@@ -284,7 +284,7 @@
     [self lock];
     [SGPlayerActivity resignActive:self];
     [self closeSession];
-    self.playbackState = SGPlayerPlaybackStateNone;
+    self.playbackState = SGPlaybackStateNone;
     [self unlock];
 }
 
@@ -307,7 +307,7 @@
     if (session.state == SGFFSourceStateOpened)
     {
         [self.session read];
-        self.loadingState = SGPlayerLoadingStateLoading;
+        self.loadingState = SGLoadingStateLoading;
     }
     [self unlock];
 }
@@ -317,13 +317,13 @@
     [self lock];
     if (self.session.state == SGFFSessionStateFinished)
     {
-        self.loadingState = SGPlayerLoadingStateFinished;
+        self.loadingState = SGLoadingStateFinished;
     }
     [self playOrPause];
     if (self.session.state == SGFFSessionStateFinished &&
         CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
     {
-        self.playbackState = SGPlayerPlaybackStateFinished;
+        self.playbackState = SGPlaybackStateFinished;
     }
     [self unlock];
 }

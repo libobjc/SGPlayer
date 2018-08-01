@@ -44,7 +44,7 @@
 //        self.decoder = [SGPlayerDecoder decoderByDefault];
 //        self.contentURL = nil;
 //        self.videoType = SGVideoTypeNormal;
-////        self.backgroundMode = SGPlayerBackgroundModeAutoPlayAndPause;
+////        self.backgroundMode = SGBackgroundModeAutoPlayAndPause;
 //        self.displayMode = SGDisplayModePlane;
 //        self.viewGravityMode = SGGravityModeResizeAspect;
 //        self.playableBufferInterval = 2.f;

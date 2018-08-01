@@ -14,31 +14,31 @@
 #define SGPLAYER_EXTERN extern
 #endif
 
-typedef NS_ENUM(NSUInteger, SGPlayerPlaybackState)
+typedef NS_ENUM(NSUInteger, SGPlaybackState)
 {
-    SGPlayerPlaybackStateNone,
-    SGPlayerPlaybackStatePlaying,
-    SGPlayerPlaybackStateSeeking,
-    SGPlayerPlaybackStatePaused,
-    SGPlayerPlaybackStateStopped,
-    SGPlayerPlaybackStateFinished,
-    SGPlayerPlaybackStateFailed,
+    SGPlaybackStateNone,
+    SGPlaybackStatePlaying,
+    SGPlaybackStateSeeking,
+    SGPlaybackStatePaused,
+    SGPlaybackStateStopped,
+    SGPlaybackStateFinished,
+    SGPlaybackStateFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGPlayerLoadingState)
+typedef NS_ENUM(NSUInteger, SGLoadingState)
 {
-    SGPlayerLoadingStateNone,
-    SGPlayerLoadingStateLoading,
-    SGPlayerLoadingStatePaused,
-    SGPlayerLoadingStateStoped,
-    SGPlayerLoadingStateFinished,
-    SGPlayerLoadingStateFailed,
+    SGLoadingStateNone,
+    SGLoadingStateLoading,
+    SGLoadingStatePaused,
+    SGLoadingStateStoped,
+    SGLoadingStateFinished,
+    SGLoadingStateFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGPlayerBackgroundMode)
+typedef NS_ENUM(NSUInteger, SGBackgroundMode)
 {
-    SGPlayerBackgroundModeAutoPlayAndPause,
-    SGPlayerBackgroundModeContinue,
+    SGBackgroundModeAutoPlayAndPause,
+    SGBackgroundModeContinue,
 };
 
 typedef NS_ENUM(NSUInteger, SGMediaType)

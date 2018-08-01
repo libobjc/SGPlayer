@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 //@property (nonatomic, assign, readonly) NSTimeInterval duration;
 //@property (nonatomic, assign, readonly) NSTimeInterval playableTime;
 //
-////@property (nonatomic, assign) SGPlayerBackgroundMode backgroundMode;    // background mode
+////@property (nonatomic, assign) SGBackgroundMode backgroundMode;    // background mode
 //@property (nonatomic, assign) NSTimeInterval playableBufferInterval;    // default is 2s
 //@property (nonatomic, assign) CGFloat volume;       // default is 1
 //

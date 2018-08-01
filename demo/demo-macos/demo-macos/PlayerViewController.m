@@ -72,28 +72,28 @@
     
     NSString * text;
     switch (playbackStateModel.current) {
-        case SGPlayerPlaybackStateNone:
+        case SGPlaybackStateNone:
             text = @"Idle";
             break;
-        case SGPlayerPlaybackStatePlaying:
+        case SGPlaybackStatePlaying:
             text = @"Playing";
             break;
-        case SGPlayerPlaybackStateSeeking:
+        case SGPlaybackStateSeeking:
             text = @"Seeking";
             break;
-        case SGPlayerPlaybackStatePaused:
+        case SGPlaybackStatePaused:
             text = @"Paused";
             break;
-        case SGPlayerPlaybackStateInterrupted:
+        case SGPlaybackStateInterrupted:
             text = @"Interrupted";
             break;
-        case SGPlayerPlaybackStateStopped:
+        case SGPlaybackStateStopped:
             text = @"Stopped";
             break;
-        case SGPlayerPlaybackStateFinished:
+        case SGPlaybackStateFinished:
             text = @"Finished";
             break;
-        case SGPlayerPlaybackStateFailed:
+        case SGPlaybackStateFailed:
             text = @"Failed";
             break;
     }
@@ -108,7 +108,7 @@
     
     NSLog(@"%s, %ld", __func__, loadStateModel.current);
     
-    if (loadStateModel.current == SGPlayerLoadingStatePlayable && self.player.playbackState == SGPlayerLoadingStateNone) {
+    if (loadStateModel.current == SGLoadingStatePlayable && self.player.playbackState == SGLoadingStateNone) {
         [self.player play];
     }
 }

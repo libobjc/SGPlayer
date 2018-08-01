@@ -73,9 +73,9 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 //    if (self.shouldAutoPlay)
 //    {
 //        self.shouldAutoPlay = NO;
-//        if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+//        if (self.player.backgroundMode == SGBackgroundModeAutoPlayAndPause)
 //        {
-//            if (self.player.playbackState == SGPlayerPlaybackStatePaused)
+//            if (self.player.playbackState == SGPlaybackStatePaused)
 //            {
 //                [self.player play];
 //            }
@@ -86,9 +86,9 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     lastDidEnterBackgroundTimeInterval = [NSDate date].timeIntervalSince1970;
-//    if (self.player.backgroundMode == SGPlayerBackgroundModeAutoPlayAndPause)
+//    if (self.player.backgroundMode == SGBackgroundModeAutoPlayAndPause)
 //    {
-//        if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
+//        if (self.player.playbackState == SGPlaybackStatePlaying)
 //        {
 //            self.shouldAutoPlay = YES;
 //            [self.player pause];

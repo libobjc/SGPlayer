@@ -63,7 +63,7 @@
     {
         case AVAudioSessionInterruptionTypeBegan:
         {
-            if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
+            if (self.player.playbackState == SGPlaybackStatePlaying)
             {
                 // Fix : Sometimes will receive interruption notification when enter foreground.
                 NSTimeInterval timeInterval = [[NSDate date] timeIntervalSince1970];
@@ -79,7 +79,7 @@
         {
             if (option & AVAudioSessionInterruptionOptionShouldResume)
             {
-//                if (self.player.playbackState == SGPlayerPlaybackStateInterrupted)
+//                if (self.player.playbackState == SGPlaybackStateInterrupted)
 //                {
 //                    [self.player play];
 //                }
@@ -97,7 +97,7 @@
     switch (reason) {
         case AVAudioSessionRouteChangeReasonOldDeviceUnavailable:
         {
-            if (self.player.playbackState == SGPlayerPlaybackStatePlaying)
+            if (self.player.playbackState == SGPlaybackStatePlaying)
             {
                 [self.player pause];
             }
