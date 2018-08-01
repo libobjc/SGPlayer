@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -16,6 +17,7 @@
                 <outlet property="stateLabel" destination="YYV-yF-5Pw" id="yVZ-lS-wi8"/>
                 <outlet property="totalTimeLabel" destination="N9a-ry-WfX" id="oQt-ud-J66"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="view1" destination="yNR-k8-i8k" id="Jbf-bt-Q7U"/>
             </connections>
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
@@ -23,6 +25,10 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yNR-k8-i8k">
+                    <rect key="frame" x="0.0" y="50" width="375" height="283.5"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                </view>
                 <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="KvZ-4g-DxG">
                     <rect key="frame" x="79" y="617" width="217" height="31"/>
                     <constraints>
@@ -108,6 +114,8 @@
             <constraints>
                 <constraint firstItem="z4U-C2-ln8" firstAttribute="top" secondItem="B1q-g9-Vrs" secondAttribute="bottom" constant="15" id="183-aD-aqE"/>
                 <constraint firstItem="1Ni-i3-gt9" firstAttribute="leading" secondItem="B1q-g9-Vrs" secondAttribute="leading" id="3MQ-dU-cVd"/>
+                <constraint firstItem="yNR-k8-i8k" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="6rf-kL-edG"/>
+                <constraint firstAttribute="trailing" secondItem="yNR-k8-i8k" secondAttribute="trailing" id="9hE-5W-Sz8"/>
                 <constraint firstItem="z4U-C2-ln8" firstAttribute="centerY" secondItem="KvZ-4g-DxG" secondAttribute="centerY" id="A1B-uY-Tn2"/>
                 <constraint firstItem="N9a-ry-WfX" firstAttribute="centerY" secondItem="KvZ-4g-DxG" secondAttribute="centerY" id="A86-3J-HK5"/>
                 <constraint firstItem="Fl7-Yh-lyd" firstAttribute="width" secondItem="B1q-g9-Vrs" secondAttribute="width" id="CWB-pb-Nhr"/>
@@ -122,6 +130,8 @@
                 <constraint firstItem="YYV-yF-5Pw" firstAttribute="trailing" secondItem="N9a-ry-WfX" secondAttribute="trailing" id="eX4-4I-de1"/>
                 <constraint firstItem="Fl7-Yh-lyd" firstAttribute="leading" secondItem="B1q-g9-Vrs" secondAttribute="trailing" constant="10" id="n10-sF-qz8"/>
                 <constraint firstItem="z4U-C2-ln8" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="16" id="n7Z-Z9-At4"/>
+                <constraint firstItem="yNR-k8-i8k" firstAttribute="top" secondItem="1Ni-i3-gt9" secondAttribute="bottom" id="nbf-KY-d2F"/>
+                <constraint firstAttribute="centerY" secondItem="yNR-k8-i8k" secondAttribute="bottom" id="r7r-UT-kwc"/>
                 <constraint firstItem="1Ni-i3-gt9" firstAttribute="height" secondItem="B1q-g9-Vrs" secondAttribute="height" id="st4-zN-kd8"/>
                 <constraint firstItem="1Ni-i3-gt9" firstAttribute="width" secondItem="B1q-g9-Vrs" secondAttribute="width" id="tmD-hf-XCs"/>
                 <constraint firstItem="N9a-ry-WfX" firstAttribute="leading" secondItem="KvZ-4g-DxG" secondAttribute="trailing" constant="5" id="zfb-jc-5uD"/>

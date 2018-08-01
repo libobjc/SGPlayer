@@ -8,15 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
+#import <UIKit/UIKit.h>
 
 #if __has_include(<SGPlayer/SGPlayer.h>)
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGDefines.h>
-#import <SGPlayer/SGFFPlayerView.h>
 #else
 #import "SGDefines.h"
-#import "SGFFPlayerView.h"
 #endif
 
 @class SGPlayer;
@@ -48,7 +47,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @property (nonatomic, copy, readonly) NSError * error;
 
-@property (nonatomic, strong, readonly) SGFFPlayerView * view;
+@property (nonatomic, strong) UIView * view;
 
 - (void)play;
 - (void)pause;

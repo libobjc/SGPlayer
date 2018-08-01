@@ -8,15 +8,12 @@
 
 #import "SGPlayer.h"
 #import "SGFFSession.h"
-#import "SGFFPlayerView.h"
 #import "SGFFAudioPlaybackOutput.h"
 #import "SGFFVideoPlaybackOutput.h"
-#import "SGFFPlayerView.h"
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
 #import "SGPlayerActivity.h"
-
 
 @interface SGPlayer () <NSLocking, SGFFSessionDelegate>
 
@@ -28,7 +25,6 @@
 @property (nonatomic, strong) SGFFSession * session;
 @property (nonatomic, strong) SGFFAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGFFVideoPlaybackOutput * videoOutput;
-@property (nonatomic, strong) SGFFPlayerView * displayView;
 
 @end
 
@@ -41,7 +37,7 @@
 {
     if (self = [super init])
     {
-        self.displayView = [[SGFFPlayerView alloc] initWithFrame:CGRectZero];
+        
     }
     return self;
 }
@@ -67,7 +63,7 @@
     self.videoOutput = [[SGFFVideoPlaybackOutput alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
-    self.displayView.view = self.videoOutput.view;
+    [self updateView];
     self.session = [[SGFFSession alloc] init];
     self.session.URL = self.URL;
     self.session.delegate = self;
@@ -204,7 +200,23 @@
     [self unlock];
 }
 
+- (void)updateView
+{
+    [self.videoOutput.view removeFromSuperview];
+    self.videoOutput.view.frame = _view.bounds;
+    [_view addSubview:self.videoOutput.view];
+}
+
 #pragma mark - Setter & Getter
+
+- (void)setView:(UIView *)view
+{
+    if (_view != view)
+    {
+        _view = view;
+        [self updateView];
+    }
+}
 
 - (void)setPlaybackState:(SGPlayerPlaybackState)playbackState
 {
@@ -254,11 +266,6 @@
         }
     }
     [self unlock];
-}
-
-- (SGPLFView *)view
-{
-    return self.displayView;
 }
 
 - (CMTime)duration

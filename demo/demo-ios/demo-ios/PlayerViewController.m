@@ -14,6 +14,7 @@
 
 @property (nonatomic, strong) SGPlayer * player;
 @property (nonatomic, strong) SGPlayer * player2;
+@property (weak, nonatomic) IBOutlet UIView * view1;
 
 @property (weak, nonatomic) IBOutlet UILabel * stateLabel;
 @property (weak, nonatomic) IBOutlet UISlider * progressSilder;
@@ -36,7 +37,7 @@
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
-    [self.view insertSubview:self.player.view atIndex:0];
+    self.player.view = self.view1;
     [self.player replaceWithURL:contentURL];
     
 //    self.player2 = [[SGPlayer alloc] init];
