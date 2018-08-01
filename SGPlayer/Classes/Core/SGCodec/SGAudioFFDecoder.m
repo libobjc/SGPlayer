@@ -1,20 +1,20 @@
 //
-//  SGFFAudioFFDecoder.m
+//  SGAudioFFDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAudioFFDecoder.h"
+#import "SGAudioFFDecoder.h"
 #import "SGAudioFFFrame.h"
 #import "SGObjectPool.h"
 
-@interface SGFFAudioFFDecoder ()
+@interface SGAudioFFDecoder ()
 
 @end
 
-@implementation SGFFAudioFFDecoder
+@implementation SGAudioFFDecoder
 
 - (SGMediaType)mediaType
 {

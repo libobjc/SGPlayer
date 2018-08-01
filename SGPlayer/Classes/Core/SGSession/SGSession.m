@@ -8,20 +8,20 @@
 
 #import "SGSession.h"
 #import "SGFormatContext.h"
-#import "SGFFAudioFFDecoder.h"
-#import "SGFFVideoFFDecoder.h"
-#import "SGFFVideoAVDecoder.h"
+#import "SGAudioFFDecoder.h"
+#import "SGVideoFFDecoder.h"
+#import "SGVideoAVDecoder.h"
 #import "SGMacro.h"
 #import "SGTime.h"
 #import "SGFFLog.h"
 
-@interface SGSession () <SGSourceDelegate, SGFFDecoderDelegate, SGOutputDelegate>
+@interface SGSession () <SGSourceDelegate, SGDecoderDelegate, SGOutputDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @property (nonatomic, strong) id <SGSource> source;
-@property (nonatomic, strong) id <SGFFDecoder> audioDecoder;
-@property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
+@property (nonatomic, strong) id <SGDecoder> audioDecoder;
+@property (nonatomic, strong) id <SGDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGOutput> audioOutput;
 @property (nonatomic, strong) id <SGOutput> videoOutput;
 @property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
@@ -342,7 +342,7 @@
             {
                 if (!self.audioDecoder)
                 {
-                    SGFFAudioFFDecoder * audioDecoder = [[SGFFAudioFFDecoder alloc] init];
+                    SGAudioFFDecoder * audioDecoder = [[SGAudioFFDecoder alloc] init];
                     audioDecoder.index = stream.index;
                     audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
                     audioDecoder.codecpar = stream.coreStream->codecpar;
@@ -357,12 +357,12 @@
             {
                 if (!self.videoDecoder)
                 {
-                    Class codecClass = [SGFFVideoFFDecoder class];
+                    Class codecClass = [SGVideoFFDecoder class];
                     if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
                     {
-                        codecClass = [SGFFVideoAVDecoder class];
+                        codecClass = [SGVideoAVDecoder class];
                     }
-                    SGFFAsyncDecoder * videoDecoder = [[codecClass alloc] init];
+                    SGAsyncDecoder * videoDecoder = [[codecClass alloc] init];
                     videoDecoder.index = stream.index;
                     videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
                     videoDecoder.codecpar = stream.coreStream->codecpar;
@@ -395,14 +395,14 @@
     self.state = SGSessionStateFinished;
 }
 
-#pragma mark - SGFFDecoderDelegate
+#pragma mark - SGDecoderDelegate
 
-- (void)decoderDidChangeCapacity:(id <SGFFDecoder>)decoder
+- (void)decoderDidChangeCapacity:(id <SGDecoder>)decoder
 {
     [self updateCapacity];
 }
 
-- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame
+- (void)decoder:(id <SGDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame
 {
     if (decoder == self.audioDecoder)
     {

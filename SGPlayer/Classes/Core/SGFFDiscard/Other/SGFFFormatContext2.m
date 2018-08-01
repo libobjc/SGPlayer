@@ -71,7 +71,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     
     if (videoError && audioError)
     {
-        if (videoError.code == SGFFDecoderErrorCodeStreamNotFound && audioError.code != SGFFDecoderErrorCodeStreamNotFound)
+        if (videoError.code == SGDecoderErrorCodeStreamNotFound && audioError.code != SGDecoderErrorCodeStreamNotFound)
         {
             self.error = audioError;
         }
@@ -92,7 +92,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     if (!_format_context)
     {
         reslut = -1;
-        error = [NSError errorWithDomain:@"SGFFDecoderErrorCodeFormatCreate error" code:SGFFDecoderErrorCodeFormatCreate userInfo:nil];
+        error = [NSError errorWithDomain:@"SGDecoderErrorCodeFormatCreate error" code:SGDecoderErrorCodeFormatCreate userInfo:nil];
         return error;
     }
     
@@ -112,7 +112,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     if (options) {
         av_dict_free(&options);
     }
-    error = SGFFCheckErrorCode(reslut, SGFFDecoderErrorCodeFormatOpenInput);
+    error = SGFFCheckErrorCode(reslut, SGDecoderErrorCodeFormatOpenInput);
     if (error || !_format_context)
     {
         if (_format_context)
@@ -123,7 +123,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     
     reslut = avformat_find_stream_info(_format_context, NULL);
-    error = SGFFCheckErrorCode(reslut, SGFFDecoderErrorCodeFormatFindStreamInfo);
+    error = SGFFCheckErrorCode(reslut, SGDecoderErrorCodeFormatFindStreamInfo);
     if (error || !_format_context)
     {
         if (_format_context)
@@ -209,7 +209,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     else
     {
-        error = [NSError errorWithDomain:@"video stream not found" code:SGFFDecoderErrorCodeStreamNotFound userInfo:nil];
+        error = [NSError errorWithDomain:@"video stream not found" code:SGDecoderErrorCodeStreamNotFound userInfo:nil];
         return error;
     }
     
@@ -239,7 +239,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
     else
     {
-        error = [NSError errorWithDomain:@"audio stream not found" code:SGFFDecoderErrorCodeStreamNotFound userInfo:nil];
+        error = [NSError errorWithDomain:@"audio stream not found" code:SGDecoderErrorCodeStreamNotFound userInfo:nil];
         return error;
     }
     
@@ -256,13 +256,13 @@ static int ffmpeg_interrupt_callback(void *ctx)
     if (!codec_context)
     {
         error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@ codec context create error", domain]
-                                    code:SGFFDecoderErrorCodeCodecContextCreate
+                                    code:SGDecoderErrorCodeCodecContextCreate
                                 userInfo:nil];
         return error;
     }
     
     result = avcodec_parameters_to_context(codec_context, stream->codecpar);
-    error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecContextSetParam);
+    error = SGFFCheckErrorCode(result, SGDecoderErrorCodeCodecContextSetParam);
     if (error)
     {
         avcodec_free_context(&codec_context);
@@ -275,7 +275,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
     {
         avcodec_free_context(&codec_context);
         error = [NSError errorWithDomain:[NSString stringWithFormat:@"%@ codec not found decoder", domain]
-                                    code:SGFFDecoderErrorCodeCodecFindDecoder
+                                    code:SGDecoderErrorCodeCodecFindDecoder
                                 userInfo:nil];
         return error;
     }
@@ -289,7 +289,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
         av_dict_set(&options, "refcounted_frames", "1", 0);
     }
     result = avcodec_open2(codec_context, codec, &options);
-    error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecOpen2);
+    error = SGFFCheckErrorCode(result, SGDecoderErrorCodeCodecOpen2);
     if (error)
     {
         avcodec_free_context(&codec_context);

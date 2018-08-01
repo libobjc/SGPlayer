@@ -1,5 +1,5 @@
 //
-//  SGFFDecoder.h
+//  SGDecoder.h
 //  SGPlayer
 //
 //  Created by Single on 05/01/2017.
@@ -12,34 +12,34 @@
 #import "SGVideoFrame.h"
 #import "SGFFTrack.h"
 
-@class SGFFDecoder;
+@class SGDecoder;
 
 
-@protocol SGFFDecoderDelegate <NSObject>
+@protocol SGDecoderDelegate <NSObject>
 
 @optional
 
-- (void)decoderWillOpenInputStream:(SGFFDecoder *)decoder;      // open input stream
-- (void)decoderDidPrepareToDecodeFrames:(SGFFDecoder *)decoder;     // prepare decode frames
-- (void)decoderDidEndOfFile:(SGFFDecoder *)decoder;     // end of file
-- (void)decoderDidPlaybackFinished:(SGFFDecoder *)decoder;
-- (void)decoder:(SGFFDecoder *)decoder didError:(NSError *)error;       // error callback
+- (void)decoderWillOpenInputStream:(SGDecoder *)decoder;      // open input stream
+- (void)decoderDidPrepareToDecodeFrames:(SGDecoder *)decoder;     // prepare decode frames
+- (void)decoderDidEndOfFile:(SGDecoder *)decoder;     // end of file
+- (void)decoderDidPlaybackFinished:(SGDecoder *)decoder;
+- (void)decoder:(SGDecoder *)decoder didError:(NSError *)error;       // error callback
 
 // value change
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBuffering:(BOOL)buffering;
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfBufferedDuration:(NSTimeInterval)bufferedDuration;
-- (void)decoder:(SGFFDecoder *)decoder didChangeValueOfProgress:(NSTimeInterval)progress;
+- (void)decoder:(SGDecoder *)decoder didChangeValueOfBuffering:(BOOL)buffering;
+- (void)decoder:(SGDecoder *)decoder didChangeValueOfBufferedDuration:(NSTimeInterval)bufferedDuration;
+- (void)decoder:(SGDecoder *)decoder didChangeValueOfProgress:(NSTimeInterval)progress;
 
 @end
 
 
-@protocol SGFFDecoderAudioOutput <NSObject>
+@protocol SGDecoderAudioOutput <NSObject>
 
 - (SGAudioFrame2 *)decoderAudioOutputGetAudioFrame;
 
 @end
 
-@protocol SGFFDecoderAudioOutputConfig <NSObject>
+@protocol SGDecoderAudioOutputConfig <NSObject>
 
 - (Float64)decoderAudioOutputConfigGetSamplingRate;
 - (UInt32)decoderAudioOutputConfigGetNumberOfChannels;
@@ -47,14 +47,14 @@
 @end
 
 
-@protocol SGFFDecoderVideoOutput <NSObject>
+@protocol SGDecoderVideoOutput <NSObject>
 
 - (SGVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
                                                       currentDuration:(NSTimeInterval)currentDuration;
 
 @end
 
-@protocol SGFFDecoderVideoOutputConfig <NSObject>
+@protocol SGDecoderVideoOutputConfig <NSObject>
 
 - (void)decoderVideoOutputConfigDidUpdateMaxPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond;
 - (BOOL)decoderVideoOutputConfigAVCodecContextDecodeAsync;
@@ -62,15 +62,15 @@
 @end
 
 
-@interface SGFFDecoder : NSObject <SGFFDecoderAudioOutput, SGFFDecoderVideoOutput>
+@interface SGDecoder : NSObject <SGDecoderAudioOutput, SGDecoderVideoOutput>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)decoderWithContentURL:(NSURL *)contentURL
-                             delegate:(id <SGFFDecoderDelegate>)delegate
-                    videoOutputConfig:(id <SGFFDecoderVideoOutputConfig>)videoOutputConfig
-                    audioOutputConfig:(id <SGFFDecoderAudioOutputConfig>)audioOutputConfig;
+                             delegate:(id <SGDecoderDelegate>)delegate
+                    videoOutputConfig:(id <SGDecoderVideoOutputConfig>)videoOutputConfig
+                    audioOutputConfig:(id <SGDecoderAudioOutputConfig>)audioOutputConfig;
 
 @property (nonatomic, strong, readonly) NSError * error;
 

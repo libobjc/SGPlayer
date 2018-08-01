@@ -7,7 +7,7 @@
 //
 
 #import "SGFFTools.h"
-#import "SGFFDecoder.h"
+#import "SGDecoder.h"
 
 #pragma mark - Util Function
 

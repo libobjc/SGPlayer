@@ -1,16 +1,16 @@
 //
-//  SGFFAsyncDecoder.m
+//  SGAsyncDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAsyncDecoder.h"
+#import "SGAsyncDecoder.h"
 
-@interface SGFFAsyncDecoder ()
+@interface SGAsyncDecoder ()
 
-@property (nonatomic, assign) SGFFDecoderState state;
+@property (nonatomic, assign) SGDecoderState state;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodingOperation;
@@ -18,7 +18,7 @@
 
 @end
 
-@implementation SGFFAsyncDecoder
+@implementation SGAsyncDecoder
 
 @synthesize index = _index;
 @synthesize timebase = _timebase;
@@ -53,17 +53,17 @@ static SGPacket * flushPacket;
 
 - (void)pauseDecoding
 {
-    if (self.state == SGFFDecoderStateDecoding)
+    if (self.state == SGDecoderStateDecoding)
     {
-        self.state = SGFFDecoderStatePaused;
+        self.state = SGDecoderStatePaused;
     }
 }
 
 - (void)resumeDecoding
 {
-    if (self.state == SGFFDecoderStatePaused)
+    if (self.state == SGDecoderStatePaused)
     {
-        self.state = SGFFDecoderStateDecoding;
+        self.state = SGDecoderStateDecoding;
         [self.decodingCondition lock];
         [self.decodingCondition broadcast];
         [self.decodingCondition unlock];
@@ -72,7 +72,7 @@ static SGPacket * flushPacket;
 
 - (void)stopDecoding
 {
-    self.state = SGFFDecoderStateStoped;
+    self.state = SGDecoderStateStoped;
     [self.packetQueue destroy];
     [self.decodingCondition lock];
     [self.decodingCondition broadcast];
@@ -133,24 +133,24 @@ static SGPacket * flushPacket;
 
 - (void)decodingThread
 {
-    self.state = SGFFDecoderStateDecoding;
+    self.state = SGDecoderStateDecoding;
     while (YES)
     {
-        if (self.state == SGFFDecoderStateStoped)
+        if (self.state == SGDecoderStateStoped)
         {
             break;
         }
-        else if (self.state == SGFFDecoderStatePaused)
+        else if (self.state == SGDecoderStatePaused)
         {
             [self.decodingCondition lock];
-            if (self.state == SGFFDecoderStatePaused)
+            if (self.state == SGDecoderStatePaused)
             {
                 [self.decodingCondition wait];
             }
             [self.decodingCondition unlock];
             continue;
         }
-        else if (self.state == SGFFDecoderStateDecoding)
+        else if (self.state == SGDecoderStateDecoding)
         {
             SGPacket * packet = [self.packetQueue getObjectSync];
             if (packet == flushPacket)

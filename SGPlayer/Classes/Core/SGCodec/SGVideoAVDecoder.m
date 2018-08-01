@@ -1,19 +1,19 @@
 //
-//  SGFFVideoAVDecoder.m
+//  SGVideoAVDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/26.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFVideoAVDecoder.h"
+#import "SGVideoAVDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
 #import "SGVideoAVFrame.h"
 #import "SGObjectPool.h"
 #import <UIKit/UIKit.h>
 #import "SGPlatform.h"
 
-@interface SGFFVideoAVDecoder ()
+@interface SGVideoAVDecoder ()
 
 {
     VTDecompressionSessionRef _decompressionSession;
@@ -31,7 +31,7 @@
 
 @end
 
-@implementation SGFFVideoAVDecoder
+@implementation SGVideoAVDecoder
 
 - (SGMediaType)mediaType
 {
@@ -207,7 +207,7 @@
                                                             (NSString *)kCVPixelBufferHeightKey : @(self.codecpar->height)};
         
         VTDecompressionOutputCallbackRecord outputCallbackRecord;
-        outputCallbackRecord.decompressionOutputCallback = SGFFVideoAVDecoderOutputCallback;
+        outputCallbackRecord.decompressionOutputCallback = SGVideoAVDecoderOutputCallback;
         outputCallbackRecord.decompressionOutputRefCon = (__bridge void *)self;
         
         OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault,
@@ -274,11 +274,11 @@
     return sampleBuffer;
 }
 
-static void SGFFVideoAVDecoderOutputCallback(void * decompressionOutputRefCon, void * sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)
+static void SGVideoAVDecoderOutputCallback(void * decompressionOutputRefCon, void * sourceFrameRefCon, OSStatus status, VTDecodeInfoFlags infoFlags, CVImageBufferRef imageBuffer, CMTime presentationTimeStamp, CMTime presentationDuration)
 {
     @autoreleasepool
     {
-        SGFFVideoAVDecoder * decoder = (__bridge SGFFVideoAVDecoder *)decompressionOutputRefCon;
+        SGVideoAVDecoder * decoder = (__bridge SGVideoAVDecoder *)decompressionOutputRefCon;
         decoder.decodingStatus = status;
         decoder.decodingPixelBuffer = imageBuffer;
         if (imageBuffer != NULL)

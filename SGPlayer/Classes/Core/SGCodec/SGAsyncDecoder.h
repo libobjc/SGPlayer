@@ -1,15 +1,15 @@
 //
-//  SGFFAsyncDecoder.h
+//  SGAsyncDecoder.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFDecoder.h"
+#import "SGDecoder.h"
 #import "SGObjectQueue.h"
 
-@interface SGFFAsyncDecoder : NSObject <SGFFDecoder>
+@interface SGAsyncDecoder : NSObject <SGDecoder>
 
 @property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
 
