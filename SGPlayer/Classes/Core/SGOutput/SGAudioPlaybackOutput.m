@@ -1,12 +1,12 @@
 //
-//  SGFFAudioPlaybackOutput.m
+//  SGAudioPlaybackOutput.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFAudioPlaybackOutput.h"
+#import "SGAudioPlaybackOutput.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGFFAudioBufferFrame.h"
 #import "SGTime.h"
@@ -14,7 +14,7 @@
 #import "swscale.h"
 #import "swresample.h"
 
-@interface SGFFAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
+@interface SGAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
 
 {
     void * _swrContextBufferData[SGFFAudioFrameMaxChannelCount];
@@ -44,7 +44,7 @@
 
 @end
 
-@implementation SGFFAudioPlaybackOutput
+@implementation SGAudioPlaybackOutput
 
 @synthesize delegate = _delegate;
 @synthesize timeSynchronizer = _timeSynchronizer;

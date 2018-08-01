@@ -8,13 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "SGFFSource.h"
-#import "SGFFOutput.h"
+#import "SGOutput.h"
 
 @interface SGSessionConfiguration : NSObject
 
 @property (nonatomic, assign) BOOL enableVideoToolBox;
 
-@property (nonatomic, strong) id <SGFFOutput> audioOutput;
-@property (nonatomic, strong) id <SGFFOutput> videoOutput;
+@property (nonatomic, strong) id <SGOutput> audioOutput;
+@property (nonatomic, strong) id <SGOutput> videoOutput;
 
 @end

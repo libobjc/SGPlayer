@@ -1,27 +1,27 @@
 //
-//  SGFFOutput.h
+//  SGOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#ifndef SGFFOutput_h
-#define SGFFOutput_h
+#ifndef SGOutput_h
+#define SGOutput_h
 
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 #import "SGFFFrame.h"
 #import "SGTimeSynchronizer.h"
 
-@protocol SGFFOutput;
-@protocol SGFFOutputDelegate;
+@protocol SGOutput;
+@protocol SGOutputDelegate;
 
-@protocol SGFFOutput <NSObject>
+@protocol SGOutput <NSObject>
 
 - (SGMediaType)mediaType;
 
-@property (nonatomic, weak) id <SGFFOutputDelegate> delegate;
+@property (nonatomic, weak) id <SGOutputDelegate> delegate;
 @property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 - (CMTime)duration;
@@ -37,10 +37,10 @@
 
 @end
 
-@protocol SGFFOutputDelegate <NSObject>
+@protocol SGOutputDelegate <NSObject>
 
-- (void)outputDidChangeCapacity:(id <SGFFOutput>)output;
+- (void)outputDidChangeCapacity:(id <SGOutput>)output;
 
 @end
 
-#endif /* SGFFOutput_h */
+#endif /* SGOutput_h */

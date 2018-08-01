@@ -1,14 +1,14 @@
 //
-//  SGFFAudioPlaybackOutput.h
+//  SGAudioPlaybackOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFOutput.h"
+#import "SGOutput.h"
 
-@interface SGFFAudioPlaybackOutput : NSObject <SGFFOutput>
+@interface SGAudioPlaybackOutput : NSObject <SGOutput>
 
 @property (nonatomic, copy, readonly) NSError * error;
 

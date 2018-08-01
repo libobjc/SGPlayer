@@ -15,15 +15,15 @@
 #import "SGTime.h"
 #import "SGFFLog.h"
 
-@interface SGSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
+@interface SGSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGOutputDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @property (nonatomic, strong) id <SGFFSource> source;
 @property (nonatomic, strong) id <SGFFDecoder> audioDecoder;
 @property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
-@property (nonatomic, strong) id <SGFFOutput> audioOutput;
-@property (nonatomic, strong) id <SGFFOutput> videoOutput;
+@property (nonatomic, strong) id <SGOutput> audioOutput;
+@property (nonatomic, strong) id <SGOutput> videoOutput;
 @property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 @end
@@ -414,9 +414,9 @@
     }
 }
 
-#pragma mark - SGFFOutputDelegate
+#pragma mark - SGOutputDelegate
 
-- (void)outputDidChangeCapacity:(id <SGFFOutput>)output
+- (void)outputDidChangeCapacity:(id <SGOutput>)output
 {
     if (output == self.audioOutput)
     {

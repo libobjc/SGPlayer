@@ -10,8 +10,8 @@
 #import "SGMacro.h"
 #import "SGActivity.h"
 #import "SGSession.h"
-#import "SGFFAudioPlaybackOutput.h"
-#import "SGFFVideoPlaybackOutput.h"
+#import "SGAudioPlaybackOutput.h"
+#import "SGVideoPlaybackOutput.h"
 
 @interface SGPlayer () <NSLocking, SGSessionDelegate>
 
@@ -21,8 +21,8 @@
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) SGSession * session;
-@property (nonatomic, strong) SGFFAudioPlaybackOutput * audioOutput;
-@property (nonatomic, strong) SGFFVideoPlaybackOutput * videoOutput;
+@property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
+@property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
 
 @end
 
@@ -57,8 +57,8 @@
         return;
     }
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
-    self.audioOutput = [[SGFFAudioPlaybackOutput alloc] init];
-    self.videoOutput = [[SGFFVideoPlaybackOutput alloc] init];
+    self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
+    self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     [self updateView];
