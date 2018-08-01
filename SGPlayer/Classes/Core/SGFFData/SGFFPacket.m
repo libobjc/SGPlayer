@@ -51,11 +51,11 @@ SGFFObjectPoolItemLockingImplementation
     if (_corePacket)
     {
         if (_corePacket->pts != AV_NOPTS_VALUE) {
-            _position = SGFFTimeMultiply(timebase, _corePacket->pts);
+            _position = SGTimeMultiply(timebase, _corePacket->pts);
         } else {
-            _position = SGFFTimeMultiply(timebase, _corePacket->dts);
+            _position = SGTimeMultiply(timebase, _corePacket->dts);
         }
-        _duration = SGFFTimeMultiply(timebase, _corePacket->duration);
+        _duration = SGTimeMultiply(timebase, _corePacket->duration);
         _size = _corePacket->size;
     }
 }

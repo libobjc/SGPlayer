@@ -32,8 +32,8 @@
 
 - (void)fillWithTimebase:(CMTime)timebase packet:(SGFFPacket *)packet
 {
-    self.position = SGFFTimeMultiply(timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
-    self.duration = SGFFTimeMultiply(timebase, av_frame_get_pkt_duration(self.coreFrame));
+    self.position = SGTimeMultiply(timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
+    self.duration = SGTimeMultiply(timebase, av_frame_get_pkt_duration(self.coreFrame));
     self.size = av_frame_get_pkt_size(self.coreFrame);
     
     self.format = self.coreFrame->format;

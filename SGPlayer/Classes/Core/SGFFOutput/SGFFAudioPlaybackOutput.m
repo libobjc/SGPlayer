@@ -9,7 +9,7 @@
 #import "SGFFAudioPlaybackOutput.h"
 #import "SGFFAudioStreamPlayer.h"
 #import "SGFFAudioBufferFrame.h"
-#import "SGFFTime.h"
+#import "SGTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
 #import "swresample.h"
@@ -241,7 +241,7 @@
 
 - (CMTime)rate
 {
-    return SGFFTimeMakeWithSeconds(self.audioPlayer.rate);
+    return SGTimeMakeWithSeconds(self.audioPlayer.rate);
 }
 
 #pragma mark - swr
@@ -346,10 +346,10 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPrepareDuration = kCMTimeZero;
-            CMTime duration = SGFFTimeMultiplyByRatio(self.currentFrame.duration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
             self.currentPreparePosition = CMTimeAdd(self.currentFrame.position, duration);
         }
-        CMTime duration = SGFFTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
+        CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
         self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
         
         numberOfSamples -= framesToCopy;

@@ -7,7 +7,7 @@
 //
 
 #import "SGFFVideoFrame.h"
-#import "SGFFTime.h"
+#import "SGTime.h"
 
 @interface SGFFVideoFrame ()
 

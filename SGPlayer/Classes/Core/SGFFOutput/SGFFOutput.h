@@ -12,7 +12,7 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 #import "SGFFFrame.h"
-#import "SGFFTimeSynchronizer.h"
+#import "SGTimeSynchronizer.h"
 
 @protocol SGFFOutput;
 @protocol SGFFOutputDelegate;
@@ -22,7 +22,7 @@
 - (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGFFOutputDelegate> delegate;
-@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
+@property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 - (CMTime)duration;
 - (long long)size;

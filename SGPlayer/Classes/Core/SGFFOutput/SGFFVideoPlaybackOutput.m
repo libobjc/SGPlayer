@@ -148,7 +148,7 @@
             CMTime position = strongSelf.timeSynchronizer.position;
             NSAssert(CMTIME_IS_VALID(position), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = CMTimeAdd(position, SGFFTimeMakeWithSeconds(nextVSyncInterval));
+            * expect = CMTimeAdd(position, SGTimeMakeWithSeconds(nextVSyncInterval));
             * current = strongSelf.currentFrame.position;
             return YES;
         }

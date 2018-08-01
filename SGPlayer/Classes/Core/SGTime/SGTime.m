@@ -1,14 +1,14 @@
 //
-//  SGFFTime.m
+//  SGTime.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/13.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFFTime.h"
+#import "SGTime.h"
 
-CMTime SGFFTimeValidate(CMTime time, CMTime defaultTime)
+CMTime SGTimeValidate(CMTime time, CMTime defaultTime)
 {
     if (CMTIME_IS_INVALID(defaultTime))
     {
@@ -25,17 +25,17 @@ CMTime SGFFTimeValidate(CMTime time, CMTime defaultTime)
     return time;
 }
 
-CMTime SGFFTimeMultiply(CMTime time, int64_t multiplier)
+CMTime SGTimeMultiply(CMTime time, int64_t multiplier)
 {
     return CMTimeMake(time.value * multiplier, time.timescale);
 }
 
-CMTime SGFFTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor)
+CMTime SGTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor)
 {
     return CMTimeMake(time.value * multiplier / divisor, time.timescale);
 }
 
-CMTime SGFFTimeMakeWithSeconds(Float64 seconds)
+CMTime SGTimeMakeWithSeconds(Float64 seconds)
 {
     return CMTimeMakeWithSeconds(seconds, 10000);
 }

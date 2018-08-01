@@ -1,14 +1,14 @@
 //
-//  SGFFTimeSynchronizer.m
+//  SGTimeSynchronizer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFFTimeSynchronizer.h"
+#import "SGTimeSynchronizer.h"
 
-@interface SGFFTimeSynchronizer ()
+@interface SGTimeSynchronizer ()
 
 @property (nonatomic, assign) CMTime keyPosition;
 @property (nonatomic, assign) CMTime keyDuration;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation SGFFTimeSynchronizer
+@implementation SGTimeSynchronizer
 
 - (instancetype)init
 {
@@ -38,7 +38,7 @@
     {
         return self.keyPosition;
     }
-    CMTime mediaTime = SGFFTimeMakeWithSeconds(CACurrentMediaTime());
+    CMTime mediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
     interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
     interval = CMTimeMinimum(self.keyDuration, interval);
@@ -51,7 +51,7 @@
     self.keyPosition = position;
     self.keyDuration = duration;
     self.keyRate = rate;
-    self.keyMediaTime = SGFFTimeMakeWithSeconds(CACurrentMediaTime());
+    self.keyMediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
 }
 
 - (void)flush

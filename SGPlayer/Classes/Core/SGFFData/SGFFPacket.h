@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGFFObjectPool.h"
 #import "SGFFObjectQueue.h"
-#import "SGFFTime.h"
+#import "SGTime.h"
 #import "avformat.h"
 
 @interface SGFFPacket : NSObject <SGFFObjectPoolItem, SGFFObjectQueueItem>

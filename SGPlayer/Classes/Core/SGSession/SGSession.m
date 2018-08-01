@@ -12,7 +12,7 @@
 #import "SGFFVideoFFDecoder.h"
 #import "SGFFVideoAVDecoder.h"
 #import "SGMacro.h"
-#import "SGFFTime.h"
+#import "SGTime.h"
 #import "SGFFLog.h"
 
 @interface SGSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
@@ -24,7 +24,7 @@
 @property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGFFOutput> audioOutput;
 @property (nonatomic, strong) id <SGFFOutput> videoOutput;
-@property (nonatomic, strong) SGFFTimeSynchronizer * timeSynchronizer;
+@property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 @end
 
@@ -57,7 +57,7 @@
         return;
     }
     self.state = SGSessionStateOpening;
-    self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
+    self.timeSynchronizer = [[SGTimeSynchronizer alloc] init];
     self.audioOutput = self.configuration.audioOutput;
     self.videoOutput = self.configuration.videoOutput;
     self.audioOutput.timeSynchronizer = self.timeSynchronizer;
@@ -344,7 +344,7 @@
                 {
                     SGFFAudioFFDecoder * audioDecoder = [[SGFFAudioFFDecoder alloc] init];
                     audioDecoder.index = stream.index;
-                    audioDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 44100));
+                    audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
                     audioDecoder.codecpar = stream.coreStream->codecpar;
                     if ([audioDecoder startDecoding])
                     {
@@ -364,7 +364,7 @@
                     }
                     SGFFAsyncDecoder * videoDecoder = [[codecClass alloc] init];
                     videoDecoder.index = stream.index;
-                    videoDecoder.timebase = SGFFTimeValidate(stream.timebase, CMTimeMake(1, 25000));
+                    videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
                     videoDecoder.codecpar = stream.coreStream->codecpar;
                     if ([videoDecoder startDecoding])
                     {

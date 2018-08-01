@@ -137,9 +137,9 @@
     }
     CMSampleTimingInfo timingInfo =
     {
-        SGFFTimeMultiply(self.timebase, packet.corePacket->duration),
-        SGFFTimeMultiply(self.timebase, timestamp),
-        SGFFTimeMultiply(self.timebase, packet.corePacket->dts),
+        SGTimeMultiply(self.timebase, packet.corePacket->duration),
+        SGTimeMultiply(self.timebase, timestamp),
+        SGTimeMultiply(self.timebase, packet.corePacket->dts),
     };
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size timingInfo:timingInfo];
     if (!sampleBuffer)

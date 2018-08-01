@@ -46,8 +46,8 @@
         if (packet.corePacket->pts == AV_NOPTS_VALUE) {
             timestamp = packet.corePacket->dts;
         }
-        self.position = SGFFTimeMultiply(timebase, timestamp);
-        self.duration = SGFFTimeMultiply(timebase, packet.corePacket->duration);
+        self.position = SGTimeMultiply(timebase, timestamp);
+        self.duration = SGTimeMultiply(timebase, packet.corePacket->duration);
         self.size = packet.corePacket->size;
         self.bestEffortTimestamp = timestamp;
         self.packetPosition = packet.corePacket->pos;
