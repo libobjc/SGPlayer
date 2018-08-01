@@ -13,7 +13,7 @@
 
 #import "SGPlayerMacro.h"
 #import "SGPlayerUtil.h"
-#import "SGPlayerActivity.h"
+#import "SGActivity.h"
 
 @interface SGPlayer () <NSLocking, SGFFSessionDelegate>
 
@@ -44,7 +44,7 @@
 
 - (void)dealloc
 {
-    [SGPlayerActivity resignActive:self];
+    [SGActivity resignActive:self];
     [self closeSession];
 }
 
@@ -77,7 +77,7 @@
 - (void)play
 {
     [self lock];
-    [SGPlayerActivity becomeActive:self];
+    [SGActivity becomeActive:self];
     switch (self.playbackState)
     {
         case SGPlaybackStateFinished:
@@ -100,7 +100,7 @@
 - (void)pause
 {
     [self lock];
-    [SGPlayerActivity resignActive:self];
+    [SGActivity resignActive:self];
     switch (self.playbackState)
     {
         case SGPlaybackStateStopped:
@@ -117,7 +117,7 @@
 - (void)stop
 {
     [self lock];
-    [SGPlayerActivity resignActive:self];
+    [SGActivity resignActive:self];
     [self closeSession];
     self.playbackState = SGPlaybackStateStopped;
     [self unlock];
@@ -282,7 +282,7 @@
 - (void)destory
 {
     [self lock];
-    [SGPlayerActivity resignActive:self];
+    [SGActivity resignActive:self];
     [self closeSession];
     self.playbackState = SGPlaybackStateNone;
     [self unlock];

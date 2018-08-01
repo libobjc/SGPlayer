@@ -9,19 +9,21 @@
 #ifndef SGPlayerMacro_h
 #define SGPlayerMacro_h
 
-
 #import <Foundation/Foundation.h>
 
-// weak self
+#if defined(__cplusplus)
+#define SGPLAYER_EXTERN extern "C"
+#else
+#define SGPLAYER_EXTERN extern
+#endif
+
 #define SGWeakSelf __weak typeof(self) weakSelf = self;
 #define SGStrongSelf __strong typeof(weakSelf) strongSelf = weakSelf;
 
-// log level
 #ifdef DEBUG
 #define SGPlayerLog(...) NSLog(__VA_ARGS__)
 #else
 #define SGPlayerLog(...)
 #endif
-
 
 #endif
