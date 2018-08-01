@@ -32,17 +32,17 @@
     self.view.backgroundColor = [UIColor blackColor];
     
     NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+//    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
     self.player = [[SGFFPlayer alloc] init];
     self.player.delegate = self;
     [self.view insertSubview:self.player.view atIndex:0];
     [self.player replaceWithURL:contentURL];
     
-    self.player2 = [[SGFFPlayer alloc] init];
-    self.player2.delegate = self;
-    [self.view insertSubview:self.player2.view atIndex:0];
-    [self.player2 replaceWithURL:contentURL2];
+//    self.player2 = [[SGFFPlayer alloc] init];
+//    self.player2.delegate = self;
+//    [self.view insertSubview:self.player2.view atIndex:0];
+//    [self.player2 replaceWithURL:contentURL2];
     
     [self.player play];
     [self.player2 play];
@@ -80,6 +80,14 @@
 - (IBAction)progressTouchUp:(id)sender
 {
     self.progressSilderTouching = NO;
+    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
+    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+    [self.player seekToTime:time];
+    [self.player2 seekToTime:time2];
+}
+
+- (IBAction)progressValueChanged:(id)sender
+{
     CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
     CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
     [self.player seekToTime:time];

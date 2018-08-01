@@ -85,7 +85,8 @@
     switch (self.playbackState)
     {
         case SGPlayerPlaybackStateFinished:
-            if (CMTimeCompare(self.session.currentTime, self.session.duration) >= 0)
+            if (self.session.state == SGFFSessionStateFinished &&
+                CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
             {
                 [self.session seekToTime:kCMTimeZero completionHandler:nil];
             }
