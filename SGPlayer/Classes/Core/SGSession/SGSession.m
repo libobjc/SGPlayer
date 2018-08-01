@@ -1,12 +1,12 @@
 //
-//  SGFFSession.m
+//  SGSession.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFSession.h"
+#import "SGSession.h"
 #import "SGFFFormatContext.h"
 #import "SGFFAudioFFDecoder.h"
 #import "SGFFVideoFFDecoder.h"
@@ -15,7 +15,7 @@
 #import "SGFFTime.h"
 #import "SGFFLog.h"
 
-@interface SGFFSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
+@interface SGSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGFFOutputDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
@@ -28,7 +28,7 @@
 
 @end
 
-@implementation SGFFSession
+@implementation SGSession
 
 @synthesize state = _state;
 
@@ -42,8 +42,8 @@
             av_register_all();
             avformat_network_init();
         });
-        self.delegateQueue = dispatch_queue_create("SGFFSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
-        self.state = SGFFSessionStateIdle;
+        self.delegateQueue = dispatch_queue_create("SGSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
+        self.state = SGSessionStateIdle;
     }
     return self;
 }
@@ -52,11 +52,11 @@
 
 - (void)open
 {
-    if (self.state != SGFFSessionStateIdle)
+    if (self.state != SGSessionStateIdle)
     {
         return;
     }
-    self.state = SGFFSessionStateOpening;
+    self.state = SGSessionStateOpening;
     self.timeSynchronizer = [[SGFFTimeSynchronizer alloc] init];
     self.audioOutput = self.configuration.audioOutput;
     self.videoOutput = self.configuration.videoOutput;
@@ -72,21 +72,21 @@
 
 - (void)read
 {
-    if (self.state != SGFFSessionStateOpened)
+    if (self.state != SGSessionStateOpened)
     {
         return;
     }
-    self.state = SGFFSessionStateReading;
+    self.state = SGSessionStateReading;
     [self.source startReading];
 }
 
 - (void)close
 {
-    if (self.state == SGFFSessionStateClosed)
+    if (self.state == SGSessionStateClosed)
     {
         return;
     }
-    self.state = SGFFSessionStateClosed;
+    self.state = SGSessionStateClosed;
     [self.source stopReading];
     [self.audioDecoder stopDecoding];
     [self.videoDecoder stopDecoding];
@@ -98,8 +98,8 @@
 
 - (BOOL)seekable
 {
-    if (self.state == SGFFSessionStateFinished ||
-        self.state == SGFFSessionStateReading)
+    if (self.state == SGSessionStateFinished ||
+        self.state == SGSessionStateReading)
     {
         return self.source.seekable;
     }
@@ -123,16 +123,16 @@
 {
     switch (self.state)
     {
-        case SGFFSessionStateIdle:
-        case SGFFSessionStateOpening:
-        case SGFFSessionStateOpened:
-        case SGFFSessionStateClosed:
-        case SGFFSessionStateFailed:
+        case SGSessionStateIdle:
+        case SGSessionStateOpening:
+        case SGSessionStateOpened:
+        case SGSessionStateClosed:
+        case SGSessionStateFailed:
             return;
-        case SGFFSessionStateFinished:
-            self.state = SGFFSessionStateReading;
+        case SGSessionStateFinished:
+            self.state = SGSessionStateReading;
             break;
-        case SGFFSessionStateReading:
+        case SGSessionStateReading:
             break;
     }
     SGWeakSelf
@@ -258,7 +258,7 @@
     return self.videoDecoder != nil;
 }
 
-- (void)setState:(SGFFSessionState)state
+- (void)setState:(SGSessionState)state
 {
     if (_state != state)
     {
@@ -381,18 +381,18 @@
     self.videoDecoder.delegate = self;
     [self.audioOutput start];
     [self.videoOutput start];
-    self.state = SGFFSessionStateOpened;
+    self.state = SGSessionStateOpened;
 }
 
 - (void)sourceDidFailed:(id <SGFFSource>)source
 {
     _error = source.error;
-    self.state = SGFFSessionStateFailed;
+    self.state = SGSessionStateFailed;
 }
 
 - (void)sourceDidFinished:(id<SGFFSource>)source
 {
-    self.state = SGFFSessionStateFinished;
+    self.state = SGSessionStateFinished;
 }
 
 #pragma mark - SGFFDecoderDelegate

@@ -1,5 +1,5 @@
 //
-//  SGFFSessionConfiguration.h
+//  SGSessionConfiguration.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/31.
@@ -10,7 +10,7 @@
 #import "SGFFSource.h"
 #import "SGFFOutput.h"
 
-@interface SGFFSessionConfiguration : NSObject
+@interface SGSessionConfiguration : NSObject
 
 @property (nonatomic, assign) BOOL enableVideoToolBox;
 

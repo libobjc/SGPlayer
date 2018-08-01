@@ -9,18 +9,18 @@
 #import "SGPlayer.h"
 #import "SGMacro.h"
 #import "SGActivity.h"
-#import "SGFFSession.h"
+#import "SGSession.h"
 #import "SGFFAudioPlaybackOutput.h"
 #import "SGFFVideoPlaybackOutput.h"
 
-@interface SGPlayer () <NSLocking, SGFFSessionDelegate>
+@interface SGPlayer () <NSLocking, SGSessionDelegate>
 
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
 
 @property (nonatomic, assign) SGPlaybackState playbackStateBeforSeeking;
 @property (nonatomic, copy) NSError * error;
 
-@property (nonatomic, strong) SGFFSession * session;
+@property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGFFAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGFFVideoPlaybackOutput * videoOutput;
 
@@ -56,13 +56,13 @@
         [self unlock];
         return;
     }
-    SGFFSessionConfiguration * configuration = [[SGFFSessionConfiguration alloc] init];
+    SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     self.audioOutput = [[SGFFAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGFFVideoPlaybackOutput alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     [self updateView];
-    self.session = [[SGFFSession alloc] init];
+    self.session = [[SGSession alloc] init];
     self.session.URL = self.URL;
     self.session.delegate = self;
     self.session.configuration = configuration;
@@ -79,7 +79,7 @@
     switch (self.playbackState)
     {
         case SGPlaybackStateFinished:
-            if (self.session.state == SGFFSessionStateFinished &&
+            if (self.session.state == SGSessionStateFinished &&
                 CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
             {
                 [self.session seekToTime:kCMTimeZero completionHandler:nil];
@@ -297,9 +297,9 @@
     [self unlock];
 }
 
-#pragma mark - SGFFSessionDelegate
+#pragma mark - SGSessionDelegate
 
-- (void)sessionDidChangeState:(SGFFSession *)session
+- (void)sessionDidChangeState:(SGSession *)session
 {
     [self lock];
     if (session.state == SGFFSourceStateOpened)
@@ -310,15 +310,15 @@
     [self unlock];
 }
 
-- (void)sessionDidChangeCapacity:(SGFFSession *)session
+- (void)sessionDidChangeCapacity:(SGSession *)session
 {
     [self lock];
-    if (self.session.state == SGFFSessionStateFinished)
+    if (self.session.state == SGSessionStateFinished)
     {
         self.loadingState = SGLoadingStateFinished;
     }
     [self playOrPause];
-    if (self.session.state == SGFFSessionStateFinished &&
+    if (self.session.state == SGSessionStateFinished &&
         CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
     {
         self.playbackState = SGPlaybackStateFinished;

@@ -1,5 +1,5 @@
 //
-//  SGFFSession.h
+//  SGSession.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
@@ -7,36 +7,36 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFSessionConfiguration.h"
+#import "SGSessionConfiguration.h"
 #import "SGDefines.h"
 
-typedef NS_ENUM(NSUInteger, SGFFSessionState)
+typedef NS_ENUM(NSUInteger, SGSessionState)
 {
-    SGFFSessionStateIdle,
-    SGFFSessionStateOpening,
-    SGFFSessionStateOpened,
-    SGFFSessionStateReading,
-    SGFFSessionStateClosed,
-    SGFFSessionStateFinished,
-    SGFFSessionStateFailed,
+    SGSessionStateIdle,
+    SGSessionStateOpening,
+    SGSessionStateOpened,
+    SGSessionStateReading,
+    SGSessionStateClosed,
+    SGSessionStateFinished,
+    SGSessionStateFailed,
 };
 
-@class SGFFSession;
+@class SGSession;
 
-@protocol SGFFSessionDelegate <NSObject>
+@protocol SGSessionDelegate <NSObject>
 
-- (void)sessionDidChangeState:(SGFFSession *)session;
-- (void)sessionDidChangeCapacity:(SGFFSession *)session;
+- (void)sessionDidChangeState:(SGSession *)session;
+- (void)sessionDidChangeCapacity:(SGSession *)session;
 
 @end
 
-@interface SGFFSession : NSObject
+@interface SGSession : NSObject
 
 @property (nonatomic, copy) NSURL * URL;
-@property (nonatomic, weak) id <SGFFSessionDelegate> delegate;
-@property (nonatomic, strong) SGFFSessionConfiguration * configuration;
+@property (nonatomic, weak) id <SGSessionDelegate> delegate;
+@property (nonatomic, strong) SGSessionConfiguration * configuration;
 
-@property (nonatomic, assign, readonly) SGFFSessionState state;
+@property (nonatomic, assign, readonly) SGSessionState state;
 @property (nonatomic, copy, readonly) NSError * error;
 
 /**
