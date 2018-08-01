@@ -12,8 +12,8 @@
 
 @interface PlayerViewController () <SGFFPlayerDelegate>
 
-@property (nonatomic, strong) SGFFPlayer * player;
-@property (nonatomic, strong) SGFFPlayer * player2;
+@property (nonatomic, strong) SGPlayer * player;
+@property (nonatomic, strong) SGPlayer * player2;
 
 @property (weak, nonatomic) IBOutlet UILabel * stateLabel;
 @property (weak, nonatomic) IBOutlet UISlider * progressSilder;
@@ -34,12 +34,12 @@
     NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
 //    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
-    self.player = [[SGFFPlayer alloc] init];
+    self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     [self.view insertSubview:self.player.view atIndex:0];
     [self.player replaceWithURL:contentURL];
     
-//    self.player2 = [[SGFFPlayer alloc] init];
+//    self.player2 = [[SGPlayer alloc] init];
 //    self.player2.delegate = self;
 //    [self.view insertSubview:self.player2.view atIndex:0];
 //    [self.player2 replaceWithURL:contentURL2];
@@ -94,7 +94,7 @@
     [self.player2 seekToTime:time2];
 }
 
-- (void)player:(SGFFPlayer *)player didChangePlaybackState:(SGPlayerPlaybackState)playbackState
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlayerPlaybackState)playbackState
 {
     NSLog(@"%s, %ld", __func__, playbackState);
     NSString * text;
@@ -125,12 +125,12 @@
     self.stateLabel.text = text;
 }
 
-- (void)player:(SGFFPlayer *)player didChangeLoadingState:(SGPlayerLoadingState)loadingState
+- (void)player:(SGPlayer *)player didChangeLoadingState:(SGPlayerLoadingState)loadingState
 {
     NSLog(@"%s, %ld", __func__, loadingState);
 }
 
-- (void)player:(SGFFPlayer *)player didChangePlaybackTime:(CMTime)playbackTime
+- (void)player:(SGPlayer *)player didChangePlaybackTime:(CMTime)playbackTime
 {
     NSLog(@"%s, %f", __func__, CMTimeGetSeconds(playbackTime));
     if (!self.progressSilderTouching)
@@ -141,7 +141,7 @@
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
 
-- (void)player:(SGFFPlayer *)player didChangeLoadedTime:(CMTime)loadedTime
+- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime
 {
     NSLog(@"%s, %f", __func__, CMTimeGetSeconds(loadedTime));
 }

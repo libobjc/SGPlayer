@@ -8,7 +8,7 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import "SGPlayerImp.h"
-#import "SGFFPlayer.h"
+#import "SGPlayer.h"
 
 @class SGFingerRotation;
 @class SGGLFrame;

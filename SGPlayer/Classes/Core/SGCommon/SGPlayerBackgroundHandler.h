@@ -7,14 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPlayerDefines.h"
-#import "SGFFPlayer.h"
+#import "SGDefines.h"
+#import "SGPlayer.h"
 
 @interface SGPlayerBackgroundHandler : NSObject
 
 + (NSTimeInterval)lastWillEnterForegroundTimeInterval;
 + (NSTimeInterval)lastDidEnterBackgroundTimeInterval;
 
-+ (instancetype)backgroundHandlerWithPlayer:(SGFFPlayer *)player;
++ (instancetype)backgroundHandlerWithPlayer:(SGPlayer *)player;
 
 @end

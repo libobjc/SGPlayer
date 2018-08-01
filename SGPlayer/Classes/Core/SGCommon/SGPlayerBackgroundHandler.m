@@ -11,7 +11,7 @@
 
 @interface SGPlayerBackgroundHandler ()
 
-@property (nonatomic, weak) SGFFPlayer * player;
+@property (nonatomic, weak) SGPlayer * player;
 @property (nonatomic, assign) BOOL shouldAutoPlay;
 
 @end
@@ -33,19 +33,19 @@ static NSTimeInterval lastDidEnterBackgroundTimeInterval = 0;
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-+ (instancetype)backgroundHandlerWithPlayer:(SGFFPlayer *)player
++ (instancetype)backgroundHandlerWithPlayer:(SGPlayer *)player
 {
     return nil;
 }
 
 #else
 
-+ (instancetype)backgroundHandlerWithPlayer:(SGFFPlayer *)player
++ (instancetype)backgroundHandlerWithPlayer:(SGPlayer *)player
 {
     return [[self alloc] initWithPlayer:player];
 }
 
-- (instancetype)initWithPlayer:(SGFFPlayer *)player
+- (instancetype)initWithPlayer:(SGPlayer *)player
 {
     if (self = [super init])
     {

@@ -109,15 +109,15 @@
     self.currentFrame = [SGGLFrame frame];
     self.aspect = 16.0 / 9.0;
     
-    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
-    switch (videoType) {
-        case SGVideoTypeNormal:
-            self.preferredFramesPerSecond = 35;
-            break;
-        case SGVideoTypeVR:
-            self.preferredFramesPerSecond = 60;
-            break;
-    }
+//    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
+//    switch (videoType) {
+//        case SGVideoTypeNormal:
+//            self.preferredFramesPerSecond = 35;
+//            break;
+//        case SGVideoTypeVR:
+//            self.preferredFramesPerSecond = 60;
+//            break;
+//    }
 }
 
 - (void)flushClearColor
@@ -196,28 +196,28 @@
 
 - (BOOL)needDrawOpenGL
 {
-    [self.displayView reloadVideoFrameForGLFrame:self.currentFrame];
-    if (!self.currentFrame.hasData) {
-        return NO;
-    }
-    if (self.displayView.abstractPlayer.videoType != SGVideoTypeVR && !self.currentFrame.hasUpate && self.drawToekn) {
-        return NO;
-    }
-    
-    SGGLTexture * texture = [self chooseTexture];
-    CGFloat aspect = 16.0 / 9.0;
-    if (![texture updateTextureWithGLFrame:self.currentFrame aspect:&aspect]) {
-        return NO;
-    }
-    
-    if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
-        self.aspect = 16.0 / 9.0;
-    } else {
-        self.aspect = aspect;
-    }
-    if (self.currentFrame.hasUpdateRotateType) {
-        [self reloadViewport];
-    }
+//    [self.displayView reloadVideoFrameForGLFrame:self.currentFrame];
+//    if (!self.currentFrame.hasData) {
+//        return NO;
+//    }
+//    if (self.displayView.abstractPlayer.videoType != SGVideoTypeVR && !self.currentFrame.hasUpate && self.drawToekn) {
+//        return NO;
+//    }
+//
+//    SGGLTexture * texture = [self chooseTexture];
+//    CGFloat aspect = 16.0 / 9.0;
+//    if (![texture updateTextureWithGLFrame:self.currentFrame aspect:&aspect]) {
+//        return NO;
+//    }
+//
+//    if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
+//        self.aspect = 16.0 / 9.0;
+//    } else {
+//        self.aspect = aspect;
+//    }
+//    if (self.currentFrame.hasUpdateRotateType) {
+//        [self reloadViewport];
+//    }
     return YES;
 }
 
@@ -226,130 +226,132 @@
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT);
     
-    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
-    SGDisplayMode displayMode = self.displayView.abstractPlayer.displayMode;
-    
-#if SGPLATFORM_TARGET_OS_IPHONE
-    if (videoType == SGVideoTypeVR && displayMode == SGDisplayModeBox) {
-        [self.distorionRenderer beforDrawFrame];
-    }
-#endif
-    
-    SGGLProgram2 * program = [self chooseProgram];
-    [program use];
-    [program bindVariable];
-    
-    CGFloat scale = SGPLFScreenGetScale();
-    CGRect rect = CGRectMake(0, 0, self.viewport.size.width * scale, self.viewport.size.height * scale);
-    switch (videoType) {
-        case SGVideoTypeNormal:
-        {
-            [self.normalModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location textureRotateType:[self chooseModelTextureRotateType]];
-            glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect), CGRectGetHeight(rect));
-            [program updateMatrix:GLKMatrix4Identity];
-            glDrawElements(GL_TRIANGLES, self.normalModel.index_count, GL_UNSIGNED_SHORT, 0);
-        }
-            break;
-        case SGVideoTypeVR:
-        {
-            [self.vrModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location];
-            switch (displayMode) {
-                case SGDisplayModeNormal:
-                {
-                    GLKMatrix4 matrix;
-                    BOOL success = [self.vrMatrix singleMatrixWithSize:rect.size matrix:&matrix fingerRotation:self.displayView.fingerRotation];
-                    if (success) {
-                        glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect), CGRectGetHeight(rect));
-                        [program updateMatrix:matrix];
-                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
-                    }
-                }
-                    break;
-                case SGDisplayModeBox:
-                {
-                    GLKMatrix4 leftMatrix;
-                    GLKMatrix4 rightMatrix;
-                    BOOL success = [self.vrMatrix doubleMatrixWithSize:rect.size leftMatrix:&leftMatrix rightMatrix:&rightMatrix];
-                    if (success) {
-                        glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect)/2, CGRectGetHeight(rect));
-                        [program updateMatrix:leftMatrix];
-                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
-                        
-                        glViewport(CGRectGetWidth(rect)/2 + rect.origin.x, rect.origin.y, CGRectGetWidth(rect)/2, CGRectGetHeight(rect));
-                        [program updateMatrix:rightMatrix];
-                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
-                    }
-                }
-                    break;
-            }
-        }
-            break;
-    }
-    
-#if SGPLATFORM_TARGET_OS_IPHONE
-    if (videoType == SGVideoTypeVR && displayMode == SGDisplayModeBox) {
-        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
-        SGPLFGLViewBindFrameBuffer(glView);
-        [self.distorionRenderer afterDrawFrame];
-    }
-#endif
+//    SGVideoType videoType = self.displayView.abstractPlayer.videoType;
+//    SGDisplayMode displayMode = self.displayView.abstractPlayer.displayMode;
+//
+//#if SGPLATFORM_TARGET_OS_IPHONE
+//    if (videoType == SGVideoTypeVR && displayMode == SGDisplayModeVRBox) {
+//        [self.distorionRenderer beforDrawFrame];
+//    }
+//#endif
+//
+//    SGGLProgram2 * program = [self chooseProgram];
+//    [program use];
+//    [program bindVariable];
+//
+//    CGFloat scale = SGPLFScreenGetScale();
+//    CGRect rect = CGRectMake(0, 0, self.viewport.size.width * scale, self.viewport.size.height * scale);
+//    switch (videoType) {
+//        case SGVideoTypeNormal:
+//        {
+//            [self.normalModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location textureRotateType:[self chooseModelTextureRotateType]];
+//            glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect), CGRectGetHeight(rect));
+//            [program updateMatrix:GLKMatrix4Identity];
+//            glDrawElements(GL_TRIANGLES, self.normalModel.index_count, GL_UNSIGNED_SHORT, 0);
+//        }
+//            break;
+//        case SGVideoTypeVR:
+//        {
+//            [self.vrModel bindPositionLocation:program.position_location textureCoordLocation:program.texture_coord_location];
+//            switch (displayMode) {
+//                case SGDisplayModePlane:
+//                {
+//                    GLKMatrix4 matrix;
+//                    BOOL success = [self.vrMatrix singleMatrixWithSize:rect.size matrix:&matrix fingerRotation:self.displayView.fingerRotation];
+//                    if (success) {
+//                        glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect), CGRectGetHeight(rect));
+//                        [program updateMatrix:matrix];
+//                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
+//                    }
+//                }
+//                    break;
+//                case SGDisplayModeVRBox:
+//                {
+//                    GLKMatrix4 leftMatrix;
+//                    GLKMatrix4 rightMatrix;
+//                    BOOL success = [self.vrMatrix doubleMatrixWithSize:rect.size leftMatrix:&leftMatrix rightMatrix:&rightMatrix];
+//                    if (success) {
+//                        glViewport(rect.origin.x, rect.origin.y, CGRectGetWidth(rect)/2, CGRectGetHeight(rect));
+//                        [program updateMatrix:leftMatrix];
+//                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
+//
+//                        glViewport(CGRectGetWidth(rect)/2 + rect.origin.x, rect.origin.y, CGRectGetWidth(rect)/2, CGRectGetHeight(rect));
+//                        [program updateMatrix:rightMatrix];
+//                        glDrawElements(GL_TRIANGLES, self.vrModel.index_count, GL_UNSIGNED_SHORT, 0);
+//                    }
+//                }
+//                    break;
+//                case SGDisplayModeVR:
+//                    break;
+//            }
+//        }
+//            break;
+//    }
+//
+//#if SGPLATFORM_TARGET_OS_IPHONE
+//    if (videoType == SGVideoTypeVR && displayMode == SGDisplayModeVRBox) {
+//        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
+//        SGPLFGLViewBindFrameBuffer(glView);
+//        [self.distorionRenderer afterDrawFrame];
+//    }
+//#endif
 }
 
 - (void)reloadViewport
 {
-    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
-    CGRect superviewFrame = glView.superview.bounds;
-    CGFloat superviewAspect = superviewFrame.size.width / superviewFrame.size.height;
-    
-    if (self.aspect <= 0) {
-        glView.frame = superviewFrame;
-        return;
-    }
-    
-    CGFloat resultAspect = self.aspect;
-    switch (self.currentFrame.rotateType) {
-        case SGFFVideoFrameRotateType90:
-        case SGFFVideoFrameRotateType270:
-            resultAspect = 1 / self.aspect;
-            break;
-        case SGFFVideoFrameRotateType0:
-        case SGFFVideoFrameRotateType180:
-            break;
-    }
-    
-    SGGravityMode gravityMode = self.displayView.abstractPlayer.viewGravityMode;
-    switch (gravityMode) {
-        case SGGravityModeResize:
-            glView.frame = superviewFrame;
-            break;
-        case SGGravityModeResizeAspect:
-            if (superviewAspect < resultAspect) {
-                CGFloat height = superviewFrame.size.width / resultAspect;
-                glView.frame = CGRectMake(0, (superviewFrame.size.height - height) / 2, superviewFrame.size.width, height);
-            } else if (superviewAspect > resultAspect) {
-                CGFloat width = superviewFrame.size.height * resultAspect;
-                glView.frame = CGRectMake((superviewFrame.size.width - width) / 2, 0, width, superviewFrame.size.height);
-            } else {
-                glView.frame = superviewFrame;
-            }
-            break;
-        case SGGravityModeResizeAspectFill:
-            if (superviewAspect < resultAspect) {
-                CGFloat width = superviewFrame.size.height * resultAspect;
-                glView.frame = CGRectMake(-(width - superviewFrame.size.width) / 2, 0, width, superviewFrame.size.height);
-            } else if (superviewAspect > resultAspect) {
-                CGFloat height = superviewFrame.size.width / resultAspect;
-                glView.frame = CGRectMake(0, -(height - superviewFrame.size.height) / 2, superviewFrame.size.width, height);
-            } else {
-                glView.frame = superviewFrame;
-            }
-            break;
-        default:
-            glView.frame = superviewFrame;
-            break;
-    }
-    self.drawToekn = NO;
-    [self.currentFrame didUpdateRotateType];
+//    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
+//    CGRect superviewFrame = glView.superview.bounds;
+//    CGFloat superviewAspect = superviewFrame.size.width / superviewFrame.size.height;
+//
+//    if (self.aspect <= 0) {
+//        glView.frame = superviewFrame;
+//        return;
+//    }
+//
+//    CGFloat resultAspect = self.aspect;
+//    switch (self.currentFrame.rotateType) {
+//        case SGFFVideoFrameRotateType90:
+//        case SGFFVideoFrameRotateType270:
+//            resultAspect = 1 / self.aspect;
+//            break;
+//        case SGFFVideoFrameRotateType0:
+//        case SGFFVideoFrameRotateType180:
+//            break;
+//    }
+//
+//    SGGravityMode gravityMode = self.displayView.abstractPlayer.viewGravityMode;
+//    switch (gravityMode) {
+//        case SGGravityModeResize:
+//            glView.frame = superviewFrame;
+//            break;
+//        case SGGravityModeResizeAspect:
+//            if (superviewAspect < resultAspect) {
+//                CGFloat height = superviewFrame.size.width / resultAspect;
+//                glView.frame = CGRectMake(0, (superviewFrame.size.height - height) / 2, superviewFrame.size.width, height);
+//            } else if (superviewAspect > resultAspect) {
+//                CGFloat width = superviewFrame.size.height * resultAspect;
+//                glView.frame = CGRectMake((superviewFrame.size.width - width) / 2, 0, width, superviewFrame.size.height);
+//            } else {
+//                glView.frame = superviewFrame;
+//            }
+//            break;
+//        case SGGravityModeResizeAspectFill:
+//            if (superviewAspect < resultAspect) {
+//                CGFloat width = superviewFrame.size.height * resultAspect;
+//                glView.frame = CGRectMake(-(width - superviewFrame.size.width) / 2, 0, width, superviewFrame.size.height);
+//            } else if (superviewAspect > resultAspect) {
+//                CGFloat height = superviewFrame.size.width / resultAspect;
+//                glView.frame = CGRectMake(0, -(height - superviewFrame.size.height) / 2, superviewFrame.size.width, height);
+//            } else {
+//                glView.frame = superviewFrame;
+//            }
+//            break;
+//        default:
+//            glView.frame = superviewFrame;
+//            break;
+//    }
+//    self.drawToekn = NO;
+//    [self.currentFrame didUpdateRotateType];
 }
 
 - (void)setAspect:(CGFloat)aspect
@@ -362,17 +364,18 @@
 
 - (SGPLFImage *)snapshot
 {
-    if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
-        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
-        return SGPLFGLViewGetCurrentSnapshot(glView);
-    } else {
-        SGPLFImage * image = [self.currentFrame imageFromVideoFrame];
-        if (image) {
-            return image;
-        }
-    }
-    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
-    return SGPLFGLViewGetCurrentSnapshot(glView);
+//    if (self.displayView.abstractPlayer.videoType == SGVideoTypeVR) {
+//        SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
+//        return SGPLFGLViewGetCurrentSnapshot(glView);
+//    } else {
+//        SGPLFImage * image = [self.currentFrame imageFromVideoFrame];
+//        if (image) {
+//            return image;
+//        }
+//    }
+//    SGPLFGLView2 * glView = SGPLFGLViewControllerGetGLView(self);
+//    return SGPLFGLViewGetCurrentSnapshot(glView);
+    return nil;
 }
 
 - (void)dealloc

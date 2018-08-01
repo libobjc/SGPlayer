@@ -6,7 +6,7 @@
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGFFPlayer.h"
+#import "SGPlayer.h"
 #import "SGFFSession.h"
 #import "SGFFPlayerView.h"
 #import "SGFFAudioPlaybackOutput.h"
@@ -18,7 +18,7 @@
 #import "SGPlayerActivity.h"
 
 
-@interface SGFFPlayer () <NSLocking, SGFFSessionDelegate>
+@interface SGPlayer () <NSLocking, SGFFSessionDelegate>
 
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
 
@@ -32,7 +32,7 @@
 
 @end
 
-@implementation SGFFPlayer
+@implementation SGPlayer
 
 @synthesize playbackState = _playbackState;
 @synthesize loadingState = _loadingState;

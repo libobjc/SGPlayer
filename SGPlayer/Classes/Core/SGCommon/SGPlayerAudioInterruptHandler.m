@@ -13,7 +13,7 @@
 
 @interface SGPlayerAudioInterruptHandler ()
 
-@property (nonatomic, weak) SGFFPlayer * player;
+@property (nonatomic, weak) SGPlayer * player;
 
 @end
 
@@ -21,19 +21,19 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-+ (instancetype)audioInterruptHandlerWithPlayer:(SGFFPlayer *)player;
++ (instancetype)audioInterruptHandlerWithPlayer:(SGPlayer *)player;
 {
     return nil;
 }
 
 #else
 
-+ (instancetype)audioInterruptHandlerWithPlayer:(SGFFPlayer *)player;
++ (instancetype)audioInterruptHandlerWithPlayer:(SGPlayer *)player;
 {
     return [[self alloc] initWithPlayer:player];
 }
 
-- (instancetype)initWithPlayer:(SGFFPlayer *)player
+- (instancetype)initWithPlayer:(SGPlayer *)player
 {
     if (self = [super init])
     {

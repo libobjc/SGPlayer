@@ -21,12 +21,12 @@
 
 #pragma mark - Interface
 
-+ (void)becomeActive:(SGFFPlayer *)player
++ (void)becomeActive:(SGPlayer *)player
 {
     [[SGPlayerActivity activity] becomeActive:player];
 }
 
-+ (void)resignActive:(SGFFPlayer *)player
++ (void)resignActive:(SGPlayer *)player
 {
     [[SGPlayerActivity activity] resignActive:player];
 }
@@ -53,7 +53,7 @@
     return self;
 }
 
-- (void)becomeActive:(SGFFPlayer *)player
+- (void)becomeActive:(SGPlayer *)player
 {
     if (player == nil) {
         return;
@@ -67,7 +67,7 @@
     [self.coreLock unlock];
 }
 
-- (void)resignActive:(SGFFPlayer *)player
+- (void)resignActive:(SGPlayer *)player
 {
     if (player == nil) {
         return;

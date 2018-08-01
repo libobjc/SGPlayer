@@ -11,7 +11,7 @@
 #import <AudioToolbox/AudioToolbox.h>
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
-#import "SGPlayerDefines.h"
+#import "SGDefines.h"
 #import "SGPlayerMacro.h"
 
 #if SGPLATFORM_TARGET_OS_MAC
