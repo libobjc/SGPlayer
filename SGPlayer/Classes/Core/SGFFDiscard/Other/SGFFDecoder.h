@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "SGFFAudioFrame2.h"
-#import "SGFFVideoFrame.h"
+#import "SGAudioFrame2.h"
+#import "SGVideoFrame.h"
 #import "SGFFTrack.h"
 
 @class SGFFDecoder;
@@ -35,7 +35,7 @@
 
 @protocol SGFFDecoderAudioOutput <NSObject>
 
-- (SGFFAudioFrame2 *)decoderAudioOutputGetAudioFrame;
+- (SGAudioFrame2 *)decoderAudioOutputGetAudioFrame;
 
 @end
 
@@ -49,7 +49,7 @@
 
 @protocol SGFFDecoderVideoOutput <NSObject>
 
-- (SGFFVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+- (SGVideoFrame *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
                                                       currentDuration:(NSTimeInterval)currentDuration;
 
 @end

@@ -15,14 +15,14 @@
 #import "SGGLModelPool.h"
 #import "SGGLProgramPool.h"
 #import "SGFFDefineMap.h"
-#import "SGFFVideoAVFrame.h"
-#import "SGFFVideoFFFrame.h"
+#import "SGVideoAVFrame.h"
+#import "SGVideoFFFrame.h"
 
 @interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGFFObjectQueue * frameQueue;
-@property (nonatomic, strong) SGFFVideoFrame * currentFrame;
+@property (nonatomic, strong) SGObjectQueue * frameQueue;
+@property (nonatomic, strong) SGVideoFrame * currentFrame;
 
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
@@ -77,7 +77,7 @@
 
 - (void)start
 {
-    self.frameQueue = [[SGFFObjectQueue alloc] init];
+    self.frameQueue = [[SGObjectQueue alloc] init];
     self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
     self.renderTimer.fireDate = [NSDate distantPast];
@@ -92,13 +92,13 @@
     [self unlock];
 }
 
-- (void)putFrame:(__kindof SGFFFrame *)frame
+- (void)putFrame:(__kindof SGFrame *)frame
 {
-    if (![frame isKindOfClass:[SGFFVideoFrame class]])
+    if (![frame isKindOfClass:[SGVideoFrame class]])
     {
         return;
     }
-    SGFFVideoFrame * videoFrame = frame;
+    SGVideoFrame * videoFrame = frame;
     [self.frameQueue putObjectSync:videoFrame];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -141,7 +141,7 @@
 {
     [self lock];
     SGWeakSelf
-    SGFFVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
+    SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
         if (strongSelf.currentFrame)
         {
@@ -191,14 +191,14 @@
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
     [self lock];
-    SGFFVideoFrame * frame = self.currentFrame;
+    SGVideoFrame * frame = self.currentFrame;
     if (!frame)
     {
         [self unlock];
         return NO;
     }
-    if (![frame isKindOfClass:[SGFFVideoFFFrame class]] &&
-        ![frame isKindOfClass:[SGFFVideoAVFrame class]])
+    if (![frame isKindOfClass:[SGVideoFFFrame class]] &&
+        ![frame isKindOfClass:[SGVideoAVFrame class]])
     {
         [self unlock];
         return NO;
@@ -233,13 +233,13 @@
         [program use];
         [program bindVariable];
         BOOL success = NO;
-        if ([frame isKindOfClass:[SGFFVideoFFFrame class]])
+        if ([frame isKindOfClass:[SGVideoFFFrame class]])
         {
             success = [self.textureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:renderSize];
         }
-        else if ([frame isKindOfClass:[SGFFVideoAVFrame class]])
+        else if ([frame isKindOfClass:[SGVideoAVFrame class]])
         {
-            success = [self.textureUploader uploadWithCVPixelBuffer:((SGFFVideoAVFrame *)frame).corePixelBuffer];
+            success = [self.textureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
         }
         if (!success)
         {

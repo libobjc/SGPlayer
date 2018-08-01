@@ -120,10 +120,10 @@
 //            break;
 //        case SGDisplayPlayerOutputTypeFF:
 //        {
-//            SGFFVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
+//            SGVideoFrame * videoFrame = [self.playerOutputFF playerOutputGetVideoFrameWithCurrentPostion:glFrame.currentPosition
 //                                                                                           currentDuration:glFrame.currentDuration];
 //            if (videoFrame) {
-//                [glFrame updateWithSGFFVideoFrame:videoFrame];
+//                [glFrame updateWithSGVideoFrame:videoFrame];
 //                glFrame.rotateType = videoFrame.rotateType;
 //            }
 //        }

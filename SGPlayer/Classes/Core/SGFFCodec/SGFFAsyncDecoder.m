@@ -30,7 +30,7 @@
     return SGMediaTypeUnknown;
 }
 
-static SGFFPacket * flushPacket;
+static SGPacket * flushPacket;
 
 - (instancetype)init
 {
@@ -38,9 +38,9 @@ static SGFFPacket * flushPacket;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            flushPacket = [[SGFFPacket alloc] init];
+            flushPacket = [[SGPacket alloc] init];
         });
-        _packetQueue = [[SGFFObjectQueue alloc] init];
+        _packetQueue = [[SGObjectQueue alloc] init];
     }
     return self;
 }
@@ -81,7 +81,7 @@ static SGFFPacket * flushPacket;
     [self.operationQueue waitUntilAllOperationsAreFinished];
 }
 
-- (BOOL)putPacket:(SGFFPacket *)packet
+- (BOOL)putPacket:(SGPacket *)packet
 {
     [self.packetQueue putObjectSync:packet];
     [self.delegate decoderDidChangeCapacity:self];
@@ -152,15 +152,15 @@ static SGFFPacket * flushPacket;
         }
         else if (self.state == SGFFDecoderStateDecoding)
         {
-            SGFFPacket * packet = [self.packetQueue getObjectSync];
+            SGPacket * packet = [self.packetQueue getObjectSync];
             if (packet == flushPacket)
             {
                 [self doFlush];
             }
             else if (packet)
             {
-                NSArray <__kindof SGFFFrame *> * frames = [self doDecode:packet];
-                for (__kindof SGFFFrame * frame in frames)
+                NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
+                for (__kindof SGFrame * frame in frames)
                 {
                     [self.delegate decoder:self hasNewFrame:frame];
                     [frame unlock];
@@ -178,7 +178,7 @@ static SGFFPacket * flushPacket;
     
 }
 
-- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
+- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet
 {
     return nil;
 }

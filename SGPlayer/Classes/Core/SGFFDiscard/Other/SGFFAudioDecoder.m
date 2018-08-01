@@ -7,7 +7,7 @@
 //
 
 #import "SGFFAudioDecoder.h"
-#import "SGFFFrameQueue2.h"
+#import "SGFrameQueue2.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
 #import "SGMacro.h"
@@ -30,7 +30,7 @@
     int _audio_swr_buffer_size;
 }
 
-@property (nonatomic, strong) SGFFFrameQueue2 * frameQueue;
+@property (nonatomic, strong) SGFrameQueue2 * frameQueue;
 @property (nonatomic, strong) SGFFFramePool * framePool;
 
 @end
@@ -56,7 +56,7 @@
 
 - (void)setup
 {
-    self.frameQueue = [SGFFFrameQueue2 frameQueue];
+    self.frameQueue = [SGFrameQueue2 frameQueue];
     self.framePool = [SGFFFramePool audioPool];
     [self setupSwsContext];
 }
@@ -106,7 +106,7 @@
     [self.framePool flush];
 }
 
-- (SGFFAudioFrame2 *)getFrameSync
+- (SGAudioFrame2 *)getFrameSync
 {
     return [self.frameQueue getFrameSync];
 }
@@ -130,7 +130,7 @@
         }
         @autoreleasepool
         {
-            SGFFAudioFrame2 * frame = [self decode:packet.size];
+            SGAudioFrame2 * frame = [self decode:packet.size];
             if (frame) {
                 [self.frameQueue putFrame:frame];
             }
@@ -140,7 +140,7 @@
     return 0;
 }
 
-- (SGFFAudioFrame2 *)decode:(int)packetSize
+- (SGAudioFrame2 *)decode:(int)packetSize
 {
     if (!_temp_frame->data[0]) return nil;
     
@@ -175,7 +175,7 @@
         numberOfFrames = _temp_frame->nb_samples;
     }
     
-    SGFFAudioFrame2 * audioFrame = [self.framePool getUnuseFrame];
+    SGAudioFrame2 * audioFrame = [self.framePool getUnuseFrame];
     audioFrame.packetSize = packetSize;
     audioFrame.position = av_frame_get_best_effort_timestamp(_temp_frame) * _timebase;
     audioFrame.duration = av_frame_get_pkt_duration(_temp_frame) * _timebase;

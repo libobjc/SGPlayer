@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderErrorCode) {
 #define SGFFFFmpegLogEnable     0
 #define SGFFSynLogEnable        0
 #define SGFFThreadLogEnable     0
-#define SGFFPacketLogEnable     0
+#define SGPacketLogEnable     0
 #define SGFFSleepLogEnable      0
 #define SGFFDecodeLogEnable     0
 #define SGFFErrorLogEnable      0
@@ -54,10 +54,10 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderErrorCode) {
 #define SGFFThreadLog(...)
 #endif
 
-#if SGFFPacketLogEnable
-#define SGFFPacketLog(...)       NSLog(__VA_ARGS__)
+#if SGPacketLogEnable
+#define SGPacketLog(...)       NSLog(__VA_ARGS__)
 #else
-#define SGFFPacketLog(...)
+#define SGPacketLog(...)
 #endif
 
 #if SGFFSleepLogEnable
@@ -86,8 +86,8 @@ void SGFFLog2(void * context, int level, const char * format, va_list args);
 NSError * SGFFCheckError(int result);
 NSError * SGFFCheckErrorCode(int result, NSUInteger errorCode);
 
-double SGFFStreamGetTimebase(AVStream * stream, double default_timebase);
-double SGFFStreamGetFPS(AVStream * stream, double timebase);
+double SGStreamGetTimebase(AVStream * stream, double default_timebase);
+double SGStreamGetFPS(AVStream * stream, double timebase);
 
 NSDictionary * SGFFFoundationBrigeOfAVDictionary(AVDictionary * avDictionary);
 AVDictionary * SGFFFFmpegBrigeOfNSDictionary(NSDictionary * dictionary);

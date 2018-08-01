@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFVideoFrame2.h"
+#import "SGVideoFrame2.h"
 #import "avformat.h"
 
 @class SGFFVideoDecoder;
@@ -26,7 +26,7 @@
                                     fps:(NSTimeInterval)fps
                       codecContextAsync:(BOOL)codecContextAsync
                      videoToolBoxEnable:(BOOL)videoToolBoxEnable
-                             rotateType:(SGFFVideoFrameRotateType)rotateType
+                             rotateType:(SGVideoFrameRotateType)rotateType
                                delegate:(id <SGFFVideoDecoderDlegate>)delegate;
 
 @property (nonatomic, weak) id <SGFFVideoDecoderDlegate> delegate;
@@ -35,7 +35,7 @@
 @property (nonatomic, assign, readonly) NSTimeInterval timebase;
 @property (nonatomic, assign, readonly) NSTimeInterval fps;
 
-@property (nonatomic, assign, readonly) SGFFVideoFrameRotateType rotateType;
+@property (nonatomic, assign, readonly) SGVideoFrameRotateType rotateType;
 
 @property (nonatomic, assign, readonly) BOOL videoToolBoxEnable;
 @property (nonatomic, assign, readonly) BOOL videoToolBoxDidOpen;
@@ -55,8 +55,8 @@
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL endOfFile;
 
-- (SGFFVideoFrame2 *)getFrameAsync;
-- (SGFFVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position;
+- (SGVideoFrame2 *)getFrameAsync;
+- (SGVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position;
 - (void)discardFrameBeforPosition:(NSTimeInterval)position;
 
 - (void)putPacket:(AVPacket)packet;

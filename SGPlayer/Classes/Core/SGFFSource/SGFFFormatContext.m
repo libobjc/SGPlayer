@@ -7,7 +7,7 @@
 //
 
 #import "SGFFFormatContext.h"
-#import "SGFFPacket.h"
+#import "SGPacket.h"
 #import "SGFFError.h"
 #import "avformat.h"
 
@@ -18,11 +18,11 @@
 @property (nonatomic, assign) SGFFSourceState state;
 @property (nonatomic, copy) NSError * error;
 
-@property (nonatomic, strong) NSArray <SGFFStream *> * streams;
-@property (nonatomic, strong) NSArray <SGFFStream *> * videoStreams;
-@property (nonatomic, strong) NSArray <SGFFStream *> * audioStreams;
-@property (nonatomic, strong) NSArray <SGFFStream *> * subtitleStreams;
-@property (nonatomic, strong) NSArray <SGFFStream *> * otherStreams;
+@property (nonatomic, strong) NSArray <SGStream *> * streams;
+@property (nonatomic, strong) NSArray <SGStream *> * videoStreams;
+@property (nonatomic, strong) NSArray <SGStream *> * audioStreams;
+@property (nonatomic, strong) NSArray <SGStream *> * subtitleStreams;
+@property (nonatomic, strong) NSArray <SGStream *> * otherStreams;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openStreamsOperation;
@@ -235,14 +235,14 @@ static int SGFFFormatContextInterruptHandler(void * context)
         return;
     }
     
-    NSMutableArray <SGFFStream *> * streams = [NSMutableArray array];
-    NSMutableArray <SGFFStream *> * audioStreams = [NSMutableArray array];
-    NSMutableArray <SGFFStream *> * videoStreams = [NSMutableArray array];
-    NSMutableArray <SGFFStream *> * subtitleStreams = [NSMutableArray array];
-    NSMutableArray <SGFFStream *> * otherStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * streams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * subtitleStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
     for (int i = 0; i < self.formatContext->nb_streams; i++)
     {
-        SGFFStream * obj = [[SGFFStream alloc] init];
+        SGStream * obj = [[SGStream alloc] init];
         obj.coreStream = self.formatContext->streams[i];
         [streams addObject:obj];
         switch (obj.coreStream->codecpar->codec_type)
@@ -349,7 +349,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
         }
         else if (self.state == SGFFSourceStateReading)
         {
-            SGFFPacket * packet = [[SGFFObjectPool sharePool] objectWithClass:[SGFFPacket class]];
+            SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
             int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
             {

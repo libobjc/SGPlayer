@@ -11,7 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
-#import "SGFFFrame.h"
+#import "SGFrame.h"
 #import "SGTimeSynchronizer.h"
 
 @protocol SGOutput;
@@ -32,7 +32,7 @@
 - (void)start;
 - (void)stop;
 
-- (void)putFrame:(__kindof SGFFFrame *)frame;
+- (void)putFrame:(__kindof SGFrame *)frame;
 - (void)flush;
 
 @end

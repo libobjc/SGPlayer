@@ -8,8 +8,8 @@
 
 #import "SGPlatform.h"
 #import "SGFFVideoDecoder.h"
-#import "SGFFPacketQueue2.h"
-#import "SGFFFrameQueue2.h"
+#import "SGPacketQueue2.h"
+#import "SGFrameQueue2.h"
 #import "SGFFFramePool.h"
 #import "SGFFTools.h"
 
@@ -30,8 +30,8 @@ static AVPacket flush_packet;
 
 @property (nonatomic, assign) BOOL canceled;
 
-@property (nonatomic, strong) SGFFPacketQueue2 * packetQueue;
-@property (nonatomic, strong) SGFFFrameQueue2 * frameQueue;
+@property (nonatomic, strong) SGPacketQueue2 * packetQueue;
+@property (nonatomic, strong) SGFrameQueue2 * frameQueue;
 
 @property (nonatomic, strong) SGFFFramePool * framePool;
 
@@ -48,7 +48,7 @@ static AVPacket flush_packet;
                                     fps:(NSTimeInterval)fps
                       codecContextAsync:(BOOL)codecContextAsync
                      videoToolBoxEnable:(BOOL)videoToolBoxEnable
-                             rotateType:(SGFFVideoFrameRotateType)rotateType
+                             rotateType:(SGVideoFrameRotateType)rotateType
                                delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     return [[self alloc] initWithCodecContext:codec_context
@@ -65,7 +65,7 @@ static AVPacket flush_packet;
                                  fps:(NSTimeInterval)fps
                    codecContextAsync:(BOOL)codecContextAsync
                   videoToolBoxEnable:(BOOL)videoToolBoxEnable
-                          rotateType:(SGFFVideoFrameRotateType)rotateType
+                          rotateType:(SGVideoFrameRotateType)rotateType
                             delegate:(id<SGFFVideoDecoderDlegate>)delegate
 {
     if (self = [super init]) {
@@ -91,7 +91,7 @@ static AVPacket flush_packet;
 {
     self.preferredFramesPerSecond = 60;
     self->_temp_frame = av_frame_alloc();
-    self.packetQueue = [SGFFPacketQueue2 packetQueueWithTimebase:self.timebase];
+    self.packetQueue = [SGPacketQueue2 packetQueueWithTimebase:self.timebase];
     self.videoToolBoxMaxDecodeFrameCount = 20;
     self.codecContextMaxDecodeFrameCount = 3;
 #if SGPLATFORM_TARGET_OS_IPHONE
@@ -106,11 +106,11 @@ static AVPacket flush_packet;
     }
 #endif
     if (self.videoToolBoxDidOpen) {
-        self.frameQueue = [SGFFFrameQueue2 frameQueue];
+        self.frameQueue = [SGFrameQueue2 frameQueue];
         self.frameQueue.minFrameCountForGet = 4;
         self->_decodeAsync = YES;
     } else if (self.codecContextAsync) {
-        self.frameQueue = [SGFFFrameQueue2 frameQueue];
+        self.frameQueue = [SGFrameQueue2 frameQueue];
         self.framePool = [SGFFFramePool videoPool];
         self->_decodeAsync = YES;
     } else {
@@ -120,7 +120,7 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame2 *)getFrameAsync
+- (SGVideoFrame2 *)getFrameAsync
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
         return [self.frameQueue getFrameAsync];
@@ -129,12 +129,12 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position
+- (SGVideoFrame2 *)getFrameAsyncPosistion:(NSTimeInterval)position
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
-        NSMutableArray <SGFFFrame2 *> * discardFrames = nil;
-        SGFFVideoFrame2 * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
-        for (SGFFVideoFrame2 * obj in discardFrames) {
+        NSMutableArray <SGFrame2 *> * discardFrames = nil;
+        SGVideoFrame2 * videoFrame = [self.frameQueue getFrameAsyncPosistion:position discardFrames:&discardFrames];
+        for (SGVideoFrame2 * obj in discardFrames) {
             [obj cancel];
         }
         return videoFrame;
@@ -146,8 +146,8 @@ static AVPacket flush_packet;
 - (void)discardFrameBeforPosition:(NSTimeInterval)position
 {
     if (self.videoToolBoxDidOpen || self.codecContextAsync) {
-        NSMutableArray <SGFFFrame2 *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
-        for (SGFFVideoFrame2 * obj in discardFrames) {
+        NSMutableArray <SGFrame2 *> * discardFrames = [self.frameQueue discardFrameBeforPosition:position];
+        for (SGVideoFrame2 * obj in discardFrames) {
             [obj cancel];
         }
     }
@@ -211,7 +211,7 @@ static AVPacket flush_packet;
         }
         if (packet.stream_index < 0 || packet.data == NULL) continue;
         
-        SGFFVideoFrame2 * videoFrame = nil;
+        SGVideoFrame2 * videoFrame = nil;
         int result = avcodec_send_packet(_codec_context, &packet);
         if (result < 0) {
             if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
@@ -238,7 +238,7 @@ static AVPacket flush_packet;
     }
 }
 
-- (SGFFVideoFrame2 *)codecContextDecodeSync
+- (SGVideoFrame2 *)codecContextDecodeSync
 {
     if (self.canceled || self.error) {
         return nil;
@@ -259,7 +259,7 @@ static AVPacket flush_packet;
         return nil;
     }
 
-    SGFFVideoFrame2 * videoFrame = nil;
+    SGVideoFrame2 * videoFrame = nil;
     int result = avcodec_send_packet(_codec_context, &packet);
     if (result < 0) {
         if (result != AVERROR(EAGAIN) && result != AVERROR_EOF) {
@@ -343,7 +343,7 @@ static AVPacket flush_packet;
         }
         if (packet.stream_index < 0 || packet.data == NULL) continue;
         
-        SGFFVideoFrame2 * videoFrame = nil;
+        SGVideoFrame2 * videoFrame = nil;
         BOOL vtbEnable = [self.videoToolBox trySetupVTSession];
         if (vtbEnable) {
             BOOL needFlush = NO;
@@ -366,7 +366,7 @@ static AVPacket flush_packet;
     self.frameQueue.ignoreMinFrameCountForGetLimit = YES;
 }
 
-- (SGFFVideoFrame2 *)videoFrameFromVideoToolBox:(AVPacket)packet
+- (SGVideoFrame2 *)videoFrameFromVideoToolBox:(AVPacket)packet
 {
     CVImageBufferRef imageBuffer = [self.videoToolBox imageBuffer];
     if (imageBuffer == NULL) return nil;

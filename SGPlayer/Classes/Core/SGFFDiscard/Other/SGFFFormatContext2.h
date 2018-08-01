@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
-#import "SGFFVideoFrame2.h"
+#import "SGVideoFrame2.h"
 #import "SGFFTrack.h"
 
 @class SGFFFormatContext2;
@@ -51,7 +51,7 @@
 @property (nonatomic, assign, readonly) NSTimeInterval videoFPS;
 @property (nonatomic, assign, readonly) CGSize videoPresentationSize;
 @property (nonatomic, assign, readonly) CGFloat videoAspect;
-@property (nonatomic, assign, readonly) SGFFVideoFrameRotateType videoFrameRotateType;
+@property (nonatomic, assign, readonly) SGVideoFrameRotateType videoFrameRotateType;
 
 @property (nonatomic, assign, readonly) NSTimeInterval audioTimebase;
 

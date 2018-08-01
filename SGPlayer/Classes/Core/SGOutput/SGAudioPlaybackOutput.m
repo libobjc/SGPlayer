@@ -8,7 +8,7 @@
 
 #import "SGAudioPlaybackOutput.h"
 #import "SGAudioStreamPlayer.h"
-#import "SGFFAudioBufferFrame.h"
+#import "SGAudioBufferFrame.h"
 #import "SGTime.h"
 #import "SGFFError.h"
 #import "swscale.h"
@@ -17,16 +17,16 @@
 @interface SGAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
 
 {
-    void * _swrContextBufferData[SGFFAudioFrameMaxChannelCount];
-    int _swrContextBufferLinesize[SGFFAudioFrameMaxChannelCount];
-    int _swrContextBufferMallocSize[SGFFAudioFrameMaxChannelCount];
+    void * _swrContextBufferData[SGAudioFrameMaxChannelCount];
+    int _swrContextBufferLinesize[SGAudioFrameMaxChannelCount];
+    int _swrContextBufferMallocSize[SGAudioFrameMaxChannelCount];
 }
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
-@property (nonatomic, strong) SGFFObjectQueue * frameQueue;
+@property (nonatomic, strong) SGObjectQueue * frameQueue;
 
-@property (nonatomic, strong) SGFFAudioFrame * currentFrame;
+@property (nonatomic, strong) SGAudioFrame * currentFrame;
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
@@ -73,7 +73,7 @@
 
 - (void)start
 {
-    self.frameQueue = [[SGFFObjectQueue alloc] init];
+    self.frameQueue = [[SGObjectQueue alloc] init];
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
@@ -96,13 +96,13 @@
     [self destorySwrContext];
 }
 
-- (void)putFrame:(__kindof SGFFFrame *)frame
+- (void)putFrame:(__kindof SGFrame *)frame
 {
-    if (![frame isKindOfClass:[SGFFAudioFrame class]])
+    if (![frame isKindOfClass:[SGAudioFrame class]])
     {
         return;
     }
-    SGFFAudioFrame * audioFrame = frame;
+    SGAudioFrame * audioFrame = frame;
     
     enum AVSampleFormat inputFormat = audioFrame.format;
     enum AVSampleFormat outputFormat = AV_SAMPLE_FMT_FLTP;
@@ -145,7 +145,7 @@
                                       audioFrame.numberOfSamples);
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
     
-    SGFFAudioBufferFrame * result = [[SGFFObjectPool sharePool] objectWithClass:[SGFFAudioBufferFrame class]];
+    SGAudioBufferFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioBufferFrame class]];
     result.position = audioFrame.position;
     result.duration = audioFrame.duration;
     result.size = audioFrame.size;
@@ -279,7 +279,7 @@
 
 - (void)setupSwrContextBufferIfNeeded:(int)bufferSize
 {
-    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
     {
         if (_swrContextBufferMallocSize[i] < bufferSize)
         {
@@ -291,7 +291,7 @@
 
 - (void)updateSwrContextBufferLinsize:(int)linesize
 {
-    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
     {
         _swrContextBufferLinesize[i] = (i < self.outputNumberOfChannels) ? linesize : 0;
     }
@@ -299,7 +299,7 @@
 
 - (void)destorySwrContextBuffer
 {
-    for (int i = 0; i < SGFFAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
     {
         if (_swrContextBufferData[i])
         {

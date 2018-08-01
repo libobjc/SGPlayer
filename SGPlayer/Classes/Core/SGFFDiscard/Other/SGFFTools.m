@@ -36,7 +36,7 @@ NSError * SGFFCheckErrorCode(int result, NSUInteger errorCode)
     return nil;
 }
 
-double SGFFStreamGetTimebase(AVStream * stream, double default_timebase)
+double SGStreamGetTimebase(AVStream * stream, double default_timebase)
 {
     double timebase;
     if (stream->time_base.den > 0 && stream->time_base.num > 0) {
@@ -47,7 +47,7 @@ double SGFFStreamGetTimebase(AVStream * stream, double default_timebase)
     return timebase;
 }
 
-double SGFFStreamGetFPS(AVStream * stream, double timebase)
+double SGStreamGetFPS(AVStream * stream, double timebase)
 {
     double fps;
     if (stream->avg_frame_rate.den > 0 && stream->avg_frame_rate.num > 0) {

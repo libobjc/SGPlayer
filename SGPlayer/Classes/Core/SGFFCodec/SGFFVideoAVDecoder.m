@@ -8,8 +8,8 @@
 
 #import "SGFFVideoAVDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
-#import "SGFFVideoAVFrame.h"
-#import "SGFFObjectPool.h"
+#import "SGVideoAVFrame.h"
+#import "SGObjectPool.h"
 #import <UIKit/UIKit.h>
 #import "SGPlatform.h"
 
@@ -101,13 +101,13 @@
     [self setupDecompressionSession];
 }
 
-- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet
+- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet
 {
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (self.applicationState == UIApplicationStateBackground)
     {
         self.shouldFlush = YES;
-        SGFFVideoFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFrame class]];
+        SGVideoFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoFrame class]];
         frame.position = packet.position;
         frame.duration = packet.duration;
         frame.size = packet.size;
@@ -119,7 +119,7 @@
         self.shouldFlush = NO;
         [self doFlush];
     }
-    SGFFVideoFrame * frame = [self decodeInternal:packet];
+    SGVideoFrame * frame = [self decodeInternal:packet];
     if (frame)
     {
         return @[frame];
@@ -127,9 +127,9 @@
     return nil;
 }
 
-- (SGFFVideoFrame *)decodeInternal:(SGFFPacket *)packet
+- (SGVideoFrame *)decodeInternal:(SGPacket *)packet
 {
-    SGFFVideoFrame * ret = nil;
+    SGVideoFrame * ret = nil;
     int64_t timestamp = packet.corePacket->pts;
     if (packet.corePacket->pts == AV_NOPTS_VALUE)
     {
@@ -155,7 +155,7 @@
         {
             if (self.decodingPixelBuffer)
             {
-                SGFFVideoAVFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoAVFrame class]];
+                SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
                 frame.corePixelBuffer = self.decodingPixelBuffer;
                 [frame fillWithTimebase:self.timebase packet:packet];
                 ret = frame;

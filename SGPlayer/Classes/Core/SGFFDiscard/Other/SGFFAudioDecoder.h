@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFAudioFrame2.h"
+#import "SGAudioFrame2.h"
 #import "avformat.h"
 
 @class SGFFAudioDecoder;
@@ -29,7 +29,7 @@
 @property (nonatomic, assign, readonly) BOOL empty;
 @property (nonatomic, assign, readonly) NSTimeInterval duration;
 
-- (SGFFAudioFrame2 *)getFrameSync;
+- (SGAudioFrame2 *)getFrameSync;
 - (int)putPacket:(AVPacket)packet;
 
 - (void)flush;

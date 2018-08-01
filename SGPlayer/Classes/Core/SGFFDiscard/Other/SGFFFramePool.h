@@ -1,5 +1,5 @@
 //
-//  SGFFFramePool.h
+//  SGFramePool.h
 //  SGPlayer
 //
 //  Created by Single on 2017/3/3.
@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFFrame2.h"
+#import "SGFrame2.h"
 
 @interface SGFFFramePool : NSObject
 
@@ -19,7 +19,7 @@
 - (NSUInteger)unuseCount;
 - (NSUInteger)usedCount;
 
-- (__kindof SGFFFrame2 *)getUnuseFrame;
+- (__kindof SGFrame2 *)getUnuseFrame;
 
 - (void)flush;
 

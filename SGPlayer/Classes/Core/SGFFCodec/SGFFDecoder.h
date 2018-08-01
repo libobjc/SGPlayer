@@ -11,8 +11,8 @@
 
 
 #import <Foundation/Foundation.h>
-#import "SGFFFrame.h"
-#import "SGFFPacket.h"
+#import "SGFrame.h"
+#import "SGPacket.h"
 
 @protocol SGFFDecoder;
 @protocol SGFFDecoderDelegate;
@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderState)
 - (void)resumeDecoding;
 - (void)stopDecoding;
 
-- (BOOL)putPacket:(SGFFPacket *)packet;
+- (BOOL)putPacket:(SGPacket *)packet;
 - (void)flush;
 
 @end
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGFFDecoderState)
 @protocol SGFFDecoderDelegate <NSObject>
 
 - (void)decoderDidChangeCapacity:(id <SGFFDecoder>)decoder;
-- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFFFrame *)frame;
+- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame;
 
 @end
 

@@ -272,7 +272,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         int result = [self.formatContext readFrame:&packet];
         if (result < 0)
         {
-            SGFFPacketLog(@"read packet finished");
+            SGPacketLog(@"read packet finished");
             self.endOfFile = YES;
             self.videoDecoder.endOfFile = YES;
             finished = YES;
@@ -283,13 +283,13 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         }
         if (packet.stream_index == self.formatContext.videoTrack.index && self.formatContext.videoEnable)
         {
-            SGFFPacketLog(@"video : put packet");
+            SGPacketLog(@"video : put packet");
             [self.videoDecoder putPacket:packet];
             [self updateBufferedDurationByVideo];
         }
         else if (packet.stream_index == self.formatContext.audioTrack.index && self.formatContext.audioEnable)
         {
-            SGFFPacketLog(@"audio : put packet");
+            SGPacketLog(@"audio : put packet");
             int result = [self.audioDecoder putPacket:packet];
             if (result < 0) {
                 self.error = SGFFCheckErrorCode(result, SGFFDecoderErrorCodeCodecAudioSendPacket);
@@ -354,7 +354,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
 }
 
-- (SGFFAudioFrame2 *)decoderAudioOutputGetAudioFrame
+- (SGAudioFrame2 *)decoderAudioOutputGetAudioFrame
 {
     BOOL check = self.closed || self.seeking || self.buffering || self.paused || self.playbackFinished || !self.formatContext.audioEnable;
     if (check) return nil;
@@ -362,7 +362,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         [self updateBufferedDurationByAudio];
         return nil;
     }
-    SGFFAudioFrame2 * audioFrame = [self.audioDecoder getFrameSync];
+    SGAudioFrame2 * audioFrame = [self.audioDecoder getFrameSync];
     if (!audioFrame) return nil;
     self.audioFramePosition = audioFrame.position;
     self.audioFrameDuration = audioFrame.duration;
@@ -375,7 +375,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     return audioFrame;
 }
 
-- (SGFFVideoFrame2 *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
+- (SGVideoFrame2 *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
                                                       currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.closed || self.error) {
@@ -395,7 +395,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     }
     
     NSTimeInterval timeInterval = [NSDate date].timeIntervalSince1970;
-    SGFFVideoFrame2 * videoFrame = nil;
+    SGVideoFrame2 * videoFrame = nil;
     if (self.formatContext.audioEnable)
     {
         if (self.videoFrameTimeClock < 0) {

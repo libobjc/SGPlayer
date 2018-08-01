@@ -10,8 +10,8 @@
 #define SGFFSource_h
 
 #import <Foundation/Foundation.h>
-#import "SGFFStream.h"
-#import "SGFFPacket.h"
+#import "SGStream.h"
+#import "SGPacket.h"
 
 @protocol SGFFSource;
 @protocol SGFFSourceDelegate;
@@ -39,11 +39,11 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 - (CMTime)duration;
 - (NSError *)error;
 
-- (NSArray <SGFFStream *> *)streams;
-- (NSArray <SGFFStream *> *)audioStreams;
-- (NSArray <SGFFStream *> *)videoStreams;
-- (NSArray <SGFFStream *> *)subtitleStreams;
-- (NSArray <SGFFStream *> *)otherStreams;
+- (NSArray <SGStream *> *)streams;
+- (NSArray <SGStream *> *)audioStreams;
+- (NSArray <SGStream *> *)videoStreams;
+- (NSArray <SGStream *> *)subtitleStreams;
+- (NSArray <SGStream *> *)otherStreams;
 
 - (void)openStreams;
 
@@ -59,7 +59,7 @@ typedef NS_ENUM(NSUInteger, SGFFSourceState)
 
 @protocol SGFFSourceDelegate <NSObject>
 
-- (void)source:(id <SGFFSource>)source hasNewPacket:(SGFFPacket *)packet;
+- (void)source:(id <SGFFSource>)source hasNewPacket:(SGPacket *)packet;
 - (void)sourceDidOpened:(id <SGFFSource>)source;
 - (void)sourceDidFailed:(id <SGFFSource>)source;
 - (void)sourceDidFinished:(id <SGFFSource>)source;

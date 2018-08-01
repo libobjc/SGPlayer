@@ -7,10 +7,10 @@
 //
 
 #import "SGFFAsyncDecoder.h"
-#import "SGFFFrame.h"
+#import "SGFrame.h"
 
 @interface SGFFAsyncFFDecoder : SGFFAsyncDecoder
 
-- (SGFFFrame *)nextReuseFrame;
+- (SGFrame *)nextReuseFrame;
 
 @end

@@ -1,5 +1,5 @@
 //
-//  SGFFFramePool.m
+//  SGFramePool.m
 //  SGPlayer
 //
 //  Created by Single on 2017/3/3.
@@ -9,13 +9,13 @@
 #import "SGFFFramePool.h"
 #import "SGMacro.h"
 
-@interface SGFFFramePool () <SGFFFrameDelegate>
+@interface SGFFFramePool () <SGFrameDelegate>
 
 @property (nonatomic, copy) Class frameClassName;
 @property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, strong) SGFFFrame2 * playingFrame;
-@property (nonatomic, strong) NSMutableSet <SGFFFrame2 *> * unuseFrames;
-@property (nonatomic, strong) NSMutableSet <SGFFFrame2 *> * usedFrames;
+@property (nonatomic, strong) SGFrame2 * playingFrame;
+@property (nonatomic, strong) NSMutableSet <SGFrame2 *> * unuseFrames;
+@property (nonatomic, strong) NSMutableSet <SGFrame2 *> * usedFrames;
 
 @end
 
@@ -28,7 +28,7 @@
 
 + (instancetype)audioPool
 {
-    return [self poolWithCapacity:500 frameClassName:NSClassFromString(@"SGFFAudioFrame")];
+    return [self poolWithCapacity:500 frameClassName:NSClassFromString(@"SGAudioFrame")];
 }
 
 + (instancetype)poolWithCapacity:(NSUInteger)number frameClassName:(Class)frameClassName
@@ -62,10 +62,10 @@
     return self.usedFrames.count;
 }
 
-- (__kindof SGFFFrame2 *)getUnuseFrame
+- (__kindof SGFrame2 *)getUnuseFrame
 {
     [self.lock lock];
-    SGFFFrame2 * frame;
+    SGFrame2 * frame;
     if (self.unuseFrames.count > 0) {
         frame = [self.unuseFrames anyObject];
         [self.unuseFrames removeObject:frame];
@@ -80,7 +80,7 @@
     return frame;
 }
 
-- (void)setFrameUnuse:(SGFFFrame2 *)frame
+- (void)setFrameUnuse:(SGFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -90,11 +90,11 @@
     [self.lock unlock];
 }
 
-- (void)setFramesUnuse:(NSArray <SGFFFrame2 *> *)frames
+- (void)setFramesUnuse:(NSArray <SGFrame2 *> *)frames
 {
     if (frames.count <= 0) return;
     [self.lock lock];
-    for (SGFFFrame2 * obj in frames) {
+    for (SGFrame2 * obj in frames) {
         if (![obj isKindOfClass:self.frameClassName]) continue;
         [self.usedFrames removeObject:obj];
         [self.unuseFrames addObject:obj];
@@ -102,7 +102,7 @@
     [self.lock unlock];
 }
 
-- (void)setFrameStartDrawing:(SGFFFrame2 *)frame
+- (void)setFrameStartDrawing:(SGFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -115,7 +115,7 @@
     [self.lock unlock];
 }
 
-- (void)setFrameStopDrawing:(SGFFFrame2 *)frame
+- (void)setFrameStopDrawing:(SGFrame2 *)frame
 {
     if (!frame) return;
     if (![frame isKindOfClass:self.frameClassName]) return;
@@ -130,33 +130,33 @@
 - (void)flush
 {
     [self.lock lock];
-    [self.usedFrames enumerateObjectsUsingBlock:^(SGFFFrame2 * _Nonnull obj, BOOL * _Nonnull stop) {
+    [self.usedFrames enumerateObjectsUsingBlock:^(SGFrame2 * _Nonnull obj, BOOL * _Nonnull stop) {
         [self.unuseFrames addObject:obj];
     }];
     [self.usedFrames removeAllObjects];
     [self.lock unlock];
 }
 
-#pragma mark - SGFFFrameDelegate
+#pragma mark - SGFrameDelegate
 
-- (void)frameDidStartPlaying:(SGFFFrame2 *)frame
+- (void)frameDidStartPlaying:(SGFrame2 *)frame
 {
     [self setFrameStartDrawing:frame];
 }
 
-- (void)frameDidStopPlaying:(SGFFFrame2 *)frame
+- (void)frameDidStopPlaying:(SGFrame2 *)frame
 {
     [self setFrameStopDrawing:frame];
 }
 
-- (void)frameDidCancel:(SGFFFrame2 *)frame
+- (void)frameDidCancel:(SGFrame2 *)frame
 {
     [self setFrameUnuse:frame];
 }
 
 - (void)dealloc
 {
-    SGPlayerLog(@"SGFFFramePool release");
+    SGPlayerLog(@"SGFramePool release");
 }
 
 @end

@@ -318,7 +318,7 @@
 
 #pragma mark - SGFFSourceDelegate
 
-- (void)source:(id <SGFFSource>)source hasNewPacket:(SGFFPacket *)packet
+- (void)source:(id <SGFFSource>)source hasNewPacket:(SGPacket *)packet
 {
     if (packet.index == self.audioDecoder.index)
     {
@@ -334,7 +334,7 @@
 
 - (void)sourceDidOpened:(id <SGFFSource>)source
 {
-    for (SGFFStream * stream in source.streams)
+    for (SGStream * stream in source.streams)
     {
         switch (stream.mediaType)
         {
@@ -402,7 +402,7 @@
     [self updateCapacity];
 }
 
-- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFFFrame *)frame
+- (void)decoder:(id <SGFFDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame
 {
     if (decoder == self.audioDecoder)
     {

@@ -11,7 +11,7 @@
 @interface SGGLFrame ()
 
 @property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
-@property (nonatomic, strong) SGFFVideoFrame2 * videoFrame;
+@property (nonatomic, strong) SGVideoFrame2 * videoFrame;
 
 @end
 
@@ -43,7 +43,7 @@
     return nil;
 }
 
-- (void)updateWithSGFFVideoFrame:(SGFFVideoFrame2 *)videoFrame;
+- (void)updateWithSGVideoFrame:(SGVideoFrame2 *)videoFrame;
 {
     [self flush];
     
@@ -64,7 +64,7 @@
     return (SGFFAVYUVVideoFrame *)self.videoFrame;
 }
 
-- (void)setRotateType:(SGFFVideoFrameRotateType)rotateType
+- (void)setRotateType:(SGVideoFrameRotateType)rotateType
 {
     if (_rotateType != rotateType) {
         _rotateType = rotateType;

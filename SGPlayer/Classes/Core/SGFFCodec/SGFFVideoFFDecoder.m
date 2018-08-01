@@ -7,8 +7,8 @@
 //
 
 #import "SGFFVideoFFDecoder.h"
-#import "SGFFVideoFFFrame.h"
-#import "SGFFObjectPool.h"
+#import "SGVideoFFFrame.h"
+#import "SGObjectPool.h"
 
 @interface SGFFVideoFFDecoder ()
 
@@ -21,9 +21,9 @@
     return SGMediaTypeVideo;
 }
 
-- (SGFFFrame *)nextReuseFrame
+- (SGFrame *)nextReuseFrame
 {
-    SGFFVideoFFFrame * frame = [[SGFFObjectPool sharePool] objectWithClass:[SGFFVideoFFFrame class]];
+    SGVideoFFFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoFFFrame class]];
     return frame;
 }
 

@@ -7,13 +7,13 @@
 //
 
 #import "SGFFDecoder.h"
-#import "SGFFObjectQueue.h"
+#import "SGObjectQueue.h"
 
 @interface SGFFAsyncDecoder : NSObject <SGFFDecoder>
 
-@property (nonatomic, strong, readonly) SGFFObjectQueue * packetQueue;
+@property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
 
 - (void)doFlush;
-- (NSArray <__kindof SGFFFrame *> *)doDecode:(SGFFPacket *)packet;
+- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet;
 
 @end

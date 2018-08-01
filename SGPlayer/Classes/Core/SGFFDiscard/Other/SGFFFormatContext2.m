@@ -197,8 +197,8 @@ static int ffmpeg_interrupt_callback(void *ctx)
                 {
                     self.videoTrack = obj;
                     self.videoEnable = YES;
-                    self.videoTimebase = SGFFStreamGetTimebase(_format_context->streams[index], 0.00004);
-                    self.videoFPS = SGFFStreamGetFPS(_format_context->streams[index], self.videoTimebase);
+                    self.videoTimebase = SGStreamGetTimebase(_format_context->streams[index], 0.00004);
+                    self.videoFPS = SGStreamGetFPS(_format_context->streams[index], self.videoTimebase);
                     self.videoPresentationSize = CGSizeMake(codec_context->width, codec_context->height);
                     self.videoAspect = (CGFloat)codec_context->width / (CGFloat)codec_context->height;
                     self->_video_codec_context = codec_context;
@@ -231,7 +231,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
             {
                 self.audioTrack = obj;
                 self.audioEnable = YES;
-                self.audioTimebase = SGFFStreamGetTimebase(_format_context->streams[index], 0.000025);
+                self.audioTimebase = SGStreamGetTimebase(_format_context->streams[index], 0.000025);
                 self->_audio_codec_context = codec_context;
                 break;
             }
@@ -369,7 +369,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
             }
         }
         self.audioEnable = YES;
-        self.audioTimebase = SGFFStreamGetTimebase(_format_context->streams[audioTrackIndex], 0.000025);
+        self.audioTimebase = SGStreamGetTimebase(_format_context->streams[audioTrackIndex], 0.000025);
         self->_audio_codec_context = codec_context;
     }
     else
@@ -420,17 +420,17 @@ static int ffmpeg_interrupt_callback(void *ctx)
     }
 }
 
-- (SGFFVideoFrameRotateType)videoFrameRotateType
+- (SGVideoFrameRotateType)videoFrameRotateType
 {
     int rotate = [[self.videoTrack.metadata.metadata objectForKey:@"rotate"] intValue];
     if (rotate == 90) {
-        return SGFFVideoFrameRotateType90;
+        return SGVideoFrameRotateType90;
     } else if (rotate == 180) {
-        return SGFFVideoFrameRotateType180;
+        return SGVideoFrameRotateType180;
     } else if (rotate == 270) {
-        return SGFFVideoFrameRotateType270;
+        return SGVideoFrameRotateType270;
     }
-    return SGFFVideoFrameRotateType0;
+    return SGVideoFrameRotateType0;
 }
 
 - (void)destroyAudioTrack

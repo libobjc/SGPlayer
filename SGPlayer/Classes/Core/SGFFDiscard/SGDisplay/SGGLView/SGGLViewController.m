@@ -182,13 +182,13 @@
 - (SGGLModelTextureRotateType)chooseModelTextureRotateType
 {
     switch (self.currentFrame.rotateType) {
-        case SGFFVideoFrameRotateType0:
+        case SGVideoFrameRotateType0:
             return SGGLModelTextureRotateType0;
-        case SGFFVideoFrameRotateType90:
+        case SGVideoFrameRotateType90:
             return SGGLModelTextureRotateType90;
-        case SGFFVideoFrameRotateType180:
+        case SGVideoFrameRotateType180:
             return SGGLModelTextureRotateType180;
-        case SGFFVideoFrameRotateType270:
+        case SGVideoFrameRotateType270:
             return SGGLModelTextureRotateType270;
     }
     return SGGLModelTextureRotateType0;
@@ -310,12 +310,12 @@
 //
 //    CGFloat resultAspect = self.aspect;
 //    switch (self.currentFrame.rotateType) {
-//        case SGFFVideoFrameRotateType90:
-//        case SGFFVideoFrameRotateType270:
+//        case SGVideoFrameRotateType90:
+//        case SGVideoFrameRotateType270:
 //            resultAspect = 1 / self.aspect;
 //            break;
-//        case SGFFVideoFrameRotateType0:
-//        case SGFFVideoFrameRotateType180:
+//        case SGVideoFrameRotateType0:
+//        case SGVideoFrameRotateType180:
 //            break;
 //    }
 //
