@@ -1491,14 +1491,6 @@
 			path = Other;
 			sourceTree = "<group>";
 		};
-		9C2533C81FAB151400BBFA5C /* ffmpeg */ = {
-			isa = PBXGroup;
-			children = (
-				9C2533C91FAB151400BBFA5C /* include */,
-			);
-			path = ffmpeg;
-			sourceTree = "<group>";
-		};
 		9C2533C91FAB151400BBFA5C /* include */ = {
 			isa = PBXGroup;
 			children = (
@@ -1660,17 +1652,7 @@
 		9C2534521FAB151500BBFA5C /* SGFFmpeg */ = {
 			isa = PBXGroup;
 			children = (
-				9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */,
-				9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */,
-				9CB62BFD2021950200A9AD6B /* SGFFSessionConfiguration.h */,
-				9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */,
-				9C5C98F820D26B350089C112 /* SGFFTime */,
-				9CBD0BA7201625010094CFC7 /* SGFFAudioStreamPlayer */,
-				9CF15DF420119FBE00585326 /* SGFFOutput */,
-				9CF15DF320119D0300585326 /* SGFFData */,
-				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
-				9C8D4E69200E101D00ED8A58 /* SGFFCodec */,
-				9C8D4E4E200E019700ED8A58 /* Other */,
+				9C2533C91FAB151400BBFA5C /* include */,
 			);
 			path = SGFFmpeg;
 			sourceTree = "<group>";
@@ -1698,9 +1680,17 @@
 		9C478F341E713A9B00AD4289 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9CB1F09C2017828A00102A69 /* SGFFDiscard */,
+				9C4FB1A92111BD640079C2D2 /* SGSession */,
+				9C5C98F820D26B350089C112 /* SGFFTime */,
+				9CBD0BA7201625010094CFC7 /* SGFFAudioStreamPlayer */,
+				9CF15DF420119FBE00585326 /* SGFFOutput */,
+				9CF15DF320119D0300585326 /* SGFFData */,
+				9C8D4E5C200E0A0600ED8A58 /* SGFFSource */,
+				9C8D4E69200E101D00ED8A58 /* SGFFCodec */,
 				9CE6F5912004E37600D1F4C8 /* SGCommon */,
-				9C478F671E713B0F00AD4289 /* SGFFPlayer */,
+				9C2534521FAB151500BBFA5C /* SGFFmpeg */,
+				9C8D4E4E200E019700ED8A58 /* Other */,
+				9CB1F09C2017828A00102A69 /* SGFFDiscard */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -1727,15 +1717,6 @@
 				9C478F541E713ABB00AD4289 /* SGFingerRotation.m */,
 			);
 			path = SGMatrix;
-			sourceTree = "<group>";
-		};
-		9C478F671E713B0F00AD4289 /* SGFFPlayer */ = {
-			isa = PBXGroup;
-			children = (
-				9C2534521FAB151500BBFA5C /* SGFFmpeg */,
-				9C2533C81FAB151400BBFA5C /* ffmpeg */,
-			);
-			path = SGFFPlayer;
 			sourceTree = "<group>";
 		};
 		9C4792BD1E713B4900AD4289 /* SGDisplay */ = {
@@ -1866,6 +1847,17 @@
 				9C47934B1E71402E00AD4289 /* libswscale.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9C4FB1A92111BD640079C2D2 /* SGSession */ = {
+			isa = PBXGroup;
+			children = (
+				9C8D4E46200DFFC700ED8A58 /* SGFFSession.h */,
+				9C8D4E47200DFFC700ED8A58 /* SGFFSession.m */,
+				9CB62BFD2021950200A9AD6B /* SGFFSessionConfiguration.h */,
+				9CB62BFE2021950200A9AD6B /* SGFFSessionConfiguration.m */,
+			);
+			path = SGSession;
 			sourceTree = "<group>";
 		};
 		9C5C6C9620182A0900863EB5 /* SGOpenGL */ = {
@@ -3703,16 +3695,16 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/include\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFmpeg/include\"";
 				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS\"",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS",
+					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFmpeg/lib-iOS\"",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-iOS",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-macOS",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS",
 				);
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/module.modulemap";
@@ -3735,16 +3727,16 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/include\"";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFmpeg/include\"";
 				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
-					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS\"",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS",
-					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS",
+					"\"$(SRCROOT)/SGPlayer/Classes/Core/SGFFmpeg/lib-iOS\"",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-iOS",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-macOS",
+					"$(PROJECT_DIR)/SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS",
 				);
 				MACH_O_TYPE = staticlib;
 				MODULEMAP_FILE = "$(PROJECT_DIR)/SGPlayer/module.modulemap";
