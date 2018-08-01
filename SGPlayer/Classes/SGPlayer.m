@@ -7,13 +7,11 @@
 //
 
 #import "SGPlayer.h"
+#import "SGMacro.h"
+#import "SGActivity.h"
 #import "SGFFSession.h"
 #import "SGFFAudioPlaybackOutput.h"
 #import "SGFFVideoPlaybackOutput.h"
-
-#import "SGMacro.h"
-#import "SGPlayerUtil.h"
-#import "SGActivity.h"
 
 @interface SGPlayer () <NSLocking, SGFFSessionDelegate>
 
