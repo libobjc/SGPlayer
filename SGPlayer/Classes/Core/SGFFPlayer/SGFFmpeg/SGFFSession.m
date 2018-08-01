@@ -106,7 +106,20 @@
     return NO;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+- (BOOL)seekableToTime:(CMTime)time
+{
+    if (!self.seekable)
+    {
+        return NO;
+    }
+    if (CMTIME_IS_INVALID(time))
+    {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
 {
     switch (self.state)
     {
@@ -115,7 +128,7 @@
         case SGFFSessionStateOpened:
         case SGFFSessionStateClosed:
         case SGFFSessionStateFailed:
-            return NO;
+            return;
         case SGFFSessionStateFinished:
             self.state = SGFFSessionStateReading;
             break;
@@ -134,7 +147,7 @@
             completionHandler(success);
         }
     }];
-    return YES;
+    return;
 }
 
 #pragma mark - Setter/Getter

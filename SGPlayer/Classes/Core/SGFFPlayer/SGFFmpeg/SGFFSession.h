@@ -76,6 +76,7 @@ typedef NS_ENUM(NSUInteger, SGFFSessionState)
  *  Seek.
  */
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
+- (BOOL)seekableToTime:(CMTime)time;
+- (void)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
 
 @end
