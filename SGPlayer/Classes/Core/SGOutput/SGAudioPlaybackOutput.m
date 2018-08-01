@@ -10,7 +10,7 @@
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioBufferFrame.h"
 #import "SGTime.h"
-#import "SGFFError.h"
+#import "SGError.h"
 #import "swscale.h"
 #import "swresample.h"
 
@@ -261,7 +261,7 @@
                                          self.inputSampleRate,
                                          0, NULL);
     int result = swr_init(self.swrContext);
-    self.swrContextError = SGFFGetErrorCode(result, SGFFErrorCodeAuidoSwrInit);
+    self.swrContextError = SGFFGetErrorCode(result, SGErrorCodeAuidoSwrInit);
     if (self.swrContextError)
     {
         [self destorySwrContext];

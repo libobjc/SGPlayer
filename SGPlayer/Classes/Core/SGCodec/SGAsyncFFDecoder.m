@@ -7,7 +7,7 @@
 //
 
 #import "SGAsyncFFDecoder.h"
-#import "SGFFError.h"
+#import "SGError.h"
 #import "SGMacro.h"
 #import "SGAudioFFFrame.h"
 #import "SGVideoFFFrame.h"
@@ -112,7 +112,7 @@
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
                 
             } else {
-                SGPlayerLog(@"Error : %@", SGFFGetErrorCode(result, SGFFErrorCodeCodecReceiveFrame));
+                SGPlayerLog(@"Error : %@", SGFFGetErrorCode(result, SGErrorCodeCodecReceiveFrame));
             }
             [frame unlock];
             break;

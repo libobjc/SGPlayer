@@ -162,13 +162,13 @@
         numberOfFrames = swr_convert(_audio_swr_context, outyput_buffer, _temp_frame->nb_samples * ratio, (const uint8_t **)_temp_frame->data, _temp_frame->nb_samples);
         NSError * error = SGFFCheckError(numberOfFrames);
         if (error) {
-            SGFFErrorLog(@"audio codec error : %@", error);
+            SGErrorLog(@"audio codec error : %@", error);
             return nil;
         }
         audioDataBuffer = _audio_swr_buffer;
     } else {
         if (_codec_context->sample_fmt != AV_SAMPLE_FMT_S16) {
-            SGFFErrorLog(@"audio format error");
+            SGErrorLog(@"audio format error");
             return nil;
         }
         audioDataBuffer = _temp_frame->data[0];

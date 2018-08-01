@@ -8,7 +8,7 @@
 
 #import "SGFormatContext.h"
 #import "SGPacket.h"
-#import "SGFFError.h"
+#import "SGError.h"
 #import "avformat.h"
 
 @interface SGFormatContext ()
@@ -201,7 +201,7 @@ static int SGFormatContextInterruptHandler(void * context)
     
     if (!self.formatContext)
     {
-        self.error = SGFFCreateErrorCode(SGFFErrorCodeFormatCreate);
+        self.error = SGFFCreateErrorCode(SGErrorCodeFormatCreate);
         [self callbackForFailed];
         return;
     }
@@ -211,7 +211,7 @@ static int SGFormatContextInterruptHandler(void * context)
     
     NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;
     int reslut = avformat_open_input(&_formatContext, URLString.UTF8String, NULL, NULL);
-    self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatOpenInput);
+    self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatOpenInput);
     if (self.error)
     {
         if (self.formatContext)
@@ -223,7 +223,7 @@ static int SGFormatContextInterruptHandler(void * context)
     }
     
     reslut = avformat_find_stream_info(self.formatContext, NULL);
-    self.error = SGFFGetErrorCode(reslut, SGFFErrorCodeFormatFindStreamInfo);
+    self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatFindStreamInfo);
     if (self.error)
     {
         if (self.formatContext)

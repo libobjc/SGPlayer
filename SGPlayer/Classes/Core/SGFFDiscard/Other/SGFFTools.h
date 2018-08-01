@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, SGDecoderErrorCode) {
 #define SGPacketLogEnable     0
 #define SGFFSleepLogEnable      0
 #define SGFFDecodeLogEnable     0
-#define SGFFErrorLogEnable      0
+#define SGErrorLogEnable      0
 
 #if SGFFFFmpegLogEnable
 #define SGFFFFmpegLog(...)       NSLog(__VA_ARGS__)
@@ -72,10 +72,10 @@ typedef NS_ENUM(NSUInteger, SGDecoderErrorCode) {
 #define SGFFDecodeLog(...)
 #endif
 
-#if SGFFErrorLogEnable
-#define SGFFErrorLog(...)        NSLog(__VA_ARGS__)
+#if SGErrorLogEnable
+#define SGErrorLog(...)        NSLog(__VA_ARGS__)
 #else
-#define SGFFErrorLog(...)
+#define SGErrorLog(...)
 #endif
 
 

@@ -1,17 +1,17 @@
 //
-//  SGFFError.m
+//  SGError.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFError.h"
+#import "SGError.h"
 #import "avformat.h"
 
 NSError * SGFFGetError(int result)
 {
-    return SGFFGetErrorCode(result, SGFFErrorCodeUnknown);
+    return SGFFGetErrorCode(result, SGErrorCodeUnknown);
 }
 
 NSError * SGFFGetErrorCode(int result, NSUInteger errorCode)
