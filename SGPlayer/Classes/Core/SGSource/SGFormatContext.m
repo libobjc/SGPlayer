@@ -1,21 +1,21 @@
 //
-//  SGFFFormatContext.m
+//  SGFormatContext.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFFFormatContext.h"
+#import "SGFormatContext.h"
 #import "SGPacket.h"
 #import "SGFFError.h"
 #import "avformat.h"
 
-@interface SGFFFormatContext ()
+@interface SGFormatContext ()
 
 @property (nonatomic, assign) AVFormatContext * formatContext;
 
-@property (nonatomic, assign) SGFFSourceState state;
+@property (nonatomic, assign) SGSourceState state;
 @property (nonatomic, copy) NSError * error;
 
 @property (nonatomic, strong) NSArray <SGStream *> * streams;
@@ -35,21 +35,21 @@
 
 @end
 
-@implementation SGFFFormatContext
+@implementation SGFormatContext
 
 @synthesize URL = _URL;
 @synthesize delegate = _delegate;
 
-static int SGFFFormatContextInterruptHandler(void * context)
+static int SGFormatContextInterruptHandler(void * context)
 {
-    SGFFFormatContext * obj = (__bridge SGFFFormatContext *)context;
+    SGFormatContext * obj = (__bridge SGFormatContext *)context;
     switch (obj.state)
     {
-        case SGFFSourceStateFinished:
-        case SGFFSourceStateStoped:
-        case SGFFSourceStateFailed:
+        case SGSourceStateFinished:
+        case SGSourceStateStoped:
+        case SGSourceStateFailed:
             return YES;
-        case SGFFSourceStateSeeking:
+        case SGSourceStateSeeking:
             if (obj.seekTimestamp != obj.seekingTimestamp)
             {
                 return YES;
@@ -79,29 +79,29 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 - (void)openStreams
 {
-    self.state = SGFFSourceStateOpening;
+    self.state = SGSourceStateOpening;
     [self startOpenStreamsThread];
 }
 
 - (void)startReading
 {
-    self.state = SGFFSourceStateReading;
+    self.state = SGSourceStateReading;
     [self startReadingThread];
 }
 
 - (void)pauseReading
 {
-    if (self.state == SGFFSourceStateReading)
+    if (self.state == SGSourceStateReading)
     {
-        self.state = SGFFSourceStatePaused;
+        self.state = SGSourceStatePaused;
     }
 }
 
 - (void)resumeReading
 {
-    if (self.state == SGFFSourceStatePaused)
+    if (self.state == SGSourceStatePaused)
     {
-        self.state = SGFFSourceStateReading;
+        self.state = SGSourceStateReading;
         [self.readingCondition lock];
         [self.readingCondition broadcast];
         [self.readingCondition unlock];
@@ -110,7 +110,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 - (void)stopReading
 {
-    self.state = SGFFSourceStateStoped;
+    self.state = SGSourceStateStoped;
     [self.readingCondition lock];
     [self.readingCondition broadcast];
     [self.readingCondition unlock];
@@ -147,33 +147,33 @@ static int SGFFFormatContextInterruptHandler(void * context)
 {
     switch (self.state)
     {
-        case SGFFSourceStateIdle:
-        case SGFFSourceStateOpening:
-        case SGFFSourceStateOpened:
-        case SGFFSourceStateStoped:
-        case SGFFSourceStateFailed:
+        case SGSourceStateIdle:
+        case SGSourceStateOpening:
+        case SGSourceStateOpened:
+        case SGSourceStateStoped:
+        case SGSourceStateFailed:
             if (completionHandler)
             {
                 completionHandler(NO);
             }
             return;
-        case SGFFSourceStateReading:
-        case SGFFSourceStatePaused:
-        case SGFFSourceStateSeeking:
-        case SGFFSourceStateFinished:
+        case SGSourceStateReading:
+        case SGSourceStatePaused:
+        case SGSourceStateSeeking:
+        case SGSourceStateFinished:
             break;
     }
     self.seekTimestamp = time.value * AV_TIME_BASE / time.timescale;
     self.seekCompletionHandler = completionHandler;
-    SGFFSourceState state = self.state;
-    self.state = SGFFSourceStateSeeking;
-    if (state == SGFFSourceStatePaused)
+    SGSourceState state = self.state;
+    self.state = SGSourceStateSeeking;
+    if (state == SGSourceStatePaused)
     {
         [self.readingCondition lock];
         [self.readingCondition broadcast];
         [self.readingCondition unlock];
     }
-    else if (state == SGFFSourceStateFinished)
+    else if (state == SGSourceStateFinished)
     {
         [self startReadingThread];
     }
@@ -206,7 +206,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
         return;
     }
     
-    self.formatContext->interrupt_callback.callback = SGFFFormatContextInterruptHandler;
+    self.formatContext->interrupt_callback.callback = SGFormatContextInterruptHandler;
     self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
     
     NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;
@@ -269,7 +269,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
     
     if (self.audioStreams.count > 0 || self.videoStreams.count > 0)
     {
-        self.state = SGFFSourceStateOpened;
+        self.state = SGSourceStateOpened;
         if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)])
         {
             [self.delegate sourceDidOpened:self];
@@ -300,29 +300,29 @@ static int SGFFFormatContextInterruptHandler(void * context)
 {
     while (YES)
     {
-        if (self.state == SGFFSourceStateFinished ||
-            self.state == SGFFSourceStateStoped ||
-            self.state == SGFFSourceStateFailed)
+        if (self.state == SGSourceStateFinished ||
+            self.state == SGSourceStateStoped ||
+            self.state == SGSourceStateFailed)
         {
             break;
         }
-        else if (self.state == SGFFSourceStatePaused)
+        else if (self.state == SGSourceStatePaused)
         {
             [self.readingCondition lock];
-            if (self.state == SGFFSourceStatePaused)
+            if (self.state == SGSourceStatePaused)
             {
                 [self.readingCondition wait];
             }
             [self.readingCondition unlock];
             continue;
         }
-        else if (self.state == SGFFSourceStateSeeking)
+        else if (self.state == SGSourceStateSeeking)
         {
             while (YES)
             {
                 self.seekingTimestamp = self.seekTimestamp;
                 int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-                if (self.state == SGFFSourceStateSeeking)
+                if (self.state == SGSourceStateSeeking)
                 {
                     if (self.seekTimestamp != self.seekingTimestamp)
                     {
@@ -335,7 +335,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
                     self.seekTimestamp = 0;
                     self.seekingTimestamp = 0;
                     self.seekCompletionHandler = nil;
-                    self.state = SGFFSourceStateReading;
+                    self.state = SGSourceStateReading;
                 }
                 else
                 {
@@ -347,13 +347,13 @@ static int SGFFFormatContextInterruptHandler(void * context)
             }
             continue;
         }
-        else if (self.state == SGFFSourceStateReading)
+        else if (self.state == SGSourceStateReading)
         {
             SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
             int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
             {
-                self.state = SGFFSourceStateFinished;
+                self.state = SGSourceStateFinished;
                 [packet unlock];
                 if ([self.delegate respondsToSelector:@selector(sourceDidFinished:)])
                 {
@@ -372,7 +372,7 @@ static int SGFFFormatContextInterruptHandler(void * context)
 
 - (void)callbackForFailed
 {
-    self.state = SGFFSourceStateFailed;
+    self.state = SGSourceStateFailed;
     if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)])
     {
         [self.delegate sourceDidFailed:self];

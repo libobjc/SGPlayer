@@ -302,7 +302,7 @@
 - (void)sessionDidChangeState:(SGSession *)session
 {
     [self lock];
-    if (session.state == SGFFSourceStateOpened)
+    if (session.state == SGSourceStateOpened)
     {
         [self.session read];
         self.loadingState = SGLoadingStateLoading;

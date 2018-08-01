@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFSource.h"
+#import "SGSource.h"
 #import "SGOutput.h"
 
 @interface SGSessionConfiguration : NSObject

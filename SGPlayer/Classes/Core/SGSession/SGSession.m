@@ -7,7 +7,7 @@
 //
 
 #import "SGSession.h"
-#import "SGFFFormatContext.h"
+#import "SGFormatContext.h"
 #import "SGFFAudioFFDecoder.h"
 #import "SGFFVideoFFDecoder.h"
 #import "SGFFVideoAVDecoder.h"
@@ -15,11 +15,11 @@
 #import "SGTime.h"
 #import "SGFFLog.h"
 
-@interface SGSession () <SGFFSourceDelegate, SGFFDecoderDelegate, SGOutputDelegate>
+@interface SGSession () <SGSourceDelegate, SGFFDecoderDelegate, SGOutputDelegate>
 
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
-@property (nonatomic, strong) id <SGFFSource> source;
+@property (nonatomic, strong) id <SGSource> source;
 @property (nonatomic, strong) id <SGFFDecoder> audioDecoder;
 @property (nonatomic, strong) id <SGFFDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGOutput> audioOutput;
@@ -64,7 +64,7 @@
     self.videoOutput.timeSynchronizer = self.timeSynchronizer;
     self.audioOutput.delegate = self;
     self.videoOutput.delegate = self;
-    self.source = [[SGFFFormatContext alloc] init];
+    self.source = [[SGFormatContext alloc] init];
     self.source.URL = self.URL;
     self.source.delegate = self;
     [self.source openStreams];
@@ -316,9 +316,9 @@
     }
 }
 
-#pragma mark - SGFFSourceDelegate
+#pragma mark - SGSourceDelegate
 
-- (void)source:(id <SGFFSource>)source hasNewPacket:(SGPacket *)packet
+- (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
 {
     if (packet.index == self.audioDecoder.index)
     {
@@ -332,7 +332,7 @@
     }
 }
 
-- (void)sourceDidOpened:(id <SGFFSource>)source
+- (void)sourceDidOpened:(id <SGSource>)source
 {
     for (SGStream * stream in source.streams)
     {
@@ -384,13 +384,13 @@
     self.state = SGSessionStateOpened;
 }
 
-- (void)sourceDidFailed:(id <SGFFSource>)source
+- (void)sourceDidFailed:(id <SGSource>)source
 {
     _error = source.error;
     self.state = SGSessionStateFailed;
 }
 
-- (void)sourceDidFinished:(id<SGFFSource>)source
+- (void)sourceDidFinished:(id<SGSource>)source
 {
     self.state = SGSessionStateFinished;
 }
