@@ -1,22 +1,22 @@
-    //
-//  SGDecoder.m
+//
+//  SGFFDecoder.m
 //  SGPlayer
 //
 //  Created by Single on 05/01/2017.
 //  Copyright © 2017 single. All rights reserved.
 //
 
-#import "SGDecoder.h"
+#import "SGFFDecoder.h"
 #import "SGFFFormatContext2.h"
 #import "SGFFAudioDecoder.h"
 #import "SGFFVideoDecoder.h"
 #import "SGFFTools.h"
 
-@interface SGDecoder () <SGFFFormatContext2Delegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
+@interface SGFFDecoder () <SGFFFormatContext2Delegate, SGFFAudioDecoderDelegate, SGFFVideoDecoderDlegate>
 
-@property (nonatomic, weak) id <SGDecoderDelegate> delegate;
-@property (nonatomic, weak) id <SGDecoderVideoOutputConfig> videoOutputConfig;
-@property (nonatomic, weak) id <SGDecoderAudioOutputConfig> audioOutputConfig;
+@property (nonatomic, weak) id <SGFFDecoderDelegate> delegate;
+@property (nonatomic, weak) id <SGFFDecoderVideoOutputConfig> videoOutputConfig;
+@property (nonatomic, weak) id <SGFFDecoderAudioOutputConfig> audioOutputConfig;
 
 @property (nonatomic, strong) NSOperationQueue * ffmpegOperationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openFileOperation;
@@ -61,12 +61,12 @@
 
 @end
 
-@implementation SGDecoder
+@implementation SGFFDecoder
 
 + (instancetype)decoderWithContentURL:(NSURL *)contentURL
-                             delegate:(id<SGDecoderDelegate>)delegate
-                    videoOutputConfig:(id<SGDecoderVideoOutputConfig>)videoOutputConfig
-                    audioOutputConfig:(id<SGDecoderAudioOutputConfig>)audioOutputConfig
+                             delegate:(id<SGFFDecoderDelegate>)delegate
+                    videoOutputConfig:(id<SGFFDecoderVideoOutputConfig>)videoOutputConfig
+                    audioOutputConfig:(id<SGFFDecoderAudioOutputConfig>)audioOutputConfig
 {
     return [[self alloc] initWithContentURL:contentURL
                                    delegate:delegate
@@ -75,9 +75,9 @@
 }
 
 - (instancetype)initWithContentURL:(NSURL *)contentURL
-                          delegate:(id<SGDecoderDelegate>)delegate
-                 videoOutputConfig:(id<SGDecoderVideoOutputConfig>)videoOutputConfig
-                 audioOutputConfig:(id<SGDecoderAudioOutputConfig>)audioOutputConfig
+                          delegate:(id<SGFFDecoderDelegate>)delegate
+                 videoOutputConfig:(id<SGFFDecoderVideoOutputConfig>)videoOutputConfig
+                 audioOutputConfig:(id<SGFFDecoderAudioOutputConfig>)audioOutputConfig
 {
     if (self = [super init]) {
         
@@ -221,7 +221,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
         if (self.seeking) {
             self.endOfFile = NO;
             self.playbackFinished = NO;
-
+            
             [self.formatContext seekFileWithFFTimebase:self.seekToTime];
             
             self.buffering = YES;
@@ -376,7 +376,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 }
 
 - (SGVideoFrame2 *)decoderVideoOutputGetVideoFrameWithCurrentPostion:(NSTimeInterval)currentPostion
-                                                      currentDuration:(NSTimeInterval)currentDuration
+                                                     currentDuration:(NSTimeInterval)currentDuration
 {
     if (self.closed || self.error) {
         return  nil;
@@ -648,7 +648,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
 - (void)dealloc
 {
     [self closeFileAsync:NO];
-    SGPlayerLog(@"SGDecoder release");
+    SGPlayerLog(@"SGFFDecoder release");
 }
 
 
