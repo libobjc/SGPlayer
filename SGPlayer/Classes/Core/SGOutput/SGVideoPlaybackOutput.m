@@ -14,7 +14,7 @@
 #import "SGGLViewport.h"
 #import "SGGLModelPool.h"
 #import "SGGLProgramPool.h"
-#import "SGFFDefineMap.h"
+#import "SGDefinesMapping.h"
 #import "SGVideoAVFrame.h"
 #import "SGVideoFFFrame.h"
 

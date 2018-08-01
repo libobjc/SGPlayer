@@ -1,5 +1,5 @@
 //
-//  SGFFDefineMap.h
+//  SGDefinesMapping.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/26.
