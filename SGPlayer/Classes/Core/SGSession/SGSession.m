@@ -7,13 +7,13 @@
 //
 
 #import "SGSession.h"
+#import "SGFFmpeg.h"
 #import "SGFormatContext.h"
 #import "SGAudioFFDecoder.h"
 #import "SGVideoFFDecoder.h"
 #import "SGVideoAVDecoder.h"
 #import "SGMacro.h"
 #import "SGTime.h"
-#import "SGFFLog.h"
 
 @interface SGSession () <SGSourceDelegate, SGDecoderDelegate, SGOutputDelegate>
 
@@ -36,12 +36,7 @@
 {
     if (self = [super init])
     {
-        static dispatch_once_t onceToken;
-        dispatch_once(&onceToken, ^{
-            av_log_set_callback(SGFFLogCallback);
-            av_register_all();
-            avformat_network_init();
-        });
+        [SGFFmpeg setupIfNeeded];
         self.delegateQueue = dispatch_queue_create("SGSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
         self.state = SGSessionStateIdle;
     }
