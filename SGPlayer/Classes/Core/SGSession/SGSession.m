@@ -52,13 +52,6 @@
         return;
     }
     self.state = SGSessionStateOpening;
-    self.timeSynchronizer = [[SGTimeSynchronizer alloc] init];
-    self.audioOutput = self.configuration.audioOutput;
-    self.videoOutput = self.configuration.videoOutput;
-    self.audioOutput.timeSynchronizer = self.timeSynchronizer;
-    self.videoOutput.timeSynchronizer = self.timeSynchronizer;
-    self.audioOutput.delegate = self;
-    self.videoOutput.delegate = self;
     self.source = [[SGCommonSource alloc] init];
     self.source.URL = self.URL;
     self.source.delegate = self;
@@ -264,7 +257,78 @@
     }
 }
 
-#pragma mark - Capacity
+#pragma mark - Internal
+
+- (void)setupDecoderIfNeeded
+{
+    for (SGStream * stream in self.source.streams)
+    {
+        switch (stream.mediaType)
+        {
+            case SGMediaTypeAudio:
+            {
+                if (!self.audioDecoder)
+                {
+                    SGAudioFFDecoder * audioDecoder = [[SGAudioFFDecoder alloc] init];
+                    audioDecoder.delegate = self;
+                    audioDecoder.index = stream.index;
+                    audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
+                    audioDecoder.codecpar = stream.coreStream->codecpar;
+                    if ([audioDecoder startDecoding])
+                    {
+                        self.audioDecoder = audioDecoder;
+                    }
+                }
+            }
+                break;
+            case SGMediaTypeVideo:
+            {
+                if (!self.videoDecoder)
+                {
+                    Class codecClass = [SGVideoFFDecoder class];
+                    if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
+                    {
+                        codecClass = [SGVideoAVDecoder class];
+                    }
+                    SGAsyncDecoder * videoDecoder = [[codecClass alloc] init];
+                    videoDecoder.delegate = self;
+                    videoDecoder.index = stream.index;
+                    videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
+                    videoDecoder.codecpar = stream.coreStream->codecpar;
+                    if ([videoDecoder startDecoding])
+                    {
+                        self.videoDecoder = videoDecoder;
+                    }
+                }
+            }
+                break;
+            default:
+                break;
+        }
+    }
+}
+
+- (void)setupOutputIfNeeded
+{
+    if (!self.timeSynchronizer)
+    {
+        self.timeSynchronizer = [[SGTimeSynchronizer alloc] init];
+    }
+    if (!self.audioOutput && self.audioDecoder)
+    {
+        self.audioOutput = self.configuration.audioOutput;
+        self.audioOutput.delegate = self;
+        self.audioOutput.timeSynchronizer = self.timeSynchronizer;
+        [self.audioOutput start];
+    }
+    if (!self.videoOutput && self.videoDecoder)
+    {
+        self.videoOutput = self.configuration.videoOutput;
+        self.videoOutput.delegate = self;
+        self.videoOutput.timeSynchronizer = self.timeSynchronizer;
+        [self.videoOutput start];
+    }
+}
 
 - (void)updateCapacity
 {
@@ -310,6 +374,33 @@
 
 #pragma mark - SGSourceDelegate
 
+- (void)sourceDidChangeState:(id <SGSource>)source
+{
+    switch (source.state)
+    {
+        case SGSourceStateOpened:
+        {
+            [self setupDecoderIfNeeded];
+            [self setupOutputIfNeeded];
+            self.state = SGSessionStateOpened;
+        }
+            break;
+        case SGSourceStateFinished:
+        {
+            self.state = SGSessionStateFinished;
+        }
+            break;
+        case SGSourceStateFailed:
+        {
+            _error = source.error;
+            self.state = SGSessionStateFailed;
+        }
+            break;
+        default:
+            break;
+    }
+}
+
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
 {
     if (packet.index == self.audioDecoder.index)
@@ -322,69 +413,6 @@
         [packet fillWithTimebase:self.videoDecoder.timebase];
         [self.videoDecoder putPacket:packet];
     }
-}
-
-- (void)sourceDidOpened:(id <SGSource>)source
-{
-    for (SGStream * stream in source.streams)
-    {
-        switch (stream.mediaType)
-        {
-            case SGMediaTypeAudio:
-            {
-                if (!self.audioDecoder)
-                {
-                    SGAudioFFDecoder * audioDecoder = [[SGAudioFFDecoder alloc] init];
-                    audioDecoder.index = stream.index;
-                    audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
-                    audioDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([audioDecoder startDecoding])
-                    {
-                        self.audioDecoder = audioDecoder;
-                    }
-                }
-            }
-                break;
-            case SGMediaTypeVideo:
-            {
-                if (!self.videoDecoder)
-                {
-                    Class codecClass = [SGVideoFFDecoder class];
-                    if (self.configuration.enableVideoToolBox && stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
-                    {
-                        codecClass = [SGVideoAVDecoder class];
-                    }
-                    SGAsyncDecoder * videoDecoder = [[codecClass alloc] init];
-                    videoDecoder.index = stream.index;
-                    videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
-                    videoDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([videoDecoder startDecoding])
-                    {
-                        self.videoDecoder = videoDecoder;
-                    }
-                }
-            }
-                break;
-            default:
-                break;
-        }
-    }
-    self.audioDecoder.delegate = self;
-    self.videoDecoder.delegate = self;
-    [self.audioOutput start];
-    [self.videoOutput start];
-    self.state = SGSessionStateOpened;
-}
-
-- (void)sourceDidFailed:(id <SGSource>)source
-{
-    _error = source.error;
-    self.state = SGSessionStateFailed;
-}
-
-- (void)sourceDidFinished:(id<SGSource>)source
-{
-    self.state = SGSessionStateFinished;
 }
 
 #pragma mark - SGDecoderDelegate

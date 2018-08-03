@@ -61,6 +61,18 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 #pragma mark - Setter/Getter
 
+- (void)setState:(SGSourceState)state
+{
+    if (_state != state)
+    {
+        _state = state;
+        if ([self.delegate respondsToSelector:@selector(sourceDidChangeState:)])
+        {
+            [self.delegate sourceDidChangeState:self];
+        }
+    }
+}
+
 - (CMTime)duration
 {
     if (!self.formatContext)
@@ -215,7 +227,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     if (!self.formatContext)
     {
         self.error = SGFFCreateErrorCode(SGErrorCodeFormatCreate);
-        [self callbackForFailed];
+        self.state = SGSourceStateFailed;
         return;
     }
     
@@ -231,7 +243,7 @@ static int SGCommonSourceInterruptHandler(void * context)
         {
             avformat_free_context(self.formatContext);
         }
-        [self callbackForFailed];
+        self.state = SGSourceStateFailed;
         return;
     }
     
@@ -244,7 +256,7 @@ static int SGCommonSourceInterruptHandler(void * context)
             avformat_close_input(&_formatContext);
             avformat_free_context(self.formatContext);
         }
-        [self callbackForFailed];
+        self.state = SGSourceStateFailed;
         return;
     }
     
@@ -283,14 +295,10 @@ static int SGCommonSourceInterruptHandler(void * context)
     if (self.audioStreams.count > 0 || self.videoStreams.count > 0)
     {
         self.state = SGSourceStateOpened;
-        if ([self.delegate respondsToSelector:@selector(sourceDidOpened:)])
-        {
-            [self.delegate sourceDidOpened:self];
-        }
     }
     else
     {
-        [self callbackForFailed];
+        self.state = SGSourceStateFailed;
     }
 }
 
@@ -368,27 +376,12 @@ static int SGCommonSourceInterruptHandler(void * context)
             {
                 self.state = SGSourceStateFinished;
                 [packet unlock];
-                if ([self.delegate respondsToSelector:@selector(sourceDidFinished:)])
-                {
-                    [self.delegate sourceDidFinished:self];
-                }
                 break;
             }
             [self.delegate source:self hasNewPacket:packet];
             [packet unlock];
             continue;
         }
-    }
-}
-
-#pragma mark - Callback
-
-- (void)callbackForFailed
-{
-    self.state = SGSourceStateFailed;
-    if ([self.delegate respondsToSelector:@selector(sourceDidFailed:)])
-    {
-        [self.delegate sourceDidFailed:self];
     }
 }
 

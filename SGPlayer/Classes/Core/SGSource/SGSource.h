@@ -35,9 +35,8 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 @property (nonatomic, weak) id <SGSourceDelegate> delegate;
 
 - (SGSourceState)state;
-
-- (CMTime)duration;
 - (NSError *)error;
+- (CMTime)duration;
 
 - (NSArray <SGStream *> *)streams;
 - (NSArray <SGStream *> *)audioStreams;
@@ -59,10 +58,8 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 
 @protocol SGSourceDelegate <NSObject>
 
+- (void)sourceDidChangeState:(id <SGSource>)source;
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet;
-- (void)sourceDidOpened:(id <SGSource>)source;
-- (void)sourceDidFailed:(id <SGSource>)source;
-- (void)sourceDidFinished:(id <SGSource>)source;
 
 @end
 
