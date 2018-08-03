@@ -1,5 +1,5 @@
 //
-//  SGFormatContext.m
+//  SGCommonSource.m
 //  SGPlayer
 //
 //  Created by Single on 2017/2/17.
@@ -473,7 +473,7 @@ static int ffmpeg_interrupt_callback(void *ctx)
 - (void)dealloc
 {
     [self destroy];
-    SGPlayerLog(@"SGFormatContext release");
+    SGPlayerLog(@"SGCommonSource release");
 }
 
 @end

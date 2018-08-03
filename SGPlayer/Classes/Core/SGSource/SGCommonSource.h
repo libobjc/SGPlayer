@@ -1,5 +1,5 @@
 //
-//  SGFormatContext.h
+//  SGCommonSource.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
@@ -8,6 +8,6 @@
 
 #import "SGSource.h"
 
-@interface SGFormatContext : NSObject <SGSource>
+@interface SGCommonSource : NSObject <SGSource>
 
 @end

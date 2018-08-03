@@ -1,17 +1,17 @@
 //
-//  SGFormatContext.m
+//  SGCommonSource.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGFormatContext.h"
+#import "SGCommonSource.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "avformat.h"
 
-@interface SGFormatContext ()
+@interface SGCommonSource ()
 
 @property (nonatomic, assign) AVFormatContext * formatContext;
 
@@ -35,14 +35,14 @@
 
 @end
 
-@implementation SGFormatContext
+@implementation SGCommonSource
 
 @synthesize URL = _URL;
 @synthesize delegate = _delegate;
 
-static int SGFormatContextInterruptHandler(void * context)
+static int SGCommonSourceInterruptHandler(void * context)
 {
-    SGFormatContext * obj = (__bridge SGFormatContext *)context;
+    SGCommonSource * obj = (__bridge SGCommonSource *)context;
     switch (obj.state)
     {
         case SGSourceStateFinished:
@@ -206,7 +206,7 @@ static int SGFormatContextInterruptHandler(void * context)
         return;
     }
     
-    self.formatContext->interrupt_callback.callback = SGFormatContextInterruptHandler;
+    self.formatContext->interrupt_callback.callback = SGCommonSourceInterruptHandler;
     self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
     
     NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;

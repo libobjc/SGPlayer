@@ -8,7 +8,7 @@
 
 #import "SGSession.h"
 #import "SGFFmpeg.h"
-#import "SGFormatContext.h"
+#import "SGCommonSource.h"
 #import "SGAudioFFDecoder.h"
 #import "SGVideoFFDecoder.h"
 #import "SGVideoAVDecoder.h"
@@ -59,7 +59,7 @@
     self.videoOutput.timeSynchronizer = self.timeSynchronizer;
     self.audioOutput.delegate = self;
     self.videoOutput.delegate = self;
-    self.source = [[SGFormatContext alloc] init];
+    self.source = [[SGCommonSource alloc] init];
     self.source.URL = self.URL;
     self.source.delegate = self;
     [self.source openStreams];
