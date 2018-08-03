@@ -111,11 +111,6 @@
     {
         return NO;
     }
-    return YES;
-}
-
-- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
-{
     switch (self.state)
     {
         case SGSessionStateIdle:
@@ -123,12 +118,23 @@
         case SGSessionStateOpened:
         case SGSessionStateClosed:
         case SGSessionStateFailed:
-            return;
+            return NO;
         case SGSessionStateFinished:
-            self.state = SGSessionStateReading;
-            break;
         case SGSessionStateReading:
             break;
+    }
+    return YES;
+}
+
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+{
+    if (![self seekableToTime:time])
+    {
+        return NO;
+    }
+    if (self.state == SGSessionStateFinished)
+    {
+        self.state = SGSessionStateReading;
     }
     SGWeakSelf
     [self.source seekToTime:time completionHandler:^(BOOL success) {
@@ -142,7 +148,7 @@
             completionHandler(success);
         }
     }];
-    return;
+    return YES;
 }
 
 #pragma mark - Setter/Getter
