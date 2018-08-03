@@ -59,6 +59,18 @@ static int SGCommonSourceInterruptHandler(void * context)
     }
 }
 
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.readingCondition = [[NSCondition alloc] init];
+        self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.maxConcurrentOperationCount = 1;
+        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+    }
+    return self;
+}
+
 #pragma mark - Setter/Getter
 
 - (void)setState:(SGSourceState)state
@@ -75,6 +87,15 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (CMTime)duration
 {
+    switch (self.state)
+    {
+        case SGSourceStateReading:
+        case SGSourceStateSeeking:
+        case SGSourceStateFinished:
+            break;
+        default:
+            return kCMTimeZero;
+    }
     if (!self.formatContext)
     {
         return kCMTimeZero;
@@ -91,37 +112,52 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)open
 {
+    if (self.state != SGSourceStateIdle)
+    {
+        return;
+    }
     self.state = SGSourceStateOpening;
     [self startOpenThread];
 }
 
 - (void)read
 {
+    if (self.state != SGSourceStateOpened)
+    {
+        return;
+    }
     self.state = SGSourceStateReading;
     [self startReadThread];
 }
 
 - (void)pause
 {
-    if (self.state == SGSourceStateReading)
+    if (self.state != SGSourceStateReading ||
+        self.state != SGSourceStateSeeking)
     {
-        self.state = SGSourceStatePaused;
+        return;
     }
+    self.state = SGSourceStatePaused;
 }
 
 - (void)resume
 {
-    if (self.state == SGSourceStatePaused)
+    if (self.state != SGSourceStatePaused)
     {
-        self.state = SGSourceStateReading;
-        [self.readingCondition lock];
-        [self.readingCondition broadcast];
-        [self.readingCondition unlock];
+        return;
     }
+    self.state = SGSourceStateReading;
+    [self.readingCondition lock];
+    [self.readingCondition broadcast];
+    [self.readingCondition unlock];
 }
 
 - (void)close
 {
+    if (self.state == SGSourceStateStoped)
+    {
+        return;
+    }
     self.state = SGSourceStateStoped;
     [self.readingCondition lock];
     [self.readingCondition broadcast];
@@ -208,12 +244,6 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)startOpenThread
 {
-    if (!self.operationQueue)
-    {
-        self.operationQueue = [[NSOperationQueue alloc] init];
-        self.operationQueue.maxConcurrentOperationCount = 1;
-        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    }
     self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
     self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -302,14 +332,10 @@ static int SGCommonSourceInterruptHandler(void * context)
     }
 }
 
-#pragma mark - Reading
+#pragma mark - Read
 
 - (void)startReadThread
 {
-    if (!self.readingCondition)
-    {
-        self.readingCondition = [[NSCondition alloc] init];
-    }
     self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
