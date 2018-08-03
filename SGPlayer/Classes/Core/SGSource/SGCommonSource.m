@@ -25,8 +25,8 @@
 @property (nonatomic, strong) NSArray <SGStream *> * otherStreams;
 
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * openStreamsOperation;
-@property (nonatomic, strong) NSInvocationOperation * readingOperation;
+@property (nonatomic, strong) NSInvocationOperation * openOperation;
+@property (nonatomic, strong) NSInvocationOperation * readOperation;
 @property (nonatomic, strong) NSCondition * readingCondition;
 
 @property (nonatomic, assign) long long seekTimestamp;
@@ -214,10 +214,10 @@ static int SGCommonSourceInterruptHandler(void * context)
         self.operationQueue.maxConcurrentOperationCount = 1;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
-    self.openStreamsOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openStreamsThread) object:nil];
-    self.openStreamsOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.openStreamsOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.operationQueue addOperation:self.openStreamsOperation];
+    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openStreamsThread) object:nil];
+    self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.openOperation];
 }
 
 - (void)openStreamsThread
@@ -310,11 +310,11 @@ static int SGCommonSourceInterruptHandler(void * context)
     {
         self.readingCondition = [[NSCondition alloc] init];
     }
-    self.readingOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readingThread) object:nil];
-    self.readingOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.readingOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.readingOperation addDependency:self.openStreamsOperation];
-    [self.operationQueue addOperation:self.readingOperation];
+    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readingThread) object:nil];
+    self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.readOperation addDependency:self.openOperation];
+    [self.operationQueue addOperation:self.readOperation];
 }
 
 - (void)readingThread
