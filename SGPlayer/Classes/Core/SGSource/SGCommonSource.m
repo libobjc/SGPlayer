@@ -77,19 +77,19 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 #pragma mark - Interface
 
-- (void)openStreams
+- (void)open
 {
     self.state = SGSourceStateOpening;
     [self startOpenStreamsThread];
 }
 
-- (void)startReading
+- (void)read
 {
     self.state = SGSourceStateReading;
     [self startReadingThread];
 }
 
-- (void)pauseReading
+- (void)pause
 {
     if (self.state == SGSourceStateReading)
     {
@@ -97,7 +97,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     }
 }
 
-- (void)resumeReading
+- (void)resume
 {
     if (self.state == SGSourceStatePaused)
     {
@@ -108,7 +108,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     }
 }
 
-- (void)stopReading
+- (void)close
 {
     self.state = SGSourceStateStoped;
     [self.readingCondition lock];
@@ -127,24 +127,6 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (BOOL)seekable
 {
-    if (!self.formatContext)
-    {
-        return NO;
-    }
-    BOOL seekable = YES;
-    if (self.formatContext->pb)
-    {
-        seekable = self.formatContext->pb->seekable;
-    }
-    if (seekable && CMTimeCompare(self.duration, kCMTimeZero) > 0)
-    {
-        return YES;
-    }
-    return NO;
-}
-
-- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
-{
     switch (self.state)
     {
         case SGSourceStateIdle:
@@ -152,16 +134,46 @@ static int SGCommonSourceInterruptHandler(void * context)
         case SGSourceStateOpened:
         case SGSourceStateStoped:
         case SGSourceStateFailed:
-            if (completionHandler)
-            {
-                completionHandler(NO);
-            }
-            return;
+            return NO;
         case SGSourceStateReading:
         case SGSourceStatePaused:
         case SGSourceStateSeeking:
         case SGSourceStateFinished:
             break;
+    }
+    if (!self.formatContext)
+    {
+        return NO;
+    }
+    if (CMTimeCompare(self.duration, kCMTimeZero) <= 0)
+    {
+        return NO;
+    }
+    if (!self.formatContext->pb)
+    {
+        return NO;
+    }
+    if (!self.formatContext->pb->seekable)
+    {
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)seekableToTime:(CMTime)time
+{
+    if (CMTIME_IS_INVALID(time))
+    {
+        return NO;
+    }
+    return self.seekable;
+}
+
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+{
+    if (![self seekableToTime:time])
+    {
+        return NO;
     }
     self.seekTimestamp = time.value * AV_TIME_BASE / time.timescale;
     self.seekCompletionHandler = completionHandler;
@@ -177,6 +189,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     {
         [self startReadingThread];
     }
+    return YES;
 }
 
 #pragma mark - Open

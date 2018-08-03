@@ -45,15 +45,15 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 - (NSArray <SGStream *> *)subtitleStreams;
 - (NSArray <SGStream *> *)otherStreams;
 
-- (void)openStreams;
-
-- (void)startReading;
-- (void)pauseReading;
-- (void)resumeReading;
-- (void)stopReading;
+- (void)open;
+- (void)read;
+- (void)pause;
+- (void)resume;
+- (void)close;
 
 - (BOOL)seekable;
-- (void)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler;
+- (BOOL)seekableToTime:(CMTime)time;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL success))completionHandler;
 
 @end
 

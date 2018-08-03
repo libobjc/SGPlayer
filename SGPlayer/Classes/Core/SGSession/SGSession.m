@@ -62,7 +62,7 @@
     self.source = [[SGCommonSource alloc] init];
     self.source.URL = self.URL;
     self.source.delegate = self;
-    [self.source openStreams];
+    [self.source open];
 }
 
 - (void)read
@@ -72,7 +72,7 @@
         return;
     }
     self.state = SGSessionStateReading;
-    [self.source startReading];
+    [self.source read];
 }
 
 - (void)close
@@ -82,7 +82,7 @@
         return;
     }
     self.state = SGSessionStateClosed;
-    [self.source stopReading];
+    [self.source close];
     [self.audioDecoder stopDecoding];
     [self.videoDecoder stopDecoding];
     [self.audioOutput stop];
@@ -93,24 +93,6 @@
 
 - (BOOL)seekable
 {
-    if (self.state == SGSessionStateFinished ||
-        self.state == SGSessionStateReading)
-    {
-        return self.source.seekable;
-    }
-    return NO;
-}
-
-- (BOOL)seekableToTime:(CMTime)time
-{
-    if (!self.seekable)
-    {
-        return NO;
-    }
-    if (CMTIME_IS_INVALID(time))
-    {
-        return NO;
-    }
     switch (self.state)
     {
         case SGSessionStateIdle:
@@ -123,7 +105,16 @@
         case SGSessionStateReading:
             break;
     }
-    return YES;
+    return self.source.seekable;
+}
+
+- (BOOL)seekableToTime:(CMTime)time
+{
+    if (CMTIME_IS_INVALID(time))
+    {
+        return NO;
+    }
+    return self.seekable;
 }
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
@@ -305,9 +296,9 @@
         shouldPaused = YES;
     }
     if (shouldPaused) {
-        [self.source pauseReading];
+        [self.source pause];
     } else {
-        [self.source resumeReading];
+        [self.source resume];
     }
     if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)])
     {
