@@ -19,10 +19,10 @@
 
 typedef NS_ENUM(NSUInteger, SGDecoderState)
 {
-    SGDecoderStateIdle,
+    SGDecoderStateNone,
     SGDecoderStateDecoding,
     SGDecoderStatePaused,
-    SGDecoderStateStoped,
+    SGDecoderStateClosed,
 };
 
 @protocol SGDecoder <NSObject>
@@ -51,6 +51,7 @@ typedef NS_ENUM(NSUInteger, SGDecoderState)
 
 @protocol SGDecoderDelegate <NSObject>
 
+- (void)decoderDidChangeState:(id <SGDecoder>)decoder;
 - (void)decoderDidChangeCapacity:(id <SGDecoder>)decoder;
 - (void)decoder:(id <SGDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame;
 

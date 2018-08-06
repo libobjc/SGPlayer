@@ -65,6 +65,10 @@ static SGPacket * flushPacket;
 
 - (BOOL)open
 {
+    if (self.state != SGDecoderStateNone)
+    {
+        return NO;
+    }
     self.state = SGDecoderStateDecoding;
     [self startDecodeThread];
     return YES;
@@ -72,26 +76,32 @@ static SGPacket * flushPacket;
 
 - (void)pause
 {
-    if (self.state == SGDecoderStateDecoding)
+    if (self.state != SGDecoderStateDecoding)
     {
-        self.state = SGDecoderStatePaused;
+        return;
     }
+    self.state = SGDecoderStatePaused;
 }
 
 - (void)resume
 {
-    if (self.state == SGDecoderStatePaused)
+    if (self.state != SGDecoderStatePaused)
     {
-        self.state = SGDecoderStateDecoding;
-        [self.pausedCondition lock];
-        [self.pausedCondition broadcast];
-        [self.pausedCondition unlock];
+        return;
     }
+    self.state = SGDecoderStateDecoding;
+    [self.pausedCondition lock];
+    [self.pausedCondition broadcast];
+    [self.pausedCondition unlock];
 }
 
 - (void)close
 {
-    self.state = SGDecoderStateStoped;
+    if (self.state == SGDecoderStateClosed)
+    {
+        return;
+    }
+    self.state = SGDecoderStateClosed;
     [self.packetQueue destroy];
     [self.pausedCondition lock];
     [self.pausedCondition broadcast];
@@ -102,6 +112,10 @@ static SGPacket * flushPacket;
 
 - (BOOL)putPacket:(SGPacket *)packet
 {
+    if (self.state == SGDecoderStateClosed)
+    {
+        return NO;
+    }
     [self.packetQueue putObjectSync:packet];
     [self.delegate decoderDidChangeCapacity:self];
     return YES;
@@ -109,6 +123,10 @@ static SGPacket * flushPacket;
 
 - (void)flush
 {
+    if (self.state == SGDecoderStateClosed)
+    {
+        return;
+    }
     [self.packetQueue flush];
     [self.packetQueue putObjectSync:flushPacket];
     [self.pausedCondition lock];
@@ -141,7 +159,7 @@ static SGPacket * flushPacket;
 {
     while (YES)
     {
-        if (self.state == SGDecoderStateStoped)
+        if (self.state == SGDecoderStateClosed)
         {
             break;
         }
