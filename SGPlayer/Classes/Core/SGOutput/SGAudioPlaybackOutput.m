@@ -66,12 +66,12 @@
 
 - (void)dealloc
 {
-    [self stop];
+    [self close];
 }
 
 #pragma mark - Interface
 
-- (void)start
+- (void)open
 {
     self.frameQueue = [[SGObjectQueue alloc] init];
     self.currentRenderReadOffset = 0;
@@ -80,7 +80,7 @@
     self.didUpdateTimeSynchronizer = NO;
 }
 
-- (void)stop
+- (void)close
 {
     [self.audioPlayer pause];
     [self lock];

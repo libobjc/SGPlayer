@@ -78,8 +78,8 @@
     [self.source close];
     [self.audioDecoder close];
     [self.videoDecoder close];
-    [self.audioOutput stop];
-    [self.videoOutput stop];
+    [self.audioOutput close];
+    [self.videoOutput close];
 }
 
 #pragma mark - Seek
@@ -321,14 +321,14 @@
         self.audioOutput = self.configuration.audioOutput;
         self.audioOutput.delegate = self;
         self.audioOutput.timeSynchronizer = self.timeSynchronizer;
-        [self.audioOutput start];
+        [self.audioOutput open];
     }
     if (!self.videoOutput && self.videoDecoder)
     {
         self.videoOutput = self.configuration.videoOutput;
         self.videoOutput.delegate = self;
         self.videoOutput.timeSynchronizer = self.timeSynchronizer;
-        [self.videoOutput start];
+        [self.videoOutput open];
     }
 }
 

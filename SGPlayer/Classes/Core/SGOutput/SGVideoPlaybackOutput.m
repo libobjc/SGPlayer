@@ -70,12 +70,12 @@
 {
     [self.renderTimer invalidate];
     [self.displayLink invalidate];
-    [self stop];
+    [self close];
 }
 
 #pragma mark - Interface
 
-- (void)start
+- (void)open
 {
     self.frameQueue = [[SGObjectQueue alloc] init];
     self.frameQueue.shouldSortObjects = YES;
@@ -83,7 +83,7 @@
     self.renderTimer.fireDate = [NSDate distantPast];
 }
 
-- (void)stop
+- (void)close
 {
     [self.frameQueue destroy];
     [self lock];
