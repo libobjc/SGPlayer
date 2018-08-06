@@ -88,10 +88,14 @@
     return NO;
 }
 
-- (void)close
+- (BOOL)close
 {
-    [super close];
+    if (![super close])
+    {
+        return NO;
+    }
     [self destoryDecompressionSession];
+    return YES;
 }
 
 - (void)doFlush

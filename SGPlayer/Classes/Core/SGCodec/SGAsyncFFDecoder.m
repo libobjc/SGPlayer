@@ -66,14 +66,18 @@
     return NO;
 }
 
-- (void)close
+- (BOOL)close
 {
-    [super close];
+    if (![super close])
+    {
+        return NO;
+    }
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
+    return YES;
 }
 
 - (void)doFlush

@@ -8,9 +8,10 @@
 
 #import "SGAsyncDecoder.h"
 
-@interface SGAsyncDecoder ()
+@interface SGAsyncDecoder () <NSLocking>
 
 @property (nonatomic, assign) SGDecoderState state;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * decodeOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
@@ -46,6 +47,23 @@ static SGPacket * flushPacket;
 
 #pragma mark - Setter/Getter
 
+- (void)setState:(SGDecoderState)state
+{
+    [self lock];
+    if (_state != state)
+    {
+        SGDecoderState previous = _state;
+        _state = state;
+        if (previous == SGDecoderStatePaused)
+        {
+            [self.pausedCondition lock];
+            [self.pausedCondition broadcast];
+            [self.pausedCondition unlock];
+        }
+    }
+    [self unlock];
+}
+
 - (CMTime)duration
 {
     return self.packetQueue.duration;
@@ -65,74 +83,87 @@ static SGPacket * flushPacket;
 
 - (BOOL)open
 {
+    [self lock];
     if (self.state != SGDecoderStateNone)
     {
+        [self unlock];
         return NO;
     }
     self.state = SGDecoderStateDecoding;
     [self startDecodeThread];
+    [self unlock];
     return YES;
 }
 
-- (void)pause
+- (BOOL)pause
 {
+    [self lock];
     if (self.state != SGDecoderStateDecoding)
     {
-        return;
+        [self unlock];
+        return NO;
     }
     self.state = SGDecoderStatePaused;
+    [self unlock];
+    return YES;
 }
 
-- (void)resume
+- (BOOL)resume
 {
+    [self lock];
     if (self.state != SGDecoderStatePaused)
     {
-        return;
+        [self unlock];
+        return NO;
     }
     self.state = SGDecoderStateDecoding;
-    [self.pausedCondition lock];
-    [self.pausedCondition broadcast];
-    [self.pausedCondition unlock];
+    [self unlock];
+    return YES;
 }
 
-- (void)close
+- (BOOL)close
 {
+    [self lock];
     if (self.state == SGDecoderStateClosed)
     {
-        return;
+        [self unlock];
+        return NO;
     }
     self.state = SGDecoderStateClosed;
+    [self unlock];
     [self.packetQueue destroy];
-    [self.pausedCondition lock];
-    [self.pausedCondition broadcast];
-    [self.pausedCondition unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
+    return YES;
 }
 
 - (BOOL)putPacket:(SGPacket *)packet
 {
+    [self lock];
     if (self.state == SGDecoderStateClosed)
     {
+        [self unlock];
         return NO;
     }
+    [self unlock];
     [self.packetQueue putObjectSync:packet];
     [self.delegate decoderDidChangeCapacity:self];
     return YES;
 }
 
-- (void)flush
+- (BOOL)flush
 {
+    [self lock];
     if (self.state == SGDecoderStateClosed)
     {
-        return;
+        [self unlock];
+        return NO;
     }
+    [self unlock];
     [self.packetQueue flush];
     [self.packetQueue putObjectSync:flushPacket];
-    [self.pausedCondition lock];
-    [self.pausedCondition broadcast];
-    [self.pausedCondition unlock];
     [self.delegate decoderDidChangeCapacity:self];
+    return YES;
 }
 
 #pragma mark - Decode
@@ -159,22 +190,24 @@ static SGPacket * flushPacket;
 {
     while (YES)
     {
-        if (self.state == SGDecoderStateClosed)
+        [self lock];
+        if (self.state == SGDecoderStateNone ||
+            self.state == SGDecoderStateClosed)
         {
+            [self unlock];
             break;
         }
         else if (self.state == SGDecoderStatePaused)
         {
             [self.pausedCondition lock];
-            if (self.state == SGDecoderStatePaused)
-            {
-                [self.pausedCondition wait];
-            }
+            [self unlock];
+            [self.pausedCondition wait];
             [self.pausedCondition unlock];
             continue;
         }
         else if (self.state == SGDecoderStateDecoding)
         {
+            [self unlock];
             SGPacket * packet = [self.packetQueue getObjectSync];
             if (packet == flushPacket)
             {
@@ -204,6 +237,22 @@ static SGPacket * flushPacket;
 - (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet
 {
     return nil;
+}
+
+#pragma mark - NSLocking
+
+- (void)lock
+{
+    if (!self.coreLock)
+    {
+        self.coreLock = [[NSRecursiveLock alloc] init];
+    }
+    [self.coreLock lock];
+}
+
+- (void)unlock
+{
+    [self.coreLock unlock];
 }
 
 @end

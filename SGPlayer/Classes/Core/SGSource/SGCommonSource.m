@@ -112,7 +112,7 @@ static int SGCommonSourceInterruptHandler(void * context)
 - (void)open
 {
     [self lock];
-    if (self.state != SGSourceStateIdle)
+    if (self.state != SGSourceStateNone)
     {
         [self unlock];
         return;
@@ -332,7 +332,8 @@ static int SGCommonSourceInterruptHandler(void * context)
     while (YES)
     {
         [self lock];
-        if (self.state == SGSourceStateFinished ||
+        if (self.state == SGSourceStateNone ||
+            self.state == SGSourceStateFinished ||
             self.state == SGSourceStateClosed ||
             self.state == SGSourceStateFailed)
         {

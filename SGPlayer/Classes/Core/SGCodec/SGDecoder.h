@@ -40,12 +40,12 @@ typedef NS_ENUM(NSUInteger, SGDecoderState)
 - (NSUInteger)count;
 
 - (BOOL)open;
-- (void)pause;
-- (void)resume;
-- (void)close;
+- (BOOL)pause;
+- (BOOL)resume;
+- (BOOL)close;
 
 - (BOOL)putPacket:(SGPacket *)packet;
-- (void)flush;
+- (BOOL)flush;
 
 @end
 

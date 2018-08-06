@@ -18,7 +18,7 @@
 
 typedef NS_ENUM(NSUInteger, SGSourceState)
 {
-    SGSourceStateIdle,
+    SGSourceStateNone,
     SGSourceStateOpening,
     SGSourceStateOpened,
     SGSourceStateReading,
