@@ -131,7 +131,7 @@
     return [self seekToTime:time completionHandler:nil];
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
 {
     [self lock];
     if (![self.session seekableToTime:time])
@@ -141,13 +141,13 @@
     }
     [self startSeeking];
     SGWeakSelf
-    [self.session seekToTime:time completionHandler:^(BOOL success) {
+    [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
         [strongSelf lock];
         [strongSelf finishSeeking];
         if (completionHandler)
         {
-            completionHandler(success);
+            completionHandler(success, time);
         }
         [strongSelf unlock];
         SGPlayerLog(@"SGPlayer seek finished, %d", success);
@@ -227,14 +227,6 @@
         {
             case SGPlaybackStateSeeking:
                 self.playbackStateBeforSeeking = previousState;
-                break;
-            default:
-                break;
-        }
-        switch (previousState)
-        {
-            case SGPlaybackStateSeeking:
-                self.playbackStateBeforSeeking = SGPlaybackStateNone;
                 break;
             default:
                 break;

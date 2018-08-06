@@ -55,6 +55,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success))completionHandler;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
 
 @end
