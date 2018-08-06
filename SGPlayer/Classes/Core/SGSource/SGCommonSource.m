@@ -47,7 +47,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     switch (obj.state)
     {
         case SGSourceStateFinished:
-        case SGSourceStateStoped:
+        case SGSourceStateClosed:
         case SGSourceStateFailed:
             ret = YES;
             break;
@@ -164,12 +164,12 @@ static int SGCommonSourceInterruptHandler(void * context)
 - (void)close
 {
     [self lock];
-    if (self.state == SGSourceStateStoped)
+    if (self.state == SGSourceStateClosed)
     {
         [self unlock];
         return;
     }
-    self.state = SGSourceStateStoped;
+    self.state = SGSourceStateClosed;
     [self unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
@@ -333,7 +333,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     {
         [self lock];
         if (self.state == SGSourceStateFinished ||
-            self.state == SGSourceStateStoped ||
+            self.state == SGSourceStateClosed ||
             self.state == SGSourceStateFailed)
         {
             [self unlock];
