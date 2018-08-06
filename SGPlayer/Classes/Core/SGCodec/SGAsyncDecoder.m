@@ -11,10 +11,9 @@
 @interface SGAsyncDecoder ()
 
 @property (nonatomic, assign) SGDecoderState state;
-
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * decodingOperation;
-@property (nonatomic, strong) NSCondition * decodingCondition;
+@property (nonatomic, strong) NSInvocationOperation * decodeOperation;
+@property (nonatomic, strong) NSCondition * pausedCondition;
 
 @end
 
@@ -25,12 +24,12 @@
 @synthesize codecpar = _codecpar;
 @synthesize delegate = _delegate;
 
+static SGPacket * flushPacket;
+
 - (SGMediaType)mediaType
 {
     return SGMediaTypeUnknown;
 }
-
-static SGPacket * flushPacket;
 
 - (instancetype)init
 {
@@ -45,58 +44,7 @@ static SGPacket * flushPacket;
     return self;
 }
 
-- (BOOL)open
-{
-    [self startDecodingThread];
-    return YES;
-}
-
-- (void)pause
-{
-    if (self.state == SGDecoderStateDecoding)
-    {
-        self.state = SGDecoderStatePaused;
-    }
-}
-
-- (void)resume
-{
-    if (self.state == SGDecoderStatePaused)
-    {
-        self.state = SGDecoderStateDecoding;
-        [self.decodingCondition lock];
-        [self.decodingCondition broadcast];
-        [self.decodingCondition unlock];
-    }
-}
-
-- (void)close
-{
-    self.state = SGDecoderStateStoped;
-    [self.packetQueue destroy];
-    [self.decodingCondition lock];
-    [self.decodingCondition broadcast];
-    [self.decodingCondition unlock];
-    [self.operationQueue cancelAllOperations];
-    [self.operationQueue waitUntilAllOperationsAreFinished];
-}
-
-- (BOOL)putPacket:(SGPacket *)packet
-{
-    [self.packetQueue putObjectSync:packet];
-    [self.delegate decoderDidChangeCapacity:self];
-    return YES;
-}
-
-- (void)flush
-{
-    [self.packetQueue flush];
-    [self.packetQueue putObjectSync:flushPacket];
-    [self.decodingCondition lock];
-    [self.decodingCondition broadcast];
-    [self.decodingCondition unlock];
-    [self.delegate decoderDidChangeCapacity:self];
-}
+#pragma mark - Setter/Getter
 
 - (CMTime)duration
 {
@@ -113,7 +61,65 @@ static SGPacket * flushPacket;
     return self.packetQueue.count;
 }
 
-- (void)startDecodingThread
+#pragma mark - Interface
+
+- (BOOL)open
+{
+    self.state = SGDecoderStateDecoding;
+    [self startDecodeThread];
+    return YES;
+}
+
+- (void)pause
+{
+    if (self.state == SGDecoderStateDecoding)
+    {
+        self.state = SGDecoderStatePaused;
+    }
+}
+
+- (void)resume
+{
+    if (self.state == SGDecoderStatePaused)
+    {
+        self.state = SGDecoderStateDecoding;
+        [self.pausedCondition lock];
+        [self.pausedCondition broadcast];
+        [self.pausedCondition unlock];
+    }
+}
+
+- (void)close
+{
+    self.state = SGDecoderStateStoped;
+    [self.packetQueue destroy];
+    [self.pausedCondition lock];
+    [self.pausedCondition broadcast];
+    [self.pausedCondition unlock];
+    [self.operationQueue cancelAllOperations];
+    [self.operationQueue waitUntilAllOperationsAreFinished];
+}
+
+- (BOOL)putPacket:(SGPacket *)packet
+{
+    [self.packetQueue putObjectSync:packet];
+    [self.delegate decoderDidChangeCapacity:self];
+    return YES;
+}
+
+- (void)flush
+{
+    [self.packetQueue flush];
+    [self.packetQueue putObjectSync:flushPacket];
+    [self.pausedCondition lock];
+    [self.pausedCondition broadcast];
+    [self.pausedCondition unlock];
+    [self.delegate decoderDidChangeCapacity:self];
+}
+
+#pragma mark - Decode
+
+- (void)startDecodeThread
 {
     if (!self.operationQueue)
     {
@@ -121,19 +127,18 @@ static SGPacket * flushPacket;
         self.operationQueue.maxConcurrentOperationCount = 1;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
-    if (!self.decodingCondition)
+    if (!self.pausedCondition)
     {
-        self.decodingCondition = [[NSCondition alloc] init];
+        self.pausedCondition = [[NSCondition alloc] init];
     }
-    self.decodingOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodingThread) object:nil];
-    self.decodingOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
-    self.decodingOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    [self.operationQueue addOperation:self.decodingOperation];
+    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeThread) object:nil];
+    self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
+    self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    [self.operationQueue addOperation:self.decodeOperation];
 }
 
-- (void)decodingThread
+- (void)decodeThread
 {
-    self.state = SGDecoderStateDecoding;
     while (YES)
     {
         if (self.state == SGDecoderStateStoped)
@@ -142,12 +147,12 @@ static SGPacket * flushPacket;
         }
         else if (self.state == SGDecoderStatePaused)
         {
-            [self.decodingCondition lock];
+            [self.pausedCondition lock];
             if (self.state == SGDecoderStatePaused)
             {
-                [self.decodingCondition wait];
+                [self.pausedCondition wait];
             }
-            [self.decodingCondition unlock];
+            [self.pausedCondition unlock];
             continue;
         }
         else if (self.state == SGDecoderStateDecoding)
