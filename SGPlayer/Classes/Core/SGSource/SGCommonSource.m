@@ -9,31 +9,26 @@
 #import "SGCommonSource.h"
 #import "SGPacket.h"
 #import "SGError.h"
-#import "avformat.h"
 
 @interface SGCommonSource () <NSLocking>
-
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
-@property (nonatomic, assign) AVFormatContext * formatContext;
 
 @property (nonatomic, assign) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) BOOL seekable;
-
 @property (nonatomic, strong) NSArray <SGStream *> * streams;
 @property (nonatomic, strong) NSArray <SGStream *> * videoStreams;
 @property (nonatomic, strong) NSArray <SGStream *> * audioStreams;
 @property (nonatomic, strong) NSArray <SGStream *> * subtitleStreams;
 @property (nonatomic, strong) NSArray <SGStream *> * otherStreams;
-
+@property (nonatomic, assign) AVFormatContext * formatContext;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSInvocationOperation * openOperation;
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
-@property (nonatomic, strong) NSCondition * readingCondition;
-
-@property (nonatomic, assign) CMTime seekTimestamp;
-@property (nonatomic, assign) CMTime seekingTimestamp;
+@property (nonatomic, strong) NSCondition * pausedCondition;
+@property (nonatomic, assign) BOOL seekable;
+@property (nonatomic, assign) CMTime seekTimeStamp;
+@property (nonatomic, assign) CMTime seekingTimeStamp;
 @property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
 
 @end
@@ -57,7 +52,7 @@ static int SGCommonSourceInterruptHandler(void * context)
             ret = YES;
             break;
         case SGSourceStateSeeking:
-            ret = CMTimeCompare(obj.seekTimestamp, obj.seekingTimestamp) != 0;
+            ret = CMTimeCompare(obj.seekTimeStamp, obj.seekingTimeStamp) != 0;
             break;
         default:
             break;
@@ -72,7 +67,9 @@ static int SGCommonSourceInterruptHandler(void * context)
     {
         self.duration = kCMTimeZero;
         self.seekable = NO;
-        self.readingCondition = [[NSCondition alloc] init];
+        self.seekTimeStamp = kCMTimeZero;
+        self.seekingTimeStamp = kCMTimeZero;
+        self.pausedCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
         self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
@@ -91,9 +88,9 @@ static int SGCommonSourceInterruptHandler(void * context)
         _state = state;
         if (privious == SGSourceStatePaused)
         {
-            [self.readingCondition lock];
-            [self.readingCondition broadcast];
-            [self.readingCondition unlock];
+            [self.pausedCondition lock];
+            [self.pausedCondition broadcast];
+            [self.pausedCondition unlock];
         }
         else if (privious == SGSourceStateFinished)
         {
@@ -210,7 +207,7 @@ static int SGCommonSourceInterruptHandler(void * context)
         return NO;
     }
     self.state = SGSourceStateSeeking;
-    self.seekTimestamp = time;
+    self.seekTimeStamp = time;
     self.seekCompletionHandler = completionHandler;
     [self unlock];
     return YES;
@@ -344,38 +341,38 @@ static int SGCommonSourceInterruptHandler(void * context)
         }
         else if (self.state == SGSourceStatePaused)
         {
-            [self.readingCondition lock];
+            [self.pausedCondition lock];
             [self unlock];
-            [self.readingCondition wait];
-            [self.readingCondition unlock];
+            [self.pausedCondition wait];
+            [self.pausedCondition unlock];
             continue;
         }
         else if (self.state == SGSourceStateSeeking)
         {
-            self.seekingTimestamp = self.seekTimestamp;
-            long long timeStamp = AV_TIME_BASE * self.seekingTimestamp.value / self.seekingTimestamp.timescale;
+            self.seekingTimeStamp = self.seekTimeStamp;
+            long long timeStamp = AV_TIME_BASE * self.seekingTimeStamp.value / self.seekingTimeStamp.timescale;
             [self unlock];
             int success = av_seek_frame(self.formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
             [self lock];
             if (self.state == SGSourceStateSeeking)
             {
-                long long currentTimeStamp = AV_TIME_BASE * self.seekTimestamp.value / self.seekTimestamp.timescale;
+                long long currentTimeStamp = AV_TIME_BASE * self.seekTimeStamp.value / self.seekTimeStamp.timescale;
                 if (timeStamp == currentTimeStamp)
                 {
                     if (self.seekCompletionHandler)
                     {
-                        self.seekCompletionHandler(success >= 0, self.seekTimestamp);
+                        self.seekCompletionHandler(success >= 0, self.seekTimeStamp);
                     }
-                    self.seekTimestamp = kCMTimeZero;
-                    self.seekingTimestamp = kCMTimeZero;
+                    self.seekTimeStamp = kCMTimeZero;
+                    self.seekingTimeStamp = kCMTimeZero;
                     self.seekCompletionHandler = nil;
                     self.state = SGSourceStateReading;
                 }
             }
             else
             {
-                self.seekTimestamp = kCMTimeZero;
-                self.seekingTimestamp = kCMTimeZero;
+                self.seekTimeStamp = kCMTimeZero;
+                self.seekingTimeStamp = kCMTimeZero;
                 self.seekCompletionHandler = nil;
             }
             [self unlock];
