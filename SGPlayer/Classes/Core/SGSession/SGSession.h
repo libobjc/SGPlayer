@@ -43,7 +43,6 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  *  Time.
  */
 @property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, assign, readonly) CMTime currentTime;
 
 - (CMTime)loadedDuration;       // Main media type is Audio.
 - (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType;

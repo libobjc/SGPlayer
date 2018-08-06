@@ -36,7 +36,6 @@
 @implementation SGVideoPlaybackOutput
 
 @synthesize delegate = _delegate;
-@synthesize timeSynchronizer = _timeSynchronizer;
 
 - (SGMediaType)mediaType
 {

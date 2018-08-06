@@ -24,7 +24,6 @@
 @property (nonatomic, strong) id <SGDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGOutput> audioOutput;
 @property (nonatomic, strong) id <SGOutput> videoOutput;
-@property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 @end
 
@@ -142,11 +141,6 @@
 - (CMTime)duration
 {
     return self.source.duration;
-}
-
-- (CMTime)currentTime
-{
-    return self.timeSynchronizer.position;
 }
 
 - (CMTime)loadedDuration
@@ -312,22 +306,16 @@
 
 - (void)setupOutputIfNeeded
 {
-    if (!self.timeSynchronizer)
-    {
-        self.timeSynchronizer = [[SGTimeSynchronizer alloc] init];
-    }
     if (!self.audioOutput && self.audioDecoder)
     {
         self.audioOutput = self.configuration.audioOutput;
         self.audioOutput.delegate = self;
-        self.audioOutput.timeSynchronizer = self.timeSynchronizer;
         [self.audioOutput open];
     }
     if (!self.videoOutput && self.videoDecoder)
     {
         self.videoOutput = self.configuration.videoOutput;
         self.videoOutput.delegate = self;
-        self.videoOutput.timeSynchronizer = self.timeSynchronizer;
         [self.videoOutput open];
     }
 }

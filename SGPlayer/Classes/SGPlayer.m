@@ -23,6 +23,7 @@
 @property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
+@property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 @end
 
@@ -56,9 +57,12 @@
         [self unlock];
         return;
     }
-    SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
+    self.timeSynchronizer = [[SGTimeSynchronizer alloc] init];
+    self.audioOutput.timeSynchronizer = self.timeSynchronizer;
+    self.videoOutput.timeSynchronizer = self.timeSynchronizer;
+    SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     [self updateView];

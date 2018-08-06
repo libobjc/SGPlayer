@@ -22,7 +22,6 @@
 - (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGOutputDelegate> delegate;
-@property (nonatomic, strong) SGTimeSynchronizer * timeSynchronizer;
 
 - (CMTime)duration;
 - (long long)size;
