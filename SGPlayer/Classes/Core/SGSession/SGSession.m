@@ -110,7 +110,7 @@
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
 {
     if (![self seekableToTime:time])
     {
@@ -121,7 +121,7 @@
         self.state = SGSessionStateReading;
     }
     SGWeakSelf
-    [self.source seekToTime:time completionHandler:^(BOOL success) {
+    [self.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
         [strongSelf.audioDecoder flush];
         [strongSelf.videoDecoder flush];
@@ -129,7 +129,9 @@
         [strongSelf.videoOutput flush];
         if (completionHandler)
         {
-            completionHandler(success);
+            dispatch_async(self.delegateQueue, ^{
+                completionHandler(success, time);
+            });
         }
     }];
     return YES;

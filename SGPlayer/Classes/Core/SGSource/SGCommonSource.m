@@ -11,12 +11,15 @@
 #import "SGError.h"
 #import "avformat.h"
 
-@interface SGCommonSource ()
+@interface SGCommonSource () <NSLocking>
 
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, assign) AVFormatContext * formatContext;
 
 @property (nonatomic, assign) SGSourceState state;
-@property (nonatomic, copy) NSError * error;
+@property (nonatomic, strong) NSError * error;
+@property (nonatomic, assign) CMTime duration;
+@property (nonatomic, assign) BOOL seekable;
 
 @property (nonatomic, strong) NSArray <SGStream *> * streams;
 @property (nonatomic, strong) NSArray <SGStream *> * videoStreams;
@@ -29,9 +32,9 @@
 @property (nonatomic, strong) NSInvocationOperation * readOperation;
 @property (nonatomic, strong) NSCondition * readingCondition;
 
-@property (nonatomic, assign) long long seekTimestamp;
-@property (nonatomic, assign) long long seekingTimestamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL);
+@property (nonatomic, assign) CMTime seekTimestamp;
+@property (nonatomic, assign) CMTime seekingTimestamp;
+@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
 
 @end
 
@@ -39,30 +42,36 @@
 
 @synthesize URL = _URL;
 @synthesize delegate = _delegate;
+@synthesize state = _state;
 
 static int SGCommonSourceInterruptHandler(void * context)
 {
     SGCommonSource * obj = (__bridge SGCommonSource *)context;
+    [obj lock];
+    int ret = NO;
     switch (obj.state)
     {
         case SGSourceStateFinished:
         case SGSourceStateStoped:
         case SGSourceStateFailed:
-            return YES;
+            ret = YES;
+            break;
         case SGSourceStateSeeking:
-            if (obj.seekTimestamp != obj.seekingTimestamp)
-            {
-                return YES;
-            }
+            ret = CMTimeCompare(obj.seekTimestamp, obj.seekingTimestamp) != 0;
+            break;
         default:
-            return NO;
+            break;
     }
+    [obj unlock];
+    return ret;
 }
 
 - (instancetype)init
 {
     if (self = [super init])
     {
+        self.duration = kCMTimeZero;
+        self.seekable = NO;
         self.readingCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
@@ -75,93 +84,96 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)setState:(SGSourceState)state
 {
+    [self lock];
     if (_state != state)
     {
+        SGSourceState privious = _state;
         _state = state;
+        if (privious == SGSourceStatePaused)
+        {
+            [self.readingCondition lock];
+            [self.readingCondition broadcast];
+            [self.readingCondition unlock];
+        }
+        else if (privious == SGSourceStateFinished)
+        {
+            if (_state == SGSourceStateSeeking)
+            {
+                [self startReadThread];
+            }
+        }
         if ([self.delegate respondsToSelector:@selector(sourceDidChangeState:)])
         {
             [self.delegate sourceDidChangeState:self];
         }
     }
-}
-
-- (CMTime)duration
-{
-    switch (self.state)
-    {
-        case SGSourceStateReading:
-        case SGSourceStateSeeking:
-        case SGSourceStateFinished:
-            break;
-        default:
-            return kCMTimeZero;
-    }
-    if (!self.formatContext)
-    {
-        return kCMTimeZero;
-    }
-    int64_t duration = self.formatContext->duration;
-    if (duration < 0)
-    {
-        return kCMTimeZero;
-    }
-    return CMTimeMake(duration, AV_TIME_BASE);
+    [self unlock];
 }
 
 #pragma mark - Interface
 
 - (void)open
 {
+    [self lock];
     if (self.state != SGSourceStateIdle)
     {
+        [self unlock];
         return;
     }
     self.state = SGSourceStateOpening;
     [self startOpenThread];
+    [self unlock];
 }
 
 - (void)read
 {
+    [self lock];
     if (self.state != SGSourceStateOpened)
     {
+        [self unlock];
         return;
     }
     self.state = SGSourceStateReading;
     [self startReadThread];
+    [self unlock];
 }
 
 - (void)pause
 {
-    if (self.state != SGSourceStateReading ||
-        self.state != SGSourceStateSeeking)
+    [self lock];
+    if (self.state != SGSourceStateReading &&
+        self.state != SGSourceStateSeeking &&
+        self.state != SGSourceStateFinished)
     {
+        [self unlock];
         return;
     }
     self.state = SGSourceStatePaused;
+    [self unlock];
 }
 
 - (void)resume
 {
+    [self lock];
     if (self.state != SGSourceStatePaused)
     {
+        [self unlock];
         return;
     }
     self.state = SGSourceStateReading;
-    [self.readingCondition lock];
-    [self.readingCondition broadcast];
-    [self.readingCondition unlock];
+    [self unlock];
 }
 
 - (void)close
 {
+    [self lock];
     if (self.state == SGSourceStateStoped)
     {
+        [self unlock];
         return;
     }
     self.state = SGSourceStateStoped;
-    [self.readingCondition lock];
-    [self.readingCondition broadcast];
-    [self.readingCondition unlock];
+    [self unlock];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
     if (self.formatContext)
@@ -173,41 +185,6 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 #pragma mark - Seeking
 
-- (BOOL)seekable
-{
-    switch (self.state)
-    {
-        case SGSourceStateIdle:
-        case SGSourceStateOpening:
-        case SGSourceStateOpened:
-        case SGSourceStateStoped:
-        case SGSourceStateFailed:
-            return NO;
-        case SGSourceStateReading:
-        case SGSourceStatePaused:
-        case SGSourceStateSeeking:
-        case SGSourceStateFinished:
-            break;
-    }
-    if (!self.formatContext)
-    {
-        return NO;
-    }
-    if (CMTimeCompare(self.duration, kCMTimeZero) <= 0)
-    {
-        return NO;
-    }
-    if (!self.formatContext->pb)
-    {
-        return NO;
-    }
-    if (!self.formatContext->pb->seekable)
-    {
-        return NO;
-    }
-    return YES;
-}
-
 - (BOOL)seekableToTime:(CMTime)time
 {
     if (CMTIME_IS_INVALID(time))
@@ -217,26 +194,25 @@ static int SGCommonSourceInterruptHandler(void * context)
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
 {
     if (![self seekableToTime:time])
     {
         return NO;
     }
-    self.seekTimestamp = time.value * AV_TIME_BASE / time.timescale;
-    self.seekCompletionHandler = completionHandler;
-    SGSourceState state = self.state;
+    [self lock];
+    if (self.state != SGSourceStateReading &&
+        self.state != SGSourceStatePaused &&
+        self.state != SGSourceStateSeeking &&
+        self.state != SGSourceStateFinished)
+    {
+        [self unlock];
+        return NO;
+    }
     self.state = SGSourceStateSeeking;
-    if (state == SGSourceStatePaused)
-    {
-        [self.readingCondition lock];
-        [self.readingCondition broadcast];
-        [self.readingCondition unlock];
-    }
-    else if (state == SGSourceStateFinished)
-    {
-        [self startReadThread];
-    }
+    self.seekTimestamp = time;
+    self.seekCompletionHandler = completionHandler;
+    [self unlock];
     return YES;
 }
 
@@ -288,6 +264,17 @@ static int SGCommonSourceInterruptHandler(void * context)
         }
         self.state = SGSourceStateFailed;
         return;
+    }
+    
+    int64_t duration = self.formatContext->duration;
+    if (duration > 0)
+    {
+        self.duration = CMTimeMake(duration, AV_TIME_BASE);
+    }
+    if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
+        self.formatContext->pb)
+    {
+        self.seekable = self.formatContext->pb->seekable;
     }
     
     NSMutableArray <SGStream *> * streams = [NSMutableArray array];
@@ -347,55 +334,56 @@ static int SGCommonSourceInterruptHandler(void * context)
 {
     while (YES)
     {
+        [self lock];
         if (self.state == SGSourceStateFinished ||
             self.state == SGSourceStateStoped ||
             self.state == SGSourceStateFailed)
         {
+            [self unlock];
             break;
         }
         else if (self.state == SGSourceStatePaused)
         {
             [self.readingCondition lock];
-            if (self.state == SGSourceStatePaused)
-            {
-                [self.readingCondition wait];
-            }
+            [self unlock];
+            [self.readingCondition wait];
             [self.readingCondition unlock];
             continue;
         }
         else if (self.state == SGSourceStateSeeking)
         {
-            while (YES)
+            self.seekingTimestamp = self.seekTimestamp;
+            long long timeStamp = AV_TIME_BASE * self.seekingTimestamp.value / self.seekingTimestamp.timescale;
+            [self unlock];
+            int success = av_seek_frame(self.formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+            [self lock];
+            if (self.state == SGSourceStateSeeking)
             {
-                self.seekingTimestamp = self.seekTimestamp;
-                int success = av_seek_frame(self.formatContext, -1, self.seekingTimestamp, AVSEEK_FLAG_BACKWARD);
-                if (self.state == SGSourceStateSeeking)
+                long long currentTimeStamp = AV_TIME_BASE * self.seekTimestamp.value / self.seekTimestamp.timescale;
+                if (timeStamp == currentTimeStamp)
                 {
-                    if (self.seekTimestamp != self.seekingTimestamp)
-                    {
-                        continue;
-                    }
                     if (self.seekCompletionHandler)
                     {
-                        self.seekCompletionHandler(success >= 0);
+                        self.seekCompletionHandler(success >= 0, self.seekTimestamp);
                     }
-                    self.seekTimestamp = 0;
-                    self.seekingTimestamp = 0;
+                    self.seekTimestamp = kCMTimeZero;
+                    self.seekingTimestamp = kCMTimeZero;
                     self.seekCompletionHandler = nil;
                     self.state = SGSourceStateReading;
                 }
-                else
-                {
-                    self.seekTimestamp = 0;
-                    self.seekingTimestamp = 0;
-                    self.seekCompletionHandler = nil;
-                }
-                break;
             }
+            else
+            {
+                self.seekTimestamp = kCMTimeZero;
+                self.seekingTimestamp = kCMTimeZero;
+                self.seekCompletionHandler = nil;
+            }
+            [self unlock];
             continue;
         }
         else if (self.state == SGSourceStateReading)
         {
+            [self unlock];
             SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
             int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
@@ -409,6 +397,22 @@ static int SGCommonSourceInterruptHandler(void * context)
             continue;
         }
     }
+}
+
+#pragma mark - NSLocking
+
+- (void)lock
+{
+    if (!self.coreLock)
+    {
+        self.coreLock = [[NSRecursiveLock alloc] init];
+    }
+    [self.coreLock lock];
+}
+
+- (void)unlock
+{
+    [self.coreLock unlock];
 }
 
 @end
