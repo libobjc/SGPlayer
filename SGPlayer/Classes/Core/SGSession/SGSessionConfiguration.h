@@ -12,7 +12,8 @@
 
 @interface SGSessionConfiguration : NSObject
 
-@property (nonatomic, assign) BOOL enableVideoToolBox;
+@property (nonatomic, assign) BOOL hardwareDecodeEnableH264;
+@property (nonatomic, assign) BOOL hardwareDecodeEnableH265;
 
 @property (nonatomic, strong) id <SGOutput> audioOutput;
 @property (nonatomic, strong) id <SGOutput> videoOutput;

@@ -14,7 +14,8 @@
 {
     if (self = [super init])
     {
-        self.enableVideoToolBox = YES;
+        self.hardwareDecodeEnableH264 = YES;
+        self.hardwareDecodeEnableH265 = YES;
     }
     return self;
 }
