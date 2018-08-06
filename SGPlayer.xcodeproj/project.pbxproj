@@ -1456,6 +1456,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C129F2A211857C800B816DC /* SGContainer */ = {
+			isa = PBXGroup;
+			children = (
+				9C2C55912015911600131E15 /* SGObjectPool.h */,
+				9C2C55922015911600131E15 /* SGObjectPool.m */,
+				9C2C55B32015D92100131E15 /* SGObjectQueue.h */,
+				9C2C55B42015D92100131E15 /* SGObjectQueue.m */,
+			);
+			path = SGContainer;
+			sourceTree = "<group>";
+		};
 		9C1D2230201B2001005147FB /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -1686,6 +1697,7 @@
 				9C5C98F820D26B350089C112 /* SGTime */,
 				9CBD0BA7201625010094CFC7 /* SGAudio */,
 				9CF15DF420119FBE00585326 /* SGOutput */,
+				9C129F2A211857C800B816DC /* SGContainer */,
 				9CF15DF320119D0300585326 /* SGData */,
 				9C8D4E5C200E0A0600ED8A58 /* SGSource */,
 				9C8D4E69200E101D00ED8A58 /* SGCodec */,
@@ -2097,10 +2109,6 @@
 				9CA3CDD620E2283500B852D0 /* SGVideoFFFrame.m */,
 				9CA3CDC520E2206D00B852D0 /* SGVideoAVFrame.h */,
 				9CA3CDC620E2206D00B852D0 /* SGVideoAVFrame.m */,
-				9C2C55912015911600131E15 /* SGObjectPool.h */,
-				9C2C55922015911600131E15 /* SGObjectPool.m */,
-				9C2C55B32015D92100131E15 /* SGObjectQueue.h */,
-				9C2C55B42015D92100131E15 /* SGObjectQueue.m */,
 			);
 			path = SGData;
 			sourceTree = "<group>";

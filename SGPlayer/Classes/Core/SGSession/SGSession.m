@@ -37,7 +37,7 @@
     {
         [SGFFmpeg setupIfNeeded];
         self.delegateQueue = dispatch_queue_create("SGSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
-        self.state = SGSessionStateIdle;
+        self.state = SGSessionStateNone;
     }
     return self;
 }
@@ -46,7 +46,7 @@
 
 - (void)open
 {
-    if (self.state != SGSessionStateIdle)
+    if (self.state != SGSessionStateNone)
     {
         return;
     }
@@ -87,7 +87,7 @@
 {
     switch (self.state)
     {
-        case SGSessionStateIdle:
+        case SGSessionStateNone:
         case SGSessionStateOpening:
         case SGSessionStateOpened:
         case SGSessionStateClosed:

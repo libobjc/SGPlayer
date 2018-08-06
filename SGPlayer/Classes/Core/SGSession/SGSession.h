@@ -12,7 +12,7 @@
 
 typedef NS_ENUM(NSUInteger, SGSessionState)
 {
-    SGSessionStateIdle,
+    SGSessionStateNone,
     SGSessionStateOpening,
     SGSessionStateOpened,
     SGSessionStateReading,
