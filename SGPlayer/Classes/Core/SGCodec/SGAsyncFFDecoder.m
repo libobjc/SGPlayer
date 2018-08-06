@@ -56,19 +56,19 @@
     return codecContext;
 }
 
-- (BOOL)startDecoding
+- (BOOL)open
 {
     self.codecContext = [SGAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
     if (self.codecContext)
     {
-        return [super startDecoding];
+        return [super open];
     }
     return NO;
 }
 
-- (void)stopDecoding
+- (void)close
 {
-    [super stopDecoding];
+    [super close];
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);

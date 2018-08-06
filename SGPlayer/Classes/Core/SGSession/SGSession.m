@@ -76,8 +76,8 @@
     }
     self.state = SGSessionStateClosed;
     [self.source close];
-    [self.audioDecoder stopDecoding];
-    [self.videoDecoder stopDecoding];
+    [self.audioDecoder close];
+    [self.videoDecoder close];
     [self.audioOutput stop];
     [self.videoOutput stop];
 }
@@ -276,7 +276,7 @@
                     audioDecoder.index = stream.index;
                     audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
                     audioDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([audioDecoder startDecoding])
+                    if ([audioDecoder open])
                     {
                         self.audioDecoder = audioDecoder;
                     }
@@ -297,7 +297,7 @@
                     videoDecoder.index = stream.index;
                     videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
                     videoDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([videoDecoder startDecoding])
+                    if ([videoDecoder open])
                     {
                         self.videoDecoder = videoDecoder;
                     }
@@ -443,17 +443,17 @@
     if (output == self.audioOutput)
     {
         if (self.audioOutput.count >= self.audioOutput.maxCount) {
-            [self.audioDecoder pauseDecoding];
+            [self.audioDecoder pause];
         } else {
-            [self.audioDecoder resumeDecoding];
+            [self.audioDecoder resume];
         }
     }
     else if (output == self.videoOutput)
     {
         if (self.videoOutput.count >= self.videoOutput.maxCount) {
-            [self.videoDecoder pauseDecoding];
+            [self.videoDecoder pause];
         } else {
-            [self.videoDecoder resumeDecoding];
+            [self.videoDecoder resume];
         }
     }
     [self updateCapacity];

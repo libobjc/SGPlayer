@@ -79,18 +79,18 @@
 
 #endif
 
-- (BOOL)startDecoding
+- (BOOL)open
 {
     if ([self setupDecompressionSession])
     {
-        return [super startDecoding];
+        return [super open];
     }
     return NO;
 }
 
-- (void)stopDecoding
+- (void)close
 {
-    [super stopDecoding];
+    [super close];
     [self destoryDecompressionSession];
 }
 

@@ -45,13 +45,13 @@ static SGPacket * flushPacket;
     return self;
 }
 
-- (BOOL)startDecoding
+- (BOOL)open
 {
     [self startDecodingThread];
     return YES;
 }
 
-- (void)pauseDecoding
+- (void)pause
 {
     if (self.state == SGDecoderStateDecoding)
     {
@@ -59,7 +59,7 @@ static SGPacket * flushPacket;
     }
 }
 
-- (void)resumeDecoding
+- (void)resume
 {
     if (self.state == SGDecoderStatePaused)
     {
@@ -70,7 +70,7 @@ static SGPacket * flushPacket;
     }
 }
 
-- (void)stopDecoding
+- (void)close
 {
     self.state = SGDecoderStateStoped;
     [self.packetQueue destroy];
