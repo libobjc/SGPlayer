@@ -12,7 +12,7 @@
 
 @property (nonatomic, copy, readonly) NSError * error;
 
-@property (nonatomic, strong) SGPlaybackTimeSync * timeSynchronizer;
+@property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 
 @property (nonatomic, assign) float volume;
 @property (nonatomic, assign) CMTime rate;

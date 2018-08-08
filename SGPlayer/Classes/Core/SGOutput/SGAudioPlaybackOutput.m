@@ -160,7 +160,7 @@
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
     if (!self.didUpdateTimeSynchronizer && self.frameQueue.count == 0)
     {
-        [self.timeSynchronizer updatePosition:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        [self.timeSync updatePosition:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     [self.frameQueue putObjectSync:result];
     [self.delegate outputDidChangeCapacity:self];
@@ -178,7 +178,7 @@
     self.didUpdateTimeSynchronizer = NO;
     [self unlock];
     [self.frameQueue flush];
-    [self.timeSynchronizer flush];
+    [self.timeSync flush];
     [self.delegate outputDidChangeCapacity:self];
 }
 
@@ -376,7 +376,7 @@
 {
     [self lock];
     self.didUpdateTimeSynchronizer = YES;
-    [self.timeSynchronizer updatePosition:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
+    [self.timeSync updatePosition:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
 
