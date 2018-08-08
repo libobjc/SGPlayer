@@ -23,7 +23,6 @@ typedef NS_ENUM(NSUInteger, SGLoadingState)
     SGLoadingStateNone,
     SGLoadingStateLoading,
     SGLoadingStatePaused,
-    SGLoadingStateStoped,
     SGLoadingStateFinished,
     SGLoadingStateFailed,
 };
