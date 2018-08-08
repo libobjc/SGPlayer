@@ -56,7 +56,7 @@
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
             SGStrongSelf
-            [strongSelf renderTimerHandler];
+            [self renderTimerHandler];
         }];
         
         self.displayLink.paused = YES;
@@ -142,13 +142,13 @@
     SGWeakSelf
     SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
-        if (strongSelf.currentFrame)
+        if (self.currentFrame)
         {
-            CMTime position = strongSelf.timeSynchronizer.position;
+            CMTime position = self.timeSynchronizer.position;
             NSAssert(CMTIME_IS_VALID(position), @"Key time is invalid.");
-            NSTimeInterval nextVSyncInterval = MAX(strongSelf.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
+            NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(position, SGTimeMakeWithSeconds(nextVSyncInterval));
-            * current = strongSelf.currentFrame.position;
+            * current = self.currentFrame.position;
             return YES;
         }
         return NO;

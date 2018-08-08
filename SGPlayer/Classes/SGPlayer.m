@@ -136,13 +136,13 @@
     SGWeakSelf
     [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
-        [strongSelf lock];
-        [strongSelf finishSeeking];
+        [self lock];
+        [self finishSeeking];
         if (completionHandler)
         {
             completionHandler(success, time);
         }
-        [strongSelf unlock];
+        [self unlock];
         SGPlayerLog(@"SGPlayer seek finished, %d", success);
     }];
     [self unlock];

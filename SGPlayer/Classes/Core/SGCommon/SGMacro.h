@@ -18,7 +18,7 @@
 #endif
 
 #define SGWeakSelf __weak typeof(self) weakSelf = self;
-#define SGStrongSelf __strong typeof(weakSelf) strongSelf = weakSelf;
+#define SGStrongSelf __strong typeof(weakSelf) self = weakSelf;
 
 #ifdef DEBUG
 #define SGPlayerLog(...) NSLog(__VA_ARGS__)
