@@ -112,9 +112,6 @@
         case SGPlaybackStatePaused:
             text = @"Paused";
             break;
-        case SGPlaybackStateStopped:
-            text = @"Stopped";
-            break;
         case SGPlaybackStateFinished:
             text = @"Finished";
             break;

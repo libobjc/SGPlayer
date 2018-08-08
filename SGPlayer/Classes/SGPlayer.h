@@ -36,25 +36,26 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 
-@property (nonatomic, copy, readonly) NSURL * URL;
-- (void)replaceWithURL:(NSURL *)URL;
-
+@property (nonatomic, strong, readonly) NSURL * URL;
+@property (nonatomic, strong, readonly) NSError * error;
 @property (nonatomic, assign, readonly) SGPlaybackState playbackState;
 @property (nonatomic, assign, readonly) SGLoadingState loadingState;
 @property (nonatomic, assign, readonly) CMTime playbackTime;
 @property (nonatomic, assign, readonly) CMTime loadedTime;
 @property (nonatomic, assign, readonly) CMTime duration;
 
-@property (nonatomic, copy, readonly) NSError * error;
-
 @property (nonatomic, strong) UIView * view;
+
+- (void)replaceWithURL:(NSURL *)URL;
 
 - (void)play;
 - (void)pause;
 - (void)stop;
 
 - (BOOL)seekable;
+- (BOOL)seekableToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
+
 
 @end

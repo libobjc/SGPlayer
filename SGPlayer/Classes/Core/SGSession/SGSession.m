@@ -19,7 +19,6 @@
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @end
 
@@ -31,7 +30,6 @@
     {
         self.URL = URL;
         self.configuration = configuration;
-        self.delegateQueue = dispatch_queue_create("SGSession-DelegateQueue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -180,9 +178,7 @@
     {
         _state = state;
         return ^{
-            dispatch_async(self.delegateQueue, ^{
-                [self.delegate sessionDidChangeState:self];
-            });
+            [self.delegate sessionDidChangeState:self];
         };
     }
     return ^{};
@@ -393,9 +389,7 @@
     } else {
         [self.configuration.source resume];
     }
-    dispatch_async(self.delegateQueue, ^{
-        [self.delegate sessionDidChangeCapacity:self];
-    });
+    [self.delegate sessionDidChangeCapacity:self];
 }
 
 #pragma mark - SGSourceDelegate

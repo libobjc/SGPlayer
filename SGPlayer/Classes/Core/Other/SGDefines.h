@@ -14,7 +14,6 @@ typedef NS_ENUM(NSUInteger, SGPlaybackState)
     SGPlaybackStatePlaying,
     SGPlaybackStateSeeking,
     SGPlaybackStatePaused,
-    SGPlaybackStateStopped,
     SGPlaybackStateFinished,
     SGPlaybackStateFailed,
 };
