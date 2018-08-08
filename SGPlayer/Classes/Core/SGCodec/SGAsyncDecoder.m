@@ -73,9 +73,7 @@ static SGPacket * flushPacket;
             [self.delegate decoderDidChangeState:self];
         };
     }
-    return ^{
-        
-    };
+    return ^{};
 }
 
 - (CMTime)duration

@@ -109,9 +109,7 @@ static int SGCommonSourceInterruptHandler(void * context)
             [self.delegate sourceDidChangeState:self];
         };
     }
-    return ^{
-        
-    };
+    return ^{};
 }
 
 #pragma mark - Interface
@@ -381,28 +379,30 @@ static int SGCommonSourceInterruptHandler(void * context)
             [self unlock];
             int success = av_seek_frame(self.formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
             [self lock];
-            BOOL enbale = NO;
-            CMTime seekTimeStamp = self.seekTimeStamp;
-            void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
+            BOOL enable = NO;
+            SGBasicBlock callback = ^{};
             if (self.state == SGSourceStateSeeking)
             {
-                long long currentTimeStamp = AV_TIME_BASE * self.seekTimeStamp.value / self.seekTimeStamp.timescale;
-                if (timeStamp == currentTimeStamp)
+                long long current = AV_TIME_BASE * self.seekTimeStamp.value / self.seekTimeStamp.timescale;
+                if (timeStamp == current)
                 {
-                    enbale = YES;
+                    enable = YES;
+                    callback = [self setState:SGSourceStateReading];
                 }
             }
+            CMTime seekTimeStamp = self.seekTimeStamp;
+            void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
             self.seekTimeStamp = kCMTimeZero;
             self.seekingTimeStamp = kCMTimeZero;
             self.seekCompletionHandler = nil;
             [self unlock];
-            if (enbale)
+            if (enable)
             {
                 if (seekCompletionHandler)
                 {
                     seekCompletionHandler(success >= 0, seekTimeStamp);
                 }
-                [self setState:SGSourceStateReading]();
+                callback();
             }
             continue;
         }

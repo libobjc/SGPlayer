@@ -18,14 +18,12 @@
 
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @end
 
 @implementation SGSession
-
-@synthesize state = _state;
 
 - (instancetype)initWithURL:(NSURL *)URL configuration:(SGSessionConfiguration *)configuration
 {
@@ -34,7 +32,6 @@
         self.URL = URL;
         self.configuration = configuration;
         self.delegateQueue = dispatch_queue_create("SGSession-DelegateQueue", DISPATCH_QUEUE_SERIAL);
-        self.state = SGSessionStateNone;
     }
     return self;
 }
@@ -54,8 +51,9 @@
         [self unlock];
         return;
     }
-    self.state = SGSessionStateOpening;
+    SGBasicBlock callback = [self setState:SGSessionStateOpening];
     [self unlock];
+    callback();
     if (!self.configuration.source)
     {
         self.configuration.source = [[SGCommonSource alloc] init];
@@ -73,8 +71,9 @@
         [self unlock];
         return;
     }
-    self.state = SGSessionStateReading;
+    SGBasicBlock callback = [self setState:SGSessionStateReading];
     [self unlock];
+    callback();
     [self.configuration.source read];
 }
 
@@ -86,8 +85,9 @@
         [self unlock];
         return;
     }
-    self.state = SGSessionStateClosed;
+    SGBasicBlock callback = [self setState:SGSessionStateClosed];
     [self unlock];
+    callback();
     [self.configuration.source close];
     [self.configuration.audioDecoder close];
     [self.configuration.videoDecoder close];
@@ -129,14 +129,21 @@
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
 {
-    [self lock];
     if (![self seekableToTime:time])
+    {
+        return NO;
+    }
+    [self lock];
+    if (self.state != SGSessionStateReading &&
+        self.state != SGSessionStateSeeking &&
+        self.state != SGSessionStateFinished)
     {
         [self unlock];
         return NO;
     }
-    self.state = SGSessionStateSeeking;
+    SGBasicBlock callback = [self setState:SGSessionStateSeeking];
     [self unlock];
+    callback();
     SGWeakSelf
     [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
@@ -145,45 +152,40 @@
         [self.configuration.audioOutput flush];
         [self.configuration.videoOutput flush];
         [self lock];
+        BOOL enable = NO;
+        SGBasicBlock callback = ^{};
         if (self.state == SGSessionStateSeeking)
         {
-            self.state = SGSessionStateReading;
-        }
-        if (completionHandler)
-        {
-            dispatch_async(self.delegateQueue, ^{
-                completionHandler(success, time);
-            });
+            enable = YES;
+            callback = [self setState:SGSessionStateReading];
         }
         [self unlock];
+        if (enable)
+        {
+            if (completionHandler)
+            {
+                completionHandler(success, time);
+            }
+            callback();
+        }
     }];
     return YES;
 }
 
 #pragma mark - Setter/Getter
 
-- (void)setState:(SGSessionState)state
+- (SGBasicBlock)setState:(SGSessionState)state
 {
-    [self lock];
     if (_state != state)
     {
         _state = state;
-        if ([self.delegate respondsToSelector:@selector(sessionDidChangeState:)])
-        {
+        return ^{
             dispatch_async(self.delegateQueue, ^{
                 [self.delegate sessionDidChangeState:self];
             });
-        }
+        };
     }
-    [self unlock];
-}
-
-- (SGSessionState)state
-{
-    [self lock];
-    SGSessionState ret = _state;
-    [self unlock];
-    return ret;
+    return ^{};
 }
 
 - (CMTime)duration
@@ -391,12 +393,9 @@
     } else {
         [self.configuration.source resume];
     }
-    if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)])
-    {
-        dispatch_async(self.delegateQueue, ^{
-            [self.delegate sessionDidChangeCapacity:self];
-        });
-    }
+    dispatch_async(self.delegateQueue, ^{
+        [self.delegate sessionDidChangeCapacity:self];
+    });
 }
 
 #pragma mark - SGSourceDelegate
@@ -404,30 +403,32 @@
 - (void)sourceDidChangeState:(id <SGSource>)source
 {
     [self lock];
+    SGBasicBlock callback = ^{};
     switch (source.state)
     {
         case SGSourceStateOpened:
         {
             [self setupDecoderIfNeeded];
             [self setupOutputIfNeeded];
-            self.state = SGSessionStateOpened;
+            callback = [self setState:SGSessionStateOpened];
         }
             break;
         case SGSourceStateFinished:
         {
-            self.state = SGSessionStateFinished;
+            callback = [self setState:SGSessionStateFinished];
         }
             break;
         case SGSourceStateFailed:
         {
             _error = source.error;
-            self.state = SGSessionStateFailed;
+            callback = [self setState:SGSessionStateFailed];
         }
             break;
         default:
             break;
     }
     [self unlock];
+    callback();
 }
 
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
@@ -497,7 +498,7 @@
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSRecursiveLock alloc] init];
+        self.coreLock = [[NSLock alloc] init];
     }
     [self.coreLock lock];
 }
