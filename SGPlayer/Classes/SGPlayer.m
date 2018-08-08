@@ -9,6 +9,7 @@
 #import "SGPlayer.h"
 #import "SGMacro.h"
 #import "SGActivity.h"
+#import "SGPeriodTimer.h"
 #import "SGSession.h"
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
@@ -37,12 +38,14 @@
         self.stateLock = [[NSLock alloc] init];
         self.loadingStateLock = [[NSLock alloc] init];
         self.delegateQueue = dispatch_get_main_queue();
+        [SGPeriodTimer addTarget:self selector:@selector(periodTimerHandler)];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [SGPeriodTimer removeTarget:self];
     [self destoryInternal];
 }
 
@@ -342,6 +345,13 @@
         callback();
     }
     [self playAndPause];
+}
+
+#pragma mark - SGPeriodTimer
+
+- (void)periodTimerHandler
+{
+    NSLog(@"time : %f", CMTimeGetSeconds(self.time));
 }
 
 #pragma mark - Callback
