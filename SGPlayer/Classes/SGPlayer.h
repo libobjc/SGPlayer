@@ -22,10 +22,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @protocol SGFFPlayerDelegate <NSObject>
 
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)playbackState;
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState;
-- (void)player:(SGPlayer *)player didChangePlaybackTime:(CMTime)playbackTime;
-- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime;
+- (void)playerDidChangePlaybackState:(SGPlayer *)player;
+- (void)playerDidChangeLoadingState:(SGPlayer *)player;
+- (void)playerDidChangePlaybackTime:(SGPlayer *)player;
+- (void)playerDidChangeLoadedTime:(SGPlayer *)player;
 
 @end
 

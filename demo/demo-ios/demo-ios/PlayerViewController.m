@@ -95,11 +95,11 @@
     [self.player2 seekToTime:time2];
 }
 
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)playbackState
+- (void)playerDidChangePlaybackState:(SGPlayer *)player
 {
-    NSLog(@"%s, %ld", __func__, playbackState);
+    NSLog(@"%s, %ld", __func__, player.playbackState);
     NSString * text;
-    switch (playbackState) {
+    switch (player.playbackState) {
         case SGPlaybackStateNone:
             text = @"Idle";
             break;
@@ -126,25 +126,25 @@
     self.stateLabel.text = text;
 }
 
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState
+- (void)playerDidChangeLoadingState:(SGPlayer *)player
 {
-    NSLog(@"%s, %ld", __func__, loadingState);
+    NSLog(@"%s, %ld", __func__, player.loadingState);
 }
 
-- (void)player:(SGPlayer *)player didChangePlaybackTime:(CMTime)playbackTime
+- (void)playerDidChangePlaybackTime:(SGPlayer *)player
 {
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(playbackTime));
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.playbackTime));
     if (!self.progressSilderTouching)
     {
-        self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(player.duration);
+        self.progressSilder.value = CMTimeGetSeconds(player.playbackTime) / CMTimeGetSeconds(player.duration);
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(playbackTime)];
+    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.playbackTime)];
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
 
-- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime
+- (void)playerDidChangeLoadedTime:(SGPlayer *)player
 {
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(loadedTime));
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.loadedTime));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

@@ -13,13 +13,10 @@
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
-@interface SGPlayer () <NSLocking, SGSessionDelegate>
+@interface SGPlayer () <SGSessionDelegate>
 
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
-
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) SGPlaybackState playbackStateBeforSeeking;
-@property (nonatomic, copy) NSError * error;
-
 @property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
@@ -40,12 +37,10 @@
 
 - (void)replaceWithURL:(NSURL *)URL
 {
-    [self lock];
     [self destory];
     _URL = URL;
     if (self.URL == nil)
     {
-        [self unlock];
         return;
     }
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
@@ -60,14 +55,12 @@
     self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
     self.session.delegate = self;
     [self.session open];
-    [self unlock];
 }
 
 #pragma mark - Control
 
 - (void)play
 {
-    [self lock];
     [SGActivity becomeActive:self];
     switch (self.playbackState)
     {
@@ -85,12 +78,10 @@
             break;
     }
     self.playbackState = SGPlaybackStatePlaying;
-    [self unlock];
 }
 
 - (void)pause
 {
-    [self lock];
     [SGActivity resignActive:self];
     switch (self.playbackState)
     {
@@ -102,16 +93,13 @@
             break;
     }
     self.playbackState = SGPlaybackStatePaused;
-    [self unlock];
 }
 
 - (void)stop
 {
-    [self lock];
     [SGActivity resignActive:self];
     [self closeSession];
     self.playbackState = SGPlaybackStateStopped;
-    [self unlock];
 }
 
 - (BOOL)seekable
@@ -126,24 +114,19 @@
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
 {
-    [self lock];
     if (![self.session seekableToTime:time])
     {
-        [self unlock];
         return NO;
     }
     [self startSeeking];
-    [self unlock];
     SGWeakSelf
     [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
-        [self lock];
         [self finishSeeking];
         if (completionHandler)
         {
             completionHandler(success, time);
         }
-        [self unlock];
         SGPlayerLog(@"SGPlayer seek finished, %d", success);
     }];
     return YES;
@@ -153,42 +136,33 @@
 
 - (void)playOrPause
 {
-    [self lock];
     if (self.playbackState != SGPlaybackStatePlaying)
     {
         [self.audioOutput pause];
-        [self unlock];
         return;
     }
     if (self.loadingState != SGLoadingStateLoading &&
         self.loadingState != SGLoadingStateFinished)
     {
         [self.audioOutput pause];
-        [self unlock];
         return;
     }
     if (CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
     {
         [self.audioOutput pause];
-        [self unlock];
         return;
     }
     [self.audioOutput play];
-    [self unlock];
 }
 
 - (void)startSeeking
 {
-    [self lock];
     self.playbackState = SGPlaybackStateSeeking;
-    [self unlock];
 }
 
 - (void)finishSeeking
 {
-    [self lock];
     self.playbackState = self.playbackStateBeforSeeking;
-    [self unlock];
 }
 
 - (void)updateView
@@ -211,7 +185,6 @@
 
 - (void)setPlaybackState:(SGPlaybackState)playbackState
 {
-    [self lock];
     if (_playbackState != playbackState)
     {
         SGPlaybackState previousState = _playbackState;
@@ -225,30 +198,17 @@
                 break;
         }
         [self playOrPause];
-        if ([self.delegate respondsToSelector:@selector(player:didChangePlaybackState:)])
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate player:self didChangePlaybackState:playbackState];
-            });
-        }
+        [self.delegate playerDidChangePlaybackState:self];
     }
-    [self unlock];
 }
 
 - (void)setLoadingState:(SGLoadingState)loadingState
 {
-    [self lock];
     if (_loadingState != loadingState)
     {
         _loadingState = loadingState;
-        if ([self.delegate respondsToSelector:@selector(player:didChangeLoadingState:)])
-        {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [self.delegate player:self didChangeLoadingState:loadingState];
-            });
-        }
+        [self.delegate playerDidChangeLoadingState:self];
     }
-    [self unlock];
 }
 
 - (CMTime)duration
@@ -264,40 +224,33 @@
 
 - (void)destory
 {
-    [self lock];
     [SGActivity resignActive:self];
     [self closeSession];
     self.playbackState = SGPlaybackStateNone;
-    [self unlock];
 }
 
 - (void)closeSession
 {
-    [self lock];
     if (self.session)
     {
         [self.session close];
         self.session = nil;
     }
-    [self unlock];
 }
 
 #pragma mark - SGSessionDelegate
 
 - (void)sessionDidChangeState:(SGSession *)session
 {
-    [self lock];
     if (session.state == SGSessionStateOpened)
     {
         [self.session read];
         self.loadingState = SGLoadingStateLoading;
     }
-    [self unlock];
 }
 
 - (void)sessionDidChangeCapacity:(SGSession *)session
 {
-    [self lock];
     if (self.session.state == SGSessionStateFinished)
     {
         self.loadingState = SGLoadingStateFinished;
@@ -308,23 +261,22 @@
     {
         self.playbackState = SGPlaybackStateFinished;
     }
-    [self unlock];
 }
 
 #pragma mark - NSLocking
 
-- (void)lock
-{
-    if (!self.coreLock)
-    {
-        self.coreLock = [[NSRecursiveLock alloc] init];
-    }
-    [self.coreLock lock];
-}
-
-- (void)unlock
-{
-    [self.coreLock unlock];
-}
+//- (void)lock
+//{
+//    if (!self.coreLock)
+//    {
+//        self.coreLock = [[NSLock alloc] init];
+//    }
+//    [self.coreLock lock];
+//}
+//
+//- (void)unlock
+//{
+//    [self.coreLock unlock];
+//}
 
 @end
