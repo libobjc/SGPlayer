@@ -89,10 +89,10 @@
 
 - (IBAction)progressValueChanged:(id)sender
 {
-    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
-    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-    [self.player seekToTime:time];
-    [self.player2 seekToTime:time2];
+//    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
+//    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+//    [self.player seekToTime:time];
+//    [self.player2 seekToTime:time2];
 }
 
 - (void)playerDidChangeState:(SGPlayer *)player
