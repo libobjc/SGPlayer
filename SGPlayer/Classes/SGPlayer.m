@@ -23,6 +23,7 @@
 @property (nonatomic, assign) SGPlaybackState stateBeforSeeking;
 @property (nonatomic, strong) NSLock * stateLock;
 @property (nonatomic, strong) NSLock * loadingStateLock;
+@property (nonatomic, strong) SGPeriodTimer * periodTimer;
 
 @end
 
@@ -38,14 +39,12 @@
         self.stateLock = [[NSLock alloc] init];
         self.loadingStateLock = [[NSLock alloc] init];
         self.delegateQueue = dispatch_get_main_queue();
-        [SGPeriodTimer addTarget:self selector:@selector(periodTimerHandler)];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [SGPeriodTimer removeTarget:self];
     [self destoryInternal];
 }
 
@@ -59,6 +58,12 @@
     {
         return;
     }
+    SGWeakSelf
+    self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
+        SGStrongSelf
+        NSLog(@"Time : %f", CMTimeGetSeconds(self.time));
+    }];
+    [self.periodTimer start];
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.timeSync = [[SGPlaybackTimeSync alloc] init];
@@ -309,6 +314,8 @@
 - (void)destoryInternal
 {
     [SGActivity removeTarget:self];
+    [self.periodTimer stop];
+    self.periodTimer = nil;
     [self.session close];
     self.session = nil;
 }
@@ -345,13 +352,6 @@
         callback();
     }
     [self playAndPause];
-}
-
-#pragma mark - SGPeriodTimer
-
-- (void)periodTimerHandler
-{
-    NSLog(@"time : %f", CMTimeGetSeconds(self.time));
 }
 
 #pragma mark - Callback

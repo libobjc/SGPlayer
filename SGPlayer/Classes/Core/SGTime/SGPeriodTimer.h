@@ -10,7 +10,9 @@
 
 @interface SGPeriodTimer : NSObject
 
-+ (void)addTarget:(id)target selector:(SEL)selector;
-+ (void)removeTarget:(id)target;
+- (instancetype)initWithHandler:(void (^)(void))handler;
+
+- (void)start;
+- (void)stop;
 
 @end
