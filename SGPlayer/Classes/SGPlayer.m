@@ -168,7 +168,7 @@
 
 #pragma mark - Internal
 
-- (void)playOrPause
+- (void)playAndPause
 {
     [self.stateLock lock];
     if (self.state != SGPlaybackStatePlaying)
@@ -228,7 +228,7 @@
                 break;
         }
         return ^{
-            [self playOrPause];
+            [self playAndPause];
             [self callback:^{
                 [self.delegate playerDidChangeState:self];
             }];
@@ -251,11 +251,37 @@
     return ^{};
 }
 
+- (CMTime)time
+{
+    if (self.timeSync)
+    {
+        return self.timeSync.time;
+    }
+    return kCMTimeZero;
+}
+
+- (CMTime)loadedTime
+{
+    CMTime time = self.time;
+    CMTime loadedDuration = self.loadedDuration;
+    CMTime duration = self.duration;
+    return CMTimeMinimum(CMTimeAdd(time, loadedDuration), duration);
+}
+
 - (CMTime)duration
 {
     if (self.session)
     {
         return self.session.duration;
+    }
+    return kCMTimeZero;
+}
+
+- (CMTime)loadedDuration
+{
+    if (self.session)
+    {
+        return self.session.loadedDuration;
     }
     return kCMTimeZero;
 }
@@ -315,7 +341,7 @@
         [self.stateLock unlock];
         callback();
     }
-    [self playOrPause];
+    [self playAndPause];
 }
 
 #pragma mark - Callback
