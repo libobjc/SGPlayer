@@ -1,5 +1,5 @@
 //
-//  SGTimeSynchronizer.h
+//  SGPlaybackTimeSync.h
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@interface SGTimeSynchronizer : NSObject
+@interface SGPlaybackTimeSync : NSObject
 
 @property (nonatomic, assign, readonly) CMTime position;
 

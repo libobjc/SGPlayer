@@ -764,12 +764,12 @@
 		9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
 		9C5C6CAE2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
 		9C5C6CAF2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
-		9C5C98FB20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGTimeSynchronizer.h */; };
-		9C5C98FC20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGTimeSynchronizer.h */; };
-		9C5C98FD20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGTimeSynchronizer.h */; };
-		9C5C98FE20D26BE10089C112 /* SGTimeSynchronizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGTimeSynchronizer.m */; };
-		9C5C98FF20D26BE10089C112 /* SGTimeSynchronizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGTimeSynchronizer.m */; };
-		9C5C990020D26BE10089C112 /* SGTimeSynchronizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGTimeSynchronizer.m */; };
+		9C5C98FB20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */; };
+		9C5C98FC20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */; };
+		9C5C98FD20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */; };
+		9C5C98FE20D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */; };
+		9C5C98FF20D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */; };
+		9C5C990020D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */; };
 		9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
 		9C6E514F2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
 		9C6E51502018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
@@ -1281,8 +1281,8 @@
 		9C5C6C9820182A4800863EB5 /* SGGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLView.m; sourceTree = "<group>"; };
 		9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDisplayLink.h; sourceTree = "<group>"; };
 		9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLDisplayLink.m; sourceTree = "<group>"; };
-		9C5C98F920D26BE10089C112 /* SGTimeSynchronizer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGTimeSynchronizer.h; sourceTree = "<group>"; };
-		9C5C98FA20D26BE10089C112 /* SGTimeSynchronizer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGTimeSynchronizer.m; sourceTree = "<group>"; };
+		9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackTimeSync.h; sourceTree = "<group>"; };
+		9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackTimeSync.m; sourceTree = "<group>"; };
 		9C6E514D2018C6C100C87C54 /* SGGLModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLModel.h; sourceTree = "<group>"; };
 		9C8D26532019DC7F002770FA /* SGGLDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDefines.h; sourceTree = "<group>"; };
 		9C8D26572019E1AC002770FA /* SGGLViewport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLViewport.h; sourceTree = "<group>"; };
@@ -1915,8 +1915,8 @@
 			children = (
 				9C4663C820D0F83600CADDA7 /* SGTime.h */,
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
-				9C5C98F920D26BE10089C112 /* SGTimeSynchronizer.h */,
-				9C5C98FA20D26BE10089C112 /* SGTimeSynchronizer.m */,
+				9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */,
+				9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */,
 			);
 			path = SGTime;
 			sourceTree = "<group>";
@@ -2335,7 +2335,7 @@
 				9C2536041FAB151500BBFA5C /* SGFrame2.h in Headers */,
 				9C2535F21FAB151500BBFA5C /* SGAudioFrame2.h in Headers */,
 				9C2534991FAB151500BBFA5C /* videotoolbox.h in Headers */,
-				9C5C98FB20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */,
+				9C5C98FB20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */,
 				9CA3CDDF20E2320F00B852D0 /* SGAudioBufferFrame.h in Headers */,
 				9C2535951FAB151500BBFA5C /* xtea.h in Headers */,
 				9C2534751FAB151500BBFA5C /* avfft.h in Headers */,
@@ -2534,7 +2534,7 @@
 				9CE6F5382004D97D00D1F4C8 /* SGPLFDisplayLink.h in Headers */,
 				9C25354B1FAB151500BBFA5C /* mem.h in Headers */,
 				9C5AB6F31E88EB720021F460 /* SGGLFrame.h in Headers */,
-				9C5C98FC20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */,
+				9C5C98FC20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */,
 				9C2534E81FAB151500BBFA5C /* cast5.h in Headers */,
 				9C25353C1FAB151500BBFA5C /* lzo.h in Headers */,
 				9CF52D08200F4EDE00950B81 /* SGVideoFFDecoder.h in Headers */,
@@ -2788,7 +2788,7 @@
 				9C25349B1FAB151500BBFA5C /* videotoolbox.h in Headers */,
 				9CF15DEF20118FB000585326 /* SGAsyncFFDecoder.h in Headers */,
 				9C5AB6F41E88EB720021F460 /* SGGLFrame.h in Headers */,
-				9C5C98FD20D26BE10089C112 /* SGTimeSynchronizer.h in Headers */,
+				9C5C98FD20D26BE10089C112 /* SGPlaybackTimeSync.h in Headers */,
 				9C25359A1FAB151500BBFA5C /* swresample.h in Headers */,
 				9C2535521FAB151500BBFA5C /* murmur3.h in Headers */,
 				9C2534B61FAB151500BBFA5C /* avio.h in Headers */,
@@ -3117,7 +3117,7 @@
 				9C478F0E1E713A3200AD4289 /* SGPlayerDecoder.m in Sources */,
 				9CA3CDE220E2320F00B852D0 /* SGAudioBufferFrame.m in Sources */,
 				9C2C559E2015B87400131E15 /* SGVideoFrame.m in Sources */,
-				9C5C98FE20D26BE10089C112 /* SGTimeSynchronizer.m in Sources */,
+				9C5C98FE20D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */,
 				9C478F5A1E713ABB00AD4289 /* SGFingerRotation.m in Sources */,
 				9CE6F5432004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
 				9CE6842B200DCEE2007BD834 /* SGPlayerImp.m in Sources */,
@@ -3251,7 +3251,7 @@
 				9C478F5B1E713ABB00AD4289 /* SGFingerRotation.m in Sources */,
 				9C3FB66E20E32EA5003442EE /* SGGLTimer.m in Sources */,
 				9CF15E0B2011AE0700585326 /* SGAudioPlaybackOutput.m in Sources */,
-				9C5C98FF20D26BE10089C112 /* SGTimeSynchronizer.m in Sources */,
+				9C5C98FF20D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */,
 				9C5AB6FE1E88F0400021F460 /* SGGLProgramNV12.m in Sources */,
 				9C47930B1E713B4900AD4289 /* SGGLProgram2.m in Sources */,
 				9CF52D03200F4ED100950B81 /* SGAudioFFDecoder.m in Sources */,
@@ -3351,7 +3351,7 @@
 				9C3FB66F20E32EA5003442EE /* SGGLTimer.m in Sources */,
 				9C2536551FAB199500BBFA5C /* SGPlayer.m in Sources */,
 				9C5AB6F71E88EB720021F460 /* SGGLFrame.m in Sources */,
-				9C5C990020D26BE10089C112 /* SGTimeSynchronizer.m in Sources */,
+				9C5C990020D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */,
 				9C2536391FAB151500BBFA5C /* SGVideoFrame2.m in Sources */,
 				9C1944EE2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C1944E620198CEC00184416 /* SGGLPlaneModel.m in Sources */,

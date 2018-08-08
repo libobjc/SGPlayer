@@ -1,14 +1,14 @@
 //
-//  SGTimeSynchronizer.m
+//  SGPlaybackTimeSync.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGTimeSynchronizer.h"
+#import "SGPlaybackTimeSync.h"
 
-@interface SGTimeSynchronizer ()
+@interface SGPlaybackTimeSync ()
 
 @property (nonatomic, assign) CMTime keyPosition;
 @property (nonatomic, assign) CMTime keyDuration;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation SGTimeSynchronizer
+@implementation SGPlaybackTimeSync
 
 - (instancetype)init
 {
