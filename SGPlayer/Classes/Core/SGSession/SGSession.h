@@ -32,12 +32,15 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
 
 @interface SGSession : NSObject
 
-@property (nonatomic, copy) NSURL * URL;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithURL:(NSURL *)URL configuration:(SGSessionConfiguration *)configuration;
+
 @property (nonatomic, weak) id <SGSessionDelegate> delegate;
-@property (nonatomic, strong) SGSessionConfiguration * configuration;
 
 @property (nonatomic, assign, readonly) SGSessionState state;
-@property (nonatomic, copy, readonly) NSError * error;
+@property (nonatomic, strong, readonly) NSError * error;
 
 /**
  *  Time.

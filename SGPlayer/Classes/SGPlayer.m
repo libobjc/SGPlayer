@@ -32,15 +32,6 @@
 @synthesize playbackState = _playbackState;
 @synthesize loadingState = _loadingState;
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        
-    }
-    return self;
-}
-
 - (void)dealloc
 {
     [SGActivity resignActive:self];
@@ -66,10 +57,8 @@
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     [self updateView];
-    self.session = [[SGSession alloc] init];
-    self.session.URL = self.URL;
+    self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
     self.session.delegate = self;
-    self.session.configuration = configuration;
     [self.session open];
     [self unlock];
 }
@@ -298,7 +287,7 @@
 - (void)sessionDidChangeState:(SGSession *)session
 {
     [self lock];
-    if (session.state == SGSourceStateOpened)
+    if (session.state == SGSessionStateOpened)
     {
         [self.session read];
         self.loadingState = SGLoadingStateLoading;

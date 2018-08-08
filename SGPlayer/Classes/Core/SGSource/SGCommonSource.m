@@ -7,6 +7,7 @@
 //
 
 #import "SGCommonSource.h"
+#import "SGFFmpeg.h"
 #import "SGPacket.h"
 #import "SGError.h"
 
@@ -225,6 +226,8 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)openThread
 {
+    [SGFFmpeg setupIfNeeded];
+    
     self.formatContext = avformat_alloc_context();
     
     if (!self.formatContext)

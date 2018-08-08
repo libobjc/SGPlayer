@@ -7,7 +7,6 @@
 //
 
 #import "SGSession.h"
-#import "SGFFmpeg.h"
 #import "SGCommonSource.h"
 #import "SGAudioFFDecoder.h"
 #import "SGVideoFFDecoder.h"
@@ -17,25 +16,20 @@
 
 @interface SGSession () <SGSourceDelegate, SGDecoderDelegate, SGOutputDelegate>
 
+@property (nonatomic, copy) NSURL * URL;
+@property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
-
-@property (nonatomic, strong) id <SGSource> source;
-@property (nonatomic, strong) id <SGDecoder> audioDecoder;
-@property (nonatomic, strong) id <SGDecoder> videoDecoder;
-@property (nonatomic, strong) id <SGOutput> audioOutput;
-@property (nonatomic, strong) id <SGOutput> videoOutput;
 
 @end
 
 @implementation SGSession
 
-@synthesize state = _state;
-
-- (instancetype)init
+- (instancetype)initWithURL:(NSURL *)URL configuration:(SGSessionConfiguration *)configuration
 {
     if (self = [super init])
     {
-        [SGFFmpeg setupIfNeeded];
+        self.URL = URL;
+        self.configuration = configuration;
         self.delegateQueue = dispatch_queue_create("SGSession-Delegate-Queue", DISPATCH_QUEUE_SERIAL);
         self.state = SGSessionStateNone;
     }
@@ -51,10 +45,13 @@
         return;
     }
     self.state = SGSessionStateOpening;
-    self.source = [[SGCommonSource alloc] init];
-    self.source.URL = self.URL;
-    self.source.delegate = self;
-    [self.source open];
+    if (!self.configuration.source)
+    {
+        self.configuration.source = [[SGCommonSource alloc] init];
+    }
+    self.configuration.source.URL = self.URL;
+    self.configuration.source.delegate = self;
+    [self.configuration.source open];
 }
 
 - (void)read
@@ -64,7 +61,7 @@
         return;
     }
     self.state = SGSessionStateReading;
-    [self.source read];
+    [self.configuration.source read];
 }
 
 - (void)close
@@ -74,11 +71,11 @@
         return;
     }
     self.state = SGSessionStateClosed;
-    [self.source close];
-    [self.audioDecoder close];
-    [self.videoDecoder close];
-    [self.audioOutput close];
-    [self.videoOutput close];
+    [self.configuration.source close];
+    [self.configuration.audioDecoder close];
+    [self.configuration.videoDecoder close];
+    [self.configuration.audioOutput close];
+    [self.configuration.videoOutput close];
 }
 
 #pragma mark - Seek
@@ -97,7 +94,7 @@
         case SGSessionStateReading:
             break;
     }
-    return self.source.seekable;
+    return self.configuration.source.seekable;
 }
 
 - (BOOL)seekableToTime:(CMTime)time
@@ -120,12 +117,12 @@
         self.state = SGSessionStateReading;
     }
     SGWeakSelf
-    [self.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
+    [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
-        [strongSelf.audioDecoder flush];
-        [strongSelf.videoDecoder flush];
-        [strongSelf.audioOutput flush];
-        [strongSelf.videoOutput flush];
+        [strongSelf.configuration.audioDecoder flush];
+        [strongSelf.configuration.videoDecoder flush];
+        [strongSelf.configuration.audioOutput flush];
+        [strongSelf.configuration.videoOutput flush];
         if (completionHandler)
         {
             dispatch_async(self.delegateQueue, ^{
@@ -140,7 +137,7 @@
 
 - (CMTime)duration
 {
-    return self.source.duration;
+    return self.configuration.source.duration;
 }
 
 - (CMTime)loadedDuration
@@ -203,40 +200,40 @@
 
 - (CMTime)audioLoadedDuration
 {
-    if (self.audioDecoder && self.audioOutput)
+    if (self.configuration.audioDecoder && self.configuration.audioOutput)
     {
-        return CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
+        return CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
     }
     return kCMTimeZero;
 }
 
 - (CMTime)videoLoadedDuration
 {
-    if (self.videoDecoder && self.videoOutput)
+    if (self.configuration.videoDecoder && self.configuration.videoOutput)
     {
-        return CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
+        return CMTimeAdd(self.configuration.videoDecoder.duration, self.configuration.videoOutput.duration);
     }
     return kCMTimeZero;
 }
 
 - (long long)audioLoadedSize
 {
-    return self.audioDecoder.size + self.audioOutput.size;
+    return self.configuration.audioDecoder.size + self.configuration.audioOutput.size;
 }
 
 - (long long)videoLoadedSize
 {
-    return self.videoDecoder.size + self.videoOutput.size;
+    return self.configuration.videoDecoder.size + self.configuration.videoOutput.size;
 }
 
 - (BOOL)audioEnable
 {
-    return self.audioDecoder != nil;
+    return self.configuration.audioDecoder != nil;
 }
 
 - (BOOL)videoEnable
 {
-    return self.videoDecoder != nil;
+    return self.configuration.videoDecoder != nil;
 }
 
 - (void)setState:(SGSessionState)state
@@ -257,13 +254,17 @@
 
 - (void)setupDecoderIfNeeded
 {
-    for (SGStream * stream in self.source.streams)
+    if (self.configuration.audioDecoder && self.configuration.videoDecoder)
+    {
+        return;
+    }
+    for (SGStream * stream in self.configuration.source.streams)
     {
         switch (stream.mediaType)
         {
             case SGMediaTypeAudio:
             {
-                if (!self.audioDecoder)
+                if (!self.configuration.audioDecoder)
                 {
                     SGAudioFFDecoder * audioDecoder = [[SGAudioFFDecoder alloc] init];
                     audioDecoder.delegate = self;
@@ -272,14 +273,14 @@
                     audioDecoder.codecpar = stream.coreStream->codecpar;
                     if ([audioDecoder open])
                     {
-                        self.audioDecoder = audioDecoder;
+                        self.configuration.audioDecoder = audioDecoder;
                     }
                 }
             }
                 break;
             case SGMediaTypeVideo:
             {
-                if (!self.videoDecoder)
+                if (!self.configuration.videoDecoder)
                 {
                     Class codecClass = [SGVideoFFDecoder class];
                     if (self.configuration.hardwareDecodeEnableH264 &&
@@ -294,7 +295,7 @@
                     videoDecoder.codecpar = stream.coreStream->codecpar;
                     if ([videoDecoder open])
                     {
-                        self.videoDecoder = videoDecoder;
+                        self.configuration.videoDecoder = videoDecoder;
                     }
                 }
             }
@@ -307,17 +308,15 @@
 
 - (void)setupOutputIfNeeded
 {
-    if (!self.audioOutput && self.audioDecoder)
+    if (!self.configuration.audioOutput && self.configuration.audioDecoder)
     {
-        self.audioOutput = self.configuration.audioOutput;
-        self.audioOutput.delegate = self;
-        [self.audioOutput open];
+        self.configuration.audioOutput.delegate = self;
+        [self.configuration.audioOutput open];
     }
-    if (!self.videoOutput && self.videoDecoder)
+    if (!self.configuration.videoOutput && self.configuration.videoDecoder)
     {
-        self.videoOutput = self.configuration.videoOutput;
-        self.videoOutput.delegate = self;
-        [self.videoOutput open];
+        self.configuration.videoOutput.delegate = self;
+        [self.configuration.videoOutput open];
     }
 }
 
@@ -326,15 +325,15 @@
     CMTime duration = kCMTimeZero;
     long long size = 0;
     
-    if (self.audioDecoder && self.audioOutput)
+    if (self.configuration.audioDecoder && self.configuration.audioOutput)
     {
-        duration = CMTimeAdd(self.audioDecoder.duration, self.audioOutput.duration);
-        size = self.audioDecoder.size + self.audioOutput.size;
+        duration = CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
+        size = self.configuration.audioDecoder.size + self.configuration.audioOutput.size;
     }
-    else if (self.videoDecoder && self.videoOutput)
+    else if (self.configuration.videoDecoder && self.configuration.videoOutput)
     {
-        duration = CMTimeAdd(self.videoDecoder.duration, self.videoOutput.duration);
-        size = self.videoDecoder.size + self.videoOutput.size;
+        duration = CMTimeAdd(self.configuration.videoDecoder.duration, self.configuration.videoOutput.duration);
+        size = self.configuration.videoDecoder.size + self.configuration.videoOutput.size;
     }
     else
     {
@@ -351,9 +350,9 @@
         shouldPaused = YES;
     }
     if (shouldPaused) {
-        [self.source pause];
+        [self.configuration.source pause];
     } else {
-        [self.source resume];
+        [self.configuration.source resume];
     }
     if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)])
     {
@@ -394,15 +393,15 @@
 
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
 {
-    if (packet.index == self.audioDecoder.index)
+    if (packet.index == self.configuration.audioDecoder.index)
     {
-        [packet fillWithTimebase:self.audioDecoder.timebase];
-        [self.audioDecoder putPacket:packet];
+        [packet fillWithTimebase:self.configuration.audioDecoder.timebase];
+        [self.configuration.audioDecoder putPacket:packet];
     }
-    else if (packet.index == self.videoDecoder.index)
+    else if (packet.index == self.configuration.videoDecoder.index)
     {
-        [packet fillWithTimebase:self.videoDecoder.timebase];
-        [self.videoDecoder putPacket:packet];
+        [packet fillWithTimebase:self.configuration.videoDecoder.timebase];
+        [self.configuration.videoDecoder putPacket:packet];
     }
 }
 
@@ -420,13 +419,13 @@
 
 - (void)decoder:(id <SGDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame
 {
-    if (decoder == self.audioDecoder)
+    if (decoder == self.configuration.audioDecoder)
     {
-        [self.audioOutput putFrame:frame];
+        [self.configuration.audioOutput putFrame:frame];
     }
-    else if (decoder == self.videoDecoder)
+    else if (decoder == self.configuration.videoDecoder)
     {
-        [self.videoOutput putFrame:frame];
+        [self.configuration.videoOutput putFrame:frame];
     }
 }
 
@@ -434,20 +433,20 @@
 
 - (void)outputDidChangeCapacity:(id <SGOutput>)output
 {
-    if (output == self.audioOutput)
+    if (output == self.configuration.audioOutput)
     {
-        if (self.audioOutput.count >= self.audioOutput.maxCount) {
-            [self.audioDecoder pause];
+        if (self.configuration.audioOutput.count >= self.configuration.audioOutput.maxCount) {
+            [self.configuration.audioDecoder pause];
         } else {
-            [self.audioDecoder resume];
+            [self.configuration.audioDecoder resume];
         }
     }
-    else if (output == self.videoOutput)
+    else if (output == self.configuration.videoOutput)
     {
-        if (self.videoOutput.count >= self.videoOutput.maxCount) {
-            [self.videoDecoder pause];
+        if (self.configuration.videoOutput.count >= self.configuration.videoOutput.maxCount) {
+            [self.configuration.videoDecoder pause];
         } else {
-            [self.videoDecoder resume];
+            [self.configuration.videoDecoder resume];
         }
     }
     [self updateCapacity];
