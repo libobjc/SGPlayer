@@ -108,6 +108,14 @@ static int SGCommonSourceInterruptHandler(void * context)
     [self unlock];
 }
 
+- (SGSourceState)state
+{
+    [self lock];
+    SGSourceState ret = _state;
+    [self unlock];
+    return ret;
+}
+
 #pragma mark - Interface
 
 - (void)open

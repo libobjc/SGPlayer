@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
     SGSessionStateOpening,
     SGSessionStateOpened,
     SGSessionStateReading,
+    SGSessionStateSeeking,
     SGSessionStateClosed,
     SGSessionStateFinished,
     SGSessionStateFailed,
