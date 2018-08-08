@@ -11,8 +11,8 @@
 
 @interface SGAsyncDecoder () <NSLocking>
 
-@property (nonatomic, assign) SGDecoderState state;
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
+@property (nonatomic, assign, readonly) SGDecoderState state;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * decodeOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
@@ -42,6 +42,10 @@ static SGPacket * flushPacket;
             flushPacket = [[SGPacket alloc] init];
         });
         _packetQueue = [[SGObjectQueue alloc] init];
+        self.pausedCondition = [[NSCondition alloc] init];
+        self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.maxConcurrentOperationCount = 1;
+        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
     return self;
 }
@@ -53,9 +57,8 @@ static SGPacket * flushPacket;
 
 #pragma mark - Setter/Getter
 
-- (void)setState:(SGDecoderState)state
+- (SGBasicBlock)setState:(SGDecoderState)state
 {
-    [self lock];
     if (_state != state)
     {
         SGDecoderState previous = _state;
@@ -66,8 +69,13 @@ static SGPacket * flushPacket;
             [self.pausedCondition broadcast];
             [self.pausedCondition unlock];
         }
+        return ^{
+            [self.delegate decoderDidChangeState:self];
+        };
     }
-    [self unlock];
+    return ^{
+        
+    };
 }
 
 - (CMTime)duration
@@ -95,9 +103,10 @@ static SGPacket * flushPacket;
         [self unlock];
         return NO;
     }
-    self.state = SGDecoderStateDecoding;
-    [self startDecodeThread];
+    SGBasicBlock callback = [self setState:SGDecoderStateDecoding];
     [self unlock];
+    callback();
+    [self startDecodeThread];
     return YES;
 }
 
@@ -109,8 +118,9 @@ static SGPacket * flushPacket;
         [self unlock];
         return NO;
     }
-    self.state = SGDecoderStatePaused;
+    SGBasicBlock callback = [self setState:SGDecoderStatePaused];
     [self unlock];
+    callback();
     return YES;
 }
 
@@ -122,8 +132,9 @@ static SGPacket * flushPacket;
         [self unlock];
         return NO;
     }
-    self.state = SGDecoderStateDecoding;
+    SGBasicBlock callback = [self setState:SGDecoderStateDecoding];
     [self unlock];
+    callback();
     return YES;
 }
 
@@ -135,8 +146,9 @@ static SGPacket * flushPacket;
         [self unlock];
         return NO;
     }
-    self.state = SGDecoderStateClosed;
+    SGBasicBlock callback = [self setState:SGDecoderStateClosed];
     [self unlock];
+    callback();
     [self.packetQueue destroy];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
@@ -178,16 +190,6 @@ static SGPacket * flushPacket;
 
 - (void)startDecodeThread
 {
-    if (!self.operationQueue)
-    {
-        self.operationQueue = [[NSOperationQueue alloc] init];
-        self.operationQueue.maxConcurrentOperationCount = 1;
-        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-    }
-    if (!self.pausedCondition)
-    {
-        self.pausedCondition = [[NSCondition alloc] init];
-    }
     SGWeakSelf
     self.decodeOperation = [NSBlockOperation blockOperationWithBlock:^{
         SGStrongSelf
@@ -257,7 +259,7 @@ static SGPacket * flushPacket;
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSRecursiveLock alloc] init];
+        self.coreLock = [[NSLock alloc] init];
     }
     [self.coreLock lock];
 }
