@@ -39,6 +39,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    
+}
+
 #pragma mark - Interface
 
 - (void)open
