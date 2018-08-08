@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGTime.h"
 
 @interface SGPeriodTimer : NSObject
 
 - (instancetype)initWithHandler:(void (^)(void))handler;
+
+@property (nonatomic, assign) CMTime timeInterval;
 
 - (void)start;
 - (void)stop;
