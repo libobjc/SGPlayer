@@ -35,6 +35,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, strong) id object;
 
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default is dispatch_get_main_queue().
 
 @property (nonatomic, strong, readonly) NSURL * URL;
 @property (nonatomic, strong, readonly) NSError * error;
@@ -56,6 +57,5 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)seekableToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
-
 
 @end
