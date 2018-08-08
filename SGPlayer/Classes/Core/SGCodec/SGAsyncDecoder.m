@@ -7,13 +7,14 @@
 //
 
 #import "SGAsyncDecoder.h"
+#import "SGMacro.h"
 
 @interface SGAsyncDecoder () <NSLocking>
 
 @property (nonatomic, assign) SGDecoderState state;
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * decodeOperation;
+@property (nonatomic, strong) NSOperation * decodeOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
 
 @end
@@ -43,6 +44,11 @@ static SGPacket * flushPacket;
         _packetQueue = [[SGObjectQueue alloc] init];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    
 }
 
 #pragma mark - Setter/Getter
@@ -134,6 +140,8 @@ static SGPacket * flushPacket;
     [self.packetQueue destroy];
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
+    self.operationQueue = nil;
+    self.decodeOperation = nil;
     return YES;
 }
 
@@ -180,7 +188,11 @@ static SGPacket * flushPacket;
     {
         self.pausedCondition = [[NSCondition alloc] init];
     }
-    self.decodeOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(decodeThread) object:nil];
+    SGWeakSelf
+    self.decodeOperation = [NSBlockOperation blockOperationWithBlock:^{
+        SGStrongSelf
+        [self decodeThread];
+    }];
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.operationQueue addOperation:self.decodeOperation];
