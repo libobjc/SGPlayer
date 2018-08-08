@@ -12,20 +12,20 @@
 @interface SGActivity ()
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) NSMutableSet * objects;
+@property (nonatomic, strong) NSMutableSet * targets;
 
 @end
 
 @implementation SGActivity
 
-+ (void)becomeActive:(id)object
++ (void)addTarget:(id)target
 {
-    [[SGActivity activity] becomeActive:object];
+    [[SGActivity activity] addTarget:target];
 }
 
-+ (void)resignActive:(id)object
++ (void)removeTarget:(id)target
 {
-    [[SGActivity activity] resignActive:object];
+    [[SGActivity activity] removeTarget:target];
 }
 
 
@@ -46,36 +46,36 @@
     if (self = [super init])
     {
         self.coreLock = [[NSLock alloc] init];
-        self.objects = [NSMutableSet set];
+        self.targets = [NSMutableSet set];
     }
     return self;
 }
 
-- (void)becomeActive:(id)object
+- (void)addTarget:(id)target
 {
-    if (!object)
+    if (!target)
     {
         return;
     }
     [self.coreLock lock];
-    if (![self.objects containsObject:[self token:object]])
+    if (![self.targets containsObject:[self token:target]])
     {
-        [self.objects addObject:[self token:object]];
+        [self.targets addObject:[self token:target]];
     }
     [self reload];
     [self.coreLock unlock];
 }
 
-- (void)resignActive:(id)object
+- (void)removeTarget:(id)target
 {
-    if (!object)
+    if (!target)
     {
         return;
     }
     [self.coreLock lock];
-    if ([self.objects containsObject:[self token:object]])
+    if ([self.targets containsObject:[self token:target]])
     {
-        [self.objects removeObject:[self token:object]];
+        [self.targets removeObject:[self token:target]];
     }
     [self reload];
     [self.coreLock unlock];
@@ -91,9 +91,9 @@
 #endif
 }
 
-- (id)token:(id)object
+- (id)token:(id)target
 {
-    return [NSString stringWithFormat:@"%p", object];
+    return [NSString stringWithFormat:@"%p", target];
 }
 
 @end

@@ -10,7 +10,7 @@
 
 @interface SGActivity : NSObject
 
-+ (void)becomeActive:(id)object;
-+ (void)resignActive:(id)object;
++ (void)addTarget:(id)target;
++ (void)removeTarget:(id)target;
 
 @end

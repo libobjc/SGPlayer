@@ -75,7 +75,7 @@
 
 - (void)play
 {
-    [SGActivity becomeActive:self];
+    [SGActivity addTarget:self];
     [self.stateLock lock];
     switch (self.state)
     {
@@ -99,7 +99,7 @@
 
 - (void)pause
 {
-    [SGActivity resignActive:self];
+    [SGActivity removeTarget:self];
     [self.stateLock lock];
     switch (self.state)
     {
@@ -308,7 +308,7 @@
 
 - (void)destoryInternal
 {
-    [SGActivity resignActive:self];
+    [SGActivity removeTarget:self];
     [self.session close];
     self.session = nil;
 }
