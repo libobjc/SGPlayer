@@ -84,7 +84,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGSourceState)state
 {

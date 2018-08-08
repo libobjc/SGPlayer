@@ -498,7 +498,7 @@ static NSTimeInterval max_packet_sleep_full_and_pause_time_interval = 0.5;
     self.videoFrameDuration = -1;
 }
 
-#pragma mark - setter/getter
+#pragma mark - Setter & Getter
 
 - (void)setProgress:(NSTimeInterval)progress
 {

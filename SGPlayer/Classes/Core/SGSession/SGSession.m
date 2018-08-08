@@ -170,7 +170,7 @@
     return YES;
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGSessionState)state
 {

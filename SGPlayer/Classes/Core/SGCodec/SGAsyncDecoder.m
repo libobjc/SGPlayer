@@ -55,7 +55,7 @@ static SGPacket * flushPacket;
     
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGDecoderState)state
 {

@@ -192,7 +192,7 @@
     [self.audioPlayer pause];
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (CMTime)duration
 {

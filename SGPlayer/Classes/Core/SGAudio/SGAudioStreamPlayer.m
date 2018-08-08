@@ -163,7 +163,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     }
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (BOOL)setVolume:(float)volume error:(NSError **)error
 {

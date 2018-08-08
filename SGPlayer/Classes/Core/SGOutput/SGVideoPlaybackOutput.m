@@ -112,7 +112,7 @@
     [self.delegate outputDidChangeCapacity:self];
 }
 
-#pragma mark - Setter/Getter
+#pragma mark - Setter & Getter
 
 - (CMTime)duration
 {

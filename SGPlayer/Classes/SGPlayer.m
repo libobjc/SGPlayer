@@ -46,6 +46,8 @@
     [self destoryInternal];
 }
 
+#pragma mark - Interface
+
 - (void)replaceWithURL:(NSURL *)URL
 {
     [self destory];
@@ -260,7 +262,7 @@
     return kCMTimeZero;
 }
 
-#pragma mark - Clean
+#pragma mark - Destory
 
 - (void)destory
 {
