@@ -149,7 +149,6 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 {
     if (!self.playing)
     {
-        _playing = YES;
         AUGraphStart(self.graph);
     }
 }
@@ -158,12 +157,26 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 {
     if (self.playing)
     {
-        _playing = NO;
         AUGraphStop(self.graph);
     }
 }
 
 #pragma mark - Setter & Getter
+
+- (BOOL)playing
+{
+    if (self.graph)
+    {
+        Boolean running = FALSE;
+        OSStatus ret = AUGraphIsRunning(self.graph, &running);
+        if (ret == noErr)
+        {
+            return running == TRUE ? YES : NO;
+        }
+        return NO;
+    }
+    return NO;
+}
 
 - (BOOL)setVolume:(float)volume error:(NSError **)error
 {
