@@ -22,9 +22,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @protocol SGFFPlayerDelegate <NSObject>
 
-- (void)playerDidChangePlaybackState:(SGPlayer *)player;
+- (void)playerDidChangeState:(SGPlayer *)player;
 - (void)playerDidChangeLoadingState:(SGPlayer *)player;
-- (void)playerDidChangePlaybackTime:(SGPlayer *)player;
+- (void)playerDidChangeTime:(SGPlayer *)player;
 - (void)playerDidChangeLoadedTime:(SGPlayer *)player;
 
 @end
@@ -39,9 +39,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @property (nonatomic, strong, readonly) NSURL * URL;
 @property (nonatomic, strong, readonly) NSError * error;
-@property (nonatomic, assign, readonly) SGPlaybackState playbackState;
+@property (nonatomic, assign, readonly) SGPlaybackState state;
 @property (nonatomic, assign, readonly) SGLoadingState loadingState;
-@property (nonatomic, assign, readonly) CMTime playbackTime;
+@property (nonatomic, assign, readonly) CMTime time;
 @property (nonatomic, assign, readonly) CMTime loadedTime;
 @property (nonatomic, assign, readonly) CMTime duration;
 
