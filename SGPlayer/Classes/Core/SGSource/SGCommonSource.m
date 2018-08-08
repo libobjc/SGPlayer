@@ -14,6 +14,7 @@
 
 @interface SGCommonSource () <NSLocking>
 
+@property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, strong) NSArray <SGStream *> * streams;

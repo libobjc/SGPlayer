@@ -446,11 +446,6 @@
 
 #pragma mark - SGDecoderDelegate
 
-- (void)decoderDidChangeState:(id<SGDecoder>)decoder
-{
-    
-}
-
 - (void)decoderDidChangeCapacity:(id <SGDecoder>)decoder
 {
     [self updateCapacity];
