@@ -36,6 +36,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    
+}
+
 #pragma mark - Streams
 
 - (void)open
@@ -119,10 +124,10 @@
     SGWeakSelf
     [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
-        [strongSelf.configuration.audioDecoder flush];
-        [strongSelf.configuration.videoDecoder flush];
-        [strongSelf.configuration.audioOutput flush];
-        [strongSelf.configuration.videoOutput flush];
+        [self.configuration.audioDecoder flush];
+        [self.configuration.videoDecoder flush];
+        [self.configuration.audioOutput flush];
+        [self.configuration.videoOutput flush];
         if (completionHandler)
         {
             dispatch_async(self.delegateQueue, ^{
@@ -308,12 +313,12 @@
 
 - (void)setupOutputIfNeeded
 {
-    if (!self.configuration.audioOutput && self.configuration.audioDecoder)
+    if (self.configuration.audioOutput && self.configuration.audioDecoder)
     {
         self.configuration.audioOutput.delegate = self;
         [self.configuration.audioOutput open];
     }
-    if (!self.configuration.videoOutput && self.configuration.videoDecoder)
+    if (self.configuration.videoOutput && self.configuration.videoDecoder)
     {
         self.configuration.videoOutput.delegate = self;
         [self.configuration.videoOutput open];
