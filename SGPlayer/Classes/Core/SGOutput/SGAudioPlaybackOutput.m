@@ -30,7 +30,7 @@
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
-@property (nonatomic, assign) BOOL didUpdateTimeSynchronizer;
+@property (nonatomic, assign) BOOL didUpdateTimeSync;
 
 @property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
@@ -76,7 +76,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSynchronizer = NO;
+    self.didUpdateTimeSync = NO;
 }
 
 - (void)close
@@ -88,7 +88,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSynchronizer = NO;
+    self.didUpdateTimeSync = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -158,9 +158,9 @@
     result.packetDuration = audioFrame.packetDuration;
     result.packetSize = audioFrame.packetSize;
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
-    if (!self.didUpdateTimeSynchronizer && self.frameQueue.count == 0)
+    if (!self.didUpdateTimeSync && self.frameQueue.count == 0)
     {
-        [self.timeSync updatePosition:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        [self.timeSync updateKeyTime:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     [self.frameQueue putObjectSync:result];
     [self.delegate outputDidChangeCapacity:self];
@@ -175,7 +175,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSynchronizer = NO;
+    self.didUpdateTimeSync = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.timeSync flush];
@@ -375,8 +375,8 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    self.didUpdateTimeSynchronizer = YES;
-    [self.timeSync updatePosition:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
+    self.didUpdateTimeSync = YES;
+    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
 

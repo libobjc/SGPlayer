@@ -11,9 +11,9 @@
 
 @interface SGPlaybackTimeSync : NSObject
 
-@property (nonatomic, assign, readonly) CMTime position;
+@property (nonatomic, assign, readonly) CMTime time;
 
-- (void)updatePosition:(CMTime)position duration:(CMTime)duration rate:(CMTime)rate;
+- (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate;
 - (void)flush;
 
 @end
