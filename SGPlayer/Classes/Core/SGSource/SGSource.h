@@ -34,7 +34,7 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, weak) id <SGSourceDelegate> delegate;
 
-- (SGSourceState)state;
+@property (nonatomic, assign, readonly) SGSourceState state;
 - (NSError *)error;
 - (CMTime)duration;
 

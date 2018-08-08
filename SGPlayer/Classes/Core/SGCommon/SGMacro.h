@@ -26,4 +26,6 @@
 #define SGPlayerLog(...)
 #endif
 
+typedef void(^SGBasicBlock)(void);
+
 #endif

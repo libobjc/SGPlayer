@@ -10,10 +10,10 @@
 #import "SGFFmpeg.h"
 #import "SGPacket.h"
 #import "SGError.h"
+#import "SGMacro.h"
 
 @interface SGCommonSource () <NSLocking>
 
-@property (nonatomic, assign) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, strong) NSArray <SGStream *> * streams;
@@ -22,10 +22,10 @@
 @property (nonatomic, strong) NSArray <SGStream *> * subtitleStreams;
 @property (nonatomic, strong) NSArray <SGStream *> * otherStreams;
 @property (nonatomic, assign) AVFormatContext * formatContext;
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
-@property (nonatomic, strong) NSInvocationOperation * openOperation;
-@property (nonatomic, strong) NSInvocationOperation * readOperation;
+@property (nonatomic, strong) NSOperation * openOperation;
+@property (nonatomic, strong) NSOperation * readOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
 @property (nonatomic, assign) BOOL seekable;
 @property (nonatomic, assign) CMTime seekTimeStamp;
@@ -78,12 +78,15 @@ static int SGCommonSourceInterruptHandler(void * context)
     return self;
 }
 
+- (void)dealloc
+{
+    
+}
+
 #pragma mark - Setter/Getter
 
-- (void)setState:(SGSourceState)state
+- (SGBasicBlock)setState:(SGSourceState)state
 {
-    [self lock];
-    BOOL callback = NO;
     if (_state != state)
     {
         SGSourceState privious = _state;
@@ -101,21 +104,13 @@ static int SGCommonSourceInterruptHandler(void * context)
                 [self startReadThread];
             }
         }
-        callback = YES;
+        return ^{
+            [self.delegate sourceDidChangeState:self];
+        };
     }
-    [self unlock];
-    if (callback && [self.delegate respondsToSelector:@selector(sourceDidChangeState:)])
-    {
-        [self.delegate sourceDidChangeState:self];
-    }
-}
-
-- (SGSourceState)state
-{
-    [self lock];
-    SGSourceState ret = _state;
-    [self unlock];
-    return ret;
+    return ^{
+        
+    };
 }
 
 #pragma mark - Interface
@@ -128,9 +123,10 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    self.state = SGSourceStateOpening;
-    [self startOpenThread];
+    SGBasicBlock callback = [self setState:SGSourceStateOpening];
     [self unlock];
+    callback();
+    [self startOpenThread];
 }
 
 - (void)read
@@ -141,9 +137,10 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    self.state = SGSourceStateReading;
-    [self startReadThread];
+    SGBasicBlock callback = [self setState:SGSourceStateReading];
     [self unlock];
+    callback();
+    [self startReadThread];
 }
 
 - (void)pause
@@ -156,8 +153,9 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    self.state = SGSourceStatePaused;
+    SGBasicBlock callback = [self setState:SGSourceStatePaused];
     [self unlock];
+    callback();
 }
 
 - (void)resume
@@ -168,8 +166,9 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    self.state = SGSourceStateReading;
+    SGBasicBlock callback = [self setState:SGSourceStateReading];
     [self unlock];
+    callback();
 }
 
 - (void)close
@@ -180,10 +179,14 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    self.state = SGSourceStateClosed;
+    SGBasicBlock callback = [self setState:SGSourceStateClosed];
     [self unlock];
+    callback();
     [self.operationQueue cancelAllOperations];
     [self.operationQueue waitUntilAllOperationsAreFinished];
+    self.operationQueue = nil;
+    self.openOperation = nil;
+    self.readOperation = nil;
     if (self.formatContext)
     {
         avformat_close_input(&_formatContext);
@@ -217,10 +220,11 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return NO;
     }
-    self.state = SGSourceStateSeeking;
+    SGBasicBlock callback = [self setState:SGSourceStateSeeking];
     self.seekTimeStamp = time;
     self.seekCompletionHandler = completionHandler;
     [self unlock];
+    callback();
     return YES;
 }
 
@@ -228,7 +232,11 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)startOpenThread
 {
-    self.openOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(openThread) object:nil];
+    SGWeakSelf
+    self.openOperation = [NSBlockOperation blockOperationWithBlock:^{
+        SGStrongSelf
+        [self openThread];
+    }];
     self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.operationQueue addOperation:self.openOperation];
@@ -237,19 +245,19 @@ static int SGCommonSourceInterruptHandler(void * context)
 - (void)openThread
 {
     [SGFFmpeg setupIfNeeded];
-    
+
     self.formatContext = avformat_alloc_context();
-    
+
     if (!self.formatContext)
     {
         self.error = SGFFCreateErrorCode(SGErrorCodeFormatCreate);
-        self.state = SGSourceStateFailed;
+        [self setState:SGSourceStateFailed]();
         return;
     }
     
     self.formatContext->interrupt_callback.callback = SGCommonSourceInterruptHandler;
     self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
-    
+
     NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;
     int reslut = avformat_open_input(&_formatContext, URLString.UTF8String, NULL, NULL);
     self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatOpenInput);
@@ -259,10 +267,10 @@ static int SGCommonSourceInterruptHandler(void * context)
         {
             avformat_free_context(self.formatContext);
         }
-        self.state = SGSourceStateFailed;
+        [self setState:SGSourceStateFailed]();
         return;
     }
-    
+
     reslut = avformat_find_stream_info(self.formatContext, NULL);
     self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatFindStreamInfo);
     if (self.error)
@@ -272,10 +280,10 @@ static int SGCommonSourceInterruptHandler(void * context)
             avformat_close_input(&_formatContext);
             avformat_free_context(self.formatContext);
         }
-        self.state = SGSourceStateFailed;
+        [self setState:SGSourceStateFailed]();
         return;
     }
-    
+
     int64_t duration = self.formatContext->duration;
     if (duration > 0)
     {
@@ -286,7 +294,7 @@ static int SGCommonSourceInterruptHandler(void * context)
     {
         self.seekable = self.formatContext->pb->seekable;
     }
-    
+
     NSMutableArray <SGStream *> * streams = [NSMutableArray array];
     NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
     NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
@@ -318,14 +326,14 @@ static int SGCommonSourceInterruptHandler(void * context)
     self.videoStreams = [videoStreams copy];
     self.subtitleStreams = [subtitleStreams copy];
     self.otherStreams = [otherStreams copy];
-    
+
     if (self.audioStreams.count > 0 || self.videoStreams.count > 0)
     {
-        self.state = SGSourceStateOpened;
+        [self setState:SGSourceStateOpened]();
     }
     else
     {
-        self.state = SGSourceStateFailed;
+        [self setState:SGSourceStateFailed]();
     }
 }
 
@@ -333,7 +341,11 @@ static int SGCommonSourceInterruptHandler(void * context)
 
 - (void)startReadThread
 {
-    self.readOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(readThread) object:nil];
+    SGWeakSelf
+    self.readOperation = [NSBlockOperation blockOperationWithBlock:^{
+        SGStrongSelf
+        [self readThread];
+    }];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
     [self.readOperation addDependency:self.openOperation];
@@ -389,7 +401,7 @@ static int SGCommonSourceInterruptHandler(void * context)
                 {
                     seekCompletionHandler(success >= 0, seekTimeStamp);
                 }
-                self.state = SGSourceStateReading;
+                [self setState:SGSourceStateReading]();
             }
             continue;
         }
@@ -400,7 +412,7 @@ static int SGCommonSourceInterruptHandler(void * context)
             int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
             {
-                self.state = SGSourceStateFinished;
+                [self setState:SGSourceStateFinished]();
                 [packet unlock];
                 break;
             }
@@ -417,7 +429,7 @@ static int SGCommonSourceInterruptHandler(void * context)
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSRecursiveLock alloc] init];
+        self.coreLock = [[NSLock alloc] init];
     }
     [self.coreLock lock];
 }
