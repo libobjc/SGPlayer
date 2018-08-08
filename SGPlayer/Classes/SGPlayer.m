@@ -133,6 +133,7 @@
         return NO;
     }
     [self startSeeking];
+    [self unlock];
     SGWeakSelf
     [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
@@ -145,7 +146,6 @@
         [self unlock];
         SGPlayerLog(@"SGPlayer seek finished, %d", success);
     }];
-    [self unlock];
     return YES;
 }
 

@@ -131,6 +131,7 @@
         return NO;
     }
     self.state = SGSessionStateSeeking;
+    [self unlock];
     SGWeakSelf
     [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
@@ -151,7 +152,6 @@
         }
         [self unlock];
     }];
-    [self unlock];
     return YES;
 }
 
