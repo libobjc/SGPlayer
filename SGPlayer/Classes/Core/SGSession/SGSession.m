@@ -386,13 +386,6 @@
     } else {
         [self.configuration.source resume];
     }
-    
-    if (self.configuration.source.state == SGSourceStateFinished &&
-        CMTimeCompare(self.audioLoadedDuration, kCMTimeZero) <= 0 &&
-        CMTimeCompare(self.videoLoadedDuration, kCMTimeZero) <= 0)
-    {
-        self.state = SGSessionStateFinished;
-    }
     if ([self.delegate respondsToSelector:@selector(sessionDidChangeCapacity:)])
     {
         dispatch_async(self.delegateQueue, ^{
@@ -413,6 +406,11 @@
             [self setupDecoderIfNeeded];
             [self setupOutputIfNeeded];
             self.state = SGSessionStateOpened;
+        }
+            break;
+        case SGSourceStateFinished:
+        {
+            self.state = SGSessionStateFinished;
         }
             break;
         case SGSourceStateFailed:
