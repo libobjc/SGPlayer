@@ -9,7 +9,6 @@
 #import "SGPlayer.h"
 #import "SGMacro.h"
 #import "SGActivity.h"
-#import "SGPeriodTimer.h"
 #import "SGSession.h"
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
@@ -22,7 +21,6 @@
 @property (nonatomic, assign) SGPlaybackState stateBeforSeeking;
 @property (nonatomic, strong) NSLock * stateLock;
 @property (nonatomic, strong) NSLock * loadingStateLock;
-@property (nonatomic, strong) SGPeriodTimer * periodTimer;
 @property (nonatomic, assign) CMTime lastTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
@@ -71,13 +69,6 @@
     self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
     self.session.delegate = self;
     [self.session open];
-    SGWeakSelf
-    self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
-        SGStrongSelf
-        [self callbackForTimingInfoIfNeeded];
-    }];
-    self.periodTimer.timeInterval = CMTimeMake(1, 60);
-    [self.periodTimer start];
 }
 
 - (void)play
@@ -242,6 +233,7 @@
         }
         return ^{
             [self playAndPause];
+            [self callbackForTimingInfoIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangeState:self];
             }];
@@ -256,6 +248,8 @@
     {
         _loadingState = loadingState;
         return ^{
+            [self playAndPause];
+            [self callbackForTimingInfoIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangeLoadingState:self];
             }];
@@ -266,6 +260,10 @@
 
 - (CMTime)time
 {
+    if (self.session.state == SGSessionStateFinished && self.session.empty)
+    {
+        return self.duration;
+    }
     if (self.audioOutput.timeSync)
     {
         return self.audioOutput.timeSync.time;
@@ -317,14 +315,11 @@
     [self.loadingStateLock unlock];
     callback();
     loadingStateCallback();
-    [self callbackForTimingInfoIfNeeded];
 }
 
 - (void)destoryInternal
 {
     [SGActivity removeTarget:self];
-    [self.periodTimer stop];
-    self.periodTimer = nil;
     [self.session close];
     self.session = nil;
     self.audioOutput = nil;
@@ -367,6 +362,7 @@
         callback();
     }
     [self playAndPause];
+    [self callbackForTimingInfoIfNeeded];
 }
 
 #pragma mark - Callback
