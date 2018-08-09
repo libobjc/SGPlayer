@@ -31,6 +31,7 @@
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
 @property (nonatomic, assign) BOOL timeSyncDidUpdate;
+@property (nonatomic, assign) BOOL hasFrame;
 
 @property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
@@ -82,7 +83,6 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.timeSyncDidUpdate = NO;
 }
 
 - (void)pause
@@ -117,6 +117,7 @@
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
     self.timeSyncDidUpdate = NO;
+    self.hasFrame = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -194,6 +195,7 @@
     {
         [self.timeSync updateKeyTime:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
+    self.hasFrame = YES;
     [self.frameQueue putObjectSync:result];
     [self.delegate outputDidChangeCapacity:self];
     [result unlock];
@@ -212,6 +214,7 @@
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
     self.timeSyncDidUpdate = NO;
+    self.hasFrame = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];

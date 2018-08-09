@@ -25,6 +25,7 @@
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 @property (nonatomic, assign) BOOL timeSyncDidUpdate;
+@property (nonatomic, assign) BOOL hasFrame;
 
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
@@ -89,7 +90,6 @@
     self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
     self.renderTimer.fireDate = [NSDate distantPast];
-    self.timeSyncDidUpdate = NO;
 }
 
 - (void)pause
@@ -121,6 +121,7 @@
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.timeSyncDidUpdate = NO;
+    self.hasFrame = NO;
     [self unlock];
 }
 
@@ -142,6 +143,7 @@
             [self.timeSync updateKeyTime:videoFrame.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
         }
     }
+    self.hasFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -156,6 +158,7 @@
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.timeSyncDidUpdate = NO;
+    self.hasFrame = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];

@@ -387,6 +387,21 @@
 
 - (void)callbackForTimingInfoIfNeeded
 {
+    if (self.audioOutput.enable && !self.audioOutput.hasFrame)
+    {
+        return;
+    }
+    if (self.videoOutput.enable && !self.videoOutput.hasFrame)
+    {
+        return;
+    }
+    [self.stateLock lock];
+    if (self.state == SGPlaybackStateSeeking)
+    {
+        [self.stateLock unlock];
+        return;
+    }
+    [self.stateLock unlock];
     CMTime time = self.time;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
