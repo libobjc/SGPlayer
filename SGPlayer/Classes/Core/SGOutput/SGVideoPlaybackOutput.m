@@ -204,7 +204,7 @@
         SGStrongSelf
         if (self.currentFrame)
         {
-            CMTime time = self.timeSync.unlimitedTime;
+            CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGTimeMakeWithSeconds(nextVSyncInterval));
