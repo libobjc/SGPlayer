@@ -22,6 +22,7 @@
 - (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGOutputDelegate> delegate;
+@property (nonatomic, assign) BOOL key;
 
 - (BOOL)empty;
 - (CMTime)duration;

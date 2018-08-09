@@ -47,6 +47,7 @@
 @implementation SGAudioPlaybackOutput
 
 @synthesize delegate = _delegate;
+@synthesize key = _key;
 
 - (SGMediaType)mediaType
 {
