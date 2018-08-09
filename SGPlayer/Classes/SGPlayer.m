@@ -19,7 +19,6 @@
 @property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
-@property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 @property (nonatomic, assign) SGPlaybackState stateBeforSeeking;
 @property (nonatomic, strong) NSLock * stateLock;
 @property (nonatomic, strong) NSLock * loadingStateLock;
@@ -63,9 +62,8 @@
     }
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
-    self.timeSync = [[SGPlaybackTimeSync alloc] init];
-    self.audioOutput.timeSync = self.timeSync;
-    self.videoOutput.timeSync = self.timeSync;
+    self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
+    self.videoOutput.timeSync = self.audioOutput.timeSync;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
@@ -76,20 +74,7 @@
     SGWeakSelf
     self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
         SGStrongSelf
-        CMTime time = self.time;
-        CMTime loadedTime = self.loadedTime;
-        CMTime duration = self.duration;
-        if (CMTimeCompare(time, self.lastTime) != 0 ||
-            CMTimeCompare(loadedTime, self.lastLoadedTime) != 0 ||
-            CMTimeCompare(duration, self.lastDuration) != 0)
-        {
-            self.lastTime = time;
-            self.lastLoadedTime = loadedTime;
-            self.lastDuration = duration;
-            [self callback:^{
-                [self.delegate playerDidChangeTimingInfo:self];
-            }];
-        }
+        [self callbackForTimingInfoIfNeeded];
     }];
     self.periodTimer.timeInterval = CMTimeMake(1, 60);
     [self.periodTimer start];
@@ -278,14 +263,9 @@
 
 - (CMTime)time
 {
-    if (self.session.state == SGSessionStateFinished &&
-        CMTimeCompare(self.loadedDuration, kCMTimeZero) <= 0)
+    if (self.audioOutput.timeSync)
     {
-        return self.duration;
-    }
-    if (self.timeSync)
-    {
-        return self.timeSync.time;
+        return self.audioOutput.timeSync.time;
     }
     return kCMTimeZero;
 }
@@ -334,11 +314,7 @@
     [self.loadingStateLock unlock];
     callback();
     loadingStateCallback();
-    _URL = nil;
-    _error = nil;
-    self.lastTime = CMTimeMake(-1900, 1);
-    self.lastLoadedTime = CMTimeMake(-1900, 1);
-    self.lastDuration = CMTimeMake(-1900, 1);
+    [self callbackForTimingInfoIfNeeded];
 }
 
 - (void)destoryInternal
@@ -348,6 +324,13 @@
     self.periodTimer = nil;
     [self.session close];
     self.session = nil;
+    self.audioOutput = nil;
+    self.videoOutput = nil;
+    self.lastTime = CMTimeMake(-1900, 1);
+    self.lastLoadedTime = CMTimeMake(-1900, 1);
+    self.lastDuration = CMTimeMake(-1900, 1);
+    _URL = nil;
+    _error = nil;
 }
 
 #pragma mark - SGSessionDelegate
@@ -401,6 +384,24 @@
     else
     {
         block();
+    }
+}
+
+- (void)callbackForTimingInfoIfNeeded
+{
+    CMTime time = self.time;
+    CMTime loadedTime = self.loadedTime;
+    CMTime duration = self.duration;
+    if (CMTimeCompare(time, self.lastTime) != 0 ||
+        CMTimeCompare(loadedTime, self.lastLoadedTime) != 0 ||
+        CMTimeCompare(duration, self.lastDuration) != 0)
+    {
+        self.lastTime = time;
+        self.lastLoadedTime = loadedTime;
+        self.lastDuration = duration;
+        [self callback:^{
+            [self.delegate playerDidChangeTimingInfo:self];
+        }];
     }
 }
 
