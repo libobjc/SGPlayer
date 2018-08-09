@@ -386,6 +386,10 @@
                 break;
         }
     }
+    self.configuration.audioOutput.enable = self.configuration.audioDecoder ? YES : NO;
+    self.configuration.videoOutput.enable = self.configuration.videoDecoder ? YES : NO;
+    self.configuration.audioOutput.key = self.configuration.audioOutput.enable ? YES : NO;
+    self.configuration.videoOutput.key = self.configuration.audioOutput.enable ? NO : YES;
 }
 
 - (void)setupOutputIfNeeded

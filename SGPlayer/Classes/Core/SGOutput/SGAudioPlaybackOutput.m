@@ -47,6 +47,7 @@
 @implementation SGAudioPlaybackOutput
 
 @synthesize delegate = _delegate;
+@synthesize enable = _enable;
 @synthesize key = _key;
 
 - (SGMediaType)mediaType
@@ -73,6 +74,10 @@
 
 - (void)open
 {
+    if (!self.enable)
+    {
+        return;
+    }
     self.frameQueue = [[SGObjectQueue alloc] init];
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
@@ -82,16 +87,28 @@
 
 - (void)pause
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self.audioPlayer pause];
 }
 
 - (void)resume
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self.audioPlayer play];
 }
 
 - (void)close
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self.audioPlayer pause];
     [self lock];
     [self.currentFrame unlock];
@@ -108,6 +125,10 @@
 
 - (void)putFrame:(__kindof SGFrame *)frame
 {
+    if (!self.enable)
+    {
+        return;
+    }
     if (![frame isKindOfClass:[SGAudioFrame class]])
     {
         return;
@@ -180,6 +201,10 @@
 
 - (void)flush
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
@@ -201,17 +226,29 @@
 
 - (CMTime)duration
 {
-    return self.frameQueue.duration;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.duration;
+    }
+    return kCMTimeZero;
 }
 
 - (long long)size
 {
-    return self.frameQueue.size;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.size;
+    }
+    return 0;
 }
 
 - (NSUInteger)count
 {
-    return self.frameQueue.count;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.count;
+    }
+    return 0;
 }
 
 - (NSUInteger)maxCount

@@ -36,6 +36,7 @@
 @implementation SGVideoPlaybackOutput
 
 @synthesize delegate = _delegate;
+@synthesize enable = _enable;
 @synthesize key = _key;
 
 - (SGMediaType)mediaType
@@ -77,6 +78,10 @@
 
 - (void)open
 {
+    if (!self.enable)
+    {
+        return;
+    }
     self.frameQueue = [[SGObjectQueue alloc] init];
     self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
@@ -85,16 +90,26 @@
 
 - (void)pause
 {
-    
+    if (!self.enable)
+    {
+        return;
+    }
 }
 
 - (void)resume
 {
-    
+    if (!self.enable)
+    {
+        return;
+    }
 }
 
 - (void)close
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self.frameQueue destroy];
     [self lock];
     [self.currentFrame unlock];
@@ -104,6 +119,10 @@
 
 - (void)putFrame:(__kindof SGFrame *)frame
 {
+    if (!self.enable)
+    {
+        return;
+    }
     if (![frame isKindOfClass:[SGVideoFrame class]])
     {
         return;
@@ -115,6 +134,10 @@
 
 - (void)flush
 {
+    if (!self.enable)
+    {
+        return;
+    }
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
@@ -132,17 +155,29 @@
 
 - (CMTime)duration
 {
-    return self.frameQueue.duration;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.duration;
+    }
+    return kCMTimeZero;
 }
 
 - (long long)size
 {
-    return self.frameQueue.size;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.size;
+    }
+    return 0;
 }
 
 - (NSUInteger)count
 {
-    return self.frameQueue.count;
+    if (self.frameQueue)
+    {
+        return self.frameQueue.count;
+    }
+    return 0;
 }
 
 - (NSUInteger)maxCount
