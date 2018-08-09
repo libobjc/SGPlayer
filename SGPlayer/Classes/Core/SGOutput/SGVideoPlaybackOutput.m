@@ -21,6 +21,7 @@
 @interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, assign) BOOL paused;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 
@@ -95,6 +96,7 @@
     {
         return;
     }
+    self.paused = YES;
 }
 
 - (void)resume
@@ -103,6 +105,7 @@
     {
         return;
     }
+    self.paused = NO;
 }
 
 - (void)close
@@ -190,13 +193,18 @@
 
 - (void)renderTimerHandler
 {
+    if (self.key && self.paused)
+    {
+        [self.timeSync refresh];
+        return;
+    }
     [self lock];
     SGWeakSelf
     SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
         if (self.currentFrame)
         {
-            CMTime time = self.timeSync.time;
+            CMTime time = self.timeSync.unlimitedTime;
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGTimeMakeWithSeconds(nextVSyncInterval));

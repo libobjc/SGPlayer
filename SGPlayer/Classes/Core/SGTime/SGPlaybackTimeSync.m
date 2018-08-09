@@ -43,11 +43,25 @@
     return position;
 }
 
+- (CMTime)unlimitedTime
+{
+    CMTime mediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+    CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
+    interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
+    CMTime position = CMTimeAdd(self.keyTime, interval);
+    return position;
+}
+
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate
 {
     self.keyTime = time;
     self.keyDuration = duration;
     self.keyRate = rate;
+    self.keyMediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+}
+
+- (void)refresh
+{
     self.keyMediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
 }
 
