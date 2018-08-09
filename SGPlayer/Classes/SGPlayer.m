@@ -87,8 +87,7 @@
     switch (self.state)
     {
         case SGPlaybackStateFinished:
-            if (self.session.state == SGSessionStateFinished &&
-                CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
+            if (self.session.state == SGSessionStateFinished && self.session.empty)
             {
                 [self.session seekToTime:kCMTimeZero completionHandler:nil];
             }
@@ -199,7 +198,7 @@
         return;
     }
     [self.loadingStateLock unlock];
-    if (CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
+    if (self.session.empty)
     {
         [self.audioOutput pause];
         [self.videoOutput pause];
@@ -360,8 +359,7 @@
         [self.loadingStateLock unlock];
         loadingStateCallback();
     }
-    if (self.session.state == SGSessionStateFinished &&
-        CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
+    if (self.session.state == SGSessionStateFinished && self.session.empty)
     {
         [self.stateLock lock];
         SGBasicBlock callback = [self setState:SGPlaybackStateFinished];

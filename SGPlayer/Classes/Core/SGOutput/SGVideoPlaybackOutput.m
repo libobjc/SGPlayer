@@ -124,6 +124,11 @@
 
 #pragma mark - Setter & Getter
 
+- (BOOL)empty
+{
+    return self.count <= 0;
+}
+
 - (CMTime)duration
 {
     return self.frameQueue.duration;

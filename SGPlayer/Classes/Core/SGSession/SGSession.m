@@ -247,6 +247,63 @@
     return 0;
 }
 
+- (BOOL)empty
+{
+    return [self emptyWithMainMediaType:SGMediaTypeAudio];
+}
+
+- (BOOL)emptyWithMainMediaType:(SGMediaType)mainMediaType
+{
+    if (self.audioEnable && !self.videoEnable)
+    {
+        return self.audioEmpty;
+    }
+    else if (!self.audioEnable && self.videoEnable)
+    {
+        return self.videoEmpty;
+    }
+    else if (self.audioEnable && self.videoEnable)
+    {
+        if (mainMediaType == SGMediaTypeAudio)
+        {
+            return self.audioEmpty;
+        }
+        else if (mainMediaType == SGMediaTypeVideo)
+        {
+            return self.videoEmpty;
+        }
+    }
+    return 0;
+}
+
+- (BOOL)audioEnable
+{
+    return self.configuration.audioDecoder != nil;
+}
+
+- (BOOL)videoEnable
+{
+    return self.configuration.videoDecoder != nil;
+}
+
+- (BOOL)audioEmpty
+{
+    if (self.configuration.audioDecoder && self.configuration.audioOutput)
+    {
+        return self.configuration.audioDecoder.empty && self.configuration.audioOutput.empty;
+    }
+    return YES;
+}
+
+- (BOOL)videoEmpty
+{
+    if (self.configuration.videoDecoder && self.configuration.videoOutput)
+    {
+        return self.configuration.videoDecoder.empty && self.configuration.videoOutput.empty;
+    }
+    return YES;
+}
+
 - (CMTime)audioLoadedDuration
 {
     if (self.configuration.audioDecoder && self.configuration.audioOutput)
@@ -273,16 +330,6 @@
 - (long long)videoLoadedSize
 {
     return self.configuration.videoDecoder.size + self.configuration.videoOutput.size;
-}
-
-- (BOOL)audioEnable
-{
-    return self.configuration.audioDecoder != nil;
-}
-
-- (BOOL)videoEnable
-{
-    return self.configuration.videoDecoder != nil;
 }
 
 #pragma mark - Internal

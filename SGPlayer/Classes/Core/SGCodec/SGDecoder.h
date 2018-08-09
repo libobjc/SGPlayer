@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, SGDecoderState)
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
 - (SGDecoderState)state;
+- (BOOL)empty;
 - (CMTime)duration;
 - (long long)size;
 - (NSUInteger)count;

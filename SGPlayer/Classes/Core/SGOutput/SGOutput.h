@@ -23,6 +23,7 @@
 
 @property (nonatomic, weak) id <SGOutputDelegate> delegate;
 
+- (BOOL)empty;
 - (CMTime)duration;
 - (long long)size;
 - (NSUInteger)count;

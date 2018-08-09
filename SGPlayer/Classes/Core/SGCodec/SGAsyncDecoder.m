@@ -76,6 +76,11 @@ static SGPacket * flushPacket;
     return ^{};
 }
 
+- (BOOL)empty
+{
+    return self.count <= 0;
+}
+
 - (CMTime)duration
 {
     return self.packetQueue.duration;

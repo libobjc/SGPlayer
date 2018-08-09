@@ -48,6 +48,9 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  */
 @property (nonatomic, assign, readonly) CMTime duration;
 
+- (BOOL)empty;
+- (BOOL)emptyWithMainMediaType:(SGMediaType)mainMediaType;
+
 - (CMTime)loadedDuration;       // Main media type is Audio.
 - (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType;
 
@@ -58,6 +61,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  *  Audio.
  */
 @property (nonatomic, assign, readonly) BOOL audioEnable;
+@property (nonatomic, assign, readonly) BOOL audioEmpty;
 @property (nonatomic, assign, readonly) CMTime audioLoadedDuration;
 @property (nonatomic, assign, readonly) long long audioLoadedSize;
 
@@ -65,6 +69,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  *  Video.
  */
 @property (nonatomic, assign, readonly) BOOL videoEnable;
+@property (nonatomic, assign, readonly) BOOL videoEmpty;
 @property (nonatomic, assign, readonly) CMTime videoLoadedDuration;
 @property (nonatomic, assign, readonly) long long videoLoadedSize;
 
