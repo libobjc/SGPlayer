@@ -413,11 +413,19 @@ static int SGCommonSourceInterruptHandler(void * context)
             int readResult = av_read_frame(self.formatContext, packet.corePacket);
             if (readResult < 0)
             {
-                [self setState:SGSourceStateFinished]();
-                [packet unlock];
-                break;
+                [self lock];
+                SGBasicBlock callback = ^{};
+                if (self.state == SGSourceStateReading)
+                {
+                    callback = [self setState:SGSourceStateFinished];
+                }
+                [self unlock];
+                callback();
             }
-            [self.delegate source:self hasNewPacket:packet];
+            else
+            {
+                [self.delegate source:self hasNewPacket:packet];
+            }
             [packet unlock];
             continue;
         }
