@@ -24,6 +24,7 @@
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
+@property (nonatomic, assign) BOOL timeSyncDidUpdate;
 
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
@@ -88,6 +89,7 @@
     self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
     self.renderTimer.fireDate = [NSDate distantPast];
+    self.timeSyncDidUpdate = NO;
 }
 
 - (void)pause
@@ -118,6 +120,7 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
+    self.timeSyncDidUpdate = NO;
     [self unlock];
 }
 
@@ -132,6 +135,13 @@
         return;
     }
     SGVideoFrame * videoFrame = frame;
+    if (self.key)
+    {
+        if ( !self.timeSyncDidUpdate && self.frameQueue.count == 0)
+        {
+            [self.timeSync updateKeyTime:videoFrame.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        }
+    }
     [self.frameQueue putObjectSync:videoFrame];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -145,6 +155,7 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
+    self.timeSyncDidUpdate = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -193,10 +204,19 @@
 
 - (void)renderTimerHandler
 {
-    if (self.key && self.paused)
+    if (self.key)
     {
-        [self.timeSync refresh];
-        return;
+        if (self.timeSyncDidUpdate)
+        {
+            if (self.paused)
+            {
+                return;
+            }
+        }
+        else
+        {
+            [self.timeSync refresh];
+        }
     }
     [self lock];
     SGWeakSelf
@@ -212,7 +232,7 @@
             return YES;
         }
         return NO;
-    } drop:YES];
+    } drop:!self.key];
     if (!render)
     {
         [self unlock];
@@ -225,6 +245,7 @@
         self.currentFrame = render;
         if (self.key)
         {
+            self.timeSyncDidUpdate = YES;
             [self.timeSync updateKeyTime:self.currentFrame.position duration:self.currentFrame.duration rate:self.rate];
         }
         drawing = YES;

@@ -30,7 +30,7 @@
 @property (nonatomic, assign) long long currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
-@property (nonatomic, assign) BOOL didUpdateTimeSync;
+@property (nonatomic, assign) BOOL timeSyncDidUpdate;
 
 @property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
@@ -82,7 +82,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSync = NO;
+    self.timeSyncDidUpdate = NO;
 }
 
 - (void)pause
@@ -116,7 +116,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSync = NO;
+    self.timeSyncDidUpdate = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -190,7 +190,7 @@
     result.packetDuration = audioFrame.packetDuration;
     result.packetSize = audioFrame.packetSize;
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
-    if (!self.didUpdateTimeSync && self.frameQueue.count == 0)
+    if (!self.timeSyncDidUpdate && self.frameQueue.count == 0)
     {
         [self.timeSync updateKeyTime:result.position duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
@@ -211,7 +211,7 @@
     self.currentRenderReadOffset = 0;
     self.currentPreparePosition = kCMTimeZero;
     self.currentPrepareDuration = kCMTimeZero;
-    self.didUpdateTimeSync = NO;
+    self.timeSyncDidUpdate = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -417,7 +417,7 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    self.didUpdateTimeSync = YES;
+    self.timeSyncDidUpdate = YES;
     [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
