@@ -12,6 +12,7 @@
 @interface SGVideoPlaybackOutput : NSObject <SGOutput>
 
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
+@property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, strong, readonly) SGPLFView * view;
 

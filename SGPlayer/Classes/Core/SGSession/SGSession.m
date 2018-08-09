@@ -288,7 +288,7 @@
 
 - (BOOL)audioEmpty
 {
-    if (self.configuration.audioDecoder && self.configuration.audioOutput)
+    if (self.audioEnable && self.configuration.audioOutput)
     {
         return self.configuration.audioDecoder.empty && self.configuration.audioOutput.empty;
     }
@@ -297,7 +297,7 @@
 
 - (BOOL)videoEmpty
 {
-    if (self.configuration.videoDecoder && self.configuration.videoOutput)
+    if (self.videoEnable && self.configuration.videoOutput)
     {
         return self.configuration.videoDecoder.empty && self.configuration.videoOutput.empty;
     }
@@ -306,7 +306,7 @@
 
 - (CMTime)audioLoadedDuration
 {
-    if (self.configuration.audioDecoder && self.configuration.audioOutput)
+    if (self.audioEnable && self.configuration.audioOutput)
     {
         return CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
     }
@@ -315,7 +315,7 @@
 
 - (CMTime)videoLoadedDuration
 {
-    if (self.configuration.videoDecoder && self.configuration.videoOutput)
+    if (self.videoEnable && self.configuration.videoOutput)
     {
         return CMTimeAdd(self.configuration.videoDecoder.duration, self.configuration.videoOutput.duration);
     }
@@ -394,12 +394,12 @@
 
 - (void)setupOutputIfNeeded
 {
-    if (self.configuration.audioOutput && self.configuration.audioDecoder)
+    if (self.audioEnable && self.configuration.audioOutput)
     {
         self.configuration.audioOutput.delegate = self;
         [self.configuration.audioOutput open];
     }
-    if (self.configuration.videoOutput && self.configuration.videoDecoder)
+    if (self.videoEnable && self.configuration.videoOutput)
     {
         self.configuration.videoOutput.delegate = self;
         [self.configuration.videoOutput open];
@@ -411,7 +411,7 @@
     CMTime duration = kCMTimeZero;
     long long size = 0;
     
-    if (self.configuration.audioDecoder && self.configuration.audioOutput)
+    if (self.audioEnable && self.configuration.audioOutput)
     {
         duration = CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
         size = self.configuration.audioDecoder.size + self.configuration.audioOutput.size;
@@ -478,12 +478,12 @@
 
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
 {
-    if (packet.index == self.configuration.audioDecoder.index)
+    if (self.audioEnable && packet.index == self.configuration.audioDecoder.index)
     {
         [packet fillWithTimebase:self.configuration.audioDecoder.timebase];
         [self.configuration.audioDecoder putPacket:packet];
     }
-    else if (packet.index == self.configuration.videoDecoder.index)
+    else if (self.videoEnable && packet.index == self.configuration.videoDecoder.index)
     {
         [packet fillWithTimebase:self.configuration.videoDecoder.timebase];
         [self.configuration.videoDecoder putPacket:packet];

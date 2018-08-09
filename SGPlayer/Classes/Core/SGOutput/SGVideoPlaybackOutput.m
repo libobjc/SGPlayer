@@ -48,6 +48,7 @@
 {
     if (self = [super init])
     {
+        self.rate = CMTimeMake(1, 1);
         self.mode = SGDisplayModePlane;
         
         self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
@@ -214,6 +215,10 @@
     {
         [self.currentFrame unlock];
         self.currentFrame = render;
+        if (self.key)
+        {
+            [self.timeSync updateKeyTime:self.currentFrame.position duration:self.currentFrame.duration rate:self.rate];
+        }
         drawing = YES;
     }
     [self unlock];
