@@ -146,8 +146,7 @@ static int SGCommonSourceInterruptHandler(void * context)
 {
     [self lock];
     if (self.state != SGSourceStateReading &&
-        self.state != SGSourceStateSeeking &&
-        self.state != SGSourceStateFinished)
+        self.state != SGSourceStateSeeking)
     {
         [self unlock];
         return;
@@ -219,6 +218,7 @@ static int SGCommonSourceInterruptHandler(void * context)
         [self unlock];
         return NO;
     }
+    NSLog(@"Source : %ld, %d", self.state, self.readOperation.isFinished);
     SGBasicBlock callback = [self setState:SGSourceStateSeeking];
     self.seekTimeStamp = time;
     self.seekCompletionHandler = completionHandler;
