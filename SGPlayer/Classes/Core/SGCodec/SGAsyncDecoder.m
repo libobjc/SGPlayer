@@ -16,6 +16,7 @@
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * decodeOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
+@property (atomic, assign) BOOL waitingFlush;
 
 @end
 
@@ -184,6 +185,7 @@ static SGPacket * flushPacket;
     }
     [self unlock];
     [self.packetQueue flush];
+    self.waitingFlush = YES;
     [self.packetQueue putObjectSync:flushPacket];
     [self.delegate decoderDidChangeCapacity:self];
     return YES;
@@ -229,16 +231,23 @@ static SGPacket * flushPacket;
             if (packet == flushPacket)
             {
                 [self doFlush];
+                self.waitingFlush = NO;
             }
             else if (packet)
             {
-                NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
-                for (__kindof SGFrame * frame in frames)
+                if (!self.waitingFlush)
                 {
-                    [self.delegate decoder:self hasNewFrame:frame];
-                    [frame unlock];
+                    NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
+                    for (__kindof SGFrame * frame in frames)
+                    {
+                        if (!self.waitingFlush)
+                        {
+                            [self.delegate decoder:self hasNewFrame:frame];
+                        }
+                        [frame unlock];
+                    }
+                    [packet unlock];
                 }
-                [packet unlock];
                 [self.delegate decoderDidChangeCapacity:self];
             }
             continue;
