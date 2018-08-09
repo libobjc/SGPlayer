@@ -128,20 +128,18 @@
     NSLog(@"%s, %ld", __func__, player.loadingState);
 }
 
-- (void)playerDidChangeTime:(SGPlayer *)player
+- (void)playerDidChangeTimingInfo:(SGPlayer *)player
 {
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.time));
+    CMTime time = player.time;
+    CMTime loadedTime = player.loadedTime;
+    CMTime duration = player.duration;
+    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
     if (!self.progressSilderTouching)
     {
-        self.progressSilder.value = CMTimeGetSeconds(player.time) / CMTimeGetSeconds(player.duration);
+        self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.time)];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
-}
-
-- (void)playerDidChangeLoadedTime:(SGPlayer *)player
-{
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(player.loadedTime));
+    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

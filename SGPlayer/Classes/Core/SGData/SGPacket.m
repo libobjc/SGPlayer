@@ -22,7 +22,6 @@ SGObjectPoolItemLockingImplementation
 {
     if (self = [super init])
     {
-        NSLog(@"%s", __func__);
         _corePacket = av_packet_alloc();
         _position = kCMTimeZero;
         _duration = kCMTimeZero;
@@ -33,7 +32,6 @@ SGObjectPoolItemLockingImplementation
 
 - (void)dealloc
 {
-    NSLog(@"%s", __func__);
     if (_corePacket)
     {
         av_packet_free(&_corePacket);

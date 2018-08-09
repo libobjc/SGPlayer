@@ -24,6 +24,9 @@
 @property (nonatomic, strong) NSLock * stateLock;
 @property (nonatomic, strong) NSLock * loadingStateLock;
 @property (nonatomic, strong) SGPeriodTimer * periodTimer;
+@property (nonatomic, assign) CMTime lastTime;
+@property (nonatomic, assign) CMTime lastLoadedTime;
+@property (nonatomic, assign) CMTime lastDuration;
 
 @end
 
@@ -73,7 +76,20 @@
     SGWeakSelf
     self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
         SGStrongSelf
-        NSLog(@"Time : %f", CMTimeGetSeconds(self.time));
+        CMTime time = self.time;
+        CMTime loadedTime = self.loadedTime;
+        CMTime duration = self.duration;
+        if (CMTimeCompare(time, loadedTime) != 0 ||
+            CMTimeCompare(loadedTime, self.lastLoadedTime) != 0 ||
+            CMTimeCompare(duration, self.lastDuration) != 0)
+        {
+            [self callback:^{
+                [self.delegate playerDidChangeTimingInfo:self];
+            }];
+        }
+        self.lastTime = time;
+        self.lastLoadedTime = loadedTime;
+        self.lastDuration = duration;
     }];
     self.periodTimer.timeInterval = CMTimeMake(1, 60);
     [self.periodTimer start];
@@ -310,6 +326,9 @@
     loadingStateCallback();
     _URL = nil;
     _error = nil;
+    self.lastTime = CMTimeMake(-1900, 1);
+    self.lastLoadedTime = CMTimeMake(-1900, 1);
+    self.duration = CMTimeMake(-1900, 1);
 }
 
 - (void)destoryInternal
