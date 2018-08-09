@@ -79,17 +79,17 @@
         CMTime time = self.time;
         CMTime loadedTime = self.loadedTime;
         CMTime duration = self.duration;
-        if (CMTimeCompare(time, loadedTime) != 0 ||
+        if (CMTimeCompare(time, self.lastTime) != 0 ||
             CMTimeCompare(loadedTime, self.lastLoadedTime) != 0 ||
             CMTimeCompare(duration, self.lastDuration) != 0)
         {
+            self.lastTime = time;
+            self.lastLoadedTime = loadedTime;
+            self.lastDuration = duration;
             [self callback:^{
                 [self.delegate playerDidChangeTimingInfo:self];
             }];
         }
-        self.lastTime = time;
-        self.lastLoadedTime = loadedTime;
-        self.lastDuration = duration;
     }];
     self.periodTimer.timeInterval = CMTimeMake(1, 60);
     [self.periodTimer start];
@@ -278,6 +278,11 @@
 
 - (CMTime)time
 {
+    if (self.session.state == SGSessionStateFinished &&
+        CMTimeCompare(self.loadedDuration, kCMTimeZero) <= 0)
+    {
+        return self.duration;
+    }
     if (self.timeSync)
     {
         return self.timeSync.time;
@@ -287,10 +292,15 @@
 
 - (CMTime)loadedTime
 {
+    if (self.session.state == SGSessionStateFinished)
+    {
+        return self.duration;
+    }
     CMTime time = self.time;
     CMTime loadedDuration = self.loadedDuration;
     CMTime duration = self.duration;
-    return CMTimeMinimum(CMTimeAdd(time, loadedDuration), duration);
+    CMTime loadedTime = CMTimeAdd(time, loadedDuration);
+    return CMTimeMinimum(loadedTime, duration);
 }
 
 - (CMTime)duration
@@ -328,7 +338,7 @@
     _error = nil;
     self.lastTime = CMTimeMake(-1900, 1);
     self.lastLoadedTime = CMTimeMake(-1900, 1);
-    self.duration = CMTimeMake(-1900, 1);
+    self.lastDuration = CMTimeMake(-1900, 1);
 }
 
 - (void)destoryInternal
