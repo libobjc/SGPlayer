@@ -178,7 +178,7 @@
     self.didUpdateTimeSync = NO;
     [self unlock];
     [self.frameQueue flush];
-    [self.timeSync flush];
+//    [self.timeSync flush];
     [self.delegate outputDidChangeCapacity:self];
 }
 

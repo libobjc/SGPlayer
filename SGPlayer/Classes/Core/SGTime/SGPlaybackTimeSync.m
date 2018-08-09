@@ -55,6 +55,7 @@
 {
     self.keyTime = kCMTimeZero;
     self.keyDuration = kCMTimeZero;
+    self.keyRate = kCMTimeZero;
     self.keyMediaTime = kCMTimeZero;
 }
 

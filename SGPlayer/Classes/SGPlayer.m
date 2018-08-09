@@ -58,12 +58,6 @@
     {
         return;
     }
-    SGWeakSelf
-    self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
-        SGStrongSelf
-        NSLog(@"Time : %f", CMTimeGetSeconds(self.time));
-    }];
-    [self.periodTimer start];
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.timeSync = [[SGPlaybackTimeSync alloc] init];
@@ -76,6 +70,13 @@
     self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
     self.session.delegate = self;
     [self.session open];
+    SGWeakSelf
+    self.periodTimer = [[SGPeriodTimer alloc] initWithHandler:^{
+        SGStrongSelf
+        NSLog(@"Time : %f", CMTimeGetSeconds(self.time));
+    }];
+    self.periodTimer.timeInterval = CMTimeMake(1, 60);
+    [self.periodTimer start];
 }
 
 - (void)play
