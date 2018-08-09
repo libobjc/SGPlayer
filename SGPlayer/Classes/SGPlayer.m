@@ -196,7 +196,7 @@
         return;
     }
     [self.audioOutput resume];
-    [self.videoOutput pause];
+    [self.videoOutput resume];
 }
 
 - (void)updateView
