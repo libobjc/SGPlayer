@@ -82,6 +82,16 @@
     self.renderTimer.fireDate = [NSDate distantPast];
 }
 
+- (void)pause
+{
+    
+}
+
+- (void)resume
+{
+    
+}
+
 - (void)close
 {
     [self.frameQueue destroy];

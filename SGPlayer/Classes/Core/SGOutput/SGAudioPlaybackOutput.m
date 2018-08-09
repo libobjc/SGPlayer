@@ -79,6 +79,16 @@
     self.didUpdateTimeSync = NO;
 }
 
+- (void)pause
+{
+    [self.audioPlayer pause];
+}
+
+- (void)resume
+{
+    [self.audioPlayer play];
+}
+
 - (void)close
 {
     [self.audioPlayer pause];
@@ -178,18 +188,7 @@
     self.didUpdateTimeSync = NO;
     [self unlock];
     [self.frameQueue flush];
-//    [self.timeSync flush];
     [self.delegate outputDidChangeCapacity:self];
-}
-
-- (void)play
-{
-    [self.audioPlayer play];
-}
-
-- (void)pause
-{
-    [self.audioPlayer pause];
 }
 
 #pragma mark - Setter & Getter

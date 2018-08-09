@@ -29,6 +29,8 @@
 - (NSUInteger)maxCount;
 
 - (void)open;
+- (void)pause;
+- (void)resume;
 - (void)close;
 
 - (void)putFrame:(__kindof SGFrame *)frame;

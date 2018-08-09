@@ -17,7 +17,4 @@
 @property (nonatomic, assign) float volume;
 @property (nonatomic, assign) CMTime rate;
 
-- (void)play;
-- (void)pause;
-
 @end

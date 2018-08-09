@@ -185,6 +185,7 @@
     {
         [self.stateLock unlock];
         [self.audioOutput pause];
+        [self.videoOutput pause];
         return;
     }
     [self.stateLock unlock];
@@ -194,15 +195,18 @@
     {
         [self.loadingStateLock unlock];
         [self.audioOutput pause];
+        [self.videoOutput pause];
         return;
     }
     [self.loadingStateLock unlock];
     if (CMTimeCompare(self.session.loadedDuration, kCMTimeZero) <= 0)
     {
         [self.audioOutput pause];
+        [self.videoOutput pause];
         return;
     }
-    [self.audioOutput play];
+    [self.audioOutput resume];
+    [self.videoOutput pause];
 }
 
 - (void)updateView
