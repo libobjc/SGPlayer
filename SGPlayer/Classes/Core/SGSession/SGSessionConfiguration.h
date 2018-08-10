@@ -13,8 +13,8 @@
 
 @interface SGSessionConfiguration : NSObject
 
-@property (nonatomic, assign) BOOL hardwareDecodeEnableH264;    // Default is YES.
-@property (nonatomic, assign) BOOL hardwareDecodeEnableH265;    // Default is YES.
+@property (nonatomic, assign) BOOL hardwareDecodeH264;    // Default is YES.
+@property (nonatomic, assign) BOOL hardwareDecodeH265;    // Default is YES.
 
 @property (nonatomic, strong) id <SGSource> source;             // nonnull
 @property (nonatomic, strong) id <SGDecoder> audioDecoder;      // nullable

@@ -14,8 +14,8 @@
 {
     if (self = [super init])
     {
-        self.hardwareDecodeEnableH264 = YES;
-        self.hardwareDecodeEnableH265 = YES;
+        self.hardwareDecodeH264 = YES;
+        self.hardwareDecodeH265 = YES;
     }
     return self;
 }

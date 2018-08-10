@@ -359,7 +359,7 @@
                 if (!self.configuration.videoDecoder)
                 {
                     Class codecClass = [SGVideoFFDecoder class];
-                    if (self.configuration.hardwareDecodeEnableH264 &&
+                    if (self.configuration.hardwareDecodeH264 &&
                         stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
                     {
                         codecClass = [SGVideoAVDecoder class];
