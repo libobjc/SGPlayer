@@ -248,24 +248,31 @@
         drawing = YES;
     }
     [self unlock];
-    if (drawing && self.view)
+    if (self.view)
     {
-        if (!self.glView)
+        if (drawing)
         {
-            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
-            self.glView.delegate = self;
+            if (!self.glView)
+            {
+                self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+                self.glView.delegate = self;
+            }
+            if (self.glView.superview != self.view)
+            {
+                [self.view addSubview:self.glView];
+            }
+            SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
+            if (layerSize.width != self.glView.displaySize.width ||
+                layerSize.height != self.glView.displaySize.height)
+            {
+                self.glView.frame = self.view.bounds;
+            }
+            [self draw];
         }
-        if (self.glView.superview != self.view)
-        {
-            [self.view addSubview:self.glView];
-        }
-        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
-        if (layerSize.width != self.glView.displaySize.width ||
-            layerSize.height != self.glView.displaySize.height)
-        {
-            self.glView.frame = self.view.bounds;
-        }
-        [self draw];
+    }
+    else
+    {
+        [self.glView removeFromSuperview];
     }
     [self.delegate outputDidChangeCapacity:self];
 }
