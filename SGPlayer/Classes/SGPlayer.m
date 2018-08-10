@@ -52,12 +52,17 @@
 
 - (void)replaceWithURL:(NSURL *)URL
 {
+    [self replaceWithPlayerItem:[[SGPlayerItem alloc] initWithURL:URL]];
+}
+
+- (void)replaceWithPlayerItem:(SGPlayerItem *)playerItem
+{
     [self destory];
-    _URL = URL;
-    if (!self.URL)
+    if (!playerItem)
     {
         return;
     }
+    _playerItem = playerItem;
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
@@ -66,7 +71,7 @@
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
-    self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
+    self.session = [[SGSession alloc] initWithURL:self.playerItem.URL configuration:configuration];
     self.session.delegate = self;
     [self.session open];
 }
@@ -84,7 +89,7 @@
             }
             break;
         case SGPlaybackStateFailed:
-            [self replaceWithURL:self.URL];
+            [self replaceWithPlayerItem:self.playerItem];
             break;
         default:
             break;
@@ -320,7 +325,7 @@
     self.lastTime = CMTimeMake(-1900, 1);
     self.lastLoadedTime = CMTimeMake(-1900, 1);
     self.lastDuration = CMTimeMake(-1900, 1);
-    _URL = nil;
+    _playerItem = nil;
     _error = nil;
 }
 

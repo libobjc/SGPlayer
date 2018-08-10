@@ -782,6 +782,8 @@
 		9CF52D0C200F4EDE00950B81 /* SGVideoFFDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF52D06200F4EDE00950B81 /* SGVideoFFDecoder.m */; };
 		9CF63F9F211D3FA5001B2684 /* SGGLRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63F9D211D3FA5001B2684 /* SGGLRenderer.h */; };
 		9CF63FA0211D3FA5001B2684 /* SGGLRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF63F9E211D3FA5001B2684 /* SGGLRenderer.m */; };
+		9CF63FBD211D8B4E001B2684 /* SGPlayerItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63FBB211D8B4E001B2684 /* SGPlayerItem.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9CF63FBE211D8B4E001B2684 /* SGPlayerItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF63FBC211D8B4E001B2684 /* SGPlayerItem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1050,6 +1052,8 @@
 		9CF52D06200F4EDE00950B81 /* SGVideoFFDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVideoFFDecoder.m; sourceTree = "<group>"; };
 		9CF63F9D211D3FA5001B2684 /* SGGLRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLRenderer.h; sourceTree = "<group>"; };
 		9CF63F9E211D3FA5001B2684 /* SGGLRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLRenderer.m; sourceTree = "<group>"; };
+		9CF63FBB211D8B4E001B2684 /* SGPlayerItem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlayerItem.h; sourceTree = "<group>"; };
+		9CF63FBC211D8B4E001B2684 /* SGPlayerItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlayerItem.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1324,6 +1328,8 @@
 			children = (
 				9C25364E1FAB199500BBFA5C /* SGPlayer.h */,
 				9C25364F1FAB199500BBFA5C /* SGPlayer.m */,
+				9CF63FBB211D8B4E001B2684 /* SGPlayerItem.h */,
+				9CF63FBC211D8B4E001B2684 /* SGPlayerItem.m */,
 				9C478F341E713A9B00AD4289 /* Core */,
 			);
 			path = Classes;
@@ -1697,6 +1703,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CF63FBD211D8B4E001B2684 /* SGPlayerItem.h in Headers */,
 				9CA0F56420E0E24000501478 /* SGDefines.h in Headers */,
 				9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */,
 				9CA3CDCF20E2255700B852D0 /* SGAudioFFFrame.h in Headers */,
@@ -2522,6 +2529,7 @@
 				9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
 				9CB1F09F20178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9C8D4E66200E0ACC00ED8A58 /* SGCommonSource.m in Sources */,
+				9CF63FBE211D8B4E001B2684 /* SGPlayerItem.m in Sources */,
 				9CE6F5332004D97D00D1F4C8 /* SGPLFColor.m in Sources */,
 				9CA0F56720E0E24000501478 /* SGDefines.m in Sources */,
 				9CE6F5572004D97D00D1F4C8 /* SGPLFView.m in Sources */,

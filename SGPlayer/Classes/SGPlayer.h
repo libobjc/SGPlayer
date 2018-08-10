@@ -14,8 +14,10 @@
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGDefines.h>
+#import <SGPlayer/SGPlayerItem.h>
 #else
 #import "SGDefines.h"
+#import "SGPlayerItem.h"
 #endif
 
 @class SGPlayer;
@@ -36,7 +38,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default is dispatch_get_main_queue().
 
-@property (nonatomic, strong, readonly) NSURL * URL;
+@property (nonatomic, strong, readonly) SGPlayerItem * playerItem;
+
+- (void)replaceWithURL:(NSURL *)URL;
+- (void)replaceWithPlayerItem:(SGPlayerItem *)playerItem;
+
 @property (nonatomic, strong, readonly) NSError * error;
 @property (nonatomic, assign, readonly) SGPlaybackState state;
 @property (nonatomic, assign, readonly) SGLoadingState loadingState;
@@ -45,8 +51,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign, readonly) CMTime duration;
 
 @property (nonatomic, strong) UIView * view;
-
-- (void)replaceWithURL:(NSURL *)URL;
 
 - (void)play;
 - (void)pause;
