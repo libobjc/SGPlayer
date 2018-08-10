@@ -29,7 +29,7 @@
 @property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLRenderer * glRenderer;
-@property (nonatomic, strong) SGGLTextureUploader * textureUploader;
+@property (nonatomic, strong) SGGLTextureUploader * glTextureUploader;
 
 @end
 
@@ -322,18 +322,18 @@
         [frame unlock];
         return NO;
     }
-    if (!self.textureUploader)
+    if (!self.glTextureUploader)
     {
-        self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
+        self.glTextureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
     }
     BOOL success = NO;
     if ([frame isKindOfClass:[SGVideoFFFrame class]])
     {
-        success = [self.textureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:textureSize];
+        success = [self.glTextureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:textureSize];
     }
     else if ([frame isKindOfClass:[SGVideoAVFrame class]])
     {
-        success = [self.textureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
+        success = [self.glTextureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
     }
     if (!success)
     {

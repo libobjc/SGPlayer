@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, SGGLModelType)
 @protocol SGGLModel <NSObject>
 
 - (void)bindPosition_location:(GLint)position_location textureCoordinate_location:(GLint)textureCoordinate_location;
-- (void)bindEmpty;
+- (void)unbind;
 - (void)draw;
 
 @end

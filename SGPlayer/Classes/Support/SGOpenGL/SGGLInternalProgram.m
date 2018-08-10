@@ -64,6 +64,11 @@
     glUseProgram(_programID);
 }
 
+- (void)unuse
+{
+    glUseProgram(0);
+}
+
 - (void)loadVariable {};
 - (void)bindVariable {};
 

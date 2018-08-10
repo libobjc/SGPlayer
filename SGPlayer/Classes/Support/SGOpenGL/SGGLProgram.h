@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, SGGLProgramType)
 - (GLint)modelViewProjectionMatrix_location;
 
 - (void)use;
+- (void)unuse;
 - (void)bindVariable;
 - (void)updateModelViewProjectionMatrix:(GLKMatrix4)matrix;
 

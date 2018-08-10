@@ -44,7 +44,8 @@
 
 - (void)unbind
 {
-    [self.model bindEmpty];
+    [self.model unbind];
+    [self.program unuse];
 }
 
 - (void)draw

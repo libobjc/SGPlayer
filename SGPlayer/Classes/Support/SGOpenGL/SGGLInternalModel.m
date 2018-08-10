@@ -50,7 +50,7 @@
         glBindBuffer(GL_ARRAY_BUFFER, _textureCoordinates_buffer_id);
         glBufferData(GL_ARRAY_BUFFER, _vertices_count * 2 * sizeof(GLfloat), _textureCoordinates_buffer_data, GL_DYNAMIC_DRAW);
         
-        [self bindEmpty];
+        [self unbind];
     }
     return self;
 }
@@ -87,7 +87,7 @@
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexes_buffer_id);
 }
 
-- (void)bindEmpty
+- (void)unbind
 {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
