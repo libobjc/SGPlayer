@@ -12,7 +12,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 typedef struct SGGLSize {
     int width;
     int height;
@@ -24,6 +23,5 @@ typedef struct SGGLRect {
     int width;
     int height;
 } SGGLRect;
-
 
 #endif /* SGGLDefines_h */

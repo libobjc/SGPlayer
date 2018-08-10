@@ -9,9 +9,14 @@
 #ifndef SGGLProgram_h
 #define SGGLProgram_h
 
-
 #import "SGPLFOpenGL.h"
 
+typedef NS_ENUM(NSUInteger, SGGLProgramType)
+{
+    SGGLProgramTypeUnknown,
+    SGGLProgramTypeYUV420P,
+    SGGLProgramTypeNV12,
+};
 
 @protocol SGGLProgram <NSObject>
 
@@ -24,6 +29,5 @@
 - (void)updateModelViewProjectionMatrix:(GLKMatrix4)matrix;
 
 @end
-
 
 #endif /* SGGLProgram_h */

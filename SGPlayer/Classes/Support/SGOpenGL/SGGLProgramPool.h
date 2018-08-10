@@ -9,13 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGGLProgram.h"
 
-typedef NS_ENUM(NSUInteger, SGGLProgramType)
-{
-    SGGLProgramTypeUnknown,
-    SGGLProgramTypeYUV420P,
-    SGGLProgramTypeNV12,
-};
-
 @interface SGGLProgramPool : NSObject
 
 - (id <SGGLProgram>)programWithType:(SGGLProgramType)type;

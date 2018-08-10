@@ -11,9 +11,7 @@
 #import "SGGLDisplayLink.h"
 #import "SGGLTimer.h"
 #import "SGGLView.h"
-#import "SGGLViewport.h"
-#import "SGGLModelPool.h"
-#import "SGGLProgramPool.h"
+#import "SGGLRenderer.h"
 #import "SGDefinesMapping.h"
 #import "SGVideoAVFrame.h"
 #import "SGVideoFFFrame.h"
@@ -30,8 +28,7 @@
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLModelPool * modelPool;
-@property (nonatomic, strong) SGGLProgramPool * programPool;
+@property (nonatomic, strong) SGGLRenderer * glRenderer;
 @property (nonatomic, strong) SGGLTextureUploader * textureUploader;
 
 @end
@@ -53,6 +50,7 @@
     {
         self.rate = CMTimeMake(1, 1);
         self.mode = SGDisplayModePlane;
+        self.glRenderer = [[SGGLRenderer alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
@@ -306,56 +304,45 @@
         [self unlock];
         return NO;
     }
+    if (frame.width == 0 || frame.height == 0)
+    {
+        [self unlock];
+        return NO;
+    }
     [frame lock];
     [self unlock];
-
-    if (!self.textureUploader)
-    {
-        self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
-    }
-    if (!self.programPool)
-    {
-        self.programPool = [[SGGLProgramPool alloc] init];
-    }
-    if (!self.modelPool)
-    {
-        self.modelPool = [[SGGLModelPool alloc] init];
-    }
-
-    id <SGGLModel> model = [self.modelPool modelWithType:SGGLModelTypePlane];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFFDMProgram(frame.format)];
-    SGGLSize renderSize = {frame.width, frame.height};
-
-    if (!model || !program || renderSize.width == 0 || renderSize.height == 0)
+    SGGLSize textureSize = {frame.width, frame.height};
+    self.glRenderer.modelType = SGGLModelTypePlane;
+    self.glRenderer.programType = SGFFDMProgram(frame.format);
+    self.glRenderer.textureSize = textureSize;
+    self.glRenderer.layerSize = size;
+    self.glRenderer.scale = glView.glScale;
+    if (![self.glRenderer bind])
     {
         [frame unlock];
         return NO;
     }
-    else
+    if (!self.textureUploader)
     {
-        [program use];
-        [program bindVariable];
-        BOOL success = NO;
-        if ([frame isKindOfClass:[SGVideoFFFrame class]])
-        {
-            success = [self.textureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:renderSize];
-        }
-        else if ([frame isKindOfClass:[SGVideoAVFrame class]])
-        {
-            success = [self.textureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
-        }
-        if (!success)
-        {
-            [frame unlock];
-            return NO;
-        }
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        [model bindPosition_location:program.position_location textureCoordinate_location:program.textureCoordinate_location];
-        [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-        [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:renderSize layerSize:size scale:glView.glScale];
-        [model draw];
-        [model bindEmpty];
+        self.textureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
     }
+    BOOL success = NO;
+    if ([frame isKindOfClass:[SGVideoFFFrame class]])
+    {
+        success = [self.textureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:textureSize];
+    }
+    else if ([frame isKindOfClass:[SGVideoAVFrame class]])
+    {
+        success = [self.textureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
+    }
+    if (!success)
+    {
+        [self.glRenderer unbind];
+        [frame unlock];
+        return NO;
+    }
+    [self.glRenderer draw];
+    [self.glRenderer unbind];
     [frame unlock];
     return YES;
 }

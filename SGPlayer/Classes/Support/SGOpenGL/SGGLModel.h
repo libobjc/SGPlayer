@@ -9,9 +9,14 @@
 #ifndef SGGLModel_h
 #define SGGLModel_h
 
-
 #import "SGPLFOpenGL.h"
 
+typedef NS_ENUM(NSUInteger, SGGLModelType)
+{
+    SGGLModelTypeUnknown,
+    SGGLModelTypePlane,
+    SGGLModelTypeSphere,
+};
 
 @protocol SGGLModel <NSObject>
 
@@ -20,6 +25,5 @@
 - (void)draw;
 
 @end
-
 
 #endif /* SGGLModel_h */

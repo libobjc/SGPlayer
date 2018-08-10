@@ -9,13 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGGLModel.h"
 
-typedef NS_ENUM(NSUInteger, SGGLModelType)
-{
-    SGGLModelTypeUnknown,
-    SGGLModelTypePlane,
-    SGGLModelTypeSphere,
-};
-
 @interface SGGLModelPool : NSObject
 
 - (id <SGGLModel>)modelWithType:(SGGLModelType)type;
