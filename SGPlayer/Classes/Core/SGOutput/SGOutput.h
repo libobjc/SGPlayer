@@ -25,6 +25,7 @@
 @property (nonatomic, assign) BOOL enable;
 @property (nonatomic, assign) BOOL key;
 
+- (NSError *)error;
 - (BOOL)empty;
 - (CMTime)duration;
 - (long long)size;

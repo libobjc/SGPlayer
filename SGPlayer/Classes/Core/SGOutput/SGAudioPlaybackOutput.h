@@ -10,8 +10,6 @@
 
 @interface SGAudioPlaybackOutput : NSObject <SGOutput>
 
-@property (nonatomic, copy, readonly) NSError * error;
-
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 @property (nonatomic, assign) CMTime rate;
 @property (nonatomic, assign) float volume;

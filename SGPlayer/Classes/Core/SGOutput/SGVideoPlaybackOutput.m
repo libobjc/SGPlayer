@@ -49,7 +49,6 @@
     if (self = [super init])
     {
         self.rate = CMTimeMake(1, 1);
-        self.mode = SGDisplayModePlane;
         self.glRenderer = [[SGGLRenderer alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
@@ -157,6 +156,11 @@
 }
 
 #pragma mark - Setter & Getter
+
+- (NSError *)error
+{
+    return nil;
+}
 
 - (BOOL)empty
 {

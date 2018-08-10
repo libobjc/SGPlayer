@@ -13,9 +13,6 @@
 
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 @property (nonatomic, assign) CMTime rate;
-
 @property (nonatomic, strong) SGPLFView * view;
-
-@property (nonatomic, assign) SGDisplayMode mode;       // Default is SGDisplayModePlane.
 
 @end

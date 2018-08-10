@@ -222,6 +222,15 @@
 
 #pragma mark - Setter & Getter
 
+- (NSError *)error
+{
+    if (self.audioPlayer.error)
+    {
+        return self.audioPlayer.error;
+    }
+    return self.swrContextError;
+}
+
 - (BOOL)empty
 {
     return self.count <= 0;
@@ -257,15 +266,6 @@
 - (NSUInteger)maxCount
 {
     return 5;
-}
-
-- (NSError *)error
-{
-    if (self.audioPlayer.error)
-    {
-        return self.audioPlayer.error;
-    }
-    return self.swrContextError;
 }
 
 - (void)setVolume:(float)volume
