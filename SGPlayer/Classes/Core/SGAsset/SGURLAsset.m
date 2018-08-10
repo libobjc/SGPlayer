@@ -15,7 +15,6 @@
     if (self = [super init])
     {
         _URL = URL;
-        self.rate = CMTimeMake(1, 1);
     }
     return self;
 }

@@ -14,7 +14,7 @@
 
 @interface SGURLSource () <NSLocking>
 
-@property (nonatomic, strong) NSURL * URL;
+@property (nonatomic, strong) SGURLAsset * asset;
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
@@ -63,11 +63,11 @@ static int SGURLSourceInterruptHandler(void * context)
     return ret;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL
+- (instancetype)initWithAsset:(SGURLAsset *)asset
 {
     if (self = [super init])
     {
-        self.URL = URL;
+        self.asset = asset;
         self.duration = kCMTimeZero;
         self.seekable = NO;
         self.seekTimeStamp = kCMTimeZero;
@@ -257,7 +257,7 @@ static int SGURLSourceInterruptHandler(void * context)
     self.formatContext->interrupt_callback.callback = SGURLSourceInterruptHandler;
     self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
 
-    NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;
+    NSString * URLString = self.asset.URL.isFileURL ? self.asset.URL.path : self.asset.URL.absoluteString;
     int reslut = avformat_open_input(&_formatContext, URLString.UTF8String, NULL, NULL);
     self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatOpenInput);
     if (self.error)

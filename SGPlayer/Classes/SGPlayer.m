@@ -11,6 +11,7 @@
 #import "SGActivity.h"
 #import "SGSession.h"
 #import "SGURLSource.h"
+#import "SGConcatSource.h"
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
@@ -66,11 +67,11 @@
     id <SGSource> source = nil;
     if ([asset isKindOfClass:[SGURLAsset class]])
     {
-        SGURLAsset * obj = (SGURLAsset *)asset;
-        source = [[SGURLSource alloc] initWithURL:obj.URL];
+        source = [[SGURLSource alloc] initWithAsset:(SGURLAsset *)asset];
     }
     else if ([asset isKindOfClass:[SGConcatAsset class]])
     {
+        source = [[SGConcatSource alloc] initWithAsset:(SGConcatAsset *)asset];
         return;
     }
     else

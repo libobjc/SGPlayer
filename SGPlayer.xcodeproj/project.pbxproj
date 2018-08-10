@@ -788,6 +788,8 @@
 		9CF63FCB211D8F5C001B2684 /* SGConcatAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63FC9211D8F5C001B2684 /* SGConcatAsset.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF63FCE211D8FAF001B2684 /* SGURLAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63FCC211D8FAF001B2684 /* SGURLAsset.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF63FCF211D8FAF001B2684 /* SGURLAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF63FCD211D8FAF001B2684 /* SGURLAsset.m */; };
+		9CF63FD2211D9359001B2684 /* SGConcatSource.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63FD0211D9359001B2684 /* SGConcatSource.h */; };
+		9CF63FD3211D9359001B2684 /* SGConcatSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF63FD1211D9359001B2684 /* SGConcatSource.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -1062,6 +1064,8 @@
 		9CF63FC9211D8F5C001B2684 /* SGConcatAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGConcatAsset.h; sourceTree = "<group>"; };
 		9CF63FCC211D8FAF001B2684 /* SGURLAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLAsset.h; sourceTree = "<group>"; };
 		9CF63FCD211D8FAF001B2684 /* SGURLAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLAsset.m; sourceTree = "<group>"; };
+		9CF63FD0211D9359001B2684 /* SGConcatSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConcatSource.h; sourceTree = "<group>"; };
+		9CF63FD1211D9359001B2684 /* SGConcatSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConcatSource.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1472,6 +1476,8 @@
 				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
 				9C8D4E61200E0ACC00ED8A58 /* SGURLSource.h */,
 				9C8D4E62200E0ACC00ED8A58 /* SGURLSource.m */,
+				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
+				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
 			);
 			path = SGSource;
 			sourceTree = "<group>";
@@ -1807,6 +1813,7 @@
 				9C25347B1FAB151500BBFA5C /* dirac.h in Headers */,
 				9C2535411FAB151500BBFA5C /* mastering_display_metadata.h in Headers */,
 				9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */,
+				9CF63FD2211D9359001B2684 /* SGConcatSource.h in Headers */,
 				9C1D220D201AC83F005147FB /* SGGLModelPool.h in Headers */,
 				9C2534B41FAB151500BBFA5C /* avio.h in Headers */,
 				9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */,
@@ -2543,6 +2550,7 @@
 				9CF63FCA211D8F5C001B2684 /* SGConcatAsset.m in Sources */,
 				9C329AAE2005E3F800252B10 /* SGActivity.m in Sources */,
 				9C8D4E83200E1ACA00ED8A58 /* SGError.m in Sources */,
+				9CF63FD3211D9359001B2684 /* SGConcatSource.m in Sources */,
 				9CB62C022021950200A9AD6B /* SGSessionConfiguration.m in Sources */,
 				9CE6F5672004D97D00D1F4C8 /* SGPLFGLView2.m in Sources */,
 				9CE6F56F2004D97D00D1F4C8 /* SGPLFGLViewController.m in Sources */,
