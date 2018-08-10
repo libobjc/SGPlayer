@@ -12,9 +12,7 @@
 
 + (instancetype)timerWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler;
 
-@property (nonatomic, copy) NSDate * fireDate;
-@property (nonatomic, assign, readonly) NSTimeInterval timeInterval;
-@property (nonatomic, assign, readonly) BOOL valid;
+@property (nonatomic, assign) BOOL paused;
 
 - (void)invalidate;
 

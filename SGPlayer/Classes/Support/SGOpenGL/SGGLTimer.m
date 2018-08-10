@@ -27,14 +27,10 @@
     if (self = [super init])
     {
         self.handler = handler;
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:timeInterval target:self selector:@selector(timerHandler) userInfo:nil repeats:YES];
+        self.timer = [NSTimer timerWithTimeInterval:timeInterval target:self selector:@selector(timerHandler) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:self.timer forMode:NSRunLoopCommonModes];
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [self invalidate];
 }
 
 - (void)timerHandler
@@ -45,24 +41,13 @@
     }
 }
 
-- (void)setFireDate:(NSDate *)fireDate
+- (void)setPaused:(BOOL)paused
 {
-    self.timer.fireDate = fireDate;
-}
-
-- (NSDate *)fireDate
-{
-    return self.timer.fireDate;
-}
-
-- (NSTimeInterval)timeInterval
-{
-    return self.timer.timeInterval;
-}
-
-- (BOOL)valid
-{
-    return self.timer.isValid;
+    if (_paused != paused)
+    {
+        _paused = paused;
+        self.timer.fireDate = _paused ? [NSDate distantFuture] : [NSDate distantPast];
+    }
 }
 
 - (void)invalidate

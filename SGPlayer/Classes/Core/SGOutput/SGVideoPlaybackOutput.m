@@ -21,9 +21,9 @@
 @interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, assign) BOOL paused;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
+@property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL timeSyncDidUpdate;
 @property (nonatomic, assign) BOOL hasFrame;
 
@@ -53,20 +53,14 @@
     {
         self.rate = CMTimeMake(1, 1);
         self.mode = SGDisplayModePlane;
-        
-        self.glView = [[SGGLView alloc] initWithFrame:CGRectZero];
-        self.glView.delegate = self;
-        _view = self.glView;
-        
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
             SGStrongSelf
             [self renderTimerHandler];
         }];
-        
         self.displayLink.paused = YES;
-        self.renderTimer.fireDate = [NSDate distantFuture];
+        self.renderTimer.paused = YES;
     }
     return self;
 }
@@ -89,7 +83,7 @@
     self.frameQueue = [[SGObjectQueue alloc] init];
     self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
-    self.renderTimer.fireDate = [NSDate distantPast];
+    self.renderTimer.paused = NO;
 }
 
 - (void)pause
@@ -254,8 +248,23 @@
         drawing = YES;
     }
     [self unlock];
-    if (drawing)
+    if (drawing && self.view)
     {
+        if (!self.glView)
+        {
+            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+            self.glView.delegate = self;
+        }
+        if (self.glView.superview != self.view)
+        {
+            [self.view addSubview:self.glView];
+        }
+        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
+        if (layerSize.width != self.glView.displaySize.width ||
+            layerSize.height != self.glView.displaySize.height)
+        {
+            self.glView.frame = self.view.bounds;
+        }
         [self draw];
     }
     [self.delegate outputDidChangeCapacity:self];

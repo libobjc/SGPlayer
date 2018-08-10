@@ -20,6 +20,7 @@
 @interface SGGLView : SGPLFGLView
 
 @property (nonatomic, weak) id <SGGLViewDelegate> delegate;
+@property (nonatomic, assign, readonly) SGGLSize displaySize;
 
 - (void)display;
 - (void)clear;

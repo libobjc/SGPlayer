@@ -62,10 +62,10 @@
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
     self.videoOutput.timeSync = self.audioOutput.timeSync;
+    self.videoOutput.view = self.view;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
-    [self updateView];
     self.session = [[SGSession alloc] initWithURL:self.URL configuration:configuration];
     self.session.delegate = self;
     [self.session open];
@@ -199,23 +199,7 @@
     [self.videoOutput resume];
 }
 
-- (void)updateView
-{
-    [self.videoOutput.view removeFromSuperview];
-    self.videoOutput.view.frame = _view.bounds;
-    [_view addSubview:self.videoOutput.view];
-}
-
 #pragma mark - Setter & Getter
-
-- (void)setView:(UIView *)view
-{
-    if (_view != view)
-    {
-        _view = view;
-        [self updateView];
-    }
-}
 
 - (SGBasicBlock)setState:(SGPlaybackState)state
 {
@@ -256,6 +240,15 @@
         };
     }
     return ^{};
+}
+
+- (void)setView:(UIView *)view
+{
+    if (_view != view)
+    {
+        _view = view;
+        self.videoOutput.view = _view;
+    }
 }
 
 - (CMTime)time
