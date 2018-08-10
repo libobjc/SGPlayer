@@ -1319,22 +1319,12 @@
 			path = SGFFmpeg;
 			sourceTree = "<group>";
 		};
-		9C44AE952004A1130052E3B9 /* Support */ = {
-			isa = PBXGroup;
-			children = (
-				9C5C6C9620182A0900863EB5 /* SGOpenGL */,
-				9CE6F5172004D97C00D1F4C8 /* SGPlatform */,
-			);
-			path = Support;
-			sourceTree = "<group>";
-		};
 		9C478EF31E7139E500AD4289 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
 				9C25364E1FAB199500BBFA5C /* SGPlayer.h */,
 				9C25364F1FAB199500BBFA5C /* SGPlayer.m */,
 				9C478F341E713A9B00AD4289 /* Core */,
-				9C44AE952004A1130052E3B9 /* Support */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -1351,6 +1341,8 @@
 				9CF15DF320119D0300585326 /* SGData */,
 				9C5C98F820D26B350089C112 /* SGTime */,
 				9CE6F5912004E37600D1F4C8 /* SGCommon */,
+				9C5C6C9620182A0900863EB5 /* SGOpenGL */,
+				9CE6F5172004D97C00D1F4C8 /* SGPlatform */,
 				9C2534521FAB151500BBFA5C /* SGFFmpeg */,
 			);
 			path = Core;
