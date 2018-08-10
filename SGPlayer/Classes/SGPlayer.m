@@ -10,6 +10,7 @@
 #import "SGMacro.h"
 #import "SGActivity.h"
 #import "SGSession.h"
+#import "SGURLSource.h"
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
@@ -52,26 +53,41 @@
 
 - (void)replaceWithURL:(NSURL *)URL
 {
-    [self replaceWithPlayerItem:[[SGPlayerItem alloc] initWithURL:URL]];
+    [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];
 }
 
-- (void)replaceWithPlayerItem:(SGPlayerItem *)playerItem
+- (void)replaceWithAsset:(SGAsset *)asset
 {
     [self destory];
-    if (!playerItem)
+    if (!asset)
     {
         return;
     }
-    _playerItem = playerItem;
+    id <SGSource> source = nil;
+    if ([asset isKindOfClass:[SGURLAsset class]])
+    {
+        SGURLAsset * obj = (SGURLAsset *)asset;
+        source = [[SGURLSource alloc] initWithURL:obj.URL];
+    }
+    else if ([asset isKindOfClass:[SGConcatAsset class]])
+    {
+        return;
+    }
+    else
+    {
+        return;
+    }
+    _asset = asset;
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
     self.videoOutput.timeSync = self.audioOutput.timeSync;
     self.videoOutput.view = self.view;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
+    configuration.source = source;
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
-    self.session = [[SGSession alloc] initWithURL:self.playerItem.URL configuration:configuration];
+    self.session = [[SGSession alloc] initWithConfiguration:configuration];
     self.session.delegate = self;
     [self.session open];
 }
@@ -89,7 +105,7 @@
             }
             break;
         case SGPlaybackStateFailed:
-            [self replaceWithPlayerItem:self.playerItem];
+            [self replaceWithAsset:self.asset];
             break;
         default:
             break;
@@ -325,7 +341,7 @@
     self.lastTime = CMTimeMake(-1900, 1);
     self.lastLoadedTime = CMTimeMake(-1900, 1);
     self.lastDuration = CMTimeMake(-1900, 1);
-    _playerItem = nil;
+    _asset = nil;
     _error = nil;
 }
 

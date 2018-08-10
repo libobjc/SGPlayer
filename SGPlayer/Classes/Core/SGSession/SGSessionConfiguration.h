@@ -16,7 +16,7 @@
 @property (nonatomic, assign) BOOL hardwareDecodeEnableH264;    // Default is YES.
 @property (nonatomic, assign) BOOL hardwareDecodeEnableH265;    // Default is YES.
 
-@property (nonatomic, strong) id <SGSource> source;             // nullable
+@property (nonatomic, strong) id <SGSource> source;             // nonnull
 @property (nonatomic, strong) id <SGDecoder> audioDecoder;      // nullable
 @property (nonatomic, strong) id <SGDecoder> videoDecoder;      // nullable
 @property (nonatomic, strong) id <SGOutput> audioOutput;        // nonnull

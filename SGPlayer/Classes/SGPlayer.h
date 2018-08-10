@@ -14,10 +14,14 @@
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGDefines.h>
-#import <SGPlayer/SGPlayerItem.h>
+#import <SGPlayer/SGAsset.h>
+#import <SGPlayer/SGURLAsset.h>
+#import <SGPlayer/SGConcatAsset.h>
 #else
 #import "SGDefines.h"
-#import "SGPlayerItem.h"
+#import "SGAsset.h"
+#import "SGURLAsset.h"
+#import "SGConcatAsset.h"
 #endif
 
 @class SGPlayer;
@@ -38,10 +42,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default is dispatch_get_main_queue().
 
-@property (nonatomic, strong, readonly) SGPlayerItem * playerItem;
+@property (nonatomic, strong, readonly) SGAsset * asset;
 
 - (void)replaceWithURL:(NSURL *)URL;
-- (void)replaceWithPlayerItem:(SGPlayerItem *)playerItem;
+- (void)replaceWithAsset:(SGAsset *)asset;
 
 @property (nonatomic, strong, readonly) NSError * error;
 @property (nonatomic, assign, readonly) SGPlaybackState state;

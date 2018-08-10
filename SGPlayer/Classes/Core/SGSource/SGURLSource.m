@@ -1,19 +1,20 @@
 //
-//  SGCommonSource.m
+//  SGURLSource.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGCommonSource.h"
+#import "SGURLSource.h"
 #import "SGFFmpeg.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGCommonSource () <NSLocking>
+@interface SGURLSource () <NSLocking>
 
+@property (nonatomic, strong) NSURL * URL;
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
@@ -35,15 +36,14 @@
 
 @end
 
-@implementation SGCommonSource
+@implementation SGURLSource
 
-@synthesize URL = _URL;
 @synthesize delegate = _delegate;
 @synthesize state = _state;
 
-static int SGCommonSourceInterruptHandler(void * context)
+static int SGURLSourceInterruptHandler(void * context)
 {
-    SGCommonSource * obj = (__bridge SGCommonSource *)context;
+    SGURLSource * obj = (__bridge SGURLSource *)context;
     [obj lock];
     int ret = NO;
     switch (obj.state)
@@ -63,10 +63,11 @@ static int SGCommonSourceInterruptHandler(void * context)
     return ret;
 }
 
-- (instancetype)init
+- (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init])
     {
+        self.URL = URL;
         self.duration = kCMTimeZero;
         self.seekable = NO;
         self.seekTimeStamp = kCMTimeZero;
@@ -253,7 +254,7 @@ static int SGCommonSourceInterruptHandler(void * context)
         return;
     }
     
-    self.formatContext->interrupt_callback.callback = SGCommonSourceInterruptHandler;
+    self.formatContext->interrupt_callback.callback = SGURLSourceInterruptHandler;
     self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
 
     NSString * URLString = self.URL.isFileURL ? self.URL.path : self.URL.absoluteString;

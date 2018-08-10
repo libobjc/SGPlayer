@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithURL:(NSURL *)URL configuration:(SGSessionConfiguration *)configuration;
+- (instancetype)initWithConfiguration:(SGSessionConfiguration *)configuration;
 
 @property (nonatomic, weak) id <SGSessionDelegate> delegate;
 

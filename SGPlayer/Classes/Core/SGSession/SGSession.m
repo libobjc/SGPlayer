@@ -7,7 +7,7 @@
 //
 
 #import "SGSession.h"
-#import "SGCommonSource.h"
+#import "SGURLSource.h"
 #import "SGAudioFFDecoder.h"
 #import "SGVideoFFDecoder.h"
 #import "SGVideoAVDecoder.h"
@@ -24,11 +24,10 @@
 
 @implementation SGSession
 
-- (instancetype)initWithURL:(NSURL *)URL configuration:(SGSessionConfiguration *)configuration
+- (instancetype)initWithConfiguration:(SGSessionConfiguration *)configuration
 {
     if (self = [super init])
     {
-        self.URL = URL;
         self.configuration = configuration;
     }
     return self;
@@ -52,11 +51,6 @@
     SGBasicBlock callback = [self setState:SGSessionStateOpening];
     [self unlock];
     callback();
-    if (!self.configuration.source)
-    {
-        self.configuration.source = [[SGCommonSource alloc] init];
-    }
-    self.configuration.source.URL = self.URL;
     self.configuration.source.delegate = self;
     [self.configuration.source open];
 }
