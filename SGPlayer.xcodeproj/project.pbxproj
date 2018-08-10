@@ -2058,14 +2058,14 @@
 			isa = PBXGroup;
 			children = (
 				9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */,
-				9C329AA82005E3F800252B10 /* SGActivity.h */,
-				9C329AA92005E3F800252B10 /* SGActivity.m */,
 				9C8D4E7E200E1ACA00ED8A58 /* SGError.h */,
 				9C8D4E7F200E1ACA00ED8A58 /* SGError.m */,
-				9C1D2228201B1DA2005147FB /* SGDefinesMapping.h */,
-				9C1D2229201B1DA2005147FB /* SGDefinesMapping.m */,
+				9C329AA82005E3F800252B10 /* SGActivity.h */,
+				9C329AA92005E3F800252B10 /* SGActivity.m */,
 				9CA0F56220E0E24000501478 /* SGDefines.h */,
 				9CA0F56320E0E24000501478 /* SGDefines.m */,
+				9C1D2228201B1DA2005147FB /* SGDefinesMapping.h */,
+				9C1D2229201B1DA2005147FB /* SGDefinesMapping.m */,
 			);
 			path = SGCommon;
 			sourceTree = "<group>";
