@@ -211,6 +211,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     {
         [obj destory];
     }
+    self.formatContext = nil;
+    self.formatContexts = nil;
 }
 
 #pragma mark - Seeking
