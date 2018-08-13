@@ -46,6 +46,9 @@
         if (packet.corePacket->pts == AV_NOPTS_VALUE) {
             timestamp = packet.corePacket->dts;
         }
+        self.timebase = packet.timebase;
+        self.offset = packet.offset;
+        self.scale = packet.scale;
         self.position = SGTimeMultiply(timebase, timestamp);
         self.duration = SGTimeMultiply(timebase, packet.corePacket->duration);
         self.size = packet.corePacket->size;

@@ -178,6 +178,9 @@
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
     
     SGAudioBufferFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioBufferFrame class]];
+    result.timebase = audioFrame.timebase;
+    result.offset = audioFrame.offset;
+    result.scale = audioFrame.scale;
     result.position = audioFrame.position;
     result.duration = audioFrame.duration;
     result.size = audioFrame.size;

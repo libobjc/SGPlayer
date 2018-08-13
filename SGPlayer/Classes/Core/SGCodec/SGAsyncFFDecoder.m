@@ -68,6 +68,7 @@
 
 - (void)doResetup
 {
+    [super doResetup];
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);

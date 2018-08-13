@@ -32,6 +32,9 @@
 
 - (void)fillWithPacket:(SGPacket *)packet
 {
+    self.timebase = packet.timebase;
+    self.offset = packet.offset;
+    self.scale = packet.scale;
     self.position = SGTimeMultiply(packet.timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
     self.duration = SGTimeMultiply(packet.timebase, av_frame_get_pkt_duration(self.coreFrame));
     self.size = av_frame_get_pkt_size(self.coreFrame);
