@@ -281,17 +281,9 @@ static int SGConcatSourceInterruptHandler(void * context)
             break;
         }
     }
-    int success = 0;
     CMTime realTimeStamp = CMTimeSubtract(timeStamp, self.formatContext.startTime);
     long long ffRealTimeStamp = AV_TIME_BASE * realTimeStamp.value / realTimeStamp.timescale;
-    for (SGFormatContext * formatContext in self.formatContexts)
-    {
-        success = av_seek_frame(formatContext.coreFormatContext, -1, formatContext == self.formatContext ? ffRealTimeStamp : 0, AVSEEK_FLAG_BACKWARD);
-        if (success < 0)
-        {
-            break;
-        }
-    }
+    int success = av_seek_frame(self.formatContext.coreFormatContext, -1, ffRealTimeStamp, AVSEEK_FLAG_BACKWARD);
     return success;
 }
 
@@ -433,6 +425,10 @@ static int SGConcatSourceInterruptHandler(void * context)
                     else
                     {
                         [self changeToNextFormatContext];
+                        if (self.formatContext.seekable)
+                        {
+                            av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
+                        }
                     }
                 }
                 [self unlock];
