@@ -12,7 +12,9 @@
 @interface SGAsyncDecoder : NSObject <SGDecoder>
 
 @property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
+@property (nonatomic, assign) AVCodecParameters * codecpar;
 
+- (void)doResetup;
 - (void)doFlush;
 - (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet;
 

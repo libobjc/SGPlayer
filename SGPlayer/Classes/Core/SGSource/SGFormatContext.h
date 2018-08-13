@@ -13,6 +13,9 @@
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
+@property (nonatomic, assign) CMTime startTime;
+@property (nonatomic, assign) CMTime scale;
+
 @property (nonatomic, strong, readonly) NSURL * URL;
 @property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
 @property (nonatomic, strong, readonly) NSError * error;

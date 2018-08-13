@@ -19,6 +19,8 @@
 {
     if (self = [super init])
     {
+        _startTime = kCMTimeZero;
+        _scale = CMTimeMake(1, 1);
         _URL = URL;
         _coreFormatContext = NULL;
         _duration = kCMTimeZero;

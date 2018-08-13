@@ -134,16 +134,11 @@
 - (SGVideoFrame *)decodeInternal:(SGPacket *)packet
 {
     SGVideoFrame * ret = nil;
-    int64_t timestamp = packet.corePacket->pts;
-    if (packet.corePacket->pts == AV_NOPTS_VALUE)
-    {
-        timestamp = packet.corePacket->dts;
-    }
     CMSampleTimingInfo timingInfo =
     {
-        SGTimeMultiply(self.timebase, packet.corePacket->duration),
-        SGTimeMultiply(self.timebase, timestamp),
-        SGTimeMultiply(self.timebase, packet.corePacket->dts),
+        packet.duration,
+        packet.position,
+        packet.dts,
     };
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size timingInfo:timingInfo];
     if (!sampleBuffer)
@@ -161,7 +156,7 @@
             {
                 SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
                 frame.corePixelBuffer = self.decodingPixelBuffer;
-                [frame fillWithTimebase:self.timebase packet:packet];
+//                [frame fillWithTimebase:self.timebase packet:packet];
                 ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;

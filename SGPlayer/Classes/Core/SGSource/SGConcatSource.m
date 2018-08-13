@@ -19,6 +19,8 @@
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, strong) SGStream * audioStream;
+@property (nonatomic, strong) SGStream * videoStream;
 @property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
@@ -262,6 +264,8 @@ static int SGConcatSourceInterruptHandler(void * context)
         NSInteger index = [self.formatContexts indexOfObject:self.formatContext] + 1;
         self.formatContext = [self.formatContexts objectAtIndex:index];
     }
+    self.audioStream = self.formatContext.audioStreams.firstObject;
+    self.videoStream = self.formatContext.videoStreams.firstObject;
 }
 
 #pragma mark - Open
@@ -289,6 +293,8 @@ static int SGConcatSourceInterruptHandler(void * context)
         BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
+            formatContext.startTime = duration;
+            formatContext.scale = obj.scale;
             duration = CMTimeAdd(duration, formatContext.duration);
             seekable = seekable && formatContext.seekable;
             [formatContexts addObject:formatContext];
@@ -405,7 +411,20 @@ static int SGConcatSourceInterruptHandler(void * context)
             }
             else
             {
-                [self.delegate source:self hasNewPacket:packet];
+                SGStream * stream = nil;
+                for (SGStream * obj in self.formatContext.streams)
+                {
+                    if (obj.index == packet.corePacket->stream_index)
+                    {
+                        stream = obj;
+                        break;
+                    }
+                }
+                if (stream == self.audioStream || stream == self.videoStream)
+                {
+                    [packet fillWithStream:stream offset:self.formatContext.startTime scale:self.formatContext.scale];
+                    [self.delegate source:self hasNewPacket:packet];
+                }
             }
             [packet unlock];
             continue;

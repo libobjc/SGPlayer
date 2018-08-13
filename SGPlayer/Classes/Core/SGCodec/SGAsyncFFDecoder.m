@@ -56,28 +56,27 @@
     return codecContext;
 }
 
-- (BOOL)open
-{
-    self.codecContext = [SGAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
-    if (self.codecContext)
-    {
-        return [super open];
-    }
-    return NO;
-}
-
 - (BOOL)close
 {
-    if (![super close])
-    {
-        return NO;
-    }
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
-    return YES;
+    return [super close];
+}
+
+- (void)doResetup
+{
+    if (self.codecContext)
+    {
+        avcodec_close(self.codecContext);
+        self.codecContext = nil;
+    }
+    if (self.codecpar && CMTimeCompare(self.timebase, kCMTimeZero) > 0)
+    {
+        self.codecContext = [SGAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
+    }
 }
 
 - (void)doFlush
@@ -103,6 +102,7 @@
         AVFrame * coreFrame = NULL;
         if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
         {
+            
             coreFrame = ((SGFFAudioFFFrame *)frame).coreFrame;
         }
         else if ([frame isKindOfClass:[SGVideoFFFrame class]])
@@ -128,11 +128,11 @@
             }
             if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
             {
-                [(SGFFAudioFFFrame *)frame fillWithTimebase:self.timebase packet:packet];
+                [(SGFFAudioFFFrame *)frame fillWithPacket:packet];
             }
             else if ([frame isKindOfClass:[SGVideoFFFrame class]])
             {
-                [(SGVideoFFFrame *)frame fillWithTimebase:self.timebase packet:packet];
+                [(SGVideoFFFrame *)frame fillWithPacket:packet];
             }
             [array addObject:frame];
         }

@@ -23,8 +23,14 @@ SGObjectPoolItemLockingImplementation
     if (self = [super init])
     {
         _corePacket = av_packet_alloc();
+        _codecpar = NULL;
+        _mediaType = SGMediaTypeUnknown;
+        _timebase = kCMTimeZero;
+        _offset = kCMTimeZero;
+        _scale = CMTimeMake(1, 1);
         _position = kCMTimeZero;
         _duration = kCMTimeZero;
+        _dts = kCMTimeZero;
         _size = 0;
     }
     return self;
@@ -39,29 +45,46 @@ SGObjectPoolItemLockingImplementation
     }
 }
 
-- (int)index
+- (void)fillWithStream:(SGStream *)stream
 {
-    return _corePacket->stream_index;
+    [self fillWithStream:stream offset:kCMTimeZero scale:CMTimeMake(1, 1)];
 }
 
-- (void)fillWithTimebase:(CMTime)timebase
+- (void)fillWithStream:(SGStream *)stream offset:(CMTime)offset scale:(CMTime)scale
 {
-    if (_corePacket)
+    CMTime defaultTimebase = CMTimeMake(1, 1);
+    switch (stream.mediaType)
     {
-        if (_corePacket->pts != AV_NOPTS_VALUE) {
-            _position = SGTimeMultiply(timebase, _corePacket->pts);
-        } else {
-            _position = SGTimeMultiply(timebase, _corePacket->dts);
-        }
-        _duration = SGTimeMultiply(timebase, _corePacket->duration);
-        _size = _corePacket->size;
+        case SGMediaTypeAudio:
+            defaultTimebase = CMTimeMake(1, 44100);
+            break;
+        case SGMediaTypeVideo:
+            defaultTimebase = CMTimeMake(1, 25000);
+        default:
+            break;
     }
+    CMTime timebase = SGTimeValidate(stream.timebase, defaultTimebase);
+    _timebase = timebase;
+    _codecpar = stream.coreStream->codecpar;
+    _mediaType = stream.mediaType;
+    _offset = offset;
+    _scale = scale;
+    _position = SGTimeMultiply(timebase, _corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts);
+    _duration = SGTimeMultiply(timebase, _corePacket->duration);
+    _dts = SGTimeMultiply(timebase, _corePacket->dts);
+    _size = _corePacket->size;
 }
 
 - (void)clear
 {
+    _codecpar = NULL;
+    _mediaType = SGMediaTypeUnknown;
+    _timebase = kCMTimeZero;
+    _offset = kCMTimeZero;
+    _scale = CMTimeMake(1, 1);
     _position = kCMTimeZero;
     _duration = kCMTimeZero;
+    _dts = kCMTimeZero;
     _size = 0;
     if (_corePacket)
     {

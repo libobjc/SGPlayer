@@ -274,12 +274,12 @@
 
 - (BOOL)audioEnable
 {
-    return self.configuration.audioDecoder != nil;
+    return self.configuration.source.audioStream != nil;
 }
 
 - (BOOL)videoEnable
 {
-    return self.configuration.videoDecoder != nil;
+    return self.configuration.source.videoStream != nil;
 }
 
 - (BOOL)audioEmpty
@@ -332,55 +332,17 @@
 
 - (void)setupDecoderIfNeeded
 {
-    if (self.configuration.audioDecoder && self.configuration.videoDecoder)
+    if (self.audioEnable && !self.configuration.audioDecoder)
     {
-        return;
+        self.configuration.audioDecoder = [[SGAudioFFDecoder alloc] init];
+        self.configuration.audioDecoder.delegate = self;
+        [self.configuration.audioDecoder open];
     }
-    for (SGStream * stream in self.configuration.source.streams)
+    if (self.videoEnable && !self.configuration.videoDecoder)
     {
-        switch (stream.mediaType)
-        {
-            case SGMediaTypeAudio:
-            {
-                if (!self.configuration.audioDecoder)
-                {
-                    SGAudioFFDecoder * audioDecoder = [[SGAudioFFDecoder alloc] init];
-                    audioDecoder.delegate = self;
-                    audioDecoder.index = stream.index;
-                    audioDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 44100));
-                    audioDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([audioDecoder open])
-                    {
-                        self.configuration.audioDecoder = audioDecoder;
-                    }
-                }
-            }
-                break;
-            case SGMediaTypeVideo:
-            {
-                if (!self.configuration.videoDecoder)
-                {
-                    Class codecClass = [SGVideoFFDecoder class];
-                    if (self.configuration.hardwareDecodeH264 &&
-                        stream.coreStream->codecpar->codec_id == AV_CODEC_ID_H264)
-                    {
-                        codecClass = [SGVideoAVDecoder class];
-                    }
-                    SGAsyncDecoder * videoDecoder = [[codecClass alloc] init];
-                    videoDecoder.delegate = self;
-                    videoDecoder.index = stream.index;
-                    videoDecoder.timebase = SGTimeValidate(stream.timebase, CMTimeMake(1, 25000));
-                    videoDecoder.codecpar = stream.coreStream->codecpar;
-                    if ([videoDecoder open])
-                    {
-                        self.configuration.videoDecoder = videoDecoder;
-                    }
-                }
-            }
-                break;
-            default:
-                break;
-        }
+        self.configuration.videoDecoder = [[SGVideoFFDecoder alloc] init];
+        self.configuration.videoDecoder.delegate = self;
+        [self.configuration.videoDecoder open];
     }
     self.configuration.audioOutput.enable = self.configuration.audioDecoder ? YES : NO;
     self.configuration.videoOutput.enable = self.configuration.videoDecoder ? YES : NO;
@@ -474,15 +436,16 @@
 
 - (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
 {
-    if (self.audioEnable && packet.index == self.configuration.audioDecoder.index)
+    switch (packet.mediaType)
     {
-        [packet fillWithTimebase:self.configuration.audioDecoder.timebase];
-        [self.configuration.audioDecoder putPacket:packet];
-    }
-    else if (self.videoEnable && packet.index == self.configuration.videoDecoder.index)
-    {
-        [packet fillWithTimebase:self.configuration.videoDecoder.timebase];
-        [self.configuration.videoDecoder putPacket:packet];
+        case SGMediaTypeAudio:
+            [self.configuration.audioDecoder putPacket:packet];
+            break;
+        case SGMediaTypeVideo:
+            [self.configuration.videoDecoder putPacket:packet];
+            break;
+        default:
+            break;
     }
 }
 

@@ -30,9 +30,7 @@ typedef NS_ENUM(NSUInteger, SGDecoderState)
 - (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGDecoderDelegate> delegate;
-@property (nonatomic, assign) int index;
 @property (nonatomic, assign) CMTime timebase;
-@property (nonatomic, assign) AVCodecParameters * codecpar;
 
 - (SGDecoderState)state;
 - (BOOL)empty;

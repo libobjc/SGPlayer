@@ -12,6 +12,6 @@
 
 @property (nonatomic, assign, readonly) AVFrame * coreFrame;
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGPacket *)packet;
+- (void)fillWithPacket:(SGPacket *)packet;
 
 @end

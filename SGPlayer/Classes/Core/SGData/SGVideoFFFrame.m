@@ -30,10 +30,10 @@
     }
 }
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGPacket *)packet
+- (void)fillWithPacket:(SGPacket *)packet
 {
-    self.position = SGTimeMultiply(timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
-    self.duration = SGTimeMultiply(timebase, av_frame_get_pkt_duration(self.coreFrame));
+    self.position = SGTimeMultiply(packet.timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
+    self.duration = SGTimeMultiply(packet.timebase, av_frame_get_pkt_duration(self.coreFrame));
     self.size = av_frame_get_pkt_size(self.coreFrame);
     
     self.format = self.coreFrame->format;

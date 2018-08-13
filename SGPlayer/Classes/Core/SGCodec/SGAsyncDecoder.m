@@ -22,10 +22,8 @@
 
 @implementation SGAsyncDecoder
 
-@synthesize index = _index;
-@synthesize timebase = _timebase;
-@synthesize codecpar = _codecpar;
 @synthesize delegate = _delegate;
+@synthesize timebase = _timebase;
 
 static SGPacket * flushPacket;
 
@@ -235,6 +233,12 @@ static SGPacket * flushPacket;
             }
             else if (packet)
             {
+                if (packet.codecpar != self.codecpar)
+                {
+                    self.codecpar = packet.codecpar;
+                    self.timebase = packet.timebase;
+                    [self doResetup];
+                }
                 if (!self.waitingFlush)
                 {
                     NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
@@ -253,6 +257,11 @@ static SGPacket * flushPacket;
             continue;
         }
     }
+}
+
+- (void)doResetup
+{
+    
 }
 
 - (void)doFlush
