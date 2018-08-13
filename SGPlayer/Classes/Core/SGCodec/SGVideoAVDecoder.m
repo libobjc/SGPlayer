@@ -79,15 +79,6 @@
 
 #endif
 
-- (BOOL)open
-{
-    if ([self setupDecompressionSession])
-    {
-        return [super open];
-    }
-    return NO;
-}
-
 - (BOOL)close
 {
     if (![super close])
@@ -96,6 +87,12 @@
     }
     [self destoryDecompressionSession];
     return YES;
+}
+
+- (void)doResetup
+{
+    [super doResetup];
+    [self doFlush];
 }
 
 - (void)doFlush
@@ -156,7 +153,7 @@
             {
                 SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
                 frame.corePixelBuffer = self.decodingPixelBuffer;
-//                [frame fillWithTimebase:self.timebase packet:packet];
+                [frame fillWithPpacket:packet];
                 ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;

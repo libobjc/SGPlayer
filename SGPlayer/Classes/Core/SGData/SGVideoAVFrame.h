@@ -12,6 +12,6 @@
 
 @property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGPacket *)packet;
+- (void)fillWithPpacket:(SGPacket *)packet;
 
 @end

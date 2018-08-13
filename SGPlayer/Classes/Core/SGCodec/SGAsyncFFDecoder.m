@@ -58,12 +58,16 @@
 
 - (BOOL)close
 {
+    if (![super close])
+    {
+        return NO;
+    }
     if (self.codecContext)
     {
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
-    return [super close];
+    return YES;
 }
 
 - (void)doResetup

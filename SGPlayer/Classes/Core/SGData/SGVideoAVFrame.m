@@ -15,7 +15,7 @@
     [self clear];
 }
 
-- (void)fillWithTimebase:(CMTime)timebase packet:(SGPacket *)packet
+- (void)fillWithPpacket:(SGPacket *)packet
 {
     CVPixelBufferRef pixelBuffer = self.corePixelBuffer;
     if (pixelBuffer)
@@ -49,8 +49,8 @@
         self.timebase = packet.timebase;
         self.offset = packet.offset;
         self.scale = packet.scale;
-        self.position = SGTimeMultiply(timebase, timestamp);
-        self.duration = SGTimeMultiply(timebase, packet.corePacket->duration);
+        self.position = packet.position;
+        self.duration = packet.duration;
         self.pts = CMTimeAdd(self.offset, self.position);
         self.dts = packet.dts;
         self.size = packet.corePacket->size;
