@@ -109,27 +109,27 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 - (NSArray <SGStream *> *)streams
 {
-    return self.formatContexts.firstObject.streams;
+    return self.formatContext.streams;
 }
 
 - (NSArray <SGStream *> *)audioStreams
 {
-    return self.formatContexts.firstObject.audioStreams;
+    return self.formatContext.audioStreams;
 }
 
 - (NSArray <SGStream *> *)videoStreams
 {
-    return self.formatContexts.firstObject.videoStreams;
+    return self.formatContext.videoStreams;
 }
 
 - (NSArray <SGStream *> *)subtitleStreams
 {
-    return self.formatContexts.firstObject.subtitleStreams;
+    return self.formatContext.subtitleStreams;
 }
 
 - (NSArray <SGStream *> *)otherStreams
 {
-    return self.formatContexts.firstObject.otherStreams;
+    return self.formatContext.otherStreams;
 }
 
 #pragma mark - Interface
@@ -245,6 +245,25 @@ static int SGConcatSourceInterruptHandler(void * context)
     return YES;
 }
 
+#pragma mark - Internal
+
+- (void)nextFormatContext
+{
+    if (!self.formatContext)
+    {
+        self.formatContext = self.formatContexts.firstObject;
+    }
+    else if (self.formatContext == self.formatContexts.lastObject)
+    {
+        self.formatContext = nil;
+    }
+    else
+    {
+        NSInteger index = [self.formatContexts indexOfObject:self.formatContext] + 1;
+        self.formatContext = [self.formatContexts objectAtIndex:index];
+    }
+}
+
 #pragma mark - Open
 
 - (void)startOpenThread
@@ -288,7 +307,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.seekable = seekable;
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
-    SGBasicBlock callback = [self setState:state];;
+    SGBasicBlock callback = [self setState:state];
+    [self nextFormatContext];
     [self unlock];
     callback();
 }
@@ -334,7 +354,7 @@ static int SGConcatSourceInterruptHandler(void * context)
             self.seekingTimeStamp = self.seekTimeStamp;
             long long timeStamp = AV_TIME_BASE * self.seekingTimeStamp.value / self.seekingTimeStamp.timescale;
             [self unlock];
-            int success = av_seek_frame(self.formatContexts.firstObject.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+            int success = av_seek_frame(self.formatContext.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
             [self lock];
             BOOL enable = NO;
             SGBasicBlock callback = ^{};
@@ -367,14 +387,18 @@ static int SGConcatSourceInterruptHandler(void * context)
         {
             [self unlock];
             SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-            int readResult = av_read_frame(self.formatContexts.firstObject.coreFormatContext, packet.corePacket);
+            int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
             if (readResult < 0)
             {
                 [self lock];
                 SGBasicBlock callback = ^{};
                 if (self.state == SGSourceStateReading)
                 {
-                    callback = [self setState:SGSourceStateFinished];
+                    [self nextFormatContext];
+                    if (!self.formatContext)
+                    {
+                        callback = [self setState:SGSourceStateFinished];
+                    }
                 }
                 [self unlock];
                 callback();
