@@ -39,8 +39,8 @@
 - (__kindof id <SGObjectQueueItem>)getObjectSync;
 - (__kindof id <SGObjectQueueItem>)getObjectAsync;
 
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop;
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop;
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
 
 - (void)flush;
 - (void)destroy;

@@ -94,7 +94,14 @@
     if (self.shouldSortObjects)
     {
         [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
-            return CMTimeCompare(obj1.position, obj2.position) < 0 ? NSOrderedAscending : NSOrderedDescending;
+            if (CMTimeCompare(obj1.offset, obj2.offset) == 0)
+            {
+                return CMTimeCompare(obj1.position, obj2.position) < 0 ? NSOrderedAscending : NSOrderedDescending;
+            }
+            else
+            {
+                return CMTimeCompare(obj1.offset, obj2.offset) < 0 ? NSOrderedAscending : NSOrderedDescending;
+            }
         }];
     }
     NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
@@ -134,7 +141,7 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
 {
     [self.condition lock];
     while (self.objects.count <= 0)
@@ -146,7 +153,7 @@
             return nil;
         }
     }
-    id <SGObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler drop:drop];
+    id <SGObjectQueueItem> object = [self getObjectWithPTSHandler:ptsHandler drop:drop];
     if (object)
     {
         [self.condition signal];
@@ -155,7 +162,7 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)
@@ -163,7 +170,7 @@
         [self.condition unlock];
         return nil;
     }
-    id <SGObjectQueueItem> object = [self getObjectWithPositionHandler:positionHandler drop:drop];
+    id <SGObjectQueueItem> object = [self getObjectWithPTSHandler:ptsHandler drop:drop];
     if (object)
     {
         [self.condition signal];
@@ -172,15 +179,15 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectWithPositionHandler:(BOOL(^)(CMTime * current, CMTime * expect))positionHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObjectWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
 {
-    if (!positionHandler)
+    if (!ptsHandler)
     {
         return [self getObject];
     }
     CMTime current = kCMTimeZero;
     CMTime expect = kCMTimeZero;
-    if (!positionHandler(&current, &expect))
+    if (!ptsHandler(&current, &expect))
     {
         return [self getObject];
     }

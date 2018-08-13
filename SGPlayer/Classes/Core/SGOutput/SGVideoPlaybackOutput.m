@@ -219,7 +219,7 @@
     }
     [self lock];
     SGWeakSelf
-    SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPositionHandler:^BOOL(CMTime * current, CMTime * expect) {
+    SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
         if (self.currentFrame)
         {
