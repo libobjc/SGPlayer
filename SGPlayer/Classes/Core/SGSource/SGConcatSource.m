@@ -251,23 +251,48 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 #pragma mark - Internal
 
-- (void)nextFormatContext
+- (void)changeToNextFormatContext
 {
     if (!self.formatContext)
     {
         self.formatContext = self.formatContexts.firstObject;
+        self.audioStream = self.formatContext.audioStreams.firstObject;
+        self.videoStream = self.formatContext.videoStreams.firstObject;
     }
-    else if (self.formatContext == self.formatContexts.lastObject)
-    {
-        self.formatContext = nil;
-    }
-    else
+    else if (self.formatContext != self.formatContexts.lastObject)
     {
         NSInteger index = [self.formatContexts indexOfObject:self.formatContext] + 1;
         self.formatContext = [self.formatContexts objectAtIndex:index];
+        self.audioStream = self.formatContext.audioStreams.firstObject;
+        self.videoStream = self.formatContext.videoStreams.firstObject;
     }
-    self.audioStream = self.formatContext.audioStreams.firstObject;
-    self.videoStream = self.formatContext.videoStreams.firstObject;
+}
+
+- (int)changeFormatContextWithTimeStamp:(CMTime)timeStamp
+{
+    for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
+    {
+        SGFormatContext * formatContext = [self.formatContexts objectAtIndex:i];
+        if (CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
+        {
+            self.formatContext = formatContext;
+            self.audioStream = self.formatContext.audioStreams.firstObject;
+            self.videoStream = self.formatContext.videoStreams.firstObject;
+            break;
+        }
+    }
+    int success = 0;
+    CMTime realTimeStamp = CMTimeSubtract(timeStamp, self.formatContext.startTime);
+    long long ffRealTimeStamp = AV_TIME_BASE * realTimeStamp.value / realTimeStamp.timescale;
+    for (SGFormatContext * formatContext in self.formatContexts)
+    {
+        success = av_seek_frame(formatContext.coreFormatContext, -1, formatContext == self.formatContext ? ffRealTimeStamp : 0, AVSEEK_FLAG_BACKWARD);
+        if (success < 0)
+        {
+            break;
+        }
+    }
+    return success;
 }
 
 #pragma mark - Open
@@ -316,7 +341,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
     SGBasicBlock callback = [self setState:state];
-    [self nextFormatContext];
+    [self changeToNextFormatContext];
     [self unlock];
     callback();
 }
@@ -360,16 +385,15 @@ static int SGConcatSourceInterruptHandler(void * context)
         else if (self.state == SGSourceStateSeeking)
         {
             self.seekingTimeStamp = self.seekTimeStamp;
-            long long timeStamp = AV_TIME_BASE * self.seekingTimeStamp.value / self.seekingTimeStamp.timescale;
+            CMTime timeStamp = self.seekingTimeStamp;
             [self unlock];
-            int success = av_seek_frame(self.formatContext.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+            int success = [self changeFormatContextWithTimeStamp:timeStamp];
             [self lock];
             BOOL enable = NO;
             SGBasicBlock callback = ^{};
             if (self.state == SGSourceStateSeeking)
             {
-                long long current = AV_TIME_BASE * self.seekTimeStamp.value / self.seekTimeStamp.timescale;
-                if (timeStamp == current)
+                if (CMTimeCompare(self.seekTimeStamp, timeStamp) == 0)
                 {
                     enable = YES;
                     callback = [self setState:SGSourceStateReading];
@@ -402,10 +426,13 @@ static int SGConcatSourceInterruptHandler(void * context)
                 SGBasicBlock callback = ^{};
                 if (self.state == SGSourceStateReading)
                 {
-                    [self nextFormatContext];
-                    if (!self.formatContext)
+                    if (self.formatContext == self.formatContexts.lastObject)
                     {
                         callback = [self setState:SGSourceStateFinished];
+                    }
+                    else
+                    {
+                        [self changeToNextFormatContext];
                     }
                 }
                 [self unlock];

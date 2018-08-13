@@ -269,7 +269,7 @@
             return self.videoEmpty;
         }
     }
-    return 0;
+    return YES;
 }
 
 - (BOOL)audioEnable
