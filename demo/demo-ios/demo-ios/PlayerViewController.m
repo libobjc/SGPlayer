@@ -32,13 +32,18 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
     
-    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-//    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+    NSURL * contentURL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
+    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+    
+    SGConcatAssetUnit * unit1 = [[SGConcatAssetUnit alloc] initWithURL:contentURL2];
+    SGConcatAssetUnit * unit2 = [[SGConcatAssetUnit alloc] initWithURL:contentURL1];
+    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithUnits:@[unit1, unit2]];
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.view = self.view1;
-    [self.player replaceWithURL:contentURL];
+//    [self.player replaceWithURL:contentURL1];
+    [self.player replaceWithAsset:asset];
     [self.player play];
     
 //    self.player2 = [[SGPlayer alloc] init];
