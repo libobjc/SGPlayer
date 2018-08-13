@@ -7,6 +7,7 @@
 //
 
 #import "SGConcatSource.h"
+#import "SGFormatContext.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "SGMacro.h"
@@ -17,12 +18,8 @@
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
-@property (nonatomic, strong) NSArray <SGStream *> * streams;
-@property (nonatomic, strong) NSArray <SGStream *> * videoStreams;
-@property (nonatomic, strong) NSArray <SGStream *> * audioStreams;
-@property (nonatomic, strong) NSArray <SGStream *> * subtitleStreams;
-@property (nonatomic, strong) NSArray <SGStream *> * otherStreams;
-@property (nonatomic, assign) AVFormatContext * formatContext;
+@property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
@@ -67,8 +64,6 @@ static int SGConcatSourceInterruptHandler(void * context)
     if (self = [super init])
     {
         self.asset = asset;
-        self.duration = kCMTimeZero;
-        self.seekable = NO;
         self.seekTimeStamp = kCMTimeZero;
         self.seekingTimeStamp = kCMTimeZero;
         self.pausedCondition = [[NSCondition alloc] init];
@@ -110,6 +105,31 @@ static int SGConcatSourceInterruptHandler(void * context)
         };
     }
     return ^{};
+}
+
+- (NSArray <SGStream *> *)streams
+{
+    return self.formatContexts.firstObject.streams;
+}
+
+- (NSArray <SGStream *> *)audioStreams
+{
+    return self.formatContexts.firstObject.audioStreams;
+}
+
+- (NSArray <SGStream *> *)videoStreams
+{
+    return self.formatContexts.firstObject.videoStreams;
+}
+
+- (NSArray <SGStream *> *)subtitleStreams
+{
+    return self.formatContexts.firstObject.subtitleStreams;
+}
+
+- (NSArray <SGStream *> *)otherStreams
+{
+    return self.formatContexts.firstObject.otherStreams;
 }
 
 #pragma mark - Interface
@@ -185,10 +205,9 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    if (self.formatContext)
+    for (SGFormatContext * obj in self.formatContexts)
     {
-        avformat_close_input(&_formatContext);
-        self.formatContext = NULL;
+        [obj destory];
     }
 }
 
@@ -242,95 +261,35 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 - (void)openThread
 {
-    self.formatContext = avformat_alloc_context();
-    
-    if (!self.formatContext)
+    CMTime duration = kCMTimeZero;
+    BOOL seekable = YES;
+    NSMutableArray <SGFormatContext *> * units = [NSMutableArray array];
+    for (SGConcatAssetUnit * obj in self.asset.units)
     {
-        self.error = SGFFCreateErrorCode(SGErrorCodeFormatCreate);
-        [self setState:SGSourceStateFailed]();
-        return;
-    }
-    
-    self.formatContext->interrupt_callback.callback = SGConcatSourceInterruptHandler;
-    self.formatContext->interrupt_callback.opaque = (__bridge void *)self;
-    
-    NSString * URLString = self.asset.units.firstObject.URL.isFileURL ? self.asset.units.firstObject.URL.path : self.asset.units.firstObject.URL.absoluteString;
-    int reslut = avformat_open_input(&_formatContext, URLString.UTF8String, NULL, NULL);
-    self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatOpenInput);
-    if (self.error)
-    {
-        if (self.formatContext)
+        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
+        BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
+        if (success)
         {
-            avformat_free_context(self.formatContext);
+            duration = CMTimeAdd(duration, formatContext.duration);
+            seekable = seekable && formatContext.seekable;
+            [units addObject:formatContext];
         }
-        [self setState:SGSourceStateFailed]();
-        return;
-    }
-    
-    reslut = avformat_find_stream_info(self.formatContext, NULL);
-    self.error = SGFFGetErrorCode(reslut, SGErrorCodeFormatFindStreamInfo);
-    if (self.error)
-    {
-        if (self.formatContext)
+        else
         {
-            avformat_close_input(&_formatContext);
-            avformat_free_context(self.formatContext);
-        }
-        [self setState:SGSourceStateFailed]();
-        return;
-    }
-    
-    int64_t duration = self.formatContext->duration;
-    if (duration > 0)
-    {
-        self.duration = CMTimeMake(duration, AV_TIME_BASE);
-    }
-    if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
-        self.formatContext->pb)
-    {
-        self.seekable = self.formatContext->pb->seekable;
-    }
-    
-    NSMutableArray <SGStream *> * streams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * subtitleStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
-    for (int i = 0; i < self.formatContext->nb_streams; i++)
-    {
-        SGStream * obj = [[SGStream alloc] init];
-        obj.coreStream = self.formatContext->streams[i];
-        [streams addObject:obj];
-        switch (obj.coreStream->codecpar->codec_type)
-        {
-            case AVMEDIA_TYPE_AUDIO:
-                [audioStreams addObject:obj];
-                break;
-            case AVMEDIA_TYPE_VIDEO:
-                [videoStreams addObject:obj];
-                break;
-            case AVMEDIA_TYPE_SUBTITLE:
-                [subtitleStreams addObject:obj];
-                break;
-            default:
-                [otherStreams addObject:obj];
-                break;
+            duration = kCMTimeZero;
+            seekable = NO;
+            self.error = formatContext.error;
+            break;
         }
     }
-    self.streams = [streams copy];
-    self.audioStreams = [audioStreams copy];
-    self.videoStreams = [videoStreams copy];
-    self.subtitleStreams = [subtitleStreams copy];
-    self.otherStreams = [otherStreams copy];
-    
-    if (self.audioStreams.count > 0 || self.videoStreams.count > 0)
-    {
-        [self setState:SGSourceStateOpened]();
-    }
-    else
-    {
-        [self setState:SGSourceStateFailed]();
-    }
+    self.formatContexts = units;
+    self.duration = duration;
+    self.seekable = seekable;
+    [self lock];
+    SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
+    SGBasicBlock callback = [self setState:state];;
+    [self unlock];
+    callback();
 }
 
 #pragma mark - Read
@@ -374,7 +333,7 @@ static int SGConcatSourceInterruptHandler(void * context)
             self.seekingTimeStamp = self.seekTimeStamp;
             long long timeStamp = AV_TIME_BASE * self.seekingTimeStamp.value / self.seekingTimeStamp.timescale;
             [self unlock];
-            int success = av_seek_frame(self.formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+            int success = av_seek_frame(self.formatContexts.firstObject.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
             [self lock];
             BOOL enable = NO;
             SGBasicBlock callback = ^{};
@@ -407,7 +366,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         {
             [self unlock];
             SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-            int readResult = av_read_frame(self.formatContext, packet.corePacket);
+            int readResult = av_read_frame(self.formatContexts.firstObject.coreFormatContext, packet.corePacket);
             if (readResult < 0)
             {
                 [self lock];

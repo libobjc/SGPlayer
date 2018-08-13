@@ -28,6 +28,6 @@
 
 - (instancetype)initWithUnits:(NSArray <SGConcatAssetUnit *> *)units;
 
-@property (nonatomic, strong) NSArray <SGConcatAssetUnit *> * units;
+@property (nonatomic, strong, readonly) NSArray <SGConcatAssetUnit *> * units;
 
 @end
