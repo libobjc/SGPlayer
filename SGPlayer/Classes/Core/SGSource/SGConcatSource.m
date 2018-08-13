@@ -263,7 +263,7 @@ static int SGConcatSourceInterruptHandler(void * context)
 {
     CMTime duration = kCMTimeZero;
     BOOL seekable = YES;
-    NSMutableArray <SGFormatContext *> * units = [NSMutableArray array];
+    NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
     for (SGConcatAssetUnit * obj in self.asset.units)
     {
         SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
@@ -272,17 +272,18 @@ static int SGConcatSourceInterruptHandler(void * context)
         {
             duration = CMTimeAdd(duration, formatContext.duration);
             seekable = seekable && formatContext.seekable;
-            [units addObject:formatContext];
+            [formatContexts addObject:formatContext];
         }
         else
         {
             duration = kCMTimeZero;
             seekable = NO;
+            formatContexts = nil;
             self.error = formatContext.error;
             break;
         }
     }
-    self.formatContexts = units;
+    self.formatContexts = formatContexts;
     self.duration = duration;
     self.seekable = seekable;
     [self lock];
