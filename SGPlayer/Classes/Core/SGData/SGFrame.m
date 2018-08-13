@@ -30,6 +30,8 @@ SGObjectPoolItemImplementation
     self.scale = CMTimeMake(1, 1);
     self.position = kCMTimeZero;
     self.duration = kCMTimeZero;
+    self.pts = kCMTimeZero;
+    self.dts = kCMTimeZero;
     self.size = 0;
 }
 

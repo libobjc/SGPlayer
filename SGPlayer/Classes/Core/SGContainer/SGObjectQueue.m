@@ -186,7 +186,7 @@
     }
     id <SGObjectQueueItem> object = nil;
     do {
-        CMTime first = self.objects.firstObject.position;
+        CMTime first = self.objects.firstObject.pts;
         if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
         {
             [object unlock];

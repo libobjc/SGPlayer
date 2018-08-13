@@ -51,6 +51,8 @@
         self.scale = packet.scale;
         self.position = SGTimeMultiply(timebase, timestamp);
         self.duration = SGTimeMultiply(timebase, packet.corePacket->duration);
+        self.pts = CMTimeAdd(self.offset, self.position);
+        self.dts = packet.dts;
         self.size = packet.corePacket->size;
         self.bestEffortTimestamp = timestamp;
         self.packetPosition = packet.corePacket->pos;

@@ -61,6 +61,18 @@
     }
 }
 
+- (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame
+{
+    self.timebase = audioFrame.timebase;
+    self.offset = audioFrame.offset;
+    self.scale = audioFrame.scale;
+    self.position = audioFrame.position;
+    self.duration = audioFrame.duration;
+    self.pts = CMTimeAdd(audioFrame.offset, audioFrame.position);
+    self.dts = audioFrame.dts;
+    self.size = audioFrame.size;
+}
+
 - (void)clear
 {
     [super clear];

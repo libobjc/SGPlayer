@@ -12,8 +12,11 @@
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
 
+- (CMTime)offset;
+- (CMTime)scale;
 - (CMTime)position;
 - (CMTime)duration;
+- (CMTime)pts;
 - (long long)size;
 
 @end

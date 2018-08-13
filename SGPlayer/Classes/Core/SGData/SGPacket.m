@@ -30,6 +30,7 @@ SGObjectPoolItemLockingImplementation
         _scale = CMTimeMake(1, 1);
         _position = kCMTimeZero;
         _duration = kCMTimeZero;
+        _pts = kCMTimeZero;
         _dts = kCMTimeZero;
         _size = 0;
     }
@@ -71,6 +72,7 @@ SGObjectPoolItemLockingImplementation
     _scale = scale;
     _position = SGTimeMultiply(timebase, _corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts);
     _duration = SGTimeMultiply(timebase, _corePacket->duration);
+    _pts = CMTimeAdd(self.offset, self.position);
     _dts = SGTimeMultiply(timebase, _corePacket->dts);
     _size = _corePacket->size;
 }
@@ -84,6 +86,7 @@ SGObjectPoolItemLockingImplementation
     _scale = CMTimeMake(1, 1);
     _position = kCMTimeZero;
     _duration = kCMTimeZero;
+    _pts = kCMTimeZero;
     _dts = kCMTimeZero;
     _size = 0;
     if (_corePacket)
