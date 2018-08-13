@@ -42,8 +42,8 @@
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.view = self.view1;
-    [self.player replaceWithURL:contentURL1];
-//    [self.player replaceWithAsset:asset];
+//    [self.player replaceWithURL:contentURL1];
+    [self.player replaceWithAsset:asset];
     [self.player play];
     
 //    self.player2 = [[SGPlayer alloc] init];
