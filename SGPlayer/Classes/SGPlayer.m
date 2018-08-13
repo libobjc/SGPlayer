@@ -72,9 +72,8 @@
     else if ([asset isKindOfClass:[SGConcatAsset class]])
     {
         source = [[SGConcatSource alloc] initWithAsset:(SGConcatAsset *)asset];
-        return;
     }
-    else
+    if (!source)
     {
         return;
     }

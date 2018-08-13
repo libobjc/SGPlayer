@@ -11,6 +11,7 @@
 #import "SGAudioFFDecoder.h"
 #import "SGVideoFFDecoder.h"
 #import "SGVideoAVDecoder.h"
+#import "SGFFmpeg.h"
 #import "SGMacro.h"
 #import "SGTime.h"
 
@@ -28,6 +29,7 @@
 {
     if (self = [super init])
     {
+        [SGFFmpeg setupIfNeeded];
         self.configuration = configuration;
     }
     return self;

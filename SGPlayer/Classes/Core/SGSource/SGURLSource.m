@@ -7,7 +7,6 @@
 //
 
 #import "SGURLSource.h"
-#import "SGFFmpeg.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "SGMacro.h"
@@ -243,8 +242,6 @@ static int SGURLSourceInterruptHandler(void * context)
 
 - (void)openThread
 {
-    [SGFFmpeg setupIfNeeded];
-
     self.formatContext = avformat_alloc_context();
 
     if (!self.formatContext)
