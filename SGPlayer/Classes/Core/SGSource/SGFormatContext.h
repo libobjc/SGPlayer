@@ -20,8 +20,8 @@
 @property (nonatomic, strong, readonly) NSURL * URL;
 @property (nonatomic, assign, readonly) CMTime offset;
 @property (nonatomic, assign, readonly) CMTime scale;
-@property (nonatomic, assign, readonly) CMTime scaledDuration;
-@property (nonatomic, assign, readonly) CMTime actualDuration;
+@property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign, readonly) CMTime originalDuration;
 @property (nonatomic, assign, readonly) BOOL seekable;
 @property (nonatomic, strong, readonly) NSError * error;
 

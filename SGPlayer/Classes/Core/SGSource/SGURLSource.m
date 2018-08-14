@@ -275,7 +275,7 @@ static int SGURLSourceInterruptHandler(void * context)
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;
     self.videoStream = self.formatContext.videoStreams.firstObject;
-    self.duration = self.formatContext.scaledDuration;
+    self.duration = self.formatContext.duration;
     self.seekable = self.formatContext.seekable;
     self.error = formatContext.error;
     [self lock];

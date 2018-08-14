@@ -39,9 +39,10 @@
     for (int i = 0; i < 1; i++)
     {
         SGURLAsset * asset1 = [[SGURLAsset alloc] initWithURL:contentURL1];
+        asset1.scale = CMTimeMake(1, 1);
         SGURLAsset * asset2 = [[SGURLAsset alloc] initWithURL:contentURL2];
         [assets addObject:asset1];
-//        [assets addObject:asset2];
+        [assets addObject:asset2];
     }
     SGConcatAsset * asset = [[SGConcatAsset alloc] initWithAssets:assets];
     

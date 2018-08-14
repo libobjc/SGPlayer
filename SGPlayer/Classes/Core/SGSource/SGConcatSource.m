@@ -322,7 +322,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
-            duration = CMTimeAdd(duration, formatContext.scaledDuration);
+            duration = CMTimeAdd(duration, formatContext.duration);
             seekable = seekable && formatContext.seekable;
             [formatContexts addObject:formatContext];
         }

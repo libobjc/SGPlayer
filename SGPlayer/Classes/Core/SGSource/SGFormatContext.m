@@ -27,8 +27,8 @@
         _URL = URL;
         _offset = offset;
         _scale = scale;
-        _scaledDuration = kCMTimeZero;
-        _actualDuration = kCMTimeZero;
+        _duration = kCMTimeZero;
+        _originalDuration = kCMTimeZero;
         _seekable = NO;
     }
     return self;
@@ -51,10 +51,10 @@
     }
     if (formatContext->duration > 0)
     {
-        _actualDuration = CMTimeMake(formatContext->duration, AV_TIME_BASE);
-        _scaledDuration = SGTimeMultiplyByTime(self.actualDuration, self.scale);
+        _originalDuration = CMTimeMake(formatContext->duration, AV_TIME_BASE);
+        _duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
     }
-    if (CMTimeCompare(self.scaledDuration, kCMTimeZero) > 0 &&
+    if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
         formatContext->pb)
     {
         _seekable = formatContext->pb->seekable;
