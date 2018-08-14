@@ -48,6 +48,8 @@
 {
     if (self = [super init])
     {
+        _enable = NO;
+        _key = NO;
         self.rate = CMTimeMake(1, 1);
         self.glRenderer = [[SGGLRenderer alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];

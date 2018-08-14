@@ -10,19 +10,4 @@
 
 @implementation SGSessionConfiguration
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeH265 = YES;
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    
-}
-
 @end

@@ -7,10 +7,6 @@
 //
 
 #import "SGSession.h"
-#import "SGURLSource.h"
-#import "SGAudioFFDecoder.h"
-#import "SGVideoFFDecoder.h"
-#import "SGVideoAVDecoder.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
 #import "SGTime.h"
@@ -332,12 +328,12 @@
 
 - (void)setupDecoderIfNeeded
 {
-    if (self.audioEnable && self.configuration.audioDecoder)
+    if (self.audioEnable)
     {
         self.configuration.audioDecoder.delegate = self;
         [self.configuration.audioDecoder open];
     }
-    if (self.videoEnable && self.configuration.videoDecoder)
+    if (self.videoEnable)
     {
         self.configuration.videoDecoder.delegate = self;
         [self.configuration.videoDecoder open];
@@ -346,20 +342,20 @@
 
 - (void)setupOutputIfNeeded
 {
-    if (self.audioEnable && self.configuration.audioOutput)
+    if (self.audioEnable)
     {
+        self.configuration.audioOutput.enable = YES;
+        self.configuration.audioOutput.key = YES;
         self.configuration.audioOutput.delegate = self;
         [self.configuration.audioOutput open];
     }
-    if (self.videoEnable && self.configuration.videoOutput)
+    if (self.videoEnable)
     {
+        self.configuration.videoOutput.enable = YES;
+        self.configuration.videoOutput.key = !self.audioEnable;
         self.configuration.videoOutput.delegate = self;
         [self.configuration.videoOutput open];
     }
-    self.configuration.audioOutput.enable = self.audioEnable ? YES : NO;
-    self.configuration.videoOutput.enable = self.videoEnable ? YES : NO;
-    self.configuration.audioOutput.key = self.audioEnable ? YES : NO;
-    self.configuration.videoOutput.key = self.audioEnable ? NO : YES;
 }
 
 - (void)updateCapacity

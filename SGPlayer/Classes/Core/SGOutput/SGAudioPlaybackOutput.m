@@ -64,9 +64,12 @@
 {
     if (self = [super init])
     {
+        _enable = NO;
+        _key = NO;
         _rate = CMTimeMake(1, 1);
         _finalRate = CMTimeMake(1, 1);
         _frameRate = CMTimeMake(1, 1);
+        _currentScale = CMTimeMake(1, 1);
         self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
@@ -304,7 +307,8 @@
 - (void)updatePlayerRate
 {
     CMTime rate = SGTimeMultiplyByTime(self.rate, self.frameRate);
-    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:nil];
+    NSError * error = nil;
+    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:&error];
 }
 
 #pragma mark - swr
