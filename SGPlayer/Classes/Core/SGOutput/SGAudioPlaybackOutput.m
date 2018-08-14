@@ -22,12 +22,16 @@
     int _swrContextBufferMallocSize[SGAudioFrameMaxChannelCount];
 }
 
+@property (nonatomic, assign) CMTime finalRate;
+@property (nonatomic, assign) CMTime frameRate;
+
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
 @property (nonatomic, assign) long long currentRenderReadOffset;
+@property (nonatomic, assign) CMTime currentScale;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
 @property (nonatomic, assign) BOOL timeSyncDidUpdate;
@@ -60,6 +64,9 @@
 {
     if (self = [super init])
     {
+        _rate = CMTimeMake(1, 1);
+        _finalRate = CMTimeMake(1, 1);
+        _frameRate = CMTimeMake(1, 1);
         self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
@@ -278,12 +285,26 @@
 
 - (void)setRate:(CMTime)rate
 {
-    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:nil];
+    if (CMTimeCompare(_rate, rate) != 0)
+    {
+        _rate = rate;
+        [self updatePlayerRate];
+    }
 }
 
-- (CMTime)rate
+- (void)setFrameRate:(CMTime)frameRate
 {
-    return SGTimeMakeWithSeconds(self.audioPlayer.rate);
+    if (CMTimeCompare(_frameRate, frameRate) != 0)
+    {
+        _frameRate = frameRate;
+        [self updatePlayerRate];
+    }
+}
+
+- (void)updatePlayerRate
+{
+    CMTime rate = SGTimeMultiplyByTime(self.rate, self.frameRate);
+    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:nil];
 }
 
 #pragma mark - swr
@@ -371,6 +392,7 @@
         {
             break;
         }
+        self.currentScale = self.currentFrame.scale;
         
         long long residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
         long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
@@ -418,8 +440,9 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
+    self.frameRate = SGTimeDivideByTime(CMTimeMake(1, 1), self.currentScale);
     self.timeSyncDidUpdate = YES;
-    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
+    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.finalRate];
     [self unlock];
 }
 
