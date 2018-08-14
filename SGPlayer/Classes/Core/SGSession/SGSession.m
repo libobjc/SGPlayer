@@ -332,22 +332,16 @@
 
 - (void)setupDecoderIfNeeded
 {
-    if (self.audioEnable && !self.configuration.audioDecoder)
+    if (self.audioEnable && self.configuration.audioDecoder)
     {
-        self.configuration.audioDecoder = [[SGAudioFFDecoder alloc] init];
         self.configuration.audioDecoder.delegate = self;
         [self.configuration.audioDecoder open];
     }
-    if (self.videoEnable && !self.configuration.videoDecoder)
+    if (self.videoEnable && self.configuration.videoDecoder)
     {
-        self.configuration.videoDecoder = [[SGVideoFFDecoder alloc] init];
         self.configuration.videoDecoder.delegate = self;
         [self.configuration.videoDecoder open];
     }
-    self.configuration.audioOutput.enable = self.configuration.audioDecoder ? YES : NO;
-    self.configuration.videoOutput.enable = self.configuration.videoDecoder ? YES : NO;
-    self.configuration.audioOutput.key = self.configuration.audioOutput.enable ? YES : NO;
-    self.configuration.videoOutput.key = self.configuration.audioOutput.enable ? NO : YES;
 }
 
 - (void)setupOutputIfNeeded
@@ -362,6 +356,10 @@
         self.configuration.videoOutput.delegate = self;
         [self.configuration.videoOutput open];
     }
+    self.configuration.audioOutput.enable = self.audioEnable ? YES : NO;
+    self.configuration.videoOutput.enable = self.videoEnable ? YES : NO;
+    self.configuration.audioOutput.key = self.audioEnable ? YES : NO;
+    self.configuration.videoOutput.key = self.audioEnable ? NO : YES;
 }
 
 - (void)updateCapacity
