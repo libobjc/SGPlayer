@@ -410,10 +410,12 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPrepareDuration = kCMTimeZero;
-            CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            duration = SGTimeMultiplyByTime(duration, self.currentFrame.scale);
             self.currentPreparePosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
-        CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
+        CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.originalDuration, bytesToCopy, self.currentFrame.linesize[0]);
+        duration = SGTimeMultiplyByTime(duration, self.currentFrame.scale);
         self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
         
         numberOfSamples -= framesToCopy;
@@ -442,7 +444,7 @@
     [self lock];
     self.frameRate = SGTimeDivideByTime(CMTimeMake(1, 1), self.currentScale);
     self.timeSyncDidUpdate = YES;
-    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.finalRate];
+    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];
 }
 
