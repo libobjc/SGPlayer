@@ -35,9 +35,15 @@
     NSURL * contentURL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
     NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
-    SGConcatAssetUnit * unit1 = [[SGConcatAssetUnit alloc] initWithURL:contentURL2];
-    SGConcatAssetUnit * unit2 = [[SGConcatAssetUnit alloc] initWithURL:contentURL1];
-    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithUnits:@[unit1, unit2]];
+    NSMutableArray * units = [NSMutableArray array];
+    for (int i = 0; i < 1; i++)
+    {
+        SGConcatAssetUnit * unit1 = [[SGConcatAssetUnit alloc] initWithURL:contentURL1];
+        SGConcatAssetUnit * unit2 = [[SGConcatAssetUnit alloc] initWithURL:contentURL2];
+        [units addObject:unit1];
+        [units addObject:unit2];
+    }
+    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithUnits:units];
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
