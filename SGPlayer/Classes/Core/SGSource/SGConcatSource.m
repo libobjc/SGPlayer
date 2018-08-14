@@ -306,7 +306,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     CMTime duration = kCMTimeZero;
     BOOL seekable = YES;
     NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
-    for (SGConcatAssetUnit * obj in self.asset.units)
+    for (SGURLAsset * obj in self.asset.assets)
     {
         SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
         BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];

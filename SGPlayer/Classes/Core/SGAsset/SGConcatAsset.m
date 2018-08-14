@@ -8,31 +8,13 @@
 
 #import "SGConcatAsset.h"
 
-@implementation SGConcatAssetUnit
-
-- (instancetype)initWithURL:(NSURL *)URL
-{
-    if (self = [super init])
-    {
-        _URL = URL;
-        self.scale = CMTimeMake(1, 1);
-    }
-    return self;
-}
-
-@end
-
-@interface SGConcatAsset ()
-
-@end
-
 @implementation SGConcatAsset
 
-- (instancetype)initWithUnits:(NSArray <SGConcatAssetUnit *> *)units
+- (instancetype)initWithAssets:(NSArray <SGURLAsset *> *)assets
 {
     if (self = [super init])
     {
-        _units = units;
+        _assets = assets;
     }
     return self;
 }

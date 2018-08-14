@@ -7,27 +7,15 @@
 //
 
 #import "SGAsset.h"
-#import <AVFoundation/AVFoundation.h>
-
-@interface SGConcatAssetUnit : NSObject
-
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithURL:(NSURL *)URL;
-
-@property (nonatomic, strong, readonly) NSURL * URL;
-@property (nonatomic, assign) CMTime scale;             // Default is (1, 1).
-
-@end
+#import "SGURLAsset.h"
 
 @interface SGConcatAsset : SGAsset
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithUnits:(NSArray <SGConcatAssetUnit *> *)units;
+- (instancetype)initWithAssets:(NSArray <SGURLAsset *> *)assets;
 
-@property (nonatomic, strong, readonly) NSArray <SGConcatAssetUnit *> * units;
+@property (nonatomic, strong, readonly) NSArray <SGURLAsset *> * assets;
 
 @end

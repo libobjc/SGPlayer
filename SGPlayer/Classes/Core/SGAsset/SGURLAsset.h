@@ -7,6 +7,7 @@
 //
 
 #import "SGAsset.h"
+#import <AVFoundation/AVFoundation.h>
 
 @interface SGURLAsset : SGAsset
 
@@ -16,5 +17,6 @@
 - (instancetype)initWithURL:(NSURL *)URL;
 
 @property (nonatomic, strong, readonly) NSURL * URL;
+@property (nonatomic, assign) CMTime scale;             // Default is (1, 1).
 
 @end

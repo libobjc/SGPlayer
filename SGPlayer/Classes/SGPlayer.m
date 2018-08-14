@@ -60,31 +60,19 @@
 - (void)replaceWithAsset:(SGAsset *)asset
 {
     [self destory];
-    if (!asset)
+    SGConcatAsset * concatAsset = [self concatAssetWithAsset:asset];
+    if (!concatAsset)
     {
         return;
     }
-    id <SGSource> source = nil;
-    if ([asset isKindOfClass:[SGURLAsset class]])
-    {
-        source = [[SGURLSource alloc] initWithAsset:(SGURLAsset *)asset];
-    }
-    else if ([asset isKindOfClass:[SGConcatAsset class]])
-    {
-        source = [[SGConcatSource alloc] initWithAsset:(SGConcatAsset *)asset];
-    }
-    if (!source)
-    {
-        return;
-    }
-    _asset = asset;
+    _asset = concatAsset;
     self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
     self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
     self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
     self.videoOutput.timeSync = self.audioOutput.timeSync;
     self.videoOutput.view = self.view;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
-    configuration.source = source;
+    configuration.source = [[SGConcatSource alloc] initWithAsset:concatAsset];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     self.session = [[SGSession alloc] initWithConfiguration:configuration];
@@ -188,6 +176,41 @@
 }
 
 #pragma mark - Internal
+
+- (SGConcatAsset *)concatAssetWithAsset:(SGAsset *)asset
+{
+    if (!asset)
+    {
+        return nil;
+    }
+    SGConcatAsset * concatAsset = nil;
+    if ([asset isKindOfClass:[SGURLAsset class]])
+    {
+        concatAsset = [[SGConcatAsset alloc] initWithAssets:@[(SGURLAsset *)asset]];
+    }
+    else if ([asset isKindOfClass:[SGConcatAsset class]])
+    {
+        concatAsset = (SGConcatAsset *)asset;
+    }
+    if (!concatAsset)
+    {
+        return nil;
+    }
+    BOOL error = NO;
+    for (SGURLAsset * obj in concatAsset.assets)
+    {
+        if (!obj.URL)
+        {
+            error = YES;
+            break;
+        }
+    }
+    if (error)
+    {
+        return nil;
+    }
+    return concatAsset;
+}
 
 - (void)playAndPause
 {

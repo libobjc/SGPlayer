@@ -15,6 +15,7 @@
     if (self = [super init])
     {
         _URL = URL;
+        self.scale = CMTimeMake(1, 1);
     }
     return self;
 }
