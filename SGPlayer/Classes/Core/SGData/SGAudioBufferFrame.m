@@ -70,7 +70,7 @@
     self.originalDuration = audioFrame.originalDuration;
     self.timeStamp = audioFrame.timeStamp;
     self.duration = audioFrame.duration;
-    self.dts = audioFrame.dts;
+    self.decodeTimeStamp = audioFrame.decodeTimeStamp;
     self.size = audioFrame.size;
 }
 

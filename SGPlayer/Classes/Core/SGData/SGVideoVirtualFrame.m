@@ -19,7 +19,7 @@
     self.originalDuration = packet.originalDuration;
     self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
     self.duration = packet.duration;
-    self.dts = packet.dts;
+    self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = packet.corePacket->size;
     self.packetPosition = packet.corePacket->pos;
     self.packetDuration = packet.corePacket->duration;

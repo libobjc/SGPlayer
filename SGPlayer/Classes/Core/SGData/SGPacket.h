@@ -24,7 +24,7 @@
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime originalTimeStamp;
 @property (nonatomic, assign, readonly) CMTime originalDuration;
-@property (nonatomic, assign, readonly) CMTime dts;
+@property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, assign, readonly) long long size;
 
 - (void)fillWithStream:(SGStream *)stream;

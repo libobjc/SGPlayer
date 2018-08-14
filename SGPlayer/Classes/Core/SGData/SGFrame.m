@@ -32,7 +32,7 @@ SGObjectPoolItemImplementation
     self.duration = kCMTimeZero;
     self.originalTimeStamp = kCMTimeZero;
     self.originalDuration = kCMTimeZero;
-    self.dts = kCMTimeZero;
+    self.decodeTimeStamp = kCMTimeZero;
     self.size = 0;
 }
 

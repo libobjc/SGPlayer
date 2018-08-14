@@ -39,7 +39,7 @@
     self.originalDuration = SGTimeMultiply(packet.timebase, av_frame_get_pkt_duration(self.coreFrame));
     self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
     self.duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
-    self.dts = packet.dts;
+    self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = av_frame_get_pkt_size(self.coreFrame);
     
     self.format = self.coreFrame->format;

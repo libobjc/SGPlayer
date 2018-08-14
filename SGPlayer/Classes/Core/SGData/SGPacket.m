@@ -32,7 +32,7 @@ SGObjectPoolItemLockingImplementation
         _duration = kCMTimeZero;
         _originalTimeStamp = kCMTimeZero;
         _originalTimeStamp = kCMTimeZero;
-        _dts = kCMTimeZero;
+        _decodeTimeStamp = kCMTimeZero;
         _size = 0;
     }
     return self;
@@ -75,7 +75,7 @@ SGObjectPoolItemLockingImplementation
     _originalDuration = SGTimeMultiply(timebase, _corePacket->duration);
     _timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
     _duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
-    _dts = SGTimeMultiply(timebase, _corePacket->dts);
+    _decodeTimeStamp = SGTimeMultiply(timebase, _corePacket->dts);
     _size = _corePacket->size;
 }
 
@@ -90,7 +90,7 @@ SGObjectPoolItemLockingImplementation
     _duration = kCMTimeZero;
     _originalTimeStamp = kCMTimeZero;
     _originalDuration = kCMTimeZero;
-    _dts = kCMTimeZero;
+    _decodeTimeStamp = kCMTimeZero;
     _size = 0;
     if (_corePacket)
     {

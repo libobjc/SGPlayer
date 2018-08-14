@@ -134,7 +134,7 @@
     {
         packet.duration,
         packet.originalTimeStamp,
-        packet.dts,
+        packet.decodeTimeStamp,
     };
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size timingInfo:timingInfo];
     if (!sampleBuffer)
