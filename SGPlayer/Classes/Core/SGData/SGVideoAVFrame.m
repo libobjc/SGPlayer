@@ -50,6 +50,7 @@
         self.offset = packet.offset;
         self.scale = packet.scale;
         self.originalTimeStamp = packet.originalTimeStamp;
+        self.originalDuration = packet.originalDuration;
         self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
         self.duration = packet.duration;
         self.dts = packet.dts;

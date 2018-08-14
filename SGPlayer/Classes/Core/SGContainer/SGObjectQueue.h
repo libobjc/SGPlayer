@@ -15,8 +15,9 @@
 - (CMTime)offset;
 - (CMTime)scale;
 - (CMTime)timeStamp;
-- (CMTime)originalTimeStamp;
 - (CMTime)duration;
+- (CMTime)originalTimeStamp;
+- (CMTime)originalDuration;
 - (long long)size;
 
 @end

@@ -67,6 +67,7 @@
     self.offset = audioFrame.offset;
     self.scale = audioFrame.scale;
     self.originalTimeStamp = audioFrame.originalTimeStamp;
+    self.originalDuration = audioFrame.originalDuration;
     self.timeStamp = audioFrame.timeStamp;
     self.duration = audioFrame.duration;
     self.dts = audioFrame.dts;
