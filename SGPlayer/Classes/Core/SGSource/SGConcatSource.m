@@ -18,19 +18,20 @@
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
+@property (nonatomic, assign) BOOL seekable;
+@property (nonatomic, assign) CMTime seekTimeStamp;
+@property (nonatomic, assign) CMTime seekingTimeStamp;
+@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
+
+@property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
 @property (nonatomic, strong) SGFormatContext * formatContext;
 @property (nonatomic, strong) SGStream * audioStream;
 @property (nonatomic, strong) SGStream * videoStream;
-@property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
 @property (nonatomic, strong) NSOperation * readOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
-@property (nonatomic, assign) BOOL seekable;
-@property (nonatomic, assign) CMTime seekTimeStamp;
-@property (nonatomic, assign) CMTime seekingTimeStamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
 
 @end
 
@@ -66,6 +67,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     if (self = [super init])
     {
         self.asset = asset;
+        self.duration = kCMTimeZero;
+        self.seekable = NO;
         self.seekTimeStamp = kCMTimeZero;
         self.seekingTimeStamp = kCMTimeZero;
         self.pausedCondition = [[NSCondition alloc] init];
@@ -207,12 +210,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    for (SGFormatContext * obj in self.formatContexts)
-    {
-        [obj destory];
-    }
-    self.formatContext = nil;
-    self.formatContexts = nil;
+    [self destoryFormatContext];
 }
 
 #pragma mark - Seeking
@@ -251,20 +249,26 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 #pragma mark - Internal
 
+- (void)destoryFormatContext
+{
+    for (SGFormatContext * obj in self.formatContexts)
+    {
+        [obj destory];
+    }
+    self.formatContext = nil;
+    self.formatContexts = nil;
+}
+
 - (void)changeToNextFormatContext
 {
     if (!self.formatContext)
     {
-        self.formatContext = self.formatContexts.firstObject;
-        self.audioStream = self.formatContext.audioStreams.firstObject;
-        self.videoStream = self.formatContext.videoStreams.firstObject;
+        [self setCurrentFormatContext:self.formatContexts.firstObject];
     }
     else if (self.formatContext != self.formatContexts.lastObject)
     {
         NSInteger index = [self.formatContexts indexOfObject:self.formatContext] + 1;
-        self.formatContext = [self.formatContexts objectAtIndex:index];
-        self.audioStream = self.formatContext.audioStreams.firstObject;
-        self.videoStream = self.formatContext.videoStreams.firstObject;
+        [self setCurrentFormatContext:[self.formatContexts objectAtIndex:index]];
     }
 }
 
@@ -273,18 +277,24 @@ static int SGConcatSourceInterruptHandler(void * context)
     for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
     {
         SGFormatContext * formatContext = [self.formatContexts objectAtIndex:i];
-        if (i == 0 || CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
+        if (i == 0 || CMTimeCompare(timeStamp, formatContext.offset) >= 0)
         {
-            self.formatContext = formatContext;
-            self.audioStream = self.formatContext.audioStreams.firstObject;
-            self.videoStream = self.formatContext.videoStreams.firstObject;
+            [self setCurrentFormatContext:formatContext];
             break;
         }
     }
-    CMTime realTimeStamp = CMTimeSubtract(timeStamp, self.formatContext.startTime);
-    long long ffRealTimeStamp = AV_TIME_BASE * realTimeStamp.value / realTimeStamp.timescale;
-    int success = av_seek_frame(self.formatContext.coreFormatContext, -1, ffRealTimeStamp, AVSEEK_FLAG_BACKWARD);
+    timeStamp = CMTimeSubtract(timeStamp, self.formatContext.offset);
+    timeStamp = SGTimeDivideByTime(timeStamp, self.formatContext.scale);
+    long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
+    int success = av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
     return success;
+}
+
+- (void)setCurrentFormatContext:(SGFormatContext *)formatContext
+{
+    self.formatContext = formatContext;
+    self.audioStream = self.formatContext.audioStreams.firstObject;
+    self.videoStream = self.formatContext.videoStreams.firstObject;
 }
 
 #pragma mark - Open
@@ -308,13 +318,11 @@ static int SGConcatSourceInterruptHandler(void * context)
     NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
     for (SGURLAsset * obj in self.asset.assets)
     {
-        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
+        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL offset:duration scale:obj.scale];
         BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
-            formatContext.startTime = duration;
-            formatContext.scale = obj.scale;
-            duration = CMTimeAdd(duration, formatContext.duration);
+            duration = CMTimeAdd(duration, formatContext.scaledDuration);
             seekable = seekable && formatContext.seekable;
             [formatContexts addObject:formatContext];
         }
@@ -424,11 +432,13 @@ static int SGConcatSourceInterruptHandler(void * context)
                     }
                     else
                     {
-                        [self changeToNextFormatContext];
-                        if (self.formatContext.seekable)
-                        {
-                            av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
-                        }
+                        callback = ^{
+                            [self changeToNextFormatContext];
+                            if (self.formatContext.seekable)
+                            {
+                                av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
+                            }
+                        };
                     }
                 }
                 [self unlock];
@@ -447,7 +457,7 @@ static int SGConcatSourceInterruptHandler(void * context)
                 }
                 if (stream == self.audioStream || stream == self.videoStream)
                 {
-                    [packet fillWithStream:stream offset:self.formatContext.startTime scale:self.formatContext.scale];
+                    [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
                     [self.delegate source:self hasNewPacket:packet];
                 }
             }

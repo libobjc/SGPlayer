@@ -18,6 +18,11 @@
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
+@property (nonatomic, assign) BOOL seekable;
+@property (nonatomic, assign) CMTime seekTimeStamp;
+@property (nonatomic, assign) CMTime seekingTimeStamp;
+@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
+
 @property (nonatomic, strong) SGFormatContext * formatContext;
 @property (nonatomic, strong) SGStream * audioStream;
 @property (nonatomic, strong) SGStream * videoStream;
@@ -26,10 +31,6 @@
 @property (nonatomic, strong) NSOperation * openOperation;
 @property (nonatomic, strong) NSOperation * readOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
-@property (nonatomic, assign) BOOL seekable;
-@property (nonatomic, assign) CMTime seekTimeStamp;
-@property (nonatomic, assign) CMTime seekingTimeStamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
 
 @end
 
@@ -208,8 +209,7 @@ static int SGURLSourceInterruptHandler(void * context)
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    [self.formatContext destory];
-    self.formatContext = nil;
+    [self destoryFormatContext];
 }
 
 #pragma mark - Seeking
@@ -246,6 +246,14 @@ static int SGURLSourceInterruptHandler(void * context)
     return YES;
 }
 
+#pragma mark - Internal
+
+- (void)destoryFormatContext
+{
+    [self.formatContext destory];
+    self.formatContext = nil;
+}
+
 #pragma mark - Open
 
 - (void)startOpenThread
@@ -267,7 +275,7 @@ static int SGURLSourceInterruptHandler(void * context)
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;
     self.videoStream = self.formatContext.videoStreams.firstObject;
-    self.duration = self.formatContext.duration;
+    self.duration = self.formatContext.scaledDuration;
     self.seekable = self.formatContext.seekable;
     self.error = formatContext.error;
     [self lock];
@@ -316,16 +324,16 @@ static int SGURLSourceInterruptHandler(void * context)
         else if (self.state == SGSourceStateSeeking)
         {
             self.seekingTimeStamp = self.seekTimeStamp;
-            long long timeStamp = AV_TIME_BASE * self.seekingTimeStamp.value / self.seekingTimeStamp.timescale;
+            CMTime timeStamp = self.seekingTimeStamp;
             [self unlock];
-            int success = av_seek_frame(self.formatContext.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+            long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
+            int success = av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
             [self lock];
             BOOL enable = NO;
             SGBasicBlock callback = ^{};
             if (self.state == SGSourceStateSeeking)
             {
-                long long current = AV_TIME_BASE * self.seekTimeStamp.value / self.seekTimeStamp.timescale;
-                if (timeStamp == current)
+                if (CMTimeCompare(self.seekTimeStamp, timeStamp) == 0)
                 {
                     enable = YES;
                     callback = [self setState:SGSourceStateReading];
@@ -376,7 +384,7 @@ static int SGURLSourceInterruptHandler(void * context)
                 }
                 if (stream == self.audioStream || stream == self.videoStream)
                 {
-                    [packet fillWithStream:stream offset:self.formatContext.startTime scale:self.formatContext.scale];
+                    [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
                     [self.delegate source:self hasNewPacket:packet];
                 }
             }

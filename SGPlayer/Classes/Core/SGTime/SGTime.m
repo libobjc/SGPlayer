@@ -27,15 +27,35 @@ CMTime SGTimeValidate(CMTime time, CMTime defaultTime)
 
 CMTime SGTimeMultiply(CMTime time, int64_t multiplier)
 {
-    return CMTimeMake(time.value * multiplier, time.timescale);
+    return CMTimeMultiply(time, (int32_t)multiplier);
+}
+
+CMTime SGTimeMultiplyByTime(CMTime time, CMTime multiplier)
+{
+    return SGTimeMultiplyByRatio(time, multiplier.value, multiplier.timescale);
 }
 
 CMTime SGTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor)
 {
-    return CMTimeMake(time.value * multiplier / divisor, time.timescale);
+    return CMTimeMultiplyByRatio(time, (int32_t)multiplier, (int32_t)divisor);
+}
+
+CMTime SGTimeDivide(CMTime time, int64_t divisor)
+{
+    return SGTimeMultiplyByRatio(time, 1, divisor);
+}
+
+CMTime SGTimeDivideByTime(CMTime time, CMTime divisor)
+{
+    return SGTimeMultiplyByRatio(time, divisor.timescale, divisor.value);
+}
+
+CMTime SGTimeDivideByRatio(CMTime time, int64_t divisor, int64_t multiplier)
+{
+    return CMTimeMultiplyByRatio(time, (int32_t)multiplier, (int32_t)divisor);
 }
 
 CMTime SGTimeMakeWithSeconds(Float64 seconds)
 {
-    return CMTimeMakeWithSeconds(seconds, 10000);
+    return CMTimeMakeWithSeconds(seconds, 1000000);
 }

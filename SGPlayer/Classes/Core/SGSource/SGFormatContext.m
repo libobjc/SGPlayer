@@ -17,13 +17,18 @@
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
+    return [self initWithURL:URL offset:kCMTimeZero scale:CMTimeMake(1, 1)];
+}
+
+- (instancetype)initWithURL:(NSURL *)URL offset:(CMTime)offset scale:(CMTime)scale
+{
     if (self = [super init])
     {
-        _startTime = kCMTimeZero;
-        _scale = CMTimeMake(1, 1);
         _URL = URL;
-        _coreFormatContext = NULL;
-        _duration = kCMTimeZero;
+        _offset = offset;
+        _scale = scale;
+        _scaledDuration = kCMTimeZero;
+        _actualDuration = kCMTimeZero;
         _seekable = NO;
     }
     return self;
@@ -44,13 +49,12 @@
         _error = error;
         return NO;
     }
-    int64_t duration = formatContext->duration;
-    if (duration > 0)
+    if (formatContext->duration > 0)
     {
-        _duration = CMTimeMake(duration, AV_TIME_BASE);
+        _actualDuration = CMTimeMake(formatContext->duration, AV_TIME_BASE);
+        _scaledDuration = SGTimeMultiplyByTime(self.actualDuration, self.scale);
     }
-    
-    if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
+    if (CMTimeCompare(self.scaledDuration, kCMTimeZero) > 0 &&
         formatContext->pb)
     {
         _seekable = formatContext->pb->seekable;

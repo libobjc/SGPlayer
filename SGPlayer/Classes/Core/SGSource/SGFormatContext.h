@@ -11,21 +11,26 @@
 
 @interface SGFormatContext : NSObject
 
-- (instancetype)initWithURL:(NSURL *)URL;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
-@property (nonatomic, assign) CMTime startTime;
-@property (nonatomic, assign) CMTime scale;
+- (instancetype)initWithURL:(NSURL *)URL;
+- (instancetype)initWithURL:(NSURL *)URL offset:(CMTime)offset scale:(CMTime)scale;
 
 @property (nonatomic, strong, readonly) NSURL * URL;
-@property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
+@property (nonatomic, assign, readonly) CMTime offset;
+@property (nonatomic, assign, readonly) CMTime scale;
+@property (nonatomic, assign, readonly) CMTime scaledDuration;
+@property (nonatomic, assign, readonly) CMTime actualDuration;
+@property (nonatomic, assign, readonly) BOOL seekable;
 @property (nonatomic, strong, readonly) NSError * error;
-@property (nonatomic, assign, readonly) CMTime duration;
+
+@property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * streams;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * videoStreams;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * audioStreams;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * subtitleStreams;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * otherStreams;
-@property (nonatomic, assign, readonly) BOOL seekable;
 
 - (BOOL)openWithOpaque:(void *)opaque callback:(int (*)(void *))callback;
 - (void)destory;
