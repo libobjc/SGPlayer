@@ -273,7 +273,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
     {
         SGFormatContext * formatContext = [self.formatContexts objectAtIndex:i];
-        if (CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
+        if (i == 0 || CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
         {
             self.formatContext = formatContext;
             self.audioStream = self.formatContext.audioStreams.firstObject;
