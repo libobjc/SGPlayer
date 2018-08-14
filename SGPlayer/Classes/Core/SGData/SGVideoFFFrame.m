@@ -35,9 +35,9 @@
     self.timebase = packet.timebase;
     self.offset = packet.offset;
     self.scale = packet.scale;
-    self.position = SGTimeMultiply(packet.timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
+    self.originalTimeStamp = SGTimeMultiply(packet.timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
+    self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
     self.duration = SGTimeMultiply(packet.timebase, av_frame_get_pkt_duration(self.coreFrame));
-    self.pts = CMTimeAdd(self.offset, self.position);
     self.dts = packet.dts;
     self.size = av_frame_get_pkt_size(self.coreFrame);
     

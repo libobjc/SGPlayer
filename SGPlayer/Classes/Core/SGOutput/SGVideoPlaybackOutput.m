@@ -131,7 +131,7 @@
     {
         if ( !self.timeSyncDidUpdate && self.frameQueue.count == 0)
         {
-            [self.timeSync updateKeyTime:videoFrame.pts duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+            [self.timeSync updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
         }
     }
     self.hasFrame = YES;
@@ -227,7 +227,7 @@
             NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
             NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGTimeMakeWithSeconds(nextVSyncInterval));
-            * current = self.currentFrame.pts;
+            * current = self.currentFrame.timeStamp;
             return YES;
         }
         return NO;
@@ -245,7 +245,7 @@
         if (self.key)
         {
             self.timeSyncDidUpdate = YES;
-            [self.timeSync updateKeyTime:self.currentFrame.pts duration:self.currentFrame.duration rate:self.rate];
+            [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
         }
         drawing = YES;
     }

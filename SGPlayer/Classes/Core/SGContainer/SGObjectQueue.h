@@ -14,9 +14,9 @@
 
 - (CMTime)offset;
 - (CMTime)scale;
-- (CMTime)position;
+- (CMTime)timeStamp;
+- (CMTime)originalTimeStamp;
 - (CMTime)duration;
-- (CMTime)pts;
 - (long long)size;
 
 @end

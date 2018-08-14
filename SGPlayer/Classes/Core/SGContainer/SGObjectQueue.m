@@ -96,7 +96,7 @@
         [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
             if (CMTimeCompare(obj1.offset, obj2.offset) == 0)
             {
-                return CMTimeCompare(obj1.position, obj2.position) < 0 ? NSOrderedAscending : NSOrderedDescending;
+                return CMTimeCompare(obj1.originalTimeStamp, obj2.originalTimeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
             }
             else
             {
@@ -193,7 +193,7 @@
     }
     id <SGObjectQueueItem> object = nil;
     do {
-        CMTime first = self.objects.firstObject.pts;
+        CMTime first = self.objects.firstObject.timeStamp;
         if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
         {
             [object unlock];

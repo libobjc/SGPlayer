@@ -28,9 +28,9 @@ SGObjectPoolItemImplementation
     self.timebase = kCMTimeZero;
     self.offset = kCMTimeZero;
     self.scale = CMTimeMake(1, 1);
-    self.position = kCMTimeZero;
+    self.timeStamp = kCMTimeZero;
+    self.originalTimeStamp = kCMTimeZero;
     self.duration = kCMTimeZero;
-    self.pts = kCMTimeZero;
     self.dts = kCMTimeZero;
     self.size = 0;
 }

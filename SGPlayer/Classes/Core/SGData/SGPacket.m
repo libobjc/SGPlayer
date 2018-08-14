@@ -28,9 +28,9 @@ SGObjectPoolItemLockingImplementation
         _timebase = kCMTimeZero;
         _offset = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
-        _position = kCMTimeZero;
+        _timeStamp = kCMTimeZero;
+        _originalTimeStamp = kCMTimeZero;
         _duration = kCMTimeZero;
-        _pts = kCMTimeZero;
         _dts = kCMTimeZero;
         _size = 0;
     }
@@ -70,9 +70,9 @@ SGObjectPoolItemLockingImplementation
     _mediaType = stream.mediaType;
     _offset = offset;
     _scale = scale;
-    _position = SGTimeMultiply(timebase, _corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts);
+    _originalTimeStamp = SGTimeMultiply(timebase, _corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts);
+    _timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
     _duration = SGTimeMultiply(timebase, _corePacket->duration);
-    _pts = CMTimeAdd(self.offset, self.position);
     _dts = SGTimeMultiply(timebase, _corePacket->dts);
     _size = _corePacket->size;
 }
@@ -84,9 +84,9 @@ SGObjectPoolItemLockingImplementation
     _timebase = kCMTimeZero;
     _offset = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
-    _position = kCMTimeZero;
+    _timeStamp = kCMTimeZero;
+    _originalTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
-    _pts = kCMTimeZero;
     _dts = kCMTimeZero;
     _size = 0;
     if (_corePacket)

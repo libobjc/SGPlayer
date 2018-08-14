@@ -191,7 +191,7 @@
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
     if (!self.timeSyncDidUpdate && self.frameQueue.count == 0)
     {
-        [self.timeSync updateKeyTime:result.pts duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        [self.timeSync updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     self.hasFrame = YES;
     [self.frameQueue putObjectSync:result];
@@ -389,7 +389,7 @@
         {
             self.currentPrepareDuration = kCMTimeZero;
             CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
-            self.currentPreparePosition = CMTimeAdd(self.currentFrame.pts, duration);
+            self.currentPreparePosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
         CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
         self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);

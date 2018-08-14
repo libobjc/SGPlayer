@@ -8,6 +8,7 @@
 
 #import "SGVideoAVDecoder.h"
 #import <VideoToolbox/VideoToolbox.h>
+#import "SGVideoVirtualFrame.h"
 #import "SGVideoAVFrame.h"
 #import "SGObjectPool.h"
 #import <UIKit/UIKit.h>
@@ -108,10 +109,8 @@
     if (self.applicationState == UIApplicationStateBackground)
     {
         self.shouldFlush = YES;
-        SGVideoFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoFrame class]];
-        frame.position = packet.position;
-        frame.duration = packet.duration;
-        frame.size = packet.size;
+        SGVideoVirtualFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoVirtualFrame class]];
+        [frame fillWithPacket:packet];
         return @[frame];
     }
 #endif
@@ -134,7 +133,7 @@
     CMSampleTimingInfo timingInfo =
     {
         packet.duration,
-        packet.position,
+        packet.originalTimeStamp,
         packet.dts,
     };
     CMSampleBufferRef sampleBuffer = [self sampleBufferFromData:packet.corePacket->data size:packet.corePacket->size timingInfo:timingInfo];
@@ -153,7 +152,7 @@
             {
                 SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
                 frame.corePixelBuffer = self.decodingPixelBuffer;
-                [frame fillWithPpacket:packet];
+                [frame fillWithPacket:packet];
                 ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;

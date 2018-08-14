@@ -66,9 +66,9 @@
     self.timebase = audioFrame.timebase;
     self.offset = audioFrame.offset;
     self.scale = audioFrame.scale;
-    self.position = audioFrame.position;
+    self.originalTimeStamp = audioFrame.originalTimeStamp;
+    self.timeStamp = audioFrame.timeStamp;
     self.duration = audioFrame.duration;
-    self.pts = CMTimeAdd(audioFrame.offset, audioFrame.position);
     self.dts = audioFrame.dts;
     self.size = audioFrame.size;
 }

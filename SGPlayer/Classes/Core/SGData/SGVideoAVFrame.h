@@ -12,6 +12,6 @@
 
 @property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
 
-- (void)fillWithPpacket:(SGPacket *)packet;
+- (void)fillWithPacket:(SGPacket *)packet;
 
 @end
