@@ -379,11 +379,19 @@
 {
     if (session.state == SGSessionStateOpened)
     {
-        [self.session read];
+        [session read];
         [self.loadingStateLock lock];
         SGBasicBlock loadingStateCallback = [self setLoadingState:SGLoadingStateLoading];
         [self.loadingStateLock unlock];
         loadingStateCallback();
+    }
+    else if (session.state == SGSessionStateFailed)
+    {
+        _error =  session.error;
+        [self.stateLock lock];
+        SGBasicBlock callback = [self setState:SGPlaybackStateFailed];
+        [self.stateLock unlock];
+        callback();
     }
 }
 
@@ -438,7 +446,8 @@
         return;
     }
     [self.stateLock lock];
-    if (self.state == SGPlaybackStateSeeking)
+    if (self.state == SGPlaybackStateSeeking ||
+        self.state == SGPlaybackStateFailed)
     {
         [self.stateLock unlock];
         return;

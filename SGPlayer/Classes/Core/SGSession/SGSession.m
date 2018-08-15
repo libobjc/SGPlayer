@@ -326,38 +326,6 @@
 
 #pragma mark - Internal
 
-- (void)setupDecoderIfNeeded
-{
-    if (self.audioEnable)
-    {
-        self.configuration.audioDecoder.delegate = self;
-        [self.configuration.audioDecoder open];
-    }
-    if (self.videoEnable)
-    {
-        self.configuration.videoDecoder.delegate = self;
-        [self.configuration.videoDecoder open];
-    }
-}
-
-- (void)setupOutputIfNeeded
-{
-    if (self.audioEnable)
-    {
-        self.configuration.audioOutput.enable = YES;
-        self.configuration.audioOutput.key = YES;
-        self.configuration.audioOutput.delegate = self;
-        [self.configuration.audioOutput open];
-    }
-    if (self.videoEnable)
-    {
-        self.configuration.videoOutput.enable = YES;
-        self.configuration.videoOutput.key = !self.audioEnable;
-        self.configuration.videoOutput.delegate = self;
-        [self.configuration.videoOutput open];
-    }
-}
-
 - (void)updateCapacity
 {
     CMTime duration = kCMTimeZero;
@@ -405,9 +373,33 @@
     {
         case SGSourceStateOpened:
         {
-            [self setupDecoderIfNeeded];
-            [self setupOutputIfNeeded];
-            callback = [self setState:SGSessionStateOpened];
+            if (!self.audioEnable && !self.videoEnable)
+            {
+                _error = [NSError errorWithDomain:@"No valid track to play." code:-1 userInfo:nil];
+                callback = [self setState:SGSessionStateFailed];
+            }
+            else
+            {
+                if (self.audioEnable)
+                {
+                    self.configuration.audioDecoder.delegate = self;
+                    [self.configuration.audioDecoder open];
+                    self.configuration.audioOutput.enable = YES;
+                    self.configuration.audioOutput.key = YES;
+                    self.configuration.audioOutput.delegate = self;
+                    [self.configuration.audioOutput open];
+                }
+                if (self.videoEnable)
+                {
+                    self.configuration.videoDecoder.delegate = self;
+                    [self.configuration.videoDecoder open];
+                    self.configuration.videoOutput.enable = YES;
+                    self.configuration.videoOutput.key = !self.audioEnable;
+                    self.configuration.videoOutput.delegate = self;
+                    [self.configuration.videoOutput open];
+                }
+                callback = [self setState:SGSessionStateOpened];
+            }
         }
             break;
         case SGSourceStateFinished:

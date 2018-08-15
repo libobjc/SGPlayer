@@ -76,8 +76,15 @@
                 [audioStreams addObject:obj];
                 break;
             case AVMEDIA_TYPE_VIDEO:
-                _videoEnable = YES;
-                [videoStreams addObject:obj];
+                if ((obj.coreStream->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0)
+                {
+                    _videoEnable = YES;
+                    [videoStreams addObject:obj];
+                }
+                else
+                {
+                    [otherStreams addObject:obj];
+                }
                 break;
             case AVMEDIA_TYPE_SUBTITLE:
                 [subtitleStreams addObject:obj];
