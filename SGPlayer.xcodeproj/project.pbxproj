@@ -579,8 +579,6 @@
 		9C959A00211AE7AF00E67565 /* SGDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CA0F56320E0E24000501478 /* SGDefines.m */; };
 		9C959A01211AE7AF00E67565 /* SGDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CA0F56320E0E24000501478 /* SGDefines.m */; };
 		9C959A02211AE7AF00E67565 /* SGDefines.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CA0F56320E0E24000501478 /* SGDefines.m */; };
-		9C959A05211AFE7700E67565 /* SGPeriodTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C959A03211AFE7700E67565 /* SGPeriodTimer.h */; };
-		9C959A06211AFE7700E67565 /* SGPeriodTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C959A04211AFE7700E67565 /* SGPeriodTimer.m */; };
 		9CA0F56420E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CA0F56520E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; };
 		9CA0F56620E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; };
@@ -993,8 +991,6 @@
 		9C8D4E72200E10BD00ED8A58 /* SGDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDecoder.h; sourceTree = "<group>"; };
 		9C8D4E7E200E1ACA00ED8A58 /* SGError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGError.h; sourceTree = "<group>"; };
 		9C8D4E7F200E1ACA00ED8A58 /* SGError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGError.m; sourceTree = "<group>"; };
-		9C959A03211AFE7700E67565 /* SGPeriodTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPeriodTimer.h; sourceTree = "<group>"; };
-		9C959A04211AFE7700E67565 /* SGPeriodTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPeriodTimer.m; sourceTree = "<group>"; };
 		9CA0F56220E0E24000501478 /* SGDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDefines.h; sourceTree = "<group>"; };
 		9CA0F56320E0E24000501478 /* SGDefines.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDefines.m; sourceTree = "<group>"; };
 		9CA3CDB320E1F74300B852D0 /* SGFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrame.m; sourceTree = "<group>"; };
@@ -1472,8 +1468,6 @@
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
 				9C5C98F920D26BE10089C112 /* SGPlaybackTimeSync.h */,
 				9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */,
-				9C959A03211AFE7700E67565 /* SGPeriodTimer.h */,
-				9C959A04211AFE7700E67565 /* SGPeriodTimer.m */,
 			);
 			path = SGTime;
 			sourceTree = "<group>";
@@ -1831,7 +1825,6 @@
 				9C1D220D201AC83F005147FB /* SGGLModelPool.h in Headers */,
 				9C2534B41FAB151500BBFA5C /* avio.h in Headers */,
 				9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */,
-				9C959A05211AFE7700E67565 /* SGPeriodTimer.h in Headers */,
 				9C1D221C201ACA13005147FB /* SGGLProgram.h in Headers */,
 				9C2535081FAB151500BBFA5C /* ffversion.h in Headers */,
 				9C2535A11FAB151500BBFA5C /* version.h in Headers */,
@@ -2544,7 +2537,6 @@
 				9CE6F5432004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
 				9C2C55B82015D92100131E15 /* SGObjectQueue.m in Sources */,
 				9C8D26642019F297002770FA /* SGGLTextureUploader.m in Sources */,
-				9C959A06211AFE7700E67565 /* SGPeriodTimer.m in Sources */,
 				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9CA3CDDA20E2283500B852D0 /* SGVideoFFFrame.m in Sources */,
 				9C1944F42019AC4000184416 /* SGGLInternalModel.m in Sources */,
