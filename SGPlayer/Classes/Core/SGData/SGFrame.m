@@ -25,7 +25,7 @@ SGObjectPoolItemImplementation
 
 - (void)clear
 {
-    self.timebase = kCMTimeZero;
+    self.timebase = av_make_q(0, 1);
     self.offset = kCMTimeZero;
     self.scale = CMTimeMake(1, 1);
     self.timeStamp = kCMTimeZero;

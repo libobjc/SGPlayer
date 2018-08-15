@@ -25,7 +25,7 @@ SGObjectPoolItemLockingImplementation
         _corePacket = av_packet_alloc();
         _codecpar = NULL;
         _mediaType = SGMediaTypeUnknown;
-        _timebase = kCMTimeZero;
+        _timebase = av_make_q(0, 1);
         _offset = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
         _timeStamp = kCMTimeZero;
@@ -54,28 +54,17 @@ SGObjectPoolItemLockingImplementation
 
 - (void)fillWithStream:(SGStream *)stream offset:(CMTime)offset scale:(CMTime)scale
 {
-    CMTime defaultTimebase = CMTimeMake(1, 1);
-    switch (stream.mediaType)
-    {
-        case SGMediaTypeAudio:
-            defaultTimebase = CMTimeMake(1, 44100);
-            break;
-        case SGMediaTypeVideo:
-            defaultTimebase = CMTimeMake(1, 25000);
-        default:
-            break;
-    }
-    CMTime timebase = SGTimeValidate(stream.timebase, defaultTimebase);
-    _timebase = timebase;
+    AVRational defaultTimebase = stream.mediaType == SGMediaTypeAudio ? av_make_q(1, 44100) : av_make_q(1, 25000);
+    _timebase = SGRationalValidate(stream.timebase, defaultTimebase);
     _codecpar = stream.coreStream->codecpar;
     _mediaType = stream.mediaType;
     _offset = offset;
     _scale = scale;
-    _originalTimeStamp = SGTimeMultiply(timebase, _corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts);
-    _originalDuration = SGTimeMultiply(timebase, _corePacket->duration);
-    _timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
-    _duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
-    _decodeTimeStamp = SGTimeMultiply(timebase, _corePacket->dts);
+    _originalTimeStamp = SGCMTimeMakeWithRational(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
+    _originalDuration = SGCMTimeMakeWithRational(_corePacket->duration, self.timebase);
+    _timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
+    _decodeTimeStamp = SGCMTimeMakeWithRational(_corePacket->dts, self.timebase);
     _size = _corePacket->size;
 }
 
@@ -83,7 +72,7 @@ SGObjectPoolItemLockingImplementation
 {
     _codecpar = NULL;
     _mediaType = SGMediaTypeUnknown;
-    _timebase = kCMTimeZero;
+    _timebase = av_make_q(0, 1);
     _offset = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
     _timeStamp = kCMTimeZero;

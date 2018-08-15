@@ -30,7 +30,7 @@
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
-@property (nonatomic, assign) long long currentRenderReadOffset;
+@property (nonatomic, assign) int32_t currentRenderReadOffset;
 @property (nonatomic, assign) CMTime currentScale;
 @property (nonatomic, assign) CMTime currentPreparePosition;
 @property (nonatomic, assign) CMTime currentPrepareDuration;
@@ -306,7 +306,7 @@
 
 - (void)updatePlayerRate
 {
-    CMTime rate = SGTimeMultiplyByTime(self.rate, self.frameRate);
+    CMTime rate = SGCMTimeMultiply(self.rate, self.frameRate);
     NSError * error = nil;
     [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:&error];
 }
@@ -398,9 +398,9 @@
         }
         self.currentScale = self.currentFrame.scale;
         
-        long long residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
-        long long bytesToCopy = MIN(numberOfSamples * sizeof(float), residueLinesize);
-        long long framesToCopy = bytesToCopy / sizeof(float);
+        int32_t residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
+        int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
+        int32_t framesToCopy = bytesToCopy / sizeof(float);
         
         for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.numberOfChannels; i++)
         {
@@ -414,12 +414,12 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPrepareDuration = kCMTimeZero;
-            CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
-            duration = SGTimeMultiplyByTime(duration, self.currentFrame.scale);
+            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
             self.currentPreparePosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
-        CMTime duration = SGTimeMultiplyByRatio(self.currentFrame.originalDuration, bytesToCopy, self.currentFrame.linesize[0]);
-        duration = SGTimeMultiplyByTime(duration, self.currentFrame.scale);
+        CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, bytesToCopy, self.currentFrame.linesize[0]);
+        duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
         self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
         
         numberOfSamples -= framesToCopy;
@@ -446,7 +446,7 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    self.frameRate = SGTimeDivideByTime(CMTimeMake(1, 1), self.currentScale);
+    self.frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentScale);
     self.timeSyncDidUpdate = YES;
     [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
     [self unlock];

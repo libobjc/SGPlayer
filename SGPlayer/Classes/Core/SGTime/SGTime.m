@@ -8,54 +8,48 @@
 
 #import "SGTime.h"
 
-CMTime SGTimeValidate(CMTime time, CMTime defaultTime)
+AVRational SGRationalValidate(AVRational rational, AVRational defaultRational)
 {
-    if (CMTIME_IS_INVALID(defaultTime))
+    if (rational.num > 0 && rational.den > 0)
     {
-        return time;
+        return rational;
     }
-    if (CMTIME_IS_INVALID(time))
+    return defaultRational;
+}
+
+CMTime SGCMTimeMakeWithRational(int64_t timeStamp, AVRational timebase)
+{
+    int64_t maxV = ABS(timeStamp == 0 ? INT64_MAX : INT64_MAX / timeStamp);
+    if (timebase.num > maxV || timebase.num < -maxV)
     {
-        return defaultTime;
+        return CMTimeMake(timeStamp, timebase.den / timebase.num);
     }
-    if (CMTimeCompare(time, kCMTimeZero) <= 0)
-    {
-        return defaultTime;
-    }
-    return time;
+    return CMTimeMake(timebase.num * timeStamp, timebase.den);
 }
 
-CMTime SGTimeMultiply(CMTime time, int64_t multiplier)
-{
-    return CMTimeMultiply(time, (int32_t)multiplier);
-}
-
-CMTime SGTimeMultiplyByTime(CMTime time, CMTime multiplier)
-{
-    return SGTimeMultiplyByRatio(time, multiplier.value, multiplier.timescale);
-}
-
-CMTime SGTimeMultiplyByRatio(CMTime time, int64_t multiplier, int64_t divisor)
-{
-    return CMTimeMultiplyByRatio(time, (int32_t)multiplier, (int32_t)divisor);
-}
-
-CMTime SGTimeDivide(CMTime time, int64_t divisor)
-{
-    return SGTimeMultiplyByRatio(time, 1, divisor);
-}
-
-CMTime SGTimeDivideByTime(CMTime time, CMTime divisor)
-{
-    return SGTimeMultiplyByRatio(time, divisor.timescale, divisor.value);
-}
-
-CMTime SGTimeDivideByRatio(CMTime time, int64_t divisor, int64_t multiplier)
-{
-    return CMTimeMultiplyByRatio(time, (int32_t)multiplier, (int32_t)divisor);
-}
-
-CMTime SGTimeMakeWithSeconds(Float64 seconds)
+CMTime SGCMTimeMakeWithSeconds(Float64 seconds)
 {
     return CMTimeMakeWithSeconds(seconds, 1000000);
+}
+
+CMTime SGCMTimeMultiply(CMTime time, CMTime multiplier)
+{
+    int64_t maxV = ABS(time.value == 0 ? INT64_MAX : INT64_MAX / time.value);
+    int32_t maxT = ABS(time.timescale == 0 ? INT32_MAX : INT32_MAX / time.timescale);
+    if (multiplier.value > maxV || multiplier.value < -maxV || multiplier.timescale > maxT || multiplier.timescale < -maxT)
+    {
+        return CMTimeMultiplyByFloat64(time, CMTimeGetSeconds(multiplier));
+    }
+    return CMTimeMake(time.value * multiplier.value, time.timescale * multiplier.timescale);
+}
+
+CMTime SGCMTimeDivide(CMTime time, CMTime divisor)
+{
+    int64_t maxV = ABS(time.value == 0 ? INT64_MAX : INT64_MAX / time.value);
+    int32_t maxT = ABS(time.timescale == 0 ? INT32_MAX : INT32_MAX / time.timescale);
+    if (divisor.timescale > maxV || divisor.timescale < -maxV || divisor.value > maxT || divisor.value < -maxT)
+    {
+        return CMTimeMultiplyByFloat64(time, 1.0 / CMTimeGetSeconds(divisor));
+    }
+    return CMTimeMake(time.value * divisor.timescale, time.timescale * (int32_t)divisor.value);
 }

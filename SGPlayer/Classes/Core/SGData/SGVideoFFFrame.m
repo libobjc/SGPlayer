@@ -61,10 +61,11 @@
     self.timebase = packet.timebase;
     self.offset = packet.offset;
     self.scale = packet.scale;
-    self.originalTimeStamp = SGTimeMultiply(packet.timebase, av_frame_get_best_effort_timestamp(self.coreFrame));
-    self.originalDuration = SGTimeMultiply(packet.timebase, av_frame_get_pkt_duration(self.coreFrame));
-    self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
-    self.duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
+    
+    self.originalTimeStamp = SGCMTimeMakeWithRational(av_frame_get_best_effort_timestamp(self.coreFrame), self.timebase);
+    self.originalDuration = SGCMTimeMakeWithRational(av_frame_get_pkt_duration(self.coreFrame), self.timebase);
+    self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = av_frame_get_pkt_size(self.coreFrame);
     

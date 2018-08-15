@@ -29,13 +29,13 @@
     return -1;
 }
 
-- (CMTime)timebase
+- (AVRational)timebase
 {
     if (self.coreStream)
     {
-        return CMTimeMake(self.coreStream->time_base.num, self.coreStream->time_base.den);
+        return self.coreStream->time_base;
     }
-    return kCMTimeZero;
+    return av_make_q(0, 1);
 }
 
 @end

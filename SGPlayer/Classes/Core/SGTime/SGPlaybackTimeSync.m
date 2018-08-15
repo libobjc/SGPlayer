@@ -35,7 +35,7 @@
     {
         return self.keyTime;
     }
-    CMTime mediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+    CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
     interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
     interval = CMTimeMinimum(self.keyDuration, interval);
@@ -45,7 +45,7 @@
 
 - (CMTime)unlimitedTime
 {
-    CMTime mediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+    CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
     interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
     CMTime position = CMTimeAdd(self.keyTime, interval);
@@ -57,12 +57,12 @@
     self.keyTime = time;
     self.keyDuration = duration;
     self.keyRate = rate;
-    self.keyMediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+    self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
 }
 
 - (void)refresh
 {
-    self.keyMediaTime = SGTimeMakeWithSeconds(CACurrentMediaTime());
+    self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
 }
 
 - (void)flush

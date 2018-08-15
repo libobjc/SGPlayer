@@ -52,7 +52,7 @@
     if (formatContext->duration > 0)
     {
         _originalDuration = CMTimeMake(formatContext->duration, AV_TIME_BASE);
-        _duration = SGTimeMultiplyByTime(self.originalDuration, self.scale);
+        _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     }
     if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
         formatContext->pb)

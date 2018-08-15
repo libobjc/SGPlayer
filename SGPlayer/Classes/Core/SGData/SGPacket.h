@@ -17,7 +17,7 @@
 @property (nonatomic, assign, readonly) AVCodecParameters * codecpar;
 @property (nonatomic, assign, readonly) SGMediaType mediaType;
 
-@property (nonatomic, assign, readonly) CMTime timebase;
+@property (nonatomic, assign, readonly) AVRational timebase;
 @property (nonatomic, assign, readonly) CMTime offset;
 @property (nonatomic, assign, readonly) CMTime scale;
 @property (nonatomic, assign, readonly) CMTime timeStamp;

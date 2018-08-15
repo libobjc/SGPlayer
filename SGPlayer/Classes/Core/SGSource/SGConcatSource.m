@@ -261,7 +261,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         }
     }
     timeStamp = CMTimeSubtract(timeStamp, self.formatContext.offset);
-    timeStamp = SGTimeDivideByTime(timeStamp, self.formatContext.scale);
+    timeStamp = SGCMTimeDivide(timeStamp, self.formatContext.scale);
     long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
     int success = av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
     return success;

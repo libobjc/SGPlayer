@@ -51,7 +51,7 @@
         self.scale = packet.scale;
         self.originalTimeStamp = packet.originalTimeStamp;
         self.originalDuration = packet.originalDuration;
-        self.timeStamp = CMTimeAdd(self.offset, SGTimeMultiplyByTime(self.originalTimeStamp, self.scale));
+        self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
         self.duration = packet.duration;
         self.decodeTimeStamp = packet.decodeTimeStamp;
         self.size = packet.corePacket->size;

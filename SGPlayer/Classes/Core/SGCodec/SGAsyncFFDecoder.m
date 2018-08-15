@@ -20,7 +20,7 @@
 
 @implementation SGAsyncFFDecoder
 
-+ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(CMTime)timebase
++ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(AVRational)timebase
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
     if (!codecContext)
@@ -35,7 +35,7 @@
         avcodec_free_context(&codecContext);
         return nil;
     }
-    av_codec_set_pkt_timebase(codecContext, (AVRational){(int)timebase.value, (int)timebase.timescale});
+    av_codec_set_pkt_timebase(codecContext, timebase);
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -78,7 +78,7 @@
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
-    if (self.codecpar && CMTimeCompare(self.timebase, kCMTimeZero) > 0)
+    if (self.codecpar && av_cmp_q(self.timebase, av_make_q(0, 1)) > 0)
     {
         self.codecContext = [SGAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
     }
