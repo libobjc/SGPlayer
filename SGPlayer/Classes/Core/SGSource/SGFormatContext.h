@@ -23,6 +23,8 @@
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime originalDuration;
 @property (nonatomic, assign, readonly) BOOL seekable;
+@property (nonatomic, assign, readonly) BOOL audioEnable;
+@property (nonatomic, assign, readonly) BOOL videoEnable;
 @property (nonatomic, strong, readonly) NSError * error;
 
 @property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;

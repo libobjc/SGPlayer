@@ -24,6 +24,8 @@
 @property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
 
 @property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, assign) BOOL audioEnable;
+@property (nonatomic, assign) BOOL videoEnable;
 @property (nonatomic, strong) SGStream * audioStream;
 @property (nonatomic, strong) SGStream * videoStream;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -109,31 +111,6 @@ static int SGURLSourceInterruptHandler(void * context)
         };
     }
     return ^{};
-}
-
-- (NSArray <SGStream *> *)streams
-{
-    return self.formatContext.streams;
-}
-
-- (NSArray <SGStream *> *)audioStreams
-{
-    return self.formatContext.audioStreams;
-}
-
-- (NSArray <SGStream *> *)videoStreams
-{
-    return self.formatContext.videoStreams;
-}
-
-- (NSArray <SGStream *> *)subtitleStreams
-{
-    return self.formatContext.subtitleStreams;
-}
-
-- (NSArray <SGStream *> *)otherStreams
-{
-    return self.formatContext.otherStreams;
 }
 
 #pragma mark - Interface

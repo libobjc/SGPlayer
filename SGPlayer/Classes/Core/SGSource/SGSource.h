@@ -37,13 +37,8 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 - (NSError *)error;
 - (CMTime)duration;
 
-- (SGStream *)audioStream;
-- (SGStream *)videoStream;
-- (NSArray <SGStream *> *)streams;
-- (NSArray <SGStream *> *)audioStreams;
-- (NSArray <SGStream *> *)videoStreams;
-- (NSArray <SGStream *> *)subtitleStreams;
-- (NSArray <SGStream *> *)otherStreams;
+- (BOOL)audioEnable;
+- (BOOL)videoEnable;
 
 - (void)open;
 - (void)read;

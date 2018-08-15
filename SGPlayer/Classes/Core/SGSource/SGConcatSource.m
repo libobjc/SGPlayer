@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
 @property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, assign) BOOL audioEnable;
+@property (nonatomic, assign) BOOL videoEnable;
 @property (nonatomic, strong) SGStream * audioStream;
 @property (nonatomic, strong) SGStream * videoStream;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -110,31 +112,6 @@ static int SGConcatSourceInterruptHandler(void * context)
         };
     }
     return ^{};
-}
-
-- (NSArray <SGStream *> *)streams
-{
-    return self.formatContext.streams;
-}
-
-- (NSArray <SGStream *> *)audioStreams
-{
-    return self.formatContext.audioStreams;
-}
-
-- (NSArray <SGStream *> *)videoStreams
-{
-    return self.formatContext.videoStreams;
-}
-
-- (NSArray <SGStream *> *)subtitleStreams
-{
-    return self.formatContext.subtitleStreams;
-}
-
-- (NSArray <SGStream *> *)otherStreams
-{
-    return self.formatContext.otherStreams;
 }
 
 #pragma mark - Interface
@@ -315,6 +292,8 @@ static int SGConcatSourceInterruptHandler(void * context)
 {
     CMTime duration = kCMTimeZero;
     BOOL seekable = YES;
+    BOOL audioEnable = YES;
+    BOOL videoEnable = YES;
     NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
     for (SGURLAsset * obj in self.asset.assets)
     {
@@ -324,12 +303,16 @@ static int SGConcatSourceInterruptHandler(void * context)
         {
             duration = CMTimeAdd(duration, formatContext.duration);
             seekable = seekable && formatContext.seekable;
+            audioEnable = audioEnable && formatContext.audioEnable;
+            videoEnable = videoEnable && formatContext.videoEnable;
             [formatContexts addObject:formatContext];
         }
         else
         {
             duration = kCMTimeZero;
             seekable = NO;
+            audioEnable = NO;
+            videoEnable = NO;
             formatContexts = nil;
             self.error = formatContext.error;
             break;
@@ -338,6 +321,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.formatContexts = formatContexts;
     self.duration = duration;
     self.seekable = seekable;
+    self.audioEnable = audioEnable;
+    self.videoEnable = videoEnable;
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
     SGBasicBlock callback = [self setState:state];
@@ -455,7 +440,8 @@ static int SGConcatSourceInterruptHandler(void * context)
                         break;
                     }
                 }
-                if (stream == self.audioStream || stream == self.videoStream)
+                if ((self.audioEnable && stream == self.audioStream) ||
+                    (self.videoEnable && stream == self.videoStream))
                 {
                     [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
                     [self.delegate source:self hasNewPacket:packet];

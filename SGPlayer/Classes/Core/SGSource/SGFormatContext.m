@@ -72,9 +72,11 @@
         switch (obj.coreStream->codecpar->codec_type)
         {
             case AVMEDIA_TYPE_AUDIO:
+                _audioEnable = YES;
                 [audioStreams addObject:obj];
                 break;
             case AVMEDIA_TYPE_VIDEO:
+                _videoEnable = YES;
                 [videoStreams addObject:obj];
                 break;
             case AVMEDIA_TYPE_SUBTITLE:

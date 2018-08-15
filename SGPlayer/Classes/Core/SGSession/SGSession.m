@@ -270,12 +270,12 @@
 
 - (BOOL)audioEnable
 {
-    return self.configuration.source.audioStream != nil;
+    return self.configuration.source.audioEnable;
 }
 
 - (BOOL)videoEnable
 {
-    return self.configuration.source.videoStream != nil;
+    return self.configuration.source.videoEnable;
 }
 
 - (BOOL)audioEmpty
