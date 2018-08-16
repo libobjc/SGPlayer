@@ -230,6 +230,7 @@
     }
     [self.currentFrame unlock];
     self.currentFrame = frame;
+    self.renderedFrame = YES;
     if (self.key)
     {
         [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
@@ -252,10 +253,7 @@
         {
             self.glView.frame = self.view.bounds;
         }
-        if ([self draw])
-        {
-            self.renderedFrame = YES;
-        }
+        [self draw];
     }
     else
     {
