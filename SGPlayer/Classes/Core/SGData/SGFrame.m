@@ -10,22 +10,35 @@
 
 @interface SGFrame ()
 
-SGObjectPoolItemInterface
+@property (nonatomic, assign) NSInteger lockingCount;
 
 @end
 
 @implementation SGFrame
 
-SGObjectPoolItemImplementation
+- (SGMediaType)mediaType
+{
+    return SGMediaTypeUnknown;
+}
 
 - (void)dealloc
 {
     [self clear];
 }
 
-- (SGMediaType)mediaType
+- (void)lock
 {
-    return SGMediaTypeUnknown;
+    self.lockingCount++;
+}
+
+- (void)unlock
+{
+    self.lockingCount--;
+    if (self.lockingCount <= 0)
+    {
+        self.lockingCount = 0;
+        [[SGObjectPool sharePool] comeback:self];
+    }
 }
 
 - (void)clear

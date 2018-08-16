@@ -10,13 +10,11 @@
 
 @interface SGPacket ()
 
-SGObjectPoolItemLockingInterface
+@property (nonatomic, assign) NSInteger lockingCount;
 
 @end
 
 @implementation SGPacket
-
-SGObjectPoolItemLockingImplementation
 
 - (instancetype)init
 {
@@ -47,25 +45,19 @@ SGObjectPoolItemLockingImplementation
     }
 }
 
-- (void)fillWithStream:(SGStream *)stream
+- (void)lock
 {
-    [self fillWithStream:stream offset:kCMTimeZero scale:CMTimeMake(1, 1)];
+    self.lockingCount++;
 }
 
-- (void)fillWithStream:(SGStream *)stream offset:(CMTime)offset scale:(CMTime)scale
+- (void)unlock
 {
-    CMTime defaultTimebase = stream.mediaType == SGMediaTypeAudio ? CMTimeMake(1, 44100) : CMTimeMake(1, 25000);
-    _timebase = SGCMTimeValidate(stream.timebase, defaultTimebase);
-    _codecpar = stream.coreStream->codecpar;
-    _mediaType = stream.mediaType;
-    _offset = offset;
-    _scale = scale;
-    _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
-    _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
-    _timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-    _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    _decodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
-    _size = _corePacket->size;
+    self.lockingCount--;
+    if (self.lockingCount <= 0)
+    {
+        self.lockingCount = 0;
+        [[SGObjectPool sharePool] comeback:self];
+    }
 }
 
 - (void)clear
@@ -85,6 +77,27 @@ SGObjectPoolItemLockingImplementation
     {
         av_packet_unref(_corePacket);
     }
+}
+
+- (void)fillWithStream:(SGStream *)stream
+{
+    [self fillWithStream:stream offset:kCMTimeZero scale:CMTimeMake(1, 1)];
+}
+
+- (void)fillWithStream:(SGStream *)stream offset:(CMTime)offset scale:(CMTime)scale
+{
+    CMTime defaultTimebase = stream.mediaType == SGMediaTypeAudio ? CMTimeMake(1, 44100) : CMTimeMake(1, 25000);
+    _timebase = SGCMTimeValidate(stream.timebase, defaultTimebase);
+    _codecpar = stream.coreStream->codecpar;
+    _mediaType = stream.mediaType;
+    _offset = offset;
+    _scale = scale;
+    _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
+    _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
+    _timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
+    _decodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
+    _size = _corePacket->size;
 }
 
 @end

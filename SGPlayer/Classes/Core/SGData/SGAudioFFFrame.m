@@ -33,6 +33,15 @@
     }
 }
 
+- (void)clear
+{
+    [super clear];
+    if (_coreFrame)
+    {
+        av_frame_unref(_coreFrame);
+    }
+}
+
 - (void)fillWithPacket:(SGPacket *)packet
 {
     self.timebase = packet.timebase;
@@ -56,15 +65,6 @@
     self.packetSize = av_frame_get_pkt_size(self.coreFrame);
     self.data = self.coreFrame->data;
     self.linesize = self.coreFrame->linesize;
-}
-
-- (void)clear
-{
-    [super clear];
-    if (_coreFrame)
-    {
-        av_frame_unref(_coreFrame);
-    }
 }
 
 @end

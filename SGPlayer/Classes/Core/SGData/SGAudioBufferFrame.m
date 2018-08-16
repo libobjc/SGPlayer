@@ -44,6 +44,15 @@
     }
 }
 
+- (void)clear
+{
+    [super clear];
+    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
+    {
+        internalLinesize[i] = 0;
+    }
+}
+
 - (void)updateData:(void **)data linesize:(int *)linesize
 {
     for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
@@ -72,15 +81,6 @@
     self.duration = frame.duration;
     self.decodeTimeStamp = frame.decodeTimeStamp;
     self.size = frame.size;
-}
-
-- (void)clear
-{
-    [super clear];
-    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
-    {
-        internalLinesize[i] = 0;
-    }
 }
 
 - (uint8_t **)data

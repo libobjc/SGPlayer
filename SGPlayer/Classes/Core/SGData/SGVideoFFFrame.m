@@ -59,6 +59,15 @@
     }
 }
 
+- (void)clear
+{
+    [super clear];
+    if (_coreFrame)
+    {
+        av_frame_unref(_coreFrame);
+    }
+}
+
 - (void)fillWithPacket:(SGPacket *)packet
 {
     self.timebase = packet.timebase;
@@ -133,15 +142,6 @@
         }
     }
     return resample;
-}
-
-- (void)clear
-{
-    [super clear];
-    if (_coreFrame)
-    {
-        av_frame_unref(_coreFrame);
-    }
 }
 
 @end

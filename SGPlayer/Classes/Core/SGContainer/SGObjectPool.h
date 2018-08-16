@@ -30,8 +30,10 @@
 #define SGObjectPoolItemLockingInterface      SGObjectPoolItemInterface
 #define SGObjectPoolItemLockingImplementation SGObjectPoolItemImplementation
 
-@protocol SGObjectPoolItem <NSObject, NSLocking>
+@protocol SGObjectPoolItem <NSObject>
 
+- (void)lock;
+- (void)unlock;
 - (void)clear;
 
 @end
