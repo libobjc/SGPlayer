@@ -7,7 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "avcodec.h"
+#import "SGFrame.h"
+#import "SGPacket.h"
 
 @interface SGVideoToolBox : NSObject
+
+@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, assign) AVCodecParameters * codecpar;
+
+- (BOOL)open;
+- (void)flush;
+- (void)close;
+
+- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet;
 
 @end

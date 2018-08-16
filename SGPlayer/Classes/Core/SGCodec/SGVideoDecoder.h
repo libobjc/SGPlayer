@@ -10,4 +10,6 @@
 
 @interface SGVideoDecoder : SGAsyncDecoder
 
+@property (nonatomic, assign) BOOL hardwareDecodeH264;
+
 @end
