@@ -14,7 +14,7 @@
 #import "swscale.h"
 #import "SGError.h"
 
-@interface SGAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
+@interface SGAudioPlaybackOutput () <NSLocking, SGAudioStreamPlayerDelegate>
 
 {
     void * _swrContextBufferData[SGAudioFrameMaxChannelCount];
@@ -24,22 +24,18 @@
 
 @property (nonatomic, assign) CMTime finalRate;
 @property (nonatomic, assign) CMTime frameRate;
-
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
-@property (nonatomic, strong) SGObjectQueue * frameQueue;
-
-@property (nonatomic, strong) SGAudioFrame * currentFrame;
-@property (nonatomic, assign) int32_t currentRenderReadOffset;
-@property (nonatomic, assign) CMTime currentScale;
-@property (nonatomic, assign) CMTime currentPreparePosition;
-@property (nonatomic, assign) CMTime currentPrepareDuration;
-@property (nonatomic, assign) BOOL timeSyncDidUpdate;
 @property (nonatomic, assign) BOOL receivedFrame;
-
+@property (nonatomic, assign) BOOL renderedFrame;
+@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) SGObjectQueue * frameQueue;
+@property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
+@property (nonatomic, strong) SGAudioFrame * currentFrame;
+@property (nonatomic, assign) int32_t currentFrameReadOffset;
+@property (nonatomic, assign) CMTime currentFrameScale;
+@property (nonatomic, assign) CMTime currentPostPosition;
+@property (nonatomic, assign) CMTime currentPostDuration;
 @property (nonatomic, assign) SwrContext * swrContext;
 @property (nonatomic, assign) NSError * swrContextError;
-
 @property (nonatomic, assign) SGAVSampleFormat inputFormat;
 @property (nonatomic, assign) SGAVSampleFormat outputFormat;
 @property (nonatomic, assign) int inputSampleRate;
@@ -69,7 +65,11 @@
         _rate = CMTimeMake(1, 1);
         _finalRate = CMTimeMake(1, 1);
         _frameRate = CMTimeMake(1, 1);
-        _currentScale = CMTimeMake(1, 1);
+        _currentFrameScale = CMTimeMake(1, 1);
+        self.frameQueue = [[SGObjectQueue alloc] init];
+        self.currentFrameReadOffset = 0;
+        self.currentPostPosition = kCMTimeZero;
+        self.currentPostDuration = kCMTimeZero;
         self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
@@ -89,10 +89,6 @@
     {
         return;
     }
-    self.frameQueue = [[SGObjectQueue alloc] init];
-    self.currentRenderReadOffset = 0;
-    self.currentPreparePosition = kCMTimeZero;
-    self.currentPrepareDuration = kCMTimeZero;
 }
 
 - (void)pause
@@ -123,11 +119,11 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
-    self.currentRenderReadOffset = 0;
-    self.currentPreparePosition = kCMTimeZero;
-    self.currentPrepareDuration = kCMTimeZero;
-    self.timeSyncDidUpdate = NO;
+    self.currentFrameReadOffset = 0;
+    self.currentPostPosition = kCMTimeZero;
+    self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
+    self.renderedFrame = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -199,7 +195,7 @@
     result.packetDuration = audioFrame.packetDuration;
     result.packetSize = audioFrame.packetSize;
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
-    if (!self.timeSyncDidUpdate && self.frameQueue.count == 0)
+    if (!self.receivedFrame)
     {
         [self.timeSync updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
@@ -218,11 +214,11 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
-    self.currentRenderReadOffset = 0;
-    self.currentPreparePosition = kCMTimeZero;
-    self.currentPrepareDuration = kCMTimeZero;
-    self.timeSyncDidUpdate = NO;
+    self.currentFrameReadOffset = 0;
+    self.currentPostPosition = kCMTimeZero;
+    self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
+    self.renderedFrame = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -396,44 +392,44 @@
         {
             break;
         }
-        self.currentScale = self.currentFrame.scale;
+        self.currentFrameScale = self.currentFrame.scale;
         
-        int32_t residueLinesize = self.currentFrame.linesize[0] - self.currentRenderReadOffset;
+        int32_t residueLinesize = self.currentFrame.linesize[0] - self.currentFrameReadOffset;
         int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
         int32_t framesToCopy = bytesToCopy / sizeof(float);
         
         for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.numberOfChannels; i++)
         {
-            if (self.currentFrame.linesize[i] - self.currentRenderReadOffset >= bytesToCopy)
+            if (self.currentFrame.linesize[i] - self.currentFrameReadOffset >= bytesToCopy)
             {
-                Byte * bytes = (Byte *)self.currentFrame.data[i] + self.currentRenderReadOffset;
+                Byte * bytes = (Byte *)self.currentFrame.data[i] + self.currentFrameReadOffset;
                 memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
         }
         
         if (ioDataWriteOffset == 0)
         {
-            self.currentPrepareDuration = kCMTimeZero;
-            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentRenderReadOffset, self.currentFrame.linesize[0]);
+            self.currentPostDuration = kCMTimeZero;
+            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentFrameReadOffset, self.currentFrame.linesize[0]);
             duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
-            self.currentPreparePosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
+            self.currentPostPosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
         CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, bytesToCopy, self.currentFrame.linesize[0]);
         duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
-        self.currentPrepareDuration = CMTimeAdd(self.currentPrepareDuration, duration);
+        self.currentPostDuration = CMTimeAdd(self.currentPostDuration, duration);
         
         numberOfSamples -= framesToCopy;
         ioDataWriteOffset += bytesToCopy;
         
         if (bytesToCopy < residueLinesize)
         {
-            self.currentRenderReadOffset += bytesToCopy;
+            self.currentFrameReadOffset += bytesToCopy;
         }
         else
         {
             [self.currentFrame unlock];
             self.currentFrame = nil;
-            self.currentRenderReadOffset = 0;
+            self.currentFrameReadOffset = 0;
         }
     }
     [self unlock];
@@ -446,9 +442,9 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    self.frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentScale);
-    self.timeSyncDidUpdate = YES;
-    [self.timeSync updateKeyTime:self.currentPreparePosition duration:self.currentPrepareDuration rate:self.rate];
+    self.frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentFrameScale);
+    self.renderedFrame = YES;
+    [self.timeSync updateKeyTime:self.currentPostPosition duration:self.currentPostDuration rate:self.rate];
     [self unlock];
 }
 

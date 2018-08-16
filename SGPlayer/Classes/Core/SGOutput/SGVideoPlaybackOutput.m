@@ -16,7 +16,7 @@
 #import "SGGLView.h"
 #import "SGMacro.h"
 
-@interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
+@interface SGVideoPlaybackOutput () <NSLocking, SGGLViewDelegate>
 
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
