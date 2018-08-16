@@ -12,7 +12,7 @@
 #import "SGGLTimer.h"
 #import "SGGLView.h"
 #import "SGGLRenderer.h"
-#import "SGDefinesMapping.h"
+#import "SGFFDefinesMapping.h"
 #import "SGVideoAVFrame.h"
 #import "SGVideoFFFrame.h"
 

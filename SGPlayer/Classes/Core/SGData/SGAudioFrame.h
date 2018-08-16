@@ -7,13 +7,13 @@
 //
 
 #import "SGFrame.h"
-#import "samplefmt.h"
+#import "SGFFDefines.h"
 
 static int const SGAudioFrameMaxChannelCount = 8;
 
 @interface SGAudioFrame : SGFrame
 
-@property (nonatomic, assign) enum AVSampleFormat format;
+@property (nonatomic, assign) SGAVSampleFormat format;
 @property (nonatomic, assign) int numberOfSamples;
 @property (nonatomic, assign) int sampleRate;
 @property (nonatomic, assign) int numberOfChannels;

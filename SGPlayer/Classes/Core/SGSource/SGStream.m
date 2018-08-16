@@ -7,7 +7,7 @@
 //
 
 #import "SGStream.h"
-#import "SGDefinesMapping.h"
+#import "SGFFDefinesMapping.h"
 
 @implementation SGStream
 

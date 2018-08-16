@@ -32,7 +32,7 @@
 - (void)clear
 {
     [super clear];
-    self.format = AV_SAMPLE_FMT_NONE;
+    self.format = SG_AV_SAMPLE_FMT_NONE;
     self.numberOfSamples = 0;
     self.sampleRate = 0;
     self.numberOfChannels = 0;
