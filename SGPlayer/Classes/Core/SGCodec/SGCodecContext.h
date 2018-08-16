@@ -22,6 +22,6 @@
 - (void)flush;
 - (void)close;
 
-- (NSArray <__kindof SGFrame <SGFFFrame> *> *)doDecode:(SGPacket *)packet;
+- (NSArray <__kindof SGFrame <SGFFFrame> *> *)decode:(SGPacket *)packet;
 
 @end

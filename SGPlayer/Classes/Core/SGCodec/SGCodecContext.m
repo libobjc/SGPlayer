@@ -99,7 +99,7 @@
     }
 }
 
-- (NSArray <__kindof SGFrame <SGFFFrame> *> *)doDecode:(SGPacket *)packet
+- (NSArray <__kindof SGFrame <SGFFFrame> *> *)decode:(SGPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)

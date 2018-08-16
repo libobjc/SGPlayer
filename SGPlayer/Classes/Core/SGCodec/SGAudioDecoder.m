@@ -40,7 +40,7 @@
 
 - (NSArray <SGFrame *> *)doDecode:(SGPacket *)packet
 {
-    return [self.codecContext doDecode:packet];
+    return [self.codecContext decode:packet];
 }
 
 @end

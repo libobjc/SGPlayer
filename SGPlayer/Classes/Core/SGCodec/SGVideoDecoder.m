@@ -69,9 +69,9 @@
 {
     if (self.videoToolBox)
     {
-        return [self.videoToolBox doDecode:packet];
+        return [self.videoToolBox decode:packet];
     }
-    return [self.codecContext doDecode:packet];
+    return [self.codecContext decode:packet];
 }
 
 @end
