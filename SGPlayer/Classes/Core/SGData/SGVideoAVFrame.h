@@ -11,6 +11,6 @@
 
 @interface SGVideoAVFrame : SGVideoFrame
 
-- (void)fillWithPacket:(SGPacket *)packet pixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (void)fillWithPacket:(SGPacket *)packet;
 
 @end

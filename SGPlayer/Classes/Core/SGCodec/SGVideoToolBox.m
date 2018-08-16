@@ -8,7 +8,6 @@
 
 #import "SGVideoToolBox.h"
 #import <VideoToolbox/VideoToolbox.h>
-#import "SGVideoEmptyFrame.h"
 #import "SGVideoAVFrame.h"
 #import "SGObjectPool.h"
 #import "SGPlatform.h"
@@ -69,7 +68,7 @@
     if (self.applicationState == UIApplicationStateBackground)
     {
         self.shouldFlush = YES;
-        SGVideoEmptyFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoEmptyFrame class]];
+        SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
         [frame fillWithPacket:packet];
         return @[frame];
     }
@@ -123,7 +122,8 @@
             if (self.decodingPixelBuffer)
             {
                 SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
-                [frame fillWithPacket:packet pixelBuffer:self.decodingPixelBuffer];
+                frame.pixelBuffer = self.decodingPixelBuffer;
+                [frame fillWithPacket:packet];
                 ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;

@@ -18,6 +18,11 @@ SGObjectPoolItemInterface
 
 SGObjectPoolItemImplementation
 
+- (void)dealloc
+{
+    [self clear];
+}
+
 - (SGMediaType)mediaType
 {
     return SGMediaTypeUnknown;

@@ -53,6 +53,20 @@
     self.packetSize = 0;
     self.data = NULL;
     self.linesize = NULL;
+    self.pixelBuffer = NULL;
+}
+
+- (void)setPixelBuffer:(CVPixelBufferRef)pixelBuffer
+{
+    if (pixelBuffer)
+    {
+        CVPixelBufferRetain(pixelBuffer);
+    }
+    if (_pixelBuffer)
+    {
+        CVPixelBufferRelease(_pixelBuffer);
+    }
+    _pixelBuffer = pixelBuffer;
 }
 
 @end
