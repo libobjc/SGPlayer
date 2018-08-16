@@ -28,7 +28,7 @@
     }
     
     int result = avcodec_parameters_to_context(codecContext, codecpar);
-    NSError * error = SGFFGetError(result);
+    NSError * error = SGEGetError(result);
     if (error)
     {
         avcodec_free_context(&codecContext);
@@ -46,7 +46,7 @@
     codecContext->codec_id = codec->id;
     
     result = avcodec_open2(codecContext, codec, NULL);
-    error = SGFFGetError(result);
+    error = SGEGetError(result);
     if (error)
     {
         avcodec_free_context(&codecContext);
@@ -119,7 +119,7 @@
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
                 
             } else {
-                SGPlayerLog(@"Error : %@", SGFFGetErrorCode(result, SGErrorCodeCodecReceiveFrame));
+                SGPlayerLog(@"Error : %@", SGEGetErrorCode(result, SGErrorCodeCodecReceiveFrame));
             }
             [frame unlock];
             break;

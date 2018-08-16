@@ -9,26 +9,26 @@
 #import "SGError.h"
 #import "avformat.h"
 
-NSError * SGFFGetError(int result)
+NSError * SGEGetError(int result)
 {
-    return SGFFGetErrorCode(result, SGErrorCodeUnknown);
+    return SGEGetErrorCode(result, SGErrorCodeUnknown);
 }
 
-NSError * SGFFGetErrorCode(int result, NSUInteger errorCode)
+NSError * SGEGetErrorCode(int result, NSUInteger code)
 {
     if (result < 0)
     {
         char * errorStringBuffer = malloc(256);
         av_strerror(result, errorStringBuffer, 256);
         NSString * errorString = [NSString stringWithFormat:@"FFmpeg code : %d, FFmpeg msg : %s", result, errorStringBuffer];
-        NSError * error = [NSError errorWithDomain:errorString code:errorCode userInfo:nil];
+        NSError * error = [NSError errorWithDomain:errorString code:code userInfo:nil];
         return error;
     }
     return nil;
 }
 
-NSError * SGFFCreateErrorCode(NSUInteger errorCode)
+NSError * SGECreateError(NSString * domian, NSUInteger code)
 {
-    NSError * error = [NSError errorWithDomain:@"SGFFCreateErrorCode" code:errorCode userInfo:nil];
+    NSError * error = [NSError errorWithDomain:domian code:code userInfo:nil];
     return error;
 }

@@ -8,6 +8,7 @@
 
 #import "SGOutput.h"
 #import "SGPlatform.h"
+#import "SGPlaybackTimeSync.h"
 
 @interface SGVideoPlaybackOutput : NSObject <SGOutput>
 

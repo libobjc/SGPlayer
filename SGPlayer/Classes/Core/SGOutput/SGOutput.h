@@ -12,7 +12,6 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 #import "SGFrame.h"
-#import "SGPlaybackTimeSync.h"
 
 @protocol SGOutput;
 @protocol SGOutputDelegate;

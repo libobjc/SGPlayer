@@ -7,6 +7,7 @@
 //
 
 #import "SGOutput.h"
+#import "SGPlaybackTimeSync.h"
 
 @interface SGAudioPlaybackOutput : NSObject <SGOutput>
 

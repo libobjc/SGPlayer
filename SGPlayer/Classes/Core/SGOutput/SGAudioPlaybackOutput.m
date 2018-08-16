@@ -329,7 +329,7 @@
                                          self.inputSampleRate,
                                          0, NULL);
     int result = swr_init(self.swrContext);
-    self.swrContextError = SGFFGetErrorCode(result, SGErrorCodeAuidoSwrInit);
+    self.swrContextError = SGEGetErrorCode(result, SGErrorCodeAuidoSwrInit);
     if (self.swrContextError)
     {
         [self destorySwrContext];

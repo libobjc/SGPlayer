@@ -9,11 +9,11 @@
 #import "SGSession.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
+#import "SGError.h"
 #import "SGTime.h"
 
 @interface SGSession () <NSLocking, SGSourceDelegate, SGDecoderDelegate, SGOutputDelegate>
 
-@property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
 
@@ -375,7 +375,7 @@
         {
             if (!self.audioEnable && !self.videoEnable)
             {
-                _error = [NSError errorWithDomain:@"No valid track to play." code:-1 userInfo:nil];
+                _error = SGECreateError(@"", SGErrorCodeNoValidTrackToPlay);
                 callback = [self setState:SGSessionStateFailed];
             }
             else

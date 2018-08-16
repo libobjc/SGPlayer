@@ -9,10 +9,6 @@
 #import "SGFormatContext.h"
 #import "SGError.h"
 
-@interface SGFormatContext ()
-
-@end
-
 @implementation SGFormatContext
 
 - (instancetype)initWithURL:(NSURL *)URL
@@ -117,14 +113,14 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, void *
     AVFormatContext * fc = avformat_alloc_context();
     if (!fc)
     {
-        * error = SGFFCreateErrorCode(SGErrorCodeFormatCreate);
+        * error = SGECreateError(@"", SGErrorCodeFormatCreate);
         return NO;
     }
     fc->interrupt_callback.callback = callback;
     fc->interrupt_callback.opaque = opaque;
     NSString * URLString = URL.isFileURL ? URL.path : URL.absoluteString;
     int suc = avformat_open_input(&fc, URLString.UTF8String, NULL, NULL);
-    NSError * err = SGFFGetErrorCode(suc, SGErrorCodeFormatOpenInput);
+    NSError * err = SGEGetErrorCode(suc, SGErrorCodeFormatOpenInput);
     if (err)
     {
         if (fc)
@@ -135,7 +131,7 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, void *
         return NO;
     }
     suc = avformat_find_stream_info(fc, NULL);
-    err = SGFFGetErrorCode(suc, SGErrorCodeFormatFindStreamInfo);
+    err = SGEGetErrorCode(suc, SGErrorCodeFormatFindStreamInfo);
     if (err)
     {
         if (fc)

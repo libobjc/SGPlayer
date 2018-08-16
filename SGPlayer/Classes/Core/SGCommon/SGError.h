@@ -11,6 +11,7 @@
 typedef NS_ENUM(NSUInteger, SGErrorCode)
 {
     SGErrorCodeUnknown,
+    SGErrorCodeNoValidTrackToPlay,
     SGErrorCodeFormatCreate,
     SGErrorCodeFormatOpenInput,
     SGErrorCodeFormatFindStreamInfo,
@@ -27,6 +28,6 @@ typedef NS_ENUM(NSUInteger, SGErrorCode)
     SGErrorCodeAuidoSwrInit,
 };
 
-NSError * SGFFGetError(int result);
-NSError * SGFFGetErrorCode(int result, NSUInteger errorCode);
-NSError * SGFFCreateErrorCode(NSUInteger errorCode);
+NSError * SGEGetError(int result);
+NSError * SGEGetErrorCode(int result, NSUInteger code);
+NSError * SGECreateError(NSString * domian, NSUInteger code);
