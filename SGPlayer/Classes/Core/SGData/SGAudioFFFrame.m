@@ -8,7 +8,9 @@
 
 #import "SGAudioFFFrame.h"
 
-@implementation SGFFAudioFFFrame
+@implementation SGAudioFFFrame
+
+@synthesize coreFrame = _coreFrame;
 
 - (instancetype)init
 {

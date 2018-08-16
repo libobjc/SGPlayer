@@ -12,9 +12,8 @@
 #import "SGSession.h"
 #import "SGURLSource.h"
 #import "SGConcatSource.h"
-#import "SGAudioFFDecoder.h"
-#import "SGVideoFFDecoder.h"
-#import "SGVideoAVDecoder.h"
+#import "SGAudioDecoder.h"
+#import "SGVideoDecoder.h"
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
@@ -76,8 +75,8 @@
     self.videoOutput.view = self.view;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.source = [[SGConcatSource alloc] initWithAsset:concatAsset];
-    configuration.audioDecoder = [[SGAudioFFDecoder alloc] init];
-    configuration.videoDecoder = [[SGVideoFFDecoder alloc] init];
+    configuration.audioDecoder = [[SGAudioDecoder alloc] init];
+    configuration.videoDecoder = [[SGVideoDecoder alloc] init];
     configuration.audioOutput = self.audioOutput;
     configuration.videoOutput = self.videoOutput;
     self.session = [[SGSession alloc] initWithConfiguration:configuration];

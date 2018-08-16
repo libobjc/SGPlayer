@@ -235,9 +235,10 @@ static SGPacket * flushPacket;
             {
                 if (packet.codecpar != self.codecpar)
                 {
+                    [self doDestory];
                     self.codecpar = packet.codecpar;
                     self.timebase = packet.timebase;
-                    [self doResetup];
+                    [self doSetup];
                 }
                 if (!self.waitingFlush)
                 {
@@ -259,7 +260,12 @@ static SGPacket * flushPacket;
     }
 }
 
-- (void)doResetup
+- (void)doSetup
+{
+    
+}
+
+- (void)doDestory
 {
     
 }

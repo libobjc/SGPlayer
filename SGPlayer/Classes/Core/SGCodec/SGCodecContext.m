@@ -1,24 +1,23 @@
 //
-//  SGAsyncFFDecoder.m
-//  SGPlayer
+//  SGCodecContext.m
+//  SGPlayer iOS
 //
-//  Created by Single on 2018/1/19.
-//  Copyright © 2018年 single. All rights reserved.
+//  Created by Single on 2018/8/16.
+//  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGAsyncFFDecoder.h"
+#import "SGCodecContext.h"
+#import "SGObjectPool.h"
 #import "SGError.h"
 #import "SGMacro.h"
-#import "SGAudioFFFrame.h"
-#import "SGVideoFFFrame.h"
 
-@interface SGAsyncFFDecoder ()
+@interface SGCodecContext ()
 
 @property (nonatomic, assign) AVCodecContext * codecContext;
 
 @end
 
-@implementation SGAsyncFFDecoder
+@implementation SGCodecContext
 
 + (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(AVRational)timebase
 {
@@ -56,44 +55,51 @@
     return codecContext;
 }
 
-- (BOOL)close
+- (void)dealloc
 {
-    if (![super close])
+    [self close];
+}
+
+- (BOOL)open
+{
+    if (!self.codecpar)
     {
         return NO;
     }
-    if (self.codecContext)
+    if (!self.frameClass)
     {
-        avcodec_close(self.codecContext);
-        self.codecContext = nil;
+        return NO;
+    }
+    if (av_cmp_q(self.timebase, av_make_q(0, 1)) <= 0)
+    {
+        return NO;
+    }
+    self.codecContext = [SGCodecContext ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
+    if (!self.codecContext)
+    {
+        return NO;
     }
     return YES;
 }
 
-- (void)doResetup
+- (void)flush
 {
-    [super doResetup];
-    if (self.codecContext)
-    {
-        avcodec_close(self.codecContext);
-        self.codecContext = nil;
-    }
-    if (self.codecpar && av_cmp_q(self.timebase, av_make_q(0, 1)) > 0)
-    {
-        self.codecContext = [SGAsyncFFDecoder ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
-    }
-}
-
-- (void)doFlush
-{
-    [super doFlush];
     if (self.codecContext)
     {
         avcodec_flush_buffers(self.codecContext);
     }
 }
 
-- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet
+- (void)close
+{
+    if (self.codecContext)
+    {
+        avcodec_close(self.codecContext);
+        self.codecContext = nil;
+    }
+}
+
+- (NSArray <__kindof SGFrame <SGFFFrame> *> *)doDecode:(SGPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)
@@ -103,17 +109,8 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        SGFrame * frame = [self nextReuseFrame];
-        AVFrame * coreFrame = NULL;
-        if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
-        {
-            
-            coreFrame = ((SGFFAudioFFFrame *)frame).coreFrame;
-        }
-        else if ([frame isKindOfClass:[SGVideoFFFrame class]])
-        {
-            coreFrame = ((SGVideoFFFrame *)frame).coreFrame;
-        }
+        SGFrame <SGFFFrame> * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        AVFrame * coreFrame = frame.coreFrame;
         NSAssert(frame, @"Fecth frame failed");
         result = avcodec_receive_frame(self.codecContext, coreFrame);
         if (result < 0)
@@ -131,23 +128,11 @@
             if (!array) {
                 array = [NSMutableArray array];
             }
-            if ([frame isKindOfClass:[SGFFAudioFFFrame class]])
-            {
-                [(SGFFAudioFFFrame *)frame fillWithPacket:packet];
-            }
-            else if ([frame isKindOfClass:[SGVideoFFFrame class]])
-            {
-                [(SGVideoFFFrame *)frame fillWithPacket:packet];
-            }
+            [frame fillWithPacket:packet];
             [array addObject:frame];
         }
     }
     return array;
-}
-
-- (SGFrame *)nextReuseFrame
-{
-    return nil;
 }
 
 @end

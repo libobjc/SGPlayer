@@ -90,17 +90,23 @@
     return YES;
 }
 
-- (void)doResetup
+- (void)doSetup
 {
-    [super doResetup];
-    [self doFlush];
+    [super doSetup];
+    [self setupDecompressionSession];
+}
+
+- (void)doDestory
+{
+    [super doDestory];
+    [self destoryDecompressionSession];
 }
 
 - (void)doFlush
 {
     [super doFlush];
-    [self destoryDecompressionSession];
-    [self setupDecompressionSession];
+    [self doDestory];
+    [self doSetup];
 }
 
 - (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet

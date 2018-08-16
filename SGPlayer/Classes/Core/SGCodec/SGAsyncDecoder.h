@@ -14,7 +14,8 @@
 @property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
-- (void)doResetup;
+- (void)doSetup;
+- (void)doDestory;
 - (void)doFlush;
 - (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet;
 

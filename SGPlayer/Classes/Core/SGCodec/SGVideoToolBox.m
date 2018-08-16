@@ -1,0 +1,13 @@
+//
+//  SGVideoToolBox.m
+//  SGPlayer iOS
+//
+//  Created by Single on 2018/8/16.
+//  Copyright © 2018 single. All rights reserved.
+//
+
+#import "SGVideoToolBox.h"
+
+@implementation SGVideoToolBox
+
+@end

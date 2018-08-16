@@ -7,11 +7,8 @@
 //
 
 #import "SGVideoFrame.h"
+#import "SGFFFrame.h"
 
-@interface SGVideoFFFrame : SGVideoFrame
-
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-
-- (void)fillWithPacket:(SGPacket *)packet;
+@interface SGVideoFFFrame : SGVideoFrame <SGFFFrame>
 
 @end

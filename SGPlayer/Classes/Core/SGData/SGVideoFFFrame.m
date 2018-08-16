@@ -20,6 +20,8 @@
 
 @implementation SGVideoFFFrame
 
+@synthesize coreFrame = _coreFrame;
+
 - (instancetype)init
 {
     if (self = [super init])

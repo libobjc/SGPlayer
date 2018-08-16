@@ -7,11 +7,8 @@
 //
 
 #import "SGAudioFrame.h"
+#import "SGFFFrame.h"
 
-@interface SGFFAudioFFFrame : SGAudioFrame
-
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-
-- (void)fillWithPacket:(SGPacket *)packet;
+@interface SGAudioFFFrame : SGAudioFrame <SGFFFrame>
 
 @end
