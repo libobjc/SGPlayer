@@ -16,15 +16,15 @@
     {
         OSType format = CVPixelBufferGetPixelFormatType(self.pixelBuffer);
         if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-            self.format = AV_PIX_FMT_NV12;
+            self.format = SG_AV_PIX_FMT_NV12;
         } else if (format == kCVPixelFormatType_420YpCbCr8Planar) {
-            self.format = AV_PIX_FMT_YUV420P;
+            self.format = SG_AV_PIX_FMT_YUV420P;
         } else if (format == kCVPixelFormatType_422YpCbCr8) {
-            self.format = AV_PIX_FMT_UYVY422;
+            self.format = SG_AV_PIX_FMT_UYVY422;
         } else if (format == kCVPixelFormatType_32BGRA) {
-            self.format = AV_PIX_FMT_BGRA;
+            self.format = SG_AV_PIX_FMT_BGRA;
         } else {
-            self.format = AV_PIX_FMT_NONE;
+            self.format = SG_AV_PIX_FMT_NONE;
         }
         if (CVPixelBufferIsPlanar(self.pixelBuffer)) {
             self.width = (int)CVPixelBufferGetWidthOfPlane(self.pixelBuffer, 0);

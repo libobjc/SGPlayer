@@ -7,6 +7,7 @@
 //
 
 #import "SGAudioFFFrame.h"
+#import "SGFFDefinesMapping.h"
 
 @implementation SGAudioFFFrame
 
@@ -44,7 +45,7 @@
     self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = av_frame_get_pkt_size(self.coreFrame);
     
-    self.format = self.coreFrame->format;
+    self.format = SGDMSampleFormatFF2SG(self.coreFrame->format);
     self.numberOfSamples = self.coreFrame->nb_samples;
     self.sampleRate = av_frame_get_sample_rate(self.coreFrame);
     self.numberOfChannels = av_frame_get_channels(self.coreFrame);

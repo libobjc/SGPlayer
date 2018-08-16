@@ -179,7 +179,7 @@
     const int numberOfChannelsRatio = MAX(1, self.outputNumberOfChannels / self.inputNumberOfChannels);
     const int sampleRateRatio = MAX(1, self.outputSampleRate / self.inputSampleRate);
     const int ratio = sampleRateRatio * numberOfChannelsRatio;
-    const int bufferSize = av_samples_get_buffer_size(NULL, 1, audioFrame.numberOfSamples * ratio, SGSampleFormatSG2FF(self.outputFormat), 1);
+    const int bufferSize = av_samples_get_buffer_size(NULL, 1, audioFrame.numberOfSamples * ratio, SGDMSampleFormatSG2FF(self.outputFormat), 1);
     [self setupSwrContextBufferIfNeeded:bufferSize];
     int numberOfSamples = swr_convert(self.swrContext,
                                       (uint8_t **)_swrContextBufferData,
@@ -322,10 +322,10 @@
     }
     self.swrContext = swr_alloc_set_opts(NULL,
                                          av_get_default_channel_layout(self.outputNumberOfChannels),
-                                         SGSampleFormatSG2FF(self.outputFormat),
+                                         SGDMSampleFormatSG2FF(self.outputFormat),
                                          self.outputSampleRate,
                                          av_get_default_channel_layout(self.inputNumberOfChannels),
-                                         SGSampleFormatSG2FF(self.inputFormat),
+                                         SGDMSampleFormatSG2FF(self.inputFormat),
                                          self.inputSampleRate,
                                          0, NULL);
     int result = swr_init(self.swrContext);

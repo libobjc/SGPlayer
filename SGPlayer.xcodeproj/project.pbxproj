@@ -431,7 +431,7 @@
 		9C2C55962015911600131E15 /* SGObjectPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55922015911600131E15 /* SGObjectPool.m */; };
 		9C2C55972015911600131E15 /* SGObjectPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55922015911600131E15 /* SGObjectPool.m */; };
 		9C2C55982015911600131E15 /* SGObjectPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55922015911600131E15 /* SGObjectPool.m */; };
-		9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55992015B87400131E15 /* SGVideoFrame.h */; };
+		9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55992015B87400131E15 /* SGVideoFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C2C559C2015B87400131E15 /* SGVideoFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55992015B87400131E15 /* SGVideoFrame.h */; };
 		9C2C559D2015B87400131E15 /* SGVideoFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55992015B87400131E15 /* SGVideoFrame.h */; };
 		9C2C559E2015B87400131E15 /* SGVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C559A2015B87400131E15 /* SGVideoFrame.m */; };
@@ -1702,6 +1702,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */,
 				9C3082D62125448600B44298 /* SGFFDefines.h in Headers */,
 				9C2C55B52015D92100131E15 /* SGObjectQueue.h in Headers */,
 				9C2C55932015911600131E15 /* SGObjectPool.h in Headers */,
@@ -1828,7 +1829,6 @@
 				9C2535741FAB151500BBFA5C /* sha.h in Headers */,
 				9C2534E71FAB151500BBFA5C /* cast5.h in Headers */,
 				9C2534E11FAB151500BBFA5C /* buffer.h in Headers */,
-				9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */,
 				9C1945012019C6A100184416 /* SGGLYUV420PProgram.h in Headers */,
 				9C25349F1FAB151500BBFA5C /* xvmc.h in Headers */,
 				9C2534A51FAB151500BBFA5C /* avfiltergraph.h in Headers */,

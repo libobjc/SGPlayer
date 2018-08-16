@@ -20,6 +20,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGConcatAsset.h>
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
+#import <SGPlayer/SGVideoFrame.h>
 #else
 #import "SGDefines.h"
 #import "SGFFDefines.h"
@@ -28,6 +29,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import "SGConcatAsset.h"
 #import "SGFrame.h"
 #import "SGAudioFrame.h"
+#import "SGVideoFrame.h"
 #endif
 
 @class SGPlayer;

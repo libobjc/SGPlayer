@@ -7,7 +7,7 @@
 //
 
 #import "SGVideoFFFrame.h"
-#import "rational.h"
+#import "SGFFDefinesMapping.h"
 
 @interface SGVideoFFFrame ()
 
@@ -70,13 +70,12 @@
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = av_frame_get_pkt_size(self.coreFrame);
-    self.format = self.coreFrame->format;
-    self.pictureType = self.coreFrame->pict_type;
-    self.colorRange = self.coreFrame->color_range;
-    self.colorPrimaries = self.coreFrame->color_primaries;
-    self.colorTransferCharacteristic = self.coreFrame->color_trc;
-    self.colorSpace = self.coreFrame->colorspace;
-    self.chromaLocation = self.coreFrame->chroma_location;
+    self.format = SGDMPixelFormatFF2SG(self.coreFrame->format);
+    self.colorRange = SGDMColorRangeFF2SG(self.coreFrame->color_range);
+    self.colorPrimaries = SGDMColorPrimariesFF2SG(self.coreFrame->color_primaries);
+    self.colorTransferCharacteristic = SGDMColorTransferCharacteristicFF2SG(self.coreFrame->color_trc);
+    self.colorSpace = SGDMColorSpaceFF2SG(self.coreFrame->colorspace);
+    self.chromaLocation = SGDMChromaLocationFF2SG(self.coreFrame->chroma_location);
     self.width = self.coreFrame->width;
     self.height = self.coreFrame->height;
     self.keyFrame = self.coreFrame->key_frame;
@@ -95,7 +94,7 @@
     int channels = 0;
     int linesize[8] = {0};
     int linecount[8] = {0};
-    if (self.format == AV_PIX_FMT_YUV420P)
+    if (self.format == SG_AV_PIX_FMT_YUV420P)
     {
         channels = 3;
         linesize[0] = self.width;

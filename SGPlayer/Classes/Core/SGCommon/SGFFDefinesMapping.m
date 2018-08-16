@@ -8,106 +8,128 @@
 
 #import "SGFFDefinesMapping.h"
 
-SGMediaType SGFFMediaType(enum AVMediaType mediaType)
-{
-    if (mediaType == AVMEDIA_TYPE_AUDIO) {
-        return SGMediaTypeAudio;
-    } else if (mediaType == AVMEDIA_TYPE_VIDEO) {
-        return SGMediaTypeVideo;
-    } else if (mediaType == AVMEDIA_TYPE_SUBTITLE) {
-        return SGMediaTypeSubtitle;
-    }
-    return SGMediaTypeUnknown;
-}
-
-SGGLProgramType SGFFDMProgram(enum AVPixelFormat format)
-{
-    if (format == AV_PIX_FMT_YUV420P) {
-        return SGGLProgramTypeYUV420P;
-    } else if (format == AV_PIX_FMT_NV12) {
-        return SGGLProgramTypeNV12;
-    }
-    return SGGLProgramTypeUnknown;
-}
-
-SGGLTextureType SGFFDMTexture(enum AVPixelFormat format)
-{
-    if (format == AV_PIX_FMT_YUV420P) {
-        return SGGLTextureTypeYUV420P;
-    } else if (format == AV_PIX_FMT_NV12) {
-        return SGGLTextureTypeNV12;
-    }
-    return SGGLTextureTypeUnknown;
-}
-
-SGAVSampleFormat SGSampleFormatFF2SG(enum AVSampleFormat format)
+SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format)
 {
     switch (format)
     {
-        case AV_SAMPLE_FMT_NONE:
-            return SG_AV_SAMPLE_FMT_NONE;
-        case AV_SAMPLE_FMT_U8:
-            return SG_AV_SAMPLE_FMT_U8;
-        case AV_SAMPLE_FMT_S16:
-            return SG_AV_SAMPLE_FMT_S16;
-        case AV_SAMPLE_FMT_S32:
-            return SG_AV_SAMPLE_FMT_S32;
-        case AV_SAMPLE_FMT_FLT:
-            return SG_AV_SAMPLE_FMT_FLT;
-        case AV_SAMPLE_FMT_DBL:
-            return SG_AV_SAMPLE_FMT_DBL;
-        case AV_SAMPLE_FMT_U8P:
-            return SG_AV_SAMPLE_FMT_U8P;
-        case AV_SAMPLE_FMT_S16P:
-            return SG_AV_SAMPLE_FMT_S16P;
-        case AV_SAMPLE_FMT_S32P:
-            return SG_AV_SAMPLE_FMT_S32P;
-        case AV_SAMPLE_FMT_FLTP:
-            return SG_AV_SAMPLE_FMT_FLTP;
-        case AV_SAMPLE_FMT_DBLP:
-            return SG_AV_SAMPLE_FMT_DBLP;
-        case AV_SAMPLE_FMT_S64:
-            return SG_AV_SAMPLE_FMT_S64;
-        case AV_SAMPLE_FMT_S64P:
-            return SG_AV_SAMPLE_FMT_S64P;
-        case AV_SAMPLE_FMT_NB:
-            return SG_AV_SAMPLE_FMT_NB;
+        case SG_AV_PIX_FMT_YUV420P:
+            return SGGLProgramTypeYUV420P;
+        case SG_AV_PIX_FMT_NV12:
+            return SGGLProgramTypeNV12;
+        default:
+            return SGGLProgramTypeUnknown;
     }
-    return SG_AV_SAMPLE_FMT_NONE;
 }
 
-enum AVSampleFormat SGSampleFormatSG2FF(SGAVSampleFormat froamt)
+SGGLTextureType SGDMFormat2Texture(SGAVPixelFormat format)
 {
-    switch (froamt)
+    switch (format)
     {
-        case SG_AV_SAMPLE_FMT_NONE:
-            return AV_SAMPLE_FMT_NONE;
-        case SG_AV_SAMPLE_FMT_U8:
-            return AV_SAMPLE_FMT_U8;
-        case SG_AV_SAMPLE_FMT_S16:
-            return AV_SAMPLE_FMT_S16;
-        case SG_AV_SAMPLE_FMT_S32:
-            return AV_SAMPLE_FMT_S32;
-        case SG_AV_SAMPLE_FMT_FLT:
-            return AV_SAMPLE_FMT_FLT;
-        case SG_AV_SAMPLE_FMT_DBL:
-            return AV_SAMPLE_FMT_DBL;
-        case SG_AV_SAMPLE_FMT_U8P:
-            return AV_SAMPLE_FMT_U8P;
-        case SG_AV_SAMPLE_FMT_S16P:
-            return AV_SAMPLE_FMT_S16P;
-        case SG_AV_SAMPLE_FMT_S32P:
-            return AV_SAMPLE_FMT_S32P;
-        case SG_AV_SAMPLE_FMT_FLTP:
-            return AV_SAMPLE_FMT_FLTP;
-        case SG_AV_SAMPLE_FMT_DBLP:
-            return AV_SAMPLE_FMT_DBLP;
-        case SG_AV_SAMPLE_FMT_S64:
-            return AV_SAMPLE_FMT_S64;
-        case SG_AV_SAMPLE_FMT_S64P:
-            return AV_SAMPLE_FMT_S64P;
-        case SG_AV_SAMPLE_FMT_NB:
-            return AV_SAMPLE_FMT_NB;
+        case SG_AV_PIX_FMT_YUV420P:
+            return SGGLTextureTypeYUV420P;
+        case SG_AV_PIX_FMT_NV12:
+            return SGGLTextureTypeNV12;
+        default:
+            return SGGLTextureTypeUnknown;
     }
-    return AV_SAMPLE_FMT_NONE;
+}
+
+SGMediaType SGDMMediaTypeFF2SG(enum AVMediaType mediaType)
+{
+    switch (mediaType)
+    {
+        case AVMEDIA_TYPE_AUDIO:
+            return SGMediaTypeAudio;
+        case AVMEDIA_TYPE_VIDEO:
+            return SGMediaTypeVideo;
+        case AVMEDIA_TYPE_SUBTITLE:
+            return SGMediaTypeSubtitle;
+        default:
+            return SGMediaTypeUnknown;
+    }
+}
+
+SGAVSampleFormat SGDMSampleFormatFF2SG(enum AVSampleFormat format)
+{
+    return (SGAVSampleFormat)format;
+}
+
+SGAVPixelFormat SGDMPixelFormatFF2SG(enum AVPixelFormat format)
+{
+    return (SGAVPixelFormat)format;
+}
+
+SGAVColorRange SGDMColorRangeFF2SG(enum AVColorRange format)
+{
+    return (SGAVColorRange)format;
+}
+
+SGAVColorPrimaries SGDMColorPrimariesFF2SG(enum AVColorPrimaries format)
+{
+    return (SGAVColorPrimaries)format;
+}
+
+SGAVColorTransferCharacteristic SGDMColorTransferCharacteristicFF2SG(enum AVColorTransferCharacteristic format)
+{
+    return (SGAVColorTransferCharacteristic)format;
+}
+
+SGAVColorSpace SGDMColorSpaceFF2SG(enum AVColorSpace format)
+{
+    return (SGAVColorSpace)format;
+}
+
+SGAVChromaLocation SGDMChromaLocationFF2SG(enum AVChromaLocation format)
+{
+    return (SGAVChromaLocation)format;
+}
+
+enum AVMediaType SGDMMediaTypeSG2FF(SGMediaType mediaType)
+{
+    switch (mediaType)
+    {
+        case SGMediaTypeAudio:
+            return AVMEDIA_TYPE_AUDIO;
+        case SGMediaTypeVideo:
+            return AVMEDIA_TYPE_VIDEO;
+        case SGMediaTypeSubtitle:
+            return AVMEDIA_TYPE_SUBTITLE;
+        default:
+            return AVMEDIA_TYPE_UNKNOWN;
+    }
+}
+
+enum AVSampleFormat SGDMSampleFormatSG2FF(SGAVSampleFormat foramt)
+{
+    return (enum AVSampleFormat)foramt;
+}
+
+enum AVPixelFormat SGDMPixelFormatSG2FF(SGAVPixelFormat foramt)
+{
+    return (enum AVPixelFormat)foramt;
+}
+
+enum AVColorRange SGDMColorRangeSG2FF(SGAVColorRange foramt)
+{
+    return (enum AVColorRange)foramt;
+}
+
+enum AVColorPrimaries SGDMColorPrimariesSG2FF(SGAVColorPrimaries foramt)
+{
+    return (enum AVColorPrimaries)foramt;
+}
+
+enum AVColorTransferCharacteristic SGDMColorTransferCharacteristicSG2FF(SGAVColorTransferCharacteristic foramt)
+{
+    return (enum AVColorTransferCharacteristic)foramt;
+}
+
+enum AVColorSpace SGDMColorSpaceSG2FF(SGAVColorSpace foramt)
+{
+    return (enum AVColorSpace)foramt;
+}
+
+enum AVChromaLocation SGDMChromaLocationSG2FF(SGAVChromaLocation foramt)
+{
+    return (enum AVChromaLocation)foramt;
 }

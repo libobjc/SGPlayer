@@ -319,7 +319,7 @@
     [self unlock];
     SGGLSize textureSize = {frame.width, frame.height};
     self.glRenderer.modelType = SGGLModelTypePlane;
-    self.glRenderer.programType = SGFFDMProgram(frame.format);
+    self.glRenderer.programType = SGDMFormat2Program(frame.format);
     self.glRenderer.textureSize = textureSize;
     self.glRenderer.layerSize = size;
     self.glRenderer.scale = glView.glScale;
@@ -339,7 +339,7 @@
     }
     else
     {
-        success = [self.glTextureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:textureSize];
+        success = [self.glTextureUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame.data size:textureSize];
     }
     if (!success)
     {

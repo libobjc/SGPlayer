@@ -37,13 +37,12 @@
 - (void)clear
 {
     [super clear];
-    self.format = AV_PIX_FMT_NONE;
-    self.pictureType = AV_PICTURE_TYPE_NONE;
-    self.colorRange = AVCOL_RANGE_UNSPECIFIED;
-    self.colorPrimaries = AVCOL_PRI_RESERVED0;
-    self.colorTransferCharacteristic = AVCOL_TRC_RESERVED0;
-    self.colorSpace = AVCOL_SPC_RGB;
-    self.chromaLocation = AVCHROMA_LOC_UNSPECIFIED;
+    self.format = SG_AV_PIX_FMT_NONE;
+    self.colorRange = SG_AVCOL_RANGE_UNSPECIFIED;
+    self.colorPrimaries = SG_AVCOL_PRI_RESERVED0;
+    self.colorTransferCharacteristic = SG_AVCOL_TRC_RESERVED0;
+    self.colorSpace = SG_AVCOL_SPC_RGB;
+    self.chromaLocation = SG_AVCHROMA_LOC_UNSPECIFIED;
     self.width = 0;
     self.height = 0;
     self.keyFrame = 0;

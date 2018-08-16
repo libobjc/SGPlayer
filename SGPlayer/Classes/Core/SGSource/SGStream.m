@@ -15,7 +15,7 @@
 {
     if (self.coreStream)
     {
-        return SGFFMediaType(self.coreStream->codecpar->codec_type);
+        return SGDMMediaTypeFF2SG(self.coreStream->codecpar->codec_type);
     }
     return SGMediaTypeUnknown;
 }
