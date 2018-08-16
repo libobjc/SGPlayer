@@ -22,7 +22,7 @@
 @property (nonatomic, weak) id <SGGLViewDelegate> delegate;
 @property (nonatomic, assign, readonly) SGGLSize displaySize;
 
-- (void)display;
+- (BOOL)display;
 - (void)clear;
 
 @end

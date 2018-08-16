@@ -37,7 +37,7 @@
 - (void)close;
 
 - (void)putFrame:(__kindof SGFrame *)frame;
-- (BOOL)hasFrame;
+- (BOOL)receivedFrame;
 - (void)flush;
 
 @end

@@ -48,7 +48,7 @@
     }
 }
 
-- (void)display
+- (BOOL)display
 {
     SGPLGLContextSetCurrentContext(self.context);
     glBindFramebuffer(GL_FRAMEBUFFER, self.displayFramebuffer);
@@ -61,6 +61,7 @@
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    return success;
 }
 
 - (void)clear

@@ -436,11 +436,11 @@
 
 - (void)callbackForTimingInfoIfNeeded
 {
-    if (self.audioOutput.enable && !self.audioOutput.hasFrame)
+    if (self.audioOutput.enable && !self.audioOutput.receivedFrame)
     {
         return;
     }
-    if (self.videoOutput.enable && !self.videoOutput.hasFrame)
+    if (self.videoOutput.enable && !self.videoOutput.receivedFrame)
     {
         return;
     }

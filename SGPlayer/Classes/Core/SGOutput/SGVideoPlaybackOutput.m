@@ -18,15 +18,14 @@
 
 @interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 
+@property (nonatomic, assign) BOOL paused;
+@property (nonatomic, assign) BOOL receivedFrame;
+@property (nonatomic, assign) BOOL renderedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
-@property (nonatomic, assign) BOOL paused;
-@property (nonatomic, assign) BOOL timeSyncDidUpdate;
-@property (nonatomic, assign) BOOL hasFrame;
-
-@property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
+@property (nonatomic, strong) SGGLDisplayLink * displayLink;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLRenderer * glRenderer;
 @property (nonatomic, strong) SGGLTextureUploader * glTextureUploader;
@@ -51,6 +50,8 @@
         _enable = NO;
         _key = NO;
         self.rate = CMTimeMake(1, 1);
+        self.frameQueue = [[SGObjectQueue alloc] init];
+        self.frameQueue.shouldSortObjects = YES;
         self.glRenderer = [[SGGLRenderer alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
@@ -79,8 +80,6 @@
     {
         return;
     }
-    self.frameQueue = [[SGObjectQueue alloc] init];
-    self.frameQueue.shouldSortObjects = YES;
     self.displayLink.paused = NO;
     self.renderTimer.paused = NO;
 }
@@ -113,8 +112,8 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
-    self.timeSyncDidUpdate = NO;
-    self.hasFrame = NO;
+    self.receivedFrame = NO;
+    self.renderedFrame = NO;
     [self unlock];
 }
 
@@ -129,14 +128,11 @@
         return;
     }
     SGVideoFrame * videoFrame = frame;
-    if (self.key)
+    if (self.key && !self.receivedFrame)
     {
-        if ( !self.timeSyncDidUpdate && self.frameQueue.count == 0)
-        {
-            [self.timeSync updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
-        }
+        [self.timeSync updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
-    self.hasFrame = YES;
+    self.receivedFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
     [self.delegate outputDidChangeCapacity:self];
 }
@@ -150,8 +146,8 @@
     [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
-    self.timeSyncDidUpdate = NO;
-    self.hasFrame = NO;
+    self.receivedFrame = NO;
+    self.renderedFrame = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -205,73 +201,60 @@
 
 - (void)renderTimerHandler
 {
-    if (self.key)
+    if (self.key && self.renderedFrame && self.paused)
     {
-        if (self.timeSyncDidUpdate)
-        {
-            if (self.paused)
-            {
-                return;
-            }
-        }
-        else
-        {
-            [self.timeSync refresh];
-        }
+        return;
     }
     [self lock];
+    if (self.key && !self.renderedFrame)
+    {
+        [self.timeSync refresh];
+    }
     SGWeakSelf
-    SGVideoFrame * render = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
+    SGVideoFrame * frame = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
         SGStrongSelf
-        if (self.currentFrame)
+        if (!self.currentFrame)
         {
-            CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
-            NSAssert(CMTIME_IS_VALID(time), @"Key time is invalid.");
-            NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
-            * current = self.currentFrame.timeStamp;
-            return YES;
+            return NO;
         }
-        return NO;
+        CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
+        NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
+        * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
+        * current = self.currentFrame.timeStamp;
+        return YES;
     } drop:!self.key];
-    if (!render)
+    if (!frame || frame == self.currentFrame)
     {
         [self unlock];
         return;
     }
-    BOOL drawing = NO;
-    if (render != self.currentFrame)
+    [self.currentFrame unlock];
+    self.currentFrame = frame;
+    if (self.key)
     {
-        [self.currentFrame unlock];
-        self.currentFrame = render;
-        if (self.key)
-        {
-            self.timeSyncDidUpdate = YES;
-            [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
-        }
-        drawing = YES;
+        [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
     }
     [self unlock];
     if (self.view)
     {
-        if (drawing)
+        if (!self.glView)
         {
-            if (!self.glView)
-            {
-                self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
-                self.glView.delegate = self;
-            }
-            if (self.glView.superview != self.view)
-            {
-                [self.view addSubview:self.glView];
-            }
-            SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
-            if (layerSize.width != self.glView.displaySize.width ||
-                layerSize.height != self.glView.displaySize.height)
-            {
-                self.glView.frame = self.view.bounds;
-            }
-            [self draw];
+            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+            self.glView.delegate = self;
+        }
+        if (self.glView.superview != self.view)
+        {
+            [self.view addSubview:self.glView];
+        }
+        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
+        if (layerSize.width != self.glView.displaySize.width ||
+            layerSize.height != self.glView.displaySize.height)
+        {
+            self.glView.frame = self.view.bounds;
+        }
+        if ([self draw])
+        {
+            self.renderedFrame = YES;
         }
     }
     else
@@ -283,15 +266,16 @@
 
 #pragma mark - SGGLView
 
-- (void)draw
+- (BOOL)draw
 {
 #if SGPLATFORM_TARGET_OS_IPHONE
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
     {
-        [self.glView display];
+        return [self.glView display];
     }
+    return NO;
 #else
-    [self.glView display];
+    return [self.glView display];
 #endif
 }
 
@@ -299,18 +283,7 @@
 {
     [self lock];
     SGVideoFrame * frame = self.currentFrame;
-    if (!frame)
-    {
-        [self unlock];
-        return NO;
-    }
-    if (![frame isKindOfClass:[SGVideoFFFrame class]] &&
-        ![frame isKindOfClass:[SGVideoAVFrame class]])
-    {
-        [self unlock];
-        return NO;
-    }
-    if (frame.width == 0 || frame.height == 0)
+    if (!frame || frame.width == 0 || frame.height == 0)
     {
         [self unlock];
         return NO;
