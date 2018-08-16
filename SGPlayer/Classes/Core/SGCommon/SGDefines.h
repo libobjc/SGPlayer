@@ -27,12 +27,6 @@ typedef NS_ENUM(NSUInteger, SGLoadingState)
     SGLoadingStateFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGBackgroundMode)
-{
-    SGBackgroundModeAutoPlayAndPause,
-    SGBackgroundModeContinue,
-};
-
 typedef NS_ENUM(NSUInteger, SGMediaType)
 {
     SGMediaTypeUnknown,
