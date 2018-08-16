@@ -8,10 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-
 #define SGObjectPoolItemInterface \
 @property (nonatomic, assign) NSInteger lockingCount;\
-
 
 #define SGObjectPoolItemImplementation \
 - (void)lock\
@@ -29,10 +27,8 @@
     }\
 }\
 
-
 #define SGObjectPoolItemLockingInterface      SGObjectPoolItemInterface
 #define SGObjectPoolItemLockingImplementation SGObjectPoolItemImplementation
-
 
 @protocol SGObjectPoolItem <NSObject, NSLocking>
 

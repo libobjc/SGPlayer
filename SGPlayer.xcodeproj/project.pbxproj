@@ -497,7 +497,7 @@
 		9C41E7321E9756B0006E5A65 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936D1E71404A00AD4289 /* libssl.a */; };
 		9C41E7331E9756B0006E5A65 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936E1E71404A00AD4289 /* libswresample.a */; };
 		9C41E7341E9756B0006E5A65 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936F1E71404A00AD4289 /* libswscale.a */; };
-		9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
+		9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C4663CB20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
 		9C4663CC20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
 		9C4663CD20D0F83600CADDA7 /* SGTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C4663C920D0F83600CADDA7 /* SGTime.m */; };
@@ -1672,6 +1672,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */,
 				9C3082D62125448600B44298 /* SGFFDefines.h in Headers */,
 				9C2C55B52015D92100131E15 /* SGObjectQueue.h in Headers */,
@@ -1726,7 +1727,6 @@
 				9C1944F92019C09D00184416 /* SGGLInternalProgram.h in Headers */,
 				9C2534E41FAB151500BBFA5C /* camellia.h in Headers */,
 				9C2535591FAB151500BBFA5C /* pixdesc.h in Headers */,
-				9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9C2535201FAB151500BBFA5C /* hwcontext_dxva2.h in Headers */,
 				9C5C6C9920182A4800863EB5 /* SGGLView.h in Headers */,
 				9C2535771FAB151500BBFA5C /* sha512.h in Headers */,

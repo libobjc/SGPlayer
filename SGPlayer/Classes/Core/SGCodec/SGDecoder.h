@@ -9,7 +9,6 @@
 #ifndef SGDecoder_h
 #define SGDecoder_h
 
-
 #import <Foundation/Foundation.h>
 #import "SGFrame.h"
 #import "SGPacket.h"

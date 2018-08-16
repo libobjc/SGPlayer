@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGDefines.h"
-#import "SGObjectPool.h"
 #import "SGObjectQueue.h"
+#import "SGObjectPool.h"
+#import "SGDefines.h"
 
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 

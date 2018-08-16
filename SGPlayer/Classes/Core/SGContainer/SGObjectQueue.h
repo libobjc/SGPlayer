@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
-
+#import "SGTime.h"
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
 
@@ -21,7 +20,6 @@
 - (long long)size;
 
 @end
-
 
 @interface SGObjectQueue : NSObject
 

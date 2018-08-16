@@ -7,14 +7,14 @@
 //
 
 #import "SGVideoPlaybackOutput.h"
-#import "SGMacro.h"
-#import "SGGLDisplayLink.h"
-#import "SGGLTimer.h"
-#import "SGGLView.h"
-#import "SGGLRenderer.h"
 #import "SGFFDefinesMapping.h"
+#import "SGGLDisplayLink.h"
 #import "SGVideoAVFrame.h"
 #import "SGVideoFFFrame.h"
+#import "SGGLRenderer.h"
+#import "SGGLTimer.h"
+#import "SGGLView.h"
+#import "SGMacro.h"
 
 @interface SGVideoPlaybackOutput () <SGGLViewDelegate, NSLocking>
 

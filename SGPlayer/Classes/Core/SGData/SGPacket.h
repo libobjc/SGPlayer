@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGObjectPool.h"
 #import "SGObjectQueue.h"
+#import "SGObjectPool.h"
 #import "SGStream.h"
 
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>

@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGGLProgram.h"
 #import "SGGLTextureUploader.h"
-#import "SGDefines.h"
+#import "SGGLProgram.h"
 #import "SGFFDefines.h"
+#import "SGDefines.h"
 #import "samplefmt.h"
 #import "pixfmt.h"
 

@@ -10,10 +10,9 @@
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioBufferFrame.h"
 #import "SGFFDefinesMapping.h"
-#import "SGTime.h"
-#import "SGError.h"
-#import "swscale.h"
 #import "swresample.h"
+#import "swscale.h"
+#import "SGError.h"
 
 @interface SGAudioPlaybackOutput () <SGAudioStreamPlayerDelegate, NSLocking>
 
