@@ -10,8 +10,6 @@
 
 @interface SGVideoAVFrame : SGVideoFrame
 
-@property (nonatomic, assign) CVPixelBufferRef corePixelBuffer;
-
-- (void)fillWithPacket:(SGPacket *)packet;
+- (void)fillWithPacket:(SGPacket *)packet pixelBuffer:(CVPixelBufferRef)pixelBuffer;
 
 @end

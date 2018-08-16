@@ -333,13 +333,13 @@
         self.glTextureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
     }
     BOOL success = NO;
-    if ([frame isKindOfClass:[SGVideoFFFrame class]])
+    if (frame.pixelBuffer)
+    {
+        success = [self.glTextureUploader uploadWithCVPixelBuffer:frame.pixelBuffer];
+    }
+    else
     {
         success = [self.glTextureUploader uploadWithType:SGFFDMTexture(frame.format) data:frame.data size:textureSize];
-    }
-    else if ([frame isKindOfClass:[SGVideoAVFrame class]])
-    {
-        success = [self.glTextureUploader uploadWithCVPixelBuffer:((SGVideoAVFrame *)frame).corePixelBuffer];
     }
     if (!success)
     {

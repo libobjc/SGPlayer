@@ -8,6 +8,10 @@
 
 #import "SGVideoAVFrame.h"
 
+@interface SGVideoAVFrame ()
+
+@end
+
 @implementation SGVideoAVFrame
 
 - (void)dealloc
@@ -15,70 +19,61 @@
     [self clear];
 }
 
-- (void)fillWithPacket:(SGPacket *)packet
+- (void)fillWithPacket:(SGPacket *)packet pixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
-    CVPixelBufferRef pixelBuffer = self.corePixelBuffer;
-    if (pixelBuffer)
+    CVPixelBufferRetain(pixelBuffer);
+    if (self.pixelBuffer)
     {
-        OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
-        if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-            self.format = AV_PIX_FMT_NV12;
-        } else if (format == kCVPixelFormatType_420YpCbCr8Planar) {
-            self.format = AV_PIX_FMT_YUV420P;
-        } else if (format == kCVPixelFormatType_422YpCbCr8) {
-            self.format = AV_PIX_FMT_UYVY422;
-        } else if (format == kCVPixelFormatType_32BGRA) {
-            self.format = AV_PIX_FMT_BGRA;
-        } else {
-            self.format = AV_PIX_FMT_NONE;
-        }
-        if (CVPixelBufferIsPlanar(pixelBuffer)) {
-            self.width = (int)CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
-            self.height = (int)CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
-        } else {
-            self.width  = (int)CVPixelBufferGetWidth(pixelBuffer);
-            self.height = (int)CVPixelBufferGetHeight(pixelBuffer);
-        }
+        CVPixelBufferRelease(self.pixelBuffer);
+        self.pixelBuffer = NULL;
     }
-    if (packet)
-    {
-        int64_t timestamp = packet.corePacket->pts;
-        if (packet.corePacket->pts == AV_NOPTS_VALUE) {
-            timestamp = packet.corePacket->dts;
-        }
-        self.timebase = packet.timebase;
-        self.offset = packet.offset;
-        self.scale = packet.scale;
-        self.originalTimeStamp = packet.originalTimeStamp;
-        self.originalDuration = packet.originalDuration;
-        self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-        self.duration = packet.duration;
-        self.decodeTimeStamp = packet.decodeTimeStamp;
-        self.size = packet.corePacket->size;
-        self.bestEffortTimestamp = timestamp;
-        self.packetPosition = packet.corePacket->pos;
-        self.packetDuration = packet.corePacket->duration;
-        self.packetSize = packet.corePacket->size;
+    self.pixelBuffer = pixelBuffer;
+    OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
+    if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
+        self.format = AV_PIX_FMT_NV12;
+    } else if (format == kCVPixelFormatType_420YpCbCr8Planar) {
+        self.format = AV_PIX_FMT_YUV420P;
+    } else if (format == kCVPixelFormatType_422YpCbCr8) {
+        self.format = AV_PIX_FMT_UYVY422;
+    } else if (format == kCVPixelFormatType_32BGRA) {
+        self.format = AV_PIX_FMT_BGRA;
+    } else {
+        self.format = AV_PIX_FMT_NONE;
     }
-}
-
-- (void)setCorePixelBuffer:(CVPixelBufferRef)corePixelBuffer
-{
-    if (corePixelBuffer)
-    {
-        CVPixelBufferRetain(corePixelBuffer);
+    if (CVPixelBufferIsPlanar(pixelBuffer)) {
+        self.width = (int)CVPixelBufferGetWidthOfPlane(pixelBuffer, 0);
+        self.height = (int)CVPixelBufferGetHeightOfPlane(pixelBuffer, 0);
+    } else {
+        self.width  = (int)CVPixelBufferGetWidth(pixelBuffer);
+        self.height = (int)CVPixelBufferGetHeight(pixelBuffer);
     }
-    if (_corePixelBuffer)
-    {
-        CVPixelBufferRelease(_corePixelBuffer);
+    int64_t timestamp = packet.corePacket->pts;
+    if (packet.corePacket->pts == AV_NOPTS_VALUE) {
+        timestamp = packet.corePacket->dts;
     }
-    _corePixelBuffer = corePixelBuffer;
+    self.timebase = packet.timebase;
+    self.offset = packet.offset;
+    self.scale = packet.scale;
+    self.originalTimeStamp = packet.originalTimeStamp;
+    self.originalDuration = packet.originalDuration;
+    self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    self.duration = packet.duration;
+    self.decodeTimeStamp = packet.decodeTimeStamp;
+    self.size = packet.corePacket->size;
+    self.bestEffortTimestamp = timestamp;
+    self.packetPosition = packet.corePacket->pos;
+    self.packetDuration = packet.corePacket->duration;
+    self.packetSize = packet.corePacket->size;
 }
 
 - (void)clear
 {
     [super clear];
-    self.corePixelBuffer = NULL;
+    if (self.pixelBuffer)
+    {
+        CVPixelBufferRelease(self.pixelBuffer);
+        self.pixelBuffer = NULL;
+    }
 }
 
 @end

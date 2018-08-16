@@ -123,8 +123,7 @@
             if (self.decodingPixelBuffer)
             {
                 SGVideoAVFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoAVFrame class]];
-                frame.corePixelBuffer = self.decodingPixelBuffer;
-                [frame fillWithPacket:packet];
+                [frame fillWithPacket:packet pixelBuffer:self.decodingPixelBuffer];
                 ret = frame;
                 CFRelease(self.decodingPixelBuffer);
                 self.decodingPixelBuffer = NULL;
