@@ -1315,6 +1315,18 @@
 			path = SGFFmpeg;
 			sourceTree = "<group>";
 		};
+		9C3082D821255CA400B44298 /* SGDefine */ = {
+			isa = PBXGroup;
+			children = (
+				9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */,
+				9CA0F56220E0E24000501478 /* SGDefines.h */,
+				9C3082D42125448600B44298 /* SGFFDefines.h */,
+				9C1D2228201B1DA2005147FB /* SGFFDefinesMapping.h */,
+				9C1D2229201B1DA2005147FB /* SGFFDefinesMapping.m */,
+			);
+			path = SGDefine;
+			sourceTree = "<group>";
+		};
 		9C478EF31E7139E500AD4289 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
@@ -1336,6 +1348,7 @@
 				9CBD0BA7201625010094CFC7 /* SGAudio */,
 				9C129F2A211857C800B816DC /* SGContainer */,
 				9CF15DF320119D0300585326 /* SGData */,
+				9C3082D821255CA400B44298 /* SGDefine */,
 				9CE6F5912004E37600D1F4C8 /* SGCommon */,
 				9C5C6C9620182A0900863EB5 /* SGOpenGL */,
 				9CE6F5172004D97C00D1F4C8 /* SGPlatform */,
@@ -1535,11 +1548,6 @@
 		9CE6F5912004E37600D1F4C8 /* SGCommon */ = {
 			isa = PBXGroup;
 			children = (
-				9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */,
-				9CA0F56220E0E24000501478 /* SGDefines.h */,
-				9C3082D42125448600B44298 /* SGFFDefines.h */,
-				9C1D2228201B1DA2005147FB /* SGFFDefinesMapping.h */,
-				9C1D2229201B1DA2005147FB /* SGFFDefinesMapping.m */,
 				9C4663C820D0F83600CADDA7 /* SGTime.h */,
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
 				9C8D4E7E200E1ACA00ED8A58 /* SGError.h */,
