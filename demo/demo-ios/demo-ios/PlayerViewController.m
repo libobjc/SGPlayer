@@ -50,6 +50,9 @@
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.view = self.view1;
+    [self.player setRenderCallback:^(SGVideoFrame * frame) {
+        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
+    }];
     [self.player replaceWithAsset:asset];
     [self.player play];
     
@@ -144,7 +147,7 @@
     CMTime time = player.time;
     CMTime loadedTime = player.loadedTime;
     CMTime duration = player.duration;
-    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
+//    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
     if (!self.progressSilderTouching)
     {
         self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);

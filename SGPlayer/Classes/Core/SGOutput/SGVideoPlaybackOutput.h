@@ -8,6 +8,7 @@
 
 #import "SGOutput.h"
 #import "SGPlatform.h"
+#import "SGVideoFrame.h"
 #import "SGPlaybackTimeSync.h"
 
 @interface SGVideoPlaybackOutput : NSObject <SGOutput>
@@ -15,5 +16,6 @@
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 @property (nonatomic, assign) CMTime rate;
 @property (nonatomic, strong) SGPLFView * view;
+@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
 
 @end

@@ -73,6 +73,7 @@
     self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
     self.videoOutput.timeSync = self.audioOutput.timeSync;
     self.videoOutput.view = self.view;
+    self.videoOutput.renderCallback = self.renderCallback;
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.source = [[SGConcatSource alloc] initWithAsset:concatAsset];
     configuration.audioDecoder = [[SGAudioDecoder alloc] init];
@@ -296,6 +297,15 @@
     {
         _view = view;
         self.videoOutput.view = _view;
+    }
+}
+
+- (void)setRenderCallback:(void (^)(SGVideoFrame *))renderCallback
+{
+    if (_renderCallback != renderCallback)
+    {
+        _renderCallback = renderCallback;
+        self.videoOutput.renderCallback = _renderCallback;
     }
 }
 

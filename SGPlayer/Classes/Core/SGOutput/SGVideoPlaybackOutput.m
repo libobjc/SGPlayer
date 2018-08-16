@@ -236,6 +236,12 @@
         [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
     }
     [self unlock];
+    if (self.renderCallback)
+    {
+        [frame lock];
+        self.renderCallback(frame);
+        [frame unlock];
+    }
     if (self.view)
     {
         if (!self.glView)

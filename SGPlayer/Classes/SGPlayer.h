@@ -63,6 +63,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign, readonly) CMTime duration;
 
 @property (nonatomic, strong) UIView * view;
+@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
 
 - (void)play;
 - (void)pause;
