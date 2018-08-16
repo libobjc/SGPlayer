@@ -63,14 +63,12 @@
     self.timebase = packet.timebase;
     self.offset = packet.offset;
     self.scale = packet.scale;
-    
     self.originalTimeStamp = SGCMTimeMakeWithRational(av_frame_get_best_effort_timestamp(self.coreFrame), self.timebase);
     self.originalDuration = SGCMTimeMakeWithRational(av_frame_get_pkt_duration(self.coreFrame), self.timebase);
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.decodeTimeStamp = packet.decodeTimeStamp;
     self.size = av_frame_get_pkt_size(self.coreFrame);
-    
     self.format = self.coreFrame->format;
     self.pictureType = self.coreFrame->pict_type;
     self.colorRange = self.coreFrame->color_range;
@@ -86,7 +84,6 @@
     self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
     self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
     self.packetSize = av_frame_get_pkt_size(self.coreFrame);
-    
     BOOL resample = [self resampleIfNeeded];
     self.data = resample ? _resampleData : self.coreFrame->data;
     self.linesize = resample ? _resampleLinesize : self.coreFrame->linesize;
@@ -142,7 +139,6 @@
 - (void)clear
 {
     [super clear];
-    
     if (_coreFrame)
     {
         av_frame_unref(_coreFrame);

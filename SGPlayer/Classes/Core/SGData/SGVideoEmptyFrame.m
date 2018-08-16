@@ -1,14 +1,14 @@
 //
-//  SGVideoVirtualFrame.m
+//  SGVideoEmptyFrame.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGVideoVirtualFrame.h"
+#import "SGVideoEmptyFrame.h"
 
-@implementation SGVideoVirtualFrame
+@implementation SGVideoEmptyFrame
 
 - (void)fillWithPacket:(SGPacket *)packet
 {

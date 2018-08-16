@@ -1,5 +1,5 @@
 //
-//  SGVideoVirtualFrame.h
+//  SGVideoEmptyFrame.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/14.
@@ -8,7 +8,7 @@
 
 #import "SGVideoFrame.h"
 
-@interface SGVideoVirtualFrame : SGVideoFrame
+@interface SGVideoEmptyFrame : SGVideoFrame
 
 - (void)fillWithPacket:(SGPacket *)packet;
 

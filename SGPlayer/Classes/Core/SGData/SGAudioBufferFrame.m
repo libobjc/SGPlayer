@@ -61,23 +61,22 @@
     }
 }
 
-- (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame
+- (void)fillWithFrame:(SGFrame *)frame
 {
-    self.timebase = audioFrame.timebase;
-    self.offset = audioFrame.offset;
-    self.scale = audioFrame.scale;
-    self.originalTimeStamp = audioFrame.originalTimeStamp;
-    self.originalDuration = audioFrame.originalDuration;
-    self.timeStamp = audioFrame.timeStamp;
-    self.duration = audioFrame.duration;
-    self.decodeTimeStamp = audioFrame.decodeTimeStamp;
-    self.size = audioFrame.size;
+    self.timebase = frame.timebase;
+    self.offset = frame.offset;
+    self.scale = frame.scale;
+    self.originalTimeStamp = frame.originalTimeStamp;
+    self.originalDuration = frame.originalDuration;
+    self.timeStamp = frame.timeStamp;
+    self.duration = frame.duration;
+    self.decodeTimeStamp = frame.decodeTimeStamp;
+    self.size = frame.size;
 }
 
 - (void)clear
 {
     [super clear];
-    
     for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
     {
         internalLinesize[i] = 0;

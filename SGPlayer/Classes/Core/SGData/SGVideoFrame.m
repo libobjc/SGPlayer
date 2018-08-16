@@ -37,7 +37,6 @@
 - (void)clear
 {
     [super clear];
-    
     self.format = AV_PIX_FMT_NONE;
     self.pictureType = AV_PICTURE_TYPE_NONE;
     self.colorRange = AVCOL_RANGE_UNSPECIFIED;

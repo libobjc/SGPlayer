@@ -12,6 +12,6 @@
 
 - (void)updateData:(void **)data linesize:(int *)linesize;
 
-- (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame;
+- (void)fillWithFrame:(SGFrame *)frame;
 
 @end

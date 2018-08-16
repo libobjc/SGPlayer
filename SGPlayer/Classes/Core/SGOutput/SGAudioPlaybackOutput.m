@@ -188,7 +188,7 @@
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
     
     SGAudioBufferFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioBufferFrame class]];
-    [result fillWithAudioFrame:audioFrame];
+    [result fillWithFrame:audioFrame];
     result.format = AV_SAMPLE_FMT_FLTP;
     result.numberOfSamples = numberOfSamples;
     result.sampleRate = self.outputSampleRate;

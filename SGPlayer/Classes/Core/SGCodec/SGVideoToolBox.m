@@ -8,7 +8,7 @@
 
 #import "SGVideoToolBox.h"
 #import <VideoToolbox/VideoToolbox.h>
-#import "SGVideoVirtualFrame.h"
+#import "SGVideoEmptyFrame.h"
 #import "SGVideoAVFrame.h"
 #import "SGObjectPool.h"
 #import "SGPlatform.h"
@@ -69,7 +69,7 @@
     if (self.applicationState == UIApplicationStateBackground)
     {
         self.shouldFlush = YES;
-        SGVideoVirtualFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoVirtualFrame class]];
+        SGVideoEmptyFrame * frame = [[SGObjectPool sharePool] objectWithClass:[SGVideoEmptyFrame class]];
         [frame fillWithPacket:packet];
         return @[frame];
     }
