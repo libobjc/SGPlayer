@@ -14,14 +14,20 @@
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGDefines.h>
+#import <SGPlayer/SGFFDefines.h>
 #import <SGPlayer/SGAsset.h>
 #import <SGPlayer/SGURLAsset.h>
 #import <SGPlayer/SGConcatAsset.h>
+#import <SGPlayer/SGFrame.h>
+#import <SGPlayer/SGAudioFrame.h>
 #else
 #import "SGDefines.h"
+#import "SGFFDefines.h"
 #import "SGAsset.h"
 #import "SGURLAsset.h"
 #import "SGConcatAsset.h"
+#import "SGFrame.h"
+#import "SGAudioFrame.h"
 #endif
 
 @class SGPlayer;
