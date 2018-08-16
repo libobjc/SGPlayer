@@ -1455,6 +1455,8 @@
 				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
 				9C620D6721215EEF00845F2A /* SGFormatContext.h */,
 				9C620D6821215EEF00845F2A /* SGFormatContext.m */,
+				9CF52CF5200F45D700950B81 /* SGStream.h */,
+				9CF52CF6200F45D700950B81 /* SGStream.m */,
 			);
 			path = SGSource;
 			sourceTree = "<group>";
@@ -1591,8 +1593,6 @@
 		9CF15DF320119D0300585326 /* SGData */ = {
 			isa = PBXGroup;
 			children = (
-				9CF52CF5200F45D700950B81 /* SGStream.h */,
-				9CF52CF6200F45D700950B81 /* SGStream.m */,
 				9C2C55AB2015D1D200131E15 /* SGPacket.h */,
 				9C2C55AC2015D1D200131E15 /* SGPacket.m */,
 				9C389ACB20108C2E003259FF /* SGFrame.h */,
