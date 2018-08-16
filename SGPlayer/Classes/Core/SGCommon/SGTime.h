@@ -8,10 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
-#import "rational.h"
 
-AVRational SGRationalValidate(AVRational rational, AVRational defaultRational);
-CMTime SGCMTimeMakeWithRational(int64_t timeStamp, AVRational timebase);
+CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime);
+CMTime SGCMTimeMakeWithTimebase(int64_t timeStamp, CMTime timebase);
 CMTime SGCMTimeMakeWithSeconds(Float64 seconds);
 CMTime SGCMTimeMultiply(CMTime time, CMTime multiplier);
 CMTime SGCMTimeDivide(CMTime time, CMTime divisor);

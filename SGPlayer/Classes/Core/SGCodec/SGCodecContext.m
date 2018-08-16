@@ -19,7 +19,7 @@
 
 @implementation SGCodecContext
 
-+ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(AVRational)timebase
++ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(CMTime)timebase
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
     if (!codecContext)
@@ -34,7 +34,8 @@
         avcodec_free_context(&codecContext);
         return nil;
     }
-    av_codec_set_pkt_timebase(codecContext, timebase);
+    AVRational rational = av_make_q((int)timebase.value, (int)timebase.timescale);
+    av_codec_set_pkt_timebase(codecContext, rational);
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -70,7 +71,7 @@
     {
         return NO;
     }
-    if (av_cmp_q(self.timebase, av_make_q(0, 1)) <= 0)
+    if (CMTimeCompare(self.timebase, kCMTimeZero) <= 0)
     {
         return NO;
     }

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
-#import "SGPacket.h"
 #import "SGObjectPool.h"
 #import "SGObjectQueue.h"
 
@@ -16,7 +15,7 @@
 
 @property (nonatomic, assign, readonly) SGMediaType mediaType;
 
-@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) CMTime offset;
 @property (nonatomic, assign) CMTime scale;
 @property (nonatomic, assign) CMTime timeStamp;

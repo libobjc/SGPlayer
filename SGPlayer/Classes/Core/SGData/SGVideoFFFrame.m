@@ -7,6 +7,7 @@
 //
 
 #import "SGVideoFFFrame.h"
+#import "rational.h"
 
 @interface SGVideoFFFrame ()
 
@@ -63,8 +64,8 @@
     self.timebase = packet.timebase;
     self.offset = packet.offset;
     self.scale = packet.scale;
-    self.originalTimeStamp = SGCMTimeMakeWithRational(av_frame_get_best_effort_timestamp(self.coreFrame), self.timebase);
-    self.originalDuration = SGCMTimeMakeWithRational(av_frame_get_pkt_duration(self.coreFrame), self.timebase);
+    self.originalTimeStamp = SGCMTimeMakeWithTimebase(av_frame_get_best_effort_timestamp(self.coreFrame), self.timebase);
+    self.originalDuration = SGCMTimeMakeWithTimebase(av_frame_get_pkt_duration(self.coreFrame), self.timebase);
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.decodeTimeStamp = packet.decodeTimeStamp;
@@ -76,7 +77,6 @@
     self.colorTransferCharacteristic = self.coreFrame->color_trc;
     self.colorSpace = self.coreFrame->colorspace;
     self.chromaLocation = self.coreFrame->chroma_location;
-    self.sampleAspectRatio = self.coreFrame->sample_aspect_ratio;
     self.width = self.coreFrame->width;
     self.height = self.coreFrame->height;
     self.keyFrame = self.coreFrame->key_frame;

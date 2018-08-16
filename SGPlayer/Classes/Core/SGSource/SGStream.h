@@ -17,6 +17,6 @@
 
 - (SGMediaType)mediaType;
 - (int)index;
-- (AVRational)timebase;
+- (CMTime)timebase;
 
 @end

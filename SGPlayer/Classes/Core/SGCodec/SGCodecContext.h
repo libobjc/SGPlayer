@@ -14,7 +14,7 @@
 
 @interface SGCodecContext : NSObject
 
-@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 @property (nonatomic, strong) Class frameClass;
 

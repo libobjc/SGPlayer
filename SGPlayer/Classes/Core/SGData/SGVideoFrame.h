@@ -7,6 +7,8 @@
 //
 
 #import "SGFrame.h"
+#import "pixfmt.h"
+#import "avutil.h"
 
 @interface SGVideoFrame : SGFrame
 
@@ -17,7 +19,6 @@
 @property (nonatomic, assign) enum AVColorTransferCharacteristic colorTransferCharacteristic;
 @property (nonatomic, assign) enum AVColorSpace colorSpace;
 @property (nonatomic, assign) enum AVChromaLocation chromaLocation;
-@property (nonatomic, assign) AVRational sampleAspectRatio;
 @property (nonatomic, assign) int width;
 @property (nonatomic, assign) int height;
 @property (nonatomic, assign) BOOL keyFrame;

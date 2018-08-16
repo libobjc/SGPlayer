@@ -7,6 +7,7 @@
 //
 
 #import "SGFrame.h"
+#import "samplefmt.h"
 
 static int const SGAudioFrameMaxChannelCount = 8;
 

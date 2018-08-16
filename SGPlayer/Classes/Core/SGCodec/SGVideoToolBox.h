@@ -13,7 +13,7 @@
 
 @interface SGVideoToolBox : NSObject
 
-@property (nonatomic, assign) AVRational timebase;
+@property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
 - (BOOL)open;

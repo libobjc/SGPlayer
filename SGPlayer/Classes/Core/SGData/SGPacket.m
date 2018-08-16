@@ -25,7 +25,7 @@ SGObjectPoolItemLockingImplementation
         _corePacket = av_packet_alloc();
         _codecpar = NULL;
         _mediaType = SGMediaTypeUnknown;
-        _timebase = av_make_q(0, 1);
+        _timebase = kCMTimeZero;
         _offset = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
         _timeStamp = kCMTimeZero;
@@ -54,17 +54,17 @@ SGObjectPoolItemLockingImplementation
 
 - (void)fillWithStream:(SGStream *)stream offset:(CMTime)offset scale:(CMTime)scale
 {
-    AVRational defaultTimebase = stream.mediaType == SGMediaTypeAudio ? av_make_q(1, 44100) : av_make_q(1, 25000);
-    _timebase = SGRationalValidate(stream.timebase, defaultTimebase);
+    CMTime defaultTimebase = stream.mediaType == SGMediaTypeAudio ? CMTimeMake(1, 44100) : CMTimeMake(1, 25000);
+    _timebase = SGCMTimeValidate(stream.timebase, defaultTimebase);
     _codecpar = stream.coreStream->codecpar;
     _mediaType = stream.mediaType;
     _offset = offset;
     _scale = scale;
-    _originalTimeStamp = SGCMTimeMakeWithRational(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
-    _originalDuration = SGCMTimeMakeWithRational(_corePacket->duration, self.timebase);
+    _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
+    _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
     _timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    _decodeTimeStamp = SGCMTimeMakeWithRational(_corePacket->dts, self.timebase);
+    _decodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _size = _corePacket->size;
 }
 
@@ -72,7 +72,7 @@ SGObjectPoolItemLockingImplementation
 {
     _codecpar = NULL;
     _mediaType = SGMediaTypeUnknown;
-    _timebase = av_make_q(0, 1);
+    _timebase = kCMTimeZero;
     _offset = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
     _timeStamp = kCMTimeZero;

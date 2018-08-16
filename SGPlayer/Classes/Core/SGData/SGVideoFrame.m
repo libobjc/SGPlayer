@@ -44,8 +44,6 @@
     self.colorTransferCharacteristic = AVCOL_TRC_RESERVED0;
     self.colorSpace = AVCOL_SPC_RGB;
     self.chromaLocation = AVCHROMA_LOC_UNSPECIFIED;
-    AVRational rational = {1, 1};
-    self.sampleAspectRatio = rational;
     self.width = 0;
     self.height = 0;
     self.keyFrame = 0;

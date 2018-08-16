@@ -7,6 +7,7 @@
 //
 
 #import "SGVideoFrame.h"
+#import "SGPacket.h"
 
 @interface SGVideoEmptyFrame : SGVideoFrame
 

@@ -8,23 +8,31 @@
 
 #import "SGTime.h"
 
-AVRational SGRationalValidate(AVRational rational, AVRational defaultRational)
+CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime)
 {
-    if (rational.num > 0 && rational.den > 0)
+    if (CMTIME_IS_INVALID(defaultTime))
     {
-        return rational;
+        return time;
     }
-    return defaultRational;
+    if (CMTIME_IS_INVALID(time))
+    {
+        return defaultTime;
+    }
+    if (CMTimeCompare(time, kCMTimeZero) <= 0)
+    {
+        return defaultTime;
+    }
+    return time;
 }
 
-CMTime SGCMTimeMakeWithRational(int64_t timeStamp, AVRational timebase)
+CMTime SGCMTimeMakeWithTimebase(int64_t timeStamp, CMTime timebase)
 {
     int64_t maxV = ABS(timeStamp == 0 ? INT64_MAX : INT64_MAX / timeStamp);
-    if (timebase.num > maxV || timebase.num < -maxV)
+    if (timebase.value > maxV || timebase.value < -maxV)
     {
-        return CMTimeMake(timeStamp, timebase.den / timebase.num);
+        return CMTimeMake(timeStamp, timebase.timescale / timebase.value);
     }
-    return CMTimeMake(timebase.num * timeStamp, timebase.den);
+    return CMTimeMake(timebase.value * timeStamp, timebase.timescale);
 }
 
 CMTime SGCMTimeMakeWithSeconds(Float64 seconds)
