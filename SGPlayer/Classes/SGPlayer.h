@@ -48,7 +48,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, strong) id object;
 
 @property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default is dispatch_get_main_queue().
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default is nil.
+@property (nonatomic, assign) BOOL asynchronous;                    // Default is YES.
 
 @property (nonatomic, strong, readonly) SGAsset * asset;
 
@@ -63,7 +64,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign, readonly) CMTime duration;
 
 @property (nonatomic, strong) UIView * view;
-@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);       // Callback on main thread.
 
 - (void)play;
 - (void)pause;
