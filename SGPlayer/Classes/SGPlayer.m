@@ -44,6 +44,8 @@
         self.loadingStateLock = [[NSLock alloc] init];
         self.delegateQueue = dispatch_get_main_queue();
         self.asynchronous = YES;
+        self.volume = 1.0;
+        self.rate = CMTimeMake(1, 1);
     }
     return self;
 }
@@ -69,18 +71,38 @@
         return;
     }
     _asset = concatAsset;
-    self.audioOutput = [[SGAudioPlaybackOutput alloc] init];
-    self.videoOutput = [[SGVideoPlaybackOutput alloc] init];
-    self.audioOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
-    self.videoOutput.timeSync = self.audioOutput.timeSync;
-    self.videoOutput.view = self.view;
-    self.videoOutput.renderCallback = self.renderCallback;
+    
+    // Source
+    SGConcatSource * source = [[SGConcatSource alloc] initWithAsset:concatAsset];
+    
+    // Decoder
+    SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
+    SGVideoDecoder * videoDecoder = [[SGVideoDecoder alloc] init];
+    
+    // Audio Output
+    SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
+    auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
+    auidoOutput.volume = self.volume;
+    auidoOutput.rate = self.rate;
+    self.audioOutput = auidoOutput;
+    
+    // Video Output
+    SGVideoPlaybackOutput * videoOutput = [[SGVideoPlaybackOutput alloc] init];
+    videoOutput.timeSync = self.audioOutput.timeSync;
+    videoOutput.view = self.view;
+    videoOutput.renderCallback = self.renderCallback;
+    videoOutput.rate = self.rate;
+    self.videoOutput = videoOutput;
+    
+    // Session Configuration
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
-    configuration.source = [[SGConcatSource alloc] initWithAsset:concatAsset];
-    configuration.audioDecoder = [[SGAudioDecoder alloc] init];
-    configuration.videoDecoder = [[SGVideoDecoder alloc] init];
-    configuration.audioOutput = self.audioOutput;
-    configuration.videoOutput = self.videoOutput;
+    configuration.source = source;
+    configuration.audioDecoder = audioDecoder;
+    configuration.videoDecoder = videoDecoder;
+    configuration.audioOutput = auidoOutput;
+    configuration.videoOutput = videoOutput;
+    
+    // Session
     self.session = [[SGSession alloc] initWithConfiguration:configuration];
     self.session.delegate = self;
     [self.session open];
@@ -307,6 +329,25 @@
     {
         _renderCallback = renderCallback;
         self.videoOutput.renderCallback = _renderCallback;
+    }
+}
+
+- (void)setVolume:(float)volume
+{
+    if (_volume != volume)
+    {
+        _volume = volume;
+        self.audioOutput.volume = _volume;
+    }
+}
+
+- (void)setRate:(CMTime)rate
+{
+    if (CMTimeCompare(_rate, rate))
+    {
+        _rate = rate;
+        self.audioOutput.rate =  _rate;
+        self.videoOutput.rate = _rate;
     }
 }
 
