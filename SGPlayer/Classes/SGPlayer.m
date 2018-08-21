@@ -524,14 +524,6 @@
         self.lastLoadedTime = loadedTime;
         self.lastDuration = duration;
         [self callback:^{
-            [self.stateLock lock];
-            if (self.state == SGPlaybackStateSeeking ||
-                self.state == SGPlaybackStateFailed)
-            {
-                [self.stateLock unlock];
-                return;
-            }
-            [self.stateLock unlock];
             [self.delegate playerDidChangeTimingInfo:self];
         }];
     }
