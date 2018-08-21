@@ -42,7 +42,7 @@
     {
         self.stateLock = [[NSLock alloc] init];
         self.loadingStateLock = [[NSLock alloc] init];
-        self.delegateQueue = nil;
+        self.delegateQueue = dispatch_get_main_queue();
         self.asynchronous = YES;
     }
     return self;
@@ -483,6 +483,14 @@
         self.lastLoadedTime = loadedTime;
         self.lastDuration = duration;
         [self callback:^{
+            [self.stateLock lock];
+            if (self.state == SGPlaybackStateSeeking ||
+                self.state == SGPlaybackStateFailed)
+            {
+                [self.stateLock unlock];
+                return;
+            }
+            [self.stateLock unlock];
             [self.delegate playerDidChangeTimingInfo:self];
         }];
     }

@@ -111,55 +111,49 @@
 
 - (void)playerDidChangeState:(SGPlayer *)player
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"%s, %ld", __func__, player.state);
-        NSString * text;
-        switch (player.state) {
-            case SGPlaybackStateNone:
-                text = @"Idle";
-                break;
-            case SGPlaybackStatePlaying:
-                text = @"Playing";
-                break;
-            case SGPlaybackStateSeeking:
-                text = @"Seeking";
-                break;
-            case SGPlaybackStatePaused:
-                text = @"Paused";
-                break;
-            case SGPlaybackStateFinished:
-                text = @"Finished";
-                break;
-            case SGPlaybackStateFailed:
-                text = @"Failed";
-                NSLog(@"%s, %@", __func__, player.error);
-                break;
-        }
-        self.stateLabel.text = text;
-    });
+    NSLog(@"%s, %ld", __func__, player.state);
+    NSString * text;
+    switch (player.state) {
+        case SGPlaybackStateNone:
+            text = @"Idle";
+            break;
+        case SGPlaybackStatePlaying:
+            text = @"Playing";
+            break;
+        case SGPlaybackStateSeeking:
+            text = @"Seeking";
+            break;
+        case SGPlaybackStatePaused:
+            text = @"Paused";
+            break;
+        case SGPlaybackStateFinished:
+            text = @"Finished";
+            break;
+        case SGPlaybackStateFailed:
+            text = @"Failed";
+            NSLog(@"%s, %@", __func__, player.error);
+            break;
+    }
+    self.stateLabel.text = text;
 }
 
 - (void)playerDidChangeLoadingState:(SGPlayer *)player
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        NSLog(@"%s, %ld", __func__, player.loadingState);
-    });
+    NSLog(@"%s, %ld", __func__, player.loadingState);
 }
 
 - (void)playerDidChangeTimingInfo:(SGPlayer *)player
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        CMTime time = player.time;
-        CMTime loadedTime = player.loadedTime;
-        CMTime duration = player.duration;
-        NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
-        if (!self.progressSilderTouching)
-        {
-            self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
-        }
-        self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
-        self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
-    });
+    CMTime time = player.time;
+    CMTime loadedTime = player.loadedTime;
+    CMTime duration = player.duration;
+//    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
+    if (!self.progressSilderTouching)
+    {
+        self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
+    }
+    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
