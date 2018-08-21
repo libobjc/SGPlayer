@@ -25,8 +25,8 @@
 @property (nonatomic, assign) CMTime finalRate;
 @property (nonatomic, assign) CMTime frameRate;
 @property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, assign) BOOL renderedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
@@ -63,6 +63,7 @@
         _enable = NO;
         _key = NO;
         _rate = CMTimeMake(1, 1);
+        _deviceDelay = CMTimeMake(1, 18);
         _finalRate = CMTimeMake(1, 1);
         _frameRate = CMTimeMake(1, 1);
         _currentFrameScale = CMTimeMake(1, 1);
@@ -123,7 +124,6 @@
     self.currentPostPosition = kCMTimeZero;
     self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
-    self.renderedFrame = NO;
     [self unlock];
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -218,7 +218,6 @@
     self.currentPostPosition = kCMTimeZero;
     self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
-    self.renderedFrame = NO;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -442,9 +441,27 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
     [self lock];
-    self.frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentFrameScale);
-    self.renderedFrame = YES;
-    [self.timeSync updateKeyTime:self.currentPostPosition duration:self.currentPostDuration rate:self.rate];
+    CMTime frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentFrameScale);
+    CMTime currentPostPosition = self.currentPostPosition;
+    CMTime currentPostDuration = self.currentPostDuration;
+    CMTime rate = self.rate;
+    CMTime deviceDelay = self.deviceDelay;
+    dispatch_block_t block = ^{
+        self.frameRate = frameRate;
+        [self.timeSync updateKeyTime:currentPostPosition duration:currentPostDuration rate:rate];
+    };
+    if (CMTimeCompare(deviceDelay, kCMTimeZero) > 0)
+    {
+        if (!self.delegateQueue)
+        {
+            self.delegateQueue = dispatch_queue_create("SGAudioPlaybackOutput-DelegateQueue", DISPATCH_QUEUE_SERIAL);
+        }
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(deviceDelay) * NSEC_PER_SEC)), self.delegateQueue, block);
+    }
+    else
+    {
+        block();
+    }
     [self unlock];
 }
 
