@@ -92,11 +92,6 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     SG_AV_PIX_FMT_YUVJ420P,  ///< planar YUV 4:2:0, 12bpp, full scale (JPEG), deprecated in favor of SG_AV_PIX_FMT_YUV420P and setting color_range
     SG_AV_PIX_FMT_YUVJ422P,  ///< planar YUV 4:2:2, 16bpp, full scale (JPEG), deprecated in favor of SG_AV_PIX_FMT_YUV422P and setting color_range
     SG_AV_PIX_FMT_YUVJ444P,  ///< planar YUV 4:4:4, 24bpp, full scale (JPEG), deprecated in favor of SG_AV_PIX_FMT_YUV444P and setting color_range
-#if FF_API_XVMC
-    SG_AV_PIX_FMT_XVMC_MPEG2_MC,///< XVideo Motion Acceleration via common packet passing
-    SG_AV_PIX_FMT_XVMC_MPEG2_IDCT,
-    SG_AV_PIX_FMT_XVMC = SG_AV_PIX_FMT_XVMC_MPEG2_IDCT,
-#endif /* FF_API_XVMC */
     SG_AV_PIX_FMT_UYVY422,   ///< packed YUV 4:2:2, 16bpp, Cb Y0 Cr Y1
     SG_AV_PIX_FMT_UYYVYY411, ///< packed YUV 4:1:1, 12bpp, Cb Y0 Y1 Cr Y2 Y3
     SG_AV_PIX_FMT_BGR8,      ///< packed RGB 3:3:2,  8bpp, (msb)2B 3G 3R(lsb)
@@ -118,13 +113,6 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     SG_AV_PIX_FMT_YUV440P,   ///< planar YUV 4:4:0 (1 Cr & Cb sample per 1x2 Y samples)
     SG_AV_PIX_FMT_YUVJ440P,  ///< planar YUV 4:4:0 full scale (JPEG), deprecated in favor of SG_AV_PIX_FMT_YUV440P and setting color_range
     SG_AV_PIX_FMT_YUVA420P,  ///< planar YUV 4:2:0, 20bpp, (1 Cr & Cb sample per 2x2 Y & A samples)
-#if FF_API_VDPAU
-    SG_AV_PIX_FMT_VDPAU_H264,///< H.264 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-    SG_AV_PIX_FMT_VDPAU_MPEG1,///< MPEG-1 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-    SG_AV_PIX_FMT_VDPAU_MPEG2,///< MPEG-2 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-    SG_AV_PIX_FMT_VDPAU_WMV3,///< WMV3 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-    SG_AV_PIX_FMT_VDPAU_VC1, ///< VC-1 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-#endif
     SG_AV_PIX_FMT_RGB48BE,   ///< packed RGB 16:16:16, 48bpp, 16R, 16G, 16B, the 2-byte value for each R/G/B component is stored as big-endian
     SG_AV_PIX_FMT_RGB48LE,   ///< packed RGB 16:16:16, 48bpp, 16R, 16G, 16B, the 2-byte value for each R/G/B component is stored as little-endian
     
@@ -160,9 +148,6 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     SG_AV_PIX_FMT_YUV422P16BE,  ///< planar YUV 4:2:2, 32bpp, (1 Cr & Cb sample per 2x1 Y samples), big-endian
     SG_AV_PIX_FMT_YUV444P16LE,  ///< planar YUV 4:4:4, 48bpp, (1 Cr & Cb sample per 1x1 Y samples), little-endian
     SG_AV_PIX_FMT_YUV444P16BE,  ///< planar YUV 4:4:4, 48bpp, (1 Cr & Cb sample per 1x1 Y samples), big-endian
-#if FF_API_VDPAU
-    SG_AV_PIX_FMT_VDPAU_MPEG4,  ///< MPEG-4 HW decoding with VDPAU, data[0] contains a vdpau_render_state struct which contains the bitstream of the slices as well as various fields extracted from headers
-#endif
     SG_AV_PIX_FMT_DXVA2_VLD,    ///< HW decoding through DXVA2, Picture.data[3] contains a LPDIRECT3DSURFACE9 pointer
     
     SG_AV_PIX_FMT_RGB444LE,  ///< packed RGB 4:4:4, 16bpp, (msb)4X 4R 4G 4B(lsb), little-endian, X=unused/undefined
@@ -194,7 +179,6 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     SG_AV_PIX_FMT_YUV444P10LE,///< planar YUV 4:4:4, 30bpp, (1 Cr & Cb sample per 1x1 Y samples), little-endian
     SG_AV_PIX_FMT_YUV422P9BE, ///< planar YUV 4:2:2, 18bpp, (1 Cr & Cb sample per 2x1 Y samples), big-endian
     SG_AV_PIX_FMT_YUV422P9LE, ///< planar YUV 4:2:2, 18bpp, (1 Cr & Cb sample per 2x1 Y samples), little-endian
-    SG_AV_PIX_FMT_VDA_VLD,    ///< hardware decoding through VDA
     SG_AV_PIX_FMT_GBRP,      ///< planar GBR 4:4:4 24bpp
     SG_AV_PIX_FMT_GBR24P = SG_AV_PIX_FMT_GBRP, // alias for #SG_AV_PIX_FMT_GBRP
     SG_AV_PIX_FMT_GBRP9BE,   ///< planar GBR 4:4:4 27bpp, big-endian
@@ -239,8 +223,6 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     
     SG_AV_PIX_FMT_YVYU422,   ///< packed YUV 4:2:2, 16bpp, Y0 Cr Y1 Cb
     
-    SG_AV_PIX_FMT_VDA,          ///< HW acceleration through VDA, data[3] contains a CVPixelBufferRef
-    
     SG_AV_PIX_FMT_YA16BE,       ///< 16 bits gray, 16 bits alpha (big-endian)
     SG_AV_PIX_FMT_YA16LE,       ///< 16 bits gray, 16 bits alpha (little-endian)
     
@@ -258,7 +240,7 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
      */
     SG_AV_PIX_FMT_MMAL,
     
-    SG_AV_PIX_FMT_D3D11VA_VLD,  ///< HW decoding through Direct3D11, Picture.data[3] contains a ID3D11VideoDecoderOutputView pointer
+    SG_AV_PIX_FMT_D3D11VA_VLD,  ///< HW decoding through Direct3D11 via old API, Picture.data[3] contains a ID3D11VideoDecoderOutputView pointer
     
     /**
      * HW acceleration through CUDA. data[i] contain CUdeviceptr pointers
@@ -266,7 +248,7 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
      */
     SG_AV_PIX_FMT_CUDA,
     
-    SG_AV_PIX_FMT_0RGB=0x123+4,///< packed RGB 8:8:8, 32bpp, XRGBXRGB...   X=unused/undefined
+    SG_AV_PIX_FMT_0RGB,        ///< packed RGB 8:8:8, 32bpp, XRGBXRGB...   X=unused/undefined
     SG_AV_PIX_FMT_RGB0,        ///< packed RGB 8:8:8, 32bpp, RGBXRGBX...   X=unused/undefined
     SG_AV_PIX_FMT_0BGR,        ///< packed BGR 8:8:8, 32bpp, XBGRXBGR...   X=unused/undefined
     SG_AV_PIX_FMT_BGR0,        ///< packed BGR 8:8:8, 32bpp, BGRXBGRX...   X=unused/undefined
@@ -301,9 +283,9 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     SG_AV_PIX_FMT_BAYER_GBRG16BE, ///< bayer, GBGB..(odd line), RGRG..(even line), 16-bit samples, big-endian */
     SG_AV_PIX_FMT_BAYER_GRBG16LE, ///< bayer, GRGR..(odd line), BGBG..(even line), 16-bit samples, little-endian */
     SG_AV_PIX_FMT_BAYER_GRBG16BE, ///< bayer, GRGR..(odd line), BGBG..(even line), 16-bit samples, big-endian */
-#if !FF_API_XVMC
+    
     SG_AV_PIX_FMT_XVMC,///< XVideo Motion Acceleration via common packet passing
-#endif /* !FF_API_XVMC */
+    
     SG_AV_PIX_FMT_YUV440P10LE, ///< planar YUV 4:4:0,20bpp, (1 Cr & Cb sample per 1x2 Y samples), little-endian
     SG_AV_PIX_FMT_YUV440P10BE, ///< planar YUV 4:4:0,20bpp, (1 Cr & Cb sample per 1x2 Y samples), big-endian
     SG_AV_PIX_FMT_YUV440P12LE, ///< planar YUV 4:4:0,24bpp, (1 Cr & Cb sample per 1x2 Y samples), little-endian
@@ -324,22 +306,54 @@ typedef NS_ENUM(NSInteger, SGAVPixelFormat)
     
     SG_AV_PIX_FMT_MEDIACODEC, ///< hardware decoding through MediaCodec
     
+    SG_AV_PIX_FMT_GRAY12BE,   ///<        Y        , 12bpp, big-endian
+    SG_AV_PIX_FMT_GRAY12LE,   ///<        Y        , 12bpp, little-endian
+    SG_AV_PIX_FMT_GRAY10BE,   ///<        Y        , 10bpp, big-endian
+    SG_AV_PIX_FMT_GRAY10LE,   ///<        Y        , 10bpp, little-endian
+    
+    SG_AV_PIX_FMT_P016LE, ///< like NV12, with 16bpp per component, little-endian
+    SG_AV_PIX_FMT_P016BE, ///< like NV12, with 16bpp per component, big-endian
+    
+    /**
+     * Hardware surfaces for Direct3D11.
+     *
+     * This is preferred over the legacy SG_AV_PIX_FMT_D3D11VA_VLD. The new D3D11
+     * hwaccel API and filtering support SG_AV_PIX_FMT_D3D11 only.
+     *
+     * data[0] contains a ID3D11Texture2D pointer, and data[1] contains the
+     * texture array index of the frame as intptr_t if the ID3D11Texture2D is
+     * an array texture (or always 0 if it's a normal texture).
+     */
+    SG_AV_PIX_FMT_D3D11,
+    
+    SG_AV_PIX_FMT_GRAY9BE,   ///<        Y        , 9bpp, big-endian
+    SG_AV_PIX_FMT_GRAY9LE,   ///<        Y        , 9bpp, little-endian
+    
+    SG_AV_PIX_FMT_GBRPF32BE,  ///< IEEE-754 single precision planar GBR 4:4:4,     96bpp, big-endian
+    SG_AV_PIX_FMT_GBRPF32LE,  ///< IEEE-754 single precision planar GBR 4:4:4,     96bpp, little-endian
+    SG_AV_PIX_FMT_GBRAPF32BE, ///< IEEE-754 single precision planar GBRA 4:4:4:4, 128bpp, big-endian
+    SG_AV_PIX_FMT_GBRAPF32LE, ///< IEEE-754 single precision planar GBRA 4:4:4:4, 128bpp, little-endian
+    
+    /**
+     * DRM-managed buffers exposed through PRIME buffer sharing.
+     *
+     * data[0] points to an AVDRMFrameDescriptor.
+     */
+    SG_AV_PIX_FMT_DRM_PRIME,
+    /**
+     * Hardware surfaces for OpenCL.
+     *
+     * data[i] contain 2D image objects (typed in C as cl_mem, used
+     * in OpenCL as image2d_t) for each plane of the surface.
+     */
+    SG_AV_PIX_FMT_OPENCL,
+    
     SG_AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 };
 
 /**
- * MPEG vs JPEG YUV range.
- */
-typedef NS_ENUM(NSInteger, SGAVColorRange)
-{
-    SG_AVCOL_RANGE_UNSPECIFIED = 0,
-    SG_AVCOL_RANGE_MPEG        = 1, ///< the normal 219*2^(n-8) "MPEG" YUV ranges
-    SG_AVCOL_RANGE_JPEG        = 2, ///< the normal     2^n-1   "JPEG" YUV ranges
-    SG_AVCOL_RANGE_NB               ///< Not part of ABI
-};
-
-/**
  * Chromaticity coordinates of the source primaries.
+ * These values match the ones defined by ISO/IEC 23001-8_2013 § 7.1.
  */
 typedef NS_ENUM(NSInteger, SGAVColorPrimaries)
 {
@@ -354,14 +368,17 @@ typedef NS_ENUM(NSInteger, SGAVColorPrimaries)
     SG_AVCOL_PRI_SMPTE240M   = 7,  ///< functionally identical to above
     SG_AVCOL_PRI_FILM        = 8,  ///< colour filters using Illuminant C
     SG_AVCOL_PRI_BT2020      = 9,  ///< ITU-R BT2020
-    SG_AVCOL_PRI_SMPTEST428_1 = 10, ///< SMPTE ST 428-1 (CIE 1931 XYZ)
-    SG_AVCOL_PRI_SMPTE431    = 11, ///< SMPTE ST 431-2 (2011)
-    SG_AVCOL_PRI_SMPTE432    = 12, ///< SMPTE ST 432-1 D65 (2010)
+    SG_AVCOL_PRI_SMPTE428    = 10, ///< SMPTE ST 428-1 (CIE 1931 XYZ)
+    SG_AVCOL_PRI_SMPTEST428_1 = SG_AVCOL_PRI_SMPTE428,
+    SG_AVCOL_PRI_SMPTE431    = 11, ///< SMPTE ST 431-2 (2011) / DCI P3
+    SG_AVCOL_PRI_SMPTE432    = 12, ///< SMPTE ST 432-1 (2010) / P3 D65 / Display P3
+    SG_AVCOL_PRI_JEDEC_P22   = 22, ///< JEDEC P22 phosphors
     SG_AVCOL_PRI_NB                ///< Not part of ABI
 };
 
 /**
  * Color Transfer Characteristic.
+ * These values match the ones defined by ISO/IEC 23001-8_2013 § 7.2.
  */
 typedef NS_ENUM(NSInteger, SGAVColorTransferCharacteristic)
 {
@@ -381,14 +398,17 @@ typedef NS_ENUM(NSInteger, SGAVColorTransferCharacteristic)
     SG_AVCOL_TRC_IEC61966_2_1 = 13, ///< IEC 61966-2-1 (sRGB or sYCC)
     SG_AVCOL_TRC_BT2020_10    = 14, ///< ITU-R BT2020 for 10-bit system
     SG_AVCOL_TRC_BT2020_12    = 15, ///< ITU-R BT2020 for 12-bit system
-    SG_AVCOL_TRC_SMPTEST2084  = 16, ///< SMPTE ST 2084 for 10-, 12-, 14- and 16-bit systems
-    SG_AVCOL_TRC_SMPTEST428_1 = 17, ///< SMPTE ST 428-1
+    SG_AVCOL_TRC_SMPTE2084    = 16, ///< SMPTE ST 2084 for 10-, 12-, 14- and 16-bit systems
+    SG_AVCOL_TRC_SMPTEST2084  = SG_AVCOL_TRC_SMPTE2084,
+    SG_AVCOL_TRC_SMPTE428     = 17, ///< SMPTE ST 428-1
+    SG_AVCOL_TRC_SMPTEST428_1 = SG_AVCOL_TRC_SMPTE428,
     SG_AVCOL_TRC_ARIB_STD_B67 = 18, ///< ARIB STD-B67, known as "Hybrid log-gamma"
     SG_AVCOL_TRC_NB                 ///< Not part of ABI
 };
 
 /**
  * YUV colorspace type.
+ * These values match the ones defined by ISO/IEC 23001-8_2013 § 7.3.
  */
 typedef NS_ENUM(NSInteger, SGAVColorSpace)
 {
@@ -400,11 +420,26 @@ typedef NS_ENUM(NSInteger, SGAVColorSpace)
     SG_AVCOL_SPC_BT470BG     = 5,  ///< also ITU-R BT601-6 625 / ITU-R BT1358 625 / ITU-R BT1700 625 PAL & SECAM / IEC 61966-2-4 xvYCC601
     SG_AVCOL_SPC_SMPTE170M   = 6,  ///< also ITU-R BT601-6 525 / ITU-R BT1358 525 / ITU-R BT1700 NTSC
     SG_AVCOL_SPC_SMPTE240M   = 7,  ///< functionally identical to above
-    SG_AVCOL_SPC_YCOCG       = 8,  ///< Used by Dirac / VC-2 and H.264 FRext, see ITU-T SG16
+    SG_AVCOL_SPC_YCGCO       = 8,  ///< Used by Dirac / VC-2 and H.264 FRext, see ITU-T SG16
+    SG_AVCOL_SPC_YCOCG       = SG_AVCOL_SPC_YCGCO,
     SG_AVCOL_SPC_BT2020_NCL  = 9,  ///< ITU-R BT2020 non-constant luminance system
     SG_AVCOL_SPC_BT2020_CL   = 10, ///< ITU-R BT2020 constant luminance system
     SG_AVCOL_SPC_SMPTE2085   = 11, ///< SMPTE 2085, Y'D'zD'x
+    SG_AVCOL_SPC_CHROMA_DERIVED_NCL = 12, ///< Chromaticity-derived non-constant luminance system
+    SG_AVCOL_SPC_CHROMA_DERIVED_CL = 13, ///< Chromaticity-derived constant luminance system
+    SG_AVCOL_SPC_ICTCP       = 14, ///< ITU-R BT.2100-0, ICtCp
     SG_AVCOL_SPC_NB                ///< Not part of ABI
+};
+
+/**
+ * MPEG vs JPEG YUV range.
+ */
+typedef NS_ENUM(NSInteger, SGAVColorRange)
+{
+    SG_AVCOL_RANGE_UNSPECIFIED = 0,
+    SG_AVCOL_RANGE_MPEG        = 1, ///< the normal 219*2^(n-8) "MPEG" YUV ranges
+    SG_AVCOL_RANGE_JPEG        = 2, ///< the normal     2^n-1   "JPEG" YUV ranges
+    SG_AVCOL_RANGE_NB               ///< Not part of ABI
 };
 
 /**

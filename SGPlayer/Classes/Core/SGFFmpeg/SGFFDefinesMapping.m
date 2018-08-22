@@ -59,11 +59,6 @@ SGAVPixelFormat SGDMPixelFormatFF2SG(enum AVPixelFormat format)
     return (SGAVPixelFormat)format;
 }
 
-SGAVColorRange SGDMColorRangeFF2SG(enum AVColorRange format)
-{
-    return (SGAVColorRange)format;
-}
-
 SGAVColorPrimaries SGDMColorPrimariesFF2SG(enum AVColorPrimaries format)
 {
     return (SGAVColorPrimaries)format;
@@ -77,6 +72,11 @@ SGAVColorTransferCharacteristic SGDMColorTransferCharacteristicFF2SG(enum AVColo
 SGAVColorSpace SGDMColorSpaceFF2SG(enum AVColorSpace format)
 {
     return (SGAVColorSpace)format;
+}
+
+SGAVColorRange SGDMColorRangeFF2SG(enum AVColorRange format)
+{
+    return (SGAVColorRange)format;
 }
 
 SGAVChromaLocation SGDMChromaLocationFF2SG(enum AVChromaLocation format)
@@ -109,11 +109,6 @@ enum AVPixelFormat SGDMPixelFormatSG2FF(SGAVPixelFormat foramt)
     return (enum AVPixelFormat)foramt;
 }
 
-enum AVColorRange SGDMColorRangeSG2FF(SGAVColorRange foramt)
-{
-    return (enum AVColorRange)foramt;
-}
-
 enum AVColorPrimaries SGDMColorPrimariesSG2FF(SGAVColorPrimaries foramt)
 {
     return (enum AVColorPrimaries)foramt;
@@ -127,6 +122,11 @@ enum AVColorTransferCharacteristic SGDMColorTransferCharacteristicSG2FF(SGAVColo
 enum AVColorSpace SGDMColorSpaceSG2FF(SGAVColorSpace foramt)
 {
     return (enum AVColorSpace)foramt;
+}
+
+enum AVColorRange SGDMColorRangeSG2FF(SGAVColorRange foramt)
+{
+    return (enum AVColorRange)foramt;
 }
 
 enum AVChromaLocation SGDMChromaLocationSG2FF(SGAVChromaLocation foramt)
