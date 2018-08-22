@@ -3,60 +3,63 @@
 ARGV1=$1
 
 ROOT_PATH=`pwd`
-LIB_FFMPEG_DOWNLOAD_URL=""
-LIB_FFMPEG_FILE_NAME=""
-LIB_FFMPEG_FILE_NAME_IOS="lib-iOS"
-LIB_FFMPEG_FILE_NAME_MACOS="lib-macOS"
-LIB_FFMPEG_FILE_NAME_TVOS="lib-tvOS"
+FFMPEG_VERSION="4.0.2"
+FFMPEG_PATH=$ROOT_PATH/SGPlayer/Classes/Core/SGFFmpeg/
+FFMPEG_LIB_FILE_NAME=""
+FFMPEG_LIB_FILE_NAME_IOS="FFmpeg-"$FFMPEG_VERSION"-lib-iOS"
+FFMPEG_LIB_FILE_NAME_MACOS="FFmpeg-"$FFMPEG_VERSION"-lib-macOS"
+FFMPEG_LIB_FILE_NAME_TVOS="FFmpeg-"$FFMPEG_VERSION"-lib-tvOS"
+FFMPEG_INCLUDE_FILE_NAME="FFmpeg-"$FFMPEG_VERSION"-include"
 
-do_lib_ffmpeg () {
-  if [ -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/$LIB_FFMPEG_FILE_NAME ]; then
-    echo "lib ffmpeg exist."
+do_ffmpeg_lib () {
+  LIB_FFMPEG_FILE_PATH=$FFMPEG_PATH$FFMPEG_LIB_FILE_NAME
+  if [ -d LIB_FFMPEG_FILE_PATH ]; then
+    echo "ffmpeg lib exist."
   else
-    LIB_FFMPEG_DOWNLOAD_URL="http://omw595ki7.bkt.clouddn.com/ffmpeg2/$LIB_FFMPEG_FILE_NAME.zip"
-    echo "download lib ffmpeg..."
-    curl -o $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip $LIB_FFMPEG_DOWNLOAD_URL
-    echo "unzip lib ffmpeg..."
-    unzip $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/
+    FFMPEG_LIB_DOWNLOAD_URL="http://omw595ki7.bkt.clouddn.com/FFmpeg/$FFMPEG_LIB_FILE_NAME.zip"
+    echo "download ffmpeg lib..."
+    curl -o $LIB_FFMPEG_FILE_PATH.zip $FFMPEG_LIB_DOWNLOAD_URL
+    echo "unzip ffmpeg lib..."
+    unzip $LIB_FFMPEG_FILE_PATH.zip -d $FFMPEG_PATH
     echo "clean temp file..."
-    rm -rf $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip
-    echo "download lib ffmpeg done."
+    rm -rf -v $LIB_FFMPEG_FILE_PATH.zip
+    echo "download ffmpeg lib done."
   fi
 }
 
-do_framework_SGPlatform () {
-  echo "check SGPlatform..."
-  if [ -d ".git" ]; then
-    git submodule update --init --recursive
+do_ffmpeg_inlcude () {
+  INCLUDE_FFMPEG_FILE_PATH=$FFMPEG_PATH$FFMPEG_INCLUDE_FILE_NAME
+  if [ -d INCLUDE_FFMPEG_FILE_PATH ]; then
+    echo "ffmpeg include exist."
   else
-    echo "no git repository."
-  fi
-  if [ ! -d "Vendors/SGPlatform/SGPlatform.xcodeproj" ]; then
-    echo "clone SGPlatform from GitHub..."
-    git clone https://github.com/libobjc/SGPlatform.git Vendors/SGPlatform
-    echo "SGPlatform done."
-  else
-    echo "SGPlatform done."
+    INCLUDE_FFMPEG_DOWNLOAD_URL="http://omw595ki7.bkt.clouddn.com/FFmpeg/$FFMPEG_INCLUDE_FILE_NAME.zip"
+    echo "download ffmpeg include..."
+    curl -o $INCLUDE_FFMPEG_FILE_PATH.zip $INCLUDE_FFMPEG_DOWNLOAD_URL
+    echo "unzip ffmpeg include..."
+    unzip $INCLUDE_FFMPEG_FILE_PATH.zip -d $FFMPEG_PATH
+    echo "clean temp file..."
+    rm -rf -v $INCLUDE_FFMPEG_FILE_PATH.zip
+    echo "download ffmpeg include done."
   fi
 }
 
 if [ "$ARGV1" == "iOS" ]; then
   echo "build for iOS."
-  LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_IOS
-  do_framework_SGPlatform
-  do_lib_ffmpeg
+  FFMPEG_LIB_FILE_NAME=$FFMPEG_LIB_FILE_NAME_IOS
+  do_ffmpeg_inlcude
+  do_ffmpeg_lib
   echo "build iOS done."
 elif [ "$ARGV1" == "macOS" ]; then
   echo "build for macOS."
-  LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_MACOS
-  do_framework_SGPlatform
-  do_lib_ffmpeg
+  FFMPEG_LIB_FILE_NAME=$FFMPEG_LIB_FILE_NAME_MACOS
+  do_ffmpeg_inlcude
+  do_ffmpeg_lib
   echo "build macOS done."
 elif [ "$ARGV1" == "tvOS" ]; then
   echo "build for tvOS."
-  LIB_FFMPEG_FILE_NAME=$LIB_FFMPEG_FILE_NAME_TVOS
-  do_framework_SGPlatform
-  do_lib_ffmpeg
+  FFMPEG_LIB_FILE_NAME=$FFMPEG_LIB_FILE_NAME_TVOS
+  do_ffmpeg_inlcude
+  do_ffmpeg_lib
   echo "build tvOS done."
 else
   echo echo "Usage:"
