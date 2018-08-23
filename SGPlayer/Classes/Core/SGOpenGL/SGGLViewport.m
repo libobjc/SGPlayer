@@ -11,6 +11,24 @@
 
 @implementation SGGLViewport
 
++ (void)updateWithLayerSize:(SGGLSize)layerSize scale:(double)scale
+{
+    SGGLRect viewport = {0, 0, layerSize.width, layerSize.height};
+    glViewport(viewport.x * scale, viewport.y * scale, viewport.width * scale, viewport.height * scale);
+}
+
++ (void)updateLeftWithLayerSize:(SGGLSize)layerSize scale:(double)scale
+{
+    SGGLRect viewport = {0, 0, layerSize.width / 2, layerSize.height};
+    glViewport(viewport.x * scale, viewport.y * scale, viewport.width * scale, viewport.height * scale);
+}
+
++ (void)updateRightWithLayerSize:(SGGLSize)layerSize scale:(double)scale
+{
+    SGGLRect viewport = {layerSize.width / 2, 0, layerSize.width / 2, layerSize.height};
+    glViewport(viewport.x * scale, viewport.y * scale, viewport.width * scale, viewport.height * scale);
+}
+
 + (void)updateWithMode:(SGGLViewportMode)mode textureSize:(SGGLSize)textureSize layerSize:(SGGLSize)layerSize scale:(double)scale
 {
     SGGLRect viewport = {0, 0, layerSize.width, layerSize.height};

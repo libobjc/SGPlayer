@@ -8,6 +8,19 @@
 
 #import "SGFFDefinesMapping.h"
 
+SGGLModelType SGDMDisplay2Model(SGDisplayMode displayMode)
+{
+    switch (displayMode)
+    {
+        case SGDisplayModePlane:
+            return SGGLModelTypePlane;
+        case SGDisplayModeVR:
+        case SGDisplayModeVRBox:
+            return SGGLModelTypeSphere;
+    }
+    return SGGLModelTypePlane;
+}
+
 SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format)
 {
     switch (format)

@@ -9,11 +9,14 @@
 #import "SGVideoPlaybackOutput.h"
 #import "SGFFDefinesMapping.h"
 #import "SGGLDisplayLink.h"
+#import "SGGLProgramPool.h"
 #import "SGVideoAVFrame.h"
 #import "SGVideoFFFrame.h"
-#import "SGGLRenderer.h"
+#import "SGGLModelPool.h"
+#import "SGGLViewport.h"
 #import "SGGLTimer.h"
 #import "SGGLView.h"
+#import "SGMatrix.h"
 #import "SGMacro.h"
 
 @interface SGVideoPlaybackOutput () <NSLocking, SGGLViewDelegate>
@@ -26,9 +29,11 @@
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
+@property (nonatomic, strong) SGMatrix * matrix;
 @property (nonatomic, strong) SGGLView * glView;
-@property (nonatomic, strong) SGGLRenderer * glRenderer;
-@property (nonatomic, strong) SGGLTextureUploader * glTextureUploader;
+@property (nonatomic, strong) SGGLModelPool * modelPool;
+@property (nonatomic, strong) SGGLProgramPool * programPool;
+@property (nonatomic, strong) SGGLTextureUploader * glUploader;
 
 @end
 
@@ -52,7 +57,8 @@
         self.rate = CMTimeMake(1, 1);
         self.frameQueue = [[SGObjectQueue alloc] init];
         self.frameQueue.shouldSortObjects = YES;
-        self.glRenderer = [[SGGLRenderer alloc] init];
+        self.programPool = [[SGGLProgramPool alloc] init];
+        self.modelPool = [[SGGLModelPool alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
@@ -247,6 +253,7 @@
         if (!self.glView)
         {
             self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+            self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
             self.glView.delegate = self;
         }
         if (self.glView.superview != self.view)
@@ -296,46 +303,82 @@
     [self unlock];
     SGGLSize textureSize = {frame.width, frame.height};
     SGDisplayMode displayMode = self.displayMode;
-    switch (displayMode)
-    {
-        case SGDisplayModePlane:
-            self.glRenderer.modelType = SGGLModelTypePlane;
-            break;
-        case SGDisplayModeVR:
-        case SGDisplayModeVRBox:
-            self.glRenderer.modelType = SGGLModelTypeSphere;
-            break;
-    }
-    self.glRenderer.programType = SGDMFormat2Program(frame.format);
-    self.glRenderer.textureSize = textureSize;
-    self.glRenderer.layerSize = size;
-    self.glRenderer.scale = glView.glScale;
-    if (![self.glRenderer bind])
+    id <SGGLModel> model = [self.modelPool modelWithType:SGDMDisplay2Model(displayMode)];
+    id <SGGLProgram> program = [self.programPool programWithType:SGDMFormat2Program(frame.format)];
+    if (!model || !program)
     {
         [frame unlock];
         return NO;
     }
-    if (!self.glTextureUploader)
-    {
-        self.glTextureUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
-    }
+    [program use];
+    [program bindVariable];
     BOOL success = NO;
     if (frame.pixelBuffer)
     {
-        success = [self.glTextureUploader uploadWithCVPixelBuffer:frame.pixelBuffer];
+        success = [self.glUploader uploadWithCVPixelBuffer:frame.pixelBuffer];
     }
     else
     {
-        success = [self.glTextureUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame.data size:textureSize];
+        success = [self.glUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame.data size:textureSize];
     }
     if (!success)
     {
-        [self.glRenderer unbind];
+        [model unbind];
+        [program unuse];
         [frame unlock];
         return NO;
     }
-    [self.glRenderer draw];
-    [self.glRenderer unbind];
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    [model bindPosition_location:program.position_location
+      textureCoordinate_location:program.textureCoordinate_location];
+    switch (displayMode)
+    {
+        case SGDisplayModePlane:
+        {
+            if (self.matrix)
+            {
+                self.matrix = nil;
+            }
+            [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
+            [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:textureSize layerSize:size scale:glView.glScale];
+            [model draw];
+        }
+            break;
+        case SGDisplayModeVR:
+        {
+            if (!self.matrix)
+            {
+                self.matrix = [[SGMatrix alloc] init];
+            }
+            self.matrix.aspect = (float)size.width / (float)size.height;
+            GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
+            [self.matrix matrix:&modelViewProjectionMatrix];
+            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix];
+            [SGGLViewport updateWithLayerSize:size scale:glView.glScale];
+            [model draw];
+        }
+            break;
+        case SGDisplayModeVRBox:
+        {
+            if (!self.matrix)
+            {
+                self.matrix = [[SGMatrix alloc] init];
+            }
+            self.matrix.aspect = (float)size.width / (float)size.height / 2;
+            GLKMatrix4 modelViewProjectionMatrix1 = GLKMatrix4Identity;
+            GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Identity;
+            [self.matrix leftMatrix:&modelViewProjectionMatrix1 rightMatrix:&modelViewProjectionMatrix2];
+            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix1];
+            [SGGLViewport updateLeftWithLayerSize:size scale:glView.glScale];
+            [model draw];
+            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix2];
+            [SGGLViewport updateRightWithLayerSize:size scale:glView.glScale];
+            [model draw];
+        }
+            break;
+    }
+    [model unbind];
+    [program unuse];
     [frame unlock];
     return YES;
 }

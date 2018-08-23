@@ -18,6 +18,9 @@ typedef NS_ENUM(NSUInteger, SGGLViewportMode)
 
 @interface SGGLViewport : NSObject
 
++ (void)updateWithLayerSize:(SGGLSize)layerSize scale:(double)scale;
++ (void)updateLeftWithLayerSize:(SGGLSize)layerSize scale:(double)scale;
++ (void)updateRightWithLayerSize:(SGGLSize)layerSize scale:(double)scale;
 + (void)updateWithMode:(SGGLViewportMode)mode textureSize:(SGGLSize)textureSize layerSize:(SGGLSize)layerSize scale:(double)scale;
 
 @end

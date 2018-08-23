@@ -11,10 +11,12 @@
 #import "SGGLProgram.h"
 #import "SGFFDefines.h"
 #import "SGDefines.h"
+#import "SGGLModel.h"
 #import "samplefmt.h"
 #import "pixfmt.h"
 
 // SG -> GL
+SGGLModelType SGDMDisplay2Model(SGDisplayMode displayMode);
 SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format);
 SGGLTextureType SGDMFormat2Texture(SGAVPixelFormat format);
 
