@@ -203,6 +203,35 @@
     return 3;
 }
 
+#pragma mark - Internal
+
+- (void)updateGLViewIfNeeded
+{
+    if (self.view)
+    {
+        if (!self.glView)
+        {
+            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+            self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
+            self.glView.delegate = self;
+        }
+        if (self.glView.superview != self.view)
+        {
+            [self.view addSubview:self.glView];
+        }
+        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
+        if (layerSize.width != self.glView.displaySize.width ||
+            layerSize.height != self.glView.displaySize.height)
+        {
+            self.glView.frame = self.view.bounds;
+        }
+    }
+    else
+    {
+        [self.glView removeFromSuperview];
+    }
+}
+
 #pragma mark - Render
 
 - (void)renderTimerHandler
@@ -229,10 +258,9 @@
         * current = self.currentFrame.timeStamp;
         return YES;
     } drop:!self.key];
-    SGDisplayMode displayMode = self.displayMode;
-    BOOL redraw = displayMode == SGDisplayModeVR || displayMode == SGDisplayModeVRBox;
     if (frame)
     {
+        [self updateGLViewIfNeeded];
         [self.currentFrame unlock];
         self.currentFrame = frame;
         self.renderedFrame = YES;
@@ -241,9 +269,14 @@
             [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
         }
     }
-    else if (redraw && self.currentFrame)
+    else if (self.currentFrame)
     {
-        frame = self.currentFrame;
+        [self updateGLViewIfNeeded];
+        BOOL vrMode = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
+        if (!self.glView.rendered || vrMode)
+        {
+            frame = self.currentFrame;
+        }
     }
     if (frame)
     {
@@ -261,27 +294,7 @@
     }
     if (self.view)
     {
-        if (!self.glView)
-        {
-            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
-            self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
-            self.glView.delegate = self;
-        }
-        if (self.glView.superview != self.view)
-        {
-            [self.view addSubview:self.glView];
-        }
-        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
-        if (layerSize.width != self.glView.displaySize.width ||
-            layerSize.height != self.glView.displaySize.height)
-        {
-            self.glView.frame = self.view.bounds;
-        }
         [self draw];
-    }
-    else
-    {
-        [self.glView removeFromSuperview];
     }
     [frame unlock];
     [self.delegate outputDidChangeCapacity:self];
