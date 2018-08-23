@@ -34,8 +34,7 @@
         avcodec_free_context(&codecContext);
         return nil;
     }
-    AVRational rational = av_make_q((int)timebase.value, (int)timebase.timescale);
-    av_codec_set_pkt_timebase(codecContext, rational);
+    codecContext->pkt_timebase = av_make_q((int)timebase.value, (int)timebase.timescale);
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)

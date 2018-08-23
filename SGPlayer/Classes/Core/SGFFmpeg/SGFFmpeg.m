@@ -12,7 +12,7 @@
 void SGFFLogCallback(void * context, int level, const char * format, va_list args)
 {
 //    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
-//    SGPlayerLog(@"SGFFLog : %@", message);
+//    NSLog(@"SGFFLog : %@", message);
 }
 
 @implementation SGFFmpeg
@@ -22,7 +22,6 @@ void SGFFLogCallback(void * context, int level, const char * format, va_list arg
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         av_log_set_callback(SGFFLogCallback);
-        av_register_all();
         avformat_network_init();
     });
 }

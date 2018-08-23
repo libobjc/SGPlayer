@@ -47,22 +47,21 @@
     self.timebase = packet.timebase;
     self.offset = packet.offset;
     self.scale = packet.scale;
-    self.originalTimeStamp = SGCMTimeMakeWithTimebase(av_frame_get_best_effort_timestamp(self.coreFrame), packet.timebase);
-    self.originalDuration = SGCMTimeMakeWithTimebase(av_frame_get_pkt_duration(self.coreFrame), packet.timebase);
+    self.originalTimeStamp = SGCMTimeMakeWithTimebase(self.coreFrame->best_effort_timestamp, packet.timebase);
+    self.originalDuration = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_duration, packet.timebase);
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.decodeTimeStamp = packet.decodeTimeStamp;
-    self.size = av_frame_get_pkt_size(self.coreFrame);
-    
+    self.size = self.coreFrame->pkt_size;
     self.format = SGDMSampleFormatFF2SG(self.coreFrame->format);
     self.numberOfSamples = self.coreFrame->nb_samples;
-    self.sampleRate = av_frame_get_sample_rate(self.coreFrame);
-    self.numberOfChannels = av_frame_get_channels(self.coreFrame);
-    self.channelLayout = av_frame_get_channel_layout(self.coreFrame);
-    self.bestEffortTimestamp = av_frame_get_best_effort_timestamp(self.coreFrame);
-    self.packetPosition = av_frame_get_pkt_pos(self.coreFrame);
-    self.packetDuration = av_frame_get_pkt_duration(self.coreFrame);
-    self.packetSize = av_frame_get_pkt_size(self.coreFrame);
+    self.sampleRate = self.coreFrame->sample_rate;
+    self.numberOfChannels = self.coreFrame->channels;
+    self.channelLayout = self.coreFrame->channel_layout;
+    self.bestEffortTimestamp = self.coreFrame->best_effort_timestamp;
+    self.packetPosition = self.coreFrame->pkt_pos;
+    self.packetDuration = self.coreFrame->pkt_duration;
+    self.packetSize = self.coreFrame->pkt_size;
     self.data = self.coreFrame->data;
     self.linesize = self.coreFrame->linesize;
 }
