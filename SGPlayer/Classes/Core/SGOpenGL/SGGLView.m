@@ -44,7 +44,6 @@
         self.displaySize = layerSize;
         [self destroyFramebuffer];
         [self setupFramebuffer];
-        [self display];
     }
 }
 
@@ -58,6 +57,7 @@
     {
         glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
         [self present];
+        _rendered = YES;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
@@ -69,6 +69,7 @@
     SGPLGLContextSetCurrentContext(self.context);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     [self present];
+    _rendered = NO;
 }
 
 - (void)setupFramebuffer
@@ -85,6 +86,7 @@
     glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
     [self renderbufferStorage];
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, self.displayRenderbuffer);
+    _rendered = NO;
 }
 
 - (void)destroyFramebuffer
@@ -100,6 +102,7 @@
         glDeleteRenderbuffers(1, &_displayRenderbuffer);
         self.displayRenderbuffer = 0;
     }
+    _rendered = NO;
 }
 
 @end
