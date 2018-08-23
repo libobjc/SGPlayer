@@ -26,6 +26,7 @@
         self.x = 0;
         self.y = 0;
         self.flip = NO;
+        self.sensorEnable = YES;
         self.sensor = [[SGSensor alloc] init];
         [self.sensor start];
     }
@@ -51,7 +52,10 @@
     }
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(self.y) * (self.flip ? -1 : 1));
-    modelMatrix = GLKMatrix4Multiply(modelMatrix, self.sensor.matrix);
+    if (self.sensorEnable)
+    {
+        modelMatrix = GLKMatrix4Multiply(modelMatrix, self.sensor.matrix);
+    }
     modelMatrix = GLKMatrix4RotateY(modelMatrix, GLKMathDegreesToRadians(self.x));
     GLKMatrix4 viewMatrix = GLKMatrix4MakeLookAt(0, 0, 0.0, 0, 0, -1000, 0, 1, 0);
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(self.degress), self.aspect, 0.1f, 400.0f);

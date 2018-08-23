@@ -18,6 +18,7 @@
 @property (nonatomic, assign) double x;              // Default value is 0, range is (-360, 360).
 @property (nonatomic, assign) double y;              // Default value is 0, range is (-360, 360).
 @property (nonatomic, assign) BOOL flip;             // Default value is NO.
+@property (nonatomic, assign) BOOL sensorEnable;     // Default value is YES.
 
 - (BOOL)matrix:(GLKMatrix4 *)matrix;
 - (BOOL)leftMatrix:(GLKMatrix4 *)leftMatrix rightMatrix:(GLKMatrix4 *)rightMatrix;
