@@ -229,24 +229,35 @@
         * current = self.currentFrame.timeStamp;
         return YES;
     } drop:!self.key];
-    if (!frame || frame == self.currentFrame)
+    SGDisplayMode displayMode = self.displayMode;
+    BOOL redraw = displayMode == SGDisplayModeVR || displayMode == SGDisplayModeVRBox;
+    if (frame)
+    {
+        [self.currentFrame unlock];
+        self.currentFrame = frame;
+        self.renderedFrame = YES;
+        if (self.key)
+        {
+            [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
+        }
+    }
+    else if (redraw && self.currentFrame)
+    {
+        frame = self.currentFrame;
+    }
+    if (frame)
+    {
+        [frame lock];
+        [self unlock];
+    }
+    else
     {
         [self unlock];
         return;
     }
-    [self.currentFrame unlock];
-    self.currentFrame = frame;
-    self.renderedFrame = YES;
-    if (self.key)
-    {
-        [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
-    }
-    [self unlock];
     if (self.renderCallback)
     {
-        [frame lock];
         self.renderCallback(frame);
-        [frame unlock];
     }
     if (self.view)
     {
@@ -272,6 +283,7 @@
     {
         [self.glView removeFromSuperview];
     }
+    [frame unlock];
     [self.delegate outputDidChangeCapacity:self];
 }
 
