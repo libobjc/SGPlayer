@@ -64,6 +64,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign, readonly) CMTime duration;
 
 @property (nonatomic, strong) UIView * view;
+@property (nonatomic, assign) SGDisplayMode displayMode;                        // Default is SGDisplayModePlane.
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);       // Callback on main thread.
 
 @property (nonatomic, assign) float volume;     // Default is 1.

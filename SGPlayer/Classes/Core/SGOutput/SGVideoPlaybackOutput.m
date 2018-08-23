@@ -295,7 +295,17 @@
     [frame lock];
     [self unlock];
     SGGLSize textureSize = {frame.width, frame.height};
-    self.glRenderer.modelType = SGGLModelTypePlane;
+    SGDisplayMode displayMode = self.displayMode;
+    switch (displayMode)
+    {
+        case SGDisplayModePlane:
+            self.glRenderer.modelType = SGGLModelTypePlane;
+            break;
+        case SGDisplayModeVR:
+        case SGDisplayModeVRBox:
+            self.glRenderer.modelType = SGGLModelTypeSphere;
+            break;
+    }
     self.glRenderer.programType = SGDMFormat2Program(frame.format);
     self.glRenderer.textureSize = textureSize;
     self.glRenderer.layerSize = size;

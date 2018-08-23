@@ -44,6 +44,7 @@
         self.loadingStateLock = [[NSLock alloc] init];
         self.delegateQueue = dispatch_get_main_queue();
         self.asynchronous = YES;
+        self.displayMode = SGDisplayModePlane;
         self.volume = 1.0;
         self.rate = CMTimeMake(1, 1);
     }
@@ -90,6 +91,7 @@
     SGVideoPlaybackOutput * videoOutput = [[SGVideoPlaybackOutput alloc] init];
     videoOutput.timeSync = self.audioOutput.timeSync;
     videoOutput.view = self.view;
+    videoOutput.displayMode = self.displayMode;
     videoOutput.renderCallback = self.renderCallback;
     videoOutput.rate = self.rate;
     self.videoOutput = videoOutput;
@@ -320,6 +322,15 @@
     {
         _view = view;
         self.videoOutput.view = _view;
+    }
+}
+
+- (void)setDisplayMode:(SGDisplayMode)displayMode
+{
+    if (_displayMode != displayMode)
+    {
+        _displayMode = displayMode;
+        self.videoOutput.displayMode = displayMode;
     }
 }
 
