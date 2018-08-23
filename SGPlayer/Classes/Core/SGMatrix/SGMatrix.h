@@ -12,7 +12,11 @@
 
 @interface SGMatrix : NSObject
 
-@property (nonatomic, assign) float aspect;
+@property (nonatomic, assign) double degress;        // Default value is 60.
+@property (nonatomic, assign) double aspect;         // Default value is 1.
+@property (nonatomic, assign) double x;              // Default value is 0, range is (-360, 360).
+@property (nonatomic, assign) double y;              // Default value is 0, range is (-360, 360).
+@property (nonatomic, assign) BOOL flip;             // Default value is NO.
 
 - (BOOL)matrix:(GLKMatrix4 *)matrix;
 - (BOOL)leftMatrix:(GLKMatrix4 *)leftMatrix rightMatrix:(GLKMatrix4 *)rightMatrix;
