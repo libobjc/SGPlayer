@@ -12,6 +12,7 @@
 
 @interface SGMatrix : NSObject
 
+@property (nonatomic, assign, readonly) BOOL ready;
 @property (nonatomic, assign) double degress;        // Default value is 60.
 @property (nonatomic, assign) double aspect;         // Default value is 1.
 @property (nonatomic, assign) double x;              // Default value is 0, range is (-360, 360).

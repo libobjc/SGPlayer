@@ -38,6 +38,11 @@
     self.sensor = nil;
 }
 
+- (BOOL)ready
+{
+    return self.sensor.ready;
+}
+
 - (BOOL)matrix:(GLKMatrix4 *)matrix
 {
     if (!self.sensor.ready)

@@ -258,6 +258,7 @@
         * current = self.currentFrame.timeStamp;
         return YES;
     } drop:!self.key];
+    BOOL VRMode = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
     if (frame)
     {
         [self updateGLViewIfNeeded];
@@ -272,8 +273,7 @@
     else if (self.currentFrame)
     {
         [self updateGLViewIfNeeded];
-        BOOL vrMode = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
-        if (!self.glView.rendered || vrMode)
+        if (!self.glView.rendered || VRMode)
         {
             frame = self.currentFrame;
         }
@@ -294,7 +294,23 @@
     }
     if (self.view)
     {
-        [self draw];
+        BOOL needDraw = YES;
+        if (VRMode)
+        {
+            if (!self.matrix)
+            {
+                self.matrix = [[SGMatrix alloc] init];
+            }
+            needDraw &= self.matrix.ready;
+        }
+        else
+        {
+            self.matrix = nil;
+        }
+        if (needDraw)
+        {
+            [self draw];
+        }
     }
     [frame unlock];
     [self.delegate outputDidChangeCapacity:self];
@@ -360,10 +376,6 @@
     {
         case SGDisplayModePlane:
         {
-            if (self.matrix)
-            {
-                self.matrix = nil;
-            }
             [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
             [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:textureSize layerSize:size scale:glView.glScale];
             [model draw];
@@ -371,13 +383,12 @@
             break;
         case SGDisplayModeVR:
         {
-            if (!self.matrix)
-            {
-                self.matrix = [[SGMatrix alloc] init];
-            }
             self.matrix.aspect = (float)size.width / (float)size.height;
             GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
-            [self.matrix matrix:&modelViewProjectionMatrix];
+            if (![self.matrix matrix:&modelViewProjectionMatrix])
+            {
+                break;
+            }
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix];
             [SGGLViewport updateWithLayerSize:size scale:glView.glScale];
             [model draw];
@@ -385,14 +396,13 @@
             break;
         case SGDisplayModeVRBox:
         {
-            if (!self.matrix)
-            {
-                self.matrix = [[SGMatrix alloc] init];
-            }
             self.matrix.aspect = (float)size.width / (float)size.height / 2;
             GLKMatrix4 modelViewProjectionMatrix1 = GLKMatrix4Identity;
             GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Identity;
-            [self.matrix leftMatrix:&modelViewProjectionMatrix1 rightMatrix:&modelViewProjectionMatrix2];
+            if (![self.matrix leftMatrix:&modelViewProjectionMatrix1 rightMatrix:&modelViewProjectionMatrix2])
+            {
+                break;
+            }
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix1];
             [SGGLViewport updateLeftWithLayerSize:size scale:glView.glScale];
             [model draw];

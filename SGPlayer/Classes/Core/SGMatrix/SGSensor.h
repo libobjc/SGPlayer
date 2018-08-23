@@ -11,8 +11,8 @@
 
 @interface SGSensor : NSObject
 
-@property (nonatomic, assign, readonly) GLKMatrix4 matrix;
 @property (nonatomic, assign, readonly) BOOL ready;
+@property (nonatomic, assign, readonly) GLKMatrix4 matrix;
 
 - (void)start;
 - (void)stop;
