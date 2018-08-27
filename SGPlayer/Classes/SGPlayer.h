@@ -150,7 +150,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Delegate)
 
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default value is nil.
-@property (nonatomic, assign) BOOL asynchronous;                    // Default value is YES.
+@property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end

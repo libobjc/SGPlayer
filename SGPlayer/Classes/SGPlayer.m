@@ -47,8 +47,7 @@
 
 // Delegate
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;
-@property (nonatomic, assign) BOOL asynchronous;
+@property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end
 
@@ -77,8 +76,7 @@
     {
         self.stateLock = [[NSLock alloc] init];
         self.loadingStateLock = [[NSLock alloc] init];
-        self.delegateQueue = dispatch_get_main_queue();
-        self.asynchronous = YES;
+        self.delegateQueue = [NSOperationQueue mainQueue];
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
@@ -544,18 +542,10 @@
     }
     if (self.delegateQueue)
     {
-        if (self.asynchronous)
-        {
-            dispatch_async(self.delegateQueue, ^{
-                block();
-            });
-        }
-        else
-        {
-            dispatch_sync(self.delegateQueue, ^{
-                block();
-            });
-        }
+        NSOperation * operation = [NSBlockOperation blockOperationWithBlock:^{
+            block();
+        }];
+        [self.delegateQueue addOperation:operation];
     }
     else
     {
