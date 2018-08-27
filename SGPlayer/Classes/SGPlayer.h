@@ -1,5 +1,5 @@
 //
-//  SGFFPlayer.h
+//  SGPlayer.h
 //  SGPlayer
 //
 //  Created by Single on 03/01/2017.
@@ -134,7 +134,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Delegate
 
-@protocol SGFFPlayerDelegate <NSObject>
+@protocol SGPlayerDelegate <NSObject>
 
 - (void)playerDidChangeState:(SGPlayer *)player;
 - (void)playerDidChangeLoadingState:(SGPlayer *)player;
@@ -144,7 +144,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Delegate)
 
-@property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
+@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;       // Default value is nil.
 @property (nonatomic, assign) BOOL asynchronous;                    // Default value is YES.
 

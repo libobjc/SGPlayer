@@ -1,5 +1,5 @@
 //
-//  SGFFAudioFFFrame.m
+//  SGAudioFFFrame.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/26.

@@ -1,5 +1,5 @@
 //
-//  SGFFPlayer.m
+//  SGPlayer.m
 //  SGPlayer
 //
 //  Created by Single on 03/01/2017.
@@ -45,7 +45,7 @@
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
 
 // Delegate
-@property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
+@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, assign) BOOL asynchronous;
 
