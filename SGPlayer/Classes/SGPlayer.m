@@ -45,6 +45,7 @@
         self.delegateQueue = dispatch_get_main_queue();
         self.asynchronous = YES;
         self.displayMode = SGDisplayModePlane;
+        self.viewport = [[SGVRViewport alloc] init];
         self.volume = 1.0;
         self.rate = CMTimeMake(1, 1);
     }
@@ -93,6 +94,7 @@
     videoOutput.view = self.view;
     videoOutput.displayMode = self.displayMode;
     videoOutput.renderCallback = self.renderCallback;
+    videoOutput.viewport = self.viewport;
     videoOutput.rate = self.rate;
     self.videoOutput = videoOutput;
     
@@ -339,7 +341,16 @@
     if (_renderCallback != renderCallback)
     {
         _renderCallback = renderCallback;
-        self.videoOutput.renderCallback = _renderCallback;
+        self.videoOutput.renderCallback = renderCallback;
+    }
+}
+
+- (void)setViewport:(SGVRViewport *)viewport
+{
+    if (_viewport != viewport)
+    {
+        _viewport = viewport;
+        self.videoOutput.viewport = viewport;
     }
 }
 

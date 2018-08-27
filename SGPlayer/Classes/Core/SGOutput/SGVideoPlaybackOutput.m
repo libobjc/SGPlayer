@@ -16,7 +16,7 @@
 #import "SGGLViewport.h"
 #import "SGGLTimer.h"
 #import "SGGLView.h"
-#import "SGMatrix.h"
+#import "SGVRMatrixMaker.h"
 #import "SGMacro.h"
 
 @interface SGVideoPlaybackOutput () <NSLocking, SGGLViewDelegate>
@@ -29,7 +29,7 @@
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGMatrix * matrix;
+@property (nonatomic, strong) SGVRMatrixMaker * matrixMaker;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
@@ -59,7 +59,7 @@
         self.frameQueue.shouldSortObjects = YES;
         self.programPool = [[SGGLProgramPool alloc] init];
         self.modelPool = [[SGGLModelPool alloc] init];
-        self.matrix = [[SGMatrix alloc] init];
+        self.matrixMaker = [[SGVRMatrixMaker alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
@@ -204,6 +204,16 @@
     return 3;
 }
 
+- (void)setViewport:(SGVRViewport *)viewport
+{
+    self.matrixMaker.viewport = viewport;
+}
+
+- (SGVRViewport *)viewport
+{
+    return self.matrixMaker.viewport;
+}
+
 #pragma mark - Internal
 
 - (void)updateGLViewIfNeeded
@@ -295,7 +305,7 @@
     }
     if (self.view)
     {
-        BOOL needDraw = VRMode ? self.matrix.ready : YES;
+        BOOL needDraw = VRMode ? self.matrixMaker.ready : YES;
         if (needDraw)
         {
             [self draw];
@@ -372,9 +382,9 @@
             break;
         case SGDisplayModeVR:
         {
-            self.matrix.aspect = (float)size.width / (float)size.height;
+            double aspect = (float)size.width / (float)size.height;
             GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
-            if (![self.matrix matrix:&modelViewProjectionMatrix])
+            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix])
             {
                 break;
             }
@@ -385,10 +395,10 @@
             break;
         case SGDisplayModeVRBox:
         {
-            self.matrix.aspect = (float)size.width / (float)size.height / 2;
+            double aspect = (float)size.width / (float)size.height / 2;
             GLKMatrix4 modelViewProjectionMatrix1 = GLKMatrix4Identity;
             GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Identity;
-            if (![self.matrix leftMatrix:&modelViewProjectionMatrix1 rightMatrix:&modelViewProjectionMatrix2])
+            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix1 matrix2:&modelViewProjectionMatrix2])
             {
                 break;
             }

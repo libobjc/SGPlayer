@@ -9,6 +9,7 @@
 #import "SGOutput.h"
 #import "SGPlatform.h"
 #import "SGVideoFrame.h"
+#import "SGVRViewport.h"
 #import "SGPlaybackTimeSync.h"
 
 @interface SGVideoPlaybackOutput : NSObject <SGOutput>
@@ -18,5 +19,6 @@
 @property (nonatomic, strong) SGPLFView * view;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, strong) SGVRViewport * viewport;
 
 @end

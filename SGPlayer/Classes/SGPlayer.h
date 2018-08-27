@@ -21,6 +21,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
 #import <SGPlayer/SGVideoFrame.h>
+#import <SGPlayer/SGVRViewport.h>
 #else
 #import "SGDefines.h"
 #import "SGFFDefines.h"
@@ -30,6 +31,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import "SGFrame.h"
 #import "SGAudioFrame.h"
 #import "SGVideoFrame.h"
+#import "SGVRViewport.h"
 #endif
 
 @class SGPlayer;
@@ -66,6 +68,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, strong) UIView * view;
 @property (nonatomic, assign) SGDisplayMode displayMode;                        // Default value is SGDisplayModePlane.
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);       // Callback on main thread.
+@property (nonatomic, strong) SGVRViewport * viewport;
 
 @property (nonatomic, assign) float volume;     // Default value is 1.
 @property (nonatomic, assign) CMTime rate;      // Default value is (1, 1).

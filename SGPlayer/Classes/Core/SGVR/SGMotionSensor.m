@@ -1,15 +1,15 @@
 //
-//  SGSensor.m
+//  SGMotionSensor.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/23.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGSensor.h"
+#import "SGMotionSensor.h"
 #import <CoreMotion/CoreMotion.h>
 
-@interface SGSensor ()
+@interface SGMotionSensor ()
 
 @property (nonatomic, strong) CMMotionManager * manager;
 @property (nonatomic, assign) UIInterfaceOrientation orientation;
@@ -19,7 +19,7 @@
 
 @end
 
-@implementation SGSensor
+@implementation SGMotionSensor
 
 - (instancetype)init
 {
