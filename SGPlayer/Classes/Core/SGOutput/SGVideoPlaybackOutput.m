@@ -376,7 +376,7 @@
         case SGDisplayModePlane:
         {
             [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-            [SGGLViewport updateWithMode:SGGLViewportModeResizeAspect textureSize:textureSize layerSize:size scale:glView.glScale];
+            [SGGLViewport updateWithLayerSize:size scale:glView.glScale textureSize:textureSize mode:SGDMScaling2Viewport(self.scalingMode)];
             [model draw];
         }
             break;
@@ -403,10 +403,10 @@
                 break;
             }
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix1];
-            [SGGLViewport updateLeftWithLayerSize:size scale:glView.glScale];
+            [SGGLViewport updateWithLayerSizeForLeft:size scale:glView.glScale];
             [model draw];
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix2];
-            [SGGLViewport updateRightWithLayerSize:size scale:glView.glScale];
+            [SGGLViewport updateWithLayerSizeForRight:size scale:glView.glScale];
             [model draw];
         }
             break;

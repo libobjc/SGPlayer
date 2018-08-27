@@ -47,6 +47,20 @@ SGGLTextureType SGDMFormat2Texture(SGAVPixelFormat format)
     }
 }
 
+SGGLViewportMode SGDMScaling2Viewport(SGScalingMode scalingMode)
+{
+    switch (scalingMode)
+    {
+        case SGScalingModeResize:
+            return SGGLViewportModeResize;
+        case SGScalingModeResizeAspect:
+            return SGGLViewportModeResizeAspect;
+        case SGScalingModeResizeAspectFill:
+            return SGGLViewportModeResizeAspectFill;
+    }
+    return SGGLViewportModeResizeAspect;
+}
+
 SGMediaType SGDMMediaTypeFF2SG(enum AVMediaType mediaType)
 {
     switch (mediaType)

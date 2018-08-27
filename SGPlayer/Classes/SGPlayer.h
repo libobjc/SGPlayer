@@ -116,6 +116,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, strong) UIView * view;
 
 /**
+ *  Default value is SGScalingModeResizeAspect.
+ */
+@property (nonatomic, assign) SGScalingMode scalingMode;
+
+/**
  *  Default value is SGDisplayModePlane.
  */
 @property (nonatomic, assign) SGDisplayMode displayMode;

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGGLTextureUploader.h"
+#import "SGGLViewport.h"
 #import "SGGLProgram.h"
 #import "SGFFDefines.h"
 #import "SGDefines.h"
@@ -19,6 +20,7 @@
 SGGLModelType SGDMDisplay2Model(SGDisplayMode displayMode);
 SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format);
 SGGLTextureType SGDMFormat2Texture(SGAVPixelFormat format);
+SGGLViewportMode SGDMScaling2Viewport(SGScalingMode scalingMode);
 
 // FF -> SG
 SGMediaType SGDMMediaTypeFF2SG(enum AVMediaType mediaType);

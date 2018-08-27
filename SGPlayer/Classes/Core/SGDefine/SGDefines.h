@@ -41,3 +41,10 @@ typedef NS_ENUM(NSUInteger, SGDisplayMode)
     SGDisplayModeVR,
     SGDisplayModeVRBox,
 };
+
+typedef NS_ENUM(NSUInteger, SGScalingMode)
+{
+    SGScalingModeResize,
+    SGScalingModeResizeAspect,
+    SGScalingModeResizeAspectFill,
+};

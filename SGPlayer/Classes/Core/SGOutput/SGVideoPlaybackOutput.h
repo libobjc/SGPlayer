@@ -17,6 +17,7 @@
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
 @property (nonatomic, assign) CMTime rate;
 @property (nonatomic, strong) SGPLFView * view;
+@property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
 @property (nonatomic, strong) SGVRViewport * viewport;

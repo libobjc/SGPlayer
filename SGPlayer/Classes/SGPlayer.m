@@ -40,6 +40,7 @@
 
 // Video
 @property (nonatomic, strong) UIView * view;
+@property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
 @property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
@@ -78,6 +79,7 @@
         self.loadingStateLock = [[NSLock alloc] init];
         self.delegateQueue = dispatch_get_main_queue();
         self.asynchronous = YES;
+        self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
         self.volume = 1.0;
@@ -126,6 +128,7 @@
     SGVideoPlaybackOutput * videoOutput = [[SGVideoPlaybackOutput alloc] init];
     videoOutput.timeSync = self.audioOutput.timeSync;
     videoOutput.view = self.view;
+    videoOutput.scalingMode = self.scalingMode;
     videoOutput.displayMode = self.displayMode;
     videoOutput.renderCallback = self.renderCallback;
     videoOutput.viewport = self.viewport;
@@ -358,6 +361,15 @@
     {
         _view = view;
         self.videoOutput.view = _view;
+    }
+}
+
+- (void)setScalingMode:(SGScalingMode)scalingMode
+{
+    if (_scalingMode != scalingMode)
+    {
+        _scalingMode = scalingMode;
+        self.videoOutput.scalingMode = scalingMode;
     }
 }
 
