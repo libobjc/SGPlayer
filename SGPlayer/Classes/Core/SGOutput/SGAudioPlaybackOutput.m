@@ -63,7 +63,7 @@
         _enable = NO;
         _key = NO;
         _rate = CMTimeMake(1, 1);
-        _deviceDelay = CMTimeMake(1, 18);
+        _deviceDelay = CMTimeMake(0, 1);
         _finalRate = CMTimeMake(1, 1);
         _frameRate = CMTimeMake(1, 1);
         _currentFrameScale = CMTimeMake(1, 1);

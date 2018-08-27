@@ -12,8 +12,9 @@
 @interface SGAudioPlaybackOutput : NSObject <SGOutput>
 
 @property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
-@property (nonatomic, assign) float volume;             // Default value is 1.
-@property (nonatomic, assign) CMTime rate;              // Default value is (1, 1).
-@property (nonatomic, assign) CMTime deviceDelay;       // Default value is (1, 20).
+@property (nonatomic, assign) CMTime rate;
+
+@property (nonatomic, assign) float volume;
+@property (nonatomic, assign) CMTime deviceDelay;
 
 @end

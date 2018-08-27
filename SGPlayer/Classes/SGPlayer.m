@@ -28,6 +28,7 @@
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign) CMTime rate;
 @property (nonatomic, assign) float volume;
+@property (nonatomic, assign) CMTime deviceDelay;
 @property (nonatomic, strong) UIView * view;
 @property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
@@ -60,12 +61,13 @@
     {
         self.stateLock = [[NSLock alloc] init];
         self.loadingStateLock = [[NSLock alloc] init];
-        self.delegateQueue = [NSOperationQueue mainQueue];
+        self.rate = CMTimeMake(1, 1);
+        self.volume = 1.0;
+        self.deviceDelay = CMTimeMake(1, 20);
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
-        self.volume = 1.0;
-        self.rate = CMTimeMake(1, 1);
+        self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
     }
     return self;
@@ -100,18 +102,19 @@
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
     auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
-    auidoOutput.volume = self.volume;
     auidoOutput.rate = self.rate;
+    auidoOutput.volume = self.volume;
+    self.deviceDelay = self.deviceDelay;
     self.audioOutput = auidoOutput;
     
     SGVideoPlaybackOutput * videoOutput = [[SGVideoPlaybackOutput alloc] init];
     videoOutput.timeSync = self.audioOutput.timeSync;
+    videoOutput.rate = self.rate;
     videoOutput.view = self.view;
     videoOutput.scalingMode = self.scalingMode;
     videoOutput.displayMode = self.displayMode;
     videoOutput.renderCallback = self.renderCallback;
     videoOutput.viewport = self.viewport;
-    videoOutput.rate = self.rate;
     self.videoOutput = videoOutput;
     
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
@@ -373,6 +376,15 @@
     {
         _volume = volume;
         self.audioOutput.volume = _volume;
+    }
+}
+
+- (void)setDeviceDelay:(CMTime)deviceDelay
+{
+    if (CMTimeCompare(_deviceDelay, deviceDelay) != 0)
+    {
+        _deviceDelay = deviceDelay;
+        self.audioOutput.deviceDelay = deviceDelay;
     }
 }
 

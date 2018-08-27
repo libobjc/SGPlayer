@@ -103,6 +103,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
  */
 @property (nonatomic, assign) float volume;
 
+/**
+ *  Default value is (1, 20).
+ */
+@property (nonatomic, assign) CMTime deviceDelay;
+
 @end
 
 #pragma mark - Video
