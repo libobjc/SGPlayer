@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
 
 #if __has_include(<SGPlayer/SGPlayer.h>)
