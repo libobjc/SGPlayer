@@ -299,9 +299,9 @@
         [self unlock];
         return;
     }
-    if (self.renderCallback)
+    if (self.displayCallback)
     {
-        self.renderCallback(frame);
+        self.displayCallback(frame);
     }
     if (self.view)
     {

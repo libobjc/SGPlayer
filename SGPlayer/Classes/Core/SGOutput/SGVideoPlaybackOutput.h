@@ -21,6 +21,6 @@
 @property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
-@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
 
 @end

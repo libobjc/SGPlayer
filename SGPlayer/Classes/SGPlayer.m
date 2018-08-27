@@ -33,7 +33,7 @@
 @property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
-@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
@@ -113,7 +113,7 @@
     videoOutput.view = self.view;
     videoOutput.scalingMode = self.scalingMode;
     videoOutput.displayMode = self.displayMode;
-    videoOutput.renderCallback = self.renderCallback;
+    videoOutput.displayCallback = self.displayCallback;
     videoOutput.viewport = self.viewport;
     self.videoOutput = videoOutput;
     
@@ -426,12 +426,12 @@
     }
 }
 
-- (void)setRenderCallback:(void (^)(SGVideoFrame *))renderCallback
+- (void)setDisplayCallback:(void (^)(SGVideoFrame *))displayCallback
 {
-    if (_renderCallback != renderCallback)
+    if (_displayCallback != displayCallback)
     {
-        _renderCallback = renderCallback;
-        self.videoOutput.renderCallback = renderCallback;
+        _displayCallback = displayCallback;
+        self.videoOutput.displayCallback = displayCallback;
     }
 }
 

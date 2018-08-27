@@ -137,7 +137,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 /**
  *  Callback on main thread.
  */
-@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
 
 @end
 
