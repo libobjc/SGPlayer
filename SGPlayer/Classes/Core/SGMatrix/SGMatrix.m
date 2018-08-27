@@ -27,28 +27,52 @@
         self.y = 0;
         self.flip = NO;
         self.sensorEnable = YES;
-        self.sensor = [[SGSensor alloc] init];
-        [self.sensor start];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self.sensor stop];
-    self.sensor = nil;
+    [self stop];
+}
+
+- (void)start
+{
+    if (!self.sensor)
+    {
+        self.sensor = [[SGSensor alloc] init];
+        [self.sensor start];
+    }
+}
+
+- (void)stop
+{
+    if (self.sensor)
+    {
+        [self.sensor stop];
+        self.sensor = nil;
+    }
 }
 
 - (BOOL)ready
 {
-    return self.sensor.ready;
+    if (self.sensorEnable)
+    {
+        [self start];
+        return self.sensor.ready;
+    }
+    return YES;
 }
 
 - (BOOL)matrix:(GLKMatrix4 *)matrix
 {
-    if (!self.sensor.ready)
+    if (self.sensorEnable)
     {
-        return NO;
+        [self start];
+        if (!self.sensor.ready)
+        {
+            return NO;
+        }
     }
     GLKMatrix4 modelMatrix = GLKMatrix4Identity;
     modelMatrix = GLKMatrix4RotateX(modelMatrix, GLKMathDegreesToRadians(self.y) * (self.flip ? -1 : 1));
@@ -67,9 +91,13 @@
 
 - (BOOL)leftMatrix:(GLKMatrix4 *)leftMatrix rightMatrix:(GLKMatrix4 *)rightMatrix
 {
-    if (!self.sensor.ready)
+    if (self.sensorEnable)
     {
-        return NO;
+        [self start];
+        if (!self.sensor.ready)
+        {
+            return NO;
+        }
     }
     float distance = 0.012;
     GLKMatrix4 modelMatrix = self.sensor.matrix;

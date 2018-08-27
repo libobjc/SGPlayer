@@ -59,6 +59,7 @@
         self.frameQueue.shouldSortObjects = YES;
         self.programPool = [[SGGLProgramPool alloc] init];
         self.modelPool = [[SGGLModelPool alloc] init];
+        self.matrix = [[SGMatrix alloc] init];
         self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
         SGWeakSelf
         self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
@@ -294,19 +295,7 @@
     }
     if (self.view)
     {
-        BOOL needDraw = YES;
-        if (VRMode)
-        {
-            if (!self.matrix)
-            {
-                self.matrix = [[SGMatrix alloc] init];
-            }
-            needDraw &= self.matrix.ready;
-        }
-        else
-        {
-            self.matrix = nil;
-        }
+        BOOL needDraw = VRMode ? self.matrix.ready : YES;
         if (needDraw)
         {
             [self draw];
