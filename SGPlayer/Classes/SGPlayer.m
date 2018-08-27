@@ -17,6 +17,40 @@
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
+@interface SGPlayer ()
+
+// Asset
+@property (nonatomic, strong, readonly) SGAsset * asset;
+
+// State
+@property (nonatomic, strong, readonly) NSError * error;
+@property (nonatomic, assign, readonly) SGPlaybackState state;
+@property (nonatomic, assign, readonly) SGLoadingState loadingState;
+
+// Timing
+@property (nonatomic, assign, readonly) CMTime time;
+@property (nonatomic, assign, readonly) CMTime loadedTime;
+@property (nonatomic, assign, readonly) CMTime duration;
+
+// Playback
+@property (nonatomic, assign) CMTime rate;
+
+// Audio
+@property (nonatomic, assign) float volume;
+
+// Video
+@property (nonatomic, strong) UIView * view;
+@property (nonatomic, assign) SGDisplayMode displayMode;
+@property (nonatomic, strong) SGVRViewport * viewport;
+@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+
+// Delegate
+@property (nonatomic, weak) id <SGFFPlayerDelegate> delegate;
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;
+@property (nonatomic, assign) BOOL asynchronous;
+
+@end
+
 @interface SGPlayer () <SGSessionDelegate>
 
 @property (nonatomic, strong) SGSession * session;
@@ -293,7 +327,7 @@
         }
         return ^{
             [self playAndPause];
-            [self callbackForTimingInfoIfNeeded];
+            [self callbackForTimingIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangeState:self];
             }];
@@ -309,7 +343,7 @@
         _loadingState = loadingState;
         return ^{
             [self playAndPause];
-            [self callbackForTimingInfoIfNeeded];
+            [self callbackForTimingIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangeLoadingState:self];
             }];
@@ -485,7 +519,7 @@
         callback();
     }
     [self playAndPause];
-    [self callbackForTimingInfoIfNeeded];
+    [self callbackForTimingIfNeeded];
 }
 
 #pragma mark - Callback
@@ -517,7 +551,7 @@
     }
 }
 
-- (void)callbackForTimingInfoIfNeeded
+- (void)callbackForTimingIfNeeded
 {
     if (self.audioOutput.enable && !self.audioOutput.receivedFrame)
     {
