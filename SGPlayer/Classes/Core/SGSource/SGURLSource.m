@@ -39,6 +39,7 @@
 @implementation SGURLSource
 
 @synthesize delegate = _delegate;
+@synthesize options = _options;
 @synthesize state = _state;
 
 static int SGURLSourceInterruptHandler(void * context)

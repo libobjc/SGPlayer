@@ -34,6 +34,12 @@
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
 @property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) NSDictionary * formatContextOptions;
+@property (nonatomic, copy) NSDictionary * codecContextOptions;
+@property (nonatomic, assign) BOOL threadsAuto;
+@property (nonatomic, assign) BOOL refcountedFrames;
+@property (nonatomic, assign) BOOL hardwareDecodeH264;
+@property (nonatomic, assign) BOOL hardwareDecodeH265;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
@@ -67,6 +73,12 @@
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
+        self.formatContextOptions = nil;
+        self.codecContextOptions = nil;
+        self.threadsAuto = YES;
+        self.refcountedFrames = YES;
+        self.hardwareDecodeH264 = YES;
+        self.hardwareDecodeH265 = YES;
         self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
     }
@@ -96,9 +108,19 @@
     _asset = concatAsset;
     
     SGConcatSource * source = [[SGConcatSource alloc] initWithAsset:concatAsset];
+    source.options = self.formatContextOptions;
     
     SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
+    audioDecoder.options = self.codecContextOptions;
+    audioDecoder.threadsAuto = self.threadsAuto;
+    audioDecoder.refcountedFrames = self.refcountedFrames;
+    
     SGVideoDecoder * videoDecoder = [[SGVideoDecoder alloc] init];
+    videoDecoder.options = self.codecContextOptions;
+    videoDecoder.threadsAuto = self.threadsAuto;
+    videoDecoder.refcountedFrames = self.refcountedFrames;
+    videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
+    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
     auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
@@ -447,7 +469,9 @@
 
 #pragma mark - Track
 
-#pragma mark - Option
+#pragma mark - FormatContext
+
+#pragma mark - CodecContext
 
 #pragma mark - Delegate
 

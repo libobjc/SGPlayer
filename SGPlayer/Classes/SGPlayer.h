@@ -146,7 +146,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (UIImage *)originalImage;
 
 /**
- *  Must call on main thread.
+ *  Must be called on the main thread.
  *  nullable.
  */
 - (UIImage *)snapshot;
@@ -159,9 +159,42 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @end
 
-#pragma mark - Option
+#pragma mark - FormatContext
 
-@interface SGPlayer (Option)
+@interface SGPlayer (FormatContext)
+
+@property (nonatomic, copy) NSDictionary * formatContextOptions;
+
+@end
+
+#pragma mark - CodecContext
+
+@interface SGPlayer (CodecContext)
+
+/**
+ *  Default value is nil.
+ */
+@property (nonatomic, copy) NSDictionary * codecContextOptions;
+
+/**
+ *  Default value is YES.
+ */
+@property (nonatomic, assign) BOOL threadsAuto;
+
+/**
+ *  Default value is YES.
+ */
+@property (nonatomic, assign) BOOL refcountedFrames;
+
+/**
+ *  Default value is YES.
+ */
+@property (nonatomic, assign) BOOL hardwareDecodeH264;
+
+/**
+ *  Default value is YES.
+ */
+@property (nonatomic, assign) BOOL hardwareDecodeH265;
 
 @end
 

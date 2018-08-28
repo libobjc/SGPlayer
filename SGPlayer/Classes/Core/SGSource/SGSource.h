@@ -32,6 +32,7 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 @protocol SGSource <NSObject>
 
 @property (nonatomic, weak) id <SGSourceDelegate> delegate;
+@property (nonatomic, copy) NSDictionary * options;
 
 - (SGSourceState)state;
 - (NSError *)error;

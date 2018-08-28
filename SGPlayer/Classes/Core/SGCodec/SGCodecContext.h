@@ -18,6 +18,10 @@
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 @property (nonatomic, strong) Class frameClass;
 
+@property (nonatomic, copy) NSDictionary * options;
+@property (nonatomic, assign) BOOL threadsAuto;
+@property (nonatomic, assign) BOOL refcountedFrames;
+
 - (BOOL)open;
 - (void)flush;
 - (void)close;

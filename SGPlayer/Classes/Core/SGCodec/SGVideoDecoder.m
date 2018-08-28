@@ -24,7 +24,11 @@
 {
     if (self = [super init])
     {
+        self.options = nil;
+        self.threadsAuto = YES;
+        self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
+        self.hardwareDecodeH265 = YES;
     }
     return self;
 }
@@ -47,6 +51,9 @@
         self.codecContext.timebase = self.timebase;
         self.codecContext.codecpar = self.codecpar;
         self.codecContext.frameClass = [SGVideoFFFrame class];
+        self.codecContext.options = self.options;
+        self.codecContext.threadsAuto = self.threadsAuto;
+        self.codecContext.refcountedFrames = self.refcountedFrames;
         [self.codecContext open];
     }
 }

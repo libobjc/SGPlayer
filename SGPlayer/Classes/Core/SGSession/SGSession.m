@@ -25,7 +25,7 @@
 {
     if (self = [super init])
     {
-        [SGFFmpeg setupIfNeeded];
+        SGFFmpegSetupIfNeeded();
         self.configuration = configuration;
     }
     return self;

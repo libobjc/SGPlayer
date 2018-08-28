@@ -8,6 +8,7 @@
 
 #import "SGCodecContext.h"
 #import "SGObjectPool.h"
+#import "SGFFmpeg.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
@@ -19,7 +20,7 @@
 
 @implementation SGCodecContext
 
-+ (AVCodecContext *)ccodecContextWithCodecpar:(AVCodecParameters *)codecpar timebase:(CMTime)timebase
+- (AVCodecContext *)createCcodecContext
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
     if (!codecContext)
@@ -27,14 +28,14 @@
         return nil;
     }
     
-    int result = avcodec_parameters_to_context(codecContext, codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.codecpar);
     NSError * error = SGEGetError(result);
     if (error)
     {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = av_make_q((int)timebase.value, (int)timebase.timescale);
+    codecContext->pkt_timebase = av_make_q((int)self.timebase.value, (int)self.timebase.timescale);
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -44,7 +45,20 @@
     }
     codecContext->codec_id = codec->id;
     
-    result = avcodec_open2(codecContext, codec, NULL);
+    AVDictionary * options = SGDictionaryNS2FF(self.options);
+    if (self.threadsAuto &&
+        !av_dict_get(options, "threads", NULL, 0))
+    {
+        av_dict_set(&options, "threads", "auto", 0);
+    }
+    if (self.refcountedFrames &&
+        !av_dict_get(options, "refcounted_frames", NULL, 0) &&
+        (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO))
+    {
+        av_dict_set(&options, "refcounted_frames", "1", 0);
+    }
+    
+    result = avcodec_open2(codecContext, codec, &options);
     error = SGEGetError(result);
     if (error)
     {
@@ -74,7 +88,7 @@
     {
         return NO;
     }
-    self.codecContext = [SGCodecContext ccodecContextWithCodecpar:self.codecpar timebase:self.timebase];
+    self.codecContext = [self createCcodecContext];
     if (!self.codecContext)
     {
         return NO;

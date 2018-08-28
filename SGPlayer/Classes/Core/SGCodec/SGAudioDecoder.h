@@ -10,4 +10,8 @@
 
 @interface SGAudioDecoder : SGAsyncDecoder
 
+@property (nonatomic, copy) NSDictionary * options;
+@property (nonatomic, assign) BOOL threadsAuto;
+@property (nonatomic, assign) BOOL refcountedFrames;
+
 @end

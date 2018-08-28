@@ -10,6 +10,10 @@
 
 @interface SGVideoDecoder : SGAsyncDecoder
 
+@property (nonatomic, copy) NSDictionary * options;
+@property (nonatomic, assign) BOOL threadsAuto;
+@property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
+@property (nonatomic, assign) BOOL hardwareDecodeH265;
 
 @end

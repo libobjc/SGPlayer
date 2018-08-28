@@ -40,6 +40,7 @@
 @implementation SGConcatSource
 
 @synthesize delegate = _delegate;
+@synthesize options = _options;
 @synthesize state = _state;
 
 static int SGConcatSourceInterruptHandler(void * context)
