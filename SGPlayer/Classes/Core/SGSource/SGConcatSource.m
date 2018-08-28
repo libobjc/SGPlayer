@@ -351,105 +351,108 @@ static int SGConcatSourceInterruptHandler(void * context)
 {
     while (YES)
     {
-        [self lock];
-        if (self.state == SGSourceStateNone ||
-            self.state == SGSourceStateFinished ||
-            self.state == SGSourceStateClosed ||
-            self.state == SGSourceStateFailed)
+        @autoreleasepool
         {
-            [self unlock];
-            break;
-        }
-        else if (self.state == SGSourceStatePaused)
-        {
-            [self.pausedCondition lock];
-            [self unlock];
-            [self.pausedCondition wait];
-            [self.pausedCondition unlock];
-            continue;
-        }
-        else if (self.state == SGSourceStateSeeking)
-        {
-            self.seekingTimeStamp = self.seekTimeStamp;
-            CMTime timeStamp = self.seekingTimeStamp;
-            [self unlock];
-            int success = [self changeFormatContextWithTimeStamp:timeStamp];
             [self lock];
-            BOOL enable = NO;
-            SGBasicBlock callback = ^{};
-            if (self.state == SGSourceStateSeeking)
+            if (self.state == SGSourceStateNone ||
+                self.state == SGSourceStateFinished ||
+                self.state == SGSourceStateClosed ||
+                self.state == SGSourceStateFailed)
             {
-                if (CMTimeCompare(self.seekTimeStamp, timeStamp) == 0)
-                {
-                    enable = YES;
-                    callback = [self setState:SGSourceStateReading];
-                }
-            }
-            CMTime seekTimeStamp = self.seekTimeStamp;
-            void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
-            self.seekTimeStamp = kCMTimeZero;
-            self.seekingTimeStamp = kCMTimeZero;
-            self.seekCompletionHandler = nil;
-            [self unlock];
-            if (enable)
-            {
-                if (seekCompletionHandler)
-                {
-                    seekCompletionHandler(success >= 0, seekTimeStamp);
-                }
-                callback();
-            }
-            continue;
-        }
-        else if (self.state == SGSourceStateReading)
-        {
-            [self unlock];
-            SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-            int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
-            if (readResult < 0)
-            {
-                [self lock];
-                SGBasicBlock callback = ^{};
-                if (self.state == SGSourceStateReading)
-                {
-                    if (self.formatContext == self.formatContexts.lastObject)
-                    {
-                        callback = [self setState:SGSourceStateFinished];
-                    }
-                    else
-                    {
-                        callback = ^{
-                            [self changeToNextFormatContext];
-                            if (self.formatContext.seekable)
-                            {
-                                av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
-                            }
-                        };
-                    }
-                }
                 [self unlock];
-                callback();
+                break;
             }
-            else
+            else if (self.state == SGSourceStatePaused)
             {
-                SGStream * stream = nil;
-                for (SGStream * obj in self.formatContext.streams)
+                [self.pausedCondition lock];
+                [self unlock];
+                [self.pausedCondition wait];
+                [self.pausedCondition unlock];
+                continue;
+            }
+            else if (self.state == SGSourceStateSeeking)
+            {
+                self.seekingTimeStamp = self.seekTimeStamp;
+                CMTime timeStamp = self.seekingTimeStamp;
+                [self unlock];
+                int success = [self changeFormatContextWithTimeStamp:timeStamp];
+                [self lock];
+                BOOL enable = NO;
+                SGBasicBlock callback = ^{};
+                if (self.state == SGSourceStateSeeking)
                 {
-                    if (obj.index == packet.corePacket->stream_index)
+                    if (CMTimeCompare(self.seekTimeStamp, timeStamp) == 0)
                     {
-                        stream = obj;
-                        break;
+                        enable = YES;
+                        callback = [self setState:SGSourceStateReading];
                     }
                 }
-                if ((self.audioEnable && stream == self.audioStream) ||
-                    (self.videoEnable && stream == self.videoStream))
+                CMTime seekTimeStamp = self.seekTimeStamp;
+                void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
+                self.seekTimeStamp = kCMTimeZero;
+                self.seekingTimeStamp = kCMTimeZero;
+                self.seekCompletionHandler = nil;
+                [self unlock];
+                if (enable)
                 {
-                    [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
-                    [self.delegate source:self hasNewPacket:packet];
+                    if (seekCompletionHandler)
+                    {
+                        seekCompletionHandler(success >= 0, seekTimeStamp);
+                    }
+                    callback();
                 }
+                continue;
             }
-            [packet unlock];
-            continue;
+            else if (self.state == SGSourceStateReading)
+            {
+                [self unlock];
+                SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
+                int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
+                if (readResult < 0)
+                {
+                    [self lock];
+                    SGBasicBlock callback = ^{};
+                    if (self.state == SGSourceStateReading)
+                    {
+                        if (self.formatContext == self.formatContexts.lastObject)
+                        {
+                            callback = [self setState:SGSourceStateFinished];
+                        }
+                        else
+                        {
+                            callback = ^{
+                                [self changeToNextFormatContext];
+                                if (self.formatContext.seekable)
+                                {
+                                    av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
+                                }
+                            };
+                        }
+                    }
+                    [self unlock];
+                    callback();
+                }
+                else
+                {
+                    SGStream * stream = nil;
+                    for (SGStream * obj in self.formatContext.streams)
+                    {
+                        if (obj.index == packet.corePacket->stream_index)
+                        {
+                            stream = obj;
+                            break;
+                        }
+                    }
+                    if ((self.audioEnable && stream == self.audioStream) ||
+                        (self.videoEnable && stream == self.videoStream))
+                    {
+                        [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
+                        [self.delegate source:self hasNewPacket:packet];
+                    }
+                }
+                [packet unlock];
+                continue;
+            }
         }
     }
 }

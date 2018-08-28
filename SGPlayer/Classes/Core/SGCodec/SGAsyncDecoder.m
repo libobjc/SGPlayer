@@ -207,55 +207,58 @@ static SGPacket * flushPacket;
 {
     while (YES)
     {
-        [self lock];
-        if (self.state == SGDecoderStateNone ||
-            self.state == SGDecoderStateClosed)
+        @autoreleasepool
         {
-            [self unlock];
-            break;
-        }
-        else if (self.state == SGDecoderStatePaused)
-        {
-            [self.pausedCondition lock];
-            [self unlock];
-            [self.pausedCondition wait];
-            [self.pausedCondition unlock];
-            continue;
-        }
-        else if (self.state == SGDecoderStateDecoding)
-        {
-            [self unlock];
-            SGPacket * packet = [self.packetQueue getObjectSync];
-            if (packet == flushPacket)
+            [self lock];
+            if (self.state == SGDecoderStateNone ||
+                self.state == SGDecoderStateClosed)
             {
-                [self doFlush];
-                self.waitingFlush = NO;
+                [self unlock];
+                break;
             }
-            else if (packet)
+            else if (self.state == SGDecoderStatePaused)
             {
-                if (packet.codecpar != self.codecpar)
+                [self.pausedCondition lock];
+                [self unlock];
+                [self.pausedCondition wait];
+                [self.pausedCondition unlock];
+                continue;
+            }
+            else if (self.state == SGDecoderStateDecoding)
+            {
+                [self unlock];
+                SGPacket * packet = [self.packetQueue getObjectSync];
+                if (packet == flushPacket)
                 {
-                    [self doDestory];
-                    self.codecpar = packet.codecpar;
-                    self.timebase = packet.timebase;
-                    [self doSetup];
+                    [self doFlush];
+                    self.waitingFlush = NO;
                 }
-                if (!self.waitingFlush)
+                else if (packet)
                 {
-                    NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
-                    for (__kindof SGFrame * frame in frames)
+                    if (packet.codecpar != self.codecpar)
                     {
-                        if (!self.waitingFlush)
-                        {
-                            [self.delegate decoder:self hasNewFrame:frame];
-                        }
-                        [frame unlock];
+                        [self doDestory];
+                        self.codecpar = packet.codecpar;
+                        self.timebase = packet.timebase;
+                        [self doSetup];
                     }
-                    [packet unlock];
+                    if (!self.waitingFlush)
+                    {
+                        NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
+                        for (__kindof SGFrame * frame in frames)
+                        {
+                            if (!self.waitingFlush)
+                            {
+                                [self.delegate decoder:self hasNewFrame:frame];
+                            }
+                            [frame unlock];
+                        }
+                        [packet unlock];
+                    }
+                    [self.delegate decoderDidChangeCapacity:self];
                 }
-                [self.delegate decoderDidChangeCapacity:self];
+                continue;
             }
-            continue;
         }
     }
 }
