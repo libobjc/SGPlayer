@@ -46,7 +46,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Asset)
 
-@property (nonatomic, strong, readonly) SGAsset * asset;
+- (SGAsset *)asset;
 
 - (void)replaceWithURL:(NSURL *)URL;
 - (void)replaceWithAsset:(SGAsset *)asset;
@@ -57,9 +57,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (State)
 
-@property (nonatomic, strong, readonly) NSError * error;
-@property (nonatomic, assign, readonly) SGPlaybackState state;
-@property (nonatomic, assign, readonly) SGLoadingState loadingState;
+- (NSError *)error;
+
+- (SGPlaybackState)state;
+- (SGLoadingState)loadingState;
 
 @end
 
@@ -67,9 +68,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Timing)
 
-@property (nonatomic, assign, readonly) CMTime time;
-@property (nonatomic, assign, readonly) CMTime loadedTime;
-@property (nonatomic, assign, readonly) CMTime duration;
+- (CMTime)time;
+- (CMTime)loadedTime;
+- (CMTime)duration;
 
 @end
 
