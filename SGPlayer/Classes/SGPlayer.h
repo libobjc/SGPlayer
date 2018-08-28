@@ -145,6 +145,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (UIImage *)originalImage;
 
 /**
+ *  Must call on main thread.
  *  nullable.
  */
 - (UIImage *)snapshot;
