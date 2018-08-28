@@ -7,10 +7,9 @@
 //
 
 #import "SGVideoFrame.h"
-#import "SGFFDefinesMapping.h"
+#import "SGSWSContext.h"
 #import "SGPlatform.h"
 #import "imgutils.h"
-#import "swscale.h"
 #import "frame.h"
 #import "SGTime.h"
 
@@ -85,22 +84,17 @@
     {
         return nil;
     }
-    struct SwsContext * sws_context = NULL;
-    sws_context = sws_getCachedContext(sws_context,
-                                       self.width,
-                                       self.height,
-                                       SGDMPixelFormatSG2FF(self.format),
-                                       self.width,
-                                       self.height,
-                                       AV_PIX_FMT_RGB24,
-                                       SWS_FAST_BILINEAR,
-                                       NULL, NULL, NULL);
-    if (!sws_context)
+    SGSWSContext * context = [[SGSWSContext alloc] init];
+    context.srcFormat = self.format;
+    context.dstFormat = AV_PIX_FMT_RGB24;
+    context.width = self.width;
+    context.height = self.height;
+    if (![context open])
     {
         return nil;
     }
-    uint8_t * data[AV_NUM_DATA_POINTERS];
-    int linesize[AV_NUM_DATA_POINTERS];
+    uint8_t * data[AV_NUM_DATA_POINTERS] = {NULL};
+    int linesize[AV_NUM_DATA_POINTERS] = {0};
     int result = av_image_alloc(data,
                                 linesize,
                                 self.width,
@@ -109,23 +103,12 @@
                                 1);
     if (result < 0)
     {
-        if (sws_context)
-        {
-            sws_freeContext(sws_context);
-        }
         return nil;
     }
-    result = sws_scale(sws_context,
-                       (const uint8_t **)self.data,
-                       self.linesize,
-                       0,
-                       self.height,
-                       data,
-                       linesize);
-    if (sws_context)
-    {
-        sws_freeContext(sws_context);
-    }
+    result = [context scaleWithSrcData:(const uint8_t **)self.data
+                           srcLinesize:self.linesize
+                               dstData:data
+                           dstLinesize:linesize];
     if (result < 0)
     {
         return nil;
@@ -135,7 +118,7 @@
         return nil;
     }
     SGPLFImage * image = SGPLFImageWithRGBData(data[0], linesize[0], self.width, self.height);
-    av_freep(&data[0]);
+    av_freep(data);
     return image;
 }
 
