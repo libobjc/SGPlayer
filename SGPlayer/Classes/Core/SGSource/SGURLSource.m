@@ -249,7 +249,7 @@ static int SGURLSourceInterruptHandler(void * context)
 - (void)openThread
 {
     SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:self.asset.URL];
-    [formatContext openWithOpaque:(__bridge void *)self callback:SGURLSourceInterruptHandler];
+    [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGURLSourceInterruptHandler];
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;
     self.videoStream = self.formatContext.videoStreams.firstObject;

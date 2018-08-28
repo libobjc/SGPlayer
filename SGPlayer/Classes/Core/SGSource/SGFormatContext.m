@@ -7,6 +7,7 @@
 //
 
 #import "SGFormatContext.h"
+#import "SGFFmpeg.h"
 #import "SGError.h"
 
 @implementation SGFormatContext
@@ -35,11 +36,11 @@
     [self destory];
 }
 
-- (BOOL)openWithOpaque:(void *)opaque callback:(int (*)(void *))callback
+- (BOOL)openWithOptions:(NSDictionary *)options opaque:(void *)opaque callback:(int (*)(void *))callback
 {
     NSError * error = nil;
     AVFormatContext * formatContext = NULL;
-    BOOL success = SGCreateFormatContext(&formatContext, self.URL, opaque, callback, &error);
+    BOOL success = SGCreateFormatContext(&formatContext, self.URL, options, opaque, callback, &error);
     if (!success)
     {
         _error = error;
@@ -108,7 +109,7 @@
     }
 }
 
-BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, void * opaque, int (*callback)(void *), NSError ** error)
+BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *), NSError ** error)
 {
     AVFormatContext * fc = avformat_alloc_context();
     if (!fc)
@@ -116,10 +117,27 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, void *
         * error = SGECreateError(@"", SGErrorCodeFormatCreate);
         return NO;
     }
+    
     fc->interrupt_callback.callback = callback;
     fc->interrupt_callback.opaque = opaque;
+    
     NSString * URLString = URL.isFileURL ? URL.path : URL.absoluteString;
-    int suc = avformat_open_input(&fc, URLString.UTF8String, NULL, NULL);
+    NSString * lowercaseURLString = [URLString lowercaseString];
+    
+    AVDictionary * opts = SGDictionaryNS2FF(options);
+    if ([lowercaseURLString hasPrefix:@"rtmp"] ||
+        [lowercaseURLString hasPrefix:@"rtsp"])
+    {
+        av_dict_set(&opts, "timeout", NULL, 0);
+    }
+    
+    int suc = avformat_open_input(&fc, URLString.UTF8String, NULL, &opts);
+    
+    if (opts)
+    {
+        av_dict_free(&opts);
+    }
+    
     NSError * err = SGEGetErrorCode(suc, SGErrorCodeFormatOpenInput);
     if (err)
     {
@@ -130,6 +148,7 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, void *
         * error = err;
         return NO;
     }
+    
     suc = avformat_find_stream_info(fc, NULL);
     err = SGEGetErrorCode(suc, SGErrorCodeFormatFindStreamInfo);
     if (err)

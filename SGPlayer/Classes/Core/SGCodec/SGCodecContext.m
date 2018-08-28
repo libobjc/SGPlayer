@@ -45,20 +45,26 @@
     }
     codecContext->codec_id = codec->id;
     
-    AVDictionary * options = SGDictionaryNS2FF(self.options);
+    AVDictionary * opts = SGDictionaryNS2FF(self.options);
     if (self.threadsAuto &&
-        !av_dict_get(options, "threads", NULL, 0))
+        !av_dict_get(opts, "threads", NULL, 0))
     {
-        av_dict_set(&options, "threads", "auto", 0);
+        av_dict_set(&opts, "threads", "auto", 0);
     }
     if (self.refcountedFrames &&
-        !av_dict_get(options, "refcounted_frames", NULL, 0) &&
+        !av_dict_get(opts, "refcounted_frames", NULL, 0) &&
         (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO))
     {
-        av_dict_set(&options, "refcounted_frames", "1", 0);
+        av_dict_set(&opts, "refcounted_frames", "1", 0);
     }
     
-    result = avcodec_open2(codecContext, codec, &options);
+    result = avcodec_open2(codecContext, codec, &opts);
+    
+    if (opts)
+    {
+        av_dict_free(&opts);
+    }
+    
     error = SGEGetError(result);
     if (error)
     {

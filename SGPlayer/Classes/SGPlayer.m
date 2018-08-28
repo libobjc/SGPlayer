@@ -73,7 +73,9 @@
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
-        self.formatContextOptions = nil;
+        self.formatContextOptions = @{@"user-agent" : @"SGPlayer",
+                                      @"timeout" : @(20 * 1000 * 1000),
+                                      @"reconnect" : @(1)};
         self.codecContextOptions = nil;
         self.threadsAuto = YES;
         self.refcountedFrames = YES;

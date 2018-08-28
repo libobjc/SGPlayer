@@ -299,7 +299,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     for (SGURLAsset * obj in self.asset.assets)
     {
         SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL offset:duration scale:obj.scale];
-        BOOL success = [formatContext openWithOpaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
+        BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
             duration = CMTimeAdd(duration, formatContext.duration);

@@ -34,7 +34,7 @@
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * subtitleStreams;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * otherStreams;
 
-- (BOOL)openWithOpaque:(void *)opaque callback:(int (*)(void *))callback;
+- (BOOL)openWithOptions:(NSDictionary *)options opaque:(void *)opaque callback:(int (*)(void *))callback;
 - (void)destory;
 
 @end
