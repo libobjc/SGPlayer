@@ -297,9 +297,11 @@
         * current = self.currentFrame.timeStamp;
         return YES;
     } drop:!self.key];
+    BOOL needCallback = NO;
     BOOL VRMode = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
     if (frame)
     {
+        needCallback = YES;
         [self updateGLViewIfNeeded];
         [self.currentFrame unlock];
         self.currentFrame = frame;
@@ -327,17 +329,15 @@
         [self unlock];
         return;
     }
-    if (self.displayCallback)
+    if (self.displayCallback &&
+        needCallback)
     {
         self.displayCallback(frame);
     }
-    if (self.view)
+    if (self.glView.superview &&
+        (VRMode ? self.matrixMaker.ready : YES))
     {
-        BOOL needDraw = VRMode ? self.matrixMaker.ready : YES;
-        if (needDraw)
-        {
-            [self draw];
-        }
+        [self draw];
     }
     [frame unlock];
     [self.delegate outputDidChangeCapacity:self];
