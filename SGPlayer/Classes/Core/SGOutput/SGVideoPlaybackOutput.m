@@ -232,7 +232,15 @@
 
 - (UIImage *)snapshot
 {
-    return nil;
+    CGSize size = CGSizeMake(self.glView.displaySize.width,
+                             self.glView.displaySize.height);
+    CGRect rect = CGRectMake(0, 0, size.width, size.height);
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    [self.glView drawViewHierarchyInRect:rect afterScreenUpdates:YES];
+    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return image;
 }
 
 #pragma mark - Internal
