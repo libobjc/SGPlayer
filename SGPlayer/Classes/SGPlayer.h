@@ -139,6 +139,28 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
  */
 @property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
 
+/**
+ *  nullable.
+ */
+- (UIImage *)originalImage;
+
+/**
+ *  nullable.
+ */
+- (UIImage *)snapshot;
+
+@end
+
+#pragma mark - Track
+
+@interface SGPlayer (Track)
+
+@end
+
+#pragma mark - Option
+
+@interface SGPlayer (Option)
+
 @end
 
 #pragma mark - Delegate

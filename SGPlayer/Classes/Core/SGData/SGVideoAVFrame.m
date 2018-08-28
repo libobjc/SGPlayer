@@ -8,7 +8,26 @@
 
 #import "SGVideoAVFrame.h"
 
+@interface SGVideoAVFrame ()
+
+{
+    uint8_t * _dataInternal[8];
+    int _linesizeInternal[8];
+}
+
+@end
+
 @implementation SGVideoAVFrame
+
+- (void)clear
+{
+    [super clear];
+    for (int i = 0; i < 8; i++)
+    {
+        _dataInternal[i] = NULL;
+        _linesizeInternal[i] = 0;
+    }
+}
 
 - (void)fillWithPacket:(SGPacket *)packet
 {
@@ -33,9 +52,18 @@
             self.width  = (int)CVPixelBufferGetWidth(self.pixelBuffer);
             self.height = (int)CVPixelBufferGetHeight(self.pixelBuffer);
         }
+        CVPixelBufferLockBaseAddress(self.pixelBuffer, 0);
+        int count = (int)CVPixelBufferGetPlaneCount(self.pixelBuffer);
+        for (int i = 0; i < count; i++)
+        {
+            _dataInternal[i] = CVPixelBufferGetBaseAddressOfPlane(self.pixelBuffer, i);
+            _linesizeInternal[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(self.pixelBuffer, i);
+        }
+        CVPixelBufferUnlockBaseAddress(self.pixelBuffer, 0);
     }
     int64_t timestamp = packet.corePacket->pts;
-    if (packet.corePacket->pts == AV_NOPTS_VALUE) {
+    if (packet.corePacket->pts == AV_NOPTS_VALUE)
+    {
         timestamp = packet.corePacket->dts;
     }
     self.timebase = packet.timebase;
@@ -51,6 +79,16 @@
     self.packetPosition = packet.corePacket->pos;
     self.packetDuration = packet.corePacket->duration;
     self.packetSize = packet.corePacket->size;
+}
+
+- (uint8_t **)data
+{
+    return _dataInternal;
+}
+
+- (int *)linesize
+{
+    return _linesizeInternal;
 }
 
 @end

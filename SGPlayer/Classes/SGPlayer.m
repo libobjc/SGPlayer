@@ -435,6 +435,20 @@
     }
 }
 
+- (UIImage *)originalImage
+{
+    return self.videoOutput.originalImage;
+}
+
+- (UIImage *)snapshot
+{
+    return self.videoOutput.snapshot;
+}
+
+#pragma mark - Track
+
+#pragma mark - Option
+
 #pragma mark - Delegate
 
 - (void)callback:(void (^)(void))block

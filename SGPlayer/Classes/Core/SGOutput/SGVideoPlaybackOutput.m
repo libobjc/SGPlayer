@@ -214,6 +214,27 @@
     return self.matrixMaker.viewport;
 }
 
+- (UIImage *)originalImage
+{
+    [self lock];
+    SGVideoFrame * videoFrame = self.currentFrame;
+    if (!videoFrame)
+    {
+        [self unlock];
+        return nil;
+    }
+    [videoFrame lock];
+    [self unlock];
+    UIImage * image = [videoFrame image];
+    [videoFrame unlock];
+    return image;
+}
+
+- (UIImage *)snapshot
+{
+    return nil;
+}
+
 #pragma mark - Internal
 
 - (void)updateGLViewIfNeeded

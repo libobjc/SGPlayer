@@ -28,4 +28,6 @@
 @property (nonatomic, assign) int * linesize;
 @property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
 
+- (UIImage *)image;
+
 @end

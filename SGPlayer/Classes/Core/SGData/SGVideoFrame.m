@@ -7,6 +7,11 @@
 //
 
 #import "SGVideoFrame.h"
+#import "SGFFDefinesMapping.h"
+#import "SGPlatform.h"
+#import "imgutils.h"
+#import "swscale.h"
+#import "frame.h"
 #import "SGTime.h"
 
 @interface SGVideoFrame ()
@@ -66,6 +71,72 @@
         CVPixelBufferRelease(_pixelBuffer);
     }
     _pixelBuffer = pixelBuffer;
+}
+
+- (UIImage *)image
+{
+    if (self.width == 0 ||
+        self.height == 0 ||
+        !self.data)
+    {
+        return nil;
+    }
+    if (!self.data[0])
+    {
+        return nil;
+    }
+    struct SwsContext * sws_context = NULL;
+    sws_context = sws_getCachedContext(sws_context,
+                                       self.width,
+                                       self.height,
+                                       SGDMPixelFormatSG2FF(self.format),
+                                       self.width,
+                                       self.height,
+                                       AV_PIX_FMT_RGB24,
+                                       SWS_FAST_BILINEAR,
+                                       NULL, NULL, NULL);
+    if (!sws_context)
+    {
+        return nil;
+    }
+    uint8_t * data[AV_NUM_DATA_POINTERS];
+    int linesize[AV_NUM_DATA_POINTERS];
+    int result = av_image_alloc(data,
+                                linesize,
+                                self.width,
+                                self.height,
+                                AV_PIX_FMT_RGB24,
+                                1);
+    if (result < 0)
+    {
+        if (sws_context)
+        {
+            sws_freeContext(sws_context);
+        }
+        return nil;
+    }
+    result = sws_scale(sws_context,
+                       (const uint8_t **)self.data,
+                       self.linesize,
+                       0,
+                       self.height,
+                       data,
+                       linesize);
+    if (sws_context)
+    {
+        sws_freeContext(sws_context);
+    }
+    if (result < 0)
+    {
+        return nil;
+    }
+    if (linesize[0] <= 0 || data[0] == NULL)
+    {
+        return nil;
+    }
+    SGPLFImage * image = SGPLFImageWithRGBData(data[0], linesize[0], self.width, self.height);
+    av_freep(&data[0]);
+    return image;
 }
 
 @end
