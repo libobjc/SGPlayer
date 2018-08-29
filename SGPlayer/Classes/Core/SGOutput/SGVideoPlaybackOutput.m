@@ -76,6 +76,7 @@
 {
     [self.renderTimer invalidate];
     [self.displayLink invalidate];
+    [self.glView removeFromSuperview];
     [self close];
 }
 
