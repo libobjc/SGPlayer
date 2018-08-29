@@ -115,6 +115,11 @@ static int SGConcatSourceInterruptHandler(void * context)
     return ^{};
 }
 
+- (NSDictionary *)metadata
+{
+    return self.formatContext.metadata;
+}
+
 #pragma mark - Interface
 
 - (void)open

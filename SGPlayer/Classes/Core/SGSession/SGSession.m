@@ -181,6 +181,11 @@
     return self.configuration.source.duration;
 }
 
+ - (NSDictionary *)metadata
+{
+    return self.configuration.source.metadata;
+}
+
 - (CMTime)loadedDuration
 {
     return [self loadedDurationWithMainMediaType:SGMediaTypeAudio];

@@ -117,6 +117,15 @@
     return kCMTimeZero;
 }
 
+- (NSDictionary *)metadata
+{
+    if (self.session)
+    {
+        return self.session.metadata;
+    }
+    return nil;
+}
+
 - (BOOL)replaceWithURL:(NSURL *)URL
 {
     return [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];

@@ -25,7 +25,8 @@
 @property (nonatomic, assign, readonly) BOOL seekable;
 @property (nonatomic, assign, readonly) BOOL audioEnable;
 @property (nonatomic, assign, readonly) BOOL videoEnable;
-@property (nonatomic, strong, readonly) NSError * error;
+@property (nonatomic, copy, readonly) NSError * error;
+@property (nonatomic, copy, readonly) NSDictionary * metadata;
 
 @property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
 @property (nonatomic, strong, readonly) NSArray <SGStream *> * streams;

@@ -52,6 +52,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (NSError *)error;
 - (CMTime)duration;
+- (NSDictionary *)metadata;
 
 - (BOOL)replaceWithURL:(NSURL *)URL;
 - (BOOL)replaceWithAsset:(SGAsset *)asset;

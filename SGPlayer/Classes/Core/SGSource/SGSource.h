@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, SGSourceState)
 - (SGSourceState)state;
 - (NSError *)error;
 - (CMTime)duration;
+- (NSDictionary *)metadata;
 
 - (BOOL)audioEnable;
 - (BOOL)videoEnable;

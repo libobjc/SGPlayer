@@ -56,6 +56,10 @@
     {
         _seekable = formatContext->pb->seekable;
     }
+    if (formatContext->metadata)
+    {
+        _metadata = SGDictionaryFF2NS(formatContext->metadata);
+    }
     NSMutableArray <SGStream *> * streams = [NSMutableArray array];
     NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
     NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];

@@ -41,12 +41,9 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
 @property (nonatomic, weak) id <SGSessionDelegate> delegate;
 
 @property (nonatomic, assign, readonly) SGSessionState state;
-@property (nonatomic, strong, readonly) NSError * error;
-
-/**
- *  Time.
- */
 @property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, copy, readonly) NSError * error;
+@property (nonatomic, copy, readonly) NSDictionary * metadata;
 
 - (BOOL)empty;
 - (BOOL)emptyWithMainMediaType:(SGMediaType)mainMediaType;
