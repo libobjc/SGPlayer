@@ -21,13 +21,13 @@
 
 @property (nonatomic, strong, readonly) SGAsset * asset;
 @property (nonatomic, strong, readonly) NSError * error;
+@property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) SGPrepareState prepareState;
 @property (nonatomic, assign, readonly) SGPlaybackState playbackState;
-@property (nonatomic, assign, readonly) SGLoadingState loadingState;
-@property (nonatomic, assign, readonly) CMTime time;
-@property (nonatomic, assign, readonly) CMTime loadedTime;
-@property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign, readonly) CMTime playbackTime;
 @property (nonatomic, assign) CMTime rate;
+@property (nonatomic, assign, readonly) SGLoadingState loadingState;
+@property (nonatomic, assign, readonly) CMTime loadedTime;
 @property (nonatomic, assign) float volume;
 @property (nonatomic, assign) CMTime deviceDelay;
 @property (nonatomic, strong) UIView * view;
@@ -92,18 +92,18 @@
 
 #pragma mark - Asset
 
-- (void)replaceWithURL:(NSURL *)URL
+- (BOOL)replaceWithURL:(NSURL *)URL
 {
-    [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];
+    return [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];
 }
 
-- (void)replaceWithAsset:(SGAsset *)asset
+- (BOOL)replaceWithAsset:(SGAsset *)asset
 {
     [self stop];
     SGConcatAsset * concatAsset = [self concatAssetWithAsset:asset];
     if (!concatAsset)
     {
-        return;
+        return NO;
     }
     _asset = concatAsset;
     
@@ -149,13 +149,13 @@
     SGSession * session = [[SGSession alloc] initWithConfiguration:configuration];
     session.delegate = self;
     self.session = session;
-    
     [self lock];
     SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStatePreparing];
     [self unlock];
     prepareCallback();
-    
     [self.session open];
+    
+    return YES;
 }
 
 - (SGConcatAsset *)concatAssetWithAsset:(SGAsset *)asset
@@ -194,6 +194,20 @@
 }
 
 #pragma mark - State
+
+- (SGBasicBlock)setError:(NSError *)error
+{
+    if (_error != error)
+    {
+        _error = error;
+        return ^{
+            [self callback:^{
+                [self.delegate playerDidFailed:self];
+            }];
+        };
+    }
+    return ^{};
+}
 
 - (SGBasicBlock)setPrepareState:(SGPrepareState)prepareState
 {
@@ -245,7 +259,7 @@
 
 #pragma mark - Timing
 
-- (CMTime)time
+- (CMTime)playbackTime
 {
     if (self.session.state == SGSessionStateFinished && self.session.empty)
     {
@@ -264,7 +278,7 @@
     {
         return self.duration;
     }
-    CMTime time = self.time;
+    CMTime time = self.playbackTime;
     CMTime loadedDuration = self.loadedDuration;
     CMTime duration = self.duration;
     CMTime loadedTime = CMTimeAdd(time, loadedDuration);
@@ -535,7 +549,7 @@
         return;
     }
     [self unlock];
-    CMTime time = self.time;
+    CMTime time = self.playbackTime;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
     if (CMTimeCompare(time, self.lastTime) != 0 ||
@@ -603,7 +617,7 @@
     else if (session.state == SGSessionStateFailed)
     {
         [self lock];
-        _error =  session.error;
+        SGBasicBlock failedCallback =  [self setError:session.error];
         SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFailed];
         SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFailed];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFailed];
@@ -611,6 +625,7 @@
         prepareCallback();
         playbackCallback();
         loadingCallback();
+        failedCallback();
     }
 }
 

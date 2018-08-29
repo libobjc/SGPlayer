@@ -50,36 +50,28 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (SGAsset *)asset;
 
-- (void)replaceWithURL:(NSURL *)URL;
-- (void)replaceWithAsset:(SGAsset *)asset;
+- (NSError *)error;
+- (CMTime)duration;
+
+- (BOOL)replaceWithURL:(NSURL *)URL;
+- (BOOL)replaceWithAsset:(SGAsset *)asset;
 
 @end
 
-#pragma mark - State
+#pragma mark - Prepare
 
-@interface SGPlayer (State)
-
-- (NSError *)error;
+@interface SGPlayer (Prepare)
 
 - (SGPrepareState)prepareState;
-- (SGPlaybackState)playbackState;
-- (SGLoadingState)loadingState;
-
-@end
-
-#pragma mark - Timing
-
-@interface SGPlayer (Timing)
-
-- (CMTime)time;
-- (CMTime)loadedTime;
-- (CMTime)duration;
 
 @end
 
 #pragma mark - Playback
 
 @interface SGPlayer (Playback)
+
+- (SGPlaybackState)playbackState;
+- (CMTime)playbackTime;
 
 /**
  *  Default value is (1, 1).
@@ -97,6 +89,15 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (BOOL)seekToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
+
+@end
+
+#pragma mark - Loading
+
+@interface SGPlayer (Loading)
+
+- (SGLoadingState)loadingState;
+- (CMTime)loadedTime;
 
 @end
 
@@ -211,6 +212,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (void)playerDidChangePlaybackState:(SGPlayer *)player;
 - (void)playerDidChangeLoadingState:(SGPlayer *)player;
 - (void)playerDidChangeTimingInfo:(SGPlayer *)player;
+- (void)playerDidFailed:(SGPlayer *)player;
 
 @end
 

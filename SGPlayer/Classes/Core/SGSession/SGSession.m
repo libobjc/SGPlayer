@@ -25,7 +25,6 @@
 {
     if (self = [super init])
     {
-        SGFFmpegSetupIfNeeded();
         self.configuration = configuration;
     }
     return self;
@@ -40,6 +39,7 @@
 
 - (void)open
 {
+    SGFFmpegSetupIfNeeded();
     [self lock];
     if (self.state != SGSessionStateNone)
     {
