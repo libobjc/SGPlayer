@@ -297,11 +297,10 @@
         * current = self.currentFrame.timeStamp;
         return YES;
     } drop:!self.key];
-    BOOL needCallback = NO;
-    BOOL VRMode = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
+    BOOL isRedraw = NO;
+    BOOL isVR = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
     if (frame)
     {
-        needCallback = YES;
         [self updateGLViewIfNeeded];
         [self.currentFrame unlock];
         self.currentFrame = frame;
@@ -314,33 +313,37 @@
     else if (self.currentFrame)
     {
         [self updateGLViewIfNeeded];
-        if (!self.glView.rendered || VRMode)
+        if (!self.glView.rendered || isVR)
         {
+            isRedraw = YES;
             frame = self.currentFrame;
         }
     }
-    if (frame)
-    {
-        [frame lock];
-        [self unlock];
-    }
-    else
+    if (!frame)
     {
         [self unlock];
         return;
     }
-    if (self.displayCallback &&
-        needCallback)
+    [frame lock];
+    [self unlock];
+    BOOL needDraw = self.glView.superview ? YES : NO;
+    if (needDraw && isVR)
     {
-        self.displayCallback(frame);
+        needDraw = self.matrixMaker.ready ? YES : NO;
     }
-    if (self.glView.superview &&
-        (VRMode ? self.matrixMaker.ready : YES))
+    if (needDraw)
     {
         [self draw];
     }
+    if (!isRedraw)
+    {
+        if (self.displayCallback)
+        {
+            self.displayCallback(frame);
+        }
+        [self.delegate outputDidChangeCapacity:self];
+    }
     [frame unlock];
-    [self.delegate outputDidChangeCapacity:self];
 }
 
 #pragma mark - SGGLView
