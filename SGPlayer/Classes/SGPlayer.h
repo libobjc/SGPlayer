@@ -64,6 +64,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (SGPrepareState)prepareState;
 
+- (void)waitUntilFinishedPrepare;
+
 @end
 
 #pragma mark - Playback

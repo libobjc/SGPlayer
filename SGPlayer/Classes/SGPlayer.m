@@ -49,13 +49,15 @@
 @interface SGPlayer () <SGSessionDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) SGSession * session;
-@property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
-@property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
+@property (nonatomic, strong) NSCondition * prepareCondition;
 @property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, assign) CMTime lastTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
+
+@property (nonatomic, strong) SGSession * session;
+@property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
+@property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
 
 @end
 
@@ -91,6 +93,29 @@
 }
 
 #pragma mark - Asset
+
+- (SGBasicBlock)setError:(NSError *)error
+{
+    if (_error != error)
+    {
+        _error = error;
+        return ^{
+            [self callback:^{
+                [self.delegate playerDidFailed:self];
+            }];
+        };
+    }
+    return ^{};
+}
+
+- (CMTime)duration
+{
+    if (self.session)
+    {
+        return self.session.duration;
+    }
+    return kCMTimeZero;
+}
 
 - (BOOL)replaceWithURL:(NSURL *)URL
 {
@@ -193,28 +218,17 @@
     return concatAsset;
 }
 
-#pragma mark - State
-
-- (SGBasicBlock)setError:(NSError *)error
-{
-    if (_error != error)
-    {
-        _error = error;
-        return ^{
-            [self callback:^{
-                [self.delegate playerDidFailed:self];
-            }];
-        };
-    }
-    return ^{};
-}
+#pragma mark - Prepare
 
 - (SGBasicBlock)setPrepareState:(SGPrepareState)prepareState
 {
+    [self.prepareCondition lock];
     if (_prepareState != prepareState)
     {
         _prepareState = prepareState;
         return ^{
+            [self.prepareCondition broadcast];
+            [self.prepareCondition unlock];
             [self playAndPause];
             [self callbackForTimingIfNeeded];
             [self callback:^{
@@ -222,8 +236,33 @@
             }];
         };
     }
-    return ^{};
+    return ^{
+        [self.prepareCondition unlock];
+    };
 }
+
+- (void)waitUntilFinishedPrepare
+{
+    [self.prepareCondition lock];
+    while (YES)
+    {
+        [self lock];
+        if (self.prepareState == SGPrepareStatePreparing)
+        {
+            [self unlock];
+            [self.prepareCondition wait];
+            continue;
+        }
+        else
+        {
+            [self unlock];
+            break;
+        }
+    }
+    [self.prepareCondition unlock];
+}
+
+#pragma mark - Playback
 
 - (SGBasicBlock)setPlaybackState:(SGPlaybackState)playbackState
 {
@@ -241,24 +280,6 @@
     return ^{};
 }
 
-- (SGBasicBlock)setLoadingState:(SGLoadingState)loadingState
-{
-    if (_loadingState != loadingState)
-    {
-        _loadingState = loadingState;
-        return ^{
-            [self playAndPause];
-            [self callbackForTimingIfNeeded];
-            [self callback:^{
-                [self.delegate playerDidChangeLoadingState:self];
-            }];
-        };
-    }
-    return ^{};
-}
-
-#pragma mark - Timing
-
 - (CMTime)playbackTime
 {
     if (self.session.state == SGSessionStateFinished && self.session.empty)
@@ -271,39 +292,6 @@
     }
     return kCMTimeZero;
 }
-
-- (CMTime)loadedTime
-{
-    if (self.session.state == SGSessionStateFinished)
-    {
-        return self.duration;
-    }
-    CMTime time = self.playbackTime;
-    CMTime loadedDuration = self.loadedDuration;
-    CMTime duration = self.duration;
-    CMTime loadedTime = CMTimeAdd(time, loadedDuration);
-    return CMTimeMinimum(loadedTime, duration);
-}
-
-- (CMTime)duration
-{
-    if (self.session)
-    {
-        return self.session.duration;
-    }
-    return kCMTimeZero;
-}
-
-- (CMTime)loadedDuration
-{
-    if (self.session)
-    {
-        return self.session.loadedDuration;
-    }
-    return kCMTimeZero;
-}
-
-#pragma mark - Playback
 
 - (void)setRate:(CMTime)rate
 {
@@ -426,6 +414,46 @@
         }
     }];
     return YES;
+}
+
+#pragma mark - Loading
+
+- (SGBasicBlock)setLoadingState:(SGLoadingState)loadingState
+{
+    if (_loadingState != loadingState)
+    {
+        _loadingState = loadingState;
+        return ^{
+            [self playAndPause];
+            [self callbackForTimingIfNeeded];
+            [self callback:^{
+                [self.delegate playerDidChangeLoadingState:self];
+            }];
+        };
+    }
+    return ^{};
+}
+
+- (CMTime)loadedTime
+{
+    if (self.session.state == SGSessionStateFinished)
+    {
+        return self.duration;
+    }
+    CMTime time = self.playbackTime;
+    CMTime loadedDuration = self.loadedDuration;
+    CMTime duration = self.duration;
+    CMTime loadedTime = CMTimeAdd(time, loadedDuration);
+    return CMTimeMinimum(loadedTime, duration);
+}
+
+- (CMTime)loadedDuration
+{
+    if (self.session)
+    {
+        return self.session.loadedDuration;
+    }
+    return kCMTimeZero;
 }
 
 #pragma mark - Audio
