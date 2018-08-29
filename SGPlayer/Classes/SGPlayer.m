@@ -229,7 +229,7 @@
         return ^{
             [self.prepareCondition broadcast];
             [self.prepareCondition unlock];
-            [self playAndPause];
+            [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangePrepareState:self];
@@ -270,7 +270,7 @@
     {
         _playbackState = playbackState;
         return ^{
-            [self playAndPause];
+            [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangePlaybackState:self];
@@ -424,7 +424,7 @@
     {
         _loadingState = loadingState;
         return ^{
-            [self playAndPause];
+            [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
                 [self.delegate playerDidChangeLoadingState:self];
@@ -595,7 +595,7 @@
 
 #pragma mark - Internal
 
-- (void)playAndPause
+- (void)pauseOrResumeOutput
 {
     [self lock];
     BOOL playback = self.playbackState == SGPlaybackStatePlaying;
@@ -659,12 +659,14 @@
 
 - (void)sessionDidChangeCapacity:(SGSession *)session
 {
+    BOOL needCallback = YES;
     if (self.session.state == SGSessionStateFinished)
     {
         [self lock];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
         [self unlock];
         loadingCallback();
+        needCallback = NO;
     }
     if (self.session.state == SGSessionStateFinished && self.session.empty)
     {
@@ -672,9 +674,13 @@
         SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];
         [self unlock];
         playbackCallback();
+        needCallback = NO;
     }
-    [self playAndPause];
-    [self callbackForTimingIfNeeded];
+    if (needCallback)
+    {
+        [self pauseOrResumeOutput];
+        [self callbackForTimingIfNeeded];
+    }
 }
 
 #pragma mark - NSLocking
