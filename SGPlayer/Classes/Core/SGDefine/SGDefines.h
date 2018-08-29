@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger, SGPrepareState)
+{
+    SGPrepareStateNone,
+    SGPrepareStateFinished,
+    SGPrepareStateFailed,
+};
+
 typedef NS_ENUM(NSUInteger, SGPlaybackState)
 {
     SGPlaybackStateNone,
