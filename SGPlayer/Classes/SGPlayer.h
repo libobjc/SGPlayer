@@ -73,6 +73,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Playback)
 
 - (SGPlaybackState)playbackState;
+
 - (CMTime)playbackTime;
 
 /**
@@ -99,6 +100,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Loading)
 
 - (SGLoadingState)loadingState;
+
 - (CMTime)loadedTime;
 
 @end
