@@ -11,6 +11,7 @@
 typedef NS_ENUM(NSUInteger, SGPrepareState)
 {
     SGPrepareStateNone,
+    SGPrepareStatePreparing,
     SGPrepareStateFinished,
     SGPrepareStateFailed,
 };
@@ -19,7 +20,6 @@ typedef NS_ENUM(NSUInteger, SGPlaybackState)
 {
     SGPlaybackStateNone,
     SGPlaybackStatePlaying,
-    SGPlaybackStateSeeking,
     SGPlaybackStatePaused,
     SGPlaybackStateFinished,
     SGPlaybackStateFailed,

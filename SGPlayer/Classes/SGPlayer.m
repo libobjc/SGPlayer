@@ -17,10 +17,11 @@
 #import "SGAudioPlaybackOutput.h"
 #import "SGVideoPlaybackOutput.h"
 
-@interface SGPlayer ()
+@interface SGPlayer () <NSLocking>
 
 @property (nonatomic, strong, readonly) SGAsset * asset;
 @property (nonatomic, strong, readonly) NSError * error;
+@property (nonatomic, assign, readonly) SGPrepareState prepareState;
 @property (nonatomic, assign, readonly) SGPlaybackState playbackState;
 @property (nonatomic, assign, readonly) SGLoadingState loadingState;
 @property (nonatomic, assign, readonly) CMTime time;
@@ -47,12 +48,11 @@
 
 @interface SGPlayer () <SGSessionDelegate>
 
-@property (nonatomic, strong) NSLock * playbackStateLock;
-@property (nonatomic, strong) NSLock * loadingStateLock;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
 @property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
-@property (nonatomic, assign) SGPlaybackState stateBeforSeeking;
+@property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, assign) CMTime lastTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
@@ -65,8 +65,6 @@
 {
     if (self = [super init])
     {
-        self.playbackStateLock = [[NSLock alloc] init];
-        self.loadingStateLock = [[NSLock alloc] init];
         self.rate = CMTimeMake(1, 1);
         self.volume = 1.0;
         self.deviceDelay = CMTimeMake(1, 20);
@@ -148,8 +146,15 @@
     configuration.audioOutput = auidoOutput;
     configuration.videoOutput = videoOutput;
     
-    self.session = [[SGSession alloc] initWithConfiguration:configuration];
-    self.session.delegate = self;
+    SGSession * session = [[SGSession alloc] initWithConfiguration:configuration];
+    session.delegate = self;
+    self.session = session;
+    
+    [self lock];
+    SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStatePreparing];
+    [self unlock];
+    prepareCallback();
+    
     [self.session open];
 }
 
@@ -190,20 +195,27 @@
 
 #pragma mark - State
 
+- (SGBasicBlock)setPrepareState:(SGPrepareState)prepareState
+{
+    if (_prepareState != prepareState)
+    {
+        _prepareState = prepareState;
+        return ^{
+            [self playAndPause];
+            [self callbackForTimingIfNeeded];
+            [self callback:^{
+                [self.delegate playerDidChangePrepareState:self];
+            }];
+        };
+    }
+    return ^{};
+}
+
 - (SGBasicBlock)setPlaybackState:(SGPlaybackState)playbackState
 {
     if (_playbackState != playbackState)
     {
-        SGPlaybackState previous = _playbackState;
         _playbackState = playbackState;
-        switch (playbackState)
-        {
-            case SGPlaybackStateSeeking:
-                self.stateBeforSeeking = previous;
-                break;
-            default:
-                break;
-        }
         return ^{
             [self playAndPause];
             [self callbackForTimingIfNeeded];
@@ -289,59 +301,68 @@
     }
 }
 
-- (void)play
+- (BOOL)play
 {
     [SGActivity addTarget:self];
-    [self.playbackStateLock lock];
-    switch (self.playbackState)
+    [self lock];
+    if (self.error)
     {
-        case SGPlaybackStateFinished:
-            if (self.session.state == SGSessionStateFinished && self.session.empty)
-            {
-                [self.session seekToTime:kCMTimeZero completionHandler:nil];
-            }
-            break;
-        case SGPlaybackStateFailed:
-            [self replaceWithAsset:self.asset];
-            break;
-        default:
-            break;
+        [self unlock];
+        return NO;
+    }
+    if (self.playbackState == SGPlaybackStateFinished ||
+        self.playbackState == SGPlaybackStateFailed)
+    {
+        [self unlock];
+        return NO;
     }
     SGBasicBlock callback = [self setPlaybackState:SGPlaybackStatePlaying];
-    [self.playbackStateLock unlock];
+    [self unlock];
     callback();
+    return YES;
 }
 
-- (void)pause
+- (BOOL)pause
 {
     [SGActivity removeTarget:self];
-    [self.playbackStateLock lock];
-    switch (self.playbackState)
+    [self lock];
+    if (self.error)
     {
-        case SGPlaybackStateNone:
-        case SGPlaybackStateFinished:
-        case SGPlaybackStateFailed:
-            [self.playbackStateLock unlock];
-            return;
-        default:
-            break;
+        [self unlock];
+        return NO;
+    }
+    if (self.playbackState == SGPlaybackStateFinished ||
+        self.playbackState == SGPlaybackStateFailed)
+    {
+        [self unlock];
+        return NO;
     }
     SGBasicBlock callback = [self setPlaybackState:SGPlaybackStatePaused];
-    [self.playbackStateLock unlock];
+    [self unlock];
     callback();
+    return YES;
 }
 
-- (void)stop
+- (BOOL)stop
 {
     [self destory];
-    [self.playbackStateLock lock];
-    SGBasicBlock callback = [self setPlaybackState:SGPlaybackStateNone];
-    [self.playbackStateLock unlock];
-    [self.loadingStateLock lock];
-    SGBasicBlock loadingStateCallback = [self setLoadingState:SGLoadingStateNone];
-    [self.loadingStateLock unlock];
-    callback();
-    loadingStateCallback();
+    [self lock];
+    SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateNone];
+    SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateNone];
+    SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateNone];
+    [self unlock];
+    prepareCallback();
+    playbackCallback();
+    loadingCallback();
+    return YES;
+}
+
+- (BOOL)seeking
+{
+    [self lock];
+    BOOL ret = self.seekingToken != 0;
+    [self unlock];
+    return ret;
 }
 
 - (BOOL)seekable
@@ -365,23 +386,24 @@
     {
         return NO;
     }
-    [self.playbackStateLock lock];
-    if (self.playbackState == SGPlaybackStateNone ||
-        self.playbackState == SGPlaybackStateFailed)
+    [self lock];
+    if (self.error)
     {
-        [self.playbackStateLock unlock];
+        [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setPlaybackState:SGPlaybackStateSeeking];
-    [self.playbackStateLock unlock];
-    callback();
+    self.seekingToken++;
+    NSInteger seekingToken = self.seekingToken;
+    [self unlock];
     SGWeakSelf
     [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
-        [self.playbackStateLock lock];
-        SGBasicBlock callback = [self setPlaybackState:self.stateBeforSeeking];
-        [self.playbackStateLock unlock];
-        callback();
+        [self lock];
+        if (seekingToken == self.seekingToken)
+        {
+            self.seekingToken = 0;
+        }
+        [self unlock];
         if (completionHandler)
         {
             [self callback:^{
@@ -506,14 +528,13 @@
     {
         return;
     }
-    [self.playbackStateLock lock];
-    if (self.playbackState == SGPlaybackStateSeeking ||
-        self.playbackState == SGPlaybackStateFailed)
+    [self lock];
+    if (self.error)
     {
-        [self.playbackStateLock unlock];
+        [self unlock];
         return;
     }
-    [self.playbackStateLock unlock];
+    [self unlock];
     CMTime time = self.time;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
@@ -534,33 +555,21 @@
 
 - (void)playAndPause
 {
-    [self.playbackStateLock lock];
-    if (self.playbackState != SGPlaybackStatePlaying)
+    [self lock];
+    BOOL playback = self.playbackState == SGPlaybackStatePlaying;
+    BOOL loading = self.loadingState == SGLoadingStateLoading || self.loadingState == SGLoadingStateFinished;
+    BOOL data = !self.session.empty;
+    [self unlock];
+    if (playback && loading && data)
     {
-        [self.playbackStateLock unlock];
-        [self.audioOutput pause];
-        [self.videoOutput pause];
-        return;
+        [self.audioOutput resume];
+        [self.videoOutput resume];
     }
-    [self.playbackStateLock unlock];
-    [self.loadingStateLock lock];
-    if (self.loadingState != SGLoadingStateLoading &&
-        self.loadingState != SGLoadingStateFinished)
-    {
-        [self.loadingStateLock unlock];
-        [self.audioOutput pause];
-        [self.videoOutput pause];
-        return;
-    }
-    [self.loadingStateLock unlock];
-    if (self.session.empty)
+    else
     {
         [self.audioOutput pause];
         [self.videoOutput pause];
-        return;
     }
-    [self.audioOutput resume];
-    [self.videoOutput resume];
 }
 
 - (void)destory
@@ -584,18 +593,24 @@
     if (session.state == SGSessionStateOpened)
     {
         [session read];
-        [self.loadingStateLock lock];
-        SGBasicBlock loadingStateCallback = [self setLoadingState:SGLoadingStateLoading];
-        [self.loadingStateLock unlock];
-        loadingStateCallback();
+        [self lock];
+        SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFinished];
+        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateLoading];
+        [self unlock];
+        prepareCallback();
+        loadingCallback();
     }
     else if (session.state == SGSessionStateFailed)
     {
+        [self lock];
         _error =  session.error;
-        [self.playbackStateLock lock];
-        SGBasicBlock callback = [self setPlaybackState:SGPlaybackStateFailed];
-        [self.playbackStateLock unlock];
-        callback();
+        SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFailed];
+        SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFailed];
+        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFailed];
+        [self unlock];
+        prepareCallback();
+        playbackCallback();
+        loadingCallback();
     }
 }
 
@@ -603,20 +618,36 @@
 {
     if (self.session.state == SGSessionStateFinished)
     {
-        [self.loadingStateLock lock];
-        SGBasicBlock loadingStateCallback = [self setLoadingState:SGLoadingStateFinished];
-        [self.loadingStateLock unlock];
-        loadingStateCallback();
+        [self lock];
+        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
+        [self unlock];
+        loadingCallback();
     }
     if (self.session.state == SGSessionStateFinished && self.session.empty)
     {
-        [self.playbackStateLock lock];
-        SGBasicBlock callback = [self setPlaybackState:SGPlaybackStateFinished];
-        [self.playbackStateLock unlock];
-        callback();
+        [self lock];
+        SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];
+        [self unlock];
+        playbackCallback();
     }
     [self playAndPause];
     [self callbackForTimingIfNeeded];
+}
+
+#pragma mark - NSLocking
+
+- (void)lock
+{
+    if (!self.coreLock)
+    {
+        self.coreLock = [[NSLock alloc] init];
+    }
+    [self.coreLock lock];
+}
+
+- (void)unlock
+{
+    [self.coreLock unlock];
 }
 
 @end

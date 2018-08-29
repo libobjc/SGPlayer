@@ -61,6 +61,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (NSError *)error;
 
+- (SGPrepareState)prepareState;
 - (SGPlaybackState)playbackState;
 - (SGLoadingState)loadingState;
 
@@ -85,9 +86,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
  */
 @property (nonatomic, assign) CMTime rate;
 
-- (void)play;
-- (void)pause;
-- (void)stop;
+- (BOOL)play;
+- (BOOL)pause;
+- (BOOL)stop;
+
+- (BOOL)seeking;
 
 - (BOOL)seekable;
 - (BOOL)seekableToTime:(CMTime)time;
@@ -204,6 +207,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @protocol SGPlayerDelegate <NSObject>
 
+- (void)playerDidChangePrepareState:(SGPlayer *)player;
 - (void)playerDidChangePlaybackState:(SGPlayer *)player;
 - (void)playerDidChangeLoadingState:(SGPlayer *)player;
 - (void)playerDidChangeTimingInfo:(SGPlayer *)player;
