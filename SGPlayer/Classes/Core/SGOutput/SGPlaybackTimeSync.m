@@ -37,7 +37,7 @@
     }
     CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
-    interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
+    interval = SGCMTimeMultiply(interval, self.keyRate);
     interval = CMTimeMinimum(self.keyDuration, interval);
     CMTime position = CMTimeAdd(self.keyTime, interval);
     return position;
@@ -47,7 +47,7 @@
 {
     CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
     CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
-    interval = CMTimeMake(interval.value * self.keyRate.value, interval.timescale * self.keyRate.timescale);
+    interval = SGCMTimeMultiply(interval, self.keyRate);
     CMTime position = CMTimeAdd(self.keyTime, interval);
     return position;
 }
