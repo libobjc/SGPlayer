@@ -24,6 +24,7 @@
 - (void)dealloc
 {
     [self clear];
+    NSAssert(self.lockingCount <= 0, @"SGFrame, must be unlocked before release");
 }
 
 - (void)lock

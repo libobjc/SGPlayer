@@ -43,6 +43,7 @@
         av_packet_free(&_corePacket);
         _corePacket = nil;
     }
+    NSAssert(self.lockingCount <= 0, @"SGPacket, must be unlocked before release");
 }
 
 - (void)lock

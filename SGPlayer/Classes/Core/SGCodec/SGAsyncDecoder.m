@@ -253,8 +253,8 @@ static SGPacket * flushPacket;
                             }
                             [frame unlock];
                         }
-                        [packet unlock];
                     }
+                    [packet unlock];
                     [self.delegate decoderDidChangeCapacity:self];
                 }
                 continue;
