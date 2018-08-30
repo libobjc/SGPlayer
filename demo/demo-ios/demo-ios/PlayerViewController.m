@@ -10,7 +10,7 @@
 #import <SGPlayer/SGPlayer.h>
 //#import <SGAVPlayer/SGAVPlayer.h>
 
-@interface PlayerViewController () <SGFFPlayerDelegate>
+@interface PlayerViewController () <SGPlayerDelegate>
 
 @property (nonatomic, strong) SGPlayer * player;
 @property (nonatomic, strong) SGPlayer * player2;
@@ -50,7 +50,7 @@
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.view = self.view1;
-    [self.player setRenderCallback:^(SGVideoFrame * frame) {
+    [self.player setDisplayCallback:^(SGVideoFrame * frame) {
 //        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
     }];
     [self.player replaceWithAsset:asset];
@@ -103,25 +103,27 @@
 
 - (IBAction)progressValueChanged:(id)sender
 {
-//    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
-//    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-//    [self.player seekToTime:time];
-//    [self.player2 seekToTime:time2];
+    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
+    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+    [self.player seekToTime:time];
+    [self.player2 seekToTime:time2];
 }
 
-- (void)playerDidChangeState:(SGPlayer *)player
+- (void)playerDidChangePrepareState:(SGPlayer *)player
 {
-    NSLog(@"%s, %ld", __func__, player.state);
+    NSLog(@"%s, %ld", __func__, player.prepareState);
+}
+
+- (void)playerDidChangePlaybackState:(SGPlayer *)player
+{
+    NSLog(@"%s, %ld", __func__, player.playbackState);
     NSString * text;
-    switch (player.state) {
+    switch (player.playbackState) {
         case SGPlaybackStateNone:
             text = @"Idle";
             break;
         case SGPlaybackStatePlaying:
             text = @"Playing";
-            break;
-        case SGPlaybackStateSeeking:
-            text = @"Seeking";
             break;
         case SGPlaybackStatePaused:
             text = @"Paused";
@@ -144,7 +146,7 @@
 
 - (void)playerDidChangeTimingInfo:(SGPlayer *)player
 {
-    CMTime time = player.time;
+    CMTime time = player.playbackTime;
     CMTime loadedTime = player.loadedTime;
     CMTime duration = player.duration;
 //    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
@@ -154,6 +156,11 @@
     }
     self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
+}
+
+- (void)playerDidFailed:(SGPlayer *)player
+{
+    NSLog(@"%s, %@", __func__, player.error);
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
