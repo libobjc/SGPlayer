@@ -10,6 +10,7 @@
 
 @interface SGPacket ()
 
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSInteger lockingCount;
 
 @end
@@ -20,6 +21,7 @@
 {
     if (self = [super init])
     {
+        self.coreLock = [[NSLock alloc] init];
         _corePacket = av_packet_alloc();
         _codecpar = NULL;
         _mediaType = SGMediaTypeUnknown;
@@ -48,12 +50,16 @@
 
 - (void)lock
 {
+    [self.coreLock lock];
     self.lockingCount++;
+    [self.coreLock unlock];
 }
 
 - (void)unlock
 {
+    [self.coreLock lock];
     self.lockingCount--;
+    [self.coreLock unlock];
     if (self.lockingCount <= 0)
     {
         self.lockingCount = 0;

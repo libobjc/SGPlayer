@@ -10,6 +10,7 @@
 
 @interface SGFrame ()
 
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSInteger lockingCount;
 
 @end
@@ -21,6 +22,15 @@
     return SGMediaTypeUnknown;
 }
 
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.coreLock = [[NSLock alloc] init];
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [self clear];
@@ -29,12 +39,16 @@
 
 - (void)lock
 {
+    [self.coreLock lock];
     self.lockingCount++;
+    [self.coreLock unlock];
 }
 
 - (void)unlock
 {
+    [self.coreLock lock];
     self.lockingCount--;
+    [self.coreLock unlock];
     if (self.lockingCount <= 0)
     {
         self.lockingCount = 0;
