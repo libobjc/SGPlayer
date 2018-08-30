@@ -39,6 +39,7 @@ static SGPacket * flushPacket;
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
             flushPacket = [[SGPacket alloc] init];
+            [flushPacket lock];
         });
         _packetQueue = [[SGObjectQueue alloc] init];
         self.pausedCondition = [[NSCondition alloc] init];
@@ -254,9 +255,9 @@ static SGPacket * flushPacket;
                             [frame unlock];
                         }
                     }
-                    [packet unlock];
                     [self.delegate decoderDidChangeCapacity:self];
                 }
+                [packet unlock];
                 continue;
             }
         }
