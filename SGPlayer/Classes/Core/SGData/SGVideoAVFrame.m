@@ -43,11 +43,20 @@
             self.height = (int)CVPixelBufferGetHeight(self.pixelBuffer);
         }
         CVPixelBufferLockBaseAddress(self.pixelBuffer, 0);
-        int count = (int)CVPixelBufferGetPlaneCount(self.pixelBuffer);
-        for (int i = 0; i < count; i++)
+        CVPixelBufferLockBaseAddress(self.pixelBuffer, 0);
+        if (CVPixelBufferIsPlanar(self.pixelBuffer))
         {
-            _dataInternal[i] = CVPixelBufferGetBaseAddressOfPlane(self.pixelBuffer, i);
-            _linesizeInternal[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(self.pixelBuffer, i);
+            int count = (int)CVPixelBufferGetPlaneCount(self.pixelBuffer);
+            for (int i = 0; i < count; i++)
+            {
+                _dataInternal[i] = CVPixelBufferGetBaseAddressOfPlane(self.pixelBuffer, i);
+                _linesizeInternal[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(self.pixelBuffer, i);
+            }
+        }
+        else
+        {
+            _dataInternal[0] = CVPixelBufferGetBaseAddress(self.pixelBuffer);
+            _linesizeInternal[0] = (int)CVPixelBufferGetBytesPerRow(self.pixelBuffer);
         }
         CVPixelBufferUnlockBaseAddress(self.pixelBuffer, 0);
     }
