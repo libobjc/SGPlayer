@@ -29,18 +29,35 @@
         self.threadsAuto = YES;
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeH265 = YES;
+        self.hardwareDecodeHEVC = YES;
     }
     return self;
 }
 
 - (void)doSetup
 {
-    if (self.hardwareDecodeH264 && self.codecpar->codec_id == AV_CODEC_ID_H264)
+    BOOL videoToolBoxEnable = NO;
+    CMVideoCodecType codecType = kCMVideoCodecType_H264;
+    if (self.hardwareDecodeH264 &&
+        self.codecpar->codec_id == AV_CODEC_ID_H264 &&
+        [SGVideoToolBox supportH264])
+    {
+        videoToolBoxEnable = YES;
+        CMVideoCodecType codecType = kCMVideoCodecType_H264;
+    }
+    if (self.hardwareDecodeHEVC &&
+        self.codecpar->codec_id == AV_CODEC_ID_HEVC &&
+        [SGVideoToolBox supportHEVC])
+    {
+        videoToolBoxEnable = YES;
+        CMVideoCodecType codecType = kCMVideoCodecType_HEVC;
+    }
+    if (videoToolBoxEnable)
     {
         SGVideoToolBox * videoToolBox = [[SGVideoToolBox alloc] init];
         videoToolBox.timebase = self.timebase;
         videoToolBox.codecpar = self.codecpar;
+        videoToolBox.codecType = codecType;
         videoToolBox.preferredPixelFormat = SGDMPixelFormatSG2AV(self.preferredPixelFormat);
         if ([videoToolBox open])
         {

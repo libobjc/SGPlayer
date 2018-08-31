@@ -15,7 +15,7 @@
 @property (nonatomic, assign) BOOL threadsAuto;
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
-@property (nonatomic, assign) BOOL hardwareDecodeH265;
+@property (nonatomic, assign) BOOL hardwareDecodeHEVC;
 @property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
 
 @end

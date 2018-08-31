@@ -29,10 +29,29 @@
 
 @implementation SGVideoToolBox
 
++ (BOOL)supportH264
+{
+    if (@available(iOS 11.0, *)) {
+        return VTIsHardwareDecodeSupported(kCMVideoCodecType_H264);
+    } else {
+        return YES;
+    }
+}
+
++ (BOOL)supportHEVC
+{
+    if (@available(iOS 11.0, *)) {
+        return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC);
+    } else {
+        return NO;
+    }
+}
+
 - (instancetype)init
 {
     if (self = [super init])
     {
+        self.codecType = kCMVideoCodecType_H264;
         self.preferredPixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
         [self addNotifications];
     }
@@ -144,10 +163,6 @@
 
 - (BOOL)setupDecompressionSession
 {
-    if (self.codecpar->codec_id != AV_CODEC_ID_H264)
-    {
-        return NO;
-    }
     uint8_t * extradata = self.codecpar->extradata;
     int extradata_size = self.codecpar->extradata_size;
     if (extradata_size < 7 || extradata == NULL)
@@ -161,7 +176,7 @@
             extradata[4] = 0xFF;
             self.shouldConvertNALSize3To4 = YES;
         }
-        self.formatDescription = CreateFormatDescription(kCMVideoCodecType_H264,
+        self.formatDescription = CreateFormatDescription(self.codecType,
                                                          self.codecpar->width,
                                                          self.codecpar->height,
                                                          extradata,
