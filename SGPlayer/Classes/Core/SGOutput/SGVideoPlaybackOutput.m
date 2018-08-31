@@ -34,6 +34,8 @@
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
 @property (nonatomic, strong) SGGLTextureUploader * glUploader;
+@property (nonatomic, assign) NSUInteger displayIncreasedCoefficient;
+@property (nonatomic, assign) NSUInteger displayCallbackCount;
 
 @end
 
@@ -60,14 +62,8 @@
         self.programPool = [[SGGLProgramPool alloc] init];
         self.modelPool = [[SGGLModelPool alloc] init];
         self.matrixMaker = [[SGVRMatrixMaker alloc] init];
-        self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
-        SGWeakSelf
-        self.renderTimer = [SGGLTimer timerWithTimeInterval:1.0 / 60.0 handler:^{
-            SGStrongSelf
-            [self renderTimerHandler];
-        }];
-        self.displayLink.paused = YES;
-        self.renderTimer.paused = YES;
+        self.displayInterval = CMTimeMake(1, 60);
+        self.displayIncreasedCoefficient = 2;
     }
     return self;
 }
@@ -88,6 +84,13 @@
     {
         return;
     }
+    self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
+    SGWeakSelf
+    NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval) / (NSTimeInterval)self.displayIncreasedCoefficient;
+    self.renderTimer = [SGGLTimer timerWithTimeInterval:timeInterval handler:^{
+        SGStrongSelf
+        [self renderTimerHandler];
+    }];
     self.displayLink.paused = NO;
     self.renderTimer.paused = NO;
 }
@@ -276,47 +279,55 @@
 
 - (void)renderTimerHandler
 {
-    if (self.key && self.renderedFrame && self.paused)
-    {
-        return;
-    }
     [self lock];
-    if (self.key && !self.renderedFrame)
+    SGVideoFrame * frame = nil;
+    SGBasicBlock callback = ^{};
+    BOOL needFetchFrame = !self.key || !self.paused || !self.renderedFrame;
+    if (needFetchFrame)
     {
-        [self.timeSync refresh];
-    }
-    SGWeakSelf
-    SGVideoFrame * frame = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
-        SGStrongSelf
-        if (!self.currentFrame)
+        SGWeakSelf
+        frame = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
+            SGStrongSelf
+            if (!self.currentFrame)
+            {
+                return NO;
+            }
+            CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
+            NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
+            * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
+            * current = self.currentFrame.timeStamp;
+            return YES;
+        } drop:!self.key];
+        if (frame)
         {
-            return NO;
+            NSAssert(self.currentFrame != frame, @"SGVideoPlaybackOutput : Frame can't equal to currentTime.");
+            [self.currentFrame unlock];
+            self.currentFrame = frame;
+            self.renderedFrame = YES;
+            callback = ^{
+                if (self.key)
+                {
+                    [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
+                }
+                if (self.displayCallback)
+                {
+                    self.displayCallback(frame);
+                }
+                [self.delegate outputDidChangeCapacity:self];
+            };
         }
-        CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
-        NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-        * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
-        * current = self.currentFrame.timeStamp;
-        return YES;
-    } drop:!self.key];
-    BOOL isRedraw = NO;
-    BOOL isVR = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
-    if (frame)
-    {
-        [self updateGLViewIfNeeded];
-        [self.currentFrame unlock];
-        self.currentFrame = frame;
-        self.renderedFrame = YES;
-        if (self.key)
-        {
-            [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
-        }
     }
-    else if (self.currentFrame)
+    [self updateGLViewIfNeeded];
+    self.displayCallbackCount += 1;
+    if (!frame)
     {
-        [self updateGLViewIfNeeded];
-        if (!self.glView.rendered || isVR)
+        BOOL delivery = (self.displayCallbackCount % self.displayIncreasedCoefficient) == 0;
+        BOOL viewReady = (self.glView.superview && !self.glView.rendered);
+        BOOL isVR = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
+        BOOL VRReady = (isVR && self.matrixMaker.ready);
+        BOOL needRedraw = delivery && (viewReady || VRReady);
+        if (needRedraw)
         {
-            isRedraw = YES;
             frame = self.currentFrame;
         }
     }
@@ -327,23 +338,8 @@
     }
     [frame lock];
     [self unlock];
-    BOOL needDraw = self.glView.superview ? YES : NO;
-    if (needDraw && isVR)
-    {
-        needDraw = self.matrixMaker.ready ? YES : NO;
-    }
-    if (needDraw)
-    {
-        [self draw];
-    }
-    if (!isRedraw)
-    {
-        if (self.displayCallback)
-        {
-            self.displayCallback(frame);
-        }
-        [self.delegate outputDidChangeCapacity:self];
-    }
+    callback();
+    [self draw];
     [frame unlock];
 }
 

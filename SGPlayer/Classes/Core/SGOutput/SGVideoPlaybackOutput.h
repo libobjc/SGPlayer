@@ -21,6 +21,7 @@
 @property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
+@property (nonatomic, assign) CMTime displayInterval;
 @property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
 
 - (UIImage *)originalImage;

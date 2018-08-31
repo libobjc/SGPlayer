@@ -15,7 +15,6 @@
 @property (nonatomic, assign, readonly) CMTime unlimitedTime;
 
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate;
-- (void)refresh;
 - (void)flush;
 
 @end

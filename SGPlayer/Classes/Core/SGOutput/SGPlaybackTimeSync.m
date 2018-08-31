@@ -60,11 +60,6 @@
     self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
 }
 
-- (void)refresh
-{
-    self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
-}
-
 - (void)flush
 {
     self.keyTime = kCMTimeZero;
