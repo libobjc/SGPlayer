@@ -407,6 +407,7 @@
     self.seekingToken++;
     NSInteger seekingToken = self.seekingToken;
     [self unlock];
+    [self pauseOrResumeOutput];
     SGWeakSelf
     [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
@@ -416,6 +417,7 @@
             self.seekingToken = 0;
         }
         [self unlock];
+        [self pauseOrResumeOutput];
         if (completionHandler)
         {
             [self callback:^{
@@ -608,11 +610,11 @@
 - (void)pauseOrResumeOutput
 {
     [self lock];
+    BOOL seeking = self.seekingToken != 0;
     BOOL playback = self.playbackState == SGPlaybackStatePlaying;
     BOOL loading = self.loadingState == SGLoadingStateLoading || self.loadingState == SGLoadingStateFinished;
-    BOOL data = !self.session.empty;
     [self unlock];
-    if (playback && loading && data)
+    if (!seeking && playback && loading && !self.session.empty)
     {
         [self.audioOutput resume];
         [self.videoOutput resume];

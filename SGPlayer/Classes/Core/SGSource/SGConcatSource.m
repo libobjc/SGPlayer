@@ -380,34 +380,28 @@ static int SGConcatSourceInterruptHandler(void * context)
             else if (self.state == SGSourceStateSeeking)
             {
                 self.seekingTimeStamp = self.seekTimeStamp;
-                CMTime timeStamp = self.seekingTimeStamp;
+                CMTime seekingTimeStamp = self.seekingTimeStamp;
                 [self unlock];
-                int success = [self changeFormatContextWithTimeStamp:timeStamp];
+                int success = [self changeFormatContextWithTimeStamp:seekingTimeStamp];
                 [self lock];
-                BOOL enable = NO;
-                SGBasicBlock callback = ^{};
-                if (self.state == SGSourceStateSeeking)
+                if (self.state == SGSourceStateSeeking &&
+                    CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0)
                 {
-                    if (CMTimeCompare(self.seekTimeStamp, timeStamp) == 0)
-                    {
-                        enable = YES;
-                        callback = [self setState:SGSourceStateReading];
-                    }
+                    [self unlock];
+                    continue;
                 }
+                SGBasicBlock callback = [self setState:SGSourceStateReading];
                 CMTime seekTimeStamp = self.seekTimeStamp;
                 void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
                 self.seekTimeStamp = kCMTimeZero;
                 self.seekingTimeStamp = kCMTimeZero;
                 self.seekCompletionHandler = nil;
                 [self unlock];
-                if (enable)
+                if (seekCompletionHandler)
                 {
-                    if (seekCompletionHandler)
-                    {
-                        seekCompletionHandler(success >= 0, seekTimeStamp);
-                    }
-                    callback();
+                    seekCompletionHandler(success >= 0, seekTimeStamp);
                 }
+                callback();
                 continue;
             }
             else if (self.state == SGSourceStateReading)

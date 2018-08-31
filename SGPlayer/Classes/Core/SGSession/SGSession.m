@@ -16,6 +16,7 @@
 
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, assign) NSUInteger seekingToken;
 
 @end
 
@@ -87,6 +88,14 @@
 
 #pragma mark - Seek
 
+- (BOOL)seeking
+{
+    [self lock];
+    BOOL ret = self.seekingToken != 0;
+    [self unlock];
+    return ret;
+}
+
 - (BOOL)seekable
 {
     [self lock];
@@ -100,7 +109,6 @@
             [self unlock];
             return NO;
         case SGSessionStateReading:
-        case SGSessionStateSeeking:
         case SGSessionStateFinished:
             break;
     }
@@ -125,38 +133,32 @@
     }
     [self lock];
     if (self.state != SGSessionStateReading &&
-        self.state != SGSessionStateSeeking &&
         self.state != SGSessionStateFinished)
     {
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGSessionStateSeeking];
+    self.seekingToken++;
+    NSInteger seekingToken = self.seekingToken;
     [self unlock];
-    callback();
     SGWeakSelf
     [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
         SGStrongSelf
+        [self lock];
+        if (seekingToken != self.seekingToken)
+        {
+            [self unlock];
+            return;
+        }
+        self.seekingToken = 0;
+        [self unlock];
         [self.configuration.audioDecoder flush];
         [self.configuration.videoDecoder flush];
         [self.configuration.audioOutput flush];
         [self.configuration.videoOutput flush];
-        [self lock];
-        BOOL enable = NO;
-        SGBasicBlock callback = ^{};
-        if (self.state == SGSessionStateSeeking)
+        if (completionHandler)
         {
-            enable = YES;
-            callback = [self setState:SGSessionStateReading];
-        }
-        [self unlock];
-        if (enable)
-        {
-            if (completionHandler)
-            {
-                completionHandler(success, time);
-            }
-            callback();
+            completionHandler(success, time);
         }
     }];
     return YES;

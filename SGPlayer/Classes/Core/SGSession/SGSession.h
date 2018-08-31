@@ -16,7 +16,6 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
     SGSessionStateOpening,
     SGSessionStateOpened,
     SGSessionStateReading,
-    SGSessionStateSeeking,
     SGSessionStateClosed,
     SGSessionStateFinished,
     SGSessionStateFailed,
@@ -80,6 +79,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
 /**
  *  Seek.
  */
+- (BOOL)seeking;
 - (BOOL)seekable;
 - (BOOL)seekableToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
