@@ -52,6 +52,8 @@
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
 @property (nonatomic, assign) NSUInteger seekingToken;
+@property (nonatomic, assign) NSTimeInterval seekFinishedTimeInterval;
+@property (nonatomic, assign) NSTimeInterval seekFinishedDelay;
 @property (nonatomic, assign) CMTime lastTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
@@ -84,6 +86,7 @@
         self.hardwareDecodeH265 = YES;
         self.preferredPixelFormat = SG_AV_PIX_FMT_NONE;
         self.delegateQueue = [NSOperationQueue mainQueue];
+        self.seekFinishedDelay = 1.0 / 50.0;
         [self destory];
     }
     return self;
@@ -417,6 +420,7 @@
         if (seekingToken == self.seekingToken)
         {
             self.seekingToken = 0;
+            self.seekFinishedTimeInterval = [NSDate date].timeIntervalSince1970;
         }
         [self unlock];
         [self pauseOrResumeOutput];
@@ -613,10 +617,11 @@
 {
     [self lock];
     BOOL seeking = self.seekingToken != 0;
+    BOOL seekDelay = ([NSDate date].timeIntervalSince1970 - self.seekFinishedTimeInterval) < self.seekFinishedDelay;
     BOOL playback = self.playbackState == SGPlaybackStatePlaying;
     BOOL loading = self.loadingState == SGLoadingStateLoading || self.loadingState == SGLoadingStateFinished;
     [self unlock];
-    if (!seeking && playback && loading && !self.session.empty)
+    if (!seeking && !seekDelay && playback && loading && !self.session.empty)
     {
         [self.audioOutput resume];
         [self.videoOutput resume];
@@ -625,6 +630,12 @@
     {
         [self.audioOutput pause];
         [self.videoOutput pause];
+    }
+    if (seekDelay)
+    {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((self.seekFinishedDelay + 0.01) * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
+            [self pauseOrResumeOutput];
+        });
     }
 }
 
