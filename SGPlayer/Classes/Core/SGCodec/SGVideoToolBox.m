@@ -53,8 +53,7 @@
 
 - (void)flush
 {
-    [self destoryDecompressionSession];
-    [self setupDecompressionSession];
+    
 }
 
 - (void)close
@@ -76,7 +75,8 @@
     if (self.shouldFlush)
     {
         self.shouldFlush = NO;
-        [self flush];
+        [self destoryDecompressionSession];
+        [self setupDecompressionSession];
     }
     SGVideoFrame * frame = [self decodeInternal:packet];
     if (frame)
@@ -132,7 +132,8 @@
     }
     if (status == kVTInvalidSessionErr)
     {
-        [self flush];
+        [self destoryDecompressionSession];
+        [self setupDecompressionSession];
     }
     CFRelease(sampleBuffer);
     return ret;
