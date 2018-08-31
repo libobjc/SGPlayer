@@ -409,6 +409,11 @@
             }
         }
             break;
+        case SGSourceStateReading:
+        {
+            callback = [self setState:SGSessionStateReading];
+        }
+            break;
         case SGSourceStateFinished:
         {
             callback = [self setState:SGSessionStateFinished];

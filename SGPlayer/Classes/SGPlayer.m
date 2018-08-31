@@ -324,7 +324,8 @@
         [self unlock];
         return NO;
     }
-    if (self.playbackState == SGPlaybackStateFailed)
+    if ((self.playbackState == SGPlaybackStateFinished && self.session.empty) ||
+        self.playbackState == SGPlaybackStateFailed)
     {
         [self unlock];
         return NO;
@@ -344,7 +345,8 @@
         [self unlock];
         return NO;
     }
-    if (self.playbackState == SGPlaybackStateFailed)
+    if ((self.playbackState == SGPlaybackStateFinished && self.session.empty) ||
+        self.playbackState == SGPlaybackStateFailed)
     {
         [self unlock];
         return NO;
