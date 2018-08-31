@@ -40,7 +40,7 @@
 @property (nonatomic, assign) BOOL threadsAuto;
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
-@property (nonatomic, assign) BOOL hardwareDecodeHEVC;
+@property (nonatomic, assign) BOOL hardwareDecodeH265;
 @property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
@@ -81,7 +81,7 @@
         self.threadsAuto = YES;
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeHEVC = YES;
+        self.hardwareDecodeH265 = YES;
         self.preferredPixelFormat = SG_AV_PIX_FMT_NONE;
         self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
@@ -156,7 +156,7 @@
     videoDecoder.threadsAuto = self.threadsAuto;
     videoDecoder.refcountedFrames = self.refcountedFrames;
     videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
-    videoDecoder.hardwareDecodeHEVC = self.hardwareDecodeHEVC;
+    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
     videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];

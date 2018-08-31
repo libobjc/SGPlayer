@@ -38,7 +38,7 @@
     }
 }
 
-+ (BOOL)supportHEVC
++ (BOOL)supportH265
 {
     if (@available(iOS 11.0, *)) {
         return VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC);

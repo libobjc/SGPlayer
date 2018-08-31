@@ -29,7 +29,7 @@
         self.threadsAuto = YES;
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeHEVC = YES;
+        self.hardwareDecodeH265 = YES;
     }
     return self;
 }
@@ -43,14 +43,14 @@
         [SGVideoToolBox supportH264])
     {
         videoToolBoxEnable = YES;
-        CMVideoCodecType codecType = kCMVideoCodecType_H264;
+        codecType = kCMVideoCodecType_H264;
     }
-    if (self.hardwareDecodeHEVC &&
+    if (self.hardwareDecodeH265 &&
         self.codecpar->codec_id == AV_CODEC_ID_HEVC &&
-        [SGVideoToolBox supportHEVC])
+        [SGVideoToolBox supportH265])
     {
         videoToolBoxEnable = YES;
-        CMVideoCodecType codecType = kCMVideoCodecType_HEVC;
+        codecType = kCMVideoCodecType_HEVC;
     }
     if (videoToolBoxEnable)
     {

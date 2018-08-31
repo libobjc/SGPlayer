@@ -205,7 +205,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 /**
  *  Default value is YES.
  */
-@property (nonatomic, assign) BOOL hardwareDecodeHEVC;
+@property (nonatomic, assign) BOOL hardwareDecodeH265;
 
 /**
  *  Default value is SG_AV_PIX_FMT_NONE.

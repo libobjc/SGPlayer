@@ -14,7 +14,7 @@
 @interface SGVideoToolBox : NSObject
 
 + (BOOL)supportH264;
-+ (BOOL)supportHEVC;
++ (BOOL)supportH265;
 
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
