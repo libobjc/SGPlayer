@@ -10,6 +10,7 @@
 #import "SGCodecContext.h"
 #import "SGVideoToolBox.h"
 #import "SGVideoFFFrame.h"
+#import "SGFFDefinesMapping.h"
 
 @interface SGVideoDecoder ()
 
@@ -40,6 +41,7 @@
         SGVideoToolBox * videoToolBox = [[SGVideoToolBox alloc] init];
         videoToolBox.timebase = self.timebase;
         videoToolBox.codecpar = self.codecpar;
+        videoToolBox.preferredPixelFormat = SGDMPixelFormatSG2AV(self.preferredPixelFormat);
         if ([videoToolBox open])
         {
             self.videoToolBox = videoToolBox;

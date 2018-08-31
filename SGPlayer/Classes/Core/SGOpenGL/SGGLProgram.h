@@ -16,6 +16,7 @@ typedef NS_ENUM(NSUInteger, SGGLProgramType)
     SGGLProgramTypeUnknown,
     SGGLProgramTypeYUV420P,
     SGGLProgramTypeNV12,
+    SGGLProgramTypeBGRA,
 };
 
 @protocol SGGLProgram <NSObject>

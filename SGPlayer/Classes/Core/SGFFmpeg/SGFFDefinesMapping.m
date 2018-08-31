@@ -29,6 +29,8 @@ SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format)
             return SGGLProgramTypeYUV420P;
         case SG_AV_PIX_FMT_NV12:
             return SGGLProgramTypeNV12;
+        case SG_AV_PIX_FMT_BGRA:
+            return SGGLProgramTypeBGRA;
         default:
             return SGGLProgramTypeUnknown;
     }
@@ -159,4 +161,44 @@ enum AVColorRange SGDMColorRangeSG2FF(SGAVColorRange foramt)
 enum AVChromaLocation SGDMChromaLocationSG2FF(SGAVChromaLocation foramt)
 {
     return (enum AVChromaLocation)foramt;
+}
+
+OSType SGDMPixelFormatSG2AV(SGAVPixelFormat format)
+{
+    switch (format)
+    {
+        case SG_AV_PIX_FMT_NV12:
+            return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+        case SG_AV_PIX_FMT_YUV420P:
+            return kCVPixelFormatType_420YpCbCr8Planar;
+        case SG_AV_PIX_FMT_UYVY422:
+            return kCVPixelFormatType_422YpCbCr8;
+        case SG_AV_PIX_FMT_BGRA:
+            return kCVPixelFormatType_32BGRA;
+        case SG_AV_PIX_FMT_RGBA:
+            return kCVPixelFormatType_32RGBA;
+        default:
+            return 0;
+    }
+    return 0;
+}
+
+SGAVPixelFormat SGDMPixelFormatAV2SG(OSType format)
+{
+    switch (format)
+    {
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+            return SG_AV_PIX_FMT_NV12;
+        case kCVPixelFormatType_420YpCbCr8Planar:
+            return SG_AV_PIX_FMT_YUV420P;
+        case kCVPixelFormatType_422YpCbCr8:
+            return SG_AV_PIX_FMT_UYVY422;
+        case kCVPixelFormatType_32BGRA:
+            return SG_AV_PIX_FMT_BGRA;
+        case kCVPixelFormatType_32RGBA:
+            return SG_AV_PIX_FMT_RGBA;
+        default:
+            return SG_AV_PIX_FMT_NONE;
+    }
+    return SG_AV_PIX_FMT_NONE;
 }

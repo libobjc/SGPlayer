@@ -41,3 +41,7 @@ enum AVColorTransferCharacteristic SGDMColorTransferCharacteristicSG2FF(SGAVColo
 enum AVColorSpace SGDMColorSpaceSG2FF(SGAVColorSpace foramt);
 enum AVColorRange SGDMColorRangeSG2FF(SGAVColorRange foramt);
 enum AVChromaLocation SGDMChromaLocationSG2FF(SGAVChromaLocation foramt);
+
+// SG <-> AV
+OSType SGDMPixelFormatSG2AV(SGAVPixelFormat format);
+SGAVPixelFormat SGDMPixelFormatAV2SG(OSType format);

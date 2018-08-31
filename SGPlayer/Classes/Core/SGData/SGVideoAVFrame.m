@@ -7,6 +7,7 @@
 //
 
 #import "SGVideoAVFrame.h"
+#import "SGFFDefinesMapping.h"
 
 @interface SGVideoAVFrame ()
 
@@ -33,18 +34,7 @@
 {
     if (self.pixelBuffer)
     {
-        OSType format = CVPixelBufferGetPixelFormatType(self.pixelBuffer);
-        if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
-            self.format = SG_AV_PIX_FMT_NV12;
-        } else if (format == kCVPixelFormatType_420YpCbCr8Planar) {
-            self.format = SG_AV_PIX_FMT_YUV420P;
-        } else if (format == kCVPixelFormatType_422YpCbCr8) {
-            self.format = SG_AV_PIX_FMT_UYVY422;
-        } else if (format == kCVPixelFormatType_32BGRA) {
-            self.format = SG_AV_PIX_FMT_BGRA;
-        } else {
-            self.format = SG_AV_PIX_FMT_NONE;
-        }
+        self.format = SGDMPixelFormatAV2SG(CVPixelBufferGetPixelFormatType(self.pixelBuffer));
         if (CVPixelBufferIsPlanar(self.pixelBuffer)) {
             self.width = (int)CVPixelBufferGetWidthOfPlane(self.pixelBuffer, 0);
             self.height = (int)CVPixelBufferGetHeightOfPlane(self.pixelBuffer, 0);

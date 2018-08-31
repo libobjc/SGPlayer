@@ -33,6 +33,7 @@
 {
     if (self = [super init])
     {
+        self.preferredPixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
         [self addNotifications];
     }
     return self;
@@ -169,7 +170,12 @@
         {
             return NO;
         }
-        NSDictionary * destinationImageBufferAttributes = @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange),
+        OSType pixelFormat = kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+        if (self.preferredPixelFormat == kCVPixelFormatType_32BGRA)
+        {
+            pixelFormat = kCVPixelFormatType_32BGRA;
+        }
+        NSDictionary * destinationImageBufferAttributes = @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(pixelFormat),
                                                             (NSString *)kCVPixelBufferWidthKey : @(self.codecpar->width),
                                                             (NSString *)kCVPixelBufferHeightKey : @(self.codecpar->height)};
         

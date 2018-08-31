@@ -15,6 +15,7 @@
 
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
+@property (nonatomic, assign) OSType preferredPixelFormat;
 
 - (BOOL)open;
 - (void)flush;

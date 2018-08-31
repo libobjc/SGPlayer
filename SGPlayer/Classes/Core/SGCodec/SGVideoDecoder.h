@@ -7,6 +7,7 @@
 //
 
 #import "SGAsyncDecoder.h"
+#import "SGFFDefines.h"
 
 @interface SGVideoDecoder : SGAsyncDecoder
 
@@ -15,5 +16,6 @@
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
+@property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
 
 @end

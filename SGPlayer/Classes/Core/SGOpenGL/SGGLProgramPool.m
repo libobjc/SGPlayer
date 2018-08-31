@@ -9,11 +9,13 @@
 #import "SGGLProgramPool.h"
 #import "SGGLYUV420PProgram.h"
 #import "SGGLNV12Program.h"
+#import "SGGLBGRAProgram.h"
 
 @interface SGGLProgramPool ()
 
 @property (nonatomic, strong) SGGLYUV420PProgram * yuv420p;
 @property (nonatomic, strong) SGGLNV12Program * nv12;
+@property (nonatomic, strong) SGGLBGRAProgram * bgra;
 
 @end
 
@@ -29,6 +31,8 @@
             return self.yuv420p;
         case SGGLProgramTypeNV12:
             return self.nv12;
+        case SGGLProgramTypeBGRA:
+            return self.bgra;
     }
     return nil;
 }
@@ -49,6 +53,15 @@
         _nv12 = [[SGGLNV12Program alloc] init];
     }
     return _nv12;
+}
+
+- (SGGLBGRAProgram *)bgra
+{
+    if (!_bgra)
+    {
+        _bgra = [[SGGLBGRAProgram alloc] init];
+    }
+    return _bgra;
 }
 
 @end
