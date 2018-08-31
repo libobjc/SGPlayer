@@ -43,7 +43,6 @@
             self.height = (int)CVPixelBufferGetHeight(self.pixelBuffer);
         }
         CVPixelBufferLockBaseAddress(self.pixelBuffer, 0);
-        CVPixelBufferLockBaseAddress(self.pixelBuffer, 0);
         if (CVPixelBufferIsPlanar(self.pixelBuffer))
         {
             int count = (int)CVPixelBufferGetPlaneCount(self.pixelBuffer);
