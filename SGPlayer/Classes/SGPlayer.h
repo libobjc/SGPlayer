@@ -86,6 +86,17 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)pause;
 - (BOOL)stop;
 
+@end
+
+#pragma mark - Seeking
+
+@interface SGPlayer (Seeking)
+
+/**
+ *  Default value is NO.
+ */
+@property (nonatomic, assign) BOOL highFrequencySeeking;
+
 - (BOOL)seeking;
 
 - (BOOL)seekable;

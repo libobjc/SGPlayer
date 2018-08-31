@@ -26,6 +26,7 @@
 @property (nonatomic, assign, readonly) SGPlaybackState playbackState;
 @property (nonatomic, assign, readonly) CMTime playbackTime;
 @property (nonatomic, assign) CMTime rate;
+@property (nonatomic, assign) BOOL highFrequencySeeking;
 @property (nonatomic, assign, readonly) SGLoadingState loadingState;
 @property (nonatomic, assign, readonly) CMTime loadedTime;
 @property (nonatomic, assign) float volume;
@@ -53,7 +54,6 @@
 @property (nonatomic, strong) NSCondition * prepareCondition;
 @property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, assign) NSTimeInterval seekFinishedTimeInterval;
-@property (nonatomic, assign) NSTimeInterval seekFinishedDelay;
 @property (nonatomic, assign) CMTime lastTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
@@ -71,6 +71,7 @@
     if (self = [super init])
     {
         self.rate = CMTimeMake(1, 1);
+        self.highFrequencySeeking = NO;
         self.volume = 1.0;
         self.deviceDelay = CMTimeMake(1, 20);
         self.scalingMode = SGScalingModeResizeAspect;
@@ -86,7 +87,6 @@
         self.hardwareDecodeH265 = YES;
         self.preferredPixelFormat = SG_AV_PIX_FMT_NONE;
         self.delegateQueue = [NSOperationQueue mainQueue];
-        self.seekFinishedDelay = 1.0 / 50.0;
         [self destory];
     }
     return self;
@@ -374,6 +374,8 @@
     return YES;
 }
 
+#pragma mark - Seeking
+
 - (BOOL)seeking
 {
     [self lock];
@@ -617,10 +619,17 @@
 {
     [self lock];
     BOOL seeking = self.seekingToken != 0;
-    BOOL seekDelay = ([NSDate date].timeIntervalSince1970 - self.seekFinishedTimeInterval) < self.seekFinishedDelay;
+    BOOL seekDelay = ([NSDate date].timeIntervalSince1970 - self.seekFinishedTimeInterval) < 0.30;
     BOOL playback = self.playbackState == SGPlaybackStatePlaying;
     BOOL loading = self.loadingState == SGLoadingStateLoading || self.loadingState == SGLoadingStateFinished;
     [self unlock];
+    if (self.highFrequencySeeking && seekDelay)
+    {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.31) * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
+            [self pauseOrResumeOutput];
+        });
+        return;
+    }
     if (!seeking && !seekDelay && playback && loading && !self.session.empty)
     {
         [self.audioOutput resume];
@@ -630,12 +639,6 @@
     {
         [self.audioOutput pause];
         [self.videoOutput pause];
-    }
-    if (seekDelay)
-    {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((self.seekFinishedDelay + 0.01) * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
-            [self pauseOrResumeOutput];
-        });
     }
 }
 
