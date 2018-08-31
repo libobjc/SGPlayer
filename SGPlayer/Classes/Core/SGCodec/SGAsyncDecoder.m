@@ -201,6 +201,7 @@ static SGPacket * flushPacket;
     }];
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.decodeOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    self.decodeOperation.name = [NSString stringWithFormat:@"%@-Decode-Queue", self.class];
     [self.operationQueue addOperation:self.decodeOperation];
 }
 

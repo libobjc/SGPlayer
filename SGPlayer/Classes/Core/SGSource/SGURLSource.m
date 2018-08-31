@@ -248,6 +248,7 @@ static int SGURLSourceInterruptHandler(void * context)
     }];
     self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.openOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    self.openOperation.name = [NSString stringWithFormat:@"%@-Open-Queue", self.class];
     [self.operationQueue addOperation:self.openOperation];
 }
 
@@ -279,6 +280,7 @@ static int SGURLSourceInterruptHandler(void * context)
     }];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
+    self.readOperation.name = [NSString stringWithFormat:@"%@-Read-Queue", self.class];
     [self.readOperation addDependency:self.openOperation];
     [self.operationQueue addOperation:self.readOperation];
 }
