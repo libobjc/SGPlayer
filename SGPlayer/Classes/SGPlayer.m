@@ -669,14 +669,12 @@
 
 - (void)sessionDidChangeCapacity:(SGSession *)session
 {
-    BOOL needCallback = YES;
     if (self.session.state == SGSessionStateFinished)
     {
         [self lock];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
         [self unlock];
         loadingCallback();
-        needCallback = NO;
     }
     if (self.session.state == SGSessionStateFinished && self.session.empty)
     {
@@ -684,13 +682,9 @@
         SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];
         [self unlock];
         playbackCallback();
-        needCallback = NO;
     }
-    if (needCallback)
-    {
-        [self pauseOrResumeOutput];
-        [self callbackForTimingIfNeeded];
-    }
+    [self pauseOrResumeOutput];
+    [self callbackForTimingIfNeeded];
 }
 
 #pragma mark - NSLocking
