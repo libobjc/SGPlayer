@@ -411,6 +411,10 @@
         [self unlock];
         return NO;
     }
+    if (self.seekingToken == 0)
+    {
+        self.seekFinishedTimeInterval = 0;
+    }
     self.seekingToken++;
     NSInteger seekingToken = self.seekingToken;
     [self unlock];
@@ -619,18 +623,21 @@
 {
     [self lock];
     BOOL seeking = self.seekingToken != 0;
-    BOOL seekDelay = ([NSDate date].timeIntervalSince1970 - self.seekFinishedTimeInterval) < 0.30;
     BOOL playback = self.playbackState == SGPlaybackStatePlaying;
     BOOL loading = self.loadingState == SGLoadingStateLoading || self.loadingState == SGLoadingStateFinished;
     [self unlock];
-    if (self.highFrequencySeeking && seekDelay)
+    if (self.highFrequencySeeking)
     {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.31) * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
-            [self pauseOrResumeOutput];
-        });
-        return;
+        BOOL seekDelay = ([NSDate date].timeIntervalSince1970 - self.seekFinishedTimeInterval) < 0.30;
+        if (seekDelay)
+        {
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.31) * NSEC_PER_SEC)), dispatch_get_global_queue(0, 0), ^{
+                [self pauseOrResumeOutput];
+            });
+            return;
+        }
     }
-    if (!seeking && !seekDelay && playback && loading && !self.session.empty)
+    if (!seeking && playback && loading && !self.session.empty)
     {
         [self.audioOutput resume];
         [self.videoOutput resume];
