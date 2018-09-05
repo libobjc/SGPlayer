@@ -32,6 +32,7 @@
 @property (nonatomic, assign, readonly) CMTime originalDuration;
 
 @property (nonatomic, assign, readonly) long long size;
+@property (nonatomic, assign, readonly) BOOL keyFrame;
 
 - (void)fillWithMediaType:(SGMediaType)mediaType
                  codecpar:(AVCodecParameters *)codecpar

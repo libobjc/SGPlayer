@@ -29,16 +29,6 @@
     return self;
 }
 
-- (BOOL)putPacket:(SGPacket *)packet
-{
-    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
-        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
-    {
-        return NO;
-    }
-    return [super putPacket:packet];
-}
-
 - (void)doSetup
 {
     self.codecContext = [[SGCodecContext alloc] init];
@@ -64,6 +54,11 @@
 
 - (NSArray <SGFrame *> *)doDecode:(SGPacket *)packet
 {
+    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
+        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
+    {
+        return nil;
+    }
     return [self.codecContext decode:packet];
 }
 

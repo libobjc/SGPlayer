@@ -36,6 +36,7 @@
         _originalDecodeTimeStamp = kCMTimeZero;
         _originalDuration = kCMTimeZero;
         _size = 0;
+        _keyFrame = 0;
     }
     return self;
 }
@@ -84,6 +85,7 @@
     _originalDecodeTimeStamp = kCMTimeZero;
     _originalDuration = kCMTimeZero;
     _size = 0;
+    _keyFrame = NO;
     if (_corePacket)
     {
         av_packet_unref(_corePacket);
@@ -111,6 +113,7 @@
     _decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     _size = _corePacket->size;
+    _keyFrame = _corePacket->flags & AV_PKT_FLAG_KEY;
 }
 
 @end

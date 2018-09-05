@@ -34,16 +34,6 @@
     return self;
 }
 
-- (BOOL)putPacket:(SGPacket *)packet
-{
-    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
-        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
-    {
-        return NO;
-    }
-    return [super putPacket:packet];
-}
-
 - (void)doSetup
 {
     BOOL videoToolBoxEnable = NO;
@@ -103,6 +93,15 @@
 
 - (NSArray <SGFrame *> *)doDecode:(SGPacket *)packet
 {
+    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
+        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
+    {
+        return nil;
+    }
+    if (!packet.keyFrame && self.decodePacketCount == 0)
+    {
+        return nil;
+    }
     if (self.videoToolBox)
     {
         return [self.videoToolBox decode:packet];
