@@ -15,11 +15,13 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithURL:(NSURL *)URL;
-- (instancetype)initWithURL:(NSURL *)URL offset:(CMTime)offset scale:(CMTime)scale;
 
 @property (nonatomic, strong, readonly) NSURL * URL;
-@property (nonatomic, assign, readonly) CMTime offset;
-@property (nonatomic, assign, readonly) CMTime scale;
+
+@property (nonatomic, assign) CMTime scale;
+@property (nonatomic, assign) CMTime offset;
+@property (nonatomic, assign) CMTimeRange timeRange;
+
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime originalDuration;
 @property (nonatomic, assign, readonly) BOOL seekable;

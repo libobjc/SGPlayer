@@ -304,7 +304,10 @@ static int SGConcatSourceInterruptHandler(void * context)
     NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
     for (SGURLAsset * obj in self.asset.assets)
     {
-        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL offset:duration scale:obj.scale];
+        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
+        formatContext.scale = obj.scale;
+        formatContext.offset = duration;
+        formatContext.timeRange = obj.timeRange;
         BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {

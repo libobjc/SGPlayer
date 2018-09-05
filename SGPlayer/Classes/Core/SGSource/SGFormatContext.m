@@ -14,16 +14,12 @@
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-    return [self initWithURL:URL offset:kCMTimeZero scale:CMTimeMake(1, 1)];
-}
-
-- (instancetype)initWithURL:(NSURL *)URL offset:(CMTime)offset scale:(CMTime)scale
-{
     if (self = [super init])
     {
         _URL = URL;
-        _offset = offset;
-        _scale = scale;
+        _scale = CMTimeMake(1, 1);
+        _offset = kCMTimeZero;
+        _timeRange = CMTimeRangeMake(kCMTimeIndefinite, kCMTimeIndefinite);
         _duration = kCMTimeZero;
         _originalDuration = kCMTimeZero;
         _seekable = NO;
