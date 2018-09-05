@@ -18,11 +18,15 @@
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) CMTime offset;
 @property (nonatomic, assign) CMTime scale;
+
 @property (nonatomic, assign) CMTime timeStamp;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) CMTime originalTimeStamp;
-@property (nonatomic, assign) CMTime originalDuration;
 @property (nonatomic, assign) CMTime decodeTimeStamp;
+@property (nonatomic, assign) CMTime duration;
+
+@property (nonatomic, assign) CMTime originalTimeStamp;
+@property (nonatomic, assign) CMTime originalDecodeTimeStamp;
+@property (nonatomic, assign) CMTime originalDuration;
+
 @property (nonatomic, assign) long long size;
 
 @end

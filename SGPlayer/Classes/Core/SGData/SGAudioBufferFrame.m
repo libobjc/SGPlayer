@@ -76,10 +76,11 @@
     self.offset = frame.offset;
     self.scale = frame.scale;
     self.originalTimeStamp = frame.originalTimeStamp;
+    self.originalDecodeTimeStamp = frame.originalDecodeTimeStamp;
     self.originalDuration = frame.originalDuration;
     self.timeStamp = frame.timeStamp;
-    self.duration = frame.duration;
     self.decodeTimeStamp = frame.decodeTimeStamp;
+    self.duration = frame.duration;
     self.size = frame.size;
 }
 

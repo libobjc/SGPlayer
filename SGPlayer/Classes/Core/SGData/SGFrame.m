@@ -62,10 +62,11 @@
     self.offset = kCMTimeZero;
     self.scale = CMTimeMake(1, 1);
     self.timeStamp = kCMTimeZero;
+    self.decodeTimeStamp = kCMTimeZero;
     self.duration = kCMTimeZero;
     self.originalTimeStamp = kCMTimeZero;
+    self.originalDecodeTimeStamp = kCMTimeZero;
     self.originalDuration = kCMTimeZero;
-    self.decodeTimeStamp = kCMTimeZero;
     self.size = 0;
 }
 
