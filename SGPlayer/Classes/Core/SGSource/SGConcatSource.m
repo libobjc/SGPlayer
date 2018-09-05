@@ -260,13 +260,13 @@ static int SGConcatSourceInterruptHandler(void * context)
     for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
     {
         SGFormatContext * formatContext = [self.formatContexts objectAtIndex:i];
-        if (i == 0 || CMTimeCompare(timeStamp, formatContext.offset) >= 0)
+        if (i == 0 || CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
         {
             [self setCurrentFormatContext:formatContext];
             break;
         }
     }
-    timeStamp = CMTimeSubtract(timeStamp, self.formatContext.offset);
+    timeStamp = CMTimeSubtract(timeStamp, self.formatContext.startTime);
     timeStamp = SGCMTimeDivide(timeStamp, self.formatContext.scale);
     long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
     int success = av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
@@ -306,8 +306,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     {
         SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
         formatContext.scale = obj.scale;
-        formatContext.offset = duration;
-        formatContext.timeRange = obj.timeRange;
+        formatContext.startTime = duration;
+        formatContext.validTimeRange = obj.timeRange;
         BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
@@ -450,7 +450,7 @@ static int SGConcatSourceInterruptHandler(void * context)
                     if ((self.audioEnable && stream == self.audioStream) ||
                         (self.videoEnable && stream == self.videoStream))
                     {
-                        [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
+                        [packet fillWithStream:stream scale:self.formatContext.scale startTime:self.formatContext.startTime validTimeRange:self.formatContext.validTimeRange];
                         [self.delegate source:self hasNewPacket:packet];
                     }
                 }

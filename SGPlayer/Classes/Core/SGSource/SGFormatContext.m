@@ -18,8 +18,8 @@
     {
         _URL = URL;
         _scale = CMTimeMake(1, 1);
-        _offset = kCMTimeZero;
-        _timeRange = CMTimeRangeMake(kCMTimeIndefinite, kCMTimeIndefinite);
+        _startTime = kCMTimeZero;
+        _validTimeRange = CMTimeRangeMake(kCMTimeIndefinite, kCMTimeIndefinite);
         _duration = kCMTimeZero;
         _originalDuration = kCMTimeZero;
         _seekable = NO;

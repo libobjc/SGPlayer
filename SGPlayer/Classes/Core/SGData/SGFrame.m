@@ -59,8 +59,8 @@
 - (void)clear
 {
     self.timebase = kCMTimeZero;
-    self.offset = kCMTimeZero;
     self.scale = CMTimeMake(1, 1);
+    self.startTime = kCMTimeZero;
     self.timeStamp = kCMTimeZero;
     self.decodeTimeStamp = kCMTimeZero;
     self.duration = kCMTimeZero;

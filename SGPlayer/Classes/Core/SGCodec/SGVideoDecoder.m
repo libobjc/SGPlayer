@@ -34,6 +34,16 @@
     return self;
 }
 
+- (BOOL)putPacket:(SGPacket *)packet
+{
+    if (CMTIMERANGE_IS_VALID(packet.validTimeRange) &&
+        !CMTimeRangeContainsTime(packet.validTimeRange, packet.originalTimeStamp))
+    {
+        return NO;
+    }
+    return [super putPacket:packet];
+}
+
 - (void)doSetup
 {
     BOOL videoToolBoxEnable = NO;

@@ -16,7 +16,7 @@
     {
         _URL = URL;
         self.scale = CMTimeMake(1, 1);
-        self.timeRange = CMTimeRangeMake(kCMTimeIndefinite, kCMTimeIndefinite);
+        self.timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity, kCMTimePositiveInfinity);
     }
     return self;
 }

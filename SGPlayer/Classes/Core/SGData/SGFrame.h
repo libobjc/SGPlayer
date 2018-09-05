@@ -16,8 +16,8 @@
 @property (nonatomic, assign, readonly) SGMediaType mediaType;
 
 @property (nonatomic, assign) CMTime timebase;
-@property (nonatomic, assign) CMTime offset;
 @property (nonatomic, assign) CMTime scale;
+@property (nonatomic, assign) CMTime startTime;
 
 @property (nonatomic, assign) CMTime timeStamp;
 @property (nonatomic, assign) CMTime decodeTimeStamp;

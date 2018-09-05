@@ -73,8 +73,8 @@
 - (void)fillWithFrame:(SGFrame *)frame
 {
     self.timebase = frame.timebase;
-    self.offset = frame.offset;
     self.scale = frame.scale;
+    self.startTime = frame.startTime;
     self.originalTimeStamp = frame.originalTimeStamp;
     self.originalDecodeTimeStamp = frame.originalDecodeTimeStamp;
     self.originalDuration = frame.originalDuration;

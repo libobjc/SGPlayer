@@ -255,6 +255,8 @@ static int SGURLSourceInterruptHandler(void * context)
 - (void)openThread
 {
     SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:self.asset.URL];
+    formatContext.scale = self.asset.scale;
+    formatContext.validTimeRange = self.asset.timeRange;
     [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGURLSourceInterruptHandler];
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;
@@ -365,7 +367,7 @@ static int SGURLSourceInterruptHandler(void * context)
                     }
                     if (stream == self.audioStream || stream == self.videoStream)
                     {
-                        [packet fillWithStream:stream offset:self.formatContext.offset scale:self.formatContext.scale];
+                        [packet fillWithStream:stream scale:self.formatContext.scale startTime:self.formatContext.startTime validTimeRange:self.formatContext.validTimeRange];
                         [self.delegate source:self hasNewPacket:packet];
                     }
                 }

@@ -94,13 +94,13 @@
     if (self.shouldSortObjects)
     {
         [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
-            if (CMTimeCompare(obj1.offset, obj2.offset) == 0)
+            if (CMTimeCompare(obj1.startTime, obj2.startTime) == 0)
             {
                 return CMTimeCompare(obj1.originalTimeStamp, obj2.originalTimeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
             }
             else
             {
-                return CMTimeCompare(obj1.offset, obj2.offset) < 0 ? NSOrderedAscending : NSOrderedDescending;
+                return CMTimeCompare(obj1.startTime, obj2.startTime) < 0 ? NSOrderedAscending : NSOrderedDescending;
             }
         }];
     }

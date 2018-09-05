@@ -19,8 +19,8 @@
 @property (nonatomic, strong, readonly) NSURL * URL;
 
 @property (nonatomic, assign) CMTime scale;
-@property (nonatomic, assign) CMTime offset;
-@property (nonatomic, assign) CMTimeRange timeRange;
+@property (nonatomic, assign) CMTime startTime;
+@property (nonatomic, assign) CMTimeRange validTimeRange;
 
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime originalDuration;
