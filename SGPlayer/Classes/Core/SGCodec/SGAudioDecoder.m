@@ -31,8 +31,8 @@
 
 - (BOOL)putPacket:(SGPacket *)packet
 {
-    if (CMTIMERANGE_IS_VALID(packet.validTimeRange) &&
-        !CMTimeRangeContainsTime(packet.validTimeRange, packet.originalTimeStamp))
+    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
+        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
     {
         return NO;
     }

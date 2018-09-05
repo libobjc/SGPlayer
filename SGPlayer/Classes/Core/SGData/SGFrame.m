@@ -61,6 +61,7 @@
     self.timebase = kCMTimeZero;
     self.scale = CMTimeMake(1, 1);
     self.startTime = kCMTimeZero;
+    self.timeRange = kCMTimeRangeZero;
     self.timeStamp = kCMTimeZero;
     self.decodeTimeStamp = kCMTimeZero;
     self.duration = kCMTimeZero;

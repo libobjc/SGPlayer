@@ -41,6 +41,7 @@
 - (void)clear
 {
     [super clear];
+    
     self.format = SG_AV_PIX_FMT_NONE;
     self.colorRange = SG_AVCOL_RANGE_UNSPECIFIED;
     self.colorPrimaries = SG_AVCOL_PRI_RESERVED0;

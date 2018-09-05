@@ -75,6 +75,7 @@
     self.timebase = frame.timebase;
     self.scale = frame.scale;
     self.startTime = frame.startTime;
+    self.timeRange = frame.timeRange;
     self.originalTimeStamp = frame.originalTimeStamp;
     self.originalDecodeTimeStamp = frame.originalDecodeTimeStamp;
     self.originalDuration = frame.originalDuration;

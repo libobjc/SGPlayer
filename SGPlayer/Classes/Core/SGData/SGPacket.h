@@ -14,13 +14,14 @@
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
 @property (nonatomic, assign, readonly) AVPacket * corePacket;
-@property (nonatomic, assign, readonly) AVCodecParameters * codecpar;
+
 @property (nonatomic, assign, readonly) SGMediaType mediaType;
+@property (nonatomic, assign, readonly) AVCodecParameters * codecpar;
 
 @property (nonatomic, assign, readonly) CMTime timebase;
 @property (nonatomic, assign, readonly) CMTime scale;
 @property (nonatomic, assign, readonly) CMTime startTime;
-@property (nonatomic, assign, readonly) CMTimeRange validTimeRange;
+@property (nonatomic, assign, readonly) CMTimeRange timeRange;
 
 @property (nonatomic, assign, readonly) CMTime timeStamp;
 @property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
@@ -32,6 +33,11 @@
 
 @property (nonatomic, assign, readonly) long long size;
 
-- (void)fillWithStream:(SGStream *)stream scale:(CMTime)scale startTime:(CMTime)startTime validTimeRange:(CMTimeRange)validTimeRange;
+- (void)fillWithMediaType:(SGMediaType)mediaType
+                 codecpar:(AVCodecParameters *)codecpar
+                 timebase:(CMTime)timebase
+                    scale:(CMTime)scale
+                startTime:(CMTime)startTime
+                timeRange:(CMTimeRange)timeRange;
 
 @end

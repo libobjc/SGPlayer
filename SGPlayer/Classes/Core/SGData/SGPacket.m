@@ -23,12 +23,12 @@
     {
         self.coreLock = [[NSLock alloc] init];
         _corePacket = av_packet_alloc();
-        _codecpar = NULL;
         _mediaType = SGMediaTypeUnknown;
+        _codecpar = NULL;
         _timebase = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
         _startTime = kCMTimeZero;
-        _validTimeRange = kCMTimeRangeZero;
+        _timeRange = kCMTimeRangeZero;
         _timeStamp = kCMTimeZero;
         _decodeTimeStamp = kCMTimeZero;
         _duration = kCMTimeZero;
@@ -71,12 +71,12 @@
 
 - (void)clear
 {
-    _codecpar = NULL;
     _mediaType = SGMediaTypeUnknown;
+    _codecpar = NULL;
     _timebase = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
     _startTime = kCMTimeZero;
-    _validTimeRange = kCMTimeRangeZero;
+    _timeRange = kCMTimeRangeZero;
     _timeStamp = kCMTimeZero;
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
@@ -90,20 +90,25 @@
     }
 }
 
-- (void)fillWithStream:(SGStream *)stream scale:(CMTime)scale startTime:(CMTime)startTime validTimeRange:(CMTimeRange)validTimeRange;
+- (void)fillWithMediaType:(SGMediaType)mediaType
+                 codecpar:(AVCodecParameters *)codecpar
+                 timebase:(CMTime)timebase
+                    scale:(CMTime)scale
+                startTime:(CMTime)startTime
+                timeRange:(CMTimeRange)timeRange
 {
-    CMTime defaultTimebase = stream.mediaType == SGMediaTypeAudio ? CMTimeMake(1, 44100) : CMTimeMake(1, 25000);
-    _codecpar = stream.coreStream->codecpar;
-    _mediaType = stream.mediaType;
-    _timebase = SGCMTimeValidate(stream.timebase, defaultTimebase);
+    _mediaType = mediaType;
+    _codecpar = codecpar;
+    _timebase = timebase;
     _scale = scale;
     _startTime = startTime;
-    _validTimeRange = validTimeRange;
+    _timeRange = timeRange;
     _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
     _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
-    _timeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-    _decodeTimeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
+    CMTime offset = CMTimeSubtract(self.startTime, self.timeRange.start);
+    _timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    _decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     _size = _corePacket->size;
 }

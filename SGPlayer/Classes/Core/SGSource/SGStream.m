@@ -31,11 +31,13 @@
 
 - (CMTime)timebase
 {
+    CMTime timebase = kCMTimeZero;
     if (self.coreStream)
     {
-        return CMTimeMake(self.coreStream->time_base.num, self.coreStream->time_base.den);
+        timebase = CMTimeMake(self.coreStream->time_base.num, self.coreStream->time_base.den);
     }
-    return kCMTimeZero;
+    CMTime defaultTimebase = self.mediaType == SGMediaTypeAudio ? CMTimeMake(1, 44100) : CMTimeMake(1, 25000);
+    return SGCMTimeValidate(timebase, defaultTimebase);
 }
 
 @end

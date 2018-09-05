@@ -73,13 +73,16 @@
     self.timebase = packet.timebase;
     self.scale = packet.scale;
     self.startTime = packet.startTime;
+    self.timeRange = packet.timeRange;
     self.originalTimeStamp = SGCMTimeMakeWithTimebase(self.coreFrame->best_effort_timestamp, self.timebase);
     self.originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_dts, self.timebase);
     self.originalDuration = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_duration, self.timebase);
-    self.timeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-    self.decodeTimeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
+    CMTime offset = CMTimeSubtract(self.startTime, packet.timeRange.start);
+    self.timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    self.decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
     self.size = self.coreFrame->pkt_size;
+    
     self.format = SGDMPixelFormatFF2SG(self.coreFrame->format);
     self.colorRange = SGDMColorRangeFF2SG(self.coreFrame->color_range);
     self.colorPrimaries = SGDMColorPrimariesFF2SG(self.coreFrame->color_primaries);

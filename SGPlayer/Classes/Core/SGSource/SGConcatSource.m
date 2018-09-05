@@ -304,10 +304,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
     for (SGURLAsset * obj in self.asset.assets)
     {
-        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL];
-        formatContext.scale = obj.scale;
-        formatContext.startTime = duration;
-        formatContext.validTimeRange = obj.timeRange;
+        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL scale:obj.scale startTime:duration preferredTimeRange:obj.timeRange];
         BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {
@@ -450,7 +447,12 @@ static int SGConcatSourceInterruptHandler(void * context)
                     if ((self.audioEnable && stream == self.audioStream) ||
                         (self.videoEnable && stream == self.videoStream))
                     {
-                        [packet fillWithStream:stream scale:self.formatContext.scale startTime:self.formatContext.startTime validTimeRange:self.formatContext.validTimeRange];
+                        [packet fillWithMediaType:stream.mediaType
+                                         codecpar:stream.coreStream->codecpar
+                                         timebase:stream.timebase
+                                            scale:self.formatContext.scale
+                                        startTime:self.formatContext.startTime
+                                        timeRange:self.formatContext.actualTimeRange];
                         [self.delegate source:self hasNewPacket:packet];
                     }
                 }

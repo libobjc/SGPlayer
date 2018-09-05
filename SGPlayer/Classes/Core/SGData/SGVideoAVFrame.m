@@ -64,16 +64,20 @@
     {
         timestamp = packet.corePacket->dts;
     }
+    
     self.timebase = packet.timebase;
     self.scale = packet.scale;
     self.startTime = packet.startTime;
+    self.timeRange = packet.timeRange;
     self.originalTimeStamp = packet.originalTimeStamp;
     self.originalDecodeTimeStamp = packet.originalDecodeTimeStamp;
     self.originalDuration = packet.originalDuration;
-    self.timeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-    self.decodeTimeStamp = CMTimeAdd(self.startTime, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
+    CMTime offset = CMTimeSubtract(self.startTime, packet.timeRange.start);
+    self.timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    self.decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     self.duration = packet.duration;
     self.size = packet.corePacket->size;
+    
     self.bestEffortTimestamp = timestamp;
     self.packetPosition = packet.corePacket->pos;
     self.packetDuration = packet.corePacket->duration;

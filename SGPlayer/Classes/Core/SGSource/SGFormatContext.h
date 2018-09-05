@@ -14,13 +14,14 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithURL:(NSURL *)URL;
+- (instancetype)initWithURL:(NSURL *)URL scale:(CMTime)scale startTime:(CMTime)startTime preferredTimeRange:(CMTimeRange)preferredTimeRange;
 
 @property (nonatomic, strong, readonly) NSURL * URL;
 
-@property (nonatomic, assign) CMTime scale;
-@property (nonatomic, assign) CMTime startTime;
-@property (nonatomic, assign) CMTimeRange validTimeRange;
+@property (nonatomic, assign, readonly) CMTime scale;
+@property (nonatomic, assign, readonly) CMTime startTime;
+@property (nonatomic, assign, readonly) CMTimeRange actualTimeRange;
+@property (nonatomic, assign, readonly) CMTimeRange preferredTimeRange;
 
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign, readonly) CMTime originalDuration;

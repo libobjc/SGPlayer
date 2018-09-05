@@ -12,14 +12,15 @@
 
 @implementation SGFormatContext
 
-- (instancetype)initWithURL:(NSURL *)URL
+- (instancetype)initWithURL:(NSURL *)URL scale:(CMTime)scale startTime:(CMTime)startTime preferredTimeRange:(CMTimeRange)preferredTimeRange
 {
     if (self = [super init])
     {
         _URL = URL;
-        _scale = CMTimeMake(1, 1);
-        _startTime = kCMTimeZero;
-        _validTimeRange = CMTimeRangeMake(kCMTimeIndefinite, kCMTimeIndefinite);
+        _scale = scale;
+        _startTime = startTime;
+        _actualTimeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity);
+        _preferredTimeRange = preferredTimeRange;
         _duration = kCMTimeZero;
         _originalDuration = kCMTimeZero;
         _seekable = NO;
@@ -45,7 +46,8 @@
     if (formatContext->duration > 0)
     {
         _originalDuration = CMTimeMake(formatContext->duration, AV_TIME_BASE);
-        _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
+        _actualTimeRange = CMTimeRangeGetIntersection(self.preferredTimeRange, CMTimeRangeMake(kCMTimeZero, self.originalDuration));
+        _duration = SGCMTimeMultiply(_actualTimeRange.duration, self.scale);
     }
     if (CMTimeCompare(self.duration, kCMTimeZero) > 0 &&
         formatContext->pb)
