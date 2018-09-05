@@ -51,7 +51,7 @@
     self.originalDuration = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_duration, packet.timebase);
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    self.decodeTimeStamp = packet.decodeTimeStamp;
+    self.decodeTimeStamp = packet.originalDecodeTimeStamp;
     self.size = self.coreFrame->pkt_size;
     self.format = SGDMSampleFormatFF2SG(self.coreFrame->format);
     self.numberOfSamples = self.coreFrame->nb_samples;

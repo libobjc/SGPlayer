@@ -29,10 +29,11 @@
         _offset = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
         _timeStamp = kCMTimeZero;
+        _decodeTimeStamp = kCMTimeZero;
         _duration = kCMTimeZero;
         _originalTimeStamp = kCMTimeZero;
-        _originalTimeStamp = kCMTimeZero;
-        _decodeTimeStamp = kCMTimeZero;
+        _originalDecodeTimeStamp = kCMTimeZero;
+        _originalDuration = kCMTimeZero;
         _size = 0;
     }
     return self;
@@ -75,10 +76,11 @@
     _offset = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
     _timeStamp = kCMTimeZero;
+    _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
     _originalTimeStamp = kCMTimeZero;
+    _originalDecodeTimeStamp = kCMTimeZero;
     _originalDuration = kCMTimeZero;
-    _decodeTimeStamp = kCMTimeZero;
     _size = 0;
     if (_corePacket)
     {
@@ -100,10 +102,11 @@
     _offset = offset;
     _scale = scale;
     _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
+    _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
     _timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
+    _decodeTimeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    _decodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _size = _corePacket->size;
 }
 

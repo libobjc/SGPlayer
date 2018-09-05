@@ -71,7 +71,7 @@
     self.originalDuration = packet.originalDuration;
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = packet.duration;
-    self.decodeTimeStamp = packet.decodeTimeStamp;
+    self.decodeTimeStamp = packet.originalDecodeTimeStamp;
     self.size = packet.corePacket->size;
     self.bestEffortTimestamp = timestamp;
     self.packetPosition = packet.corePacket->pos;

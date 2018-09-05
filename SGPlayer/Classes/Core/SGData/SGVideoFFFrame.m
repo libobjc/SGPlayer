@@ -77,7 +77,7 @@
     self.originalDuration = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_duration, self.timebase);
     self.timeStamp = CMTimeAdd(self.offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    self.decodeTimeStamp = packet.decodeTimeStamp;
+    self.decodeTimeStamp = packet.originalDecodeTimeStamp;
     self.size = self.coreFrame->pkt_size;
     self.format = SGDMPixelFormatFF2SG(self.coreFrame->format);
     self.colorRange = SGDMColorRangeFF2SG(self.coreFrame->color_range);
