@@ -253,9 +253,15 @@ static int SGConcatSourceInterruptHandler(void * context)
         NSInteger index = [self.formatContexts indexOfObject:self.formatContext] + 1;
         [self setCurrentFormatContext:[self.formatContexts objectAtIndex:index]];
     }
+    if (self.formatContext.seekable)
+    {
+        CMTime timeStamp = self.formatContext.actualTimeRange.start;
+        long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
+        av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
+    }
 }
 
-- (int)changeFormatContextWithTimeStamp:(CMTime)timeStamp
+- (int)seekFormatContextWithTimeStamp:(CMTime)timeStamp
 {
     for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
     {
@@ -268,6 +274,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     }
     timeStamp = CMTimeSubtract(timeStamp, self.formatContext.startTime);
     timeStamp = SGCMTimeDivide(timeStamp, self.formatContext.scale);
+    timeStamp = CMTimeAdd(timeStamp, self.formatContext.actualTimeRange.start);
     long long par = AV_TIME_BASE * timeStamp.value / timeStamp.timescale;
     int success = av_seek_frame(self.formatContext.coreFormatContext, -1, par, AVSEEK_FLAG_BACKWARD);
     return success;
@@ -382,7 +389,7 @@ static int SGConcatSourceInterruptHandler(void * context)
                 self.seekingTimeStamp = self.seekTimeStamp;
                 CMTime seekingTimeStamp = self.seekingTimeStamp;
                 [self unlock];
-                int success = [self changeFormatContextWithTimeStamp:seekingTimeStamp];
+                int success = [self seekFormatContextWithTimeStamp:seekingTimeStamp];
                 [self lock];
                 if (self.state == SGSourceStateSeeking &&
                     CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0)
@@ -423,10 +430,6 @@ static int SGConcatSourceInterruptHandler(void * context)
                         {
                             callback = ^{
                                 [self changeToNextFormatContext];
-                                if (self.formatContext.seekable)
-                                {
-                                    av_seek_frame(self.formatContext.coreFormatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
-                                }
                             };
                         }
                     }
