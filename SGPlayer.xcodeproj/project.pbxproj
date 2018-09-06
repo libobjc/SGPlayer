@@ -215,6 +215,8 @@
 		9C5C990020D26BE10089C112 /* SGPlaybackTimeSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */; };
 		9C620D6921215EEF00845F2A /* SGFormatContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C620D6721215EEF00845F2A /* SGFormatContext.h */; };
 		9C620D6A21215EEF00845F2A /* SGFormatContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C620D6821215EEF00845F2A /* SGFormatContext.m */; };
+		9C6C76012141323900970427 /* SGDiscardFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6C75FF2141323900970427 /* SGDiscardFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C6C76022141323900970427 /* SGDiscardFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6C76002141323900970427 /* SGDiscardFilter.m */; };
 		9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
 		9C6E514F2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
 		9C6E51502018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
@@ -874,6 +876,8 @@
 		9C5C98FA20D26BE10089C112 /* SGPlaybackTimeSync.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackTimeSync.m; sourceTree = "<group>"; };
 		9C620D6721215EEF00845F2A /* SGFormatContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFormatContext.h; sourceTree = "<group>"; };
 		9C620D6821215EEF00845F2A /* SGFormatContext.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFormatContext.m; sourceTree = "<group>"; };
+		9C6C75FF2141323900970427 /* SGDiscardFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDiscardFilter.h; sourceTree = "<group>"; };
+		9C6C76002141323900970427 /* SGDiscardFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDiscardFilter.m; sourceTree = "<group>"; };
 		9C6E514D2018C6C100C87C54 /* SGGLModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLModel.h; sourceTree = "<group>"; };
 		9C8D26532019DC7F002770FA /* SGGLDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDefines.h; sourceTree = "<group>"; };
 		9C8D26572019E1AC002770FA /* SGGLViewport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLViewport.h; sourceTree = "<group>"; };
@@ -1224,6 +1228,7 @@
 		9C478F341E713A9B00AD4289 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				9C6C75FE2141318E00970427 /* SGDiscard */,
 				9CF63FBF211D8E26001B2684 /* SGAsset */,
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
 				9C8D4E5C200E0A0600ED8A58 /* SGSource */,
@@ -1340,6 +1345,15 @@
 				9C8D26602019F297002770FA /* SGGLTextureUploader.m */,
 			);
 			path = SGOpenGL;
+			sourceTree = "<group>";
+		};
+		9C6C75FE2141318E00970427 /* SGDiscard */ = {
+			isa = PBXGroup;
+			children = (
+				9C6C75FF2141323900970427 /* SGDiscardFilter.h */,
+				9C6C76002141323900970427 /* SGDiscardFilter.m */,
+			);
+			path = SGDiscard;
 			sourceTree = "<group>";
 		};
 		9C8D4E5C200E0A0600ED8A58 /* SGSource */ = {
@@ -1759,6 +1773,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6C76012141323900970427 /* SGDiscardFilter.h in Headers */,
 				9CAAC99F2133A6800065E364 /* SGVRViewport.h in Headers */,
 				9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9CF9A019212D1AB0008178BC /* SGFFDefines-4.0.2.h in Headers */,
@@ -2583,6 +2598,7 @@
 				9C19450C2019D22800184416 /* SGGLNV12Program.m in Sources */,
 				9CA3CDD220E2255700B852D0 /* SGAudioFFFrame.m in Sources */,
 				9CF63FCA211D8F5C001B2684 /* SGConcatAsset.m in Sources */,
+				9C6C76022141323900970427 /* SGDiscardFilter.m in Sources */,
 				9C329AAE2005E3F800252B10 /* SGActivity.m in Sources */,
 				9C8D4E83200E1ACA00ED8A58 /* SGError.m in Sources */,
 				9CF63FD3211D9359001B2684 /* SGConcatSource.m in Sources */,

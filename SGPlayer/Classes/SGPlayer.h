@@ -22,6 +22,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGVideoFrame.h>
 #import <SGPlayer/SGVRViewport.h>
 #import <SGPlayer/SGTime.h>
+#import <SGPlayer/SGDiscardFilter.h>
 #else
 #import "SGDefines.h"
 #import "SGFFDefines.h"
@@ -33,6 +34,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
 #import "SGTime.h"
+#import "SGDiscardFilter.h"
 #endif
 
 #pragma mark - SGPlayer
@@ -217,6 +219,16 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
  *  Default value is YES.
  */
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
+
+/**
+ *  Default value is nil.
+ */
+@property (nonatomic, copy) BOOL (^discardPacketFilter)(CMSampleTimingInfo timingInfo, int index, BOOL key);
+
+/**
+ *  Default value is nil.
+ */
+@property (nonatomic, copy) BOOL (^discardFrameFilter)(CMSampleTimingInfo timingInfo, int index);
 
 /**
  *  Default value is SG_AV_PIX_FMT_NONE.

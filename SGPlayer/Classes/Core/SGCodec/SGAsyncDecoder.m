@@ -243,18 +243,14 @@ static SGPacket * flushPacket;
                         self.codecpar = packet.codecpar;
                         self.timebase = packet.timebase;
                         [self doSetup];
-                        self.decodePacketCount = 0;
-                        self.decodeFrameCount = 0;
                     }
                     if (!self.waitingFlush)
                     {
-                        self.decodePacketCount++;
                         NSArray <__kindof SGFrame *> * frames = [self doDecode:packet];
                         for (__kindof SGFrame * frame in frames)
                         {
                             if (!self.waitingFlush)
                             {
-                                self.decodeFrameCount++;
                                 [self.delegate decoder:self hasNewFrame:frame];
                             }
                             [frame unlock];

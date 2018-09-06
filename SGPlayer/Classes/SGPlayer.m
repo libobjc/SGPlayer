@@ -42,6 +42,8 @@
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
+@property (nonatomic, copy) BOOL (^discardPacketFilter)(CMSampleTimingInfo timingInfo, int index, BOOL key);
+@property (nonatomic, copy) BOOL (^discardFrameFilter)(CMSampleTimingInfo timingInfo, int index);
 @property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
@@ -160,6 +162,8 @@
     videoDecoder.refcountedFrames = self.refcountedFrames;
     videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
     videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
+    videoDecoder.discardPacketFilter = self.discardPacketFilter;
+    videoDecoder.discardFrameFilter = self.discardFrameFilter;
     videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];

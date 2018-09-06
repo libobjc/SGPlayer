@@ -16,6 +16,9 @@
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
 @property (nonatomic, strong) SGVideoToolBox * videoToolBox;
+@property (nonatomic, assign) BOOL discardUntilKeyFrame;
+@property (nonatomic, assign) int decodedPacketCount;
+@property (nonatomic, assign) int decodedFrameCount;
 
 @end
 
@@ -75,6 +78,9 @@
         self.codecContext.refcountedFrames = self.refcountedFrames;
         [self.codecContext open];
     }
+    self.discardUntilKeyFrame = NO;
+    self.decodedPacketCount = 0;
+    self.decodedFrameCount = 0;
 }
 
 - (void)doDestory
@@ -89,24 +95,67 @@
 {
     [self.codecContext flush];
     [self.videoToolBox flush];
+    self.discardUntilKeyFrame = NO;
+    self.decodedPacketCount = 0;
+    self.decodedFrameCount = 0;
 }
 
 - (NSArray <SGFrame *> *)doDecode:(SGPacket *)packet
 {
+    if (!packet.keyFrame && self.discardUntilKeyFrame)
+    {
+        return nil;
+    }
     if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
         !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
     {
         return nil;
     }
-    if (!packet.keyFrame && self.decodePacketCount == 0)
+    if (self.discardPacketFilter)
     {
-        return nil;
+        CMSampleTimingInfo timingInfo = {kCMTimeZero};
+        timingInfo.presentationTimeStamp = packet.timeStamp;
+        timingInfo.decodeTimeStamp = packet.decodeTimeStamp;
+        timingInfo.duration = packet.duration;
+        if (self.discardPacketFilter(timingInfo, self.decodedPacketCount, packet.keyFrame))
+        {
+            self.discardUntilKeyFrame = YES;
+            return nil;
+        }
+        else
+        {
+            self.discardUntilKeyFrame = NO;
+        }
     }
-    if (self.videoToolBox)
+    self.decodedPacketCount += 1;
+    NSArray <__kindof SGFrame *> * ret = nil;
+    if (self.videoToolBox) {
+        ret = [self.videoToolBox decode:packet];
+    } else {
+        ret = [self.codecContext decode:packet];
+    }
+    if (self.discardFrameFilter)
     {
-        return [self.videoToolBox decode:packet];
+        NSMutableArray * array = [NSMutableArray array];
+        for (SGFrame * obj in ret)
+        {
+            CMSampleTimingInfo timingInfo = {kCMTimeZero};
+            timingInfo.presentationTimeStamp = obj.timeStamp;
+            timingInfo.decodeTimeStamp = obj.decodeTimeStamp;
+            timingInfo.duration = obj.duration;
+            if (self.discardFrameFilter(timingInfo, self.decodedFrameCount))
+            {
+                [obj unlock];
+            }
+            else
+            {
+                [array addObject:obj];
+            }
+        }
+        ret = array.count > 0 ? [array copy] : nil;
     }
-    return [self.codecContext decode:packet];
+    self.decodedFrameCount += (int)ret.count;
+    return ret;
 }
 
 @end

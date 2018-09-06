@@ -14,9 +14,6 @@
 @property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
 @property (nonatomic, assign) AVCodecParameters * codecpar;
 
-@property (nonatomic, assign) BOOL decodePacketCount;
-@property (nonatomic, assign) BOOL decodeFrameCount;
-
 - (void)doSetup;
 - (void)doDestory;
 - (void)doFlush;
