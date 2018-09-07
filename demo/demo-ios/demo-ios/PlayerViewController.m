@@ -180,9 +180,9 @@
     }
 }
 
-- (void)playerDidFailed:(SGPlayer *)player
+- (void)player:(SGPlayer *)player didFailed:(NSError *)error
 {
-    NSLog(@"%s, %@", __func__, player.error);
+    NSLog(@"%s, %@", __func__, error);
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

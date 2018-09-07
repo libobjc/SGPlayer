@@ -249,7 +249,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @optional
 - (void)player:(SGPlayer *)player didChangeState:(SGStateOption)option;
 - (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option;
-- (void)playerDidFailed:(SGPlayer *)player;
+- (void)player:(SGPlayer *)player didFailed:(NSError *)error;
 
 @end
 
