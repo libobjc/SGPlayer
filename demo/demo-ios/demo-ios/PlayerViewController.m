@@ -124,49 +124,60 @@
     [self.player2 seekToTime:time2];
 }
 
-- (void)playerDidChangePrepareState:(SGPlayer *)player
-{
-    NSLog(@"%s, %ld", __func__, player.prepareState);
-}
+#pragma mark - SGPlayerDelegate
 
-- (void)playerDidChangePlaybackState:(SGPlayer *)player
+- (void)player:(SGPlayer *)player didChangeState:(SGStateOption)option
 {
-    NSLog(@"%s, %ld", __func__, player.playbackState);
-    NSString * text;
-    switch (player.playbackState) {
-        case SGPlaybackStateNone:
-            text = @"Idle";
-            break;
-        case SGPlaybackStatePlaying:
-            text = @"Playing";
-            break;
-        case SGPlaybackStatePaused:
-            text = @"Paused";
-            break;
-        case SGPlaybackStateFinished:
-            text = @"Finished";
-            break;
-    }
-    self.stateLabel.text = text;
-}
-
-- (void)playerDidChangeLoadingState:(SGPlayer *)player
-{
-    NSLog(@"%s, %ld", __func__, player.loadingState);
-}
-
-- (void)playerDidChangeTimingInfo:(SGPlayer *)player
-{
-    CMTime time = player.playbackTime;
-    CMTime loadedTime = player.loadedTime;
-    CMTime duration = player.duration;
-//    NSLog(@"%s, %f, %f, %f", __func__, CMTimeGetSeconds(time), CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(duration));
-    if (!self.progressSilderTouching)
+    if (option & SGStateOptionPrepare)
     {
-        self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
+        NSLog(@"prepareState, %ld", player.prepareState);
     }
-    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
-    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
+    else if (option & SGStateOptionPlayback)
+    {
+        NSLog(@"playbackState, %ld", player.playbackState);
+        switch (player.playbackState)
+        {
+            case SGPlaybackStateNone:
+                self.stateLabel.text = @"Idle";
+                break;
+            case SGPlaybackStatePlaying:
+                self.stateLabel.text = @"Playing";
+                break;
+            case SGPlaybackStatePaused:
+                self.stateLabel.text = @"Paused";
+                break;
+            case SGPlaybackStateFinished:
+                self.stateLabel.text = @"Finished";
+                break;
+        }
+    }
+    else if (option & SGStateOptionLoading)
+    {
+        NSLog(@"loadingState, %ld", player.loadingState);
+    }
+}
+
+- (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option
+{
+    if (option & SGTimeOptionPlayback)
+    {
+        CMTime playbackTime = player.playbackTime;
+        CMTime duration = player.duration;
+        if (!self.progressSilderTouching)
+        {
+            self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(duration);
+        }
+        self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(playbackTime)];
+        self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
+    }
+    else if (option & SGTimeOptionLoaded)
+    {
+        
+    }
+    else if (option & SGTimeOptionDuration)
+    {
+        
+    }
 }
 
 - (void)playerDidFailed:(SGPlayer *)player
