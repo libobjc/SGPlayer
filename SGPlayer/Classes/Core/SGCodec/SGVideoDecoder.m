@@ -107,8 +107,7 @@
         return nil;
     }
     if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
-        (!CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp) ||
-         !CMTimeRangeContainsTime(packet.timeRange, packet.originalDecodeTimeStamp)))
+        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
     {
         return nil;
     }
