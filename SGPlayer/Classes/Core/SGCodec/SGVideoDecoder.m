@@ -17,8 +17,8 @@
 @property (nonatomic, strong) SGCodecContext * codecContext;
 @property (nonatomic, strong) SGVideoToolBox * videoToolBox;
 @property (nonatomic, assign) BOOL discardUntilKeyFrame;
-@property (nonatomic, assign) int decodedPacketCount;
-@property (nonatomic, assign) int decodedFrameCount;
+@property (nonatomic, assign) NSUInteger decodedPacketCount;
+@property (nonatomic, assign) NSUInteger decodedFrameCount;
 
 @end
 
@@ -154,7 +154,7 @@
         }
         ret = array.count > 0 ? [array copy] : nil;
     }
-    self.decodedFrameCount += (int)ret.count;
+    self.decodedFrameCount += ret.count;
     return ret;
 }
 

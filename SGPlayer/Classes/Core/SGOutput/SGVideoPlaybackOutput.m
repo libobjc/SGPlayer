@@ -23,7 +23,6 @@
 
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, assign) BOOL renderedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
@@ -36,6 +35,7 @@
 @property (nonatomic, strong) SGGLTextureUploader * glUploader;
 @property (nonatomic, assign) NSUInteger displayIncreasedCoefficient;
 @property (nonatomic, assign) NSUInteger displayCallbackCount;
+@property (nonatomic, assign) NSUInteger displayNewFrameCount;
 
 @end
 
@@ -124,7 +124,7 @@
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.receivedFrame = NO;
-    self.renderedFrame = NO;
+    self.displayNewFrameCount = 0;
     [self unlock];
 }
 
@@ -158,7 +158,7 @@
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.receivedFrame = NO;
-    self.renderedFrame = NO;
+    self.displayNewFrameCount = 0;
     [self unlock];
     [self.frameQueue flush];
     [self.delegate outputDidChangeCapacity:self];
@@ -282,7 +282,7 @@
     [self lock];
     SGVideoFrame * frame = nil;
     SGBasicBlock callback = ^{};
-    BOOL needFetchFrame = !self.key || !self.paused || !self.renderedFrame;
+    BOOL needFetchFrame = !self.key || !self.paused || (self.displayNewFrameCount == 0);
     if (needFetchFrame)
     {
         SGWeakSelf
@@ -298,20 +298,35 @@
             * current = self.currentFrame.timeStamp;
             return YES;
         } drop:!self.key];
+        if (frame && self.discardFilter)
+        {
+            CMSampleTimingInfo timingInfo = {kCMTimeZero};
+            timingInfo.presentationTimeStamp = frame.timeStamp;
+            timingInfo.decodeTimeStamp = frame.decodeTimeStamp;
+            timingInfo.duration = frame.duration;
+            if (self.discardFilter(timingInfo, self.displayNewFrameCount))
+            {
+                [frame unlock];
+                frame = nil;
+                callback = ^{
+                    [self.delegate outputDidChangeCapacity:self];
+                };
+            }
+        }
         if (frame)
         {
             NSAssert(self.currentFrame != frame, @"SGVideoPlaybackOutput : Frame can't equal to currentTime.");
+            self.displayNewFrameCount += 1;
             [self.currentFrame unlock];
             self.currentFrame = frame;
-            self.renderedFrame = YES;
             callback = ^{
                 if (self.key)
                 {
                     [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
                 }
-                if (self.displayCallback)
+                if (self.renderCallback)
                 {
-                    self.displayCallback(frame);
+                    self.renderCallback(frame);
                 }
                 [self.delegate outputDidChangeCapacity:self];
             };
@@ -331,15 +346,13 @@
             frame = self.currentFrame;
         }
     }
-    if (!frame)
-    {
-        [self unlock];
-        return;
-    }
     [frame lock];
     [self unlock];
     callback();
-    [self draw];
+    if (frame)
+    {
+        [self draw];
+    }
     [frame unlock];
 }
 

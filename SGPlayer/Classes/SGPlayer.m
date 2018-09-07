@@ -35,15 +35,16 @@
 @property (nonatomic, assign) SGScalingMode scalingMode;
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
-@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) BOOL (^displayDiscardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
+@property (nonatomic, copy) void (^displayRenderCallback)(SGVideoFrame * frame);
 @property (nonatomic, copy) NSDictionary * formatContextOptions;
 @property (nonatomic, copy) NSDictionary * codecContextOptions;
 @property (nonatomic, assign) BOOL threadsAuto;
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
-@property (nonatomic, copy) BOOL (^discardPacketFilter)(CMSampleTimingInfo timingInfo, int index, BOOL key);
-@property (nonatomic, copy) BOOL (^discardFrameFilter)(CMSampleTimingInfo timingInfo, int index);
+@property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
+@property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
 @property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
@@ -162,8 +163,8 @@
     videoDecoder.refcountedFrames = self.refcountedFrames;
     videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
     videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
-    videoDecoder.discardPacketFilter = self.discardPacketFilter;
-    videoDecoder.discardFrameFilter = self.discardFrameFilter;
+    videoDecoder.discardPacketFilter = self.codecDiscardPacketFilter;
+    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
     videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
@@ -179,7 +180,8 @@
     videoOutput.view = self.view;
     videoOutput.scalingMode = self.scalingMode;
     videoOutput.displayMode = self.displayMode;
-    videoOutput.displayCallback = self.displayCallback;
+    videoOutput.discardFilter = self.displayDiscardFilter;
+    videoOutput.renderCallback = self.displayRenderCallback;
     videoOutput.viewport = self.viewport;
     self.videoOutput = videoOutput;
     
@@ -542,12 +544,21 @@
     }
 }
 
-- (void)setDisplayCallback:(void (^)(SGVideoFrame *))displayCallback
+- (void)setDisplayDiscardFilter:(BOOL (^)(CMSampleTimingInfo, NSUInteger))displayDiscardFilter
 {
-    if (_displayCallback != displayCallback)
+    if (_displayDiscardFilter != displayDiscardFilter)
     {
-        _displayCallback = displayCallback;
-        self.videoOutput.displayCallback = displayCallback;
+        _displayDiscardFilter = displayDiscardFilter;
+        self.videoOutput.discardFilter = displayDiscardFilter;
+    }
+}
+
+- (void)setDisplayRenderCallback:(void (^)(SGVideoFrame *))displayRenderCallback
+{
+    if (_displayRenderCallback != displayRenderCallback)
+    {
+        _displayRenderCallback = displayRenderCallback;
+        self.videoOutput.renderCallback = displayRenderCallback;
     }
 }
 

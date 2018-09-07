@@ -162,7 +162,12 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 /**
  *  Callback on main thread.
  */
-@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) BOOL (^displayDiscardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
+
+/**
+ *  Callback on main thread.
+ */
+@property (nonatomic, copy) void (^displayRenderCallback)(SGVideoFrame * frame);
 
 /**
  *  nullable.
@@ -223,12 +228,12 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 /**
  *  Default value is nil.
  */
-@property (nonatomic, copy) BOOL (^discardPacketFilter)(CMSampleTimingInfo timingInfo, int index, BOOL key);
+@property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
 
 /**
  *  Default value is nil.
  */
-@property (nonatomic, copy) BOOL (^discardFrameFilter)(CMSampleTimingInfo timingInfo, int index);
+@property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
 
 /**
  *  Default value is SG_AV_PIX_FMT_NONE.

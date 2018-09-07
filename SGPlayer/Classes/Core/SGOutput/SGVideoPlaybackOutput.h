@@ -22,7 +22,8 @@
 @property (nonatomic, assign) SGDisplayMode displayMode;
 @property (nonatomic, strong) SGVRViewport * viewport;
 @property (nonatomic, assign) CMTime displayInterval;
-@property (nonatomic, copy) void (^displayCallback)(SGVideoFrame * frame);
+@property (nonatomic, copy) BOOL (^discardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
+@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
 
 - (UIImage *)originalImage;
 - (UIImage *)snapshot;
