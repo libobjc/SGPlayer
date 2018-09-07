@@ -18,6 +18,6 @@
 
 @property (nonatomic, strong, readonly) NSURL * URL;
 @property (nonatomic, assign) CMTime scale;             // Default value is (1, 1).
-@property (nonatomic, assign) CMTimeRange timeRange;    // Default value is Indefinite.
+@property (nonatomic, assign) CMTimeRange timeRange;    // Default value is (kCMTimeNegativeInfinity, kCMTimePositiveInfinity)).
 
 @end
