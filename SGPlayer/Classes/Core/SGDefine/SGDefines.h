@@ -13,7 +13,6 @@ typedef NS_ENUM(NSUInteger, SGPrepareState)
     SGPrepareStateNone,
     SGPrepareStatePreparing,
     SGPrepareStateFinished,
-    SGPrepareStateFailed,
 };
 
 typedef NS_ENUM(NSUInteger, SGPlaybackState)
@@ -22,7 +21,6 @@ typedef NS_ENUM(NSUInteger, SGPlaybackState)
     SGPlaybackStatePlaying,
     SGPlaybackStatePaused,
     SGPlaybackStateFinished,
-    SGPlaybackStateFailed,
 };
 
 typedef NS_ENUM(NSUInteger, SGLoadingState)
@@ -31,7 +29,6 @@ typedef NS_ENUM(NSUInteger, SGLoadingState)
     SGLoadingStateLoading,
     SGLoadingStatePaused,
     SGLoadingStateFinished,
-    SGLoadingStateFailed,
 };
 
 typedef NS_ENUM(NSUInteger, SGMediaType)

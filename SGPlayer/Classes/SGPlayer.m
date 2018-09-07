@@ -333,13 +333,8 @@
         [self unlock];
         return NO;
     }
-    if ((self.playbackState == SGPlaybackStateFinished && self.session.empty) ||
-        self.playbackState == SGPlaybackStateFailed)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setPlaybackState:SGPlaybackStatePlaying];
+    BOOL finished = self.session.state == SGSessionStateFinished && self.session.empty;
+    SGBasicBlock callback = [self setPlaybackState:finished ? SGPlaybackStateFinished : SGPlaybackStatePlaying];
     [self unlock];
     callback();
     return YES;
@@ -350,12 +345,6 @@
     [SGActivity removeTarget:self];
     [self lock];
     if (self.error)
-    {
-        [self unlock];
-        return NO;
-    }
-    if ((self.playbackState == SGPlaybackStateFinished && self.session.empty) ||
-        self.playbackState == SGPlaybackStateFailed)
     {
         [self unlock];
         return NO;
@@ -692,17 +681,22 @@
         prepareCallback();
         loadingCallback();
     }
+    else if (session.state == SGSessionStateReading)
+    {
+        SGBasicBlock playbackCallback = ^{};
+        [self lock];
+        if (self.playbackState == SGPlaybackStateFinished)
+        {
+            playbackCallback =  [self setPlaybackState:SGPlaybackStatePlaying];
+        }
+        [self unlock];
+        playbackCallback();
+    }
     else if (session.state == SGSessionStateFailed)
     {
         [self lock];
         SGBasicBlock failedCallback =  [self setError:session.error];
-        SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFailed];
-        SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFailed];
-        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFailed];
         [self unlock];
-        prepareCallback();
-        playbackCallback();
-        loadingCallback();
         failedCallback();
     }
 }
