@@ -340,8 +340,8 @@ static int SGConcatSourceInterruptHandler(void * context)
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
     SGBasicBlock callback = [self setState:state];
-    [self changeToNextFormatContext];
     [self unlock];
+    [self changeToNextFormatContext];
     callback();
 }
 
@@ -404,11 +404,11 @@ static int SGConcatSourceInterruptHandler(void * context)
                 self.seekingTimeStamp = kCMTimeZero;
                 self.seekCompletionHandler = nil;
                 [self unlock];
+                callback();
                 if (seekCompletionHandler)
                 {
                     seekCompletionHandler(success >= 0, seekTimeStamp);
                 }
-                callback();
                 continue;
             }
             else if (self.state == SGSourceStateReading)
@@ -418,23 +418,26 @@ static int SGConcatSourceInterruptHandler(void * context)
                 int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
                 if (readResult < 0)
                 {
-                    [self lock];
-                    SGBasicBlock callback = ^{};
-                    if (self.state == SGSourceStateReading)
+                    if (readResult != AVERROR_EXIT)
                     {
-                        if (self.formatContext == self.formatContexts.lastObject)
+                        [self lock];
+                        SGBasicBlock callback = ^{};
+                        if (self.state == SGSourceStateReading)
                         {
-                            callback = [self setState:SGSourceStateFinished];
+                            if (self.formatContext == self.formatContexts.lastObject)
+                            {
+                                callback = [self setState:SGSourceStateFinished];
+                            }
+                            else
+                            {
+                                callback = ^{
+                                    [self changeToNextFormatContext];
+                                };
+                            }
                         }
-                        else
-                        {
-                            callback = ^{
-                                [self changeToNextFormatContext];
-                            };
-                        }
+                        [self unlock];
+                        callback();
                     }
-                    [self unlock];
-                    callback();
                 }
                 else
                 {
