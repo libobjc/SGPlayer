@@ -14,7 +14,6 @@
 
 @property (nonatomic, strong) SGPlayer * player;
 @property (nonatomic, strong) SGPlayer * player2;
-@property (nonatomic, strong) SGDiscardFilter * discardFilter;
 @property (weak, nonatomic) IBOutlet UIView * view1;
 @property (weak, nonatomic) IBOutlet UIView * view2;
 
@@ -41,7 +40,7 @@
     for (int i = 0; i < 1; i++)
     {
         SGURLAsset * asset1 = [[SGURLAsset alloc] initWithURL:contentURL1];
-//        asset1.scale = CMTimeMake(1, 3);
+        asset1.scale = CMTimeMake(1, 3);
         SGURLAsset * asset2 = [[SGURLAsset alloc] initWithURL:contentURL2];
         [assets addObject:asset1];
         [assets addObject:asset2];
@@ -54,29 +53,29 @@
     
 //    self.player.hardwareDecodeH264 = NO;
     
-    self.discardFilter = [[SGDiscardFilter alloc] init];
-    self.discardFilter.minimumInterval = CMTimeMake(1, 30);
-    __weak typeof(self) weakSelf = self;
-    [self.player setDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, int index, BOOL key) {
-        __strong typeof(weakSelf) strongSelf = weakSelf;
+    SGDiscardFilter * discardFilter = [[SGDiscardFilter alloc] init];
+    discardFilter.minimumInterval = CMTimeMake(1, 30);
+    
+    [self.player setCodecDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key) {
         if (index == 0) {
-            [strongSelf.discardFilter flush];
+            [discardFilter flush];
         }
-        return [strongSelf.discardFilter discardWithTimeStamp:timingInfo.decodeTimeStamp];
+        return [discardFilter discardWithTimeStamp:timingInfo.decodeTimeStamp];
     }];
     
-    [self.player setDisplayCallback:^(SGVideoFrame * frame) {
+//    [self.player setDisplayDiscardFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index) {
+//        if (index == 0) {
+//            [discardFilter flush];
+//        }
+//        return [discardFilter discardWithTimeStamp:timingInfo.presentationTimeStamp];
+//    }];
+    
+    [self.player setDisplayRenderCallback:^(SGVideoFrame * frame) {
 //        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
     }];
     
     [self.player replaceWithAsset:asset];
     [self.player play];
-    
-//    self.player2 = [[SGPlayer alloc] init];
-//    self.player2.delegate = self;
-//    self.player2.view = self.view2;
-//    [self.player2 replaceWithURL:contentURL2];
-//    [self.player2 play];
 }
 
 - (void)viewDidLayoutSubviews
