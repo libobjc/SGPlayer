@@ -40,7 +40,7 @@
     for (int i = 0; i < 1; i++)
     {
         SGURLAsset * asset1 = [[SGURLAsset alloc] initWithURL:contentURL1];
-        asset1.scale = CMTimeMake(1, 3);
+//        asset1.scale = CMTimeMake(1, 3);
         SGURLAsset * asset2 = [[SGURLAsset alloc] initWithURL:contentURL2];
         [assets addObject:asset1];
         [assets addObject:asset2];
@@ -56,12 +56,12 @@
     SGDiscardFilter * discardFilter = [[SGDiscardFilter alloc] init];
     discardFilter.minimumInterval = CMTimeMake(1, 30);
     
-    [self.player setCodecDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key) {
-        if (index == 0) {
-            [discardFilter flush];
-        }
-        return [discardFilter discardWithTimeStamp:timingInfo.decodeTimeStamp];
-    }];
+//    [self.player setCodecDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key) {
+//        if (index == 0) {
+//            [discardFilter flush];
+//        }
+//        return [discardFilter discardWithTimeStamp:timingInfo.decodeTimeStamp];
+//    }];
     
 //    [self.player setDisplayDiscardFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index) {
 //        if (index == 0) {
@@ -145,10 +145,6 @@
             break;
         case SGPlaybackStateFinished:
             text = @"Finished";
-            break;
-        case SGPlaybackStateFailed:
-            text = @"Failed";
-            NSLog(@"%s, %@", __func__, player.error);
             break;
     }
     self.stateLabel.text = text;
