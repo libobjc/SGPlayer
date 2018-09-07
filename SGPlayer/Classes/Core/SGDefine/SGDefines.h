@@ -52,3 +52,10 @@ typedef NS_ENUM(NSUInteger, SGScalingMode)
     SGScalingModeResizeAspect,
     SGScalingModeResizeAspectFill,
 };
+
+typedef NS_OPTIONS(NSUInteger, SGTimingOption)
+{
+    SGTimingOptionPlaybackTime = 1 << 0,
+    SGTimingOptionLoadedTime = 1 << 1,
+    SGTimingOptionDuration = 1 << 2,
+};

@@ -57,7 +57,7 @@
 @property (nonatomic, strong) NSCondition * prepareCondition;
 @property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, assign) NSTimeInterval seekFinishedTimeInterval;
-@property (nonatomic, assign) CMTime lastTime;
+@property (nonatomic, assign) CMTime lastPlaybackTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
 
@@ -605,18 +605,29 @@
         return;
     }
     [self unlock];
-    CMTime time = self.playbackTime;
+    SGTimingOption option = 0;
+    CMTime playbackTime = self.playbackTime;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
-    if (CMTimeCompare(time, self.lastTime) != 0 ||
-        CMTimeCompare(loadedTime, self.lastLoadedTime) != 0 ||
-        CMTimeCompare(duration, self.lastDuration) != 0)
+    if (CMTimeCompare(playbackTime, self.lastPlaybackTime) != 0)
     {
-        self.lastTime = time;
+        option |= SGTimingOptionPlaybackTime;
+    }
+    if (CMTimeCompare(loadedTime, self.lastLoadedTime) != 0)
+    {
+        option |= SGTimingOptionLoadedTime;
+    }
+    if (CMTimeCompare(duration, self.lastDuration) != 0)
+    {
+        option |= SGTimingOptionDuration;
+    }
+    if (option != 0)
+    {
+        self.lastPlaybackTime = playbackTime;
         self.lastLoadedTime = loadedTime;
         self.lastDuration = duration;
         [self callback:^{
-            [self.delegate playerDidChangeTimingInfo:self];
+            [self.delegate playerDidChangeTiming:self option:option];
         }];
     }
 }
@@ -660,7 +671,7 @@
     self.session = nil;
     self.audioOutput = nil;
     self.videoOutput = nil;
-    self.lastTime = CMTimeMake(-1900, 1);
+    self.lastPlaybackTime = CMTimeMake(-1900, 1);
     self.lastLoadedTime = CMTimeMake(-1900, 1);
     self.lastDuration = CMTimeMake(-1900, 1);
     _asset = nil;

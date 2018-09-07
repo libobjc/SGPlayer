@@ -249,7 +249,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (void)playerDidChangePrepareState:(SGPlayer *)player;
 - (void)playerDidChangePlaybackState:(SGPlayer *)player;
 - (void)playerDidChangeLoadingState:(SGPlayer *)player;
-- (void)playerDidChangeTimingInfo:(SGPlayer *)player;
+- (void)playerDidChangeTiming:(SGPlayer *)player option:(SGTimingOption)option;
 - (void)playerDidFailed:(SGPlayer *)player;
 
 @end
