@@ -53,9 +53,16 @@ typedef NS_ENUM(NSUInteger, SGScalingMode)
     SGScalingModeResizeAspectFill,
 };
 
-typedef NS_OPTIONS(NSUInteger, SGTimingOption)
+typedef NS_OPTIONS(NSUInteger, SGStateOption)
 {
-    SGTimingOptionPlaybackTime = 1 << 0,
-    SGTimingOptionLoadedTime = 1 << 1,
-    SGTimingOptionDuration = 1 << 2,
+    SGStateOptionPrepare = 1 << 0,
+    SGStateOptionPlayback = 1 << 1,
+    SGStateOptionLoading = 1 << 2,
+};
+
+typedef NS_OPTIONS(NSUInteger, SGTimeOption)
+{
+    SGTimeOptionPlayback = 1 << 0,
+    SGTimeOptionLoaded = 1 << 1,
+    SGTimeOptionDuration = 1 << 2,
 };

@@ -246,10 +246,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @protocol SGPlayerDelegate <NSObject>
 
-- (void)playerDidChangePrepareState:(SGPlayer *)player;
-- (void)playerDidChangePlaybackState:(SGPlayer *)player;
-- (void)playerDidChangeLoadingState:(SGPlayer *)player;
-- (void)playerDidChangeTiming:(SGPlayer *)player option:(SGTimingOption)option;
+@optional
+- (void)player:(SGPlayer *)player didChangeState:(SGStateOption)option;
+- (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option;
 - (void)playerDidFailed:(SGPlayer *)player;
 
 @end

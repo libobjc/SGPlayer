@@ -109,7 +109,10 @@
         _error = error;
         return ^{
             [self callback:^{
-                [self.delegate playerDidFailed:self];
+                if ([self.delegate respondsToSelector:@selector(playerDidFailed:)])
+                {
+                    [self.delegate playerDidFailed:self];
+                }
             }];
         };
     }
@@ -253,7 +256,10 @@
             [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
-                [self.delegate playerDidChangePrepareState:self];
+                if ([self.delegate respondsToSelector:@selector(player:didChangeState:)])
+                {
+                    [self.delegate player:self didChangeState:SGStateOptionPrepare];
+                }
             }];
         };
     }
@@ -294,7 +300,10 @@
             [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
-                [self.delegate playerDidChangePlaybackState:self];
+                if ([self.delegate respondsToSelector:@selector(player:didChangeState:)])
+                {
+                    [self.delegate player:self didChangeState:SGStateOptionPlayback];
+                }
             }];
         };
     }
@@ -446,7 +455,10 @@
             [self pauseOrResumeOutput];
             [self callbackForTimingIfNeeded];
             [self callback:^{
-                [self.delegate playerDidChangeLoadingState:self];
+                if ([self.delegate respondsToSelector:@selector(player:didChangeState:)])
+                {
+                    [self.delegate player:self didChangeState:SGStateOptionLoading];
+                }
             }];
         };
     }
@@ -605,21 +617,21 @@
         return;
     }
     [self unlock];
-    SGTimingOption option = 0;
+    SGTimeOption option = 0;
     CMTime playbackTime = self.playbackTime;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
     if (CMTimeCompare(playbackTime, self.lastPlaybackTime) != 0)
     {
-        option |= SGTimingOptionPlaybackTime;
+        option |= SGTimeOptionPlayback;
     }
     if (CMTimeCompare(loadedTime, self.lastLoadedTime) != 0)
     {
-        option |= SGTimingOptionLoadedTime;
+        option |= SGTimeOptionLoaded;
     }
     if (CMTimeCompare(duration, self.lastDuration) != 0)
     {
-        option |= SGTimingOptionDuration;
+        option |= SGTimeOptionDuration;
     }
     if (option != 0)
     {
@@ -627,7 +639,10 @@
         self.lastLoadedTime = loadedTime;
         self.lastDuration = duration;
         [self callback:^{
-            [self.delegate playerDidChangeTiming:self option:option];
+            if ([self.delegate respondsToSelector:@selector(player:didChangeTime:)])
+            {
+                [self.delegate player:self didChangeTime:option];
+            }
         }];
     }
 }
