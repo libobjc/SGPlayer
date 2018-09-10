@@ -109,9 +109,9 @@
         _error = error;
         return ^{
             [self callback:^{
-                if ([self.delegate respondsToSelector:@selector(player:didFailed:)])
+                if ([self.delegate respondsToSelector:@selector(player:didFail:)])
                 {
-                    [self.delegate player:self didFailed:error];
+                    [self.delegate player:self didFail:error];
                 }
             }];
         };
