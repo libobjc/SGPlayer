@@ -70,19 +70,29 @@
     }
 }
 
-- (void)fillWithFrame:(SGFrame *)frame
+- (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame
 {
-    self.timebase = frame.timebase;
-    self.scale = frame.scale;
-    self.startTime = frame.startTime;
-    self.timeRange = frame.timeRange;
-    self.originalTimeStamp = frame.originalTimeStamp;
-    self.originalDecodeTimeStamp = frame.originalDecodeTimeStamp;
-    self.originalDuration = frame.originalDuration;
-    self.timeStamp = frame.timeStamp;
-    self.decodeTimeStamp = frame.decodeTimeStamp;
-    self.duration = frame.duration;
-    self.size = frame.size;
+    self.timebase = audioFrame.timebase;
+    self.scale = audioFrame.scale;
+    self.startTime = audioFrame.startTime;
+    self.timeRange = audioFrame.timeRange;
+    self.originalTimeStamp = audioFrame.originalTimeStamp;
+    self.originalDecodeTimeStamp = audioFrame.originalDecodeTimeStamp;
+    self.originalDuration = audioFrame.originalDuration;
+    self.timeStamp = audioFrame.timeStamp;
+    self.decodeTimeStamp = audioFrame.decodeTimeStamp;
+    self.duration = audioFrame.duration;
+    self.size = audioFrame.size;
+    
+    self.format = audioFrame.format;
+    self.numberOfSamples = audioFrame.numberOfSamples;
+    self.sampleRate = audioFrame.sampleRate;
+    self.numberOfChannels = audioFrame.numberOfSamples;
+    self.channelLayout = audioFrame.channelLayout;
+    self.bestEffortTimestamp = audioFrame.bestEffortTimestamp;
+    self.packetPosition = audioFrame.packetPosition;
+    self.packetDuration = audioFrame.packetDuration;
+    self.packetSize = audioFrame.packetSize;
 }
 
 - (uint8_t **)data

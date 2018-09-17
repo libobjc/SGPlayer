@@ -9,6 +9,7 @@
 #import "SGAudioPlaybackOutput.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioBufferFrame.h"
+#import "SGAudioFFFrame.h"
 #import "SGFFDefinesMapping.h"
 #import "swresample.h"
 #import "swscale.h"
@@ -35,13 +36,15 @@
 @property (nonatomic, assign) CMTime currentPostPosition;
 @property (nonatomic, assign) CMTime currentPostDuration;
 @property (nonatomic, assign) SwrContext * swrContext;
-@property (nonatomic, assign) NSError * swrContextError;
+@property (nonatomic, strong) NSError * swrContextError;
 @property (nonatomic, assign) SGAVSampleFormat inputFormat;
-@property (nonatomic, assign) SGAVSampleFormat outputFormat;
 @property (nonatomic, assign) int inputSampleRate;
 @property (nonatomic, assign) int inputNumberOfChannels;
+@property (nonatomic, assign) int64_t inputChannelLayout;
+@property (nonatomic, assign) SGAVSampleFormat outputFormat;
 @property (nonatomic, assign) int outputSampleRate;
 @property (nonatomic, assign) int outputNumberOfChannels;
+@property (nonatomic, assign) int64_t outputChannelLayout;
 
 @end
 
@@ -136,32 +139,40 @@
     {
         return;
     }
-    if (![frame isKindOfClass:[SGAudioFrame class]])
+    if (![frame isKindOfClass:[SGAudioFFFrame class]])
     {
         return;
     }
-    SGAudioFrame * audioFrame = frame;
+    SGAudioFFFrame * audioFrame = frame;
     
     SGAVSampleFormat inputFormat = audioFrame.format;
-    SGAVSampleFormat outputFormat = SG_AV_SAMPLE_FMT_FLTP;
     int inputSampleRate = audioFrame.sampleRate;
     int inputNumberOfChannels = audioFrame.numberOfChannels;
+    int64_t inputChannelLayout = audioFrame.channelLayout;
+    
+    SGAVSampleFormat outputFormat = SG_AV_SAMPLE_FMT_FLTP;
     int outputSampleRate = self.audioPlayer.asbd.mSampleRate;
     int outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
+    int64_t outputChannelLayout = av_get_default_channel_layout(outputNumberOfChannels);
     
     if (self.inputFormat != inputFormat ||
-        self.outputFormat != outputFormat ||
         self.inputSampleRate != inputSampleRate ||
-        self.outputSampleRate != outputSampleRate ||
         self.inputNumberOfChannels != inputNumberOfChannels ||
-        self.outputNumberOfChannels != outputNumberOfChannels)
+        self.inputChannelLayout != inputChannelLayout ||
+        self.outputFormat != outputFormat ||
+        self.outputSampleRate != outputSampleRate ||
+        self.outputNumberOfChannels != outputNumberOfChannels ||
+        self.outputChannelLayout != outputChannelLayout)
     {
         self.inputFormat = inputFormat;
-        self.outputFormat = outputFormat;
         self.inputSampleRate = inputSampleRate;
-        self.outputSampleRate = outputSampleRate;
         self.inputNumberOfChannels = inputNumberOfChannels;
+        self.inputChannelLayout = inputChannelLayout;
+        
+        self.outputFormat = outputFormat;
+        self.outputSampleRate = outputSampleRate;
         self.outputNumberOfChannels = outputNumberOfChannels;
+        self.outputChannelLayout = outputChannelLayout;
         
         [self destorySwrContext];
         [self setupSwrContext];
@@ -171,29 +182,35 @@
     {
         return;
     }
-    const int numberOfChannelsRatio = MAX(1, self.outputNumberOfChannels / self.inputNumberOfChannels);
-    const int sampleRateRatio = MAX(1, self.outputSampleRate / self.inputSampleRate);
-    const int ratio = sampleRateRatio * numberOfChannelsRatio;
-    const int bufferSize = av_samples_get_buffer_size(NULL, 1, audioFrame.numberOfSamples * ratio, SGDMSampleFormatSG2FF(self.outputFormat), 1);
+
+    int preferNumberOfSamples = swr_get_out_samples(self.swrContext, audioFrame.numberOfSamples);
+    if (preferNumberOfSamples <= 0 && audioFrame.numberOfSamples > 0)
+    {
+        float numberOfChannelsRatio = self.outputNumberOfChannels / self.inputNumberOfChannels;
+        float sampleRateRatio = self.outputSampleRate / self.inputSampleRate;
+        float ratio = sampleRateRatio * numberOfChannelsRatio;
+        preferNumberOfSamples = audioFrame.numberOfSamples * ratio;
+    }
+    int bufferSize = av_samples_get_buffer_size(NULL,
+                                                self.outputNumberOfChannels,
+                                                preferNumberOfSamples,
+                                                SGDMSampleFormatSG2FF(self.outputFormat),
+                                                0);
     [self setupSwrContextBufferIfNeeded:bufferSize];
     int numberOfSamples = swr_convert(self.swrContext,
                                       (uint8_t **)_swrContextBufferData,
-                                      audioFrame.numberOfSamples * ratio,
+                                      preferNumberOfSamples,
                                       (const uint8_t **)audioFrame.data,
                                       audioFrame.numberOfSamples);
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
-    
+
     SGAudioBufferFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioBufferFrame class]];
-    [result fillWithFrame:audioFrame];
-    result.format = AV_SAMPLE_FMT_FLTP;
+    [result fillWithAudioFrame:audioFrame];
+    result.format = self.outputFormat;
     result.numberOfSamples = numberOfSamples;
     result.sampleRate = self.outputSampleRate;
     result.numberOfChannels = self.outputNumberOfChannels;
-    result.channelLayout = audioFrame.channelLayout;
-    result.bestEffortTimestamp = audioFrame.bestEffortTimestamp;
-    result.packetPosition = audioFrame.packetPosition;
-    result.packetDuration = audioFrame.packetDuration;
-    result.packetSize = audioFrame.packetSize;
+    result.channelLayout = self.outputChannelLayout;
     [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
     if (!self.receivedFrame)
     {
@@ -315,10 +332,10 @@
         return;
     }
     self.swrContext = swr_alloc_set_opts(NULL,
-                                         av_get_default_channel_layout(self.outputNumberOfChannels),
+                                         self.outputChannelLayout,
                                          SGDMSampleFormatSG2FF(self.outputFormat),
                                          self.outputSampleRate,
-                                         av_get_default_channel_layout(self.inputNumberOfChannels),
+                                         self.inputChannelLayout,
                                          SGDMSampleFormatSG2FF(self.inputFormat),
                                          self.inputSampleRate,
                                          0, NULL);
