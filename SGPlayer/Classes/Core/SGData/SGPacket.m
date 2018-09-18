@@ -108,7 +108,7 @@
     _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
     _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
-    CMTime offset = CMTimeSubtract(self.startTime, self.timeRange.start);
+    CMTime offset = CMTimeSubtract(self.startTime, SGCMTimeMultiply(self.timeRange.start, self.scale));
     _timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     _decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);

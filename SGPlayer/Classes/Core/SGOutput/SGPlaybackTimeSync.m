@@ -23,6 +23,7 @@
 {
     if (self = [super init])
     {
+        _startTime = kCMTimeInvalid;
         [self flush];
     }
     return self;
@@ -54,6 +55,14 @@
 
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate
 {
+    if (CMTIME_IS_INVALID(self.startTime))
+    {
+        _startTime = time;
+        if ([self.delegate respondsToSelector:@selector(playbackTimeSyncDidChangeStartTime:)])
+        {
+            [self.delegate playbackTimeSyncDidChangeStartTime:self];
+        }
+    }
     self.keyTime = time;
     self.keyDuration = duration;
     self.keyRate = rate;

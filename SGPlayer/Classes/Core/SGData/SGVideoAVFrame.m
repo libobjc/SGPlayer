@@ -72,7 +72,7 @@
     self.originalTimeStamp = packet.originalTimeStamp;
     self.originalDecodeTimeStamp = packet.originalDecodeTimeStamp;
     self.originalDuration = packet.originalDuration;
-    CMTime offset = CMTimeSubtract(self.startTime, packet.timeRange.start);
+    CMTime offset = CMTimeSubtract(self.startTime, SGCMTimeMultiply(self.timeRange.start, self.scale));
     self.timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     self.duration = packet.duration;

@@ -65,4 +65,5 @@ typedef NS_OPTIONS(NSUInteger, SGTimeOption)
     SGTimeOptionPlayback = 1 << 0,
     SGTimeOptionLoaded = 1 << 1,
     SGTimeOptionDuration = 1 << 2,
+    SGTimeOptionActualStartTime = 1 << 3,
 };

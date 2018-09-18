@@ -51,7 +51,7 @@
     self.originalTimeStamp = SGCMTimeMakeWithTimebase(self.coreFrame->best_effort_timestamp, packet.timebase);
     self.originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_dts, packet.timebase);
     self.originalDuration = SGCMTimeMakeWithTimebase(self.coreFrame->pkt_duration, packet.timebase);
-    CMTime offset = CMTimeSubtract(self.startTime, packet.timeRange.start);
+    CMTime offset = CMTimeSubtract(self.startTime, SGCMTimeMultiply(self.timeRange.start, self.scale));
     self.timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     self.decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     self.duration = SGCMTimeMultiply(self.originalDuration, self.scale);

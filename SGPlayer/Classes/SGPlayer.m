@@ -22,6 +22,7 @@
 @property (nonatomic, strong, readonly) SGAsset * asset;
 @property (nonatomic, strong, readonly) NSError * error;
 @property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign) CMTime actualStartTime;
 @property (nonatomic, assign, readonly) SGPrepareState prepareState;
 @property (nonatomic, assign, readonly) SGPlaybackState playbackState;
 @property (nonatomic, assign, readonly) CMTime playbackTime;
@@ -51,7 +52,7 @@
 
 @end
 
-@interface SGPlayer () <SGSessionDelegate>
+@interface SGPlayer () <SGSessionDelegate, SGPlaybackTimeSyncDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -60,6 +61,7 @@
 @property (nonatomic, assign) CMTime lastPlaybackTime;
 @property (nonatomic, assign) CMTime lastLoadedTime;
 @property (nonatomic, assign) CMTime lastDuration;
+@property (nonatomic, assign) CMTime lastActualStartTime;
 
 @property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
@@ -172,6 +174,7 @@
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
     auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
+    auidoOutput.timeSync.delegate = self;
     auidoOutput.rate = self.rate;
     auidoOutput.volume = self.volume;
     self.deviceDelay = self.deviceDelay;
@@ -316,9 +319,13 @@
     {
         return self.duration;
     }
-    if (self.audioOutput.timeSync)
+    if (self.audioOutput.enable && self.audioOutput.key && self.audioOutput.timeSync)
     {
         return self.audioOutput.timeSync.time;
+    }
+    else if (self.videoOutput.enable && self.videoOutput.key && self.videoOutput.timeSync)
+    {
+        return self.videoOutput.timeSync.keyTime;
     }
     return kCMTimeZero;
 }
@@ -621,23 +628,33 @@
     CMTime playbackTime = self.playbackTime;
     CMTime loadedTime = self.loadedTime;
     CMTime duration = self.duration;
-    if (CMTimeCompare(playbackTime, self.lastPlaybackTime) != 0)
+    CMTime actualStartTime = self.actualStartTime;
+    if (CMTIME_IS_VALID(playbackTime) &&
+        CMTimeCompare(playbackTime, self.lastPlaybackTime) != 0)
     {
         option |= SGTimeOptionPlayback;
     }
-    if (CMTimeCompare(loadedTime, self.lastLoadedTime) != 0)
+    if (CMTIME_IS_VALID(loadedTime) &&
+        CMTimeCompare(loadedTime, self.lastLoadedTime) != 0)
     {
         option |= SGTimeOptionLoaded;
     }
-    if (CMTimeCompare(duration, self.lastDuration) != 0)
+    if (CMTIME_IS_VALID(duration) &&
+        CMTimeCompare(duration, self.lastDuration) != 0)
     {
         option |= SGTimeOptionDuration;
+    }
+    if (CMTIME_IS_VALID(actualStartTime) &&
+        CMTimeCompare(actualStartTime, self.lastActualStartTime))
+    {
+        option |= SGTimeOptionActualStartTime;
     }
     if (option != 0)
     {
         self.lastPlaybackTime = playbackTime;
         self.lastLoadedTime = loadedTime;
         self.lastDuration = duration;
+        self.lastActualStartTime = actualStartTime;
         [self callback:^{
             if ([self.delegate respondsToSelector:@selector(player:didChangeTime:)])
             {
@@ -684,13 +701,16 @@
     [SGActivity removeTarget:self];
     [self.session close];
     self.session = nil;
+    self.audioOutput.timeSync.delegate = nil;
     self.audioOutput = nil;
     self.videoOutput = nil;
     self.lastPlaybackTime = CMTimeMake(-1900, 1);
     self.lastLoadedTime = CMTimeMake(-1900, 1);
     self.lastDuration = CMTimeMake(-1900, 1);
+    self.lastActualStartTime = CMTimeMake(-1900, 1);
     _asset = nil;
     _error = nil;
+    _actualStartTime = kCMTimeInvalid;
 }
 
 #pragma mark - SGSessionDelegate
@@ -744,6 +764,14 @@
         playbackCallback();
     }
     [self pauseOrResumeOutput];
+    [self callbackForTimingIfNeeded];
+}
+
+#pragma mark - SGPlaybackTimeSyncDelegate
+
+- (void)playbackTimeSyncDidChangeStartTime:(SGPlaybackTimeSync *)playbackTimeSync
+{
+    self.actualStartTime = playbackTimeSync.startTime;
     [self callbackForTimingIfNeeded];
 }
 
