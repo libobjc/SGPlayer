@@ -410,7 +410,7 @@
     return [self seekToTime:time completionHandler:nil];
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
     if (![self seekableToTime:time])
     {
@@ -431,7 +431,7 @@
     [self unlock];
     [self pauseOrResumeOutput];
     SGWeakSelf
-    [self.session seekToTime:time completionHandler:^(BOOL success, CMTime time) {
+    [self.session seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self lock];
         if (seekingToken == self.seekingToken)
@@ -444,7 +444,7 @@
         if (completionHandler)
         {
             [self callback:^{
-                completionHandler(success, time);
+                completionHandler(time, error);
             }];
         }
     }];

@@ -106,7 +106,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)seekableToTime:(CMTime)time;
 
 - (BOOL)seekToTime:(CMTime)time;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(BOOL success, CMTime time))completionHandler;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end
 

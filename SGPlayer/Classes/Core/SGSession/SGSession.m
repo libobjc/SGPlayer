@@ -125,7 +125,7 @@
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
     if (![self seekableToTime:time])
     {
@@ -142,7 +142,7 @@
     NSInteger seekingToken = self.seekingToken;
     [self unlock];
     SGWeakSelf
-    [self.configuration.source seekToTime:time completionHandler:^(BOOL success, CMTime time) {
+    [self.configuration.source seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self lock];
         if (seekingToken != self.seekingToken)
@@ -158,7 +158,7 @@
         [self.configuration.videoOutput flush];
         if (completionHandler)
         {
-            completionHandler(success, time);
+            completionHandler(time, error);
         }
     }];
     return YES;

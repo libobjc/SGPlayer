@@ -21,7 +21,7 @@
 @property (nonatomic, assign) BOOL seekable;
 @property (nonatomic, assign) CMTime seekTimeStamp;
 @property (nonatomic, assign) CMTime seekingTimeStamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(BOOL, CMTime);
+@property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
 @property (nonatomic, strong) SGFormatContext * formatContext;
 @property (nonatomic, assign) BOOL audioEnable;
@@ -206,7 +206,7 @@ static int SGURLSourceInterruptHandler(void * context)
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(BOOL, CMTime))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
     if (![self seekableToTime:time])
     {
@@ -324,14 +324,15 @@ static int SGURLSourceInterruptHandler(void * context)
                 }
                 SGBasicBlock callback = [self setState:SGSourceStateReading];
                 CMTime seekTimeStamp = self.seekTimeStamp;
-                void(^seekCompletionHandler)(BOOL, CMTime) = self.seekCompletionHandler;
+                void(^seekCompletionHandler)(CMTime, NSError *) = self.seekCompletionHandler;
                 self.seekTimeStamp = kCMTimeZero;
                 self.seekingTimeStamp = kCMTimeZero;
                 self.seekCompletionHandler = nil;
                 [self unlock];
                 if (seekCompletionHandler)
                 {
-                    seekCompletionHandler(success >= 0, seekTimeStamp);
+                    NSError * error = SGEGetError(success);
+                    seekCompletionHandler(seekTimeStamp, error);
                 }
                 callback();
                 continue;
