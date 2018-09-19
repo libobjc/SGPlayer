@@ -198,6 +198,9 @@
         {
             [object unlock];
             object = [self getObject];
+            if (!object) {
+                break;
+            }
             continue;
         }
         break;
