@@ -262,6 +262,8 @@
 		9C9599FD211AE7AF00E67565 /* SGFFDefinesMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1D2229201B1DA2005147FB /* SGFFDefinesMapping.m */; };
 		9C9599FE211AE7AF00E67565 /* SGFFDefinesMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1D2229201B1DA2005147FB /* SGFFDefinesMapping.m */; };
 		9C9599FF211AE7AF00E67565 /* SGFFDefinesMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1D2229201B1DA2005147FB /* SGFFDefinesMapping.m */; };
+		9C95D2BD2152335400079B38 /* SGFormatContext.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C95D2BB2152335400079B38 /* SGFormatContext.m */; };
+		9C95D2BE2152335400079B38 /* SGFormatContext.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C95D2BC2152335400079B38 /* SGFormatContext.h */; };
 		9CA0F56420E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CA0F56520E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; };
 		9CA0F56620E0E24000501478 /* SGDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CA0F56220E0E24000501478 /* SGDefines.h */; };
@@ -896,6 +898,8 @@
 		9C8D4E72200E10BD00ED8A58 /* SGDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDecoder.h; sourceTree = "<group>"; };
 		9C8D4E7E200E1ACA00ED8A58 /* SGError.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGError.h; sourceTree = "<group>"; };
 		9C8D4E7F200E1ACA00ED8A58 /* SGError.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGError.m; sourceTree = "<group>"; };
+		9C95D2BB2152335400079B38 /* SGFormatContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGFormatContext.m; sourceTree = "<group>"; };
+		9C95D2BC2152335400079B38 /* SGFormatContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFormatContext.h; sourceTree = "<group>"; };
 		9CA0F56220E0E24000501478 /* SGDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDefines.h; sourceTree = "<group>"; };
 		9CA3CDB320E1F74300B852D0 /* SGFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrame.m; sourceTree = "<group>"; };
 		9CA3CDC520E2206D00B852D0 /* SGVideoAVFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVideoAVFrame.h; sourceTree = "<group>"; };
@@ -1380,6 +1384,8 @@
 				9CE469AE2151FA7A00528662 /* SGPacketReader.m */,
 				9CE469B12151FB4F00528662 /* SGURLPacketReader.h */,
 				9CE469B22151FB4F00528662 /* SGURLPacketReader.m */,
+				9C95D2BC2152335400079B38 /* SGFormatContext.h */,
+				9C95D2BB2152335400079B38 /* SGFormatContext.m */,
 			);
 			path = SGSource;
 			sourceTree = "<group>";
@@ -1809,6 +1815,7 @@
 				9CF99F6F212D187A008178BC /* opt.h in Headers */,
 				9CF99F2A212D187A008178BC /* cast5.h in Headers */,
 				9CF99F12212D187A008178BC /* lfg.h in Headers */,
+				9C95D2BE2152335400079B38 /* SGFormatContext.h in Headers */,
 				9CF99F5D212D187A008178BC /* hwcontext_drm.h in Headers */,
 				9CF99EDC212D187A008178BC /* time.h in Headers */,
 				9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */,
@@ -2618,6 +2625,7 @@
 				9C8D4E83200E1ACA00ED8A58 /* SGError.m in Sources */,
 				9CF63FD3211D9359001B2684 /* SGConcatSource.m in Sources */,
 				9CB62C022021950200A9AD6B /* SGSessionConfiguration.m in Sources */,
+				9C95D2BD2152335400079B38 /* SGFormatContext.m in Sources */,
 				9CE469B42151FB4F00528662 /* SGURLPacketReader.m in Sources */,
 				9C3082C4212518EC00B44298 /* SGVideoDecoder.m in Sources */,
 				9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
