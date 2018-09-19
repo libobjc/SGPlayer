@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGStream.h"
 
-@interface SGFormatContext : NSObject
+@interface SGFormatContext2 : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

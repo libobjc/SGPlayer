@@ -7,7 +7,7 @@
 //
 
 #import "SGConcatSource.h"
-#import "SGFormatContext.h"
+#import "SGFormatContext2.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "SGMacro.h"
@@ -23,8 +23,8 @@
 @property (nonatomic, assign) CMTime seekingTimeStamp;
 @property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
-@property (nonatomic, strong) NSArray <SGFormatContext *> * formatContexts;
-@property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, strong) NSArray <SGFormatContext2 *> * formatContexts;
+@property (nonatomic, strong) SGFormatContext2 * formatContext;
 @property (nonatomic, assign) BOOL audioEnable;
 @property (nonatomic, assign) BOOL videoEnable;
 @property (nonatomic, strong) SGStream * audioStream;
@@ -234,7 +234,7 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 - (void)destoryFormatContext
 {
-    for (SGFormatContext * obj in self.formatContexts)
+    for (SGFormatContext2 * obj in self.formatContexts)
     {
         [obj destory];
     }
@@ -265,7 +265,7 @@ static int SGConcatSourceInterruptHandler(void * context)
 {
     for (NSInteger i = self.formatContexts.count - 1; i >= 0; i--)
     {
-        SGFormatContext * formatContext = [self.formatContexts objectAtIndex:i];
+        SGFormatContext2 * formatContext = [self.formatContexts objectAtIndex:i];
         if (i == 0 || CMTimeCompare(timeStamp, formatContext.startTime) >= 0)
         {
             [self setCurrentFormatContext:formatContext];
@@ -280,7 +280,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     return success;
 }
 
-- (void)setCurrentFormatContext:(SGFormatContext *)formatContext
+- (void)setCurrentFormatContext:(SGFormatContext2 *)formatContext
 {
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;
@@ -308,10 +308,10 @@ static int SGConcatSourceInterruptHandler(void * context)
     BOOL seekable = YES;
     BOOL audioEnable = YES;
     BOOL videoEnable = YES;
-    NSMutableArray <SGFormatContext *> * formatContexts = [NSMutableArray array];
+    NSMutableArray <SGFormatContext2 *> * formatContexts = [NSMutableArray array];
     for (SGURLAsset * obj in self.asset.assets)
     {
-        SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:obj.URL scale:obj.scale startTime:duration preferredTimeRange:obj.timeRange];
+        SGFormatContext2 * formatContext = [[SGFormatContext2 alloc] initWithURL:obj.URL scale:obj.scale startTime:duration preferredTimeRange:obj.timeRange];
         BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
         if (success)
         {

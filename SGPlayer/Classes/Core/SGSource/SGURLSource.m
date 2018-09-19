@@ -7,7 +7,7 @@
 //
 
 #import "SGURLSource.h"
-#import "SGFormatContext.h"
+#import "SGFormatContext2.h"
 #import "SGPacket.h"
 #import "SGError.h"
 #import "SGMacro.h"
@@ -23,7 +23,7 @@
 @property (nonatomic, assign) CMTime seekingTimeStamp;
 @property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
-@property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, strong) SGFormatContext2 * formatContext;
 @property (nonatomic, assign) BOOL audioEnable;
 @property (nonatomic, assign) BOOL videoEnable;
 @property (nonatomic, strong) SGStream * audioStream;
@@ -254,7 +254,7 @@ static int SGURLSourceInterruptHandler(void * context)
 
 - (void)openThread
 {
-    SGFormatContext * formatContext = [[SGFormatContext alloc] initWithURL:self.asset.URL scale:self.asset.scale startTime:kCMTimeZero preferredTimeRange:self.asset.timeRange];
+    SGFormatContext2 * formatContext = [[SGFormatContext2 alloc] initWithURL:self.asset.URL scale:self.asset.scale startTime:kCMTimeZero preferredTimeRange:self.asset.timeRange];
     [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGURLSourceInterruptHandler];
     self.formatContext = formatContext;
     self.audioStream = self.formatContext.audioStreams.firstObject;

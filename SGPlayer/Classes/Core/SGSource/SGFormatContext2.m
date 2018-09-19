@@ -6,11 +6,11 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFormatContext.h"
+#import "SGFormatContext2.h"
 #import "SGFFmpeg.h"
 #import "SGError.h"
 
-@implementation SGFormatContext
+@implementation SGFormatContext2
 
 - (instancetype)initWithURL:(NSURL *)URL scale:(CMTime)scale startTime:(CMTime)startTime preferredTimeRange:(CMTimeRange)preferredTimeRange
 {
