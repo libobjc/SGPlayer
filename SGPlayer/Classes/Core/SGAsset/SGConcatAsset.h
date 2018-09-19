@@ -7,15 +7,15 @@
 //
 
 #import "SGAsset.h"
-#import "SGURLAsset.h"
+#import "SGURLAsset2.h"
 
 @interface SGConcatAsset : SGAsset
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAssets:(NSArray <SGURLAsset *> *)assets;
+- (instancetype)initWithAssets:(NSArray <SGURLAsset2 *> *)assets;
 
-@property (nonatomic, strong, readonly) NSArray <SGURLAsset *> * assets;
+@property (nonatomic, strong, readonly) NSArray <SGURLAsset2 *> * assets;
 
 @end

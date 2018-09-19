@@ -39,9 +39,9 @@
     NSMutableArray * assets = [NSMutableArray array];
     for (int i = 0; i < 1; i++)
     {
-        SGURLAsset * asset1 = [[SGURLAsset alloc] initWithURL:contentURL1];
+        SGURLAsset2 * asset1 = [[SGURLAsset2 alloc] initWithURL:contentURL1];
 //        asset1.scale = CMTimeMake(1, 3);
-        SGURLAsset * asset2 = [[SGURLAsset alloc] initWithURL:contentURL2];
+        SGURLAsset2 * asset2 = [[SGURLAsset2 alloc] initWithURL:contentURL2];
         [assets addObject:asset1];
         [assets addObject:asset2];
     }

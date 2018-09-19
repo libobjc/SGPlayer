@@ -1,5 +1,5 @@
 //
-//  SGURLAsset.h
+//  SGURLAsset2.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/10.
@@ -9,7 +9,7 @@
 #import "SGAsset.h"
 #import <AVFoundation/AVFoundation.h>
 
-@interface SGURLAsset : SGAsset
+@interface SGURLAsset2 : SGAsset
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

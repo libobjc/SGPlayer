@@ -10,7 +10,7 @@
 
 @implementation SGConcatAsset
 
-- (instancetype)initWithAssets:(NSArray <SGURLAsset *> *)assets
+- (instancetype)initWithAssets:(NSArray <SGURLAsset2 *> *)assets
 {
     if (self = [super init])
     {

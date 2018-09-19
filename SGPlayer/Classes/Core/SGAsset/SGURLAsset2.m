@@ -1,14 +1,14 @@
 //
-//  SGURLAsset.m
+//  SGURLAsset2.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/10.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGURLAsset.h"
+#import "SGURLAsset2.h"
 
-@implementation SGURLAsset
+@implementation SGURLAsset2
 
 - (instancetype)initWithURL:(NSURL *)URL
 {

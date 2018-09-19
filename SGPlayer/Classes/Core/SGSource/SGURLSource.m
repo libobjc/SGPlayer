@@ -14,7 +14,7 @@
 
 @interface SGURLSource () <NSLocking>
 
-@property (nonatomic, strong) SGURLAsset * asset;
+@property (nonatomic, strong) SGURLAsset2 * asset;
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
@@ -64,7 +64,7 @@ static int SGURLSourceInterruptHandler(void * context)
     return ret;
 }
 
-- (instancetype)initWithAsset:(SGURLAsset *)asset
+- (instancetype)initWithAsset:(SGURLAsset2 *)asset
 {
     if (self = [super init])
     {

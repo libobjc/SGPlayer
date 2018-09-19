@@ -141,7 +141,7 @@
 
 - (BOOL)replaceWithURL:(NSURL *)URL
 {
-    return [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];
+    return [self replaceWithAsset:[[SGURLAsset2 alloc] initWithURL:URL]];
 }
 
 - (BOOL)replaceWithAsset:(SGAsset *)asset
@@ -217,9 +217,9 @@
         return nil;
     }
     SGConcatAsset * concatAsset = nil;
-    if ([asset isKindOfClass:[SGURLAsset class]])
+    if ([asset isKindOfClass:[SGURLAsset2 class]])
     {
-        concatAsset = [[SGConcatAsset alloc] initWithAssets:@[(SGURLAsset *)asset]];
+        concatAsset = [[SGConcatAsset alloc] initWithAssets:@[(SGURLAsset2 *)asset]];
     }
     else if ([asset isKindOfClass:[SGConcatAsset class]])
     {
@@ -230,7 +230,7 @@
         return nil;
     }
     BOOL error = NO;
-    for (SGURLAsset * obj in concatAsset.assets)
+    for (SGURLAsset2 * obj in concatAsset.assets)
     {
         if (!obj.URL)
         {

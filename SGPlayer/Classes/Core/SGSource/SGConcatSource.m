@@ -309,7 +309,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     BOOL audioEnable = YES;
     BOOL videoEnable = YES;
     NSMutableArray <SGFormatContext2 *> * formatContexts = [NSMutableArray array];
-    for (SGURLAsset * obj in self.asset.assets)
+    for (SGURLAsset2 * obj in self.asset.assets)
     {
         SGFormatContext2 * formatContext = [[SGFormatContext2 alloc] initWithURL:obj.URL scale:obj.scale startTime:duration preferredTimeRange:obj.timeRange];
         BOOL success = [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGConcatSourceInterruptHandler];
