@@ -1373,20 +1373,20 @@
 		9C8D4E5C200E0A0600ED8A58 /* SGSource */ = {
 			isa = PBXGroup;
 			children = (
-				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
 				9C8D4E61200E0ACC00ED8A58 /* SGPacketOutput.h */,
 				9C8D4E62200E0ACC00ED8A58 /* SGPacketOutput.m */,
-				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
-				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
-				9C620D6721215EEF00845F2A /* SGFormatContext2.h */,
-				9C620D6821215EEF00845F2A /* SGFormatContext2.m */,
-				9CF52CF5200F45D700950B81 /* SGStream.h */,
-				9CF52CF6200F45D700950B81 /* SGStream.m */,
 				9C0DF027215A2FB9007142DB /* SGPacketReadable.h */,
 				9CE469B12151FB4F00528662 /* SGURLPacketReader.h */,
 				9CE469B22151FB4F00528662 /* SGURLPacketReader.m */,
 				9C95D2BC2152335400079B38 /* SGFormatContext.h */,
 				9C95D2BB2152335400079B38 /* SGFormatContext.m */,
+				9CF52CF5200F45D700950B81 /* SGStream.h */,
+				9CF52CF6200F45D700950B81 /* SGStream.m */,
+				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
+				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
+				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
+				9C620D6721215EEF00845F2A /* SGFormatContext2.h */,
+				9C620D6821215EEF00845F2A /* SGFormatContext2.m */,
 			);
 			path = SGSource;
 			sourceTree = "<group>";
