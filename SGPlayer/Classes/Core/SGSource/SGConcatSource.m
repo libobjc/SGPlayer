@@ -407,7 +407,7 @@ static int SGConcatSourceInterruptHandler(void * context)
                 callback();
                 if (seekCompletionHandler)
                 {
-                    NSError * error = SGEGetError(success);
+                    NSError * error = SGEGetError(success, SGOperationCodeFormatSeekFrame);
                     seekCompletionHandler(seekTimeStamp, error);
                 }
                 continue;

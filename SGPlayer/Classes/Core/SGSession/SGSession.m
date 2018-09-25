@@ -382,7 +382,7 @@
         {
             if (!self.audioEnable && !self.videoEnable)
             {
-                _error = SGECreateError(@"", SGErrorCodeNoValidTrackToPlay);
+                _error = SGECreateError(SGErrorCodeNoValidTrackToPlay, SGOperationCodeSessionOpen);
                 callback = [self setState:SGSessionStateFailed];
             }
             else

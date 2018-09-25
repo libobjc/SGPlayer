@@ -11,23 +11,25 @@
 typedef NS_ENUM(NSUInteger, SGErrorCode)
 {
     SGErrorCodeUnknown,
+    SGErrorCodeNoValidFormat,
     SGErrorCodeNoValidTrackToPlay,
-    SGErrorCodeFormatCreate,
-    SGErrorCodeFormatOpenInput,
-    SGErrorCodeFormatFindStreamInfo,
-    SGErrorCodeStreamNotFound,
-    SGErrorCodeCodecContextCreate,
-    SGErrorCodeCodecContextSetParam,
-    SGErrorCodeCodecFindDecoder,
-    SGErrorCodeCodecVideoSendPacket,
-    SGErrorCodeCodecAudioSendPacket,
-    SGErrorCodeCodecVideoReceiveFrame,
-    SGErrorCodeCodecAudioReceiveFrame,
-    SGErrorCodeCodecReceiveFrame,
-    SGErrorCodeCodecOpen2,
-    SGErrorCodeAuidoSwrInit,
+    SGErrorCodeFormatNotSeekable,
 };
 
-NSError * SGEGetError(int result);
-NSError * SGEGetErrorCode(int result, NSUInteger code);
-NSError * SGECreateError(NSString * domian, NSUInteger code);
+typedef NS_ENUM(NSUInteger, SGOperationCode)
+{
+    SGOperationCodeUnknown,
+    SGOperationCodeFormatCreate,
+    SGOperationCodeFormatOpenInput,
+    SGOperationCodeFormatFindStreamInfo,
+    SGOperationCodeFormatSeekFrame,
+    SGOperationCodeFormatReadFrame,
+    SGOperationCodeFormatGetSeekable,
+    SGOperationCodeCodecSetParametersToContext,
+    SGOperationCodeCodecOpen2,
+    SGOperationCodeAuidoSwrInit,
+    SGOperationCodeSessionOpen,
+};
+
+NSError * SGEGetError(int result, SGOperationCode operation);
+NSError * SGECreateError(NSUInteger code, SGOperationCode operation);

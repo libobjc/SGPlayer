@@ -7,13 +7,13 @@
 //
 
 #import "SGSource.h"
-#import "SGURLAsset2.h"
+#import "SGURLAsset.h"
 
 @interface SGURLSource : NSObject <SGSource>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAsset:(SGURLAsset2 *)asset;
+- (instancetype)initWithAsset:(SGURLAsset *)asset;
 
 @end

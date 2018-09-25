@@ -28,6 +28,12 @@ static int SGFormatContextInterruptHandler(void * context)
 }
 
 @property (nonatomic, copy) NSURL * URL;
+@property (nonatomic, copy) NSError * error;
+@property (nonatomic, copy) NSDictionary * metadata;
+@property (nonatomic, copy) NSArray <SGStream *> * streams;
+@property (nonatomic, copy) NSArray <SGStream *> * videoStreams;
+@property (nonatomic, copy) NSArray <SGStream *> * audioStreams;
+@property (nonatomic, copy) NSArray <SGStream *> * otherStreams;
 
 @end
 
@@ -47,55 +53,124 @@ static int SGFormatContextInterruptHandler(void * context)
     [self close];
 }
 
-- (BOOL)open
+- (CMTime)duration
+{
+    if (_formatContext && _formatContext->duration > 0)
+    {
+        return CMTimeMake(_formatContext->duration, AV_TIME_BASE);
+    }
+    return kCMTimeZero;
+}
+
+- (NSError *)open
 {
     if (_formatContext)
     {
-        return YES;
+        return nil;
     }
-    _error = SGCreateFormatContext(&_formatContext,
-                                   self.URL,
-                                   self.options,
-                                   (__bridge void *)self,
-                                   SGFormatContextInterruptHandler);
-    if (self.error)
+    NSError * error = SGCreateFormatContext(&_formatContext,
+                                            self.URL,
+                                            self.options,
+                                            (__bridge void *)self,
+                                            SGFormatContextInterruptHandler);
+    if (error)
     {
-        return NO;
+        self.error = error;
+        return error;
     }
-    return YES;
+    if (_formatContext && _formatContext->metadata)
+    {
+        self.metadata = SGDictionaryFF2NS(_formatContext->metadata);
+    }
+    NSMutableArray <SGStream *> * streams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * subtitleStreams = [NSMutableArray array];
+    NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
+    for (int i = 0; i < _formatContext->nb_streams; i++)
+    {
+        SGStream * obj = [[SGStream alloc] init];
+        obj.coreStream = _formatContext->streams[i];
+        [streams addObject:obj];
+        switch (obj.coreStream->codecpar->codec_type)
+        {
+            case AVMEDIA_TYPE_AUDIO:
+                [audioStreams addObject:obj];
+                break;
+            case AVMEDIA_TYPE_VIDEO:
+                if ((obj.coreStream->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0) {
+                    [videoStreams addObject:obj];
+                } else {
+                    [otherStreams addObject:obj];
+                }
+                break;
+            case AVMEDIA_TYPE_SUBTITLE:
+                [subtitleStreams addObject:obj];
+                break;
+            default:
+                [otherStreams addObject:obj];
+                break;
+        }
+    }
+    self.streams = [streams copy];
+    self.audioStreams = [audioStreams copy];
+    self.videoStreams = [videoStreams copy];
+    self.otherStreams = [otherStreams copy];
+    return nil;
 }
 
-- (BOOL)close
+- (NSError *)close
 {
     if (_formatContext)
     {
         avformat_close_input(&_formatContext);
         _formatContext = NULL;
     }
-    return YES;
+    return nil;
 }
 
-- (BOOL)seekable
+- (NSError *)seekable
 {
-    return YES;
+    if (_formatContext)
+    {
+        if (_formatContext->pb && _formatContext->pb->seekable > 0)
+        {
+            return nil;
+        }
+        return SGECreateError(SGErrorCodeFormatNotSeekable, SGOperationCodeFormatGetSeekable);
+    }
+    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatGetSeekable);
 }
 
-- (BOOL)seekableToTime:(CMTime)time
+- (NSError *)seekableToTime:(CMTime)time
 {
     return self.seekable;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    long long timeStamp = AV_TIME_BASE * time.value / time.timescale;
-    int ret = av_seek_frame(_formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
-    return SGEGetError(ret);
+    NSError * error = [self seekableToTime:time];
+    if (error)
+    {
+        return error;
+    }
+    if (_formatContext)
+    {
+        long long timeStamp = AV_TIME_BASE * time.value / time.timescale;
+        int ret = av_seek_frame(_formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+        return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
+    }
+    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatSeekFrame);
 }
 
 - (NSError *)nextPacket:(SGPacket *)packet
 {
-    int ret = av_read_frame(_formatContext, packet.corePacket);
-    return SGEGetError(ret);
+    if (_formatContext)
+    {
+        int ret = av_read_frame(_formatContext, packet.corePacket);
+        return SGEGetError(ret, SGOperationCodeFormatReadFrame);
+    }
+    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatReadFrame);
 }
 
 NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *))
@@ -103,7 +178,7 @@ NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, N
     AVFormatContext * fc = avformat_alloc_context();
     if (!fc)
     {
-        return SGECreateError(@"", SGErrorCodeFormatCreate);
+        return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
     }
     
     fc->interrupt_callback.callback = callback;
@@ -126,7 +201,7 @@ NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, N
         av_dict_free(&opts);
     }
     
-    NSError * err = SGEGetErrorCode(suc, SGErrorCodeFormatOpenInput);
+    NSError * err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
     if (err)
     {
         if (fc)
@@ -137,7 +212,7 @@ NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, N
     }
     
     suc = avformat_find_stream_info(fc, NULL);
-    err = SGEGetErrorCode(suc, SGErrorCodeFormatFindStreamInfo);
+    err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
     if (err)
     {
         if (fc)

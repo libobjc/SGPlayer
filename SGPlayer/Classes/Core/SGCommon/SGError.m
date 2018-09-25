@@ -9,26 +9,22 @@
 #import "SGError.h"
 #import "avformat.h"
 
-NSError * SGEGetError(int result)
-{
-    return SGEGetErrorCode(result, SGErrorCodeUnknown);
-}
+static NSString * const SGErrorUserInfoKeyOperation = @"SGErrorUserInfoKeyOperation";
 
-NSError * SGEGetErrorCode(int result, NSUInteger code)
+NSError * SGEGetError(int result, SGOperationCode operation)
 {
-    if (result < 0)
+    if (result >= 0)
     {
-        char * errorStringBuffer = malloc(256);
-        av_strerror(result, errorStringBuffer, 256);
-        NSString * errorString = [NSString stringWithFormat:@"FFmpeg code : %d, FFmpeg msg : %s", result, errorStringBuffer];
-        NSError * error = [NSError errorWithDomain:errorString code:code userInfo:nil];
-        return error;
+        return nil;
     }
-    return nil;
+    char * data = malloc(256);
+    av_strerror(result, data, 256);
+    NSString * domain = [NSString stringWithFormat:@"SGPlayer-Error-FFmpeg code : %d, msg : %s", result, data];
+    free(data);
+    return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
 
-NSError * SGECreateError(NSString * domian, NSUInteger code)
+NSError * SGECreateError(NSUInteger code, SGOperationCode operation)
 {
-    NSError * error = [NSError errorWithDomain:domian code:code userInfo:nil];
-    return error;
+    return [NSError errorWithDomain:@"SGPlayer-Error-SGErrorCode" code:code userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }

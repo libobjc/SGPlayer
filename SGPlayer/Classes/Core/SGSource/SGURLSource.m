@@ -7,14 +7,14 @@
 //
 
 #import "SGURLSource.h"
-#import "SGFormatContext2.h"
-#import "SGPacket.h"
+#import "SGURLPacketReader.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGURLSource () <NSLocking>
+@interface SGURLSource () <NSLocking, SGPacketReaderDelegate>
 
-@property (nonatomic, strong) SGURLAsset2 * asset;
+@property (nonatomic, strong) SGURLAsset * asset;
+@property (nonatomic, strong) SGURLPacketReader * packetReader;
 @property (nonatomic, assign, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, assign) CMTime duration;
@@ -23,11 +23,8 @@
 @property (nonatomic, assign) CMTime seekingTimeStamp;
 @property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
-@property (nonatomic, strong) SGFormatContext2 * formatContext;
 @property (nonatomic, assign) BOOL audioEnable;
 @property (nonatomic, assign) BOOL videoEnable;
-@property (nonatomic, strong) SGStream * audioStream;
-@property (nonatomic, strong) SGStream * videoStream;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
@@ -42,33 +39,12 @@
 @synthesize options = _options;
 @synthesize state = _state;
 
-static int SGURLSourceInterruptHandler(void * context)
-{
-    SGURLSource * obj = (__bridge SGURLSource *)context;
-    [obj lock];
-    int ret = NO;
-    switch (obj.state)
-    {
-        case SGSourceStateFinished:
-        case SGSourceStateClosed:
-        case SGSourceStateFailed:
-            ret = YES;
-            break;
-        case SGSourceStateSeeking:
-            ret = CMTimeCompare(obj.seekTimeStamp, obj.seekingTimeStamp) != 0;
-            break;
-        default:
-            break;
-    }
-    [obj unlock];
-    return ret;
-}
-
-- (instancetype)initWithAsset:(SGURLAsset2 *)asset
+- (instancetype)initWithAsset:(SGURLAsset *)asset
 {
     if (self = [super init])
     {
         self.asset = asset;
+        self.packetReader = [[SGURLPacketReader alloc] initWithURL:self.asset.URL];
         self.duration = kCMTimeZero;
         self.seekable = NO;
         self.seekTimeStamp = kCMTimeZero;
@@ -116,7 +92,7 @@ static int SGURLSourceInterruptHandler(void * context)
 
 - (NSDictionary *)metadata
 {
-    return self.formatContext.metadata;
+    return [self.packetReader metadata];
 }
 
 #pragma mark - Interface
@@ -192,7 +168,7 @@ static int SGURLSourceInterruptHandler(void * context)
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    [self destoryFormatContext];
+    [self.packetReader close];
 }
 
 #pragma mark - Seeking
@@ -229,14 +205,6 @@ static int SGURLSourceInterruptHandler(void * context)
     return YES;
 }
 
-#pragma mark - Internal
-
-- (void)destoryFormatContext
-{
-    [self.formatContext destory];
-    self.formatContext = nil;
-}
-
 #pragma mark - Open
 
 - (void)startOpenThread
@@ -254,14 +222,12 @@ static int SGURLSourceInterruptHandler(void * context)
 
 - (void)openThread
 {
-    SGFormatContext2 * formatContext = [[SGFormatContext2 alloc] initWithURL:self.asset.URL scale:self.asset.scale startTime:kCMTimeZero preferredTimeRange:self.asset.timeRange];
-    [formatContext openWithOptions:self.options opaque:(__bridge void *)self callback:SGURLSourceInterruptHandler];
-    self.formatContext = formatContext;
-    self.audioStream = self.formatContext.audioStreams.firstObject;
-    self.videoStream = self.formatContext.videoStreams.firstObject;
-    self.duration = self.formatContext.duration;
-    self.seekable = self.formatContext.seekable;
-    self.error = formatContext.error;
+    [self.packetReader open];
+    self.error = self.packetReader.error;
+    self.audioEnable = self.packetReader.audioStreams.count > 0;
+    self.videoEnable = self.packetReader.videoStreams.count > 0;
+    self.seekable = self.packetReader.seekable;
+    self.duration = self.packetReader.duration;
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
     SGBasicBlock callback = [self setState:state];
@@ -313,8 +279,7 @@ static int SGURLSourceInterruptHandler(void * context)
                 self.seekingTimeStamp = self.seekTimeStamp;
                 CMTime seekingTimeStamp = self.seekingTimeStamp;
                 [self unlock];
-                long long timeStamp = AV_TIME_BASE * seekingTimeStamp.value / seekingTimeStamp.timescale;
-                int success = av_seek_frame(self.formatContext.coreFormatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+                NSError * error = [self.packetReader seekToTime:seekingTimeStamp];
                 [self lock];
                 if (self.state == SGSourceStateSeeking &&
                     CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0)
@@ -331,7 +296,6 @@ static int SGURLSourceInterruptHandler(void * context)
                 [self unlock];
                 if (seekCompletionHandler)
                 {
-                    NSError * error = SGEGetError(success);
                     seekCompletionHandler(seekTimeStamp, error);
                 }
                 callback();
@@ -341,8 +305,8 @@ static int SGURLSourceInterruptHandler(void * context)
             {
                 [self unlock];
                 SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-                int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
-                if (readResult < 0)
+                NSError * error = [self.packetReader nextPacket:packet];
+                if (error)
                 {
                     [self lock];
                     SGBasicBlock callback = ^{};
@@ -356,7 +320,7 @@ static int SGURLSourceInterruptHandler(void * context)
                 else
                 {
                     SGStream * stream = nil;
-                    for (SGStream * obj in self.formatContext.streams)
+                    for (SGStream * obj in self.packetReader.streams)
                     {
                         if (obj.index == packet.corePacket->stream_index)
                         {
@@ -364,22 +328,42 @@ static int SGURLSourceInterruptHandler(void * context)
                             break;
                         }
                     }
-                    if (stream == self.audioStream || stream == self.videoStream)
-                    {
-                        [packet fillWithMediaType:stream.mediaType
-                                         codecpar:stream.coreStream->codecpar
-                                         timebase:stream.timebase
-                                            scale:self.formatContext.scale
-                                        startTime:self.formatContext.startTime
-                                        timeRange:self.formatContext.actualTimeRange];
-                        [self.delegate source:self hasNewPacket:packet];
-                    }
+                    [packet fillWithMediaType:stream.mediaType
+                                     codecpar:stream.coreStream->codecpar
+                                     timebase:stream.timebase
+                                        scale:CMTimeMake(1, 1)
+                                    startTime:kCMTimeZero
+                                    timeRange:CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)];
+                    [self.delegate source:self hasNewPacket:packet];
                 }
                 [packet unlock];
                 continue;
             }
         }
     }
+}
+
+#pragma mark - SGPacketReaderDelegate
+
+- (BOOL)packetReaderShouldAbortBlockingFunctions:(SGPacketReader *)packetReader
+{
+    [self lock];
+    BOOL ret = NO;
+    switch (self.state)
+    {
+        case SGSourceStateFinished:
+        case SGSourceStateClosed:
+        case SGSourceStateFailed:
+            ret = YES;
+            break;
+        case SGSourceStateSeeking:
+            ret = CMTimeCompare(self.seekTimeStamp, self.seekingTimeStamp) != 0;
+            break;
+        default:
+            break;
+    }
+    [self unlock];
+    return ret;
 }
 
 #pragma mark - NSLocking

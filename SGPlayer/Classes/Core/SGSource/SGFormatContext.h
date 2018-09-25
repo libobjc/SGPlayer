@@ -29,15 +29,19 @@
 @property (nonatomic, weak) id <SGFormatContextDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
-@property (nonatomic, copy, readonly) NSError * error;
+- (NSError *)error;
+- (CMTime)duration;
+- (NSDictionary *)metadata;
+- (NSArray <SGStream *> *)streams;
+- (NSArray <SGStream *> *)audioStreams;
+- (NSArray <SGStream *> *)videoStreams;
+- (NSArray <SGStream *> *)otherStreams;
 
-- (BOOL)open;
-- (BOOL)close;
-
-- (BOOL)seekable;
-- (BOOL)seekableToTime:(CMTime)time;
+- (NSError *)open;
+- (NSError *)close;
+- (NSError *)seekable;
+- (NSError *)seekableToTime:(CMTime)time;
 - (NSError *)seekToTime:(CMTime)time;
-
 - (NSError *)nextPacket:(SGPacket *)packet;
 
 @end

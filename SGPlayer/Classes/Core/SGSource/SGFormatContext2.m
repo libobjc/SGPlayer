@@ -37,7 +37,7 @@
 {
     NSError * error = nil;
     AVFormatContext * formatContext = NULL;
-    BOOL success = SGCreateFormatContext(&formatContext, self.URL, options, opaque, callback, &error);
+    BOOL success = SGCreateFormatContext2(&formatContext, self.URL, options, opaque, callback, &error);
     if (!success)
     {
         _error = error;
@@ -111,12 +111,12 @@
     }
 }
 
-BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *), NSError ** error)
+BOOL SGCreateFormatContext2(AVFormatContext ** formatContext, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *), NSError ** error)
 {
     AVFormatContext * fc = avformat_alloc_context();
     if (!fc)
     {
-        * error = SGECreateError(@"", SGErrorCodeFormatCreate);
+        * error = SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
         return NO;
     }
     
@@ -140,7 +140,7 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDict
         av_dict_free(&opts);
     }
     
-    NSError * err = SGEGetErrorCode(suc, SGErrorCodeFormatOpenInput);
+    NSError * err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
     if (err)
     {
         if (fc)
@@ -152,7 +152,7 @@ BOOL SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDict
     }
     
     suc = avformat_find_stream_info(fc, NULL);
-    err = SGEGetErrorCode(suc, SGErrorCodeFormatFindStreamInfo);
+    err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
     if (err)
     {
         if (fc)

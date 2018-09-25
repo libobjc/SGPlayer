@@ -29,39 +29,64 @@
     return self;
 }
 
-- (BOOL)open
+- (NSError *)error
+{
+    return [self.formatContext error];
+}
+
+- (CMTime)duration
+{
+    return [self.formatContext duration];
+}
+
+- (NSDictionary *)metadata
+{
+    return [self.formatContext metadata];
+}
+
+- (NSArray <SGStream *> *)streams
+{
+    return [self.formatContext streams];
+}
+
+- (NSArray <SGStream *> *)audioStreams
+{
+    return [self.formatContext audioStreams];
+}
+
+- (NSArray <SGStream *> *)videoStreams
+{
+    return [self.formatContext videoStreams];
+}
+
+- (NSArray <SGStream *> *)otherStreams
+{
+    return [self.formatContext otherStreams];
+}
+
+- (NSError *)open
 {
     return [self.formatContext open];
 }
 
-- (BOOL)close
+- (NSError *)close
 {
     return [self.formatContext close];
 }
 
-- (BOOL)seekable
+- (NSError *)seekable
 {
     return [self.formatContext seekable];
 }
 
-- (BOOL)seekableToTime:(CMTime)time
+- (NSError *)seekableToTime:(CMTime)time
 {
     return [self.formatContext seekableToTime:time];
 }
 
-- (BOOL)seekToTime:(CMTime)time
+- (NSError *)seekToTime:(CMTime)time
 {
-    return [self seekToTime:time completionHandler:nil];
-}
-
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler
-{
-    NSError * error = [self.formatContext seekToTime:time];
-    if (completionHandler)
-    {
-        completionHandler(time, error);
-    }
-    return !error;
+    return [self.formatContext seekToTime:time];
 }
 
 - (NSError *)nextPacket:(SGPacket *)packet

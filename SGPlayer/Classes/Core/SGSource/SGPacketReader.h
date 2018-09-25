@@ -19,20 +19,24 @@
 
 @interface SGPacketReader : NSObject
 
+@property (nonatomic, strong) id object;
+
 @property (nonatomic, weak) id <SGPacketReaderDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
-@property (nonatomic, copy, readonly) NSError * error;
+- (NSError *)error;
+- (CMTime)duration;
+- (NSDictionary *)metadata;
+- (NSArray <SGStream *> *)streams;
+- (NSArray <SGStream *> *)audioStreams;
+- (NSArray <SGStream *> *)videoStreams;
+- (NSArray <SGStream *> *)otherStreams;
 
-- (BOOL)open;
-- (BOOL)close;
-
-- (BOOL)seekable;
-- (BOOL)seekableToTime:(CMTime)time;
-
-- (BOOL)seekToTime:(CMTime)time;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
-
+- (NSError *)open;
+- (NSError *)close;
+- (NSError *)seekable;
+- (NSError *)seekableToTime:(CMTime)time;
+- (NSError *)seekToTime:(CMTime)time;
 - (NSError *)nextPacket:(SGPacket *)packet;
 
 @end

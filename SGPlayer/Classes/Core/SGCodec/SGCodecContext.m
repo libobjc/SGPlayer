@@ -29,7 +29,7 @@
     }
     
     int result = avcodec_parameters_to_context(codecContext, self.codecpar);
-    NSError * error = SGEGetError(result);
+    NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error)
     {
         avcodec_free_context(&codecContext);
@@ -65,7 +65,7 @@
         av_dict_free(&opts);
     }
     
-    error = SGEGetError(result);
+    error = SGEGetError(result, SGOperationCodeCodecOpen2);
     if (error)
     {
         avcodec_free_context(&codecContext);
@@ -138,7 +138,7 @@
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
                 
             } else {
-                SGPlayerLog(@"Error : %@", SGEGetErrorCode(result, SGErrorCodeCodecReceiveFrame));
+//                SGPlayerLog(@"Error : %@", SGEGetErrorWithCode(result, SGErrorCodeCodecReceiveFrame));
             }
             [frame unlock];
             break;

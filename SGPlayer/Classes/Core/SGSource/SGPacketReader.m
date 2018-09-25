@@ -10,34 +10,64 @@
 
 @implementation SGPacketReader
 
-- (BOOL)open
+- (NSError *)error
 {
-    return NO;
+    return nil;
 }
 
-- (BOOL)close
+- (CMTime)duration
 {
-    return NO;
+    return kCMTimeZero;
 }
 
-- (BOOL)seekable
+- (NSDictionary *)metadata
 {
-    return NO;
+    return nil;
 }
 
-- (BOOL)seekableToTime:(CMTime)time
+- (NSArray <SGStream *> *)streams
 {
-    return NO;
+    return nil;
 }
 
-- (BOOL)seekToTime:(CMTime)time
+- (NSArray <SGStream *> *)audioStreams
 {
-    return NO;
+    return nil;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler
+- (NSArray <SGStream *> *)videoStreams
 {
-    return NO;
+    return nil;
+}
+
+- (NSArray <SGStream *> *)otherStreams
+{
+    return nil;
+}
+
+- (NSError *)open
+{
+    return nil;
+}
+
+- (NSError *)close
+{
+    return nil;
+}
+
+- (NSError *)seekable
+{
+    return nil;
+}
+
+- (NSError *)seekableToTime:(CMTime)time
+{
+    return nil;
+}
+
+- (NSError *)seekToTime:(CMTime)time
+{
+    return nil;
 }
 
 - (NSError *)nextPacket:(SGPacket *)packet
