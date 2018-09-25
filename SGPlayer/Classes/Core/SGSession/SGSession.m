@@ -12,7 +12,7 @@
 #import "SGError.h"
 #import "SGTime.h"
 
-@interface SGSession () <NSLocking, SGSourceDelegate, SGDecoderDelegate, SGOutputDelegate>
+@interface SGSession () <NSLocking, SGPacketOutputDelegate, SGDecoderDelegate, SGOutputDelegate>
 
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -65,7 +65,7 @@
     SGBasicBlock callback = [self setState:SGSessionStateReading];
     [self unlock];
     callback();
-    [self.configuration.source read];
+    [self.configuration.source resume];
 }
 
 - (void)close
@@ -277,12 +277,12 @@
 
 - (BOOL)audioEnable
 {
-    return self.configuration.source.audioEnable;
+    return self.configuration.source.audioStreams.count > 0;
 }
 
 - (BOOL)videoEnable
 {
-    return self.configuration.source.videoEnable;
+    return self.configuration.source.videoStreams.count > 0;
 }
 
 - (BOOL)audioEmpty
@@ -372,13 +372,13 @@
 
 #pragma mark - SGSourceDelegate
 
-- (void)sourceDidChangeState:(id <SGSource>)source
+- (void)packetOutputDidChangeState:(SGPacketOutput *)packetOutput
 {
     [self lock];
     SGBasicBlock callback = ^{};
-    switch (source.state)
+    switch (packetOutput.state)
     {
-        case SGSourceStateOpened:
+        case SGPacketOutputStateOpened:
         {
             if (!self.audioEnable && !self.videoEnable)
             {
@@ -409,19 +409,19 @@
             }
         }
             break;
-        case SGSourceStateReading:
+        case SGPacketOutputStateReading:
         {
             callback = [self setState:SGSessionStateReading];
         }
             break;
-        case SGSourceStateFinished:
+        case SGPacketOutputStateFinished:
         {
             callback = [self setState:SGSessionStateFinished];
         }
             break;
-        case SGSourceStateFailed:
+        case SGPacketOutputStateFailed:
         {
-            _error = source.error;
+            _error = packetOutput.error;
             callback = [self setState:SGSessionStateFailed];
         }
             break;
@@ -432,7 +432,7 @@
     callback();
 }
 
-- (void)source:(id <SGSource>)source hasNewPacket:(SGPacket *)packet
+- (void)packetOutput:(SGPacketOutput *)packetOutput hasNewPacket:(SGPacket *)packet
 {
     switch (packet.mediaType)
     {

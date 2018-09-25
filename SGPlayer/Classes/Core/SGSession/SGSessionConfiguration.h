@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGSource.h"
+#import "SGPacketOutput.h"
 #import "SGDecoder.h"
 #import "SGOutput.h"
 
 @interface SGSessionConfiguration : NSObject
 
-@property (nonatomic, strong) id <SGSource> source;
+@property (nonatomic, strong) SGPacketOutput * source;
 @property (nonatomic, strong) id <SGDecoder> audioDecoder;
 @property (nonatomic, strong) id <SGDecoder> videoDecoder;
 @property (nonatomic, strong) id <SGOutput> audioOutput;

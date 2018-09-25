@@ -14,6 +14,11 @@ typedef NS_ENUM(NSUInteger, SGErrorCode)
     SGErrorCodeNoValidFormat,
     SGErrorCodeNoValidTrackToPlay,
     SGErrorCodeFormatNotSeekable,
+    SGErrorCodePacketOutputCannotOpen,
+    SGErrorCodePacketOutputCannotClose,
+    SGErrorCodePacketOutputCannotPause,
+    SGErrorCodePacketOutputCannotResume,
+    SGErrorCodePacketOutputCannotSeek
 };
 
 typedef NS_ENUM(NSUInteger, SGOperationCode)
@@ -29,6 +34,11 @@ typedef NS_ENUM(NSUInteger, SGOperationCode)
     SGOperationCodeCodecOpen2,
     SGOperationCodeAuidoSwrInit,
     SGOperationCodeSessionOpen,
+    SGOperationCodePacketOutputOpen,
+    SGOperationCodePacketOutputClose,
+    SGOperationCodePacketOutputPause,
+    SGOperationCodePacketOutputResmue,
+    SGOperationCodePacketOutputSeek
 };
 
 NSError * SGEGetError(int result, SGOperationCode operation);

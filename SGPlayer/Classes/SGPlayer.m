@@ -10,7 +10,7 @@
 #import "SGMacro.h"
 #import "SGActivity.h"
 #import "SGSession.h"
-#import "SGURLSource.h"
+#import "SGPacketOutput.h"
 #import "SGConcatSource.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
@@ -147,15 +147,14 @@
 - (BOOL)replaceWithAsset:(SGAsset *)asset
 {
     [self stop];
-    SGConcatAsset * concatAsset = [self concatAssetWithAsset:asset];
-    if (!concatAsset)
+    if (!asset)
     {
         return NO;
     }
-    _asset = concatAsset;
+    _asset = asset;
     
-    SGConcatSource * source = [[SGConcatSource alloc] initWithAsset:concatAsset];
-    source.options = self.formatContextOptions;
+    SGPacketOutput * source = [[SGPacketOutput alloc] initWithAsset:asset];
+//    source.options = self.formatContextOptions;
     
     SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
     audioDecoder.options = self.codecContextOptions;
@@ -208,41 +207,6 @@
     [self.session open];
     
     return YES;
-}
-
-- (SGConcatAsset *)concatAssetWithAsset:(SGAsset *)asset
-{
-    if (!asset)
-    {
-        return nil;
-    }
-    SGConcatAsset * concatAsset = nil;
-    if ([asset isKindOfClass:[SGURLAsset2 class]])
-    {
-        concatAsset = [[SGConcatAsset alloc] initWithAssets:@[(SGURLAsset2 *)asset]];
-    }
-    else if ([asset isKindOfClass:[SGConcatAsset class]])
-    {
-        concatAsset = (SGConcatAsset *)asset;
-    }
-    if (!concatAsset)
-    {
-        return nil;
-    }
-    BOOL error = NO;
-    for (SGURLAsset2 * obj in concatAsset.assets)
-    {
-        if (!obj.URL)
-        {
-            error = YES;
-            break;
-        }
-    }
-    if (error)
-    {
-        return nil;
-    }
-    return concatAsset;
 }
 
 #pragma mark - Prepare
