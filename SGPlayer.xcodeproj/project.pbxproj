@@ -43,6 +43,8 @@
 		9C0D0041200C74B20079D609 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9C0D0043200C74B20079D609 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C0DF028215A2FB9007142DB /* SGPacketReadable.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DF027215A2FB9007142DB /* SGPacketReadable.h */; };
+		9C0DF02F215A4727007142DB /* SGAsset+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DF02D215A4727007142DB /* SGAsset+Private.h */; };
+		9C0DF030215A4728007142DB /* SGAsset+Private.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0DF02E215A4727007142DB /* SGAsset+Private.m */; };
 		9C0DFFED200C74B00079D609 /* SGPLFDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F51D2004D97C00D1F4C8 /* SGPLFDisplayLink.m */; };
 		9C0DFFEF200C74B00079D609 /* SGPLFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE6F5242004D97C00D1F4C8 /* SGPLFView.m */; };
 		9C0DFFF4200C74B00079D609 /* SGActivity.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C329AA92005E3F800252B10 /* SGActivity.m */; };
@@ -797,6 +799,8 @@
 		9C0D001A200C74B00079D609 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C0D004B200C74B20079D609 /* SGAVPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGAVPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C0DF027215A2FB9007142DB /* SGPacketReadable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPacketReadable.h; sourceTree = "<group>"; };
+		9C0DF02D215A4727007142DB /* SGAsset+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGAsset+Private.h"; sourceTree = "<group>"; };
+		9C0DF02E215A4727007142DB /* SGAsset+Private.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SGAsset+Private.m"; sourceTree = "<group>"; };
 		9C13638C213934030025C72B /* SGGLBGRAProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLBGRAProgram.h; sourceTree = "<group>"; };
 		9C13638D213934030025C72B /* SGGLBGRAProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLBGRAProgram.m; sourceTree = "<group>"; };
 		9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLPlaneModel.h; sourceTree = "<group>"; };
@@ -1562,6 +1566,8 @@
 				9CF63FCD211D8FAF001B2684 /* SGURLAsset2.m */,
 				9CF63FC9211D8F5C001B2684 /* SGConcatAsset.h */,
 				9CF63FC8211D8F5C001B2684 /* SGConcatAsset.m */,
+				9C0DF02D215A4727007142DB /* SGAsset+Private.h */,
+				9C0DF02E215A4727007142DB /* SGAsset+Private.m */,
 			);
 			path = SGAsset;
 			sourceTree = "<group>";
@@ -1882,6 +1888,7 @@
 				9C8D26612019F297002770FA /* SGGLTextureUploader.h in Headers */,
 				9CF15DE520118E1100585326 /* SGAsyncDecoder.h in Headers */,
 				9CF9A002212D187A008178BC /* ac3_parser.h in Headers */,
+				9C0DF02F215A4727007142DB /* SGAsset+Private.h in Headers */,
 				9C8D26592019E1AC002770FA /* SGGLViewport.h in Headers */,
 				9C620D6921215EEF00845F2A /* SGFormatContext2.h in Headers */,
 				9C1D222A201B1DA2005147FB /* SGFFDefinesMapping.h in Headers */,
@@ -2605,6 +2612,7 @@
 				9CE6F5432004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
 				9C2C55B82015D92100131E15 /* SGObjectQueue.m in Sources */,
 				9C8D26642019F297002770FA /* SGGLTextureUploader.m in Sources */,
+				9C0DF030215A4728007142DB /* SGAsset+Private.m in Sources */,
 				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C03E5F1212E645B001F0E1B /* SGVRMatrixMaker.m in Sources */,
 				9CA3CDDA20E2283500B852D0 /* SGVideoFFFrame.m in Sources */,

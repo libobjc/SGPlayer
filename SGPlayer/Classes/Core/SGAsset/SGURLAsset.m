@@ -7,6 +7,7 @@
 //
 
 #import "SGURLAsset.h"
+#import "SGAsset+Private.h"
 #import "SGURLPacketReader.h"
 
 @interface SGURLAsset ()
@@ -23,7 +24,7 @@
     if (self = [super init])
     {
         self.URL = URL;
-        self.reader = [[SGURLPacketReader alloc] initWithURL:self.URL];
+        self.reader = [self newReadable];
     }
     return self;
 }
@@ -49,6 +50,11 @@
 - (void)openIfNeeded
 {
     [self.reader open];
+}
+
+- (id <SGPacketReadable>)newReadable
+{
+    return [[SGURLPacketReader alloc] initWithURL:self.URL];
 }
 
 @end

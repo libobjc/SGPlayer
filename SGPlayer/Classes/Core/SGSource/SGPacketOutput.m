@@ -7,15 +7,14 @@
 //
 
 #import "SGPacketOutput.h"
-#import "SGURLAsset.h"
-#import "SGURLPacketReader.h"
+#import "SGAsset+Private.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
 @interface SGPacketOutput () <NSLocking, SGPacketReadableDelegate>
 
 @property (nonatomic, strong) SGAsset * asset;
-@property (nonatomic, strong) SGURLPacketReader * packetReader;
+@property (nonatomic, strong) id <SGPacketReadable> readable;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
@@ -36,7 +35,7 @@
     if (self = [super init])
     {
         self.asset = asset;
-        self.packetReader = [[SGURLPacketReader alloc] initWithURL:((SGURLAsset *)self.asset).URL];
+        self.readable = [self.asset newReadable];
         self.pausedCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
@@ -82,37 +81,37 @@
 
 - (NSError *)error
 {
-    return self.packetReader.error;
+    return self.readable.error;
 }
 
 - (CMTime)duration
 {
-    return self.packetReader.duration;
+    return self.readable.duration;
 }
 
 - (NSDictionary *)metadata
 {
-    return self.packetReader.metadata;
+    return self.readable.metadata;
 }
 
 - (NSArray <SGStream *> *)streams
 {
-    return self.packetReader.streams;
+    return self.readable.streams;
 }
 
 - (NSArray <SGStream *> *)audioStreams
 {
-    return self.packetReader.audioStreams;
+    return self.readable.audioStreams;
 }
 
 - (NSArray <SGStream *> *)videoStreams
 {
-    return self.packetReader.videoStreams;
+    return self.readable.videoStreams;
 }
 
 - (NSArray <SGStream *> *)otherStreams
 {
-    return self.packetReader.otherStreams;
+    return self.readable.otherStreams;
 }
 
 #pragma mark - Interface
@@ -148,7 +147,7 @@
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    [self.packetReader close];
+    [self.readable close];
     return nil;
 }
 
@@ -186,7 +185,7 @@
 
 - (NSError *)seekable
 {
-    return [self.packetReader seekable];
+    return [self.readable seekable];
 }
 
 - (NSError *)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
@@ -230,7 +229,7 @@
 
 - (void)openThread
 {
-    NSError * error = [self.packetReader open];
+    NSError * error = [self.readable open];
     [self lock];
     SGPacketOutputState state = error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened;
     SGBasicBlock callback = [self setState:state];
@@ -282,7 +281,7 @@
                 self.seekingTimeStamp = self.seekTimeStamp;
                 CMTime seekingTimeStamp = self.seekingTimeStamp;
                 [self unlock];
-                NSError * error = [self.packetReader seekToTime:seekingTimeStamp];
+                NSError * error = [self.readable seekToTime:seekingTimeStamp];
                 [self lock];
                 if (self.state == SGPacketOutputStateSeeking &&
                     CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0)
@@ -308,7 +307,7 @@
             {
                 [self unlock];
                 SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-                NSError * error = [self.packetReader nextPacket:packet];
+                NSError * error = [self.readable nextPacket:packet];
                 if (error)
                 {
                     [self lock];
@@ -323,7 +322,7 @@
                 else
                 {
                     SGStream * stream = nil;
-                    for (SGStream * obj in self.packetReader.streams)
+                    for (SGStream * obj in self.readable.streams)
                     {
                         if (obj.index == packet.corePacket->stream_index)
                         {
