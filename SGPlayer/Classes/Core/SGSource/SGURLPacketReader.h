@@ -6,9 +6,9 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGPacketReader.h"
+#import "SGPacketReadable.h"
 
-@interface SGURLPacketReader : SGPacketReader
+@interface SGURLPacketReader : NSObject <SGPacketReadable>
 
 - (instancetype)initWithURL:(NSURL *)URL;
 

@@ -11,7 +11,7 @@
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGURLSource () <NSLocking, SGPacketReaderDelegate>
+@interface SGURLSource () <NSLocking, SGPacketReadableDelegate>
 
 @property (nonatomic, strong) SGURLAsset * asset;
 @property (nonatomic, strong) SGURLPacketReader * packetReader;
@@ -345,7 +345,7 @@
 
 #pragma mark - SGPacketReaderDelegate
 
-- (BOOL)packetReaderShouldAbortBlockingFunctions:(SGPacketReader *)packetReader
+- (BOOL)packetReadableShouldAbortBlockingFunctions:(id <SGPacketReadable>)packetReadable
 {
     [self lock];
     BOOL ret = NO;

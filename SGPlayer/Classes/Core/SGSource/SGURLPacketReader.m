@@ -18,6 +18,10 @@
 
 @implementation SGURLPacketReader
 
+@synthesize object = _object;
+@synthesize delegate = _delegate;
+@synthesize options = _options;
+
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init])
@@ -98,9 +102,9 @@
 
 - (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext
 {
-    if ([self.delegate respondsToSelector:@selector(packetReaderShouldAbortBlockingFunctions:)])
+    if ([self.delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)])
     {
-        return [self.delegate packetReaderShouldAbortBlockingFunctions:self];
+        return [self.delegate packetReadableShouldAbortBlockingFunctions:self];
     }
     return NO;
 }

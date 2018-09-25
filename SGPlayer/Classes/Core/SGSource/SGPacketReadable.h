@@ -1,27 +1,23 @@
 //
-//  SGPacketReader.h
+//  SGPacketReadable.h
 //  SGPlayer iOS
 //
-//  Created by Single on 2018/9/19.
+//  Created by Single on 2018/9/25.
 //  Copyright © 2018 single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 #import "SGPacket.h"
 
-@class SGPacketReader;
+@protocol SGPacketReadable;
+@protocol SGPacketReadableDelegate;
 
-@protocol SGPacketReaderDelegate <NSObject>
-
-- (BOOL)packetReaderShouldAbortBlockingFunctions:(SGPacketReader *)packetReader;
-
-@end
-
-@interface SGPacketReader : NSObject
+@protocol SGPacketReadable <NSObject>
 
 @property (nonatomic, strong) id object;
 
-@property (nonatomic, weak) id <SGPacketReaderDelegate> delegate;
+@property (nonatomic, weak) id <SGPacketReadableDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
 - (NSError *)error;
@@ -38,5 +34,11 @@
 - (NSError *)seekableToTime:(CMTime)time;
 - (NSError *)seekToTime:(CMTime)time;
 - (NSError *)nextPacket:(SGPacket *)packet;
+
+@end
+
+@protocol SGPacketReadableDelegate <NSObject>
+
+- (BOOL)packetReadableShouldAbortBlockingFunctions:(id <SGPacketReadable>)packetReadable;
 
 @end

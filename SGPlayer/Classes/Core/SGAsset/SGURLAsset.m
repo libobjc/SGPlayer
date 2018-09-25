@@ -12,7 +12,7 @@
 @interface SGURLAsset ()
 
 @property (nonatomic, copy) NSURL * URL;
-@property (nonatomic, strong) SGPacketReader * reader;
+@property (nonatomic, strong) SGURLPacketReader * reader;
 
 @end
 
