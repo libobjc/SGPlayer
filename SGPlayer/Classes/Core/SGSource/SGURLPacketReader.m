@@ -83,11 +83,6 @@
     return [self.formatContext seekable];
 }
 
-- (NSError *)seekableToTime:(CMTime)time
-{
-    return [self.formatContext seekableToTime:time];
-}
-
 - (NSError *)seekToTime:(CMTime)time
 {
     return [self.formatContext seekToTime:time];

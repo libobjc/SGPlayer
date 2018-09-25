@@ -31,11 +31,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    
-}
-
 #pragma mark - Interface
 
 - (void)open
@@ -98,36 +93,12 @@
 
 - (BOOL)seekable
 {
-    [self lock];
-    switch (self.state)
-    {
-        case SGSessionStateNone:
-        case SGSessionStateOpening:
-        case SGSessionStateOpened:
-        case SGSessionStateClosed:
-        case SGSessionStateFailed:
-            [self unlock];
-            return NO;
-        case SGSessionStateReading:
-        case SGSessionStateFinished:
-            break;
-    }
-    [self unlock];
-    return self.configuration.source.seekable;
-}
-
-- (BOOL)seekableToTime:(CMTime)time
-{
-    if (CMTIME_IS_INVALID(time))
-    {
-        return NO;
-    }
-    return self.seekable;
+    return !self.configuration.source.seekable;
 }
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
-    if (![self seekableToTime:time])
+    if (![self seekable])
     {
         return NO;
     }

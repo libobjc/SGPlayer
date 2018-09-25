@@ -142,14 +142,9 @@ static int SGFormatContextInterruptHandler(void * context)
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatGetSeekable);
 }
 
-- (NSError *)seekableToTime:(CMTime)time
-{
-    return self.seekable;
-}
-
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError * error = [self seekableToTime:time];
+    NSError * error = [self seekable];
     if (error)
     {
         return error;

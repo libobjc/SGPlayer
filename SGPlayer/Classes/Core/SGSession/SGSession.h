@@ -81,7 +81,6 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  */
 - (BOOL)seeking;
 - (BOOL)seekable;
-- (BOOL)seekableToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end

@@ -189,14 +189,9 @@
     return [self.packetReader seekable];
 }
 
-- (NSError *)seekableToTime:(CMTime)time
-{
-    return [self.packetReader seekableToTime:time];
-}
-
 - (NSError *)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
-    NSError * error = [self seekableToTime:time];
+    NSError * error = [self seekable];
     if (error)
     {
         return error;

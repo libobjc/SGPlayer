@@ -364,19 +364,9 @@
     return self.session.seekable;
 }
 
-- (BOOL)seekableToTime:(CMTime)time
-{
-    return [self.session seekableToTime:time];
-}
-
-- (BOOL)seekToTime:(CMTime)time
-{
-    return [self seekToTime:time completionHandler:nil];
-}
-
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
-    if (![self seekableToTime:time])
+    if (![self seekable])
     {
         return NO;
     }

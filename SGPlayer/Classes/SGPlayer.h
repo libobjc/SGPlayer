@@ -103,11 +103,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign) BOOL highFrequencySeeking;
 
 - (BOOL)seeking;
-
 - (BOOL)seekable;
-- (BOOL)seekableToTime:(CMTime)time;
-
-- (BOOL)seekToTime:(CMTime)time;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end
