@@ -21,6 +21,7 @@
 
 @property (nonatomic, strong) SGPacketOutput * packetOutput;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
+@property (nonatomic, strong) NSMutableArray <NSNumber *> * fullyDecoders;
 @property (nonatomic, strong) NSLock * coreLock;
 
 @end
@@ -188,6 +189,7 @@
             }
             self.outputStreams = [streams copy];
             self.decoders = [NSMutableArray array];
+            self.fullyDecoders = [NSMutableArray array];
         }
             break;
         case SGPacketOutputStateReading:
@@ -240,7 +242,10 @@
             async.delegate = self;
             [async open];
             decoder = async;
+            [self lock];
             [self.decoders addObject:decoder];
+            [self.fullyDecoders addObject:@(NO)];
+            [self unlock];
         }
     }
     if (!decoder) {
@@ -258,6 +263,20 @@
 
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
 {
+    [self lock];
+    BOOL full = count > 30 && CMTimeCompare(duration, CMTimeMake(1, 1)) > 0;
+    NSUInteger index = [self.decoders indexOfObject:decoder];
+    [self.fullyDecoders replaceObjectAtIndex:index withObject:@(full)];
+    BOOL pause = YES;
+    for (NSNumber * obj in self.fullyDecoders) {
+        pause = pause && obj.boolValue;
+    }
+    [self unlock];
+    if (pause) {
+        [self.packetOutput pause];
+    } else {
+        [self.packetOutput resume];
+    }
     [self.delegate frameOutput:self didChangeCapacity:duration size:size count:count stream:decoder.object];
 }
 

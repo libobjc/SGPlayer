@@ -75,8 +75,6 @@
     [self unlock];
     callback();
     [self.configuration.source close];
-//    [self.configuration.audioDecoder close];
-//    [self.configuration.videoDecoder close];
     [self.configuration.audioOutput close];
     [self.configuration.videoOutput close];
 }
@@ -123,8 +121,6 @@
         }
         self.seekingToken = 0;
         [self unlock];
-//        [self.configuration.audioDecoder flush];
-//        [self.configuration.videoDecoder flush];
         [self.configuration.audioOutput flush];
         [self.configuration.videoOutput flush];
         if (completionHandler)
@@ -258,246 +254,176 @@
 
 - (BOOL)audioEmpty
 {
-//    if (self.audioEnable && self.configuration.audioOutput)
-//    {
-//        return self.configuration.audioDecoder.empty && self.configuration.audioOutput.empty;
-//    }
+    if (self.audioEnable && self.configuration.audioOutput)
+    {
+        NSUInteger count = 0;
+        [self.configuration.source getDuratioin:NULL size:NULL count:&count stream:self.configuration.source.audioStreams.firstObject];
+        return count == 0 && self.configuration.audioOutput.empty;
+    }
     return YES;
 }
 
 - (BOOL)videoEmpty
 {
-//    if (self.videoEnable && self.configuration.videoOutput)
-//    {
-//        return self.configuration.videoDecoder.empty && self.configuration.videoOutput.empty;
-//    }
+    if (self.videoEnable && self.configuration.videoOutput)
+    {
+        NSUInteger count = 0;
+        [self.configuration.source getDuratioin:NULL size:NULL count:&count stream:self.configuration.source.videoStreams.firstObject];
+        return count == 0 && self.configuration.videoOutput.empty;
+    }
     return YES;
 }
 
 - (CMTime)audioLoadedDuration
 {
-//    if (self.audioEnable && self.configuration.audioOutput)
-//    {
-//        return CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
-//    }
+    if (self.audioEnable && self.configuration.audioOutput)
+    {
+        CMTime sourceDuration = kCMTimeZero;
+        [self.configuration.source getDuratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.audioStreams.firstObject];
+        
+        CMTime outputDuration = kCMTimeZero;
+        [self.configuration.audioOutput getDuratioin:&outputDuration size:NULL count:NULL];
+        
+        return CMTimeAdd(sourceDuration, outputDuration);
+    }
     return kCMTimeZero;
 }
 
 - (CMTime)videoLoadedDuration
 {
-//    if (self.videoEnable && self.configuration.videoOutput)
-//    {
-//        return CMTimeAdd(self.configuration.videoDecoder.duration, self.configuration.videoOutput.duration);
-//    }
+    if (self.videoEnable && self.configuration.videoOutput)
+    {
+        CMTime sourceDuration = kCMTimeZero;
+        [self.configuration.source getDuratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.videoStreams.firstObject];
+        
+        CMTime outputDuration = kCMTimeZero;
+        [self.configuration.videoOutput getDuratioin:&outputDuration size:NULL count:NULL];
+        
+        return CMTimeAdd(sourceDuration, outputDuration);
+    }
     return kCMTimeZero;
 }
 
 - (long long)audioLoadedSize
 {
-//    return self.configuration.audioDecoder.size + self.configuration.audioOutput.size;
-    return 0;
+    int64_t sourceSize = 0;
+    [self.configuration.source getDuratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.audioStreams.firstObject];
+    
+    int64_t outputSzie = 0;
+    [self.configuration.audioOutput getDuratioin:NULL size:&outputSzie count:NULL];
+    
+    return sourceSize + outputSzie;
 }
 
 - (long long)videoLoadedSize
 {
-//    return self.configuration.videoDecoder.size + self.configuration.videoOutput.size;
-    return 0;
-}
-
-#pragma mark - Internal
-
-- (void)updateCapacity
-{
-//    CMTime duration = kCMTimeZero;
-//    long long size = 0;
-//
-//    if (self.audioEnable && self.configuration.audioOutput)
-//    {
-//        duration = CMTimeAdd(self.configuration.audioDecoder.duration, self.configuration.audioOutput.duration);
-//        size = self.configuration.audioDecoder.size + self.configuration.audioOutput.size;
-//    }
-//    else if (self.configuration.videoDecoder && self.configuration.videoOutput)
-//    {
-//        duration = CMTimeAdd(self.configuration.videoDecoder.duration, self.configuration.videoOutput.duration);
-//        size = self.configuration.videoDecoder.size + self.configuration.videoOutput.size;
-//    }
-//    else
-//    {
-//        return;
-//    }
-//
-//    BOOL shouldPaused = NO;
-//    if (size > 15 * 1024 * 1024)
-//    {
-//        shouldPaused = YES;
-//    }
-//    else if (CMTimeCompare(duration, CMTimeMake(10, 1)) > 0)
-//    {
-//        shouldPaused = YES;
-//    }
-//    if (shouldPaused) {
-//        [self.configuration.source pause];
-//    } else {
-//        [self.configuration.source resume];
-//    }
-//    [self.delegate sessionDidChangeCapacity:self];
+    int64_t sourceSize = 0;
+    [self.configuration.source getDuratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.videoStreams.firstObject];
+    
+    int64_t outputSzie = 0;
+    [self.configuration.videoOutput getDuratioin:NULL size:&outputSzie count:NULL];
+    
+    return sourceSize + outputSzie;
 }
 
 #pragma mark - SGFrameOutputDelegate
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state
 {
-    if (state == SGFrameOutputStateOpened)
+    switch (state)
     {
-        [self lock];
-        SGBasicBlock callback = [self setState:SGSessionStateOpened];
-        [self unlock];
-        callback();
+        case SGFrameOutputStateOpened:
+        {
+            [self lock];
+            if (self.audioEnable)
+            {
+                self.configuration.audioOutput.enable = YES;
+                self.configuration.audioOutput.key = YES;
+                self.configuration.audioOutput.delegate = self;
+                [self.configuration.audioOutput open];
+            }
+            if (self.videoEnable)
+            {
+                self.configuration.videoOutput.enable = YES;
+                self.configuration.videoOutput.key = !self.audioEnable;
+                self.configuration.videoOutput.delegate = self;
+                [self.configuration.videoOutput open];
+            }
+            SGBasicBlock callback = [self setState:SGSessionStateOpened];
+            [self unlock];
+            callback();
+        }
+            break;
+        case SGFrameOutputStateReading:
+        {
+            [self lock];
+            SGBasicBlock callback = [self setState:SGSessionStateReading];
+            [self unlock];
+            callback();
+        }
+            break;
+        case SGFrameOutputStateFinished:
+        {
+            [self lock];
+            SGBasicBlock callback = [self setState:SGSessionStateFinished];
+            [self unlock];
+            callback();
+        }
+            break;
+        case SGFrameOutputStateFailed:
+        {
+            _error = frameOutput.error;
+            [self lock];
+            SGBasicBlock callback = [self setState:SGSessionStateFailed];
+            [self unlock];
+            callback();
+        }
+            break;
+        default:
+            break;
     }
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream
 {
-    if (stream.mediaType == SGMediaTypeVideo)
-    {
-        NSLog(@"duration : %f, size : %lld, count : %ld", CMTimeGetSeconds(duration), size, count);
-    }
+    [self.delegate sessionDidChangeCapacity:self];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
-//    if (frame.mediaType == SGMediaTypeAudio)
-//    {
-//        NSLog(@"audio frame : %f", CMTimeGetSeconds(frame.timeStamp));
-//    }
-//    else if (frame.mediaType == SGMediaTypeVideo)
-//    {
-//        NSLog(@"video frame : %f", CMTimeGetSeconds(frame.timeStamp));
-//    }
+    if (frame.mediaType == SGMediaTypeAudio)
+    {
+        [self.configuration.audioOutput putFrame:frame];
+    }
+    else if (frame.mediaType == SGMediaTypeVideo)
+    {
+        [self.configuration.videoOutput putFrame:frame];
+    }
 }
-
-#pragma mark - SGSourceDelegate
-
-//- (void)packetOutputDidChangeState:(SGPacketOutput *)packetOutput
-//{
-//    [self lock];
-//    SGBasicBlock callback = ^{};
-//    switch (packetOutput.state)
-//    {
-//        case SGPacketOutputStateOpened:
-//        {
-//            if (!self.audioEnable && !self.videoEnable)
-//            {
-//                _error = SGECreateError(SGErrorCodeNoValidTrackToPlay, SGOperationCodeSessionOpen);
-//                callback = [self setState:SGSessionStateFailed];
-//            }
-//            else
-//            {
-//                if (self.audioEnable)
-//                {
-//                    self.configuration.audioDecoder.delegate = self;
-//                    [self.configuration.audioDecoder open];
-//                    self.configuration.audioOutput.enable = YES;
-//                    self.configuration.audioOutput.key = YES;
-//                    self.configuration.audioOutput.delegate = self;
-//                    [self.configuration.audioOutput open];
-//                }
-//                if (self.videoEnable)
-//                {
-//                    self.configuration.videoDecoder.delegate = self;
-//                    [self.configuration.videoDecoder open];
-//                    self.configuration.videoOutput.enable = YES;
-//                    self.configuration.videoOutput.key = !self.audioEnable;
-//                    self.configuration.videoOutput.delegate = self;
-//                    [self.configuration.videoOutput open];
-//                }
-//                callback = [self setState:SGSessionStateOpened];
-//            }
-//        }
-//            break;
-//        case SGPacketOutputStateReading:
-//        {
-//            callback = [self setState:SGSessionStateReading];
-//        }
-//            break;
-//        case SGPacketOutputStateFinished:
-//        {
-//            callback = [self setState:SGSessionStateFinished];
-//        }
-//            break;
-//        case SGPacketOutputStateFailed:
-//        {
-//            _error = packetOutput.error;
-//            callback = [self setState:SGSessionStateFailed];
-//        }
-//            break;
-//        default:
-//            break;
-//    }
-//    [self unlock];
-//    callback();
-//}
-
-//- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
-//{
-//    switch (packet.mediaType)
-//    {
-//        case SGMediaTypeAudio:
-//            [self.configuration.audioDecoder putPacket:packet];
-//            break;
-//        case SGMediaTypeVideo:
-//            [self.configuration.videoDecoder putPacket:packet];
-//            break;
-//        default:
-//            break;
-//    }
-//}
-
-#pragma mark - SGDecoderDelegate
-
-//- (void)decoderDidChangeState:(id <SGDecoder>)decoder
-//{
-//
-//}
-//
-//- (void)decoderDidChangeCapacity:(id <SGDecoder>)decoder
-//{
-//    [self updateCapacity];
-//}
-
-//- (void)decoder:(id <SGDecoder>)decoder hasNewFrame:(__kindof SGFrame *)frame
-//{
-//    if (decoder == self.configuration.audioDecoder)
-//    {
-//        [self.configuration.audioOutput putFrame:frame];
-//    }
-//    else if (decoder == self.configuration.videoDecoder)
-//    {
-//        [self.configuration.videoOutput putFrame:frame];
-//    }
-//}
 
 #pragma mark - SGOutputDelegate
 
 - (void)outputDidChangeCapacity:(id <SGOutput>)output
 {
-//    if (output == self.configuration.audioOutput)
-//    {
-//        if (self.configuration.audioOutput.count >= self.configuration.audioOutput.maxCount) {
-//            [self.configuration.audioDecoder pause];
-//        } else {
-//            [self.configuration.audioDecoder resume];
-//        }
-//    }
-//    else if (output == self.configuration.videoOutput)
-//    {
-//        if (self.configuration.videoOutput.count >= self.configuration.videoOutput.maxCount) {
-//            [self.configuration.videoDecoder pause];
-//        } else {
-//            [self.configuration.videoDecoder resume];
-//        }
-//    }
-//    [self updateCapacity];
+    NSUInteger count = 0;
+    [output getDuratioin:NULL size:NULL count:&count];
+    if (output == self.configuration.audioOutput)
+    {
+        if (count >= self.configuration.audioOutput.maxCount) {
+            [self.configuration.source pause:self.configuration.source.audioStreams];
+        } else {
+            [self.configuration.source resume:self.configuration.source.audioStreams];
+        }
+    }
+    else if (output == self.configuration.videoOutput)
+    {
+        if (count >= self.configuration.videoOutput.maxCount) {
+            [self.configuration.source pause:self.configuration.source.videoStreams];
+        } else {
+            [self.configuration.source resume:self.configuration.source.videoStreams];
+        }
+    }
+    [self.delegate sessionDidChangeCapacity:self];
 }
 
 #pragma mark - NSLocking

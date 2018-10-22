@@ -173,34 +173,14 @@
 
 - (BOOL)empty
 {
-    return self.count <= 0;
+    NSUInteger count = 0;
+    [self getDuratioin:NULL size:NULL count:&count];
+    return count == 0;
 }
 
-- (CMTime)duration
+- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
-//    if (self.frameQueue)
-//    {
-//        return self.frameQueue.duration;
-//    }
-    return kCMTimeZero;
-}
-
-- (long long)size
-{
-//    if (self.frameQueue)
-//    {
-//        return self.frameQueue.size;
-//    }
-    return 0;
-}
-
-- (NSUInteger)count
-{
-//    if (self.frameQueue)
-//    {
-//        return self.frameQueue.count;
-//    }
-    return 0;
+    [self.frameQueue getDuratioin:duration size:size count:count];
 }
 
 - (NSUInteger)maxCount
