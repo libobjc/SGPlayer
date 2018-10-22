@@ -7,25 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFFrame.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
-#import "avcodec.h"
 
 @interface SGCodecContext : NSObject
 
-@property (nonatomic, assign) CMTime timebase;
-@property (nonatomic, assign) AVCodecParameters * codecpar;
-@property (nonatomic, strong) Class frameClass;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
-@property (nonatomic, copy) NSDictionary * options;
+- (instancetype)initWithStream:(SGStream *)stream frameClass:(Class)frameClass;
+
+@property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic, assign) BOOL threadsAuto;
 @property (nonatomic, assign) BOOL refcountedFrames;
 
+
 - (BOOL)open;
-- (void)flush;
 - (void)close;
 
-- (NSArray <__kindof SGFrame <SGFFFrame> *> *)decode:(SGPacket *)packet;
+- (NSArray <SGFrame *> *)decode:(SGPacket *)packet;
+- (void)flush;
 
 @end

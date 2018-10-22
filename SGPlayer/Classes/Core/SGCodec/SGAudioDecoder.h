@@ -6,11 +6,11 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGAsyncDecoder.h"
+#import "SGDecodable.h"
 
-@interface SGAudioDecoder : SGAsyncDecoder
+@interface SGAudioDecoder : NSObject <SGDecodable>
 
-@property (nonatomic, copy) NSDictionary * options;
+@property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic, assign) BOOL threadsAuto;
 @property (nonatomic, assign) BOOL refcountedFrames;
 

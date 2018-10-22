@@ -153,23 +153,23 @@
     }
     _asset = asset;
     
-    SGPacketOutput * source = [[SGPacketOutput alloc] initWithAsset:asset];
+    SGFrameOutput * source = [[SGFrameOutput alloc] initWithAsset:asset];
 //    source.options = self.formatContextOptions;
     
-    SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
-    audioDecoder.options = self.codecContextOptions;
-    audioDecoder.threadsAuto = self.threadsAuto;
-    audioDecoder.refcountedFrames = self.refcountedFrames;
-    
-    SGVideoDecoder * videoDecoder = [[SGVideoDecoder alloc] init];
-    videoDecoder.options = self.codecContextOptions;
-    videoDecoder.threadsAuto = self.threadsAuto;
-    videoDecoder.refcountedFrames = self.refcountedFrames;
-    videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
-    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
-    videoDecoder.discardPacketFilter = self.codecDiscardPacketFilter;
-    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
-    videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
+//    SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
+//    audioDecoder.options = self.codecContextOptions;
+//    audioDecoder.threadsAuto = self.threadsAuto;
+//    audioDecoder.refcountedFrames = self.refcountedFrames;
+//
+//    SGVideoDecoder * videoDecoder = [[SGVideoDecoder alloc] init];
+//    videoDecoder.options = self.codecContextOptions;
+//    videoDecoder.threadsAuto = self.threadsAuto;
+//    videoDecoder.refcountedFrames = self.refcountedFrames;
+//    videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
+//    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
+//    videoDecoder.discardPacketFilter = self.codecDiscardPacketFilter;
+//    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
+//    videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
     SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
     auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
@@ -192,8 +192,8 @@
     
     SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
     configuration.source = source;
-    configuration.audioDecoder = audioDecoder;
-    configuration.videoDecoder = videoDecoder;
+//    configuration.audioDecoder = audioDecoder;
+//    configuration.videoDecoder = videoDecoder;
     configuration.audioOutput = auidoOutput;
     configuration.videoOutput = videoOutput;
     

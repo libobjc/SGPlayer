@@ -17,7 +17,7 @@
 - (CMTime)duration;
 - (CMTime)originalTimeStamp;
 - (CMTime)originalDuration;
-- (long long)size;
+- (int64_t)size;
 
 @end
 
@@ -28,9 +28,7 @@
 
 @property (nonatomic, assign) BOOL shouldSortObjects;
 
-- (CMTime)duration;
-- (long long)size;
-- (NSUInteger)count;
+- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
 - (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;

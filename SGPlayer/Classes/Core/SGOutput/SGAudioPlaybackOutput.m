@@ -258,28 +258,28 @@
 
 - (CMTime)duration
 {
-    if (self.frameQueue)
-    {
-        return self.frameQueue.duration;
-    }
+//    if (self.frameQueue)
+//    {
+//        return self.frameQueue.duration;
+//    }
     return kCMTimeZero;
 }
 
 - (long long)size
 {
-    if (self.frameQueue)
-    {
-        return self.frameQueue.size;
-    }
+//    if (self.frameQueue)
+//    {
+//        return self.frameQueue.size;
+//    }
     return 0;
 }
 
 - (NSUInteger)count
 {
-    if (self.frameQueue)
-    {
-        return self.frameQueue.count;
-    }
+//    if (self.frameQueue)
+//    {
+//        return self.frameQueue.count;
+//    }
     return 0;
 }
 

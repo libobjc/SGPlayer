@@ -12,7 +12,7 @@
 
 @property (nonatomic, assign) NSInteger maxCount;
 @property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) long long size;
+@property (nonatomic, assign) int64_t size;
 
 @property (nonatomic, strong) NSCondition * condition;
 @property (nonatomic, strong) NSMutableArray <id <SGObjectQueueItem>> * objects;
@@ -40,6 +40,24 @@
         self.condition = [[NSCondition alloc] init];
     }
     return self;
+}
+
+- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+{
+    if (self.didDestoryed) {
+        return;
+    }
+    [self.condition lock];
+    if (duration) {
+        * duration = self.duration;
+    }
+    if (size) {
+        * size = self.size;
+    }
+    if (count) {
+        * count = self.objects.count;
+    }
+    [self.condition unlock];
 }
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object
@@ -216,19 +234,14 @@
     id <SGObjectQueueItem> object = self.objects.firstObject;
     [self.objects removeObjectAtIndex:0];
     self.duration = CMTimeSubtract(self.duration, object.duration);
-    if (CMTimeCompare(self.duration, kCMTimeZero) < 0 || self.count <= 0) {
+    if (CMTimeCompare(self.duration, kCMTimeZero) < 0 || self.objects.count <= 0) {
         self.duration = kCMTimeZero;
     }
     self.size -= object.size;
-    if (self.size <= 0 || self.count <= 0) {
+    if (self.size <= 0 || self.objects.count <= 0) {
         self.size = 0;
     }
     return object;
-}
-
-- (NSUInteger)count
-{
-    return self.objects.count;
 }
 
 - (void)flush

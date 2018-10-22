@@ -13,6 +13,7 @@
 @interface SGAudioDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
+@property (nonatomic, strong) SGStream * stream;
 
 @end
 
@@ -29,37 +30,35 @@
     return self;
 }
 
-- (void)doSetup
+- (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] init];
-    self.codecContext.timebase = self.timebase;
-    self.codecContext.codecpar = self.codecpar;
-    self.codecContext.frameClass = [SGAudioFFFrame class];
+    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGAudioFFFrame class]];
     self.codecContext.options = self.options;
     self.codecContext.threadsAuto = self.threadsAuto;
     self.codecContext.refcountedFrames = self.refcountedFrames;
     [self.codecContext open];
 }
 
-- (void)doDestory
+- (void)destory
 {
     [self.codecContext close];
     self.codecContext = nil;
 }
 
-- (void)doFlush
+- (NSArray <SGFrame *> *)decode:(SGPacket *)packet
 {
-    [self.codecContext flush];
-}
-
-- (NSArray <SGFrame *> *)doDecode:(SGPacket *)packet
-{
-    if (CMTIMERANGE_IS_VALID(packet.timeRange) &&
-        !CMTimeRangeContainsTime(packet.timeRange, packet.originalTimeStamp))
+    if (self.stream != packet.stream)
     {
-        return nil;
+        self.stream = packet.stream;
+        [self destory];
+        [self setup];
     }
     return [self.codecContext decode:packet];
+}
+
+- (void)flush
+{
+    [self.codecContext flush];
 }
 
 @end

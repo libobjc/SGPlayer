@@ -7,7 +7,6 @@
 //
 
 #import "SGAsset.h"
-#import <AVFoundation/AVFoundation.h>
 
 @interface SGURLAsset : SGAsset
 
@@ -15,10 +14,5 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithURL:(NSURL *)URL;
-
-- (NSURL *)URL;
-- (NSError *)error;
-- (CMTime)duration;
-- (NSDictionary *)metadata;
 
 @end

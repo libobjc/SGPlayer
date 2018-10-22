@@ -6,17 +6,45 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGDecoder.h"
-#import "SGObjectQueue.h"
+#import <Foundation/Foundation.h>
+#import "SGDecodable.h"
 
-@interface SGAsyncDecoder : NSObject <SGDecoder>
+@protocol SGAsyncDecoderDelegate;
 
-@property (nonatomic, strong, readonly) SGObjectQueue * packetQueue;
-@property (nonatomic, assign) AVCodecParameters * codecpar;
+typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
+{
+    SGAsyncDecoderStateNone,
+    SGAsyncDecoderStateDecoding,
+    SGAsyncDecoderStatePaused,
+    SGAsyncDecoderStateClosed,
+};
 
-- (void)doSetup;
-- (void)doDestory;
-- (void)doFlush;
-- (NSArray <__kindof SGFrame *> *)doDecode:(SGPacket *)packet;
+@interface SGAsyncDecoder : NSObject
+
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithDecodable:(id <SGDecodable>)decodable;
+
+@property (nonatomic, weak) id object;
+@property (nonatomic, weak) id <SGAsyncDecoderDelegate> delegate;
+
+- (SGAsyncDecoderState)state;
+- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+
+- (BOOL)open;
+- (BOOL)close;
+- (BOOL)pause;
+- (BOOL)resume;
+- (BOOL)putPacket:(SGPacket *)packet;
+- (BOOL)flush;
+
+@end
+
+@protocol SGAsyncDecoderDelegate <NSObject>
+
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state;
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count;
+- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame;
 
 @end

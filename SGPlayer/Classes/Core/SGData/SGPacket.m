@@ -72,6 +72,7 @@
 
 - (void)clear
 {
+    _stream = nil;
     _mediaType = SGMediaTypeUnknown;
     _codecpar = NULL;
     _timebase = kCMTimeZero;
@@ -90,6 +91,11 @@
     {
         av_packet_unref(_corePacket);
     }
+}
+
+- (void)fillWithStream:(SGStream *)stream
+{
+    _stream = stream;
 }
 
 - (void)fillWithMediaType:(SGMediaType)mediaType

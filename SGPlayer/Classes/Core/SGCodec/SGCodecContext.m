@@ -11,10 +11,13 @@
 #import "SGFFmpeg.h"
 #import "SGError.h"
 #import "SGMacro.h"
+#import "SGFFFrame.h"
 
 @interface SGCodecContext ()
 
 @property (nonatomic, assign) AVCodecContext * codecContext;
+@property (nonatomic, assign) SGStream * stream;
+@property (nonatomic, strong) Class frameClass;
 
 @end
 
@@ -28,14 +31,14 @@
         return nil;
     }
     
-    int result = avcodec_parameters_to_context(codecContext, self.codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.stream.coreStream->codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error)
     {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = av_make_q((int)self.timebase.value, (int)self.timebase.timescale);
+    codecContext->pkt_timebase = self.stream.coreStream->time_base;
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -75,6 +78,16 @@
     return codecContext;
 }
 
+- (instancetype)initWithStream:(SGStream *)stream frameClass:(Class)frameClass
+{
+    if (self = [super init])
+    {
+        self.stream = stream;
+        self.frameClass = frameClass;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [self close];
@@ -82,15 +95,11 @@
 
 - (BOOL)open
 {
-    if (!self.codecpar)
+    if (!self.stream)
     {
         return NO;
     }
     if (!self.frameClass)
-    {
-        return NO;
-    }
-    if (CMTimeCompare(self.timebase, kCMTimeZero) <= 0)
     {
         return NO;
     }
@@ -119,7 +128,7 @@
     }
 }
 
-- (NSArray <__kindof SGFrame <SGFFFrame> *> *)decode:(SGPacket *)packet
+- (NSArray <SGFrame *> *)decode:(SGPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.corePacket);
     if (result < 0)
@@ -130,15 +139,11 @@
     while (result >= 0)
     {
         SGFrame <SGFFFrame> * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
-        AVFrame * coreFrame = frame.coreFrame;
-        NSAssert(frame, @"Fecth frame failed");
-        result = avcodec_receive_frame(self.codecContext, coreFrame);
+        result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
         if (result < 0)
         {
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
                 
-            } else {
-//                SGPlayerLog(@"Error : %@", SGEGetErrorWithCode(result, SGErrorCodeCodecReceiveFrame));
             }
             [frame unlock];
             break;

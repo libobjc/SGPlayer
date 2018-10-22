@@ -7,13 +7,11 @@
 //
 
 #import "SGURLAsset.h"
-#import "SGAsset+Private.h"
 #import "SGURLPacketReader.h"
 
 @interface SGURLAsset ()
 
 @property (nonatomic, copy) NSURL * URL;
-@property (nonatomic, strong) SGURLPacketReader * reader;
 
 @end
 
@@ -24,32 +22,8 @@
     if (self = [super init])
     {
         self.URL = URL;
-        self.reader = [self newReadable];
     }
     return self;
-}
-
-- (NSError *)error
-{
-    [self openIfNeeded];
-    return self.reader.error;
-}
-
-- (CMTime)duration
-{
-    [self openIfNeeded];
-    return self.reader.duration;
-}
-
-- (NSDictionary *)metadata
-{
-    [self openIfNeeded];
-    return self.reader.metadata;
-}
-
-- (void)openIfNeeded
-{
-    [self.reader open];
 }
 
 - (id <SGPacketReadable>)newReadable

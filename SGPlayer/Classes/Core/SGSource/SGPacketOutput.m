@@ -13,18 +13,20 @@
 
 @interface SGPacketOutput () <NSLocking, SGPacketReadableDelegate>
 
+{
+    SGPacketOutputState _state;
+}
+
 @property (nonatomic, strong) SGAsset * asset;
 @property (nonatomic, strong) id <SGPacketReadable> readable;
+@property (nonatomic, assign) CMTime seekTimeStamp;
+@property (nonatomic, assign) CMTime seekingTimeStamp;
+@property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
 @property (nonatomic, strong) NSOperation * readOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
-
-@property (nonatomic, assign, readonly) SGPacketOutputState state;
-@property (nonatomic, assign) CMTime seekTimeStamp;
-@property (nonatomic, assign) CMTime seekingTimeStamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
 @end
 
@@ -60,23 +62,28 @@
         }
         else if (privious == SGPacketOutputStateOpened)
         {
-            if (_state == SGPacketOutputStateReading)
+            if (state == SGPacketOutputStateReading)
             {
                 [self startReadThread];
             }
         }
         else if (privious == SGPacketOutputStateFinished)
         {
-            if (_state == SGPacketOutputStateSeeking)
+            if (state == SGPacketOutputStateSeeking)
             {
                 [self startReadThread];
             }
         }
         return ^{
-            [self.delegate packetOutputDidChangeState:self];
+            [self.delegate packetOutput:self didChangeState:state];
         };
     }
     return ^{};
+}
+
+- (SGPacketOutputState)state
+{
+    return _state;
 }
 
 - (NSError *)error
@@ -330,13 +337,14 @@
                             break;
                         }
                     }
+                    [packet fillWithStream:stream];
                     [packet fillWithMediaType:stream.mediaType
                                      codecpar:stream.coreStream->codecpar
                                      timebase:stream.timebase
                                         scale:CMTimeMake(1, 1)
                                     startTime:kCMTimeZero
                                     timeRange:CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)];
-                    [self.delegate packetOutput:self hasNewPacket:packet];
+                    [self.delegate packetOutput:self didOutputPacket:packet];
                 }
                 [packet unlock];
                 continue;

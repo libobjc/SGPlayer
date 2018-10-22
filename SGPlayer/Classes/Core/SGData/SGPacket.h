@@ -14,6 +14,7 @@
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
 @property (nonatomic, assign, readonly) AVPacket * corePacket;
+@property (nonatomic, strong, readonly) SGStream * stream;
 
 @property (nonatomic, assign, readonly) SGMediaType mediaType;
 @property (nonatomic, assign, readonly) AVCodecParameters * codecpar;
@@ -33,6 +34,8 @@
 
 @property (nonatomic, assign, readonly) long long size;
 @property (nonatomic, assign, readonly) BOOL keyFrame;
+
+- (void)fillWithStream:(SGStream *)stream;
 
 - (void)fillWithMediaType:(SGMediaType)mediaType
                  codecpar:(AVCodecParameters *)codecpar
