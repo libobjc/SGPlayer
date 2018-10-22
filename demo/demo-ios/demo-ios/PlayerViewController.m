@@ -36,16 +36,17 @@
     NSURL * contentURL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
     NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
-    NSMutableArray * assets = [NSMutableArray array];
-    for (int i = 0; i < 1; i++)
-    {
-        SGURLAsset2 * asset1 = [[SGURLAsset2 alloc] initWithURL:contentURL1];
-//        asset1.scale = CMTimeMake(1, 3);
-        SGURLAsset2 * asset2 = [[SGURLAsset2 alloc] initWithURL:contentURL2];
-        [assets addObject:asset1];
-        [assets addObject:asset2];
-    }
-    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithAssets:assets];
+//    NSMutableArray * assets = [NSMutableArray array];
+//    for (int i = 0; i < 1; i++)
+//    {
+//        SGURLAsset2 * asset1 = [[SGURLAsset2 alloc] initWithURL:contentURL1];
+////        asset1.scale = CMTimeMake(1, 3);
+//        SGURLAsset2 * asset2 = [[SGURLAsset2 alloc] initWithURL:contentURL2];
+//        [assets addObject:asset1];
+//        [assets addObject:asset2];
+//    }
+//    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithAssets:assets];
+    SGURLAsset * asset = [[SGURLAsset alloc] initWithURL:contentURL1];
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
@@ -112,16 +113,16 @@
     self.progressSilderTouching = NO;
     CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
     CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-    [self.player seekToTime:time];
-    [self.player2 seekToTime:time2];
+    [self.player seekToTime:time completionHandler:nil];
+    [self.player2 seekToTime:time2 completionHandler:nil];
 }
 
 - (IBAction)progressValueChanged:(id)sender
 {
     CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
     CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-    [self.player seekToTime:time];
-    [self.player2 seekToTime:time2];
+    [self.player seekToTime:time completionHandler:nil];
+    [self.player2 seekToTime:time2 completionHandler:nil];
 }
 
 #pragma mark - SGPlayerDelegate
