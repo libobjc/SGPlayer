@@ -49,7 +49,7 @@
     [self.configuration.source open];
 }
 
-- (void)read
+- (void)start
 {
     [self lock];
     if (self.state != SGSessionStateOpened)
@@ -60,7 +60,7 @@
     SGBasicBlock callback = [self setState:SGSessionStateReading];
     [self unlock];
     callback();
-    [self.configuration.source resume];
+    [self.configuration.source start];
 }
 
 - (void)close

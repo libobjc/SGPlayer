@@ -44,6 +44,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (NSArray <SGStream *> *)otherStreams;
 
 - (NSError *)open;
+- (NSError *)start;
 - (NSError *)close;
 - (NSError *)pause;
 - (NSError *)resume;

@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, SGSessionState)
  *  Streams.
  */
 - (void)open;
-- (void)read;
+- (void)start;
 - (void)close;
 
 /**

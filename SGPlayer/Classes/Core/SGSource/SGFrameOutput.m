@@ -108,19 +108,38 @@
     return [self.packetOutput open];
 }
 
+- (NSError *)start
+{
+    return [self.packetOutput start];
+}
+
 - (NSError *)close
 {
-    return [self.packetOutput close];
+    NSError * error = [self.packetOutput close];
+    for (SGAsyncDecoder * obj in self.decoders) {
+        [obj close];
+    }
+    return error;
 }
 
-- (NSError *)pause
+- (NSError *)pause:(NSArray <SGStream *> *)streams
 {
-    return [self.packetOutput pause];
+    for (SGAsyncDecoder * obj in self.decoders) {
+        if ([streams containsObject:obj.object]) {
+            [obj pause];
+        }
+    }
+    return nil;
 }
 
-- (NSError *)resume
+- (NSError *)resume:(NSArray <SGStream *> *)streams
 {
-    return [self.packetOutput resume];
+    for (SGAsyncDecoder * obj in self.decoders) {
+        if ([streams containsObject:obj.object]) {
+            [obj resume];
+        }
+    }
+    return nil;
 }
 
 #pragma mark - Seeking

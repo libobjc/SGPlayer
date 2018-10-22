@@ -24,7 +24,7 @@
 @interface SGObjectQueue : NSObject
 
 - (instancetype)init;
-- (instancetype)initWithMaxCount:(NSInteger)maxCount;
+- (instancetype)initWithMaxCount:(NSUInteger)maxCount;
 
 @property (nonatomic, assign) BOOL shouldSortObjects;
 

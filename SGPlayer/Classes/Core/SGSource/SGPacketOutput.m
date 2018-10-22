@@ -138,6 +138,11 @@
     return nil;
 }
 
+- (NSError *)start
+{
+    return [self resume];
+}
+
 - (NSError *)close
 {
     [self lock];

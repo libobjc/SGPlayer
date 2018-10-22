@@ -673,7 +673,7 @@
 {
     if (session.state == SGSessionStateOpened)
     {
-        [session read];
+        [session start];
         [self lock];
         SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFinished];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateLoading];

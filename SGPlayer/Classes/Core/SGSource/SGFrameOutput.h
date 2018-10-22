@@ -47,9 +47,10 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
 
 - (NSError *)open;
+- (NSError *)start;
 - (NSError *)close;
-- (NSError *)pause;
-- (NSError *)resume;
+- (NSError *)pause:(NSArray <SGStream *> *)streams;
+- (NSError *)resume:(NSArray <SGStream *> *)streams;
 - (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
