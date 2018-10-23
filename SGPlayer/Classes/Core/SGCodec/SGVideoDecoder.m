@@ -8,7 +8,7 @@
 
 #import "SGVideoDecoder.h"
 #import "SGCodecContext.h"
-#import "SGVideoFFFrame.h"
+#import "SGVideoFrame.h"
 
 @interface SGVideoDecoder ()
 
@@ -34,7 +34,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGVideoFFFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGVideoFrame class]];
     self.codecContext.options = self.options;
     self.codecContext.threadsAuto = self.threadsAuto;
     self.codecContext.refcountedFrames = self.refcountedFrames;

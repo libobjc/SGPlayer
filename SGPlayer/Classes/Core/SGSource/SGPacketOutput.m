@@ -338,7 +338,7 @@
                     {
                         if (obj.index == packet.core->stream_index)
                         {
-                            packet.stream = obj;
+                            [packet configurateWithStream:obj];
                             break;
                         }
                     }

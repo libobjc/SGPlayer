@@ -10,10 +10,12 @@
 #import "SGObjectQueue.h"
 #import "SGObjectPool.h"
 #import "SGDefines.h"
+#import "SGStream.h"
 
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, assign, readonly) SGMediaType mediaType;
+@property (nonatomic, assign, readonly) void * coreptr;
+@property (nonatomic, strong, readonly) SGStream * stream;
 
 @property (nonatomic, assign) CMTime timebase;
 @property (nonatomic, assign) CMTime scale;

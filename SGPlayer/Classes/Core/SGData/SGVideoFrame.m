@@ -7,6 +7,8 @@
 //
 
 #import "SGVideoFrame.h"
+#import "SGFrame+Private.h"
+#import "SGFFDefinesMapping.h"
 #import "SGSWSContext.h"
 #import "SGPlatform.h"
 #import "imgutils.h"
@@ -15,20 +17,28 @@
 
 @interface SGVideoFrame ()
 
+{
+    uint8_t * _resampleData[8];
+    size_t _resampleDataSize[8];
+    int _resampleLinesize[8];
+}
+
 @end
 
 @implementation SGVideoFrame
-
-- (SGMediaType)mediaType
-{
-    return SGMediaTypeVideo;
-}
 
 - (instancetype)init
 {
     if (self = [super init])
     {
         NSLog(@"%s", __func__);
+        
+        for (int i = 0; i < 8; i++)
+        {
+            _resampleData[i] = NULL;
+            _resampleDataSize[i] = 0;
+            _resampleLinesize[i] = 0;
+        }
     }
     return self;
 }
@@ -36,6 +46,17 @@
 - (void)dealloc
 {
     NSLog(@"%s", __func__);
+    
+    for (int i = 0; i < 8; i++)
+    {
+        _resampleLinesize[i] = 0;
+        if (_resampleData[i] != NULL && _resampleDataSize[i] > 0)
+        {
+            free(_resampleData[i]);
+            _resampleData[i] = NULL;
+            _resampleDataSize[i] = 0;
+        }
+    }
 }
 
 - (void)clear
@@ -60,17 +81,73 @@
     self.pixelBuffer = NULL;
 }
 
-- (void)setPixelBuffer:(CVPixelBufferRef)pixelBuffer
+- (void)configurateWithStream:(SGStream *)stream
 {
-    if (pixelBuffer)
+    [super configurateWithStream:stream];
+    
+    self.format = SGDMPixelFormatFF2SG(self.core->format);
+    self.colorRange = SGDMColorRangeFF2SG(self.core->color_range);
+    self.colorPrimaries = SGDMColorPrimariesFF2SG(self.core->color_primaries);
+    self.colorTransferCharacteristic = SGDMColorTransferCharacteristicFF2SG(self.core->color_trc);
+    self.colorSpace = SGDMColorSpaceFF2SG(self.core->colorspace);
+    self.chromaLocation = SGDMChromaLocationFF2SG(self.core->chroma_location);
+    self.width = self.core->width;
+    self.height = self.core->height;
+    self.keyFrame = self.core->key_frame;
+    self.bestEffortTimestamp = self.core->best_effort_timestamp;
+    self.packetPosition = self.core->pkt_pos;
+    self.packetDuration = self.core->pkt_duration;
+    self.packetSize = self.core->pkt_size;
+    BOOL resample = [self resampleIfNeeded];
+    self.data = resample ? _resampleData : self.core->data;
+    self.linesize = resample ? _resampleLinesize : self.core->linesize;
+}
+
+- (BOOL)resampleIfNeeded
+{
+    BOOL resample = NO;
+    int channels = 0;
+    int linesize[8] = {0};
+    int linecount[8] = {0};
+    if (self.format == SG_AV_PIX_FMT_YUV420P)
     {
-        CVPixelBufferRetain(pixelBuffer);
+        channels = 3;
+        linesize[0] = self.width;
+        linesize[1] = self.width / 2;
+        linesize[2] = self.width / 2;
+        linecount[0] = self.height;
+        linecount[1] = self.height / 2;
+        linecount[2] = self.height / 2;
     }
-    if (_pixelBuffer)
+    for (int i = 0; i < channels; i++)
     {
-        CVPixelBufferRelease(_pixelBuffer);
+        if (self.core->linesize[i] > linesize[i])
+        {
+            resample = YES;
+            size_t size = linesize[i] * linecount[i] * sizeof(uint8_t);
+            if (_resampleDataSize[i] < size)
+            {
+                if (_resampleData[i] != NULL && _resampleDataSize[i] > 0)
+                {
+                    free(_resampleData[i]);
+                    _resampleData[i] = NULL;
+                    _resampleDataSize[i] = 0;
+                }
+                _resampleData[i] = malloc(size);
+                _resampleDataSize[i] = size;
+            }
+            uint8_t * dest = _resampleData[i];
+            uint8_t * src = self.core->data[i];
+            for (int j = 0; j < linecount[i]; j++)
+            {
+                memcpy(dest, src, linesize[i] * sizeof(uint8_t));
+                dest += linesize[i];
+                src += self.core->linesize[i];
+            }
+            _resampleLinesize[i] = linesize[i];
+        }
     }
-    _pixelBuffer = pixelBuffer;
+    return resample;
 }
 
 - (UIImage *)image

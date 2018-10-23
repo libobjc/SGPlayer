@@ -27,31 +27,22 @@
         self.coreLock = [[NSLock alloc] init];
         self.core = av_packet_alloc();
         self.coreptr = self.core;
-        _stream = nil;
-        _timebase = kCMTimeZero;
-        _scale = CMTimeMake(1, 1);
-        _startTime = kCMTimeZero;
-        _timeRange = kCMTimeRangeZero;
-        _timeStamp = kCMTimeZero;
-        _decodeTimeStamp = kCMTimeZero;
-        _duration = kCMTimeZero;
-        _originalTimeStamp = kCMTimeZero;
-        _originalDecodeTimeStamp = kCMTimeZero;
-        _originalDuration = kCMTimeZero;
-        _size = 0;
-        _keyFrame = 0;
+        [self clear];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    NSAssert(self.lockingCount <= 0, @"SGPacket, must be unlocked before release");
+    
+    [self clear];
     if (self.core)
     {
         av_packet_free(&_core);
         self.core = nil;
     }
-    NSAssert(self.lockingCount <= 0, @"SGPacket, must be unlocked before release");
+    self.coreptr = nil;
 }
 
 - (void)lock
@@ -75,6 +66,10 @@
 
 - (void)clear
 {
+    if (self.core)
+    {
+        av_packet_unref(self.core);
+    }
     _stream = nil;
     _timebase = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
@@ -88,13 +83,9 @@
     _originalDuration = kCMTimeZero;
     _size = 0;
     _keyFrame = NO;
-    if (self.core)
-    {
-        av_packet_unref(self.core);
-    }
 }
 
-- (void)setStream:(SGStream *)stream
+- (void)configurateWithStream:(SGStream *)stream
 {
     _stream = stream;
     _timebase = _stream.timebase;

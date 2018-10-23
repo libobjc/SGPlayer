@@ -7,13 +7,10 @@
 //
 
 #import "SGAudioFrame.h"
+#import "SGFrame+Private.h"
+#import "SGFFDefinesMapping.h"
 
 @implementation SGAudioFrame
-
-- (SGMediaType)mediaType
-{
-    return SGMediaTypeAudio;
-}
 
 - (instancetype)init
 {
@@ -43,6 +40,23 @@
     self.packetDuration = 0;
     self.packetSize = 0;
     self.data = nil;
+}
+
+- (void)configurateWithStream:(SGStream *)stream
+{
+    [super configurateWithStream:stream];
+    
+    self.format = SGDMSampleFormatFF2SG(self.core->format);
+    self.numberOfSamples = self.core->nb_samples;
+    self.sampleRate = self.core->sample_rate;
+    self.numberOfChannels = self.core->channels;
+    self.channelLayout = self.core->channel_layout;
+    self.bestEffortTimestamp = self.core->best_effort_timestamp;
+    self.packetPosition = self.core->pkt_pos;
+    self.packetDuration = self.core->pkt_duration;
+    self.packetSize = self.core->pkt_size;
+    self.data = self.core->data;
+    self.linesize = self.core->linesize;
 }
 
 @end

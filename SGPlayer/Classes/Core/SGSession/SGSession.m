@@ -391,11 +391,11 @@
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
-    if (frame.mediaType == SGMediaTypeAudio)
+    if (frame.stream.type == SGMediaTypeAudio)
     {
         [self.configuration.audioOutput putFrame:frame];
     }
-    else if (frame.mediaType == SGMediaTypeVideo)
+    else if (frame.stream.type == SGMediaTypeVideo)
     {
         [self.configuration.videoOutput putFrame:frame];
     }

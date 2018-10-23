@@ -8,7 +8,7 @@
 
 #import "SGAudioDecoder.h"
 #import "SGCodecContext.h"
-#import "SGAudioFFFrame.h"
+#import "SGAudioFrame.h"
 
 @interface SGAudioDecoder ()
 
@@ -32,7 +32,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGAudioFFFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGAudioFrame class]];
     self.codecContext.options = self.options;
     self.codecContext.threadsAuto = self.threadsAuto;
     self.codecContext.refcountedFrames = self.refcountedFrames;

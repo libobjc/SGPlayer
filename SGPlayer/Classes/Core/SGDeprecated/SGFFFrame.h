@@ -15,9 +15,9 @@
 
 @protocol SGFFFrame <NSObject>
 
-@property (nonatomic, assign, readonly) AVFrame * coreFrame;
-
-- (void)fillWithPacket:(SGPacket *)packet;
+//@property (nonatomic, assign, readonly) AVFrame * coreFrame;
+//
+//- (void)fillWithPacket:(SGPacket *)packet;
 
 @end
 

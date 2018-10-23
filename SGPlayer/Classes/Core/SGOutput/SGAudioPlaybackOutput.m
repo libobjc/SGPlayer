@@ -9,7 +9,7 @@
 #import "SGAudioPlaybackOutput.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioBufferFrame.h"
-#import "SGAudioFFFrame.h"
+#import "SGAudioFrame.h"
 #import "SGFFDefinesMapping.h"
 #import "swresample.h"
 #import "swscale.h"
@@ -133,17 +133,17 @@
     [self destorySwrContext];
 }
 
-- (void)putFrame:(__kindof SGFrame *)frame
+- (void)putFrame:(SGFrame *)frame
 {
     if (!self.enable)
     {
         return;
     }
-    if (![frame isKindOfClass:[SGAudioFFFrame class]])
+    if (![frame isKindOfClass:[SGAudioFrame class]])
     {
         return;
     }
-    SGAudioFFFrame * audioFrame = frame;
+    SGAudioFrame * audioFrame = (SGAudioFrame *)frame;
     
     SGAVSampleFormat inputFormat = audioFrame.format;
     int inputSampleRate = audioFrame.sampleRate;

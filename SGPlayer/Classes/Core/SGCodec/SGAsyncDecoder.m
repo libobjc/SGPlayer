@@ -223,8 +223,8 @@ static SGPacket * flushPacket;
                 {
                     if (!self.waitingFlush)
                     {
-                        NSArray <__kindof SGFrame *> * frames = [self.decodable decode:packet];
-                        for (__kindof SGFrame * frame in frames)
+                        NSArray <SGFrame *> * frames = [self.decodable decode:packet];
+                        for (SGFrame * frame in frames)
                         {
                             if (!self.waitingFlush)
                             {

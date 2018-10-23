@@ -14,6 +14,7 @@
 #import "SGFFFrame.h"
 #import "SGStream+Private.h"
 #import "SGPacket+Private.h"
+#import "SGFrame+Private.h"
 
 @interface SGCodecContext ()
 
@@ -140,8 +141,8 @@
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        SGFrame <SGFFFrame> * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
-        result = avcodec_receive_frame(self.codecContext, frame.coreFrame);
+        SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        result = avcodec_receive_frame(self.codecContext, frame.core);
         if (result < 0)
         {
             if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
@@ -155,7 +156,7 @@
             if (!array) {
                 array = [NSMutableArray array];
             }
-            [frame fillWithPacket:packet];
+            [frame configurateWithStream:packet.stream];
             [array addObject:frame];
         }
     }
