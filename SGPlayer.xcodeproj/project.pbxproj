@@ -1496,6 +1496,8 @@
 				9CA3CDCE20E2255700B852D0 /* SGAudioFFFrame.m */,
 				9CA3CDD520E2283500B852D0 /* SGVideoFFFrame.h */,
 				9CA3CDD620E2283500B852D0 /* SGVideoFFFrame.m */,
+				9CA3CDDD20E2320F00B852D0 /* SGAudioBufferFrame.h */,
+				9CA3CDDE20E2320F00B852D0 /* SGAudioBufferFrame.m */,
 			);
 			path = SGDeprecated;
 			sourceTree = "<group>";
@@ -1539,8 +1541,6 @@
 				9CEBCCA6217F19BE00430024 /* SGFrame+Private.h */,
 				9CF15E1D2011BC5400585326 /* SGAudioFrame.h */,
 				9CF15E1E2011BC5400585326 /* SGAudioFrame.m */,
-				9CA3CDDD20E2320F00B852D0 /* SGAudioBufferFrame.h */,
-				9CA3CDDE20E2320F00B852D0 /* SGAudioBufferFrame.m */,
 				9C2C55992015B87400131E15 /* SGVideoFrame.h */,
 				9C2C559A2015B87400131E15 /* SGVideoFrame.m */,
 				9C2C55AB2015D1D200131E15 /* SGPacket.h */,

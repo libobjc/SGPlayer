@@ -16,16 +16,10 @@
 
 @property (nonatomic, assign, readonly) void * coreptr;
 
-//@property (nonatomic, strong, readonly) SGStream * stream;
-//@property (nonatomic, assign, readonly) CMTime timeStamp;
-//@property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
-//@property (nonatomic, assign, readonly) CMTime duration;
-//@property (nonatomic, assign, readonly) long long size;
-
-@property (nonatomic, strong) SGStream * stream;
-@property (nonatomic, assign) CMTime timeStamp;
-@property (nonatomic, assign) CMTime decodeTimeStamp;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) long long size;
+@property (nonatomic, strong, readonly) SGStream * stream;
+@property (nonatomic, assign, readonly) CMTime timeStamp;
+@property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
+@property (nonatomic, assign, readonly) CMTime duration;
+@property (nonatomic, assign, readonly) long long size;
 
 @end

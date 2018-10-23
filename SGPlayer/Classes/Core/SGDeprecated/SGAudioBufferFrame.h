@@ -10,8 +10,4 @@
 
 @interface SGAudioBufferFrame : SGAudioFrame
 
-- (void)updateData:(void **)data linesize:(int *)linesize;
-
-- (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame;
-
 @end

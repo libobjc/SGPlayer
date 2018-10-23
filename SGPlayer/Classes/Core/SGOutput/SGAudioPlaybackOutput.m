@@ -8,19 +8,21 @@
 
 #import "SGAudioPlaybackOutput.h"
 #import "SGAudioStreamPlayer.h"
-#import "SGAudioBufferFrame.h"
+#import "SGFrame+Private.h"
 #import "SGAudioFrame.h"
 #import "SGFFDefinesMapping.h"
 #import "swresample.h"
 #import "swscale.h"
 #import "SGError.h"
 
+
+
 @interface SGAudioPlaybackOutput () <NSLocking, SGAudioStreamPlayerDelegate>
 
 {
-    void * _swrContextBufferData[SGAudioFrameMaxChannelCount];
-    int _swrContextBufferLinesize[SGAudioFrameMaxChannelCount];
-    int _swrContextBufferMallocSize[SGAudioFrameMaxChannelCount];
+    void * _swrContextBufferData[AV_NUM_DATA_POINTERS];
+    int _swrContextBufferLinesize[AV_NUM_DATA_POINTERS];
+    int _swrContextBufferMallocSize[AV_NUM_DATA_POINTERS];
 }
 
 @property (nonatomic, assign) CMTime finalRate;
@@ -57,6 +59,11 @@
 - (SGMediaType)mediaType
 {
     return SGMediaTypeAudio;
+}
+
+static void SGAudioPlaybackOutputAVBufferFree(void * opaque, uint8_t * data)
+{
+    av_free(data);
 }
 
 - (instancetype)init
@@ -204,14 +211,24 @@
                                       audioFrame.numberOfSamples);
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
 
-    SGAudioBufferFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioBufferFrame class]];
-    [result fillWithAudioFrame:audioFrame];
-    result.format = self.outputFormat;
-    result.numberOfSamples = numberOfSamples;
-    result.sampleRate = self.outputSampleRate;
-    result.numberOfChannels = self.outputNumberOfChannels;
-    result.channelLayout = self.outputChannelLayout;
-    [result updateData:_swrContextBufferData linesize:_swrContextBufferLinesize];
+    SGAudioFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioFrame class]];
+    result.core->format = SGDMSampleFormatSG2FF(self.outputFormat);
+    result.core->channels = self.outputNumberOfChannels;
+    result.core->channel_layout = self.outputChannelLayout;
+    result.core->nb_samples = numberOfSamples;
+    av_frame_copy_props(result.core, audioFrame.core);
+    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
+    {
+        int size = _swrContextBufferLinesize[i];
+        uint8_t * data = av_mallocz(size);
+        memcpy(data, _swrContextBufferData[i], size);
+        AVBufferRef * buffer = av_buffer_create(data, size, SGAudioPlaybackOutputAVBufferFree, NULL, 0);
+        result.core->buf[i] = buffer;
+        result.core->data[i] = buffer->data;
+        result.core->linesize[i] = buffer->size;
+    }
+    [result configurateWithStream:audioFrame.stream];
+    
     if (!self.receivedFrame)
     {
         [self.timeSync updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
@@ -338,7 +355,7 @@
 
 - (void)setupSwrContextBufferIfNeeded:(int)bufferSize
 {
-    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
     {
         if (_swrContextBufferMallocSize[i] < bufferSize)
         {
@@ -350,7 +367,7 @@
 
 - (void)updateSwrContextBufferLinsize:(int)linesize
 {
-    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
     {
         _swrContextBufferLinesize[i] = (i < self.outputNumberOfChannels) ? linesize : 0;
     }
@@ -358,7 +375,7 @@
 
 - (void)destorySwrContextBuffer
 {
-    for (int i = 0; i < SGAudioFrameMaxChannelCount; i++)
+    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
     {
         if (_swrContextBufferData[i])
         {
