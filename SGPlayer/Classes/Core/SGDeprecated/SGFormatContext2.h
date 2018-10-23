@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGStream.h"
+#import "avformat.h"
 
 @interface SGFormatContext2 : NSObject
 

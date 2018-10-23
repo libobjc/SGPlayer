@@ -343,12 +343,6 @@
                         }
                     }
                     [packet fillWithStream:stream];
-                    [packet fillWithMediaType:stream.mediaType
-                                     codecpar:stream.coreStream->codecpar
-                                     timebase:stream.timebase
-                                        scale:CMTimeMake(1, 1)
-                                    startTime:kCMTimeZero
-                                    timeRange:CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity)];
                     [self.delegate packetOutput:self didOutputPacket:packet];
                 }
                 [packet unlock];

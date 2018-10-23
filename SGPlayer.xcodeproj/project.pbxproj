@@ -413,6 +413,7 @@
 		9CE6F5A32004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9CE6F5A42004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9CE6F5A52004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
+		9CEBCC9D217EF8E900430024 /* SGStream+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEBCC9B217EF8E900430024 /* SGStream+Private.h */; };
 		9CF15DE520118E1100585326 /* SGAsyncDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15DE320118E1100585326 /* SGAsyncDecoder.h */; };
 		9CF15DE620118E1100585326 /* SGAsyncDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15DE320118E1100585326 /* SGAsyncDecoder.h */; };
 		9CF15DE720118E1100585326 /* SGAsyncDecoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15DE320118E1100585326 /* SGAsyncDecoder.h */; };
@@ -434,7 +435,7 @@
 		9CF15E222011BC5400585326 /* SGAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E1E2011BC5400585326 /* SGAudioFrame.m */; };
 		9CF15E232011BC5400585326 /* SGAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E1E2011BC5400585326 /* SGAudioFrame.m */; };
 		9CF15E242011BC5400585326 /* SGAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E1E2011BC5400585326 /* SGAudioFrame.m */; };
-		9CF52CF7200F45D700950B81 /* SGStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGStream.h */; };
+		9CF52CF7200F45D700950B81 /* SGStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGStream.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF52CF8200F45D700950B81 /* SGStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGStream.h */; };
 		9CF52CF9200F45D700950B81 /* SGStream.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGStream.h */; };
 		9CF52CFA200F45D700950B81 /* SGStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF52CF6200F45D700950B81 /* SGStream.m */; };
@@ -954,6 +955,7 @@
 		9CE6F52D2004D97C00D1F4C8 /* SGPLFTargets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPLFTargets.h; sourceTree = "<group>"; };
 		9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlatform.h; sourceTree = "<group>"; };
 		9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGMacro.h; sourceTree = "<group>"; };
+		9CEBCC9B217EF8E900430024 /* SGStream+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGStream+Private.h"; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9CEFA6EA1E7125C800835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1243,6 +1245,7 @@
 		9C478F341E713A9B00AD4289 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				9CEBCC9F217F018100430024 /* SGDeprecated */,
 				9C6C75FE2141318E00970427 /* SGDiscard */,
 				9CF63FBF211D8E26001B2684 /* SGAsset */,
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
@@ -1383,13 +1386,6 @@
 				9CE469B22151FB4F00528662 /* SGURLPacketReader.m */,
 				9C95D2BC2152335400079B38 /* SGFormatContext.h */,
 				9C95D2BB2152335400079B38 /* SGFormatContext.m */,
-				9CF52CF5200F45D700950B81 /* SGStream.h */,
-				9CF52CF6200F45D700950B81 /* SGStream.m */,
-				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
-				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
-				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
-				9C620D6721215EEF00845F2A /* SGFormatContext2.h */,
-				9C620D6821215EEF00845F2A /* SGFormatContext2.m */,
 			);
 			path = SGSource;
 			sourceTree = "<group>";
@@ -1481,6 +1477,18 @@
 			path = SGCommon;
 			sourceTree = "<group>";
 		};
+		9CEBCC9F217F018100430024 /* SGDeprecated */ = {
+			isa = PBXGroup;
+			children = (
+				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
+				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
+				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
+				9C620D6721215EEF00845F2A /* SGFormatContext2.h */,
+				9C620D6821215EEF00845F2A /* SGFormatContext2.m */,
+			);
+			path = SGDeprecated;
+			sourceTree = "<group>";
+		};
 		9CEFA6CC1E7122BF00835CAB = {
 			isa = PBXGroup;
 			children = (
@@ -1515,6 +1523,9 @@
 		9CF15DF320119D0300585326 /* SGData */ = {
 			isa = PBXGroup;
 			children = (
+				9CF52CF5200F45D700950B81 /* SGStream.h */,
+				9CF52CF6200F45D700950B81 /* SGStream.m */,
+				9CEBCC9B217EF8E900430024 /* SGStream+Private.h */,
 				9C2C55AB2015D1D200131E15 /* SGPacket.h */,
 				9C2C55AC2015D1D200131E15 /* SGPacket.m */,
 				9C389ACB20108C2E003259FF /* SGFrame.h */,
@@ -1797,6 +1808,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CF52CF7200F45D700950B81 /* SGStream.h in Headers */,
 				9C95D2C12152386C00079B38 /* SGURLAsset.h in Headers */,
 				9C6C76012141323900970427 /* SGDiscardFilter.h in Headers */,
 				9CAAC99F2133A6800065E364 /* SGVRViewport.h in Headers */,
@@ -1857,6 +1869,7 @@
 				9CF99F8A212D187A008178BC /* lzo.h in Headers */,
 				9CE6F52F2004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
 				9CF99F1E212D187A008178BC /* hwcontext_vdpau.h in Headers */,
+				9CEBCC9D217EF8E900430024 /* SGStream+Private.h in Headers */,
 				9CF99F9F212D187A008178BC /* mem.h in Headers */,
 				9CF99FE7212D187A008178BC /* vaapi.h in Headers */,
 				9CF99EFD212D187A008178BC /* samplefmt.h in Headers */,
@@ -1897,7 +1910,6 @@
 				9CF99ED0212D187A008178BC /* buffersrc.h in Headers */,
 				9CF99FAE212D187A008178BC /* pixfmt.h in Headers */,
 				9CF99F72212D187A008178BC /* mastering_display_metadata.h in Headers */,
-				9CF52CF7200F45D700950B81 /* SGStream.h in Headers */,
 				9CF99F39212D187A008178BC /* tree.h in Headers */,
 				9C1944F92019C09D00184416 /* SGGLInternalProgram.h in Headers */,
 				9CF99EE8212D187A008178BC /* fifo.h in Headers */,

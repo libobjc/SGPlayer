@@ -454,12 +454,12 @@ static int SGConcatSourceInterruptHandler(void * context)
                     if ((self.audioEnable && stream == self.audioStream) ||
                         (self.videoEnable && stream == self.videoStream))
                     {
-                        [packet fillWithMediaType:stream.mediaType
-                                         codecpar:stream.coreStream->codecpar
-                                         timebase:stream.timebase
-                                            scale:self.formatContext.scale
-                                        startTime:self.formatContext.startTime
-                                        timeRange:self.formatContext.actualTimeRange];
+//                        [packet fillWithMediaType:stream.mediaType
+//                                         codecpar:stream.coreStream->codecpar
+//                                         timebase:stream.timebase
+//                                            scale:self.formatContext.scale
+//                                        startTime:self.formatContext.startTime
+//                                        timeRange:self.formatContext.actualTimeRange];
                         [self.delegate source:self hasNewPacket:packet];
                     }
                 }

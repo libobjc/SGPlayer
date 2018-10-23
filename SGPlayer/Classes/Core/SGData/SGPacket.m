@@ -23,8 +23,7 @@
     {
         self.coreLock = [[NSLock alloc] init];
         _corePacket = av_packet_alloc();
-        _mediaType = SGMediaTypeUnknown;
-        _codecpar = NULL;
+        _stream = nil;
         _timebase = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
         _startTime = kCMTimeZero;
@@ -73,8 +72,6 @@
 - (void)clear
 {
     _stream = nil;
-    _mediaType = SGMediaTypeUnknown;
-    _codecpar = NULL;
     _timebase = kCMTimeZero;
     _scale = CMTimeMake(1, 1);
     _startTime = kCMTimeZero;
@@ -96,21 +93,10 @@
 - (void)fillWithStream:(SGStream *)stream
 {
     _stream = stream;
-}
-
-- (void)fillWithMediaType:(SGMediaType)mediaType
-                 codecpar:(AVCodecParameters *)codecpar
-                 timebase:(CMTime)timebase
-                    scale:(CMTime)scale
-                startTime:(CMTime)startTime
-                timeRange:(CMTimeRange)timeRange
-{
-    _mediaType = mediaType;
-    _codecpar = codecpar;
-    _timebase = timebase;
-    _scale = scale;
-    _startTime = startTime;
-    _timeRange = timeRange;
+    _timebase = _stream.timebase;
+    _scale = CMTimeMake(1, 1);
+    _startTime = kCMTimeZero;
+    _timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity);
     _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
     _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
     _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);

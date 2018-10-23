@@ -9,6 +9,7 @@
 #import "SGFormatContext2.h"
 #import "SGFFmpeg.h"
 #import "SGError.h"
+#import "SGStream+Private.h"
 
 @implementation SGFormatContext2
 
@@ -65,17 +66,16 @@
     NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
     for (int i = 0; i < formatContext->nb_streams; i++)
     {
-        SGStream * obj = [[SGStream alloc] init];
-        obj.coreStream = formatContext->streams[i];
+        SGStream * obj = [[SGStream alloc] initWithCore:_coreFormatContext->streams[i]];
         [streams addObject:obj];
-        switch (obj.coreStream->codecpar->codec_type)
+        switch (obj.core->codecpar->codec_type)
         {
             case AVMEDIA_TYPE_AUDIO:
                 _audioEnable = YES;
                 [audioStreams addObject:obj];
                 break;
             case AVMEDIA_TYPE_VIDEO:
-                if ((obj.coreStream->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0)
+                if ((obj.core->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0)
                 {
                     _videoEnable = YES;
                     [videoStreams addObject:obj];

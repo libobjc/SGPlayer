@@ -7,6 +7,7 @@
 //
 
 #import "SGFormatContext.h"
+#import "SGStream+Private.h"
 #import "SGFFmpeg.h"
 #import "SGError.h"
 
@@ -89,22 +90,21 @@ static int SGFormatContextInterruptHandler(void * context)
     NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
     for (int i = 0; i < _formatContext->nb_streams; i++)
     {
-        SGStream * obj = [[SGStream alloc] init];
-        obj.coreStream = _formatContext->streams[i];
+        SGStream * obj = [[SGStream alloc] initWithCore:_formatContext->streams[i]];
         [streams addObject:obj];
-        switch (obj.coreStream->codecpar->codec_type)
+        switch (obj.mediaType)
         {
-            case AVMEDIA_TYPE_AUDIO:
+            case SGMediaTypeAudio:
                 [audioStreams addObject:obj];
                 break;
-            case AVMEDIA_TYPE_VIDEO:
-                if ((obj.coreStream->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0) {
+            case SGMediaTypeVideo:
+                if ((obj.disposition & AV_DISPOSITION_ATTACHED_PIC) == 0) {
                     [videoStreams addObject:obj];
                 } else {
                     [otherStreams addObject:obj];
                 }
                 break;
-            case AVMEDIA_TYPE_SUBTITLE:
+            case SGMediaTypeSubtitle:
                 [subtitleStreams addObject:obj];
                 break;
             default:

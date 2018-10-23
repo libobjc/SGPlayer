@@ -10,14 +10,12 @@
 #import "SGObjectQueue.h"
 #import "SGObjectPool.h"
 #import "SGStream.h"
+#import "avformat.h"
 
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
 @property (nonatomic, assign, readonly) AVPacket * corePacket;
 @property (nonatomic, strong, readonly) SGStream * stream;
-
-@property (nonatomic, assign, readonly) SGMediaType mediaType;
-@property (nonatomic, assign, readonly) AVCodecParameters * codecpar;
 
 @property (nonatomic, assign, readonly) CMTime timebase;
 @property (nonatomic, assign, readonly) CMTime scale;
@@ -36,12 +34,5 @@
 @property (nonatomic, assign, readonly) BOOL keyFrame;
 
 - (void)fillWithStream:(SGStream *)stream;
-
-- (void)fillWithMediaType:(SGMediaType)mediaType
-                 codecpar:(AVCodecParameters *)codecpar
-                 timebase:(CMTime)timebase
-                    scale:(CMTime)scale
-                startTime:(CMTime)startTime
-                timeRange:(CMTimeRange)timeRange;
 
 @end

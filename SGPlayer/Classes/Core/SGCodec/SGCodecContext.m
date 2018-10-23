@@ -12,6 +12,7 @@
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGFFFrame.h"
+#import "SGStream+Private.h"
 
 @interface SGCodecContext ()
 
@@ -31,14 +32,14 @@
         return nil;
     }
     
-    int result = avcodec_parameters_to_context(codecContext, self.stream.coreStream->codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.stream.core->codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error)
     {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = self.stream.coreStream->time_base;
+    codecContext->pkt_timebase = self.stream.core->time_base;
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
