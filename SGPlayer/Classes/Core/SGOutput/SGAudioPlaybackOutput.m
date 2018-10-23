@@ -61,11 +61,6 @@
     return SGMediaTypeAudio;
 }
 
-static void SGAudioPlaybackOutputAVBufferFree(void * opaque, uint8_t * data)
-{
-    av_free(data);
-}
-
 - (instancetype)init
 {
     if (self = [super init])
@@ -222,7 +217,7 @@ static void SGAudioPlaybackOutputAVBufferFree(void * opaque, uint8_t * data)
         int size = _swrContextBufferLinesize[i];
         uint8_t * data = av_mallocz(size);
         memcpy(data, _swrContextBufferData[i], size);
-        AVBufferRef * buffer = av_buffer_create(data, size, SGAudioPlaybackOutputAVBufferFree, NULL, 0);
+        AVBufferRef * buffer = av_buffer_create(data, size, av_buffer_default_free, NULL, 0);
         result.core->buf[i] = buffer;
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;
