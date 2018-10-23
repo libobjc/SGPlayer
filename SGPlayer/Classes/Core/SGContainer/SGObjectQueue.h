@@ -11,12 +11,8 @@
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
 
-- (CMTime)scale;
-- (CMTime)startTime;
 - (CMTime)timeStamp;
 - (CMTime)duration;
-- (CMTime)originalTimeStamp;
-- (CMTime)originalDuration;
 - (int64_t)size;
 
 @end

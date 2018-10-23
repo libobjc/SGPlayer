@@ -16,21 +16,9 @@
 @property (nonatomic, assign, readonly) void * coreptr;
 
 @property (nonatomic, strong, readonly) SGStream * stream;
-
-@property (nonatomic, assign, readonly) CMTime timebase;
-@property (nonatomic, assign, readonly) CMTime scale;
-@property (nonatomic, assign, readonly) CMTime startTime;
-@property (nonatomic, assign, readonly) CMTimeRange timeRange;
-
 @property (nonatomic, assign, readonly) CMTime timeStamp;
 @property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, assign, readonly) CMTime duration;
-
-@property (nonatomic, assign, readonly) CMTime originalTimeStamp;
-@property (nonatomic, assign, readonly) CMTime originalDecodeTimeStamp;
-@property (nonatomic, assign, readonly) CMTime originalDuration;
-
 @property (nonatomic, assign, readonly) long long size;
-@property (nonatomic, assign, readonly) BOOL keyFrame;
 
 @end

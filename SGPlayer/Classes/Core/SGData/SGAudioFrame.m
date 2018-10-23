@@ -30,33 +30,25 @@
 {
     [super clear];
     
-    self.format = SG_AV_SAMPLE_FMT_NONE;
-    self.numberOfSamples = 0;
-    self.sampleRate = 0;
-    self.numberOfChannels = 0;
-    self.channelLayout = 0;
-    self.bestEffortTimestamp = 0;
-    self.packetPosition = 0;
-    self.packetDuration = 0;
-    self.packetSize = 0;
-    self.data = nil;
+    _format = SG_AV_SAMPLE_FMT_NONE;
+    _numberOfSamples = 0;
+    _sampleRate = 0;
+    _numberOfChannels = 0;
+    _channelLayout = 0;
+    _data = nil;
 }
 
 - (void)configurateWithStream:(SGStream *)stream
 {
     [super configurateWithStream:stream];
     
-    self.format = SGDMSampleFormatFF2SG(self.core->format);
-    self.numberOfSamples = self.core->nb_samples;
-    self.sampleRate = self.core->sample_rate;
-    self.numberOfChannels = self.core->channels;
-    self.channelLayout = self.core->channel_layout;
-    self.bestEffortTimestamp = self.core->best_effort_timestamp;
-    self.packetPosition = self.core->pkt_pos;
-    self.packetDuration = self.core->pkt_duration;
-    self.packetSize = self.core->pkt_size;
-    self.data = self.core->data;
-    self.linesize = self.core->linesize;
+    _format = SGDMSampleFormatFF2SG(self.core->format);
+    _numberOfSamples = self.core->nb_samples;
+    _sampleRate = self.core->sample_rate;
+    _numberOfChannels = self.core->channels;
+    _channelLayout = self.core->channel_layout;
+    _data = self.core->data;
+    _linesize = self.core->linesize;
 }
 
 @end

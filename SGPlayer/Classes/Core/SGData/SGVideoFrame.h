@@ -11,23 +11,18 @@
 
 @interface SGVideoFrame : SGFrame
 
-@property (nonatomic, assign) SGAVPixelFormat format;
-@property (nonatomic, assign) SGAVColorRange colorRange;
-@property (nonatomic, assign) SGAVColorPrimaries colorPrimaries;
-@property (nonatomic, assign) SGAVColorTransferCharacteristic colorTransferCharacteristic;
-@property (nonatomic, assign) SGAVColorSpace colorSpace;
-@property (nonatomic, assign) SGAVChromaLocation chromaLocation;
-@property (nonatomic, assign) int width;
-@property (nonatomic, assign) int height;
-@property (nonatomic, assign) BOOL keyFrame;
-@property (nonatomic, assign) long long bestEffortTimestamp;
-@property (nonatomic, assign) long long packetPosition;
-@property (nonatomic, assign) long long packetDuration;
-@property (nonatomic, assign) long long packetSize;
-@property (nonatomic, assign) uint8_t ** data;
-@property (nonatomic, assign) int * linesize;
-@property (nonatomic, assign) CVPixelBufferRef pixelBuffer;
-
-- (UIImage *)image;
+@property (nonatomic, assign, readonly) SGAVPixelFormat format;
+@property (nonatomic, assign, readonly) SGAVColorRange colorRange;
+@property (nonatomic, assign, readonly) SGAVColorPrimaries colorPrimaries;
+@property (nonatomic, assign, readonly) SGAVColorTransferCharacteristic colorTransferCharacteristic;
+@property (nonatomic, assign, readonly) SGAVColorSpace colorSpace;
+@property (nonatomic, assign, readonly) SGAVChromaLocation chromaLocation;
+@property (nonatomic, assign, readonly) int width;
+@property (nonatomic, assign, readonly) int height;
+@property (nonatomic, assign, readonly) BOOL keyFrame;
+@property (nonatomic, assign, readonly) uint8_t ** data;
+@property (nonatomic, assign, readonly) int * linesize;
+@property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
+@property (nonatomic, strong, readonly) UIImage * image;
 
 @end

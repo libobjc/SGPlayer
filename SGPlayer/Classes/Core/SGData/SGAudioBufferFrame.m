@@ -72,13 +72,7 @@
 
 - (void)fillWithAudioFrame:(SGAudioFrame *)audioFrame
 {
-    self.timebase = audioFrame.timebase;
-    self.scale = audioFrame.scale;
-    self.startTime = audioFrame.startTime;
-    self.timeRange = audioFrame.timeRange;
-    self.originalTimeStamp = audioFrame.originalTimeStamp;
-    self.originalDecodeTimeStamp = audioFrame.originalDecodeTimeStamp;
-    self.originalDuration = audioFrame.originalDuration;
+    self.stream = audioFrame.stream;
     self.timeStamp = audioFrame.timeStamp;
     self.decodeTimeStamp = audioFrame.decodeTimeStamp;
     self.duration = audioFrame.duration;
@@ -89,10 +83,6 @@
     self.sampleRate = audioFrame.sampleRate;
     self.numberOfChannels = audioFrame.numberOfSamples;
     self.channelLayout = audioFrame.channelLayout;
-    self.bestEffortTimestamp = audioFrame.bestEffortTimestamp;
-    self.packetPosition = audioFrame.packetPosition;
-    self.packetDuration = audioFrame.packetDuration;
-    self.packetSize = audioFrame.packetSize;
 }
 
 - (uint8_t **)data

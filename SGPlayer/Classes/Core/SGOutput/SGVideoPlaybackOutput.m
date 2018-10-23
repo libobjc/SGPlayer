@@ -128,7 +128,7 @@
     [self unlock];
 }
 
-- (void)putFrame:(SGFrame *)frame
+- (void)putFrame:(__kindof SGFrame *)frame
 {
     if (!self.enable)
     {
@@ -138,7 +138,7 @@
     {
         return;
     }
-    SGVideoFrame * videoFrame = (SGVideoFrame *)frame;
+    SGVideoFrame * videoFrame = frame;
     if (self.key && !self.receivedFrame)
     {
         [self.timeSync updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];

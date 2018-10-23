@@ -15,21 +15,17 @@
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
 @property (nonatomic, assign, readonly) void * coreptr;
-@property (nonatomic, strong, readonly) SGStream * stream;
 
-@property (nonatomic, assign) CMTime timebase;
-@property (nonatomic, assign) CMTime scale;
-@property (nonatomic, assign) CMTime startTime;
-@property (nonatomic, assign) CMTimeRange timeRange;
+//@property (nonatomic, strong, readonly) SGStream * stream;
+//@property (nonatomic, assign, readonly) CMTime timeStamp;
+//@property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
+//@property (nonatomic, assign, readonly) CMTime duration;
+//@property (nonatomic, assign, readonly) long long size;
 
+@property (nonatomic, strong) SGStream * stream;
 @property (nonatomic, assign) CMTime timeStamp;
 @property (nonatomic, assign) CMTime decodeTimeStamp;
 @property (nonatomic, assign) CMTime duration;
-
-@property (nonatomic, assign) CMTime originalTimeStamp;
-@property (nonatomic, assign) CMTime originalDecodeTimeStamp;
-@property (nonatomic, assign) CMTime originalDuration;
-
 @property (nonatomic, assign) long long size;
 
 @end

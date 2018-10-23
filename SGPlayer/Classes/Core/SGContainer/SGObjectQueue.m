@@ -113,14 +113,7 @@
     if (self.shouldSortObjects)
     {
         [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
-            if (CMTimeCompare(obj1.startTime, obj2.startTime) == 0)
-            {
-                return CMTimeCompare(obj1.originalTimeStamp, obj2.originalTimeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
-            }
-            else
-            {
-                return CMTimeCompare(obj1.startTime, obj2.startTime) < 0 ? NSOrderedAscending : NSOrderedDescending;
-            }
+            return CMTimeCompare(obj1.timeStamp, obj2.timeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
         }];
     }
     NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");

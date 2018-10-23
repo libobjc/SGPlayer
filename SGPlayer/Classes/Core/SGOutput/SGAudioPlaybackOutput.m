@@ -133,7 +133,7 @@
     [self destorySwrContext];
 }
 
-- (void)putFrame:(SGFrame *)frame
+- (void)putFrame:(__kindof SGFrame *)frame
 {
     if (!self.enable)
     {
@@ -143,7 +143,7 @@
     {
         return;
     }
-    SGAudioFrame * audioFrame = (SGAudioFrame *)frame;
+    SGAudioFrame * audioFrame = frame;
     
     SGAVSampleFormat inputFormat = audioFrame.format;
     int inputSampleRate = audioFrame.sampleRate;
@@ -388,7 +388,7 @@
         {
             break;
         }
-        self.currentFrameScale = self.currentFrame.scale;
+        self.currentFrameScale = CMTimeMake(1, 1);
         
         int32_t residueLinesize = self.currentFrame.linesize[0] - self.currentFrameReadOffset;
         int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
@@ -406,12 +406,11 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPostDuration = kCMTimeZero;
-            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, self.currentFrameReadOffset, self.currentFrame.linesize[0]);
-            duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
+            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, self.currentFrameReadOffset, self.currentFrame.linesize[0]);
             self.currentPostPosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
-        CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.originalDuration, bytesToCopy, self.currentFrame.linesize[0]);
-        duration = SGCMTimeMultiply(duration, self.currentFrame.scale);
+        CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame.linesize[0]);
+        duration = SGCMTimeMultiply(duration, CMTimeMake(1, 1));
         self.currentPostDuration = CMTimeAdd(self.currentPostDuration, duration);
         
         numberOfSamples -= framesToCopy;

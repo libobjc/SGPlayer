@@ -71,36 +71,22 @@
         av_packet_unref(self.core);
     }
     _stream = nil;
-    _timebase = kCMTimeZero;
-    _scale = CMTimeMake(1, 1);
-    _startTime = kCMTimeZero;
-    _timeRange = kCMTimeRangeZero;
     _timeStamp = kCMTimeZero;
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
-    _originalTimeStamp = kCMTimeZero;
-    _originalDecodeTimeStamp = kCMTimeZero;
-    _originalDuration = kCMTimeZero;
     _size = 0;
-    _keyFrame = NO;
 }
 
 - (void)configurateWithStream:(SGStream *)stream
 {
+    if (self.core->pts == AV_NOPTS_VALUE) {
+        self.core->pts = self.core->dts;
+    }
     _stream = stream;
-    _timebase = _stream.timebase;
-    _scale = CMTimeMake(1, 1);
-    _startTime = kCMTimeZero;
-    _timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity);
-    _originalTimeStamp = SGCMTimeMakeWithTimebase(self.core->pts != AV_NOPTS_VALUE ? self.core->pts : self.core->dts, self.timebase);
-    _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->dts, self.timebase);
-    _originalDuration = SGCMTimeMakeWithTimebase(self.core->duration, self.timebase);
-    CMTime offset = CMTimeSubtract(self.startTime, SGCMTimeMultiply(self.timeRange.start, self.scale));
-    _timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
-    _decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
-    _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
+    _timeStamp = SGCMTimeMakeWithTimebase(self.core->pts, stream.timebase);
+    _decodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->dts, stream.timebase);
+    _duration = SGCMTimeMakeWithTimebase(self.core->duration, stream.timebase);
     _size = self.core->size;
-    _keyFrame = self.core->flags & AV_PKT_FLAG_KEY;
 }
 
 @end
