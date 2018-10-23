@@ -15,6 +15,7 @@
 #import "SGStream+Private.h"
 #import "SGPacket+Private.h"
 #import "SGFrame+Private.h"
+#import "SGFFDefinesMapping.h"
 
 @interface SGCodecContext ()
 
@@ -26,6 +27,42 @@
 
 @implementation SGCodecContext
 
+static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, const enum AVPixelFormat * fmt)
+{
+    SGCodecContext * self = (__bridge SGCodecContext *)s->opaque;
+    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++)
+    {
+        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX)
+        {
+            AVBufferRef * device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
+            if (!device_ctx)
+            {
+                break;
+            }
+            AVBufferRef * frames_ctx = av_hwframe_ctx_alloc(device_ctx);
+            av_buffer_unref(&device_ctx);
+            if (!frames_ctx)
+            {
+                break;
+            }
+            AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
+            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
+            frames_ctx_data->sw_format = SGDMPixelFormatSG2FF(self.preferredPixelFormat);
+            frames_ctx_data->width = s->width;
+            frames_ctx_data->height = s->height;
+            int err = av_hwframe_ctx_init(frames_ctx);
+            if (err < 0)
+            {
+                av_buffer_unref(&frames_ctx);
+                break;
+            }
+            s->hw_frames_ctx = frames_ctx;
+            return fmt[i];
+        }
+    }
+    return fmt[0];
+}
+
 - (AVCodecContext *)createCcodecContext
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
@@ -33,6 +70,7 @@
     {
         return nil;
     }
+    codecContext->opaque = (__bridge void *)self;
     
     int result = avcodec_parameters_to_context(codecContext, self.stream.core->codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
@@ -42,6 +80,10 @@
         return nil;
     }
     codecContext->pkt_timebase = self.stream.core->time_base;
+    if ((self.hardwareDecodeH264 && self.stream.core->codecpar->codec_id == AV_CODEC_ID_H264) ||
+        (self.hardwareDecodeH265 && self.stream.core->codecpar->codec_id == AV_CODEC_ID_H265)) {
+        codecContext->get_format = SGCodecContextGetFormat;
+    }
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec)
@@ -87,6 +129,12 @@
     {
         self.stream = stream;
         self.frameClass = frameClass;
+        self.options = nil;
+        self.threadsAuto = YES;
+        self.refcountedFrames = YES;
+        self.hardwareDecodeH264 = YES;
+        self.hardwareDecodeH265 = YES;
+        self.preferredPixelFormat = SG_AV_PIX_FMT_NV12;
     }
     return self;
 }

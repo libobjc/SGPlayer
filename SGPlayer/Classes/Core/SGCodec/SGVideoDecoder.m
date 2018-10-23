@@ -28,6 +28,7 @@
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
         self.hardwareDecodeH265 = YES;
+        self.preferredPixelFormat = SG_AV_PIX_FMT_NV12;
     }
     return self;
 }
@@ -38,6 +39,9 @@
     self.codecContext.options = self.options;
     self.codecContext.threadsAuto = self.threadsAuto;
     self.codecContext.refcountedFrames = self.refcountedFrames;
+    self.codecContext.hardwareDecodeH264 = self.hardwareDecodeH264;
+    self.codecContext.hardwareDecodeH265 = self.hardwareDecodeH265;
+    self.codecContext.preferredPixelFormat = self.preferredPixelFormat;
     [self.codecContext open];
 }
 
