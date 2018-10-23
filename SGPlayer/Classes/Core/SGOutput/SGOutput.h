@@ -27,7 +27,7 @@
 - (NSError *)error;
 - (BOOL)empty;
 - (NSUInteger)maxCount;
-- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
 
 - (void)open;
 - (void)pause;

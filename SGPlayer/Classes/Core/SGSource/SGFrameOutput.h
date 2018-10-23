@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGStream *> *)audioStreams;
 - (NSArray <SGStream *> *)videoStreams;
 - (NSArray <SGStream *> *)otherStreams;
-- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
+- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
 
 - (NSError *)open;
 - (NSError *)start;

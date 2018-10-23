@@ -174,13 +174,13 @@
 - (BOOL)empty
 {
     NSUInteger count = 0;
-    [self getDuratioin:NULL size:NULL count:&count];
+    [self duratioin:NULL size:NULL count:&count];
     return count == 0;
 }
 
-- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
-    [self.frameQueue getDuratioin:duration size:size count:count];
+    return [self.frameQueue duratioin:duration size:size count:count];
 }
 
 - (NSUInteger)maxCount

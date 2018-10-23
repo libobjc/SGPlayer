@@ -42,10 +42,10 @@
     return self;
 }
 
-- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
     if (self.didDestoryed) {
-        return;
+        return NO;
     }
     [self.condition lock];
     if (duration) {
@@ -58,6 +58,7 @@
         * count = self.objects.count;
     }
     [self.condition unlock];
+    return YES;
 }
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object

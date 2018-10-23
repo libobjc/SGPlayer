@@ -257,7 +257,7 @@
     if (self.audioEnable && self.configuration.audioOutput)
     {
         NSUInteger count = 0;
-        [self.configuration.source getDuratioin:NULL size:NULL count:&count stream:self.configuration.source.audioStreams.firstObject];
+        [self.configuration.source duratioin:NULL size:NULL count:&count stream:self.configuration.source.audioStreams.firstObject];
         return count == 0 && self.configuration.audioOutput.empty;
     }
     return YES;
@@ -268,7 +268,7 @@
     if (self.videoEnable && self.configuration.videoOutput)
     {
         NSUInteger count = 0;
-        [self.configuration.source getDuratioin:NULL size:NULL count:&count stream:self.configuration.source.videoStreams.firstObject];
+        [self.configuration.source duratioin:NULL size:NULL count:&count stream:self.configuration.source.videoStreams.firstObject];
         return count == 0 && self.configuration.videoOutput.empty;
     }
     return YES;
@@ -279,10 +279,10 @@
     if (self.audioEnable && self.configuration.audioOutput)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.configuration.source getDuratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.audioStreams.firstObject];
+        [self.configuration.source duratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.audioStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.configuration.audioOutput getDuratioin:&outputDuration size:NULL count:NULL];
+        [self.configuration.audioOutput duratioin:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -294,10 +294,10 @@
     if (self.videoEnable && self.configuration.videoOutput)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.configuration.source getDuratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.videoStreams.firstObject];
+        [self.configuration.source duratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.videoStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.configuration.videoOutput getDuratioin:&outputDuration size:NULL count:NULL];
+        [self.configuration.videoOutput duratioin:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -307,10 +307,10 @@
 - (long long)audioLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.configuration.source getDuratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.audioStreams.firstObject];
+    [self.configuration.source duratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.audioStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.configuration.audioOutput getDuratioin:NULL size:&outputSzie count:NULL];
+    [self.configuration.audioOutput duratioin:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -318,10 +318,10 @@
 - (long long)videoLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.configuration.source getDuratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.videoStreams.firstObject];
+    [self.configuration.source duratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.videoStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.configuration.videoOutput getDuratioin:NULL size:&outputSzie count:NULL];
+    [self.configuration.videoOutput duratioin:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -406,7 +406,7 @@
 - (void)outputDidChangeCapacity:(id <SGOutput>)output
 {
     NSUInteger count = 0;
-    [output getDuratioin:NULL size:NULL count:&count];
+    [output duratioin:NULL size:NULL count:&count];
     if (output == self.configuration.audioOutput)
     {
         if (count >= self.configuration.audioOutput.maxCount) {

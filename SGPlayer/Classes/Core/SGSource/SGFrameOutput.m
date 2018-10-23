@@ -92,14 +92,14 @@
     return self.packetOutput.otherStreams;
 }
 
-- (void)getDuratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream
+- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream
 {
     for (SGAsyncDecoder * obj in self.decoders) {
         if (obj.object == stream) {
-            [obj getDuratioin:duration size:size count:count];
-            break;
+            return [obj duratioin:duration size:size count:count];
         }
     }
+    return NO;
 }
 
 #pragma mark - Interface
