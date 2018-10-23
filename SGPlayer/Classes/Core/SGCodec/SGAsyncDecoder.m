@@ -250,7 +250,7 @@ static SGPacket * flushPacket;
     int64_t size = 0;
     NSUInteger count = 0;
     [self duratioin:&duration size:&size count:&count];
-    [self.delegate decoder:self didChangeCapacity:duration size:size count:count];
+    [self.delegate decoder:self didChangeDuration:duration size:size count:count];
 }
 
 #pragma mark - NSLocking

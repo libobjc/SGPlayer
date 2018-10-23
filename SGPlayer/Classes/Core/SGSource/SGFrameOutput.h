@@ -59,7 +59,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 @protocol SGFrameOutputDelegate <NSObject>
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream;
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame;
 
 @end

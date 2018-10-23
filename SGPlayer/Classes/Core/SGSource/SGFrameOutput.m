@@ -261,7 +261,7 @@
     
 }
 
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
 {
     BOOL paused = count > 30 && CMTimeCompare(duration, CMTimeMake(1, 1)) > 0;
     [self lock];
@@ -276,7 +276,7 @@
     } else {
         [self.packetOutput resume];
     }
-    [self.delegate frameOutput:self didChangeCapacity:duration size:size count:count stream:decoder.object];
+    [self.delegate frameOutput:self didChangeDuration:duration size:size count:count stream:decoder.object];
 }
 
 - (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame

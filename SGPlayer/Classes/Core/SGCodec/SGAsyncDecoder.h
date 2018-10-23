@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 @protocol SGAsyncDecoderDelegate <NSObject>
 
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state;
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count;
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count;
 - (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame;
 
 @end

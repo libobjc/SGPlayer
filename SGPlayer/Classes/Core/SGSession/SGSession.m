@@ -384,7 +384,7 @@
     }
 }
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream
 {
     [self.delegate sessionDidChangeCapacity:self];
 }
