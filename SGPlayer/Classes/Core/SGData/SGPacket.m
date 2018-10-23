@@ -7,9 +7,12 @@
 //
 
 #import "SGPacket.h"
+#import "SGPacket+Private.h"
 
 @interface SGPacket ()
 
+@property (nonatomic, assign) AVPacket * core;
+@property (nonatomic, assign) void * coreptr;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSInteger lockingCount;
 
@@ -22,7 +25,8 @@
     if (self = [super init])
     {
         self.coreLock = [[NSLock alloc] init];
-        _corePacket = av_packet_alloc();
+        self.core = av_packet_alloc();
+        self.coreptr = self.core;
         _stream = nil;
         _timebase = kCMTimeZero;
         _scale = CMTimeMake(1, 1);
@@ -42,10 +46,10 @@
 
 - (void)dealloc
 {
-    if (_corePacket)
+    if (self.core)
     {
-        av_packet_free(&_corePacket);
-        _corePacket = nil;
+        av_packet_free(&_core);
+        self.core = nil;
     }
     NSAssert(self.lockingCount <= 0, @"SGPacket, must be unlocked before release");
 }
@@ -84,28 +88,28 @@
     _originalDuration = kCMTimeZero;
     _size = 0;
     _keyFrame = NO;
-    if (_corePacket)
+    if (self.core)
     {
-        av_packet_unref(_corePacket);
+        av_packet_unref(self.core);
     }
 }
 
-- (void)fillWithStream:(SGStream *)stream
+- (void)setStream:(SGStream *)stream
 {
     _stream = stream;
     _timebase = _stream.timebase;
     _scale = CMTimeMake(1, 1);
     _startTime = kCMTimeZero;
     _timeRange = CMTimeRangeMake(kCMTimeZero, kCMTimePositiveInfinity);
-    _originalTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->pts != AV_NOPTS_VALUE ? _corePacket->pts : _corePacket->dts, self.timebase);
-    _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(_corePacket->dts, self.timebase);
-    _originalDuration = SGCMTimeMakeWithTimebase(_corePacket->duration, self.timebase);
+    _originalTimeStamp = SGCMTimeMakeWithTimebase(self.core->pts != AV_NOPTS_VALUE ? self.core->pts : self.core->dts, self.timebase);
+    _originalDecodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->dts, self.timebase);
+    _originalDuration = SGCMTimeMakeWithTimebase(self.core->duration, self.timebase);
     CMTime offset = CMTimeSubtract(self.startTime, SGCMTimeMultiply(self.timeRange.start, self.scale));
     _timeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalTimeStamp, self.scale));
     _decodeTimeStamp = CMTimeAdd(offset, SGCMTimeMultiply(self.originalDecodeTimeStamp, self.scale));
     _duration = SGCMTimeMultiply(self.originalDuration, self.scale);
-    _size = _corePacket->size;
-    _keyFrame = _corePacket->flags & AV_PKT_FLAG_KEY;
+    _size = self.core->size;
+    _keyFrame = self.core->flags & AV_PKT_FLAG_KEY;
 }
 
 @end

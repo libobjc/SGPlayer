@@ -13,6 +13,7 @@
 #import "SGMacro.h"
 #import "SGFFFrame.h"
 #import "SGStream+Private.h"
+#import "SGPacket+Private.h"
 
 @interface SGCodecContext ()
 
@@ -131,7 +132,7 @@
 
 - (NSArray <SGFrame *> *)decode:(SGPacket *)packet
 {
-    int result = avcodec_send_packet(self.codecContext, packet.corePacket);
+    int result = avcodec_send_packet(self.codecContext, packet.core);
     if (result < 0)
     {
         return nil;

@@ -231,9 +231,9 @@
     }
     if (!decoder) {
         id <SGDecodable> decodable = nil;
-        if (packet.stream.mediaType == SGMediaTypeAudio) {
+        if (packet.stream.type == SGMediaTypeAudio) {
             decodable = [[SGAudioDecoder alloc] init];
-        } else if (packet.stream.mediaType == SGMediaTypeVideo) {
+        } else if (packet.stream.type == SGMediaTypeVideo) {
             decodable = [[SGVideoDecoder alloc] init];
         }
         if (decodable) {

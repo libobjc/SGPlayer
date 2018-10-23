@@ -13,7 +13,7 @@
 @interface SGStream : NSObject
 
 @property (nonatomic, assign, readonly) void * coreptr;
-@property (nonatomic, assign, readonly) SGMediaType mediaType;
+@property (nonatomic, assign, readonly) SGMediaType type;
 @property (nonatomic, assign, readonly) int index;
 @property (nonatomic, assign, readonly) int disposition;
 @property (nonatomic, assign, readonly) CMTime timebase;

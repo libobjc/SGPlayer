@@ -8,6 +8,7 @@
 
 #import "SGPacketOutput.h"
 #import "SGAsset+Private.h"
+#import "SGPacket+Private.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
@@ -333,16 +334,14 @@
                 }
                 else
                 {
-                    SGStream * stream = nil;
                     for (SGStream * obj in self.readable.streams)
                     {
-                        if (obj.index == packet.corePacket->stream_index)
+                        if (obj.index == packet.core->stream_index)
                         {
-                            stream = obj;
+                            packet.stream = obj;
                             break;
                         }
                     }
-                    [packet fillWithStream:stream];
                     [self.delegate packetOutput:self didOutputPacket:packet];
                 }
                 [packet unlock];

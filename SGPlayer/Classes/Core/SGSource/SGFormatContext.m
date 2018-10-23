@@ -8,6 +8,7 @@
 
 #import "SGFormatContext.h"
 #import "SGStream+Private.h"
+#import "SGPacket+Private.h"
 #import "SGFFmpeg.h"
 #import "SGError.h"
 
@@ -92,7 +93,7 @@ static int SGFormatContextInterruptHandler(void * context)
     {
         SGStream * obj = [[SGStream alloc] initWithCore:_formatContext->streams[i]];
         [streams addObject:obj];
-        switch (obj.mediaType)
+        switch (obj.type)
         {
             case SGMediaTypeAudio:
                 [audioStreams addObject:obj];
@@ -162,7 +163,7 @@ static int SGFormatContextInterruptHandler(void * context)
 {
     if (_formatContext)
     {
-        int ret = av_read_frame(_formatContext, packet.corePacket);
+        int ret = av_read_frame(_formatContext, packet.core);
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatReadFrame);

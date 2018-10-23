@@ -11,6 +11,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGPacket.h"
+#import "avformat.h"
 
 @protocol SGFFFrame <NSObject>
 

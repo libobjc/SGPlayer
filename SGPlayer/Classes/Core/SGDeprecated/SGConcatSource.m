@@ -414,57 +414,57 @@ static int SGConcatSourceInterruptHandler(void * context)
             }
             else if (self.state == SGSourceStateReading)
             {
-                [self unlock];
-                SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-                int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
-                if (readResult < 0)
-                {
-                    if (readResult != AVERROR_EXIT)
-                    {
-                        [self lock];
-                        SGBasicBlock callback = ^{};
-                        if (self.state == SGSourceStateReading)
-                        {
-                            if (self.formatContext == self.formatContexts.lastObject)
-                            {
-                                callback = [self setState:SGSourceStateFinished];
-                            }
-                            else
-                            {
-                                callback = ^{
-                                    [self changeToNextFormatContext];
-                                };
-                            }
-                        }
-                        [self unlock];
-                        callback();
-                    }
-                }
-                else
-                {
-                    SGStream * stream = nil;
-                    for (SGStream * obj in self.formatContext.streams)
-                    {
-                        if (obj.index == packet.corePacket->stream_index)
-                        {
-                            stream = obj;
-                            break;
-                        }
-                    }
-                    if ((self.audioEnable && stream == self.audioStream) ||
-                        (self.videoEnable && stream == self.videoStream))
-                    {
-//                        [packet fillWithMediaType:stream.mediaType
-//                                         codecpar:stream.coreStream->codecpar
-//                                         timebase:stream.timebase
-//                                            scale:self.formatContext.scale
-//                                        startTime:self.formatContext.startTime
-//                                        timeRange:self.formatContext.actualTimeRange];
-                        [self.delegate source:self hasNewPacket:packet];
-                    }
-                }
-                [packet unlock];
-                continue;
+//                [self unlock];
+//                SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
+//                int readResult = av_read_frame(self.formatContext.coreFormatContext, packet.corePacket);
+//                if (readResult < 0)
+//                {
+//                    if (readResult != AVERROR_EXIT)
+//                    {
+//                        [self lock];
+//                        SGBasicBlock callback = ^{};
+//                        if (self.state == SGSourceStateReading)
+//                        {
+//                            if (self.formatContext == self.formatContexts.lastObject)
+//                            {
+//                                callback = [self setState:SGSourceStateFinished];
+//                            }
+//                            else
+//                            {
+//                                callback = ^{
+//                                    [self changeToNextFormatContext];
+//                                };
+//                            }
+//                        }
+//                        [self unlock];
+//                        callback();
+//                    }
+//                }
+//                else
+//                {
+//                    SGStream * stream = nil;
+//                    for (SGStream * obj in self.formatContext.streams)
+//                    {
+//                        if (obj.index == packet.corePacket->stream_index)
+//                        {
+//                            stream = obj;
+//                            break;
+//                        }
+//                    }
+//                    if ((self.audioEnable && stream == self.audioStream) ||
+//                        (self.videoEnable && stream == self.videoStream))
+//                    {
+////                        [packet fillWithMediaType:stream.mediaType
+////                                         codecpar:stream.coreStream->codecpar
+////                                         timebase:stream.timebase
+////                                            scale:self.formatContext.scale
+////                                        startTime:self.formatContext.startTime
+////                                        timeRange:self.formatContext.actualTimeRange];
+//                        [self.delegate source:self hasNewPacket:packet];
+//                    }
+//                }
+//                [packet unlock];
+//                continue;
             }
         }
     }

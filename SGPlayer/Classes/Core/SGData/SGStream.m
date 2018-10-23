@@ -14,7 +14,7 @@
 
 @property (nonatomic, assign) AVStream * core;
 @property (nonatomic, assign) void * coreptr;
-@property (nonatomic, assign) SGMediaType mediaType;
+@property (nonatomic, assign) SGMediaType type;
 @property (nonatomic, assign) int index;
 @property (nonatomic, assign) int disposition;
 @property (nonatomic, assign) CMTime timebase;
@@ -29,11 +29,11 @@
     {
         self.core = core;
         self.coreptr = self.core;
-        self.mediaType = SGDMMediaTypeFF2SG(self.core->codecpar->codec_type);
+        self.type = SGDMMediaTypeFF2SG(self.core->codecpar->codec_type);
         self.index = self.core->index;
         self.disposition = self.core->disposition;
         CMTime timebase = CMTimeMake(self.core->time_base.num, self.core->time_base.den);
-        CMTime defaultTimebase = CMTimeMake(1, self.mediaType == SGMediaTypeAudio ? 44100 : 25000);
+        CMTime defaultTimebase = CMTimeMake(1, self.type == SGMediaTypeAudio ? 44100 : 25000);
         self.timebase = SGCMTimeValidate(timebase, defaultTimebase);
     }
     return self;
