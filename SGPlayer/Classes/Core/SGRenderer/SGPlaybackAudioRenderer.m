@@ -14,6 +14,7 @@
 #import "swresample.h"
 #import "swscale.h"
 #import "SGError.h"
+#import "SGMacro.h"
 
 @interface SGPlaybackAudioRenderer () <NSLocking, SGAudioStreamPlayerDelegate>
 
@@ -86,21 +87,28 @@
 
 - (BOOL)open
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStateNone)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
+    [self unlock];
+    callback();
     return YES;
 }
 
 - (BOOL)close
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state == SGRenderableStateClosed)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStateClosed];
     [self.audioPlayer pause];
-    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.currentFrameReadOffset = 0;
@@ -108,6 +116,7 @@
     self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
     [self unlock];
+    callback();
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
     [self destorySwrContext];
@@ -116,30 +125,45 @@
 
 - (BOOL)pause
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
     [self.audioPlayer pause];
+    [self unlock];
+    callback();
     return YES;
 }
 
 - (BOOL)resume
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStateRendering];
     [self.audioPlayer play];
+    [self unlock];
+    callback();
     return YES;
 }
 
 - (BOOL)putFrame:(__kindof SGFrame *)frame
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused &&
+        self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
+    [self unlock];
+    
     if (![frame isKindOfClass:[SGAudioFrame class]])
     {
         return NO;
@@ -236,11 +260,13 @@
 
 - (BOOL)flush
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused &&
+        self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
-    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.currentFrameReadOffset = 0;
@@ -254,6 +280,18 @@
 }
 
 #pragma mark - Setter & Getter
+
+- (SGBasicBlock)setState:(SGRenderableState)state
+{
+    if (_state != state)
+    {
+        _state = state;
+        return ^{
+            [self.delegate renderable:self didChangeState:state];
+        };
+    }
+    return ^{};
+}
 
 - (SGRenderableState)state
 {

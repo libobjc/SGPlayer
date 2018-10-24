@@ -411,7 +411,7 @@
 
 #pragma mark - SGRenderableDelegate
 
-- (void)renderable:(id <SGRenderable>)renderable didRenderedFrame:(__kindof SGFrame *)frame
+- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
 {
     
 }

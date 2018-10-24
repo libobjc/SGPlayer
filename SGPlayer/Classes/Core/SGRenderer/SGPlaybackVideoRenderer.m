@@ -78,10 +78,13 @@
 
 - (BOOL)open
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStateNone)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
     self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
     SGWeakSelf
     NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval) / (NSTimeInterval)self.displayIncreasedCoefficient;
@@ -89,6 +92,8 @@
         SGStrongSelf
         [self renderTimerHandler];
     }];
+    [self unlock];
+    callback();
     self.displayLink.paused = NO;
     self.renderTimer.paused = NO;
     return YES;
@@ -96,46 +101,64 @@
 
 - (BOOL)close
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state == SGRenderableStateClosed)
     {
+        [self unlock];
         return NO;
     }
-    [self.frameQueue destroy];
-    [self lock];
+    SGBasicBlock callback = [self setState:SGRenderableStateClosed];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.receivedFrame = NO;
     self.displayNewFrameCount = 0;
     [self unlock];
+    callback();
+    [self.frameQueue destroy];
     return YES;
 }
 
 - (BOOL)pause
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
     self.paused = YES;
+    [self unlock];
+    callback();
     return YES;
 }
 
 - (BOOL)resume
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused)
     {
+        [self unlock];
         return NO;
     }
+    SGBasicBlock callback = [self setState:SGRenderableStateRendering];
     self.paused = NO;
+    [self unlock];
+    callback();
     return YES;
 }
 
 - (BOOL)putFrame:(__kindof SGFrame *)frame
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused &&
+        self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
+    [self unlock];
+    
     if (![frame isKindOfClass:[SGVideoFrame class]])
     {
         return NO;
@@ -153,11 +176,13 @@
 
 - (BOOL)flush
 {
-    if (!self.enable)
+    [self lock];
+    if (self.state != SGRenderableStatePaused &&
+        self.state != SGRenderableStateRendering)
     {
+        [self unlock];
         return NO;
     }
-    [self lock];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.receivedFrame = NO;
@@ -169,6 +194,18 @@
 }
 
 #pragma mark - Setter & Getter
+
+- (SGBasicBlock)setState:(SGRenderableState)state
+{
+    if (_state != state)
+    {
+        _state = state;
+        return ^{
+            [self.delegate renderable:self didChangeState:state];
+        };
+    }
+    return ^{};
+}
 
 - (SGRenderableState)state
 {
