@@ -6,13 +6,13 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGRenderer.h"
+#import "SGRenderable.h"
 #import "SGPlatform.h"
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
 #import "SGPlaybackSynchronizer.h"
 
-@interface SGPlaybackVideoRenderer : NSObject <SGRenderer>
+@interface SGPlaybackVideoRenderer : NSObject <SGRenderable>
 
 @property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
 @property (nonatomic, assign) CMTime rate;

@@ -166,6 +166,43 @@
 
 #pragma mark - SGPacketOutputDelegate
 
+- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
+{
+    if (![self.outputStreams containsObject:packet.stream]) {
+        return;
+    }
+    SGAsyncDecoder * decoder = nil;
+    for (SGAsyncDecoder * obj in self.decoders) {
+        if (obj.object == packet.stream) {
+            decoder = obj;
+            break;
+        }
+    }
+    if (!decoder) {
+        id <SGDecodable> decodable = nil;
+        if (packet.stream.type == SGMediaTypeAudio) {
+            decodable = [[SGAudioDecoder alloc] init];
+        } else if (packet.stream.type == SGMediaTypeVideo) {
+            decodable = [[SGVideoDecoder alloc] init];
+        }
+        if (decodable) {
+            SGAsyncDecoder * async = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
+            async.object = packet.stream;
+            async.delegate = self;
+            [async open];
+            decoder = async;
+            [self lock];
+            [self.decoders addObject:decoder];
+            [self.decodersPaused addObject:@(NO)];
+            [self unlock];
+        }
+    }
+    if (!decoder) {
+        return;
+    }
+    [decoder putPacket:packet];
+}
+
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
     SGFrameOutputState frameState = SGFrameOutputStateNone;
@@ -217,44 +254,12 @@
     callback();
 }
 
-- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
-{
-    if (![self.outputStreams containsObject:packet.stream]) {
-        return;
-    }
-    SGAsyncDecoder * decoder = nil;
-    for (SGAsyncDecoder * obj in self.decoders) {
-        if (obj.object == packet.stream) {
-            decoder = obj;
-            break;
-        }
-    }
-    if (!decoder) {
-        id <SGDecodable> decodable = nil;
-        if (packet.stream.type == SGMediaTypeAudio) {
-            decodable = [[SGAudioDecoder alloc] init];
-        } else if (packet.stream.type == SGMediaTypeVideo) {
-            decodable = [[SGVideoDecoder alloc] init];
-        }
-        if (decodable) {
-            SGAsyncDecoder * async = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
-            async.object = packet.stream;
-            async.delegate = self;
-            [async open];
-            decoder = async;
-            [self lock];
-            [self.decoders addObject:decoder];
-            [self.decodersPaused addObject:@(NO)];
-            [self unlock];
-        }
-    }
-    if (!decoder) {
-        return;
-    }
-    [decoder putPacket:packet];
-}
-
 #pragma mark - SGDecoderDelegate
+
+- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
+{
+    [self.delegate frameOutput:self didOutputFrame:frame];
+}
 
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state
 {
@@ -277,11 +282,6 @@
         [self.packetOutput resume];
     }
     [self.delegate frameOutput:self didChangeDuration:duration size:size count:count stream:decoder.object];
-}
-
-- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
-{
-    [self.delegate frameOutput:self didOutputFrame:frame];
 }
 
 #pragma mark - NSLocking

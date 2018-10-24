@@ -19,6 +19,10 @@
 
 @interface SGPlaybackVideoRenderer () <NSLocking, SGGLViewDelegate>
 
+{
+    SGRenderableState _state;
+}
+
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -39,6 +43,7 @@
 
 @implementation SGPlaybackVideoRenderer
 
+@synthesize object = _object;
 @synthesize delegate = _delegate;
 @synthesize enable = _enable;
 @synthesize key = _key;
@@ -71,11 +76,11 @@
 
 #pragma mark - Interface
 
-- (void)open
+- (BOOL)open
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
     SGWeakSelf
@@ -86,13 +91,14 @@
     }];
     self.displayLink.paused = NO;
     self.renderTimer.paused = NO;
+    return YES;
 }
 
-- (void)close
+- (BOOL)close
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     [self.frameQueue destroy];
     [self lock];
@@ -101,35 +107,38 @@
     self.receivedFrame = NO;
     self.displayNewFrameCount = 0;
     [self unlock];
+    return YES;
 }
 
-- (void)pause
+- (BOOL)pause
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     self.paused = YES;
+    return YES;
 }
 
-- (void)resume
+- (BOOL)resume
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     self.paused = NO;
+    return YES;
 }
 
-- (void)putFrame:(__kindof SGFrame *)frame
+- (BOOL)putFrame:(__kindof SGFrame *)frame
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     if (![frame isKindOfClass:[SGVideoFrame class]])
     {
-        return;
+        return NO;
     }
     SGVideoFrame * videoFrame = frame;
     if (self.key && !self.receivedFrame)
@@ -138,14 +147,15 @@
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
-    [self.delegate outputDidChangeCapacity:self];
+    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    return YES;
 }
 
-- (void)flush
+- (BOOL)flush
 {
     if (!self.enable)
     {
-        return;
+        return NO;
     }
     [self lock];
     [self.currentFrame unlock];
@@ -154,10 +164,16 @@
     self.displayNewFrameCount = 0;
     [self unlock];
     [self.frameQueue flush];
-    [self.delegate outputDidChangeCapacity:self];
+    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    return YES;
 }
 
 #pragma mark - Setter & Getter
+
+- (SGRenderableState)state
+{
+    return _state;
+}
 
 - (NSError *)error
 {
@@ -277,7 +293,7 @@
                 [frame unlock];
                 frame = nil;
                 callback = ^{
-                    [self.delegate outputDidChangeCapacity:self];
+                    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
                 };
             }
         }
@@ -296,7 +312,7 @@
                 {
                     self.renderCallback(frame);
                 }
-                [self.delegate outputDidChangeCapacity:self];
+                [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
             };
         }
     }

@@ -392,9 +392,9 @@
 		9CF15DE820118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
 		9CF15DE920118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
 		9CF15DEA20118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
-		9CF15E022011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
-		9CF15E032011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
-		9CF15E042011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
+		9CF15E022011ADB500585326 /* SGRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderable.h */; };
+		9CF15E032011ADB500585326 /* SGRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderable.h */; };
+		9CF15E042011ADB500585326 /* SGRenderable.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderable.h */; };
 		9CF15E072011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
 		9CF15E082011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
 		9CF15E092011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
@@ -921,7 +921,7 @@
 		9CEFA6F51E7125CC00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CF15DE320118E1100585326 /* SGAsyncDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAsyncDecoder.h; sourceTree = "<group>"; };
 		9CF15DE420118E1100585326 /* SGAsyncDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAsyncDecoder.m; sourceTree = "<group>"; };
-		9CF15E012011ADB500585326 /* SGRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRenderer.h; sourceTree = "<group>"; };
+		9CF15E012011ADB500585326 /* SGRenderable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRenderable.h; sourceTree = "<group>"; };
 		9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackAudioRenderer.h; sourceTree = "<group>"; };
 		9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackAudioRenderer.m; sourceTree = "<group>"; };
 		9CF15E1D2011BC5400585326 /* SGAudioFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioFrame.h; sourceTree = "<group>"; };
@@ -1501,7 +1501,7 @@
 		9CF15DF420119FBE00585326 /* SGRenderer */ = {
 			isa = PBXGroup;
 			children = (
-				9CF15E012011ADB500585326 /* SGRenderer.h */,
+				9CF15E012011ADB500585326 /* SGRenderable.h */,
 				9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */,
 				9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */,
 				9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */,
@@ -1829,7 +1829,7 @@
 				9CF99F93212D187A008178BC /* encryption_info.h in Headers */,
 				9CF99F7E212D187A008178BC /* bswap.h in Headers */,
 				9CF99F69212D187A008178BC /* dict.h in Headers */,
-				9CF15E022011ADB500585326 /* SGRenderer.h in Headers */,
+				9CF15E022011ADB500585326 /* SGRenderable.h in Headers */,
 				9CF99FF0212D187A008178BC /* mediacodec.h in Headers */,
 				9CF99F0F212D187A008178BC /* avconfig.h in Headers */,
 				9CF9A005212D187A008178BC /* vorbis_parser.h in Headers */,
@@ -1963,7 +1963,7 @@
 				9CF99EEF212D187A008178BC /* hwcontext_mediacodec.h in Headers */,
 				9C5C6C9A20182A4800863EB5 /* SGGLView.h in Headers */,
 				9CF99FAF212D187A008178BC /* pixfmt.h in Headers */,
-				9CF15E032011ADB500585326 /* SGRenderer.h in Headers */,
+				9CF15E032011ADB500585326 /* SGRenderable.h in Headers */,
 				9CE6F5302004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
 				9CF99F64212D187A008178BC /* hmac.h in Headers */,
 				9CF99F55212D187A008178BC /* buffer.h in Headers */,
@@ -2146,7 +2146,7 @@
 				9CE6F5792004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
 				9C1944F32019AC4000184416 /* SGGLInternalModel.h in Headers */,
 				9CF99F20212D187A008178BC /* hwcontext_vdpau.h in Headers */,
-				9CF15E042011ADB500585326 /* SGRenderer.h in Headers */,
+				9CF15E042011ADB500585326 /* SGRenderable.h in Headers */,
 				9C5C6C9B20182A4800863EB5 /* SGGLView.h in Headers */,
 				9CE6F5552004D97D00D1F4C8 /* SGPLFView.h in Headers */,
 				9CF99F05212D187A008178BC /* base64.h in Headers */,

@@ -12,7 +12,7 @@
 #import "SGError.h"
 #import "SGTime.h"
 
-@interface SGSession () <NSLocking, SGFrameOutputDelegate, SGRendererDelegate>
+@interface SGSession () <NSLocking, SGFrameOutputDelegate, SGRenderableDelegate>
 
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -409,11 +409,21 @@
     }
 }
 
-#pragma mark - SGRendererDelegate
+#pragma mark - SGRenderableDelegate
 
-- (void)outputDidChangeCapacity:(id <SGRenderer>)output
+- (void)renderable:(id <SGRenderable>)renderable didRenderedFrame:(__kindof SGFrame *)frame
 {
-    if (output == self.configuration.audioOutput)
+    
+}
+
+- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
+{
+    
+}
+
+- (void)renderable:(id <SGRenderable>)renderable didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
+{
+    if (renderable == self.configuration.audioOutput)
     {
         if (self.configuration.audioOutput.enough) {
             [self.configuration.source pause:self.configuration.source.audioStreams];
@@ -421,7 +431,7 @@
             [self.configuration.source resume:self.configuration.source.audioStreams];
         }
     }
-    else if (output == self.configuration.videoOutput)
+    else if (renderable == self.configuration.videoOutput)
     {
         if (self.configuration.videoOutput.enough) {
             [self.configuration.source pause:self.configuration.source.videoStreams];
