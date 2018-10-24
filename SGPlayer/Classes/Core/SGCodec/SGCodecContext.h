@@ -24,7 +24,6 @@
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
 @property (nonatomic, assign) int preferredPixelFormat;
 
-
 - (BOOL)open;
 - (void)close;
 

@@ -256,9 +256,13 @@
 {
     if (self.audioEnable && self.configuration.audioOutput)
     {
-        NSUInteger count = 0;
-        [self.configuration.source duratioin:NULL size:NULL count:&count stream:self.configuration.source.audioStreams.firstObject];
-        return count == 0 && self.configuration.audioOutput.empty;
+        NSUInteger sourceCount = 0;
+        [self.configuration.source duratioin:NULL size:NULL count:&sourceCount stream:self.configuration.source.audioStreams.firstObject];
+        
+        NSUInteger outputCount = 0;
+        [self.configuration.audioOutput duratioin:NULL size:NULL count:&outputCount];
+        
+        return sourceCount == 0 && outputCount == 0;
     }
     return YES;
 }
@@ -267,9 +271,13 @@
 {
     if (self.videoEnable && self.configuration.videoOutput)
     {
-        NSUInteger count = 0;
-        [self.configuration.source duratioin:NULL size:NULL count:&count stream:self.configuration.source.videoStreams.firstObject];
-        return count == 0 && self.configuration.videoOutput.empty;
+        NSUInteger sourceCount = 0;
+        [self.configuration.source duratioin:NULL size:NULL count:&sourceCount stream:self.configuration.source.videoStreams.firstObject];
+        
+        NSUInteger outputCount = 0;
+        [self.configuration.videoOutput duratioin:NULL size:NULL count:&outputCount];
+        
+        return sourceCount == 0 && outputCount == 0;
     }
     return YES;
 }
@@ -405,11 +413,9 @@
 
 - (void)outputDidChangeCapacity:(id <SGOutput>)output
 {
-    NSUInteger count = 0;
-    [output duratioin:NULL size:NULL count:&count];
     if (output == self.configuration.audioOutput)
     {
-        if (count >= self.configuration.audioOutput.maxCount) {
+        if (self.configuration.audioOutput.enough) {
             [self.configuration.source pause:self.configuration.source.audioStreams];
         } else {
             [self.configuration.source resume:self.configuration.source.audioStreams];
@@ -417,7 +423,7 @@
     }
     else if (output == self.configuration.videoOutput)
     {
-        if (count >= self.configuration.videoOutput.maxCount) {
+        if (self.configuration.videoOutput.enough) {
             [self.configuration.source pause:self.configuration.source.videoStreams];
         } else {
             [self.configuration.source resume:self.configuration.source.videoStreams];

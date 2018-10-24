@@ -7,7 +7,7 @@
 //
 
 #import "SGPacket.h"
-#import "avformat.h"
+#import "avcodec.h"
 
 @interface SGPacket (Private)
 

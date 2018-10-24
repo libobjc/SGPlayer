@@ -564,14 +564,22 @@
 
 - (void)callbackForTimingIfNeeded
 {
-    if (self.audioOutput.enable && !self.audioOutput.receivedFrame)
+    if (self.audioOutput.enable)
     {
         return;
     }
-    if (self.videoOutput.enable && !self.videoOutput.receivedFrame)
+    if (self.videoOutput.enable)
     {
         return;
     }
+//    if (self.audioOutput.enable && !self.audioOutput.receivedFrame)
+//    {
+//        return;
+//    }
+//    if (self.videoOutput.enable && !self.videoOutput.receivedFrame)
+//    {
+//        return;
+//    }
     [self lock];
     if (self.error)
     {

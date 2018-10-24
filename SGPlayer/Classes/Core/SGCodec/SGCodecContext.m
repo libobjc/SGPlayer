@@ -7,14 +7,13 @@
 //
 
 #import "SGCodecContext.h"
+#import "SGStream+Private.h"
+#import "SGPacket+Private.h"
+#import "SGFrame+Private.h"
 #import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGError.h"
 #import "SGMacro.h"
-#import "SGFFFrame.h"
-#import "SGStream+Private.h"
-#import "SGPacket+Private.h"
-#import "SGFrame+Private.h"
 
 @interface SGCodecContext ()
 

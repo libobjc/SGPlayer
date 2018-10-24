@@ -8,12 +8,9 @@
 
 #import "SGVideoFrame.h"
 #import "SGFrame+Private.h"
-#import "SGMapping.h"
 #import "SGSWSContext.h"
 #import "SGPlatform.h"
 #import "imgutils.h"
-#import "frame.h"
-#import "SGTime.h"
 
 @interface SGVideoFrame ()
 

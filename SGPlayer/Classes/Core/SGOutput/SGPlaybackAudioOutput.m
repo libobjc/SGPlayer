@@ -54,11 +54,6 @@
 @synthesize enable = _enable;
 @synthesize key = _key;
 
-- (SGMediaType)mediaType
-{
-    return SGMediaTypeAudio;
-}
-
 - (instancetype)init
 {
     if (self = [super init])
@@ -261,21 +256,16 @@
     return self.swrContextError;
 }
 
-- (BOOL)empty
+- (BOOL)enough
 {
     NSUInteger count = 0;
     [self duratioin:NULL size:NULL count:&count];
-    return count == 0;
+    return count >= 5;
 }
 
 - (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
     return [self.frameQueue duratioin:duration size:size count:count];
-}
-
-- (NSUInteger)maxCount
-{
-    return 5;
 }
 
 - (void)setVolume:(float)volume

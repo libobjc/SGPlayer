@@ -152,7 +152,7 @@ static int SGFormatContextInterruptHandler(void * context)
     }
     if (_formatContext)
     {
-        long long timeStamp = AV_TIME_BASE * time.value / time.timescale;
+        int64_t timeStamp = AV_TIME_BASE * time.value / time.timescale;
         int ret = av_seek_frame(_formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
     }

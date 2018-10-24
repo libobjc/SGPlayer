@@ -9,13 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGPacket.h"
 
-@class SGFormatContext;
-
-@protocol SGFormatContextDelegate <NSObject>
-
-- (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext;
-
-@end
+@protocol SGFormatContextDelegate;
 
 @interface SGFormatContext : NSObject
 
@@ -42,5 +36,11 @@
 - (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time;
 - (NSError *)nextPacket:(SGPacket *)packet;
+
+@end
+
+@protocol SGFormatContextDelegate <NSObject>
+
+- (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext;
 
 @end

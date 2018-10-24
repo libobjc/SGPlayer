@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGObjectQueue.h"
 #import "SGObjectPool.h"
-#import "SGDefines.h"
 #import "SGStream.h"
 
 static int const SGFramePlaneCount = 8;
@@ -22,6 +21,6 @@ static int const SGFramePlaneCount = 8;
 @property (nonatomic, assign, readonly) CMTime timeStamp;
 @property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, assign, readonly) long long size;
+@property (nonatomic, assign, readonly) int64_t size;
 
 @end

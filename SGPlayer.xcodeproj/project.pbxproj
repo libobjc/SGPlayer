@@ -873,14 +873,6 @@
 		9C95D2C02152386C00079B38 /* SGURLAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLAsset.m; sourceTree = "<group>"; };
 		9CA0F56220E0E24000501478 /* SGDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDefines.h; sourceTree = "<group>"; };
 		9CA3CDB320E1F74300B852D0 /* SGFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrame.m; sourceTree = "<group>"; };
-		9CA3CDC520E2206D00B852D0 /* SGVideoAVFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVideoAVFrame.h; sourceTree = "<group>"; };
-		9CA3CDC620E2206D00B852D0 /* SGVideoAVFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVideoAVFrame.m; sourceTree = "<group>"; };
-		9CA3CDCD20E2255700B852D0 /* SGAudioFFFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioFFFrame.h; sourceTree = "<group>"; };
-		9CA3CDCE20E2255700B852D0 /* SGAudioFFFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioFFFrame.m; sourceTree = "<group>"; };
-		9CA3CDD520E2283500B852D0 /* SGVideoFFFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVideoFFFrame.h; sourceTree = "<group>"; };
-		9CA3CDD620E2283500B852D0 /* SGVideoFFFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVideoFFFrame.m; sourceTree = "<group>"; };
-		9CA3CDDD20E2320F00B852D0 /* SGAudioBufferFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioBufferFrame.h; sourceTree = "<group>"; };
-		9CA3CDDE20E2320F00B852D0 /* SGAudioBufferFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioBufferFrame.m; sourceTree = "<group>"; };
 		9CAAC99D2133A6800065E364 /* SGVRViewport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVRViewport.h; sourceTree = "<group>"; };
 		9CAAC99E2133A6800065E364 /* SGVRViewport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVRViewport.m; sourceTree = "<group>"; };
 		9CB1F09D20178B0D00102A69 /* SGPLFGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPLFGLView.m; sourceTree = "<group>"; };
@@ -922,7 +914,6 @@
 		9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGMacro.h; sourceTree = "<group>"; };
 		9CEBCC9B217EF8E900430024 /* SGStream+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGStream+Private.h"; sourceTree = "<group>"; };
 		9CEBCCA0217F109000430024 /* SGPacket+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGPacket+Private.h"; sourceTree = "<group>"; };
-		9CEBCCA4217F186500430024 /* SGFFFrame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGFFFrame.h; sourceTree = "<group>"; };
 		9CEBCCA6217F19BE00430024 /* SGFrame+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGFrame+Private.h"; sourceTree = "<group>"; };
 		9CEFA6D61E7122BF00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CEFA6DA1E7122BF00835CAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -1448,17 +1439,8 @@
 				9C8D4E5D200E0A1400ED8A58 /* SGSource.h */,
 				9CF63FD0211D9359001B2684 /* SGConcatSource.h */,
 				9CF63FD1211D9359001B2684 /* SGConcatSource.m */,
-				9CA3CDC520E2206D00B852D0 /* SGVideoAVFrame.h */,
-				9CA3CDC620E2206D00B852D0 /* SGVideoAVFrame.m */,
 				9C620D6721215EEF00845F2A /* SGFormatContext2.h */,
 				9C620D6821215EEF00845F2A /* SGFormatContext2.m */,
-				9CEBCCA4217F186500430024 /* SGFFFrame.h */,
-				9CA3CDCD20E2255700B852D0 /* SGAudioFFFrame.h */,
-				9CA3CDCE20E2255700B852D0 /* SGAudioFFFrame.m */,
-				9CA3CDD520E2283500B852D0 /* SGVideoFFFrame.h */,
-				9CA3CDD620E2283500B852D0 /* SGVideoFFFrame.m */,
-				9CA3CDDD20E2320F00B852D0 /* SGAudioBufferFrame.h */,
-				9CA3CDDE20E2320F00B852D0 /* SGAudioBufferFrame.m */,
 			);
 			path = SGDeprecated;
 			sourceTree = "<group>";

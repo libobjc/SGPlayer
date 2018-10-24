@@ -7,7 +7,7 @@
 //
 
 #import "SGFrame.h"
-#import "avformat.h"
+#import "frame.h"
 
 @interface SGFrame (Private)
 

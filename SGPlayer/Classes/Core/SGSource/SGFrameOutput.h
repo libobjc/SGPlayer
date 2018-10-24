@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SGAsset.h"
-#import "SGStream.h"
 #import "SGFrame.h"
 
 @protocol SGFrameOutputDelegate;

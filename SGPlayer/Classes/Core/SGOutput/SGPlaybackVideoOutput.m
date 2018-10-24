@@ -10,8 +10,6 @@
 #import "SGMapping.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLProgramPool.h"
-#import "SGVideoAVFrame.h"
-#import "SGVideoFFFrame.h"
 #import "SGGLModelPool.h"
 #import "SGGLViewport.h"
 #import "SGGLTimer.h"
@@ -44,11 +42,6 @@
 @synthesize delegate = _delegate;
 @synthesize enable = _enable;
 @synthesize key = _key;
-
-- (SGMediaType)mediaType
-{
-    return SGMediaTypeVideo;
-}
 
 - (instancetype)init
 {
@@ -171,21 +164,16 @@
     return nil;
 }
 
-- (BOOL)empty
+- (BOOL)enough
 {
     NSUInteger count = 0;
     [self duratioin:NULL size:NULL count:&count];
-    return count == 0;
+    return count >= 3;
 }
 
 - (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
     return [self.frameQueue duratioin:duration size:size count:count];
-}
-
-- (NSUInteger)maxCount
-{
-    return 3;
 }
 
 - (void)setViewport:(SGVRViewport *)viewport

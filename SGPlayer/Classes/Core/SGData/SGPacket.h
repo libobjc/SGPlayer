@@ -19,6 +19,6 @@
 @property (nonatomic, assign, readonly) CMTime timeStamp;
 @property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, assign, readonly) long long size;
+@property (nonatomic, assign, readonly) int64_t size;
 
 @end

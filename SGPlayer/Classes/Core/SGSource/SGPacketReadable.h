@@ -7,10 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
 #import "SGPacket.h"
 
-@protocol SGPacketReadable;
 @protocol SGPacketReadableDelegate;
 
 @protocol SGPacketReadable <NSObject>

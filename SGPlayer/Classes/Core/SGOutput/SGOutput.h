@@ -10,23 +10,18 @@
 #define SGOutput_h
 
 #import <Foundation/Foundation.h>
-#import "SGDefines.h"
 #import "SGFrame.h"
 
-@protocol SGOutput;
 @protocol SGOutputDelegate;
 
 @protocol SGOutput <NSObject>
-
-- (SGMediaType)mediaType;
 
 @property (nonatomic, weak) id <SGOutputDelegate> delegate;
 @property (nonatomic, assign) BOOL enable;
 @property (nonatomic, assign) BOOL key;
 
 - (NSError *)error;
-- (BOOL)empty;
-- (NSUInteger)maxCount;
+- (BOOL)enough;
 - (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
 
 - (void)open;
@@ -35,7 +30,6 @@
 - (void)resume;
 
 - (void)putFrame:(__kindof SGFrame *)frame;
-- (BOOL)receivedFrame;
 - (void)flush;
 
 @end
