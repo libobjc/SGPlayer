@@ -13,7 +13,6 @@
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGDefines.h>
-#import <SGPlayer/SGFFDefines.h>
 #import <SGPlayer/SGAsset.h>
 #import <SGPlayer/SGURLAsset.h>
 #import <SGPlayer/SGURLAsset2.h>
@@ -235,9 +234,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
 
 /**
- *  Default value is SG_AV_PIX_FMT_NONE.
+ *  Default value is AV_PIX_FMT_NV12.
  */
-@property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
+@property (nonatomic, assign) int preferredPixelFormat;
 
 @end
 

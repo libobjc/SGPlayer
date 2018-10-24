@@ -7,7 +7,7 @@
 //
 
 #import "SGSWSContext.h"
-#import "SGFFDefinesMapping.h"
+#import "SGMapping.h"
 #import "swscale.h"
 
 @interface SGSWSContext ()
@@ -46,27 +46,27 @@
     self.context = sws_getCachedContext(self.context,
                                         self.width,
                                         self.height,
-                                        SGDMPixelFormatSG2FF(self.srcFormat),
+                                        self.src_format,
                                         self.width,
                                         self.height,
-                                        SGDMPixelFormatSG2FF(self.dstFormat),
+                                        self.dst_format,
                                         self.flags,
                                         NULL, NULL, NULL);
     return self.context ? YES : NO;
 }
 
-- (int)scaleWithSrcData:(const uint8_t *const [])srcData
-            srcLinesize:(const int [])srcLinesize
-                dstData:(uint8_t *const [])dstData
-            dstLinesize:(const int [])dstLinesize
+- (int)scaleWithSrcData:(const uint8_t *const [])src_data
+            srcLinesize:(const int [])src_linesize
+                dstData:(uint8_t *const [])dst_data
+            dstLinesize:(const int [])dst_linesize
 {
     int result = sws_scale(self.context,
-                           srcData,
-                           srcLinesize,
+                           src_data,
+                           src_linesize,
                            0,
                            self.height,
-                           dstData,
-                           dstLinesize);
+                           dst_data,
+                           dst_linesize);
     return result;
 }
 

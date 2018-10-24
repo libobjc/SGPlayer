@@ -8,7 +8,7 @@
 
 #import "SGStream.h"
 #import "SGStream+Private.h"
-#import "SGFFDefinesMapping.h"
+#import "SGMapping.h"
 
 @interface SGStream ()
 
@@ -29,7 +29,7 @@
     {
         self.core = core;
         self.coreptr = self.core;
-        self.type = SGDMMediaTypeFF2SG(self.core->codecpar->codec_type);
+        self.type = SGMediaTypeFF2SG(self.core->codecpar->codec_type);
         self.index = self.core->index;
         self.disposition = self.core->disposition;
         CMTime timebase = CMTimeMake(self.core->time_base.num, self.core->time_base.den);

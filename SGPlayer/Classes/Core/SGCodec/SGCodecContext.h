@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFDefines.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
 
@@ -23,7 +22,7 @@
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
-@property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
+@property (nonatomic, assign) int preferredPixelFormat;
 
 
 - (BOOL)open;

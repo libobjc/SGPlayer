@@ -7,7 +7,6 @@
 //
 
 #import "SGFrame.h"
-#import "SGFFDefines.h"
 
 @interface SGAudioFrame : SGFrame
 
@@ -17,10 +16,10 @@
     int linesize[SGFramePlaneCount];
 }
 
-@property (nonatomic, assign, readonly) SGAVSampleFormat format;
-@property (nonatomic, assign, readonly) int numberOfSamples;
-@property (nonatomic, assign, readonly) int sampleRate;
-@property (nonatomic, assign, readonly) int numberOfChannels;
-@property (nonatomic, assign, readonly) long long channelLayout;
+@property (nonatomic, assign, readonly) int format;         // AVSampleFormat
+@property (nonatomic, assign, readonly) int nb_samples;
+@property (nonatomic, assign, readonly) int sample_rate;
+@property (nonatomic, assign, readonly) int channels;
+@property (nonatomic, assign, readonly) uint64_t channel_layout;
 
 @end

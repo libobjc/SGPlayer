@@ -9,7 +9,7 @@
 #import "SGFormatContext.h"
 #import "SGStream+Private.h"
 #import "SGPacket+Private.h"
-#import "SGFFmpeg.h"
+#import "SGMapping.h"
 #import "SGError.h"
 
 static int SGFormatContextInterruptHandler(void * context)

@@ -7,9 +7,5 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "avformat.h"
 
 void SGFFmpegSetupIfNeeded(void);
-
-AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary);
-NSDictionary * SGDictionaryFF2NS(AVDictionary * dictionary);

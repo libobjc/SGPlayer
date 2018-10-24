@@ -7,7 +7,7 @@
 //
 
 #import "SGFormatContext2.h"
-#import "SGFFmpeg.h"
+#import "SGMapping.h"
 #import "SGError.h"
 #import "SGStream+Private.h"
 

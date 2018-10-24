@@ -7,7 +7,6 @@
 //
 
 #import "SGFrame.h"
-#import "SGFFDefines.h"
 
 @interface SGVideoFrame : SGFrame
 
@@ -18,15 +17,10 @@
     CVPixelBufferRef pixelBuffer;
 }
 
-@property (nonatomic, assign, readonly) SGAVPixelFormat format;
-@property (nonatomic, assign, readonly) SGAVColorRange colorRange;
-@property (nonatomic, assign, readonly) SGAVColorPrimaries colorPrimaries;
-@property (nonatomic, assign, readonly) SGAVColorTransferCharacteristic colorTransferCharacteristic;
-@property (nonatomic, assign, readonly) SGAVColorSpace colorSpace;
-@property (nonatomic, assign, readonly) SGAVChromaLocation chromaLocation;
+@property (nonatomic, assign, readonly) int format;     // AVPixelFormat
 @property (nonatomic, assign, readonly) int width;
 @property (nonatomic, assign, readonly) int height;
-@property (nonatomic, assign, readonly) BOOL keyFrame;
+@property (nonatomic, assign, readonly) int key_frame;
 
 - (UIImage *)image;
 

@@ -8,14 +8,13 @@
 
 #import "SGCodecContext.h"
 #import "SGObjectPool.h"
-#import "SGFFmpeg.h"
+#import "SGMapping.h"
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGFFFrame.h"
 #import "SGStream+Private.h"
 #import "SGPacket+Private.h"
 #import "SGFrame+Private.h"
-#import "SGFFDefinesMapping.h"
 
 @interface SGCodecContext ()
 
@@ -47,7 +46,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             }
             AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
             frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGDMPixelFormatSG2FF(self.preferredPixelFormat);
+            frames_ctx_data->sw_format = self.preferredPixelFormat;
             frames_ctx_data->width = s->width;
             frames_ctx_data->height = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);
@@ -134,7 +133,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
         self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = SG_AV_PIX_FMT_NV12;
+        self.preferredPixelFormat = AV_PIX_FMT_NV12;
     }
     return self;
 }

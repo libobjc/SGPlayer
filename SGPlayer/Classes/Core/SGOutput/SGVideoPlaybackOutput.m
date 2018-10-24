@@ -7,7 +7,7 @@
 //
 
 #import "SGVideoPlaybackOutput.h"
-#import "SGFFDefinesMapping.h"
+#import "SGMapping.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLProgramPool.h"
 #import "SGVideoAVFrame.h"
@@ -364,8 +364,8 @@
     [self unlock];
     SGGLSize textureSize = {frame.width, frame.height};
     SGDisplayMode displayMode = self.displayMode;
-    id <SGGLModel> model = [self.modelPool modelWithType:SGDMDisplay2Model(displayMode)];
-    id <SGGLProgram> program = [self.programPool programWithType:SGDMFormat2Program(frame.format)];
+    id <SGGLModel> model = [self.modelPool modelWithType:SGDisplay2Model(displayMode)];
+    id <SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format)];
     if (!model || !program)
     {
         [frame unlock];
@@ -380,7 +380,7 @@
     }
     else
     {
-        success = [self.glUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame->data size:textureSize];
+        success = [self.glUploader uploadWithType:SGFormat2Texture(frame.format) data:frame->data size:textureSize];
     }
     if (!success)
     {
@@ -397,7 +397,7 @@
         case SGDisplayModePlane:
         {
             [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-            [SGGLViewport updateWithLayerSize:size scale:glView.glScale textureSize:textureSize mode:SGDMScaling2Viewport(self.scalingMode)];
+            [SGGLViewport updateWithLayerSize:size scale:glView.glScale textureSize:textureSize mode:SGScaling2Viewport(self.scalingMode)];
             [model draw];
         }
             break;

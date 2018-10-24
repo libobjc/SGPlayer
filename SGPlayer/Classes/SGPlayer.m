@@ -10,6 +10,7 @@
 #import "SGMacro.h"
 #import "SGActivity.h"
 #import "SGSession.h"
+#import "SGMapping.h"
 #import "SGPacketOutput.h"
 #import "SGConcatSource.h"
 #import "SGAudioDecoder.h"
@@ -46,7 +47,7 @@
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
 @property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
 @property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-@property (nonatomic, assign) SGAVPixelFormat preferredPixelFormat;
+@property (nonatomic, assign) int preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
@@ -90,7 +91,7 @@
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
         self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = SG_AV_PIX_FMT_NONE;
+        self.preferredPixelFormat = AV_PIX_FMT_NV12;
         self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
     }

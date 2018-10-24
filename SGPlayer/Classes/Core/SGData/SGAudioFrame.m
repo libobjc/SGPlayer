@@ -8,7 +8,7 @@
 
 #import "SGAudioFrame.h"
 #import "SGFrame+Private.h"
-#import "SGFFDefinesMapping.h"
+#import "SGMapping.h"
 
 @implementation SGAudioFrame
 
@@ -30,11 +30,11 @@
 {
     [super clear];
     
-    _format = SG_AV_SAMPLE_FMT_NONE;
-    _numberOfSamples = 0;
-    _sampleRate = 0;
-    _numberOfChannels = 0;
-    _channelLayout = 0;
+    _format = AV_SAMPLE_FMT_NONE;
+    _nb_samples = 0;
+    _sample_rate = 0;
+    _channels = 0;
+    _channel_layout = 0;
     for (int i = 0; i < SGFramePlaneCount; i++)
     {
         self->data[i] = nil;
@@ -46,11 +46,11 @@
 {
     [super configurateWithStream:stream];
     
-    _format = SGDMSampleFormatFF2SG(self.core->format);
-    _numberOfSamples = self.core->nb_samples;
-    _sampleRate = self.core->sample_rate;
-    _numberOfChannels = self.core->channels;
-    _channelLayout = self.core->channel_layout;
+    _format = self.core->format;
+    _nb_samples = self.core->nb_samples;
+    _sample_rate = self.core->sample_rate;
+    _channels = self.core->channels;
+    _channel_layout = self.core->channel_layout;
     for (int i = 0; i < SGFramePlaneCount; i++)
     {
         self->data[i] = self.core->data[i];

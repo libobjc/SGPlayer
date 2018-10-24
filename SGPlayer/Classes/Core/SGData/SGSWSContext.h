@@ -7,21 +7,20 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGFFDefines.h"
 
 @interface SGSWSContext : NSObject
 
-@property (nonatomic, assign) SGAVPixelFormat srcFormat;
-@property (nonatomic, assign) SGAVPixelFormat dstFormat;
+@property (nonatomic, assign) int src_format;       // AVPixelFormat
+@property (nonatomic, assign) int dst_format;       // AVPixelFormat
 @property (nonatomic, assign) int width;
 @property (nonatomic, assign) int height;
-@property (nonatomic, assign) int flags;        // SWS_FAST_BILINEAR
+@property (nonatomic, assign) int flags;            // SWS_FAST_BILINEAR
 
 - (BOOL)open;
 
-- (int)scaleWithSrcData:(const uint8_t * const [])srcData
-            srcLinesize:(const int [])srcLinesize
-                dstData:(uint8_t * const [])dstData
-            dstLinesize:(const int [])dstLinesize;
+- (int)scaleWithSrcData:(const uint8_t * const [])src_data
+            srcLinesize:(const int [])src_linesize
+                dstData:(uint8_t * const [])dst_data
+            dstLinesize:(const int [])dst_linesize;
 
 @end

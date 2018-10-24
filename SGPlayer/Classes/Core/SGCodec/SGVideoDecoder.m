@@ -9,6 +9,7 @@
 #import "SGVideoDecoder.h"
 #import "SGCodecContext.h"
 #import "SGVideoFrame.h"
+#import "SGMapping.h"
 
 @interface SGVideoDecoder ()
 
@@ -28,7 +29,7 @@
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
         self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = SG_AV_PIX_FMT_NV12;
+        self.preferredPixelFormat = AV_PIX_FMT_NV12;
     }
     return self;
 }
