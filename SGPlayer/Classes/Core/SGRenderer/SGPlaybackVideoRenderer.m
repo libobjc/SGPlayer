@@ -1,12 +1,12 @@
 //
-//  SGPlaybackVideoOutput.m
+//  SGPlaybackVideoRenderer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGPlaybackVideoOutput.h"
+#import "SGPlaybackVideoRenderer.h"
 #import "SGMapping.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLProgramPool.h"
@@ -17,7 +17,7 @@
 #import "SGVRMatrixMaker.h"
 #import "SGMacro.h"
 
-@interface SGPlaybackVideoOutput () <NSLocking, SGGLViewDelegate>
+@interface SGPlaybackVideoRenderer () <NSLocking, SGGLViewDelegate>
 
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
@@ -37,7 +37,7 @@
 
 @end
 
-@implementation SGPlaybackVideoOutput
+@implementation SGPlaybackVideoRenderer
 
 @synthesize delegate = _delegate;
 @synthesize enable = _enable;
@@ -283,7 +283,7 @@
         }
         if (frame)
         {
-            NSAssert(self.currentFrame != frame, @"SGPlaybackVideoOutput : Frame can't equal to currentTime.");
+            NSAssert(self.currentFrame != frame, @"SGPlaybackVideoRenderer : Frame can't equal to currentTime.");
             self.displayNewFrameCount += 1;
             [self.currentFrame unlock];
             self.currentFrame = frame;

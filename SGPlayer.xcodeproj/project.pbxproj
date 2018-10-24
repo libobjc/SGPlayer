@@ -131,12 +131,12 @@
 		9C2C559E2015B87400131E15 /* SGVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C559A2015B87400131E15 /* SGVideoFrame.m */; };
 		9C2C559F2015B87400131E15 /* SGVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C559A2015B87400131E15 /* SGVideoFrame.m */; };
 		9C2C55A02015B87400131E15 /* SGVideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C559A2015B87400131E15 /* SGVideoFrame.m */; };
-		9C2C55A32015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoOutput.h */; };
-		9C2C55A42015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoOutput.h */; };
-		9C2C55A52015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoOutput.h */; };
-		9C2C55A62015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoOutput.m */; };
-		9C2C55A72015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoOutput.m */; };
-		9C2C55A82015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoOutput.m */; };
+		9C2C55A32015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */; };
+		9C2C55A42015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */; };
+		9C2C55A52015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */; };
+		9C2C55A62015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoRenderer.m */; };
+		9C2C55A72015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoRenderer.m */; };
+		9C2C55A82015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2C55A22015C1E100131E15 /* SGPlaybackVideoRenderer.m */; };
 		9C2C55AD2015D1D200131E15 /* SGPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55AB2015D1D200131E15 /* SGPacket.h */; };
 		9C2C55AE2015D1D200131E15 /* SGPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55AB2015D1D200131E15 /* SGPacket.h */; };
 		9C2C55AF2015D1D200131E15 /* SGPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55AB2015D1D200131E15 /* SGPacket.h */; };
@@ -392,15 +392,15 @@
 		9CF15DE820118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
 		9CF15DE920118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
 		9CF15DEA20118E1100585326 /* SGAsyncDecoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15DE420118E1100585326 /* SGAsyncDecoder.m */; };
-		9CF15E022011ADB500585326 /* SGOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGOutput.h */; };
-		9CF15E032011ADB500585326 /* SGOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGOutput.h */; };
-		9CF15E042011ADB500585326 /* SGOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGOutput.h */; };
-		9CF15E072011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioOutput.h */; };
-		9CF15E082011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioOutput.h */; };
-		9CF15E092011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioOutput.h */; };
-		9CF15E0A2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioOutput.m */; };
-		9CF15E0B2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioOutput.m */; };
-		9CF15E0C2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioOutput.m */; };
+		9CF15E022011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
+		9CF15E032011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
+		9CF15E042011ADB500585326 /* SGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E012011ADB500585326 /* SGRenderer.h */; };
+		9CF15E072011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
+		9CF15E082011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
+		9CF15E092011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */; };
+		9CF15E0A2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */; };
+		9CF15E0B2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */; };
+		9CF15E0C2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */; };
 		9CF15E1F2011BC5400585326 /* SGAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E1D2011BC5400585326 /* SGAudioFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF15E202011BC5400585326 /* SGAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E1D2011BC5400585326 /* SGAudioFrame.h */; };
 		9CF15E212011BC5400585326 /* SGAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E1D2011BC5400585326 /* SGAudioFrame.h */; };
@@ -796,8 +796,8 @@
 		9C2C55922015911600131E15 /* SGObjectPool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGObjectPool.m; sourceTree = "<group>"; };
 		9C2C55992015B87400131E15 /* SGVideoFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVideoFrame.h; sourceTree = "<group>"; };
 		9C2C559A2015B87400131E15 /* SGVideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVideoFrame.m; sourceTree = "<group>"; };
-		9C2C55A12015C1E100131E15 /* SGPlaybackVideoOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackVideoOutput.h; sourceTree = "<group>"; };
-		9C2C55A22015C1E100131E15 /* SGPlaybackVideoOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackVideoOutput.m; sourceTree = "<group>"; };
+		9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackVideoRenderer.h; sourceTree = "<group>"; };
+		9C2C55A22015C1E100131E15 /* SGPlaybackVideoRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackVideoRenderer.m; sourceTree = "<group>"; };
 		9C2C55AB2015D1D200131E15 /* SGPacket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPacket.h; sourceTree = "<group>"; };
 		9C2C55AC2015D1D200131E15 /* SGPacket.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPacket.m; sourceTree = "<group>"; };
 		9C2C55B32015D92100131E15 /* SGObjectQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGObjectQueue.h; sourceTree = "<group>"; };
@@ -921,9 +921,9 @@
 		9CEFA6F51E7125CC00835CAB /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CF15DE320118E1100585326 /* SGAsyncDecoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAsyncDecoder.h; sourceTree = "<group>"; };
 		9CF15DE420118E1100585326 /* SGAsyncDecoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAsyncDecoder.m; sourceTree = "<group>"; };
-		9CF15E012011ADB500585326 /* SGOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGOutput.h; sourceTree = "<group>"; };
-		9CF15E052011AE0700585326 /* SGPlaybackAudioOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackAudioOutput.h; sourceTree = "<group>"; };
-		9CF15E062011AE0700585326 /* SGPlaybackAudioOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackAudioOutput.m; sourceTree = "<group>"; };
+		9CF15E012011ADB500585326 /* SGRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRenderer.h; sourceTree = "<group>"; };
+		9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPlaybackAudioRenderer.h; sourceTree = "<group>"; };
+		9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackAudioRenderer.m; sourceTree = "<group>"; };
 		9CF15E1D2011BC5400585326 /* SGAudioFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioFrame.h; sourceTree = "<group>"; };
 		9CF15E1E2011BC5400585326 /* SGAudioFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioFrame.m; sourceTree = "<group>"; };
 		9CF52CF5200F45D700950B81 /* SGStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGStream.h; sourceTree = "<group>"; };
@@ -1207,7 +1207,7 @@
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
 				9C8D4E5C200E0A0600ED8A58 /* SGSource */,
 				9C8D4E69200E101D00ED8A58 /* SGCodec */,
-				9CF15DF420119FBE00585326 /* SGOutput */,
+				9CF15DF420119FBE00585326 /* SGRenderer */,
 				9CBD0BA7201625010094CFC7 /* SGAudio */,
 				9C129F2A211857C800B816DC /* SGContainer */,
 				9CF15DF320119D0300585326 /* SGData */,
@@ -1498,18 +1498,18 @@
 			path = SGData;
 			sourceTree = "<group>";
 		};
-		9CF15DF420119FBE00585326 /* SGOutput */ = {
+		9CF15DF420119FBE00585326 /* SGRenderer */ = {
 			isa = PBXGroup;
 			children = (
-				9CF15E012011ADB500585326 /* SGOutput.h */,
-				9CF15E052011AE0700585326 /* SGPlaybackAudioOutput.h */,
-				9CF15E062011AE0700585326 /* SGPlaybackAudioOutput.m */,
-				9C2C55A12015C1E100131E15 /* SGPlaybackVideoOutput.h */,
-				9C2C55A22015C1E100131E15 /* SGPlaybackVideoOutput.m */,
+				9CF15E012011ADB500585326 /* SGRenderer.h */,
+				9CF15E052011AE0700585326 /* SGPlaybackAudioRenderer.h */,
+				9CF15E062011AE0700585326 /* SGPlaybackAudioRenderer.m */,
+				9C2C55A12015C1E100131E15 /* SGPlaybackVideoRenderer.h */,
+				9C2C55A22015C1E100131E15 /* SGPlaybackVideoRenderer.m */,
 				9C5C98F920D26BE10089C112 /* SGPlaybackSynchronizer.h */,
 				9C5C98FA20D26BE10089C112 /* SGPlaybackSynchronizer.m */,
 			);
-			path = SGOutput;
+			path = SGRenderer;
 			sourceTree = "<group>";
 		};
 		9CF63FBF211D8E26001B2684 /* SGAsset */ = {
@@ -1829,7 +1829,7 @@
 				9CF99F93212D187A008178BC /* encryption_info.h in Headers */,
 				9CF99F7E212D187A008178BC /* bswap.h in Headers */,
 				9CF99F69212D187A008178BC /* dict.h in Headers */,
-				9CF15E022011ADB500585326 /* SGOutput.h in Headers */,
+				9CF15E022011ADB500585326 /* SGRenderer.h in Headers */,
 				9CF99FF0212D187A008178BC /* mediacodec.h in Headers */,
 				9CF99F0F212D187A008178BC /* avconfig.h in Headers */,
 				9CF9A005212D187A008178BC /* vorbis_parser.h in Headers */,
@@ -1861,9 +1861,9 @@
 				9C5C6C9920182A4800863EB5 /* SGGLView.h in Headers */,
 				9CF99FF6212D187A008178BC /* avfft.h in Headers */,
 				9C1D2215201AC9FA005147FB /* SGGLProgramPool.h in Headers */,
-				9CF15E072011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */,
+				9CF15E072011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */,
 				9CF99FA5212D187A008178BC /* ripemd.h in Headers */,
-				9C2C55A32015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */,
+				9C2C55A32015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */,
 				9CF99FED212D187A008178BC /* xvmc.h in Headers */,
 				9C8D4E63200E0ACC00ED8A58 /* SGPacketOutput.h in Headers */,
 				9CF99F15212D187A008178BC /* avutil.h in Headers */,
@@ -1963,7 +1963,7 @@
 				9CF99EEF212D187A008178BC /* hwcontext_mediacodec.h in Headers */,
 				9C5C6C9A20182A4800863EB5 /* SGGLView.h in Headers */,
 				9CF99FAF212D187A008178BC /* pixfmt.h in Headers */,
-				9CF15E032011ADB500585326 /* SGOutput.h in Headers */,
+				9CF15E032011ADB500585326 /* SGRenderer.h in Headers */,
 				9CE6F5302004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
 				9CF99F64212D187A008178BC /* hmac.h in Headers */,
 				9CF99F55212D187A008178BC /* buffer.h in Headers */,
@@ -2001,7 +2001,7 @@
 				9CF99FE8212D187A008178BC /* vaapi.h in Headers */,
 				9CF99ED7212D187A008178BC /* avfilter.h in Headers */,
 				9CF99EFE212D187A008178BC /* samplefmt.h in Headers */,
-				9CF15E082011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */,
+				9CF15E082011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */,
 				9CF99FEE212D187A008178BC /* xvmc.h in Headers */,
 				9CF99F70212D187A008178BC /* opt.h in Headers */,
 				9CF99FA6212D187A008178BC /* ripemd.h in Headers */,
@@ -2094,7 +2094,7 @@
 				9CF99F2E212D187A008178BC /* hwcontext_vaapi.h in Headers */,
 				9CF99F85212D187A008178BC /* tea.h in Headers */,
 				9C8D26622019F297002770FA /* SGGLTextureUploader.h in Headers */,
-				9C2C55A42015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */,
+				9C2C55A42015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */,
 				9CF99F5E212D187A008178BC /* hwcontext_drm.h in Headers */,
 				9CF99F07212D187A008178BC /* rational.h in Headers */,
 				9CF99FD0212D187A008178BC /* avformat.h in Headers */,
@@ -2137,7 +2137,7 @@
 				9CF99FC5212D187A008178BC /* intreadwrite.h in Headers */,
 				9CF99EEA212D187A008178BC /* fifo.h in Headers */,
 				9C8D26632019F297002770FA /* SGGLTextureUploader.h in Headers */,
-				9C2C55A52015C1E100131E15 /* SGPlaybackVideoOutput.h in Headers */,
+				9C2C55A52015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */,
 				9CA0F56620E0E24000501478 /* SGDefines.h in Headers */,
 				9CF99EDB212D187A008178BC /* hwcontext.h in Headers */,
 				9C8D4E82200E1ACA00ED8A58 /* SGError.h in Headers */,
@@ -2146,7 +2146,7 @@
 				9CE6F5792004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
 				9C1944F32019AC4000184416 /* SGGLInternalModel.h in Headers */,
 				9CF99F20212D187A008178BC /* hwcontext_vdpau.h in Headers */,
-				9CF15E042011ADB500585326 /* SGOutput.h in Headers */,
+				9CF15E042011ADB500585326 /* SGRenderer.h in Headers */,
 				9C5C6C9B20182A4800863EB5 /* SGGLView.h in Headers */,
 				9CE6F5552004D97D00D1F4C8 /* SGPLFView.h in Headers */,
 				9CF99F05212D187A008178BC /* base64.h in Headers */,
@@ -2217,7 +2217,7 @@
 				9CE6F54D2004D97D00D1F4C8 /* SGPLFScreen.h in Headers */,
 				9CF99FC8212D187A008178BC /* avstring.h in Headers */,
 				9CF99F7D212D187A008178BC /* macros.h in Headers */,
-				9CF15E092011AE0700585326 /* SGPlaybackAudioOutput.h in Headers */,
+				9CF15E092011AE0700585326 /* SGPlaybackAudioRenderer.h in Headers */,
 				9C1D222C201B1DA3005147FB /* SGMapping.h in Headers */,
 				9C1944E320198CEC00184416 /* SGGLPlaneModel.h in Headers */,
 				9CF99F6E212D187A008178BC /* random_seed.h in Headers */,
@@ -2549,7 +2549,7 @@
 				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C03E5F1212E645B001F0E1B /* SGVRMatrixMaker.m in Sources */,
 				9C1944F42019AC4000184416 /* SGGLInternalModel.m in Sources */,
-				9CF15E0A2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */,
+				9CF15E0A2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */,
 				9C13638F213934030025C72B /* SGGLBGRAProgram.m in Sources */,
 				9C1D2210201AC83F005147FB /* SGGLModelPool.m in Sources */,
 				9CE68433200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
@@ -2571,7 +2571,7 @@
 				9CE469B42151FB4F00528662 /* SGURLPacketReader.m in Sources */,
 				9C3082C4212518EC00B44298 /* SGVideoDecoder.m in Sources */,
 				9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
-				9C2C55A62015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */,
+				9C2C55A62015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */,
 				9CE6F54F2004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
 				9C1945042019C6A100184416 /* SGGLYUV420PProgram.m in Sources */,
 				9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
@@ -2626,14 +2626,14 @@
 				9CA3CDB520E1F74300B852D0 /* SGFrame.m in Sources */,
 				9C8D265D2019E1AC002770FA /* SGGLViewport.m in Sources */,
 				9C3FB66E20E32EA5003442EE /* SGGLTimer.m in Sources */,
-				9CF15E0B2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */,
+				9CF15E0B2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */,
 				9C5C98FF20D26BE10089C112 /* SGPlaybackSynchronizer.m in Sources */,
 				9CF15E232011BC5400585326 /* SGAudioFrame.m in Sources */,
 				9C1D222E201B1DA3005147FB /* SGMapping.m in Sources */,
 				9CE6F5442004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
 				9C329AAF2005E3F800252B10 /* SGActivity.m in Sources */,
 				9CAAC9A32133A6800065E364 /* SGVRViewport.m in Sources */,
-				9C2C55A72015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */,
+				9C2C55A72015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */,
 				9C2C55972015911600131E15 /* SGObjectPool.m in Sources */,
 				9C1D2219201AC9FA005147FB /* SGGLProgramPool.m in Sources */,
 				9CB62C032021950200A9AD6B /* SGSessionConfiguration.m in Sources */,
@@ -2666,7 +2666,7 @@
 				9C1945062019C6A100184416 /* SGGLYUV420PProgram.m in Sources */,
 				9C1D2212201AC83F005147FB /* SGGLModelPool.m in Sources */,
 				9C1944F62019AC4000184416 /* SGGLInternalModel.m in Sources */,
-				9CF15E0C2011AE0700585326 /* SGPlaybackAudioOutput.m in Sources */,
+				9CF15E0C2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */,
 				9CF52CFC200F45D700950B81 /* SGStream.m in Sources */,
 				9CE6F5512004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
 				9CB1F0A120178B0E00102A69 /* SGPLFGLView.m in Sources */,
@@ -2691,7 +2691,7 @@
 				9C19450E2019D22800184416 /* SGGLNV12Program.m in Sources */,
 				9CF15DEA20118E1100585326 /* SGAsyncDecoder.m in Sources */,
 				9CE6F5352004D97D00D1F4C8 /* SGPLFColor.m in Sources */,
-				9C2C55A82015C1E100131E15 /* SGPlaybackVideoOutput.m in Sources */,
+				9C2C55A82015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

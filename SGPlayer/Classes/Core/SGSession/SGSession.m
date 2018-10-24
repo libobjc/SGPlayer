@@ -12,7 +12,7 @@
 #import "SGError.h"
 #import "SGTime.h"
 
-@interface SGSession () <NSLocking, SGFrameOutputDelegate, SGOutputDelegate>
+@interface SGSession () <NSLocking, SGFrameOutputDelegate, SGRendererDelegate>
 
 @property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -409,9 +409,9 @@
     }
 }
 
-#pragma mark - SGOutputDelegate
+#pragma mark - SGRendererDelegate
 
-- (void)outputDidChangeCapacity:(id <SGOutput>)output
+- (void)outputDidChangeCapacity:(id <SGRenderer>)output
 {
     if (output == self.configuration.audioOutput)
     {

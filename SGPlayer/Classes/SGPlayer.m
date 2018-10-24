@@ -15,8 +15,8 @@
 #import "SGConcatSource.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
-#import "SGPlaybackAudioOutput.h"
-#import "SGPlaybackVideoOutput.h"
+#import "SGPlaybackAudioRenderer.h"
+#import "SGPlaybackVideoRenderer.h"
 
 @interface SGPlayer () <NSLocking>
 
@@ -65,8 +65,8 @@
 @property (nonatomic, assign) CMTime lastActualStartTime;
 
 @property (nonatomic, strong) SGSession * session;
-@property (nonatomic, strong) SGPlaybackAudioOutput * audioOutput;
-@property (nonatomic, strong) SGPlaybackVideoOutput * videoOutput;
+@property (nonatomic, strong) SGPlaybackAudioRenderer * audioOutput;
+@property (nonatomic, strong) SGPlaybackVideoRenderer * videoOutput;
 
 @end
 
@@ -172,7 +172,7 @@
 //    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
 //    videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
-    SGPlaybackAudioOutput * auidoOutput = [[SGPlaybackAudioOutput alloc] init];
+    SGPlaybackAudioRenderer * auidoOutput = [[SGPlaybackAudioRenderer alloc] init];
     auidoOutput.timeSync = [[SGPlaybackSynchronizer alloc] init];
     auidoOutput.timeSync.delegate = self;
     auidoOutput.rate = self.rate;
@@ -180,7 +180,7 @@
     self.deviceDelay = self.deviceDelay;
     self.audioOutput = auidoOutput;
     
-    SGPlaybackVideoOutput * videoOutput = [[SGPlaybackVideoOutput alloc] init];
+    SGPlaybackVideoRenderer * videoOutput = [[SGPlaybackVideoRenderer alloc] init];
     videoOutput.timeSync = self.audioOutput.timeSync;
     videoOutput.rate = self.rate;
     videoOutput.view = self.view;

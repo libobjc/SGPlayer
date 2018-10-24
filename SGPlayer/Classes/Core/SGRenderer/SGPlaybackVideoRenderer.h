@@ -1,18 +1,18 @@
 //
-//  SGPlaybackVideoOutput.h
+//  SGPlaybackVideoRenderer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGOutput.h"
+#import "SGRenderer.h"
 #import "SGPlatform.h"
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
 #import "SGPlaybackSynchronizer.h"
 
-@interface SGPlaybackVideoOutput : NSObject <SGOutput>
+@interface SGPlaybackVideoRenderer : NSObject <SGRenderer>
 
 @property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
 @property (nonatomic, assign) CMTime rate;

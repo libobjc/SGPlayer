@@ -1,22 +1,22 @@
 //
-//  SGOutput.h
+//  SGRenderer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#ifndef SGOutput_h
-#define SGOutput_h
+#ifndef SGRenderer_h
+#define SGRenderer_h
 
 #import <Foundation/Foundation.h>
 #import "SGFrame.h"
 
-@protocol SGOutputDelegate;
+@protocol SGRendererDelegate;
 
-@protocol SGOutput <NSObject>
+@protocol SGRenderer <NSObject>
 
-@property (nonatomic, weak) id <SGOutputDelegate> delegate;
+@property (nonatomic, weak) id <SGRendererDelegate> delegate;
 @property (nonatomic, assign) BOOL enable;
 @property (nonatomic, assign) BOOL key;
 
@@ -34,10 +34,10 @@
 
 @end
 
-@protocol SGOutputDelegate <NSObject>
+@protocol SGRendererDelegate <NSObject>
 
-- (void)outputDidChangeCapacity:(id <SGOutput>)output;
+- (void)outputDidChangeCapacity:(id <SGRenderer>)output;
 
 @end
 
-#endif /* SGOutput_h */
+#endif /* SGRenderer_h */
