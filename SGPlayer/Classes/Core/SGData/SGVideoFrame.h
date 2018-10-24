@@ -12,7 +12,7 @@
 @interface SGVideoFrame : SGFrame
 
 {
-    @public
+@public
     uint8_t * data[SGFramePlaneCount];
     int linesize[SGFramePlaneCount];
     CVPixelBufferRef pixelBuffer;

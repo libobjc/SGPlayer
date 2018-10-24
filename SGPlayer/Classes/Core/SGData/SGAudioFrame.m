@@ -35,7 +35,11 @@
     _sampleRate = 0;
     _numberOfChannels = 0;
     _channelLayout = 0;
-    _data = nil;
+    for (int i = 0; i < SGFramePlaneCount; i++)
+    {
+        self->data[i] = nil;
+        self->linesize[i] = 0;
+    }
 }
 
 - (void)configurateWithStream:(SGStream *)stream
@@ -47,8 +51,11 @@
     _sampleRate = self.core->sample_rate;
     _numberOfChannels = self.core->channels;
     _channelLayout = self.core->channel_layout;
-    _data = self.core->data;
-    _linesize = self.core->linesize;
+    for (int i = 0; i < SGFramePlaneCount; i++)
+    {
+        self->data[i] = self.core->data[i];
+        self->linesize[i] = self.core->linesize[i];
+    }
 }
 
 @end

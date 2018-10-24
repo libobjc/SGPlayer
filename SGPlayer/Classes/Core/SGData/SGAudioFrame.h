@@ -11,12 +11,16 @@
 
 @interface SGAudioFrame : SGFrame
 
+{
+@public
+    uint8_t * data[SGFramePlaneCount];
+    int linesize[SGFramePlaneCount];
+}
+
 @property (nonatomic, assign, readonly) SGAVSampleFormat format;
 @property (nonatomic, assign, readonly) int numberOfSamples;
 @property (nonatomic, assign, readonly) int sampleRate;
 @property (nonatomic, assign, readonly) int numberOfChannels;
 @property (nonatomic, assign, readonly) long long channelLayout;
-@property (nonatomic, assign, readonly) uint8_t ** data;
-@property (nonatomic, assign, readonly) int * linesize;
 
 @end
