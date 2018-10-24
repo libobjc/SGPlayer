@@ -18,8 +18,8 @@
 
 // FF/SG -> GL
 SGGLModelType SGDisplay2Model(SGDisplayMode displayMode);
-SGGLProgramType SGFormat2Program(enum AVPixelFormat format);
-SGGLTextureType SGFormat2Texture(enum AVPixelFormat format);
+SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer);
+SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer);
 SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode);
 
 // FF <-> SG
@@ -27,8 +27,8 @@ SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType);
 enum AVMediaType SGMediaTypeSG2FF(SGMediaType mediaType);
 
 // FF <-> AV
-OSType SGPixelFormatSG2AV(enum AVPixelFormat format);
-enum AVPixelFormat SGPixelFormatAV2SG(OSType format);
+OSType SGPixelFormatFF2AV(enum AVPixelFormat format);
+enum AVPixelFormat SGPixelFormatAV2FF(OSType format);
 
 // FF <-> NS
 AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary);

@@ -21,14 +21,17 @@ SGGLModelType SGDisplay2Model(SGDisplayMode displayMode)
     return SGGLModelTypePlane;
 }
 
-SGGLProgramType SGFormat2Program(enum AVPixelFormat format)
+SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
 {
+    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer)
+    {
+        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
+    }
     switch (format)
     {
         case AV_PIX_FMT_YUV420P:
             return SGGLProgramTypeYUV420P;
         case AV_PIX_FMT_NV12:
-        case AV_PIX_FMT_VIDEOTOOLBOX:
             return SGGLProgramTypeNV12;
         case AV_PIX_FMT_BGRA:
             return SGGLProgramTypeBGRA;
@@ -37,14 +40,17 @@ SGGLProgramType SGFormat2Program(enum AVPixelFormat format)
     }
 }
 
-SGGLTextureType SGFormat2Texture(enum AVPixelFormat format)
+SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
 {
+    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer)
+    {
+        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
+    }
     switch (format)
     {
         case AV_PIX_FMT_YUV420P:
             return SGGLTextureTypeYUV420P;
         case AV_PIX_FMT_NV12:
-        case AV_PIX_FMT_VIDEOTOOLBOX:
             return SGGLTextureTypeNV12;
         default:
             return SGGLTextureTypeUnknown;
@@ -95,7 +101,7 @@ enum AVMediaType SGMediaTypeSG2FF(SGMediaType mediaType)
     }
 }
 
-OSType SGPixelFormatSG2AV(enum AVPixelFormat format)
+OSType SGPixelFormatFF2AV(enum AVPixelFormat format)
 {
     switch (format)
     {
@@ -115,7 +121,7 @@ OSType SGPixelFormatSG2AV(enum AVPixelFormat format)
     return 0;
 }
 
-enum AVPixelFormat SGPixelFormatAV2SG(OSType format)
+enum AVPixelFormat SGPixelFormatAV2FF(OSType format)
 {
     switch (format)
     {
