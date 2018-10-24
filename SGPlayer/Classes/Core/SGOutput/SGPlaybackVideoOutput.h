@@ -1,5 +1,5 @@
 //
-//  SGVideoPlaybackOutput.h
+//  SGPlaybackVideoOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
@@ -10,11 +10,11 @@
 #import "SGPlatform.h"
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
-#import "SGPlaybackTimeSync.h"
+#import "SGPlaybackSynchronizer.h"
 
-@interface SGVideoPlaybackOutput : NSObject <SGOutput>
+@interface SGPlaybackVideoOutput : NSObject <SGOutput>
 
-@property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
+@property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, strong) SGPLFView * view;

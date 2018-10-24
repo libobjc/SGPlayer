@@ -1,12 +1,12 @@
 //
-//  SGAudioPlaybackOutput.m
+//  SGPlaybackAudioOutput.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGAudioPlaybackOutput.h"
+#import "SGPlaybackAudioOutput.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGFrame+Private.h"
 #import "SGAudioFrame.h"
@@ -15,7 +15,7 @@
 #import "swscale.h"
 #import "SGError.h"
 
-@interface SGAudioPlaybackOutput () <NSLocking, SGAudioStreamPlayerDelegate>
+@interface SGPlaybackAudioOutput () <NSLocking, SGAudioStreamPlayerDelegate>
 
 {
     void * _swrContextBufferData[AV_NUM_DATA_POINTERS];
@@ -48,7 +48,7 @@
 
 @end
 
-@implementation SGAudioPlaybackOutput
+@implementation SGPlaybackAudioOutput
 
 @synthesize delegate = _delegate;
 @synthesize enable = _enable;
@@ -460,7 +460,7 @@
     {
         if (!self.delegateQueue)
         {
-            self.delegateQueue = dispatch_queue_create("SGAudioPlaybackOutput-DelegateQueue", DISPATCH_QUEUE_SERIAL);
+            self.delegateQueue = dispatch_queue_create("SGPlaybackAudioOutput-DelegateQueue", DISPATCH_QUEUE_SERIAL);
         }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(deviceDelay) * NSEC_PER_SEC)), self.delegateQueue, block);
     }

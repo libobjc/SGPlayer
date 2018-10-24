@@ -15,8 +15,8 @@
 #import "SGConcatSource.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
-#import "SGAudioPlaybackOutput.h"
-#import "SGVideoPlaybackOutput.h"
+#import "SGPlaybackAudioOutput.h"
+#import "SGPlaybackVideoOutput.h"
 
 @interface SGPlayer () <NSLocking>
 
@@ -53,7 +53,7 @@
 
 @end
 
-@interface SGPlayer () <SGSessionDelegate, SGPlaybackTimeSyncDelegate>
+@interface SGPlayer () <SGSessionDelegate, SGPlaybackSynchronizerDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -65,8 +65,8 @@
 @property (nonatomic, assign) CMTime lastActualStartTime;
 
 @property (nonatomic, strong) SGSession * session;
-@property (nonatomic, strong) SGAudioPlaybackOutput * audioOutput;
-@property (nonatomic, strong) SGVideoPlaybackOutput * videoOutput;
+@property (nonatomic, strong) SGPlaybackAudioOutput * audioOutput;
+@property (nonatomic, strong) SGPlaybackVideoOutput * videoOutput;
 
 @end
 
@@ -172,15 +172,15 @@
 //    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
 //    videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
     
-    SGAudioPlaybackOutput * auidoOutput = [[SGAudioPlaybackOutput alloc] init];
-    auidoOutput.timeSync = [[SGPlaybackTimeSync alloc] init];
+    SGPlaybackAudioOutput * auidoOutput = [[SGPlaybackAudioOutput alloc] init];
+    auidoOutput.timeSync = [[SGPlaybackSynchronizer alloc] init];
     auidoOutput.timeSync.delegate = self;
     auidoOutput.rate = self.rate;
     auidoOutput.volume = self.volume;
     self.deviceDelay = self.deviceDelay;
     self.audioOutput = auidoOutput;
     
-    SGVideoPlaybackOutput * videoOutput = [[SGVideoPlaybackOutput alloc] init];
+    SGPlaybackVideoOutput * videoOutput = [[SGPlaybackVideoOutput alloc] init];
     videoOutput.timeSync = self.audioOutput.timeSync;
     videoOutput.rate = self.rate;
     videoOutput.view = self.view;
@@ -722,9 +722,9 @@
     [self callbackForTimingIfNeeded];
 }
 
-#pragma mark - SGPlaybackTimeSyncDelegate
+#pragma mark - SGPlaybackSynchronizerDelegate
 
-- (void)playbackTimeSyncDidChangeStartTime:(SGPlaybackTimeSync *)playbackTimeSync
+- (void)playbackTimeSyncDidChangeStartTime:(SGPlaybackSynchronizer *)playbackTimeSync
 {
     self.actualStartTime = playbackTimeSync.startTime;
     [self callbackForTimingIfNeeded];

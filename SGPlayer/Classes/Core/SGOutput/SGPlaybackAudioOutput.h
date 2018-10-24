@@ -1,5 +1,5 @@
 //
-//  SGAudioPlaybackOutput.h
+//  SGPlaybackAudioOutput.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
@@ -7,11 +7,11 @@
 //
 
 #import "SGOutput.h"
-#import "SGPlaybackTimeSync.h"
+#import "SGPlaybackSynchronizer.h"
 
-@interface SGAudioPlaybackOutput : NSObject <SGOutput>
+@interface SGPlaybackAudioOutput : NSObject <SGOutput>
 
-@property (nonatomic, strong) SGPlaybackTimeSync * timeSync;
+@property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, assign) float volume;
