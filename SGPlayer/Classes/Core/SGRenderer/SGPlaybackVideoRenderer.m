@@ -45,14 +45,12 @@
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
-@synthesize enable = _enable;
 @synthesize key = _key;
 
 - (instancetype)init
 {
     if (self = [super init])
     {
-        _enable = NO;
         _key = NO;
         self.rate = CMTimeMake(1, 1);
         self.frameQueue = [[SGObjectQueue alloc] init];

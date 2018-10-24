@@ -284,11 +284,11 @@
     {
         return self.duration;
     }
-    if (self.audioOutput.enable && self.audioOutput.key && self.audioOutput.timeSync)
+    if ((self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused) && self.audioOutput.key && self.audioOutput.timeSync)
     {
         return self.audioOutput.timeSync.time;
     }
-    else if (self.videoOutput.enable && self.videoOutput.key && self.videoOutput.timeSync)
+    else if ((self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused) && self.videoOutput.key && self.videoOutput.timeSync)
     {
         return self.videoOutput.timeSync.keyTime;
     }
@@ -564,11 +564,11 @@
 
 - (void)callbackForTimingIfNeeded
 {
-    if (self.audioOutput.enable)
+    if (self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused)
     {
         return;
     }
-    if (self.videoOutput.enable)
+    if (self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused)
     {
         return;
     }

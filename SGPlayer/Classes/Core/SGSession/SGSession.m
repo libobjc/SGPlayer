@@ -345,14 +345,12 @@
             [self lock];
             if (self.audioEnable)
             {
-                self.configuration.audioOutput.enable = YES;
                 self.configuration.audioOutput.key = YES;
                 self.configuration.audioOutput.delegate = self;
                 [self.configuration.audioOutput open];
             }
             if (self.videoEnable)
             {
-                self.configuration.videoOutput.enable = YES;
                 self.configuration.videoOutput.key = !self.audioEnable;
                 self.configuration.videoOutput.delegate = self;
                 [self.configuration.videoOutput open];

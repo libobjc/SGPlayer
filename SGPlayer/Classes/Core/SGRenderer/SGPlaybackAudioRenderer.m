@@ -54,14 +54,12 @@
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
-@synthesize enable = _enable;
 @synthesize key = _key;
 
 - (instancetype)init
 {
     if (self = [super init])
     {
-        _enable = NO;
         _key = NO;
         _rate = CMTimeMake(1, 1);
         _deviceDelay = CMTimeMake(0, 1);
