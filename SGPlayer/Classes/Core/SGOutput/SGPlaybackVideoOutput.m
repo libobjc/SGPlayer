@@ -95,6 +95,21 @@
     self.renderTimer.paused = NO;
 }
 
+- (void)close
+{
+    if (!self.enable)
+    {
+        return;
+    }
+    [self.frameQueue destroy];
+    [self lock];
+    [self.currentFrame unlock];
+    self.currentFrame = nil;
+    self.receivedFrame = NO;
+    self.displayNewFrameCount = 0;
+    [self unlock];
+}
+
 - (void)pause
 {
     if (!self.enable)
@@ -111,21 +126,6 @@
         return;
     }
     self.paused = NO;
-}
-
-- (void)close
-{
-    if (!self.enable)
-    {
-        return;
-    }
-    [self.frameQueue destroy];
-    [self lock];
-    [self.currentFrame unlock];
-    self.currentFrame = nil;
-    self.receivedFrame = NO;
-    self.displayNewFrameCount = 0;
-    [self unlock];
 }
 
 - (void)putFrame:(__kindof SGFrame *)frame

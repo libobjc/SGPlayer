@@ -52,7 +52,7 @@
     self.codecContext = nil;
 }
 
-- (NSArray <SGFrame *> *)decode:(SGPacket *)packet
+- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     if (self.stream != packet.stream)
     {

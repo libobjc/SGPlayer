@@ -95,24 +95,6 @@
     }
 }
 
-- (void)pause
-{
-    if (!self.enable)
-    {
-        return;
-    }
-    [self.audioPlayer pause];
-}
-
-- (void)resume
-{
-    if (!self.enable)
-    {
-        return;
-    }
-    [self.audioPlayer play];
-}
-
 - (void)close
 {
     if (!self.enable)
@@ -131,6 +113,24 @@
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
     [self destorySwrContext];
+}
+
+- (void)pause
+{
+    if (!self.enable)
+    {
+        return;
+    }
+    [self.audioPlayer pause];
+}
+
+- (void)resume
+{
+    if (!self.enable)
+    {
+        return;
+    }
+    [self.audioPlayer play];
 }
 
 - (void)putFrame:(__kindof SGFrame *)frame

@@ -14,7 +14,7 @@
 
 @protocol SGDecodable <NSObject>
 
-- (NSArray <SGFrame *> *)decode:(SGPacket *)packet;
+- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet;
 - (void)flush;
 
 @end

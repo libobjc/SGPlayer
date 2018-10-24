@@ -178,7 +178,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     }
 }
 
-- (NSArray <SGFrame *> *)decode:(SGPacket *)packet
+- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     int result = avcodec_send_packet(self.codecContext, packet.core);
     if (result < 0)
@@ -188,7 +188,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     NSMutableArray * array = nil;
     while (result >= 0)
     {
-        SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
         if (result < 0)
         {

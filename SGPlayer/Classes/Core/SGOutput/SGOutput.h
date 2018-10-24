@@ -30,9 +30,9 @@
 - (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
 
 - (void)open;
+- (void)close;
 - (void)pause;
 - (void)resume;
-- (void)close;
 
 - (void)putFrame:(__kindof SGFrame *)frame;
 - (BOOL)receivedFrame;
