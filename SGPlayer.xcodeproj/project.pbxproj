@@ -1191,6 +1191,8 @@
 			children = (
 				9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */,
 				9CA0F56220E0E24000501478 /* SGDefines.h */,
+				9C1D2228201B1DA2005147FB /* SGMapping.h */,
+				9C1D2229201B1DA2005147FB /* SGMapping.m */,
 			);
 			path = SGDefine;
 			sourceTree = "<group>";
@@ -1430,8 +1432,6 @@
 		9CE6F5912004E37600D1F4C8 /* SGCommon */ = {
 			isa = PBXGroup;
 			children = (
-				9C1D2228201B1DA2005147FB /* SGMapping.h */,
-				9C1D2229201B1DA2005147FB /* SGMapping.m */,
 				9C4663C820D0F83600CADDA7 /* SGTime.h */,
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
 				9C8D4E7E200E1ACA00ED8A58 /* SGError.h */,
