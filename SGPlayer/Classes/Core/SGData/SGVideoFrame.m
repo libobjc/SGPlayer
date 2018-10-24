@@ -18,28 +18,22 @@
 @interface SGVideoFrame ()
 
 {
-    uint8_t * _resampleData[8];
-    size_t _resampleDataSize[8];
-    int _resampleLinesize[8];
+    AVBufferRef * _buffer[SGFramePlaneCount];
 }
 
 @end
 
 @implementation SGVideoFrame
 
-@synthesize image = _image;
-
 - (instancetype)init
 {
     if (self = [super init])
     {
         NSLog(@"%s", __func__);
-        
+
         for (int i = 0; i < 8; i++)
         {
-            _resampleData[i] = nil;
-            _resampleDataSize[i] = 0;
-            _resampleLinesize[i] = 0;
+            _buffer[i] = nil;
         }
     }
     return self;
@@ -51,13 +45,8 @@
     
     for (int i = 0; i < 8; i++)
     {
-        _resampleLinesize[i] = 0;
-        if (_resampleData[i] != nil && _resampleDataSize[i] > 0)
-        {
-            free(_resampleData[i]);
-            _resampleData[i] = nil;
-            _resampleDataSize[i] = 0;
-        }
+        av_buffer_unref(&_buffer[i]);
+        _buffer[i] = nil;
     }
 }
 
@@ -74,10 +63,12 @@
     _width = 0;
     _height = 0;
     _keyFrame = 0;
-    _data = nil;
-    _linesize = nil;
-    _pixelBuffer = nil;
-    _image = nil;
+    for (int i = 0; i < SGFramePlaneCount; i++)
+    {
+        self->data[i] = nil;
+        self->linesize[i] = 0;
+    }
+    self->pixelBuffer = nil;
 }
 
 - (void)configurateWithStream:(SGStream *)stream
@@ -93,27 +84,18 @@
     _width = self.core->width;
     _height = self.core->height;
     _keyFrame = self.core->key_frame;
-    if ([self resampleIfNeeded]) {
-        _data = _resampleData;
-        _linesize = _resampleLinesize;
-    } else {
-        _data = self.core->data;
-        _linesize = self.core->linesize;
-    }
-    if (self.format == SG_AV_PIX_FMT_VIDEOTOOLBOX) {
-        _pixelBuffer = (CVPixelBufferRef)(self.data[3]);
-    }
+    [self fillData];
 }
 
-- (BOOL)resampleIfNeeded
+- (void)fillData
 {
     BOOL resample = NO;
-    int channels = 0;
+    int planes = 0;
     int linesize[8] = {0};
     int linecount[8] = {0};
     if (self.format == SG_AV_PIX_FMT_YUV420P)
     {
-        channels = 3;
+        planes = 3;
         linesize[0] = self.width;
         linesize[1] = self.width / 2;
         linesize[2] = self.width / 2;
@@ -121,89 +103,94 @@
         linecount[1] = self.height / 2;
         linecount[2] = self.height / 2;
     }
-    for (int i = 0; i < channels; i++)
+    else if (self.format == SG_AV_PIX_FMT_VIDEOTOOLBOX)
     {
-        if (self.core->linesize[i] > linesize[i])
+        self->pixelBuffer = (CVPixelBufferRef)(self.core->data[3]);
+    }
+    for (int i = 0; i < planes; i++)
+    {
+        resample = resample || (self.core->linesize[i] != linesize[i]);
+    }
+    if (resample)
+    {
+        for (int i = 0; i < planes; i++)
         {
-            resample = YES;
-            size_t size = linesize[i] * linecount[i] * sizeof(uint8_t);
-            if (_resampleDataSize[i] < size)
+            int size = linesize[i] * linecount[i] * sizeof(uint8_t);
+            if (!_buffer[i] || _buffer[i]->size < size)
             {
-                if (_resampleData[i] != nil && _resampleDataSize[i] > 0)
-                {
-                    free(_resampleData[i]);
-                    _resampleData[i] = nil;
-                    _resampleDataSize[i] = 0;
-                }
-                _resampleData[i] = malloc(size);
-                _resampleDataSize[i] = size;
+                av_buffer_realloc(&_buffer[i], size);
             }
-            uint8_t * dest = _resampleData[i];
-            uint8_t * src = self.core->data[i];
-            for (int j = 0; j < linecount[i]; j++)
-            {
-                memcpy(dest, src, linesize[i] * sizeof(uint8_t));
-                dest += linesize[i];
-                src += self.core->linesize[i];
-            }
-            _resampleLinesize[i] = linesize[i];
+            av_image_copy_plane(_buffer[i]->data,
+                                linesize[i],
+                                self.core->data[i],
+                                self.core->linesize[i],
+                                linesize[i] * sizeof(uint8_t),
+                                linecount[i]);
+        }
+        for (int i = 0; i < planes; i++)
+        {
+            self->data[i] = _buffer[i]->data;
+            self->linesize[i] = linesize[i];
         }
     }
-    return resample;
+    else
+    {
+        for (int i = 0; i < SGFramePlaneCount; i++)
+        {
+            self->data[i] = self.core->data[i];
+            self->linesize[i] = self.core->linesize[i];
+        }
+    }
 }
 
 - (UIImage *)image
 {
-    if (!_image)
+    if (self.width == 0 ||
+        self.height == 0 ||
+        !self->data)
     {
-        if (self.width == 0 ||
-            self.height == 0 ||
-            !self.data)
-        {
-            return nil;
-        }
-        if (!self.data[0])
-        {
-            return nil;
-        }
-        SGSWSContext * context = [[SGSWSContext alloc] init];
-        context.srcFormat = self.format;
-        context.dstFormat = AV_PIX_FMT_RGB24;
-        context.width = self.width;
-        context.height = self.height;
-        if (![context open])
-        {
-            return nil;
-        }
-        uint8_t * data[AV_NUM_DATA_POINTERS] = {nil};
-        int linesize[AV_NUM_DATA_POINTERS] = {0};
-        int result = av_image_alloc(data,
-                                    linesize,
-                                    self.width,
-                                    self.height,
-                                    AV_PIX_FMT_RGB24,
-                                    1);
-        if (result < 0)
-        {
-            return nil;
-        }
-        result = [context scaleWithSrcData:(const uint8_t **)self.data
-                               srcLinesize:self.linesize
-                                   dstData:data
-                               dstLinesize:linesize];
-        if (result < 0)
-        {
-            return nil;
-        }
-        if (linesize[0] <= 0 || data[0] == nil)
-        {
-            return nil;
-        }
-        SGPLFImage * image = SGPLFImageWithRGBData(data[0], linesize[0], self.width, self.height);
-        av_freep(data);
-        _image = image;
+        return nil;
     }
-    return _image;
+    if (!self->data[0])
+    {
+        return nil;
+    }
+    SGSWSContext * context = [[SGSWSContext alloc] init];
+    context.srcFormat = self.format;
+    context.dstFormat = AV_PIX_FMT_RGB24;
+    context.width = self.width;
+    context.height = self.height;
+    if (![context open])
+    {
+        return nil;
+    }
+    uint8_t * data[SGFramePlaneCount] = {nil};
+    int linesize[SGFramePlaneCount] = {0};
+    int result = av_image_alloc(data,
+                                linesize,
+                                self.width,
+                                self.height,
+                                AV_PIX_FMT_RGB24,
+                                1);
+    if (result < 0)
+    {
+        return nil;
+    }
+    result = [context scaleWithSrcData:(const uint8_t **)self->data
+                           srcLinesize:self->linesize
+                               dstData:data
+                           dstLinesize:linesize];
+    if (result < 0)
+    {
+        return nil;
+    }
+    if (linesize[0] <= 0 || data[0] == nil)
+    {
+        return nil;
+    }
+    SGPLFImage * image = SGPLFImageWithRGBData(data[0], linesize[0], self.width, self.height);
+    av_freep(data);
+    return image;
 }
 
 @end

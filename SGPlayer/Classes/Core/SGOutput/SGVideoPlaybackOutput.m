@@ -374,13 +374,13 @@
     [program use];
     [program bindVariable];
     BOOL success = NO;
-    if (frame.pixelBuffer)
+    if (frame->pixelBuffer)
     {
-        success = [self.glUploader uploadWithCVPixelBuffer:frame.pixelBuffer];
+        success = [self.glUploader uploadWithCVPixelBuffer:frame->pixelBuffer];
     }
     else
     {
-        success = [self.glUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame.data size:textureSize];
+        success = [self.glUploader uploadWithType:SGDMFormat2Texture(frame.format) data:frame->data size:textureSize];
     }
     if (!success)
     {

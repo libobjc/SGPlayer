@@ -28,6 +28,7 @@ SGGLProgramType SGDMFormat2Program(SGAVPixelFormat format)
         case SG_AV_PIX_FMT_YUV420P:
             return SGGLProgramTypeYUV420P;
         case SG_AV_PIX_FMT_NV12:
+        case SG_AV_PIX_FMT_VIDEOTOOLBOX:
             return SGGLProgramTypeNV12;
         case SG_AV_PIX_FMT_BGRA:
             return SGGLProgramTypeBGRA;
@@ -43,6 +44,7 @@ SGGLTextureType SGDMFormat2Texture(SGAVPixelFormat format)
         case SG_AV_PIX_FMT_YUV420P:
             return SGGLTextureTypeYUV420P;
         case SG_AV_PIX_FMT_NV12:
+        case SG_AV_PIX_FMT_VIDEOTOOLBOX:
             return SGGLTextureTypeNV12;
         default:
             return SGGLTextureTypeUnknown;
@@ -85,6 +87,13 @@ SGAVSampleFormat SGDMSampleFormatFF2SG(enum AVSampleFormat format)
 
 SGAVPixelFormat SGDMPixelFormatFF2SG(enum AVPixelFormat format)
 {
+    switch (format)
+    {
+        case AV_PIX_FMT_VIDEOTOOLBOX:
+            return SG_AV_PIX_FMT_VIDEOTOOLBOX;
+        default:
+            break;
+    }
     return (SGAVPixelFormat)format;
 }
 

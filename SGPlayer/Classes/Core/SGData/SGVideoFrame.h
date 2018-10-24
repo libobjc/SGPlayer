@@ -11,6 +11,13 @@
 
 @interface SGVideoFrame : SGFrame
 
+{
+    @public
+    uint8_t * data[SGFramePlaneCount];
+    int linesize[SGFramePlaneCount];
+    CVPixelBufferRef pixelBuffer;
+}
+
 @property (nonatomic, assign, readonly) SGAVPixelFormat format;
 @property (nonatomic, assign, readonly) SGAVColorRange colorRange;
 @property (nonatomic, assign, readonly) SGAVColorPrimaries colorPrimaries;
@@ -20,9 +27,7 @@
 @property (nonatomic, assign, readonly) int width;
 @property (nonatomic, assign, readonly) int height;
 @property (nonatomic, assign, readonly) BOOL keyFrame;
-@property (nonatomic, assign, readonly) uint8_t ** data;
-@property (nonatomic, assign, readonly) int * linesize;
-@property (nonatomic, assign, readonly) CVPixelBufferRef pixelBuffer;
-@property (nonatomic, strong, readonly) UIImage * image;
+
+- (UIImage *)image;
 
 @end

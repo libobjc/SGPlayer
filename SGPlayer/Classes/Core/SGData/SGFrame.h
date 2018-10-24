@@ -12,6 +12,8 @@
 #import "SGDefines.h"
 #import "SGStream.h"
 
+static int const SGFramePlaneCount = 8;
+
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
 @property (nonatomic, assign, readonly) void * coreptr;
