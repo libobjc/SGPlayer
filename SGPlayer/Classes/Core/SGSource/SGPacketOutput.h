@@ -55,7 +55,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 
 @protocol SGPacketOutputDelegate <NSObject>
 
-- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet;
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state;
+- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet;
 
 @end

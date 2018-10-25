@@ -217,12 +217,17 @@
 
 - (SGCapacity *)bestCapacity
 {
+    SGCapacity * ret = [[SGCapacity alloc] init];
     SGStream * stream = self.selectedAudioStream ? self.selectedAudioStream : self.selectedVideoStream;
     id <SGRenderable> renderable = self.audioRenderable != SGRenderableStateNone ? self.audioRenderable : self.videoRenderable;
     if (stream && renderable) {
-        return [self capacityWithStreams:@[stream] renderables:@[renderable]].firstObject;
+        for (SGCapacity * obj in [self capacityWithStreams:@[stream] renderables:@[renderable]]) {
+            ret.duration = CMTimeAdd(ret.duration, obj.duration);
+            ret.size += obj.size;
+            ret.count += obj.count;
+        }
     }
-    return nil;
+    return ret;
 }
 
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables
@@ -314,17 +319,12 @@
 
 #pragma mark - SGRenderableDelegate
 
-- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
-{
-    
-}
-
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
 {
     
 }
 
-- (void)renderable:(id <SGRenderable>)renderable didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
+- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
 {
     if (renderable == self.audioRenderable)
     {
@@ -343,6 +343,11 @@
         }
     }
     [self.delegateInternal sessionDidChangeCapacity:self];
+}
+
+- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
+{
+    
 }
 
 #pragma mark - NSLocking

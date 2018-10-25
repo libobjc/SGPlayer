@@ -168,7 +168,7 @@
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
-    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    [self.delegate renderable:self didChangeCapacity:nil];
     return YES;
 }
 
@@ -187,7 +187,7 @@
     self.displayNewFrameCount = 0;
     [self unlock];
     [self.frameQueue flush];
-    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    [self.delegate renderable:self didChangeCapacity:nil];
     return YES;
 }
 
@@ -326,7 +326,7 @@
                 [frame unlock];
                 frame = nil;
                 callback = ^{
-                    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+                    [self.delegate renderable:self didChangeCapacity:nil];
                 };
             }
         }
@@ -345,7 +345,7 @@
                 {
                     self.renderCallback(frame);
                 }
-                [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+                [self.delegate renderable:self didChangeCapacity:nil];
             };
         }
     }

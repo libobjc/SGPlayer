@@ -211,44 +211,6 @@
 
 #pragma mark - SGPacketOutputDelegate
 
-- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
-{
-    [self lock];
-    if (![self.selectedStreamsInternal containsObject:packet.stream]) {
-        [self unlock];
-        return;
-    }
-    SGAsyncDecoder * decoder = nil;
-    for (SGAsyncDecoder * obj in self.decoders) {
-        if (obj.object == packet.stream) {
-            decoder = obj;
-            break;
-        }
-    }
-    if (!decoder) {
-        id <SGDecodable> decodable = nil;
-        if (packet.stream.type == SGMediaTypeAudio) {
-            decodable = [[SGAudioDecoder alloc] init];
-        } else if (packet.stream.type == SGMediaTypeVideo) {
-            decodable = [[SGVideoDecoder alloc] init];
-        }
-        if (decodable) {
-            SGAsyncDecoder * async = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
-            async.object = packet.stream;
-            async.delegate = self;
-            [async open];
-            decoder = async;
-            [self.decoders addObject:decoder];
-            [self.decodersPaused addObject:@(NO)];
-        }
-    }
-    [self unlock];
-    if (!decoder) {
-        return;
-    }
-    [decoder putPacket:packet];
-}
-
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
     SGFrameOutputState frameState = SGFrameOutputStateNone;
@@ -300,6 +262,44 @@
     SGBasicBlock callback = [self setState:frameState];
     [self unlock];
     callback();
+}
+
+- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
+{
+    [self lock];
+    if (![self.selectedStreamsInternal containsObject:packet.stream]) {
+        [self unlock];
+        return;
+    }
+    SGAsyncDecoder * decoder = nil;
+    for (SGAsyncDecoder * obj in self.decoders) {
+        if (obj.object == packet.stream) {
+            decoder = obj;
+            break;
+        }
+    }
+    if (!decoder) {
+        id <SGDecodable> decodable = nil;
+        if (packet.stream.type == SGMediaTypeAudio) {
+            decodable = [[SGAudioDecoder alloc] init];
+        } else if (packet.stream.type == SGMediaTypeVideo) {
+            decodable = [[SGVideoDecoder alloc] init];
+        }
+        if (decodable) {
+            SGAsyncDecoder * async = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
+            async.object = packet.stream;
+            async.delegate = self;
+            [async open];
+            decoder = async;
+            [self.decoders addObject:decoder];
+            [self.decodersPaused addObject:@(NO)];
+        }
+    }
+    [self unlock];
+    if (!decoder) {
+        return;
+    }
+    [decoder putPacket:packet];
 }
 
 #pragma mark - SGDecoderDelegate

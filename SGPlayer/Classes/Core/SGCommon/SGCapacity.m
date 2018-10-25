@@ -10,4 +10,15 @@
 
 @implementation SGCapacity
 
+- (instancetype)init
+{
+    if (self = [super init])
+    {
+        self.duration = kCMTimeZero;
+        self.size = 0;
+        self.count = 0;
+    }
+    return self;
+}
+
 @end

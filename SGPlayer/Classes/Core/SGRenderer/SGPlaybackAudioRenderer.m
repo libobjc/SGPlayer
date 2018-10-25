@@ -251,7 +251,7 @@
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:result];
-    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    [self.delegate renderable:self didChangeCapacity:nil];
     [result unlock];
     return YES;
 }
@@ -273,7 +273,7 @@
     self.receivedFrame = NO;
     [self unlock];
     [self.frameQueue flush];
-    [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+    [self.delegate renderable:self didChangeCapacity:nil];
     return YES;
 }
 
@@ -477,7 +477,7 @@
     [self unlock];
     if (hasNewFrame)
     {
-        [self.delegate renderable:self didChangeDuration:kCMTimeZero size:0 count:0];
+        [self.delegate renderable:self didChangeCapacity:nil];
     }
 }
 
