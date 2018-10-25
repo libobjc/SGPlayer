@@ -205,6 +205,26 @@
     return self.frameOutput.selectedStreams = selectedStreams;
 }
 
+- (SGStream *)selectedAudioStream
+{
+    return self.frameOutput.selectedAudioStream;
+}
+
+- (SGStream *)selectedVideoStream
+{
+    return self.frameOutput.selectedVideoStream;
+}
+
+- (SGCapacity *)bestCapacity
+{
+    SGStream * stream = self.selectedAudioStream ? self.selectedAudioStream : self.selectedVideoStream;
+    id <SGRenderable> renderable = self.audioRenderable != SGRenderableStateNone ? self.audioRenderable : self.videoRenderable;
+    if (stream && renderable) {
+        return [self capacityWithStreams:@[stream] renderables:@[renderable]].firstObject;
+    }
+    return nil;
+}
+
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables
 {
     NSMutableArray * ret = [NSMutableArray array];
@@ -219,161 +239,6 @@
     return [ret copy];
 }
 
-- (CMTime)loadedDuration
-{
-    return [self loadedDurationWithMainMediaType:SGMediaTypeAudio];
-}
-
-- (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType
-{
-    if (self.audioEnable && !self.videoEnable)
-    {
-        return self.audioLoadedDuration;
-    }
-    else if (!self.audioEnable && self.videoEnable)
-    {
-        return self.videoLoadedDuration;
-    }
-    else if (self.audioEnable && self.videoEnable)
-    {
-        if (mainMediaType == SGMediaTypeAudio)
-        {
-            return self.audioLoadedDuration;
-        }
-        else if (mainMediaType == SGMediaTypeVideo)
-        {
-            return self.videoLoadedDuration;
-        }
-    }
-    return kCMTimeZero;
-}
-
-- (long long)loadedSize
-{
-    return [self loadedSizeWithMainMediaType:SGMediaTypeAudio];
-}
-
-- (long long)loadedSizeWithMainMediaType:(SGMediaType)mainMediaType
-{
-    if (self.audioEnable && !self.videoEnable)
-    {
-        return self.audioLoadedSize;
-    }
-    else if (!self.audioEnable && self.videoEnable)
-    {
-        return self.videoLoadedSize;
-    }
-    else if (self.audioEnable && self.videoEnable)
-    {
-        if (mainMediaType == SGMediaTypeAudio)
-        {
-            return self.audioLoadedSize;
-        }
-        else if (mainMediaType == SGMediaTypeVideo)
-        {
-            return self.videoLoadedSize;
-        }
-    }
-    return 0;
-}
-
-- (BOOL)empty
-{
-    return [self emptyWithMainMediaType:SGMediaTypeAudio];
-}
-
-- (BOOL)emptyWithMainMediaType:(SGMediaType)mainMediaType
-{
-    if (self.audioEnable && !self.videoEnable)
-    {
-        return self.audioEmpty;
-    }
-    else if (!self.audioEnable && self.videoEnable)
-    {
-        return self.videoEmpty;
-    }
-    else if (self.audioEnable && self.videoEnable)
-    {
-        if (mainMediaType == SGMediaTypeAudio)
-        {
-            return self.audioEmpty;
-        }
-        else if (mainMediaType == SGMediaTypeVideo)
-        {
-            return self.videoEmpty;
-        }
-    }
-    return YES;
-}
-
-- (BOOL)audioEnable
-{
-    return self.frameOutput.audioStreams.count > 0;
-}
-
-- (BOOL)videoEnable
-{
-    return self.frameOutput.videoStreams.count > 0;
-}
-
-- (BOOL)audioEmpty
-{
-    if (self.audioEnable && self.audioRenderable)
-    {
-        NSUInteger sourceCount = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.count;
-        NSUInteger outputCount = self.audioRenderable.capacity.count;
-        return sourceCount == 0 && outputCount == 0;
-    }
-    return YES;
-}
-
-- (BOOL)videoEmpty
-{
-    if (self.videoEnable && self.videoRenderable)
-    {
-        NSUInteger sourceCount = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.count;
-        NSUInteger outputCount = self.audioRenderable.capacity.count;
-        return sourceCount == 0 && outputCount == 0;
-    }
-    return YES;
-}
-
-- (CMTime)audioLoadedDuration
-{
-    if (self.audioEnable && self.audioRenderable)
-    {
-        CMTime sourceDuration = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.duration;
-        CMTime outputDuration = self.audioRenderable.capacity.duration;
-        return CMTimeAdd(sourceDuration, outputDuration);
-    }
-    return kCMTimeZero;
-}
-
-- (CMTime)videoLoadedDuration
-{
-    if (self.videoEnable && self.videoRenderable)
-    {
-        CMTime sourceDuration = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.duration;
-        CMTime outputDuration = self.videoRenderable.capacity.duration;
-        return CMTimeAdd(sourceDuration, outputDuration);
-    }
-    return kCMTimeZero;
-}
-
-- (long long)audioLoadedSize
-{
-    int64_t sourceSize = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.size;
-    int64_t outputSzie = self.audioRenderable.capacity.size;
-    return sourceSize + outputSzie;
-}
-
-- (long long)videoLoadedSize
-{
-    int64_t sourceSize = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.size;
-    int64_t outputSzie = self.videoRenderable.capacity.size;
-    return sourceSize + outputSzie;
-}
-
 #pragma mark - SGFrameOutputDelegate
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state
@@ -383,15 +248,15 @@
         case SGFrameOutputStateOpened:
         {
             [self lock];
-            if (self.audioEnable)
+            if (self.selectedAudioStream)
             {
                 self.audioRenderable.key = YES;
                 self.audioRenderable.delegate = self;
                 [self.audioRenderable open];
             }
-            if (self.videoEnable)
+            if (self.selectedVideoStream)
             {
-                self.videoRenderable.key = !self.audioEnable;
+                self.videoRenderable.key = !self.selectedAudioStream;
                 self.videoRenderable.delegate = self;
                 [self.videoRenderable open];
             }

@@ -22,6 +22,7 @@
 @property (nonatomic, strong) id <SGRenderable> audioRenderable;
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
+- (SGCapacity *)bestCapacity;
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables;
 
 - (BOOL)load;

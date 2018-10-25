@@ -45,6 +45,8 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGStream *> *)otherStreams;
 - (NSArray <SGStream *> *)selectedStreams;
 - (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams;
+- (SGStream *)selectedAudioStream;
+- (SGStream *)selectedVideoStream;
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams;
 
 - (NSError *)open;

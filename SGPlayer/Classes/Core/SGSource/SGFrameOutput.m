@@ -21,6 +21,8 @@
 
 @property (nonatomic, strong) SGPacketOutput * packetOutput;
 @property (nonatomic, strong) NSArray * selectedStreamsInternal;
+@property (nonatomic, strong) SGStream * selectedAudioStream;
+@property (nonatomic, strong) SGStream * selectedVideoStream;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
 @property (nonatomic, strong) NSMutableArray <NSNumber *> * decodersPaused;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -105,7 +107,29 @@
 - (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
 {
     [self lock];
-    self.selectedStreamsInternal = [selectedStreams copy];
+    self.selectedStreamsInternal = nil;
+    self.selectedAudioStream = nil;
+    self.selectedVideoStream = nil;
+    NSMutableArray * ret = [NSMutableArray array];
+    for (SGStream * obj in selectedStreams) {
+        if (self.selectedAudioStream && self.selectedVideoStream) {
+            break;
+        }
+        if (!self.selectedAudioStream && obj.type == SGMediaTypeAudio) {
+            self.selectedAudioStream = obj;
+            [ret addObject:obj];
+        } else if (!self.selectedVideoStream && obj.type == SGMediaTypeVideo) {
+            self.selectedVideoStream = obj;
+            [ret addObject:obj];
+        }
+    }
+    [ret sortUsingComparator:^NSComparisonResult(SGStream * obj1, SGStream * obj2) {
+        if (obj1.type == SGMediaTypeAudio) {
+            return NSOrderedAscending;
+        }
+        return NSOrderedDescending;
+    }];
+    self.selectedStreamsInternal = [ret copy];
     [self unlock];
     return YES;
 }
@@ -246,8 +270,8 @@
             if (self.videoStreams.firstObject) {
                 [streams addObject:self.videoStreams.firstObject];
             }
+            self.selectedStreams = [streams copy];
             [self lock];
-            self.selectedStreamsInternal = [streams copy];
             self.decoders = [NSMutableArray array];
             self.decodersPaused = [NSMutableArray array];
             [self unlock];
