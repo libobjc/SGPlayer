@@ -53,7 +53,7 @@
 
 @end
 
-@interface SGPlayer () <SGPlayerItemInternalDelegate, SGPlaybackClockDelegate>
+@interface SGPlayer () <SGPlayerItemDelegate, SGPlaybackClockDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -179,7 +179,7 @@
     videoRenderer.viewport = self.viewport;
     self.videoOutput = videoRenderer;
     
-    self.currentItem.delegateInternal = self;
+    self.currentItem.delegate = self;
     self.currentItem.audioRenderable = auidoRenderer;
     self.currentItem.videoRenderable = videoRenderer;
     [self lock];

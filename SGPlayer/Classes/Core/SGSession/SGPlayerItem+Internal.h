@@ -9,22 +9,36 @@
 #import "SGPlayerItem.h"
 #import "SGRenderable.h"
 
-@protocol SGPlayerItemInternalDelegate <SGPlayerItemDelegate>
+typedef NS_ENUM(NSUInteger, SGPlayerItemState)
+{
+    SGPlayerItemStateNone,
+    SGPlayerItemStateOpening,
+    SGPlayerItemStateOpened,
+    SGPlayerItemStateReading,
+    SGPlayerItemStateClosed,
+    SGPlayerItemStateFinished,
+    SGPlayerItemStateFailed,
+};
 
+@protocol SGPlayerItemDelegate <NSObject>
+
+- (void)sessionDidChangeState:(SGPlayerItem *)session;
 - (void)sessionDidChangeCapacity:(SGPlayerItem *)session;
 
 @end
 
 @interface SGPlayerItem (Internal)
 
-@property (nonatomic, weak) id <SGPlayerItemInternalDelegate> delegateInternal;
-
+@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 @property (nonatomic, strong) id <SGRenderable> audioRenderable;
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
+- (SGPlayerItemState)state;
 - (SGCapacity *)bestCapacity;
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables;
 
+- (BOOL)open;
 - (BOOL)load;
+- (BOOL)close;
 
 @end

@@ -10,25 +10,6 @@
 #import "SGAsset.h"
 #import "SGStream.h"
 
-typedef NS_ENUM(NSUInteger, SGPlayerItemState)
-{
-    SGPlayerItemStateNone,
-    SGPlayerItemStateOpening,
-    SGPlayerItemStateOpened,
-    SGPlayerItemStateReading,
-    SGPlayerItemStateClosed,
-    SGPlayerItemStateFinished,
-    SGPlayerItemStateFailed,
-};
-
-@class SGPlayerItem;
-
-@protocol SGPlayerItemDelegate <NSObject>
-
-- (void)sessionDidChangeState:(SGPlayerItem *)session;
-
-@end
-
 @interface SGPlayerItem : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -36,12 +17,10 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 - (instancetype)initWithAsset:(SGAsset *)asset;
 
-@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
-
-- (SGPlayerItemState)state;
 - (CMTime)duration;
 - (NSError *)error;
 - (NSDictionary *)metadata;
+
 - (NSArray <SGStream *> *)streams;
 - (NSArray <SGStream *> *)audioStreams;
 - (NSArray <SGStream *> *)videoStreams;
@@ -51,8 +30,6 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 - (SGStream *)selectedAudioStream;
 - (SGStream *)selectedVideoStream;
 
-- (BOOL)open;
-- (BOOL)close;
 - (BOOL)seeking;
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;

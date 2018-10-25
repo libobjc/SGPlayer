@@ -25,7 +25,7 @@
 @property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
 
-@property (nonatomic, weak) id <SGPlayerItemInternalDelegate> delegateInternal;
+@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 @property (nonatomic, strong) id <SGRenderable> audioRenderable;
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
@@ -154,7 +154,6 @@
         _state = state;
         return ^{
             [self.delegate sessionDidChangeState:self];
-            [self.delegateInternal sessionDidChangeState:self];
         };
     }
     return ^{};
@@ -302,7 +301,7 @@
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity stream:(SGStream *)stream
 {
-    [self.delegateInternal sessionDidChangeCapacity:self];
+    [self.delegate sessionDidChangeCapacity:self];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -342,7 +341,7 @@
             [self.frameOutput resume:self.frameOutput.videoStreams];
         }
     }
-    [self.delegateInternal sessionDidChangeCapacity:self];
+    [self.delegate sessionDidChangeCapacity:self];
 }
 
 - (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame

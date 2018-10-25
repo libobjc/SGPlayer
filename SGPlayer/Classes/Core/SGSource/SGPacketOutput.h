@@ -38,6 +38,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
+
 - (NSArray <SGStream *> *)streams;
 - (NSArray <SGStream *> *)audioStreams;
 - (NSArray <SGStream *> *)videoStreams;
