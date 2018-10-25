@@ -7,6 +7,7 @@
 //
 
 #import "SGURLAsset.h"
+#import "SGAsset+Internal.h"
 #import "SGURLPacketReader.h"
 
 @interface SGURLAsset ()

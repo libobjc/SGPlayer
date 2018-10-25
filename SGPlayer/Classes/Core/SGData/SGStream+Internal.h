@@ -1,5 +1,5 @@
 //
-//  SGStream+Private.h
+//  SGStream+Internal.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/10/23.
@@ -9,7 +9,7 @@
 #import "SGStream.h"
 #import "avformat.h"
 
-@interface SGStream (Private)
+@interface SGStream (Internal)
 
 - (instancetype)initWithCore:(AVStream *)core;
 

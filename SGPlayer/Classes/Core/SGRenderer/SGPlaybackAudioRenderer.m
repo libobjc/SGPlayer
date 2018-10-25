@@ -8,7 +8,7 @@
 
 #import "SGPlaybackAudioRenderer.h"
 #import "SGAudioStreamPlayer.h"
-#import "SGFrame+Private.h"
+#import "SGFrame+Internal.h"
 #import "SGAudioFrame.h"
 #import "SGMapping.h"
 #import "swresample.h"

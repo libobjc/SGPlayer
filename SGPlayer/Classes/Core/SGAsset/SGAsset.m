@@ -7,7 +7,13 @@
 //
 
 #import "SGAsset.h"
+#import "SGAsset+Internal.h"
 
 @implementation SGAsset
+
+- (id <SGPacketReadable>)newReadable
+{
+    return nil;
+}
 
 @end

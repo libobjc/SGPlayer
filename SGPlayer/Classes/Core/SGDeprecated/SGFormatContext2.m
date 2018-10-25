@@ -9,7 +9,7 @@
 #import "SGFormatContext2.h"
 #import "SGMapping.h"
 #import "SGError.h"
-#import "SGStream+Private.h"
+#import "SGStream+Internal.h"
 
 @implementation SGFormatContext2
 

@@ -7,7 +7,7 @@
 //
 
 #import "SGStream.h"
-#import "SGStream+Private.h"
+#import "SGStream+Internal.h"
 #import "SGMapping.h"
 
 @interface SGStream ()

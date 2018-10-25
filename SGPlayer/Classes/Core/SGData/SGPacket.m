@@ -7,7 +7,7 @@
 //
 
 #import "SGPacket.h"
-#import "SGPacket+Private.h"
+#import "SGPacket+Internal.h"
 
 @interface SGPacket ()
 

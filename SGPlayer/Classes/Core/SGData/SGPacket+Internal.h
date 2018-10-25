@@ -1,5 +1,5 @@
 //
-//  SGPacket+Private.h
+//  SGPacket+Internal.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/10/23.
@@ -9,7 +9,7 @@
 #import "SGPacket.h"
 #import "avcodec.h"
 
-@interface SGPacket (Private)
+@interface SGPacket (Internal)
 
 @property (nonatomic, assign, readonly) AVPacket * core;
 

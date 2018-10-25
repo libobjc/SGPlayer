@@ -7,7 +7,7 @@
 //
 
 #import "SGAudioFrame.h"
-#import "SGFrame+Private.h"
+#import "SGFrame+Internal.h"
 #import "SGMapping.h"
 
 @implementation SGAudioFrame

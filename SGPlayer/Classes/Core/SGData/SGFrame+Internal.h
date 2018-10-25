@@ -1,5 +1,5 @@
 //
-//  SGFrame+Private.h
+//  SGFrame+Internal.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/10/23.
@@ -9,7 +9,7 @@
 #import "SGFrame.h"
 #import "frame.h"
 
-@interface SGFrame (Private)
+@interface SGFrame (Internal)
 
 @property (nonatomic, assign, readonly) AVFrame * core;
 

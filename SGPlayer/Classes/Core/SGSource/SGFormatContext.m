@@ -7,8 +7,8 @@
 //
 
 #import "SGFormatContext.h"
-#import "SGStream+Private.h"
-#import "SGPacket+Private.h"
+#import "SGStream+Internal.h"
+#import "SGPacket+Internal.h"
 #import "SGMapping.h"
 #import "SGError.h"
 

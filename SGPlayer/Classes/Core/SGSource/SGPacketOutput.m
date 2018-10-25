@@ -7,8 +7,8 @@
 //
 
 #import "SGPacketOutput.h"
-#import "SGAsset+Private.h"
-#import "SGPacket+Private.h"
+#import "SGAsset+Internal.h"
+#import "SGPacket+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 

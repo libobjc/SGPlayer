@@ -7,7 +7,7 @@
 //
 
 #import "SGVideoFrame.h"
-#import "SGFrame+Private.h"
+#import "SGFrame+Internal.h"
 #import "SGSWSContext.h"
 #import "SGPlatform.h"
 #import "SGMapping.h"
