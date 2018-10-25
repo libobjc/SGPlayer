@@ -53,7 +53,7 @@
 
 @end
 
-@interface SGPlayer () <SGPlayerItemInternalDelegate, SGPlaybackSynchronizerDelegate>
+@interface SGPlayer () <SGPlayerItemInternalDelegate, SGPlaybackClockDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -158,7 +158,7 @@
     }
     _currentItem = item;
     
-    SGPlaybackSynchronizer * clock = [[SGPlaybackSynchronizer alloc] init];
+    SGPlaybackClock * clock = [[SGPlaybackClock alloc] init];
     clock.delegate = self;
     
     SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] init];
@@ -710,11 +710,11 @@
     [self callbackForTimingIfNeeded];
 }
 
-#pragma mark - SGPlaybackSynchronizerDelegate
+#pragma mark - SGPlaybackClockDelegate
 
-- (void)playbackTimeSyncDidChangeStartTime:(SGPlaybackSynchronizer *)playbackTimeSync
+- (void)playbackClockDidChangeStartTime:(SGPlaybackClock *)playbackClock
 {
-    self.actualStartTime = playbackTimeSync.startTime;
+    self.actualStartTime = playbackClock.startTime;
     [self callbackForTimingIfNeeded];
 }
 

@@ -1,14 +1,14 @@
 //
-//  SGPlaybackSynchronizer.m
+//  SGPlaybackClock.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGPlaybackSynchronizer.h"
+#import "SGPlaybackClock.h"
 
-@interface SGPlaybackSynchronizer ()
+@interface SGPlaybackClock ()
 
 @property (nonatomic, assign) CMTime keyTime;
 @property (nonatomic, assign) CMTime keyDuration;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation SGPlaybackSynchronizer
+@implementation SGPlaybackClock
 
 - (instancetype)init
 {
@@ -58,9 +58,9 @@
     if (CMTIME_IS_INVALID(self.startTime))
     {
         _startTime = time;
-        if ([self.delegate respondsToSelector:@selector(playbackTimeSyncDidChangeStartTime:)])
+        if ([self.delegate respondsToSelector:@selector(playbackClockDidChangeStartTime:)])
         {
-            [self.delegate playbackTimeSyncDidChangeStartTime:self];
+            [self.delegate playbackClockDidChangeStartTime:self];
         }
     }
     self.keyTime = time;

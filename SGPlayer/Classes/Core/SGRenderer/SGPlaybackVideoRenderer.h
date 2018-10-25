@@ -10,11 +10,11 @@
 #import "SGPlatform.h"
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
-#import "SGPlaybackSynchronizer.h"
+#import "SGPlaybackClock.h"
 
 @interface SGPlaybackVideoRenderer : NSObject <SGRenderable>
 
-@property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
+@property (nonatomic, strong) SGPlaybackClock * timeSync;
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, strong) SGPLFView * view;

@@ -7,11 +7,11 @@
 //
 
 #import "SGRenderable.h"
-#import "SGPlaybackSynchronizer.h"
+#import "SGPlaybackClock.h"
 
 @interface SGPlaybackAudioRenderer : NSObject <SGRenderable>
 
-@property (nonatomic, strong) SGPlaybackSynchronizer * timeSync;
+@property (nonatomic, strong) SGPlaybackClock * timeSync;
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, assign) float volume;
