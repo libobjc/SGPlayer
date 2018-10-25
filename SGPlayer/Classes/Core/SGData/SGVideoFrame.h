@@ -12,9 +12,9 @@
 
 {
 @public
-    uint8_t * data[SGFramePlaneCount];
-    int linesize[SGFramePlaneCount];
-    CVPixelBufferRef pixelBuffer;
+    uint8_t * _data[SGFramePlaneCount];
+    int _linesize[SGFramePlaneCount];
+    CVPixelBufferRef _pixelBuffer;
 }
 
 @property (nonatomic, assign, readonly) int format;     // AVPixelFormat

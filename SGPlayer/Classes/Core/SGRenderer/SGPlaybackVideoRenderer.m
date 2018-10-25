@@ -404,7 +404,7 @@
     SGGLSize textureSize = {frame.width, frame.height};
     SGDisplayMode displayMode = self.displayMode;
     id <SGGLModel> model = [self.modelPool modelWithType:SGDisplay2Model(displayMode)];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format, frame->pixelBuffer)];
+    id <SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format, frame->_pixelBuffer)];
     if (!model || !program)
     {
         [frame unlock];
@@ -413,13 +413,13 @@
     [program use];
     [program bindVariable];
     BOOL success = NO;
-    if (frame->pixelBuffer)
+    if (frame->_pixelBuffer)
     {
-        success = [self.glUploader uploadWithCVPixelBuffer:frame->pixelBuffer];
+        success = [self.glUploader uploadWithCVPixelBuffer:frame->_pixelBuffer];
     }
     else
     {
-        success = [self.glUploader uploadWithType:SGFormat2Texture(frame.format, frame->pixelBuffer) data:frame->data size:textureSize];
+        success = [self.glUploader uploadWithType:SGFormat2Texture(frame.format, frame->_pixelBuffer) data:frame->_data size:textureSize];
     }
     if (!success)
     {

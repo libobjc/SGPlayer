@@ -54,10 +54,10 @@
     return self.context ? YES : NO;
 }
 
-- (int)scaleWithSrcData:(const uint8_t *const [])src_data
-            srcLinesize:(const int [])src_linesize
-                dstData:(uint8_t *const [])dst_data
-            dstLinesize:(const int [])dst_linesize
+- (int)scaleWithSrc_data:(const uint8_t * const [])src_data
+            src_linesize:(const int [])src_linesize
+                dst_data:(uint8_t * const [])dst_data
+            dst_linesize:(const int [])dst_linesize
 {
     int result = sws_scale(self.context,
                            src_data,

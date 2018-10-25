@@ -105,16 +105,52 @@ OSType SGPixelFormatFF2AV(enum AVPixelFormat format)
 {
     switch (format)
     {
-        case AV_PIX_FMT_NV12:
-            return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
-        case AV_PIX_FMT_YUV420P:
-            return kCVPixelFormatType_420YpCbCr8Planar;
+        case AV_PIX_FMT_MONOBLACK:
+            return kCVPixelFormatType_1Monochrome;
+        case AV_PIX_FMT_RGB555BE:
+            return kCVPixelFormatType_16BE555;
+        case AV_PIX_FMT_RGB555LE:
+            return kCVPixelFormatType_16LE555;
+        case AV_PIX_FMT_RGB565BE:
+            return kCVPixelFormatType_16BE565;
+        case AV_PIX_FMT_RGB565LE:
+            return kCVPixelFormatType_16LE565;
+        case AV_PIX_FMT_RGB24:
+            return kCVPixelFormatType_24RGB;
+        case AV_PIX_FMT_BGR24:
+            return kCVPixelFormatType_24BGR;
+        case AV_PIX_FMT_0RGB:
+            return kCVPixelFormatType_32ARGB;
+        case AV_PIX_FMT_BGR0:
+            return kCVPixelFormatType_32BGRA;
+        case AV_PIX_FMT_0BGR:
+            return kCVPixelFormatType_32ABGR;
+        case AV_PIX_FMT_RGB0:
+            return kCVPixelFormatType_32RGBA;
+        case AV_PIX_FMT_BGR48BE:
+            return kCVPixelFormatType_48RGB;
         case AV_PIX_FMT_UYVY422:
             return kCVPixelFormatType_422YpCbCr8;
-        case AV_PIX_FMT_BGRA:
-            return kCVPixelFormatType_32BGRA;
-        case AV_PIX_FMT_RGBA:
-            return kCVPixelFormatType_32RGBA;
+        case AV_PIX_FMT_YUVA444P:
+            return kCVPixelFormatType_4444YpCbCrA8R;
+        case AV_PIX_FMT_YUVA444P16LE:
+            return kCVPixelFormatType_4444AYpCbCr16;
+        case AV_PIX_FMT_YUV444P:
+            return kCVPixelFormatType_444YpCbCr8;
+        case AV_PIX_FMT_YUV422P16:
+            return kCVPixelFormatType_422YpCbCr16;
+        case AV_PIX_FMT_YUV422P10:
+            return kCVPixelFormatType_422YpCbCr10;
+        case AV_PIX_FMT_YUV444P10:
+            return kCVPixelFormatType_444YpCbCr10;
+        case AV_PIX_FMT_YUV420P:
+            return kCVPixelFormatType_420YpCbCr8Planar;
+        case AV_PIX_FMT_NV12:
+            return kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;
+        case AV_PIX_FMT_YUYV422:
+            return kCVPixelFormatType_422YpCbCr8_yuvs;
+        case AV_PIX_FMT_GRAY8:
+            return kCVPixelFormatType_OneComponent8;
         default:
             return 0;
     }
@@ -125,16 +161,52 @@ enum AVPixelFormat SGPixelFormatAV2FF(OSType format)
 {
     switch (format)
     {
-        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-            return AV_PIX_FMT_NV12;
-        case kCVPixelFormatType_420YpCbCr8Planar:
-            return AV_PIX_FMT_YUV420P;
+        case kCVPixelFormatType_1Monochrome:
+            return AV_PIX_FMT_MONOBLACK;
+        case kCVPixelFormatType_16BE555:
+            return AV_PIX_FMT_RGB555BE;
+        case kCVPixelFormatType_16LE555:
+            return AV_PIX_FMT_RGB555LE;
+        case kCVPixelFormatType_16BE565:
+            return AV_PIX_FMT_RGB565BE;
+        case kCVPixelFormatType_16LE565:
+            return AV_PIX_FMT_RGB565LE;
+        case kCVPixelFormatType_24RGB:
+            return AV_PIX_FMT_RGB24;
+        case kCVPixelFormatType_24BGR:
+            return AV_PIX_FMT_BGR24;
+        case kCVPixelFormatType_32ARGB:
+            return AV_PIX_FMT_0RGB;
+        case kCVPixelFormatType_32BGRA:
+            return AV_PIX_FMT_BGR0;
+        case kCVPixelFormatType_32ABGR:
+            return AV_PIX_FMT_0BGR;
+        case kCVPixelFormatType_32RGBA:
+            return AV_PIX_FMT_RGB0;
+        case kCVPixelFormatType_48RGB:
+            return AV_PIX_FMT_BGR48BE;
         case kCVPixelFormatType_422YpCbCr8:
             return AV_PIX_FMT_UYVY422;
-        case kCVPixelFormatType_32BGRA:
-            return AV_PIX_FMT_BGRA;
-        case kCVPixelFormatType_32RGBA:
-            return AV_PIX_FMT_RGBA;
+        case kCVPixelFormatType_4444YpCbCrA8R:
+            return AV_PIX_FMT_YUVA444P;
+        case kCVPixelFormatType_4444AYpCbCr16:
+            return AV_PIX_FMT_YUVA444P16LE;
+        case kCVPixelFormatType_444YpCbCr8:
+            return AV_PIX_FMT_YUV444P;
+        case kCVPixelFormatType_422YpCbCr16:
+            return AV_PIX_FMT_YUV422P16;
+        case kCVPixelFormatType_422YpCbCr10:
+            return AV_PIX_FMT_YUV422P10;
+        case kCVPixelFormatType_444YpCbCr10:
+            return AV_PIX_FMT_YUV444P10;
+        case kCVPixelFormatType_420YpCbCr8Planar:
+            return AV_PIX_FMT_YUV420P;
+        case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+            return AV_PIX_FMT_NV12;
+        case kCVPixelFormatType_422YpCbCr8_yuvs:
+            return AV_PIX_FMT_YUYV422;
+        case kCVPixelFormatType_OneComponent8:
+            return AV_PIX_FMT_GRAY8;
         default:
             return AV_PIX_FMT_NONE;
     }
