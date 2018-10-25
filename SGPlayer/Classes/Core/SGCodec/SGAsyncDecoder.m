@@ -75,9 +75,9 @@ static SGPacket * flushPacket;
     return _state;
 }
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (SGCapacity *)capacity
 {
-    return [self.packetQueue duration:duration size:size count:count];
+    return self.packetQueue.capacity;
 }
 
 #pragma mark - Interface
@@ -246,11 +246,7 @@ static SGPacket * flushPacket;
 
 - (void)callbackForCapacity
 {
-    CMTime duration = kCMTimeZero;
-    int64_t size = 0;
-    NSUInteger count = 0;
-    [self duration:&duration size:&size count:&count];
-    [self.delegate decoder:self didChangeDuration:duration size:size count:count];
+    [self.delegate decoder:self didChangeCapacity:self.capacity];
 }
 
 #pragma mark - NSLocking

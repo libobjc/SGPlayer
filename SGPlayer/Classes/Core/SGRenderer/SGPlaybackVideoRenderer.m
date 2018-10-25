@@ -217,14 +217,12 @@
 
 - (BOOL)enough
 {
-    NSUInteger count = 0;
-    [self duration:NULL size:NULL count:&count];
-    return count >= 3;
+    return self.capacity.count >= 3;
 }
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (SGCapacity *)capacity
 {
-    return [self.frameQueue duration:duration size:size count:count];
+    return self.frameQueue.capacity;
 }
 
 - (void)setViewport:(SGVRViewport *)viewport

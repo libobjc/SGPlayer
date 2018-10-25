@@ -10,6 +10,7 @@
 #define SGRenderable_h
 
 #import <Foundation/Foundation.h>
+#import "SGCapacity.h"
 #import "SGFrame.h"
 
 @protocol SGRenderableDelegate;
@@ -32,7 +33,7 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 - (SGRenderableState)state;
 - (NSError *)error;
 - (BOOL)enough;
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+- (SGCapacity *)capacity;
 
 - (BOOL)open;
 - (BOOL)close;

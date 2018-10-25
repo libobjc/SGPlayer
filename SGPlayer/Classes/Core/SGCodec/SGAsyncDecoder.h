@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGDecodable.h"
+#import "SGCapacity.h"
 
 @protocol SGAsyncDecoderDelegate;
 
@@ -30,7 +31,7 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 @property (nonatomic, weak) id <SGAsyncDecoderDelegate> delegate;
 
 - (SGAsyncDecoderState)state;
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+- (SGCapacity *)capacity;
 
 - (BOOL)open;
 - (BOOL)close;
@@ -46,6 +47,6 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 
 - (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(__kindof SGFrame *)frame;
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state;
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count;
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(SGCapacity *)capacity;
 
 @end

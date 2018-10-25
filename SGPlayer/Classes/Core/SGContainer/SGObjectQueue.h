@@ -7,13 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGCapacity.h"
 #import "SGTime.h"
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
 
 - (CMTime)timeStamp;
 - (CMTime)duration;
-- (int64_t)size;
+- (uint64_t)size;
 
 @end
 
@@ -24,7 +25,7 @@
 
 @property (nonatomic, assign) BOOL shouldSortObjects;
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+- (SGCapacity *)capacity;
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
 - (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;

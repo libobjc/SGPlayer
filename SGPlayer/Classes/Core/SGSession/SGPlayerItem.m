@@ -205,29 +205,18 @@
     return self.frameOutput.selectedStreams = selectedStreams;
 }
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream renderable:(id <SGRenderable>)renderable
+- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables
 {
-    CMTime outputDuration = kCMTimeZero;
-    int64_t outputSize = 0;
-    NSUInteger outputCount = 0;
-    [self.frameOutput duration:&outputDuration size:&outputSize count:&outputCount stream:stream];
-    
-    CMTime renderableDuration = kCMTimeZero;
-    int64_t renderableSize = 0;
-    NSUInteger renderableCount = 0;
-    [renderable duration:&renderableDuration size:&renderableSize count:&renderableCount];
-    
-    if (duration) {
-        * duration = CMTimeAdd(outputDuration, renderableDuration);
+    NSMutableArray * ret = [NSMutableArray array];
+    for (SGCapacity * obj in [self.frameOutput capacityWithStreams:streams]) {
+        [ret addObject:obj];
     }
-    if (size) {
-        * size = outputSize + renderableSize;
+    for (id <SGRenderable> obj in renderables) {
+        SGCapacity * c = obj.capacity;
+        c.object = obj;
+        [ret addObject:c];
     }
-    if (count) {
-        * count = outputCount + renderableCount;
-    }
-    
-    return YES;
+    return [ret copy];
 }
 
 - (CMTime)loadedDuration
@@ -331,12 +320,8 @@
 {
     if (self.audioEnable && self.audioRenderable)
     {
-        NSUInteger sourceCount = 0;
-        [self.frameOutput duration:NULL size:NULL count:&sourceCount stream:self.frameOutput.audioStreams.firstObject];
-        
-        NSUInteger outputCount = 0;
-        [self.audioRenderable duration:NULL size:NULL count:&outputCount];
-        
+        NSUInteger sourceCount = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.count;
+        NSUInteger outputCount = self.audioRenderable.capacity.count;
         return sourceCount == 0 && outputCount == 0;
     }
     return YES;
@@ -346,12 +331,8 @@
 {
     if (self.videoEnable && self.videoRenderable)
     {
-        NSUInteger sourceCount = 0;
-        [self.frameOutput duration:NULL size:NULL count:&sourceCount stream:self.frameOutput.videoStreams.firstObject];
-        
-        NSUInteger outputCount = 0;
-        [self.videoRenderable duration:NULL size:NULL count:&outputCount];
-        
+        NSUInteger sourceCount = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.count;
+        NSUInteger outputCount = self.audioRenderable.capacity.count;
         return sourceCount == 0 && outputCount == 0;
     }
     return YES;
@@ -361,12 +342,8 @@
 {
     if (self.audioEnable && self.audioRenderable)
     {
-        CMTime sourceDuration = kCMTimeZero;
-        [self.frameOutput duration:&sourceDuration size:NULL count:NULL stream:self.frameOutput.audioStreams.firstObject];
-        
-        CMTime outputDuration = kCMTimeZero;
-        [self.audioRenderable duration:&outputDuration size:NULL count:NULL];
-        
+        CMTime sourceDuration = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.duration;
+        CMTime outputDuration = self.audioRenderable.capacity.duration;
         return CMTimeAdd(sourceDuration, outputDuration);
     }
     return kCMTimeZero;
@@ -376,12 +353,8 @@
 {
     if (self.videoEnable && self.videoRenderable)
     {
-        CMTime sourceDuration = kCMTimeZero;
-        [self.frameOutput duration:&sourceDuration size:NULL count:NULL stream:self.frameOutput.videoStreams.firstObject];
-        
-        CMTime outputDuration = kCMTimeZero;
-        [self.videoRenderable duration:&outputDuration size:NULL count:NULL];
-        
+        CMTime sourceDuration = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.duration;
+        CMTime outputDuration = self.videoRenderable.capacity.duration;
         return CMTimeAdd(sourceDuration, outputDuration);
     }
     return kCMTimeZero;
@@ -389,23 +362,15 @@
 
 - (long long)audioLoadedSize
 {
-    int64_t sourceSize = 0;
-    [self.frameOutput duration:NULL size:&sourceSize count:NULL stream:self.frameOutput.audioStreams.firstObject];
-    
-    int64_t outputSzie = 0;
-    [self.audioRenderable duration:NULL size:&outputSzie count:NULL];
-    
+    int64_t sourceSize = [self.frameOutput capacityWithStreams:@[self.frameOutput.audioStreams.firstObject]].firstObject.size;
+    int64_t outputSzie = self.audioRenderable.capacity.size;
     return sourceSize + outputSzie;
 }
 
 - (long long)videoLoadedSize
 {
-    int64_t sourceSize = 0;
-    [self.frameOutput duration:NULL size:&sourceSize count:NULL stream:self.frameOutput.videoStreams.firstObject];
-    
-    int64_t outputSzie = 0;
-    [self.videoRenderable duration:NULL size:&outputSzie count:NULL];
-    
+    int64_t sourceSize = [self.frameOutput capacityWithStreams:@[self.frameOutput.videoStreams.firstObject]].firstObject.size;
+    int64_t outputSzie = self.videoRenderable.capacity.size;
     return sourceSize + outputSzie;
 }
 
@@ -465,7 +430,7 @@
     }
 }
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity stream:(SGStream *)stream
 {
     [self.delegateInternal sessionDidChangeCapacity:self];
 }

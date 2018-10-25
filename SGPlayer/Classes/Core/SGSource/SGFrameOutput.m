@@ -110,14 +110,17 @@
     return YES;
 }
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream
+- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams
 {
+    NSMutableArray * ret = [NSMutableArray array];
     for (SGAsyncDecoder * obj in self.decoders) {
-        if (obj.object == stream) {
-            return [obj duration:duration size:size count:count];
+        if ([streams containsObject:obj.object]) {
+            SGCapacity * c = obj.capacity;
+            c.object = obj.object;
+            [ret addObject:c];
         }
     }
-    return NO;
+    return [ret copy];
 }
 
 #pragma mark - Interface
@@ -287,9 +290,9 @@
     
 }
 
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
+- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
-    BOOL paused = count > 30 && CMTimeCompare(duration, CMTimeMake(1, 1)) > 0;
+    BOOL paused = capacity.count > 30 && CMTimeCompare(capacity.duration, CMTimeMake(1, 1)) > 0;
     [self lock];
     NSUInteger index = [self.decoders indexOfObject:decoder];
     [self.decodersPaused replaceObjectAtIndex:index withObject:@(paused)];
@@ -306,7 +309,7 @@
     } else {
         [self.packetOutput resume];
     }
-    [self.delegate frameOutput:self didChangeDuration:duration size:size count:count stream:decoder.object];
+    [self.delegate frameOutput:self didChangeCapacity:capacity stream:decoder.object];
 }
 
 #pragma mark - NSLocking

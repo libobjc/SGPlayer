@@ -12,7 +12,7 @@
 
 @property (nonatomic, assign) NSUInteger maxCount;
 @property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) int64_t size;
+@property (nonatomic, assign) uint64_t size;
 
 @property (nonatomic, strong) NSCondition * condition;
 @property (nonatomic, strong) NSMutableArray <id <SGObjectQueueItem>> * objects;
@@ -42,23 +42,18 @@
     return self;
 }
 
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (SGCapacity *)capacity
 {
     if (self.didDestoryed) {
-        return NO;
+        return nil;
     }
     [self.condition lock];
-    if (duration) {
-        * duration = self.duration;
-    }
-    if (size) {
-        * size = self.size;
-    }
-    if (count) {
-        * count = self.objects.count;
-    }
+    SGCapacity * ret = [[SGCapacity alloc] init];
+    ret.duration = self.duration;
+    ret.size = self.size;
+    ret.count = self.objects.count;
     [self.condition unlock];
-    return YES;
+    return ret;
 }
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object

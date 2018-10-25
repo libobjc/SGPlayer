@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGCapacity.h"
 #import "SGAsset.h"
 #import "SGFrame.h"
 
@@ -44,7 +45,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGStream *> *)otherStreams;
 - (NSArray <SGStream *> *)selectedStreams;
 - (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams;
-- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
+- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams;
 
 - (NSError *)open;
 - (NSError *)start;
@@ -59,7 +60,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 @protocol SGFrameOutputDelegate <NSObject>
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity stream:(SGStream *)stream;
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame;
 
 @end
