@@ -9,7 +9,7 @@
 #import "SGPlayer.h"
 #import "SGMacro.h"
 #import "SGActivity.h"
-#import "SGPlayerItem+Private.h"
+#import "SGPlayerItem+Internal.h"
 #import "SGMapping.h"
 #import "SGPacketOutput.h"
 #import "SGConcatSource.h"
@@ -53,7 +53,7 @@
 
 @end
 
-@interface SGPlayer () <SGPlayerItemDelegate, SGPlaybackSynchronizerDelegate>
+@interface SGPlayer () <SGPlayerItemInternalDelegate, SGPlaybackSynchronizerDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -159,10 +159,10 @@
     _currentItem = item;
     
     SGPlaybackSynchronizer * clock = [[SGPlaybackSynchronizer alloc] init];
+    clock.delegate = self;
     
     SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] init];
     auidoRenderer.timeSync = clock;
-    auidoRenderer.timeSync.delegate = self;
     auidoRenderer.rate = self.rate;
     auidoRenderer.volume = self.volume;
     auidoRenderer.deviceDelay = self.deviceDelay;
@@ -179,7 +179,7 @@
     videoRenderer.viewport = self.viewport;
     self.videoOutput = videoRenderer;
     
-    self.currentItem.delegate = self;
+    self.currentItem.delegateInternal = self;
     self.currentItem.audioRenderable = auidoRenderer;
     self.currentItem.videoRenderable = videoRenderer;
     [self lock];
@@ -662,7 +662,7 @@
 {
     if (session.state == SGPlayerItemStateOpened)
     {
-        [session start];
+        [session load];
         [self lock];
         SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFinished];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateLoading];

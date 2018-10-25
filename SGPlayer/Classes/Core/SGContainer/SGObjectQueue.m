@@ -42,7 +42,7 @@
     return self;
 }
 
-- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
     if (self.didDestoryed) {
         return NO;

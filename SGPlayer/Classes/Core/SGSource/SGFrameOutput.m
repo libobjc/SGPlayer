@@ -20,6 +20,7 @@
 }
 
 @property (nonatomic, strong) SGPacketOutput * packetOutput;
+@property (nonatomic, strong) NSArray * selectedStreamsInternal;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
 @property (nonatomic, strong) NSMutableArray <NSNumber *> * decodersPaused;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -92,11 +93,28 @@
     return self.packetOutput.otherStreams;
 }
 
-- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream
+- (NSArray <SGStream *> *)selectedStreams
+{
+    NSArray * ret = nil;
+    [self lock];
+    ret = self.selectedStreamsInternal;
+    [self unlock];
+    return ret;
+}
+
+- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+{
+    [self lock];
+    self.selectedStreamsInternal = [selectedStreams copy];
+    [self unlock];
+    return YES;
+}
+
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream
 {
     for (SGAsyncDecoder * obj in self.decoders) {
         if (obj.object == stream) {
-            return [obj duratioin:duration size:size count:count];
+            return [obj duration:duration size:size count:count];
         }
     }
     return NO;
@@ -168,7 +186,9 @@
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
-    if (![self.outputStreams containsObject:packet.stream]) {
+    [self lock];
+    if (![self.selectedStreamsInternal containsObject:packet.stream]) {
+        [self unlock];
         return;
     }
     SGAsyncDecoder * decoder = nil;
@@ -191,12 +211,11 @@
             async.delegate = self;
             [async open];
             decoder = async;
-            [self lock];
             [self.decoders addObject:decoder];
             [self.decodersPaused addObject:@(NO)];
-            [self unlock];
         }
     }
+    [self unlock];
     if (!decoder) {
         return;
     }
@@ -224,9 +243,11 @@
             if (self.videoStreams.firstObject) {
                 [streams addObject:self.videoStreams.firstObject];
             }
-            self.outputStreams = [streams copy];
+            [self lock];
+            self.selectedStreamsInternal = [streams copy];
             self.decoders = [NSMutableArray array];
             self.decodersPaused = [NSMutableArray array];
+            [self unlock];
         }
             break;
         case SGPacketOutputStateReading:
@@ -272,8 +293,12 @@
     [self lock];
     NSUInteger index = [self.decoders indexOfObject:decoder];
     [self.decodersPaused replaceObjectAtIndex:index withObject:@(paused)];
-    for (NSNumber * obj in self.decodersPaused) {
-        paused = paused && obj.boolValue;
+    for (NSUInteger i = 0; i < self.decoders.count; i++) {
+        SGAsyncDecoder * obj = [self.decoders objectAtIndex:i];
+        BOOL value = [self.decodersPaused objectAtIndex:i].boolValue;
+        if ([self.selectedStreamsInternal containsObject:obj.object]) {
+            paused = paused && value;
+        }
     }
     [self unlock];
     if (paused) {

@@ -75,9 +75,9 @@ static SGPacket * flushPacket;
     return _state;
 }
 
-- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count
 {
-    return [self.packetQueue duratioin:duration size:size count:count];
+    return [self.packetQueue duration:duration size:size count:count];
 }
 
 #pragma mark - Interface
@@ -249,7 +249,7 @@ static SGPacket * flushPacket;
     CMTime duration = kCMTimeZero;
     int64_t size = 0;
     NSUInteger count = 0;
-    [self duratioin:&duration size:&size count:&count];
+    [self duration:&duration size:&size count:&count];
     [self.delegate decoder:self didChangeDuration:duration size:size count:count];
 }
 

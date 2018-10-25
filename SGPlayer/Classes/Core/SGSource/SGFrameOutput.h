@@ -33,7 +33,6 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (instancetype)initWithAsset:(SGAsset *)asset;
 
 @property (nonatomic, weak) id <SGFrameOutputDelegate> delegate;
-@property (nonatomic, strong) NSArray <SGStream *> * outputStreams;
 
 - (SGFrameOutputState)state;
 - (NSError *)error;
@@ -43,7 +42,9 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGStream *> *)audioStreams;
 - (NSArray <SGStream *> *)videoStreams;
 - (NSArray <SGStream *> *)otherStreams;
-- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
+- (NSArray <SGStream *> *)selectedStreams;
+- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams;
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream;
 
 - (NSError *)open;
 - (NSError *)start;

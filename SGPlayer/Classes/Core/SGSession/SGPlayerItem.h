@@ -26,7 +26,6 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 @protocol SGPlayerItemDelegate <NSObject>
 
 - (void)sessionDidChangeState:(SGPlayerItem *)session;
-- (void)sessionDidChangeCapacity:(SGPlayerItem *)session;
 
 @end
 
@@ -39,48 +38,37 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 
-@property (nonatomic, assign, readonly) SGPlayerItemState state;
-@property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, copy, readonly) NSError * error;
-@property (nonatomic, copy, readonly) NSDictionary * metadata;
+- (SGPlayerItemState)state;
+- (CMTime)duration;
+- (NSError *)error;
+- (NSDictionary *)metadata;
+- (NSArray <SGStream *> *)streams;
+- (NSArray <SGStream *> *)audioStreams;
+- (NSArray <SGStream *> *)videoStreams;
+- (NSArray <SGStream *> *)otherStreams;
+- (NSArray <SGStream *> *)selectedStreams;
+- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams;
+
+- (BOOL)open;
+- (BOOL)close;
+- (BOOL)seeking;
+- (BOOL)seekable;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+
 
 - (BOOL)empty;
 - (BOOL)emptyWithMainMediaType:(SGMediaType)mainMediaType;
-
-- (CMTime)loadedDuration;       // Main media type is Audio.
+- (CMTime)loadedDuration;
 - (CMTime)loadedDurationWithMainMediaType:(SGMediaType)mainMediaType;
-
-- (long long)loadedSize;        // Main media type is Audio.
+- (long long)loadedSize;
 - (long long)loadedSizeWithMainMediaType:(SGMediaType)mainMediaType;
-
-/**
- *  Audio.
- */
 @property (nonatomic, assign, readonly) BOOL audioEnable;
 @property (nonatomic, assign, readonly) BOOL audioEmpty;
 @property (nonatomic, assign, readonly) CMTime audioLoadedDuration;
 @property (nonatomic, assign, readonly) long long audioLoadedSize;
-
-/**
- *  Video.
- */
 @property (nonatomic, assign, readonly) BOOL videoEnable;
 @property (nonatomic, assign, readonly) BOOL videoEmpty;
 @property (nonatomic, assign, readonly) CMTime videoLoadedDuration;
 @property (nonatomic, assign, readonly) long long videoLoadedSize;
-
-/**
- *  Streams.
- */
-- (void)open;
-- (void)start;
-- (void)close;
-
-/**
- *  Seek.
- */
-- (BOOL)seeking;
-- (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end

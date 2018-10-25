@@ -7,7 +7,7 @@
 //
 
 #import "SGPlayerItem.h"
-#import "SGPlayerItem+Private.h"
+#import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
@@ -16,9 +16,16 @@
 
 @interface SGPlayerItem () <NSLocking, SGFrameOutputDelegate, SGRenderableDelegate>
 
+{
+    SGPlayerItemState _state;
+}
+
+@property (nonatomic, copy) NSError * error;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingToken;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
+
+@property (nonatomic, weak) id <SGPlayerItemInternalDelegate> delegateInternal;
 @property (nonatomic, strong) id <SGRenderable> audioRenderable;
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
@@ -38,42 +45,44 @@
 
 #pragma mark - Interface
 
-- (void)open
+- (BOOL)open
 {
     SGFFmpegSetupIfNeeded();
     [self lock];
     if (self.state != SGPlayerItemStateNone)
     {
         [self unlock];
-        return;
+        return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateOpening];
     [self unlock];
     callback();
     [self.frameOutput open];
+    return YES;
 }
 
-- (void)start
+- (BOOL)load
 {
     [self lock];
     if (self.state != SGPlayerItemStateOpened)
     {
         [self unlock];
-        return;
+        return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateReading];
     [self unlock];
     callback();
     [self.frameOutput start];
+    return YES;
 }
 
-- (void)close
+- (BOOL)close
 {
     [self lock];
     if (self.state == SGPlayerItemStateClosed)
     {
         [self unlock];
-        return;
+        return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateClosed];
     [self unlock];
@@ -81,6 +90,7 @@
     [self.frameOutput close];
     [self.audioRenderable close];
     [self.videoRenderable close];
+    return YES;
 }
 
 #pragma mark - Seek
@@ -144,9 +154,15 @@
         _state = state;
         return ^{
             [self.delegate sessionDidChangeState:self];
+            [self.delegateInternal sessionDidChangeState:self];
         };
     }
     return ^{};
+}
+
+- (SGPlayerItemState)state
+{
+    return _state;
 }
 
 - (CMTime)duration
@@ -157,6 +173,61 @@
  - (NSDictionary *)metadata
 {
     return self.frameOutput.metadata;
+}
+
+- (NSArray <SGStream *> *)streams
+{
+    return self.frameOutput.streams;
+}
+
+- (NSArray <SGStream *> *)audioStreams
+{
+    return self.frameOutput.audioStreams;
+}
+
+- (NSArray <SGStream *> *)videoStreams
+{
+    return self.frameOutput.videoStreams;
+}
+
+- (NSArray <SGStream *> *)otherStreams
+{
+    return self.frameOutput.otherStreams;
+}
+
+- (NSArray <SGStream *> *)selectedStreams
+{
+    return self.frameOutput.selectedStreams;
+}
+
+- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+{
+    return self.frameOutput.selectedStreams = selectedStreams;
+}
+
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count stream:(SGStream *)stream renderable:(id <SGRenderable>)renderable
+{
+    CMTime outputDuration = kCMTimeZero;
+    int64_t outputSize = 0;
+    NSUInteger outputCount = 0;
+    [self.frameOutput duration:&outputDuration size:&outputSize count:&outputCount stream:stream];
+    
+    CMTime renderableDuration = kCMTimeZero;
+    int64_t renderableSize = 0;
+    NSUInteger renderableCount = 0;
+    [renderable duration:&renderableDuration size:&renderableSize count:&renderableCount];
+    
+    if (duration) {
+        * duration = CMTimeAdd(outputDuration, renderableDuration);
+    }
+    if (size) {
+        * size = outputSize + renderableSize;
+    }
+    if (count) {
+        * count = outputCount + renderableCount;
+    }
+    
+    return YES;
 }
 
 - (CMTime)loadedDuration
@@ -261,10 +332,10 @@
     if (self.audioEnable && self.audioRenderable)
     {
         NSUInteger sourceCount = 0;
-        [self.frameOutput duratioin:NULL size:NULL count:&sourceCount stream:self.frameOutput.audioStreams.firstObject];
+        [self.frameOutput duration:NULL size:NULL count:&sourceCount stream:self.frameOutput.audioStreams.firstObject];
         
         NSUInteger outputCount = 0;
-        [self.audioRenderable duratioin:NULL size:NULL count:&outputCount];
+        [self.audioRenderable duration:NULL size:NULL count:&outputCount];
         
         return sourceCount == 0 && outputCount == 0;
     }
@@ -276,10 +347,10 @@
     if (self.videoEnable && self.videoRenderable)
     {
         NSUInteger sourceCount = 0;
-        [self.frameOutput duratioin:NULL size:NULL count:&sourceCount stream:self.frameOutput.videoStreams.firstObject];
+        [self.frameOutput duration:NULL size:NULL count:&sourceCount stream:self.frameOutput.videoStreams.firstObject];
         
         NSUInteger outputCount = 0;
-        [self.videoRenderable duratioin:NULL size:NULL count:&outputCount];
+        [self.videoRenderable duration:NULL size:NULL count:&outputCount];
         
         return sourceCount == 0 && outputCount == 0;
     }
@@ -291,10 +362,10 @@
     if (self.audioEnable && self.audioRenderable)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.frameOutput duratioin:&sourceDuration size:NULL count:NULL stream:self.frameOutput.audioStreams.firstObject];
+        [self.frameOutput duration:&sourceDuration size:NULL count:NULL stream:self.frameOutput.audioStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.audioRenderable duratioin:&outputDuration size:NULL count:NULL];
+        [self.audioRenderable duration:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -306,10 +377,10 @@
     if (self.videoEnable && self.videoRenderable)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.frameOutput duratioin:&sourceDuration size:NULL count:NULL stream:self.frameOutput.videoStreams.firstObject];
+        [self.frameOutput duration:&sourceDuration size:NULL count:NULL stream:self.frameOutput.videoStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.videoRenderable duratioin:&outputDuration size:NULL count:NULL];
+        [self.videoRenderable duration:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -319,10 +390,10 @@
 - (long long)audioLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.frameOutput duratioin:NULL size:&sourceSize count:NULL stream:self.frameOutput.audioStreams.firstObject];
+    [self.frameOutput duration:NULL size:&sourceSize count:NULL stream:self.frameOutput.audioStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.audioRenderable duratioin:NULL size:&outputSzie count:NULL];
+    [self.audioRenderable duration:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -330,10 +401,10 @@
 - (long long)videoLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.frameOutput duratioin:NULL size:&sourceSize count:NULL stream:self.frameOutput.videoStreams.firstObject];
+    [self.frameOutput duration:NULL size:&sourceSize count:NULL stream:self.frameOutput.videoStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.videoRenderable duratioin:NULL size:&outputSzie count:NULL];
+    [self.videoRenderable duration:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -382,7 +453,7 @@
             break;
         case SGFrameOutputStateFailed:
         {
-            _error = frameOutput.error;
+            self.error = frameOutput.error;
             [self lock];
             SGBasicBlock callback = [self setState:SGPlayerItemStateFailed];
             [self unlock];
@@ -396,7 +467,7 @@
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count stream:(SGStream *)stream
 {
-    [self.delegate sessionDidChangeCapacity:self];
+    [self.delegateInternal sessionDidChangeCapacity:self];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -441,7 +512,7 @@
             [self.frameOutput resume:self.frameOutput.videoStreams];
         }
     }
-    [self.delegate sessionDidChangeCapacity:self];
+    [self.delegateInternal sessionDidChangeCapacity:self];
 }
 
 #pragma mark - NSLocking

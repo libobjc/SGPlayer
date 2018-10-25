@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 - (SGRenderableState)state;
 - (NSError *)error;
 - (BOOL)enough;
-- (BOOL)duratioin:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
+- (BOOL)duration:(CMTime *)duration size:(int64_t *)size count:(NSUInteger *)count;
 
 - (BOOL)open;
 - (BOOL)close;
