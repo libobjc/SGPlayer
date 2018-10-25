@@ -106,7 +106,6 @@
         return NO;
     }
     SGBasicBlock callback = [self setState:SGRenderableStateClosed];
-    [self.audioPlayer pause];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.currentFrameReadOffset = 0;
@@ -114,6 +113,7 @@
     self.currentPostDuration = kCMTimeZero;
     self.receivedFrame = NO;
     [self unlock];
+    [self.audioPlayer pause];
     callback();
     [self.frameQueue destroy];
     [self destorySwrContextBuffer];
@@ -130,8 +130,8 @@
         return NO;
     }
     SGBasicBlock callback = [self setState:SGRenderableStatePaused];
-    [self.audioPlayer pause];
     [self unlock];
+    [self.audioPlayer pause];
     callback();
     return YES;
 }
@@ -145,8 +145,8 @@
         return NO;
     }
     SGBasicBlock callback = [self setState:SGRenderableStateRendering];
-    [self.audioPlayer play];
     [self unlock];
+    [self.audioPlayer play];
     callback();
     return YES;
 }
