@@ -12,8 +12,8 @@
 
 {
 @public
-    uint8_t * data[SGFramePlaneCount];
-    int linesize[SGFramePlaneCount];
+    uint8_t * _data[SGFramePlaneCount];
+    int _linesize[SGFramePlaneCount];
 }
 
 @property (nonatomic, assign, readonly) int format;         // AVSampleFormat

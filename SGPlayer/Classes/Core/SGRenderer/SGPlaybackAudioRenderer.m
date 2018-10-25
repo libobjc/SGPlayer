@@ -223,7 +223,7 @@
     int numberOfSamples = swr_convert(self.swrContext,
                                       (uint8_t **)_swrContextBufferData,
                                       preferNumberOfSamples,
-                                      (const uint8_t **)audioFrame->data,
+                                      (const uint8_t **)audioFrame->_data,
                                       audioFrame.nb_samples);
     [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
 
@@ -439,15 +439,15 @@
         }
         self.currentFrameScale = CMTimeMake(1, 1);
         
-        int32_t residueLinesize = self.currentFrame->linesize[0] - self.currentFrameReadOffset;
+        int32_t residueLinesize = self.currentFrame->_linesize[0] - self.currentFrameReadOffset;
         int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
         int32_t framesToCopy = bytesToCopy / sizeof(float);
         
         for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.nb_samples; i++)
         {
-            if (self.currentFrame->linesize[i] - self.currentFrameReadOffset >= bytesToCopy)
+            if (self.currentFrame->_linesize[i] - self.currentFrameReadOffset >= bytesToCopy)
             {
-                Byte * bytes = (Byte *)self.currentFrame->data[i] + self.currentFrameReadOffset;
+                Byte * bytes = (Byte *)self.currentFrame->_data[i] + self.currentFrameReadOffset;
                 memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
         }
@@ -455,10 +455,10 @@
         if (ioDataWriteOffset == 0)
         {
             self.currentPostDuration = kCMTimeZero;
-            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, self.currentFrameReadOffset, self.currentFrame->linesize[0]);
+            CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, self.currentFrameReadOffset, self.currentFrame->_linesize[0]);
             self.currentPostPosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
         }
-        CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame->linesize[0]);
+        CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, bytesToCopy, self.currentFrame->_linesize[0]);
         duration = SGCMTimeMultiply(duration, CMTimeMake(1, 1));
         self.currentPostDuration = CMTimeAdd(self.currentPostDuration, duration);
         

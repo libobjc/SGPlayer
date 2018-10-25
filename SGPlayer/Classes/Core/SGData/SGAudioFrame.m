@@ -37,8 +37,8 @@
     _channel_layout = 0;
     for (int i = 0; i < SGFramePlaneCount; i++)
     {
-        self->data[i] = nil;
-        self->linesize[i] = 0;
+        self->_data[i] = nil;
+        self->_linesize[i] = 0;
     }
 }
 
@@ -53,8 +53,8 @@
     _channel_layout = self.core->channel_layout;
     for (int i = 0; i < SGFramePlaneCount; i++)
     {
-        self->data[i] = self.core->data[i];
-        self->linesize[i] = self.core->linesize[i];
+        self->_data[i] = self.core->data[i];
+        self->_linesize[i] = self.core->linesize[i];
     }
 }
 
