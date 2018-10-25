@@ -47,7 +47,7 @@
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
 @property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
 @property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-@property (nonatomic, assign) int preferredPixelFormat;
+@property (nonatomic, assign) OSType preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
@@ -91,7 +91,7 @@
         self.refcountedFrames = YES;
         self.hardwareDecodeH264 = YES;
         self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = AV_PIX_FMT_NV12;
+        self.preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
         self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
     }
@@ -170,7 +170,7 @@
 //    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
 //    videoDecoder.discardPacketFilter = self.codecDiscardPacketFilter;
 //    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
-//    videoDecoder.preferredPixelFormat = self.preferredPixelFormat;
+//    videoDecoder.preferredPixelFormat = SGPixelFormatAV2FF(self.preferredPixelFormat);
     
     SGPlaybackAudioRenderer * auidoOutput = [[SGPlaybackAudioRenderer alloc] init];
     auidoOutput.timeSync = [[SGPlaybackSynchronizer alloc] init];

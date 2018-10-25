@@ -15,6 +15,6 @@
 @property (nonatomic, assign) BOOL refcountedFrames;
 @property (nonatomic, assign) BOOL hardwareDecodeH264;
 @property (nonatomic, assign) BOOL hardwareDecodeH265;
-@property (nonatomic, assign) int preferredPixelFormat;
+@property (nonatomic, assign) enum AVPixelFormat preferredPixelFormat;
 
 @end

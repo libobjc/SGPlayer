@@ -234,9 +234,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
 
 /**
- *  Default value is AV_PIX_FMT_NV12.
+ *  Default value is kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
  */
-@property (nonatomic, assign) int preferredPixelFormat;
+@property (nonatomic, assign) OSType preferredPixelFormat;
 
 @end
 
