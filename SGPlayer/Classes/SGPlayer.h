@@ -17,6 +17,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGURLAsset.h>
 #import <SGPlayer/SGURLAsset2.h>
 #import <SGPlayer/SGConcatAsset.h>
+#import <SGPlayer/SGPlayerItem.h>
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
 #import <SGPlayer/SGVideoFrame.h>
@@ -51,7 +52,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Asset)
 
-- (SGAsset *)asset;
+- (SGPlayerItem *)currentItem;
 
 - (NSError *)error;
 - (CMTime)duration;
@@ -60,6 +61,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (BOOL)replaceWithURL:(NSURL *)URL;
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
+- (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item;
 
 @end
 

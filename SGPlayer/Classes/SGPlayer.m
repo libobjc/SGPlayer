@@ -9,7 +9,7 @@
 #import "SGPlayer.h"
 #import "SGMacro.h"
 #import "SGActivity.h"
-#import "SGSession.h"
+#import "SGPlayerItem+Private.h"
 #import "SGMapping.h"
 #import "SGPacketOutput.h"
 #import "SGConcatSource.h"
@@ -20,7 +20,7 @@
 
 @interface SGPlayer () <NSLocking>
 
-@property (nonatomic, strong, readonly) SGAsset * asset;
+@property (nonatomic, strong, readonly) SGPlayerItem * currentItem;
 @property (nonatomic, strong, readonly) NSError * error;
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, assign) CMTime actualStartTime;
@@ -53,7 +53,7 @@
 
 @end
 
-@interface SGPlayer () <SGSessionDelegate, SGPlaybackSynchronizerDelegate>
+@interface SGPlayer () <SGPlayerItemDelegate, SGPlaybackSynchronizerDelegate>
 
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSCondition * prepareCondition;
@@ -64,7 +64,6 @@
 @property (nonatomic, assign) CMTime lastDuration;
 @property (nonatomic, assign) CMTime lastActualStartTime;
 
-@property (nonatomic, strong) SGSession * session;
 @property (nonatomic, strong) SGPlaybackAudioRenderer * audioOutput;
 @property (nonatomic, strong) SGPlaybackVideoRenderer * videoOutput;
 
@@ -124,88 +123,70 @@
 
 - (CMTime)duration
 {
-    if (self.session)
+    if (self.currentItem)
     {
-        return self.session.duration;
+        return self.currentItem.duration;
     }
     return kCMTimeZero;
 }
 
 - (NSDictionary *)metadata
 {
-    if (self.session)
+    if (self.currentItem)
     {
-        return self.session.metadata;
+        return self.currentItem.metadata;
     }
     return nil;
 }
 
 - (BOOL)replaceWithURL:(NSURL *)URL
 {
-    return [self replaceWithAsset:[[SGURLAsset2 alloc] initWithURL:URL]];
+    return [self replaceWithAsset:[[SGURLAsset alloc] initWithURL:URL]];
 }
 
 - (BOOL)replaceWithAsset:(SGAsset *)asset
 {
+    return [self replaceWithPlayerItem:[[SGPlayerItem alloc] initWithAsset:asset]];
+}
+
+- (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item
+{
     [self stop];
-    if (!asset)
+    if (!item)
     {
         return NO;
     }
-    _asset = asset;
+    _currentItem = item;
     
-    SGFrameOutput * source = [[SGFrameOutput alloc] initWithAsset:asset];
-//    source.options = self.formatContextOptions;
+    SGPlaybackSynchronizer * clock = [[SGPlaybackSynchronizer alloc] init];
     
-//    SGAudioDecoder * audioDecoder = [[SGAudioDecoder alloc] init];
-//    audioDecoder.options = self.codecContextOptions;
-//    audioDecoder.threadsAuto = self.threadsAuto;
-//    audioDecoder.refcountedFrames = self.refcountedFrames;
-//
-//    SGVideoDecoder * videoDecoder = [[SGVideoDecoder alloc] init];
-//    videoDecoder.options = self.codecContextOptions;
-//    videoDecoder.threadsAuto = self.threadsAuto;
-//    videoDecoder.refcountedFrames = self.refcountedFrames;
-//    videoDecoder.hardwareDecodeH264 = self.hardwareDecodeH264;
-//    videoDecoder.hardwareDecodeH265 = self.hardwareDecodeH265;
-//    videoDecoder.discardPacketFilter = self.codecDiscardPacketFilter;
-//    videoDecoder.discardFrameFilter = self.codecDiscardFrameFilter;
-//    videoDecoder.preferredPixelFormat = SGPixelFormatAV2FF(self.preferredPixelFormat);
+    SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] init];
+    auidoRenderer.timeSync = clock;
+    auidoRenderer.timeSync.delegate = self;
+    auidoRenderer.rate = self.rate;
+    auidoRenderer.volume = self.volume;
+    auidoRenderer.deviceDelay = self.deviceDelay;
+    self.audioOutput = auidoRenderer;
     
-    SGPlaybackAudioRenderer * auidoOutput = [[SGPlaybackAudioRenderer alloc] init];
-    auidoOutput.timeSync = [[SGPlaybackSynchronizer alloc] init];
-    auidoOutput.timeSync.delegate = self;
-    auidoOutput.rate = self.rate;
-    auidoOutput.volume = self.volume;
-    self.deviceDelay = self.deviceDelay;
-    self.audioOutput = auidoOutput;
+    SGPlaybackVideoRenderer * videoRenderer = [[SGPlaybackVideoRenderer alloc] init];
+    videoRenderer.timeSync = clock;
+    videoRenderer.rate = self.rate;
+    videoRenderer.view = self.view;
+    videoRenderer.scalingMode = self.scalingMode;
+    videoRenderer.displayMode = self.displayMode;
+    videoRenderer.discardFilter = self.displayDiscardFilter;
+    videoRenderer.renderCallback = self.displayRenderCallback;
+    videoRenderer.viewport = self.viewport;
+    self.videoOutput = videoRenderer;
     
-    SGPlaybackVideoRenderer * videoOutput = [[SGPlaybackVideoRenderer alloc] init];
-    videoOutput.timeSync = self.audioOutput.timeSync;
-    videoOutput.rate = self.rate;
-    videoOutput.view = self.view;
-    videoOutput.scalingMode = self.scalingMode;
-    videoOutput.displayMode = self.displayMode;
-    videoOutput.discardFilter = self.displayDiscardFilter;
-    videoOutput.renderCallback = self.displayRenderCallback;
-    videoOutput.viewport = self.viewport;
-    self.videoOutput = videoOutput;
-    
-    SGSessionConfiguration * configuration = [[SGSessionConfiguration alloc] init];
-    configuration.source = source;
-//    configuration.audioDecoder = audioDecoder;
-//    configuration.videoDecoder = videoDecoder;
-    configuration.audioOutput = auidoOutput;
-    configuration.videoOutput = videoOutput;
-    
-    SGSession * session = [[SGSession alloc] initWithConfiguration:configuration];
-    session.delegate = self;
-    self.session = session;
+    self.currentItem.delegate = self;
+    self.currentItem.audioRenderable = auidoRenderer;
+    self.currentItem.videoRenderable = videoRenderer;
     [self lock];
     SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStatePreparing];
     [self unlock];
     prepareCallback();
-    [self.session open];
+    [self.currentItem open];
     
     return YES;
 }
@@ -280,7 +261,7 @@
 
 - (CMTime)playbackTime
 {
-    if (self.session.state == SGSessionStateFinished && self.session.empty)
+    if (self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.empty)
     {
         return self.duration;
     }
@@ -314,7 +295,7 @@
         [self unlock];
         return NO;
     }
-    BOOL finished = self.session.state == SGSessionStateFinished && self.session.empty;
+    BOOL finished = self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.empty;
     SGBasicBlock callback = [self setPlaybackState:finished ? SGPlaybackStateFinished : SGPlaybackStatePlaying];
     [self unlock];
     callback();
@@ -362,7 +343,7 @@
 
 - (BOOL)seekable
 {
-    return self.session.seekable;
+    return self.currentItem.seekable;
 }
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
@@ -386,7 +367,7 @@
     [self unlock];
     [self pauseOrResumeOutput];
     SGWeakSelf
-    [self.session seekToTime:time completionHandler:^(CMTime time, NSError * error) {
+    [self.currentItem seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self lock];
         if (seekingToken == self.seekingToken)
@@ -429,7 +410,7 @@
 
 - (CMTime)loadedTime
 {
-    if (self.session.state == SGSessionStateFinished)
+    if (self.currentItem.state == SGPlayerItemStateFinished)
     {
         return self.duration;
     }
@@ -442,9 +423,9 @@
 
 - (CMTime)loadedDuration
 {
-    if (self.session)
+    if (self.currentItem)
     {
-        return self.session.loadedDuration;
+        return self.currentItem.loadedDuration;
     }
     return kCMTimeZero;
 }
@@ -647,7 +628,7 @@
             return;
         }
     }
-    if (!seeking && playback && loading && !self.session.empty)
+    if (!seeking && playback && loading && !self.currentItem.empty)
     {
         [self.audioOutput resume];
         [self.videoOutput resume];
@@ -662,8 +643,8 @@
 - (void)destory
 {
     [SGActivity removeTarget:self];
-    [self.session close];
-    self.session = nil;
+    [self.currentItem close];
+    _currentItem = nil;
     self.audioOutput.timeSync.delegate = nil;
     self.audioOutput = nil;
     self.videoOutput = nil;
@@ -671,16 +652,15 @@
     self.lastLoadedTime = CMTimeMake(-1900, 1);
     self.lastDuration = CMTimeMake(-1900, 1);
     self.lastActualStartTime = CMTimeMake(-1900, 1);
-    _asset = nil;
     _error = nil;
     _actualStartTime = kCMTimeInvalid;
 }
 
-#pragma mark - SGSessionDelegate
+#pragma mark - SGPlayerItemDelegate
 
-- (void)sessionDidChangeState:(SGSession *)session
+- (void)sessionDidChangeState:(SGPlayerItem *)session
 {
-    if (session.state == SGSessionStateOpened)
+    if (session.state == SGPlayerItemStateOpened)
     {
         [session start];
         [self lock];
@@ -690,7 +670,7 @@
         prepareCallback();
         loadingCallback();
     }
-    else if (session.state == SGSessionStateReading)
+    else if (session.state == SGPlayerItemStateReading)
     {
         SGBasicBlock playbackCallback = ^{};
         [self lock];
@@ -701,7 +681,7 @@
         [self unlock];
         playbackCallback();
     }
-    else if (session.state == SGSessionStateFailed)
+    else if (session.state == SGPlayerItemStateFailed)
     {
         [self lock];
         SGBasicBlock failedCallback =  [self setError:session.error];
@@ -710,16 +690,16 @@
     }
 }
 
-- (void)sessionDidChangeCapacity:(SGSession *)session
+- (void)sessionDidChangeCapacity:(SGPlayerItem *)session
 {
-    if (self.session.state == SGSessionStateFinished)
+    if (self.currentItem.state == SGPlayerItemStateFinished)
     {
         [self lock];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
         [self unlock];
         loadingCallback();
     }
-    if (self.session.state == SGSessionStateFinished && self.session.empty)
+    if (self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.empty)
     {
         [self lock];
         SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];

@@ -1,5 +1,5 @@
 //
-//  SGSession.h
+//  SGPlayerItem.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
@@ -7,39 +7,39 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGSessionConfiguration.h"
-#import "SGDefines.h"
+#import "SGAsset.h"
+#import "SGStream.h"
 
-typedef NS_ENUM(NSUInteger, SGSessionState)
+typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 {
-    SGSessionStateNone,
-    SGSessionStateOpening,
-    SGSessionStateOpened,
-    SGSessionStateReading,
-    SGSessionStateClosed,
-    SGSessionStateFinished,
-    SGSessionStateFailed,
+    SGPlayerItemStateNone,
+    SGPlayerItemStateOpening,
+    SGPlayerItemStateOpened,
+    SGPlayerItemStateReading,
+    SGPlayerItemStateClosed,
+    SGPlayerItemStateFinished,
+    SGPlayerItemStateFailed,
 };
 
-@class SGSession;
+@class SGPlayerItem;
 
-@protocol SGSessionDelegate <NSObject>
+@protocol SGPlayerItemDelegate <NSObject>
 
-- (void)sessionDidChangeState:(SGSession *)session;
-- (void)sessionDidChangeCapacity:(SGSession *)session;
+- (void)sessionDidChangeState:(SGPlayerItem *)session;
+- (void)sessionDidChangeCapacity:(SGPlayerItem *)session;
 
 @end
 
-@interface SGSession : NSObject
+@interface SGPlayerItem : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithConfiguration:(SGSessionConfiguration *)configuration;
+- (instancetype)initWithAsset:(SGAsset *)asset;
 
-@property (nonatomic, weak) id <SGSessionDelegate> delegate;
+@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 
-@property (nonatomic, assign, readonly) SGSessionState state;
+@property (nonatomic, assign, readonly) SGPlayerItemState state;
 @property (nonatomic, assign, readonly) CMTime duration;
 @property (nonatomic, copy, readonly) NSError * error;
 @property (nonatomic, copy, readonly) NSDictionary * metadata;

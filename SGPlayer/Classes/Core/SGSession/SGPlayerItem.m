@@ -1,32 +1,37 @@
 //
-//  SGSession.m
+//  SGPlayerItem.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/16.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGSession.h"
+#import "SGPlayerItem.h"
+#import "SGPlayerItem+Private.h"
+#import "SGFrameOutput.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
 #import "SGError.h"
 #import "SGTime.h"
 
-@interface SGSession () <NSLocking, SGFrameOutputDelegate, SGRenderableDelegate>
+@interface SGPlayerItem () <NSLocking, SGFrameOutputDelegate, SGRenderableDelegate>
 
-@property (nonatomic, strong) SGSessionConfiguration * configuration;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingToken;
+@property (nonatomic, strong) SGFrameOutput * frameOutput;
+@property (nonatomic, strong) id <SGRenderable> audioRenderable;
+@property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
 @end
 
-@implementation SGSession
+@implementation SGPlayerItem
 
-- (instancetype)initWithConfiguration:(SGSessionConfiguration *)configuration
+- (instancetype)initWithAsset:(SGAsset *)asset
 {
     if (self = [super init])
     {
-        self.configuration = configuration;
+        self.frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
+        self.frameOutput.delegate = self;
     }
     return self;
 }
@@ -37,46 +42,45 @@
 {
     SGFFmpegSetupIfNeeded();
     [self lock];
-    if (self.state != SGSessionStateNone)
+    if (self.state != SGPlayerItemStateNone)
     {
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSessionStateOpening];
+    SGBasicBlock callback = [self setState:SGPlayerItemStateOpening];
     [self unlock];
     callback();
-    self.configuration.source.delegate = self;
-    [self.configuration.source open];
+    [self.frameOutput open];
 }
 
 - (void)start
 {
     [self lock];
-    if (self.state != SGSessionStateOpened)
+    if (self.state != SGPlayerItemStateOpened)
     {
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSessionStateReading];
+    SGBasicBlock callback = [self setState:SGPlayerItemStateReading];
     [self unlock];
     callback();
-    [self.configuration.source start];
+    [self.frameOutput start];
 }
 
 - (void)close
 {
     [self lock];
-    if (self.state == SGSessionStateClosed)
+    if (self.state == SGPlayerItemStateClosed)
     {
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSessionStateClosed];
+    SGBasicBlock callback = [self setState:SGPlayerItemStateClosed];
     [self unlock];
     callback();
-    [self.configuration.source close];
-    [self.configuration.audioOutput close];
-    [self.configuration.videoOutput close];
+    [self.frameOutput close];
+    [self.audioRenderable close];
+    [self.videoRenderable close];
 }
 
 #pragma mark - Seek
@@ -91,7 +95,7 @@
 
 - (BOOL)seekable
 {
-    return !self.configuration.source.seekable;
+    return !self.frameOutput.seekable;
 }
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
@@ -101,8 +105,8 @@
         return NO;
     }
     [self lock];
-    if (self.state != SGSessionStateReading &&
-        self.state != SGSessionStateFinished)
+    if (self.state != SGPlayerItemStateReading &&
+        self.state != SGPlayerItemStateFinished)
     {
         [self unlock];
         return NO;
@@ -111,7 +115,7 @@
     NSInteger seekingToken = self.seekingToken;
     [self unlock];
     SGWeakSelf
-    [self.configuration.source seekToTime:time completionHandler:^(CMTime time, NSError * error) {
+    [self.frameOutput seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self lock];
         if (seekingToken != self.seekingToken)
@@ -121,8 +125,8 @@
         }
         self.seekingToken = 0;
         [self unlock];
-        [self.configuration.audioOutput flush];
-        [self.configuration.videoOutput flush];
+        [self.audioRenderable flush];
+        [self.videoRenderable flush];
         if (completionHandler)
         {
             completionHandler(time, error);
@@ -133,7 +137,7 @@
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGSessionState)state
+- (SGBasicBlock)setState:(SGPlayerItemState)state
 {
     if (_state != state)
     {
@@ -147,12 +151,12 @@
 
 - (CMTime)duration
 {
-    return self.configuration.source.duration;
+    return self.frameOutput.duration;
 }
 
  - (NSDictionary *)metadata
 {
-    return self.configuration.source.metadata;
+    return self.frameOutput.metadata;
 }
 
 - (CMTime)loadedDuration
@@ -244,23 +248,23 @@
 
 - (BOOL)audioEnable
 {
-    return self.configuration.source.audioStreams.count > 0;
+    return self.frameOutput.audioStreams.count > 0;
 }
 
 - (BOOL)videoEnable
 {
-    return self.configuration.source.videoStreams.count > 0;
+    return self.frameOutput.videoStreams.count > 0;
 }
 
 - (BOOL)audioEmpty
 {
-    if (self.audioEnable && self.configuration.audioOutput)
+    if (self.audioEnable && self.audioRenderable)
     {
         NSUInteger sourceCount = 0;
-        [self.configuration.source duratioin:NULL size:NULL count:&sourceCount stream:self.configuration.source.audioStreams.firstObject];
+        [self.frameOutput duratioin:NULL size:NULL count:&sourceCount stream:self.frameOutput.audioStreams.firstObject];
         
         NSUInteger outputCount = 0;
-        [self.configuration.audioOutput duratioin:NULL size:NULL count:&outputCount];
+        [self.audioRenderable duratioin:NULL size:NULL count:&outputCount];
         
         return sourceCount == 0 && outputCount == 0;
     }
@@ -269,13 +273,13 @@
 
 - (BOOL)videoEmpty
 {
-    if (self.videoEnable && self.configuration.videoOutput)
+    if (self.videoEnable && self.videoRenderable)
     {
         NSUInteger sourceCount = 0;
-        [self.configuration.source duratioin:NULL size:NULL count:&sourceCount stream:self.configuration.source.videoStreams.firstObject];
+        [self.frameOutput duratioin:NULL size:NULL count:&sourceCount stream:self.frameOutput.videoStreams.firstObject];
         
         NSUInteger outputCount = 0;
-        [self.configuration.videoOutput duratioin:NULL size:NULL count:&outputCount];
+        [self.videoRenderable duratioin:NULL size:NULL count:&outputCount];
         
         return sourceCount == 0 && outputCount == 0;
     }
@@ -284,13 +288,13 @@
 
 - (CMTime)audioLoadedDuration
 {
-    if (self.audioEnable && self.configuration.audioOutput)
+    if (self.audioEnable && self.audioRenderable)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.configuration.source duratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.audioStreams.firstObject];
+        [self.frameOutput duratioin:&sourceDuration size:NULL count:NULL stream:self.frameOutput.audioStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.configuration.audioOutput duratioin:&outputDuration size:NULL count:NULL];
+        [self.audioRenderable duratioin:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -299,13 +303,13 @@
 
 - (CMTime)videoLoadedDuration
 {
-    if (self.videoEnable && self.configuration.videoOutput)
+    if (self.videoEnable && self.videoRenderable)
     {
         CMTime sourceDuration = kCMTimeZero;
-        [self.configuration.source duratioin:&sourceDuration size:NULL count:NULL stream:self.configuration.source.videoStreams.firstObject];
+        [self.frameOutput duratioin:&sourceDuration size:NULL count:NULL stream:self.frameOutput.videoStreams.firstObject];
         
         CMTime outputDuration = kCMTimeZero;
-        [self.configuration.videoOutput duratioin:&outputDuration size:NULL count:NULL];
+        [self.videoRenderable duratioin:&outputDuration size:NULL count:NULL];
         
         return CMTimeAdd(sourceDuration, outputDuration);
     }
@@ -315,10 +319,10 @@
 - (long long)audioLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.configuration.source duratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.audioStreams.firstObject];
+    [self.frameOutput duratioin:NULL size:&sourceSize count:NULL stream:self.frameOutput.audioStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.configuration.audioOutput duratioin:NULL size:&outputSzie count:NULL];
+    [self.audioRenderable duratioin:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -326,10 +330,10 @@
 - (long long)videoLoadedSize
 {
     int64_t sourceSize = 0;
-    [self.configuration.source duratioin:NULL size:&sourceSize count:NULL stream:self.configuration.source.videoStreams.firstObject];
+    [self.frameOutput duratioin:NULL size:&sourceSize count:NULL stream:self.frameOutput.videoStreams.firstObject];
     
     int64_t outputSzie = 0;
-    [self.configuration.videoOutput duratioin:NULL size:&outputSzie count:NULL];
+    [self.videoRenderable duratioin:NULL size:&outputSzie count:NULL];
     
     return sourceSize + outputSzie;
 }
@@ -345,17 +349,17 @@
             [self lock];
             if (self.audioEnable)
             {
-                self.configuration.audioOutput.key = YES;
-                self.configuration.audioOutput.delegate = self;
-                [self.configuration.audioOutput open];
+                self.audioRenderable.key = YES;
+                self.audioRenderable.delegate = self;
+                [self.audioRenderable open];
             }
             if (self.videoEnable)
             {
-                self.configuration.videoOutput.key = !self.audioEnable;
-                self.configuration.videoOutput.delegate = self;
-                [self.configuration.videoOutput open];
+                self.videoRenderable.key = !self.audioEnable;
+                self.videoRenderable.delegate = self;
+                [self.videoRenderable open];
             }
-            SGBasicBlock callback = [self setState:SGSessionStateOpened];
+            SGBasicBlock callback = [self setState:SGPlayerItemStateOpened];
             [self unlock];
             callback();
         }
@@ -363,7 +367,7 @@
         case SGFrameOutputStateReading:
         {
             [self lock];
-            SGBasicBlock callback = [self setState:SGSessionStateReading];
+            SGBasicBlock callback = [self setState:SGPlayerItemStateReading];
             [self unlock];
             callback();
         }
@@ -371,7 +375,7 @@
         case SGFrameOutputStateFinished:
         {
             [self lock];
-            SGBasicBlock callback = [self setState:SGSessionStateFinished];
+            SGBasicBlock callback = [self setState:SGPlayerItemStateFinished];
             [self unlock];
             callback();
         }
@@ -380,7 +384,7 @@
         {
             _error = frameOutput.error;
             [self lock];
-            SGBasicBlock callback = [self setState:SGSessionStateFailed];
+            SGBasicBlock callback = [self setState:SGPlayerItemStateFailed];
             [self unlock];
             callback();
         }
@@ -399,11 +403,11 @@
 {
     if (frame.stream.type == SGMediaTypeAudio)
     {
-        [self.configuration.audioOutput putFrame:frame];
+        [self.audioRenderable putFrame:frame];
     }
     else if (frame.stream.type == SGMediaTypeVideo)
     {
-        [self.configuration.videoOutput putFrame:frame];
+        [self.videoRenderable putFrame:frame];
     }
 }
 
@@ -421,20 +425,20 @@
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeDuration:(CMTime)duration size:(int64_t)size count:(NSUInteger)count
 {
-    if (renderable == self.configuration.audioOutput)
+    if (renderable == self.audioRenderable)
     {
-        if (self.configuration.audioOutput.enough) {
-            [self.configuration.source pause:self.configuration.source.audioStreams];
+        if (self.audioRenderable.enough) {
+            [self.frameOutput pause:self.frameOutput.audioStreams];
         } else {
-            [self.configuration.source resume:self.configuration.source.audioStreams];
+            [self.frameOutput resume:self.frameOutput.audioStreams];
         }
     }
-    else if (renderable == self.configuration.videoOutput)
+    else if (renderable == self.videoRenderable)
     {
-        if (self.configuration.videoOutput.enough) {
-            [self.configuration.source pause:self.configuration.source.videoStreams];
+        if (self.videoRenderable.enough) {
+            [self.frameOutput pause:self.frameOutput.videoStreams];
         } else {
-            [self.configuration.source resume:self.configuration.source.videoStreams];
+            [self.frameOutput resume:self.frameOutput.videoStreams];
         }
     }
     [self.delegate sessionDidChangeCapacity:self];
