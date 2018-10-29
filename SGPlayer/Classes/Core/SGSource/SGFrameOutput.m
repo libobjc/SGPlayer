@@ -304,12 +304,12 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput);
         [self.packetOutput resume];
     }
     [self.delegate frameOutput:self didChangeCapacity:capacity track:decoder.object];
-    [self callbackForFinisehdIfNeeded];
+    [self callbackForFinishedIfNeeded];
 }
 
 #pragma mark - Callback
 
-- (void)callbackForFinisehdIfNeeded
+- (void)callbackForFinishedIfNeeded
 {
     if ([self finished]) {
         [self lock];

@@ -216,7 +216,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
         }
             break;
         case SGFrameOutputStateFinished:
-            [self callbackForFinisehdIfNeeded];
+            [self callbackForFinishedIfNeeded];
             break;
         case SGFrameOutputStateFailed:
         {
@@ -268,7 +268,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
         }
     }
     [self.delegate playerItemDidChangeCapacity:self];
-    [self callbackForFinisehdIfNeeded];
+    [self callbackForFinishedIfNeeded];
 }
 
 - (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
@@ -278,7 +278,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
 
 #pragma mark - Callback
 
-- (void)callbackForFinisehdIfNeeded
+- (void)callbackForFinisehd
 {
     if (self.frameOutput.state == SGFrameOutputStateFinished &&
         self.audioRenderable.capacity.count == 0 &&
