@@ -25,8 +25,8 @@
 - (NSArray <SGStream *> *)audioStreams;
 - (NSArray <SGStream *> *)videoStreams;
 - (NSArray <SGStream *> *)otherStreams;
-- (NSArray <SGStream *> *)selectedStreams;
-- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams;
+
+@property (nonatomic, copy) NSArray <SGStream *> * selectedStreams;
 - (SGStream *)selectedAudioStream;
 - (SGStream *)selectedVideoStream;
 

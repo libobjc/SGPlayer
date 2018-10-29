@@ -99,12 +99,12 @@
 {
     NSArray * ret = nil;
     [self lock];
-    ret = self.selectedStreamsInternal;
+    ret = [self.selectedStreamsInternal copy];
     [self unlock];
     return ret;
 }
 
-- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+- (void)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
 {
     [self lock];
     self.selectedStreamsInternal = nil;
@@ -131,7 +131,6 @@
     }];
     self.selectedStreamsInternal = [ret copy];
     [self unlock];
-    return YES;
 }
 
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams

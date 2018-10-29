@@ -34,11 +34,12 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
 - (SGPlayerItemState)state;
+
 - (SGCapacity *)bestCapacity;
 - (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables;
 
 - (BOOL)open;
-- (BOOL)load;
+- (BOOL)start;
 - (BOOL)close;
 
 @end

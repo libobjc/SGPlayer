@@ -61,7 +61,7 @@
     return YES;
 }
 
-- (BOOL)load
+- (BOOL)start
 {
     [self lock];
     if (self.state != SGPlayerItemStateOpened)
@@ -199,9 +199,9 @@
     return self.frameOutput.selectedStreams;
 }
 
-- (BOOL)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+- (void)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
 {
-    return self.frameOutput.selectedStreams = selectedStreams;
+    self.frameOutput.selectedStreams = selectedStreams;
 }
 
 - (SGStream *)selectedAudioStream
