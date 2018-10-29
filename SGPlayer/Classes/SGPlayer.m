@@ -407,7 +407,7 @@
 {
     if (self.currentItem)
     {
-        return self.currentItem.bestCapacity.duration;
+        return self.currentItem.capacity.duration;
     }
     return kCMTimeZero;
 }
@@ -588,7 +588,7 @@
             return;
         }
     }
-    if (!seeking && playback && loading && self.currentItem.bestCapacity.count > 0)
+    if (!seeking && playback && loading && self.currentItem.capacity.count > 0)
     {
         [self.audioOutput resume];
         [self.videoOutput resume];
@@ -618,7 +618,7 @@
 
 #pragma mark - SGPlayerItemDelegate
 
-- (void)sessionDidChangeState:(SGPlayerItem *)session
+- (void)playerItemDidChangeState:(SGPlayerItem *)session
 {
     if (session.state == SGPlayerItemStateOpened)
     {
@@ -659,7 +659,7 @@
     }
 }
 
-- (void)sessionDidChangeCapacity:(SGPlayerItem *)session
+- (void)playerItemDidChangeCapacity:(SGPlayerItem *)session
 {
     [self pauseOrResumeOutput];
     [self callbackForTimingIfNeeded];

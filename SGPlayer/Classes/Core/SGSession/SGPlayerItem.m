@@ -12,10 +12,8 @@
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
-#import "SGError.h"
-#import "SGTime.h"
 
-@interface SGPlayerItem () <NSLocking, SGFrameOutputDelegate, SGRenderableDelegate>
+@interface SGPlayerItem () <SGFrameOutputDelegate, SGRenderableDelegate>
 
 {
     SGPlayerItemState _state;
@@ -25,7 +23,6 @@
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingCount;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
-
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 @property (nonatomic, strong) id <SGRenderable> audioRenderable;
 @property (nonatomic, strong) id <SGRenderable> videoRenderable;
@@ -38,6 +35,7 @@
 {
     if (self = [super init])
     {
+        self.coreLock = [[NSLock alloc] init];
         self.frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self.frameOutput.delegate = self;
     }
@@ -49,14 +47,14 @@
 - (BOOL)open
 {
     SGFFmpegSetupIfNeeded();
-    [self lock];
+    [self.coreLock lock];
     if (self.state != SGPlayerItemStateNone)
     {
-        [self unlock];
+        [self.coreLock unlock];
         return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateOpening];
-    [self unlock];
+    [self.coreLock unlock];
     callback();
     [self.frameOutput open];
     return YES;
@@ -64,14 +62,14 @@
 
 - (BOOL)start
 {
-    [self lock];
+    [self.coreLock lock];
     if (self.state != SGPlayerItemStateOpened)
     {
-        [self unlock];
+        [self.coreLock unlock];
         return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateReading];
-    [self unlock];
+    [self.coreLock unlock];
     callback();
     [self.frameOutput start];
     return YES;
@@ -79,14 +77,14 @@
 
 - (BOOL)close
 {
-    [self lock];
+    [self.coreLock lock];
     if (self.state == SGPlayerItemStateClosed)
     {
-        [self unlock];
+        [self.coreLock unlock];
         return NO;
     }
     SGBasicBlock callback = [self setState:SGPlayerItemStateClosed];
-    [self unlock];
+    [self.coreLock unlock];
     callback();
     [self.frameOutput close];
     [self.audioRenderable close];
@@ -98,9 +96,9 @@
 
 - (BOOL)seeking
 {
-    [self lock];
+    [self.coreLock lock];
     BOOL ret = self.seekingCount != 0;
-    [self unlock];
+    [self.coreLock unlock];
     return ret;
 }
 
@@ -115,27 +113,27 @@
     {
         return NO;
     }
-    [self lock];
+    [self.coreLock lock];
     if (self.state != SGPlayerItemStateReading &&
         self.state != SGPlayerItemStateFinished)
     {
-        [self unlock];
+        [self.coreLock unlock];
         return NO;
     }
     self.seekingCount++;
-    NSInteger seekingToken = self.seekingCount;
-    [self unlock];
+    NSInteger seekingCount = self.seekingCount;
+    [self.coreLock unlock];
     SGWeakSelf
     [self.frameOutput seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
-        [self lock];
-        if (seekingToken != self.seekingCount)
+        [self.coreLock lock];
+        if (seekingCount != self.seekingCount)
         {
-            [self unlock];
+            [self.coreLock unlock];
             return;
         }
         self.seekingCount = 0;
-        [self unlock];
+        [self.coreLock unlock];
         [self.audioRenderable flush];
         [self.videoRenderable flush];
         if (completionHandler)
@@ -154,7 +152,7 @@
     {
         _state = state;
         return ^{
-            [self.delegate sessionDidChangeState:self];
+            [self.delegate playerItemDidChangeState:self];
         };
     }
     return ^{};
@@ -209,7 +207,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
     {
         case SGFrameOutputStateOpened:
         {
-            [self lock];
+            [self.coreLock lock];
             if (self.selectedAudioTrack)
             {
                 self.audioRenderable.key = YES;
@@ -223,15 +221,15 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
                 [self.videoRenderable open];
             }
             SGBasicBlock callback = [self setState:SGPlayerItemStateOpened];
-            [self unlock];
+            [self.coreLock unlock];
             callback();
         }
             break;
         case SGFrameOutputStateReading:
         {
-            [self lock];
+            [self.coreLock lock];
             SGBasicBlock callback = [self setState:SGPlayerItemStateReading];
-            [self unlock];
+            [self.coreLock unlock];
             callback();
         }
             break;
@@ -243,9 +241,9 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
         case SGFrameOutputStateFailed:
         {
             self.error = frameOutput.error;
-            [self lock];
+            [self.coreLock lock];
             SGBasicBlock callback = [self setState:SGPlayerItemStateFailed];
-            [self unlock];
+            [self.coreLock unlock];
             callback();
         }
             break;
@@ -256,7 +254,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
-    [self.delegate sessionDidChangeCapacity:self];
+    [self.delegate playerItemDidChangeCapacity:self];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -296,7 +294,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
             [self.frameOutput resume:self.frameOutput.videoTracks];
         }
     }
-    [self.delegate sessionDidChangeCapacity:self];
+    [self.delegate playerItemDidChangeCapacity:self];
     [self callbackForFinisehdIfNeeded];
 }
 
@@ -310,9 +308,9 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
 - (void)callbackForFinisehdIfNeeded
 {
     if ([self finished]) {
-        [self lock];
+        [self.coreLock lock];
         SGBasicBlock callback = [self setState:SGPlayerItemStateFinished];
-        [self unlock];
+        [self.coreLock unlock];
         callback();
     }
 }
@@ -325,22 +323,6 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
         finished = finished && self.videoRenderable.capacity.count == 0;
     }
     return finished;
-}
-
-#pragma mark - NSLocking
-
-- (void)lock
-{
-    if (!self.coreLock)
-    {
-        self.coreLock = [[NSLock alloc] init];
-    }
-    [self.coreLock lock];
-}
-
-- (void)unlock
-{
-    [self.coreLock unlock];
 }
 
 @end

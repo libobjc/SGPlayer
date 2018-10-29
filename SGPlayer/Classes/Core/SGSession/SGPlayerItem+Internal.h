@@ -22,8 +22,8 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 @protocol SGPlayerItemDelegate <NSObject>
 
-- (void)sessionDidChangeState:(SGPlayerItem *)session;
-- (void)sessionDidChangeCapacity:(SGPlayerItem *)session;
+- (void)playerItemDidChangeState:(SGPlayerItem *)session;
+- (void)playerItemDidChangeCapacity:(SGPlayerItem *)session;
 
 @end
 
@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 - (SGPlayerItemState)state;
 
-- (SGCapacity *)bestCapacity;
+- (SGCapacity *)capacity;
 - (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks renderables:(NSArray <id <SGRenderable>> *)renderables;
 
 - (BOOL)open;
