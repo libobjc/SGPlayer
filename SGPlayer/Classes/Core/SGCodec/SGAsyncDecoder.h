@@ -39,6 +39,7 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 - (BOOL)resume;
 
 - (BOOL)putPacket:(SGPacket *)packet;
+- (BOOL)finish;
 - (BOOL)flush;
 
 @end

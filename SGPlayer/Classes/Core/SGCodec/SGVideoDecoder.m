@@ -54,7 +54,7 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (self.stream != packet.stream)
+    if (packet && packet.stream != self.stream)
     {
         self.stream = packet.stream;
         [self destory];

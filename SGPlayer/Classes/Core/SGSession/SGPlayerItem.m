@@ -279,10 +279,7 @@
             break;
         case SGFrameOutputStateFinished:
         {
-            [self lock];
-            SGBasicBlock callback = [self setState:SGPlayerItemStateFinished];
-            [self unlock];
-            callback();
+            [self callbackForFinisehdIfNeeded];
         }
             break;
         case SGFrameOutputStateFailed:
@@ -342,11 +339,34 @@
         }
     }
     [self.delegate sessionDidChangeCapacity:self];
+    [self callbackForFinisehdIfNeeded];
 }
 
 - (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
 {
     
+}
+
+#pragma mark - Callback
+
+- (void)callbackForFinisehdIfNeeded
+{
+    if ([self finished]) {
+        [self lock];
+        SGBasicBlock callback = [self setState:SGPlayerItemStateFinished];
+        [self unlock];
+        callback();
+    }
+}
+
+- (BOOL)finished
+{
+    BOOL finished = self.frameOutput.state == SGFrameOutputStateFinished;
+    if (finished) {
+        finished = finished && self.audioRenderable.capacity.count == 0;
+        finished = finished && self.videoRenderable.capacity.count == 0;
+    }
+    return finished;
 }
 
 #pragma mark - NSLocking

@@ -261,7 +261,7 @@
 
 - (CMTime)playbackTime
 {
-    if (self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.bestCapacity.count == 0)
+    if (self.currentItem.state == SGPlayerItemStateFinished)
     {
         return self.duration;
     }
@@ -295,7 +295,7 @@
         [self unlock];
         return NO;
     }
-    BOOL finished = self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.bestCapacity.count == 0;
+    BOOL finished = self.currentItem.state == SGPlayerItemStateFinished;
     SGBasicBlock callback = [self setPlaybackState:finished ? SGPlaybackStateFinished : SGPlaybackStatePlaying];
     [self unlock];
     callback();
@@ -699,7 +699,7 @@
         [self unlock];
         loadingCallback();
     }
-    if (self.currentItem.state == SGPlayerItemStateFinished && self.currentItem.bestCapacity.count == 0)
+    if (self.currentItem.state == SGPlayerItemStateFinished)
     {
         [self lock];
         SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];

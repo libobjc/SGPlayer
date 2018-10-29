@@ -29,6 +29,7 @@
 
 @implementation SGAsyncDecoder
 
+static SGPacket * finishPacket;
 static SGPacket * flushPacket;
 
 - (instancetype)initWithDecodable:(id <SGDecodable>)decodable
@@ -37,6 +38,8 @@ static SGPacket * flushPacket;
     {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
+            finishPacket = [[SGPacket alloc] init];
+            [finishPacket lock];
             flushPacket = [[SGPacket alloc] init];
             [flushPacket lock];
         });
@@ -155,6 +158,20 @@ static SGPacket * flushPacket;
     return YES;
 }
 
+- (BOOL)finish
+{
+    [self lock];
+    if (self.state == SGAsyncDecoderStateClosed)
+    {
+        [self unlock];
+        return NO;
+    }
+    [self unlock];
+    [self.packetQueue putObjectSync:finishPacket];
+    [self callbackForCapacity];
+    return YES;
+}
+
 - (BOOL)flush
 {
     [self lock];
@@ -220,7 +237,7 @@ static SGPacket * flushPacket;
                 }
                 else if (packet)
                 {
-                    NSArray <SGFrame *> * frames = [self.decodable decode:packet];
+                    NSArray <SGFrame *> * frames = [self.decodable decode:packet != finishPacket ? packet : nil];
                     [self lock];
                     BOOL drop = self.waitingFlush;
                     [self unlock];

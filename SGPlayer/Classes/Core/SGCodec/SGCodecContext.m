@@ -179,21 +179,22 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    int result = avcodec_send_packet(self.codecContext, packet.core);
+    if (!self.codecContext)
+    {
+        return nil;
+    }
+    int result = avcodec_send_packet(self.codecContext, packet ? packet.core : NULL);
     if (result < 0)
     {
         return nil;
     }
     NSMutableArray * array = nil;
-    while (result >= 0)
+    while (result != AVERROR(EAGAIN))
     {
         __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
         if (result < 0)
         {
-            if (result == AVERROR(EAGAIN) || result == AVERROR_EOF) {
-                
-            }
             [frame unlock];
             break;
         }
@@ -202,7 +203,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             if (!array) {
                 array = [NSMutableArray array];
             }
-            [frame configurateWithStream:packet.stream];
+            [frame configurateWithStream:self.stream];
             [array addObject:frame];
         }
     }

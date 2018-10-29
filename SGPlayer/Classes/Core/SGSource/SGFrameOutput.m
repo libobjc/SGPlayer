@@ -25,7 +25,7 @@
 @property (nonatomic, strong) SGStream * selectedVideoStream;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
 @property (nonatomic, strong) NSMutableArray <NSNumber *> * decodersPaused;
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 
 @end
 
@@ -212,7 +212,8 @@
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
-    SGFrameOutputState frameState = SGFrameOutputStateNone;
+    [self lock];
+    SGFrameOutputState frameState = self.state;
     switch (state)
     {
         case SGPacketOutputStateNone:
@@ -232,10 +233,8 @@
                 [streams addObject:self.videoStreams.firstObject];
             }
             self.selectedStreams = [streams copy];
-            [self lock];
             self.decoders = [NSMutableArray array];
             self.decodersPaused = [NSMutableArray array];
-            [self unlock];
         }
             break;
         case SGPacketOutputStateReading:
@@ -248,7 +247,9 @@
             frameState = SGFrameOutputStateSeeking;
             break;
         case SGPacketOutputStateFinished:
-            frameState = SGFrameOutputStateFinished;
+            for (SGAsyncDecoder * obj in self.decoders) {
+                [obj finish];
+            }
             break;
         case SGPacketOutputStateClosed:
             frameState = SGFrameOutputStateClosed;
@@ -257,7 +258,6 @@
             frameState = SGFrameOutputStateFailed;
             break;
     }
-    [self lock];
     SGBasicBlock callback = [self setState:frameState];
     [self unlock];
     callback();
@@ -333,6 +333,34 @@
         [self.packetOutput resume];
     }
     [self.delegate frameOutput:self didChangeCapacity:capacity stream:decoder.object];
+    [self callbackForFinisehdIfNeeded];
+}
+
+#pragma mark - Callback
+
+- (void)callbackForFinisehdIfNeeded
+{
+    if ([self finished]) {
+        [self lock];
+        SGBasicBlock callback = [self setState:SGFrameOutputStateFinished];
+        [self unlock];
+        callback();
+    }
+}
+
+- (BOOL)finished
+{
+    BOOL finished = self.packetOutput.state == SGPacketOutputStateFinished;
+    if (finished) {
+        [self lock];
+        for (SGAsyncDecoder * obj in self.decoders) {
+            if ([self.selectedStreams containsObject:obj.object]) {
+                finished = finished && obj.capacity.count == 0;
+            }
+        }
+        [self unlock];
+    }
+    return finished;
 }
 
 #pragma mark - NSLocking
@@ -341,7 +369,7 @@
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSLock alloc] init];
+        self.coreLock = [[NSRecursiveLock alloc] init];
     }
     [self.coreLock lock];
 }
