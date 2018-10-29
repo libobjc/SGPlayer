@@ -58,6 +58,11 @@
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object
 {
+    return [self putObjectSync:object waitHandler:nil resumeHandler:nil];
+}
+
+- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+{
     if (self.didDestoryed) {
         return;
     }
@@ -65,7 +70,15 @@
     while (self.objects.count >= self.maxCount)
     {
         self.puttingObject = object;
+        if (waitHandler)
+        {
+            waitHandler();
+        }
         [self.condition wait];
+        if (resumeHandler)
+        {
+            resumeHandler();
+        }
         self.puttingObject = nil;
         if (self.didDestoryed)
         {
@@ -118,10 +131,23 @@
 
 - (__kindof id <SGObjectQueueItem>)getObjectSync
 {
+    return [self getObjectSyncWithWaitHandler:nil resumeHandler:nil];
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+{
     [self.condition lock];
     while (self.objects.count <= 0)
     {
+        if (waitHandler)
+        {
+            waitHandler();
+        }
         [self.condition wait];
+        if (resumeHandler)
+        {
+            resumeHandler();
+        }
         if (self.didDestoryed)
         {
             [self.condition unlock];
@@ -148,12 +174,20 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
 {
     [self.condition lock];
     while (self.objects.count <= 0)
     {
+        if (waitHandler)
+        {
+            waitHandler();
+        }
         [self.condition wait];
+        if (resumeHandler)
+        {
+            resumeHandler();
+        }
         if (self.didDestoryed)
         {
             [self.condition unlock];
@@ -169,7 +203,7 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed)

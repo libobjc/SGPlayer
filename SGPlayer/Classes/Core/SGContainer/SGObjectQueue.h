@@ -28,12 +28,14 @@
 - (SGCapacity *)capacity;
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
+- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
 - (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;
 
 - (__kindof id <SGObjectQueueItem>)getObjectSync;
-- (__kindof id <SGObjectQueueItem>)getObjectAsync;
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
 
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+- (__kindof id <SGObjectQueueItem>)getObjectAsync;
 - (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
 
 - (void)flush;
