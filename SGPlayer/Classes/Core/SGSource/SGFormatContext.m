@@ -9,6 +9,7 @@
 #import "SGFormatContext.h"
 #import "SGStream+Internal.h"
 #import "SGPacket+Internal.h"
+#import "SGConfiguration.h"
 #import "SGMapping.h"
 #import "SGError.h"
 
@@ -46,6 +47,7 @@ static int SGFormatContextInterruptHandler(void * context)
     if (self = [super init])
     {
         self.URL = URL;
+        self.options = [SGConfiguration defaultConfiguration].formatContextOptions;
     }
     return self;
 }

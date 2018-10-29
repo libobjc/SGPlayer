@@ -20,7 +20,6 @@
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
-@synthesize options = _options;
 
 - (instancetype)initWithURL:(NSURL *)URL
 {

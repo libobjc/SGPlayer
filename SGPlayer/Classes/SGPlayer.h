@@ -179,66 +179,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @end
 
-#pragma mark - Track
-
-@interface SGPlayer (Track)
-
-@end
-
-#pragma mark - FormatContext
-
-@interface SGPlayer (FormatContext)
-
-@property (nonatomic, copy) NSDictionary * formatContextOptions;
-
-@end
-
-#pragma mark - CodecContext
-
-@interface SGPlayer (CodecContext)
-
-/**
- *  Default value is nil.
- */
-@property (nonatomic, copy) NSDictionary * codecContextOptions;
-
-/**
- *  Default value is YES.
- */
-@property (nonatomic, assign) BOOL threadsAuto;
-
-/**
- *  Default value is YES.
- */
-@property (nonatomic, assign) BOOL refcountedFrames;
-
-/**
- *  Default value is YES.
- */
-@property (nonatomic, assign) BOOL hardwareDecodeH264;
-
-/**
- *  Default value is YES.
- */
-@property (nonatomic, assign) BOOL hardwareDecodeH265;
-
-/**
- *  Default value is nil.
- */
-@property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
-
-/**
- *  Default value is nil.
- */
-@property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-
-/**
- *  Default value is kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
- */
-@property (nonatomic, assign) OSType preferredPixelFormat;
-
-@end
-
 #pragma mark - Delegate
 
 @protocol SGPlayerDelegate <NSObject>

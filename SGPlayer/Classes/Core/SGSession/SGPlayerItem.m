@@ -9,6 +9,7 @@
 #import "SGPlayerItem.h"
 #import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
+#import "SGMapping.h"
 #import "SGFFmpeg.h"
 #import "SGMacro.h"
 #import "SGError.h"

@@ -39,15 +39,6 @@
 @property (nonatomic, strong) SGVRViewport * viewport;
 @property (nonatomic, copy) BOOL (^displayDiscardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
 @property (nonatomic, copy) void (^displayRenderCallback)(SGVideoFrame * frame);
-@property (nonatomic, copy) NSDictionary * formatContextOptions;
-@property (nonatomic, copy) NSDictionary * codecContextOptions;
-@property (nonatomic, assign) BOOL threadsAuto;
-@property (nonatomic, assign) BOOL refcountedFrames;
-@property (nonatomic, assign) BOOL hardwareDecodeH264;
-@property (nonatomic, assign) BOOL hardwareDecodeH265;
-@property (nonatomic, copy) BOOL (^codecDiscardPacketFilter)(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key);
-@property (nonatomic, copy) BOOL (^codecDiscardFrameFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-@property (nonatomic, assign) OSType preferredPixelFormat;
 @property (nonatomic, weak) id <SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
@@ -82,15 +73,6 @@
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
-        self.formatContextOptions = @{@"user-agent" : @"SGPlayer",
-                                      @"timeout" : @(20 * 1000 * 1000),
-                                      @"reconnect" : @(1)};
-        self.codecContextOptions = nil;
-        self.threadsAuto = YES;
-        self.refcountedFrames = YES;
-        self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
         self.delegateQueue = [NSOperationQueue mainQueue];
         [self destory];
     }
@@ -515,12 +497,6 @@
 {
     return self.videoOutput.snapshot;
 }
-
-#pragma mark - Track
-
-#pragma mark - FormatContext
-
-#pragma mark - CodecContext
 
 #pragma mark - Delegate
 

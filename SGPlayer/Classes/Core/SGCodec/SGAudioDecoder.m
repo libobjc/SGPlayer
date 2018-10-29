@@ -19,23 +19,9 @@
 
 @implementation SGAudioDecoder
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        self.options = nil;
-        self.threadsAuto = YES;
-        self.refcountedFrames = YES;
-    }
-    return self;
-}
-
 - (void)setup
 {
     self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGAudioFrame class]];
-    self.codecContext.options = self.options;
-    self.codecContext.threadsAuto = self.threadsAuto;
-    self.codecContext.refcountedFrames = self.refcountedFrames;
     [self.codecContext open];
 }
 

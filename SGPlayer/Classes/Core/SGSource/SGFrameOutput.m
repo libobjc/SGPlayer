@@ -11,6 +11,7 @@
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
 #import "SGAsyncDecoder.h"
+#import "SGMapping.h"
 #import "SGMacro.h"
 
 @interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecoderDelegate>

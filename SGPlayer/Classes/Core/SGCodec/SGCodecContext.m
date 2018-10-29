@@ -10,6 +10,7 @@
 #import "SGStream+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
+#import "SGConfiguration.h"
 #import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGError.h"
@@ -45,7 +46,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             }
             AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
             frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = self.preferredPixelFormat;
+            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self.preferredPixelFormat);
             frames_ctx_data->width = s->width;
             frames_ctx_data->height = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);
@@ -125,14 +126,14 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 {
     if (self = [super init])
     {
+        self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
+        self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
+        self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
+        self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
+        self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
+        self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
         self.stream = stream;
         self.frameClass = frameClass;
-        self.options = nil;
-        self.threadsAuto = YES;
-        self.refcountedFrames = YES;
-        self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = AV_PIX_FMT_NV12;
     }
     return self;
 }

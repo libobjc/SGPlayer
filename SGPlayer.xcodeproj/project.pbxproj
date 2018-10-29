@@ -189,6 +189,8 @@
 		9C41E7321E9756B0006E5A65 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936D1E71404A00AD4289 /* libssl.a */; };
 		9C41E7331E9756B0006E5A65 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936E1E71404A00AD4289 /* libswresample.a */; };
 		9C41E7341E9756B0006E5A65 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936F1E71404A00AD4289 /* libswscale.a */; };
+		9C43D50D2187037200235169 /* SGConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C43D50B2187037200235169 /* SGConfiguration.h */; };
+		9C43D50E2187037200235169 /* SGConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C43D50C2187037200235169 /* SGConfiguration.m */; };
 		9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C4663CB20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
 		9C4663CC20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
@@ -810,6 +812,8 @@
 		9C389ACB20108C2E003259FF /* SGFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFrame.h; sourceTree = "<group>"; };
 		9C3FB66820E32EA5003442EE /* SGGLTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLTimer.h; sourceTree = "<group>"; };
 		9C3FB66920E32EA5003442EE /* SGGLTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLTimer.m; sourceTree = "<group>"; };
+		9C43D50B2187037200235169 /* SGConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConfiguration.h; sourceTree = "<group>"; };
+		9C43D50C2187037200235169 /* SGConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConfiguration.m; sourceTree = "<group>"; };
 		9C4663C820D0F83600CADDA7 /* SGTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGTime.h; sourceTree = "<group>"; };
 		9C4663C920D0F83600CADDA7 /* SGTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGTime.m; sourceTree = "<group>"; };
 		9C4793431E71402E00AD4289 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS/libavcodec.a"; sourceTree = "<group>"; };
@@ -1426,6 +1430,8 @@
 				9C329AA92005E3F800252B10 /* SGActivity.m */,
 				9CC649FD2181A8C000453B3E /* SGCapacity.h */,
 				9CC649FE2181A8C000453B3E /* SGCapacity.m */,
+				9C43D50B2187037200235169 /* SGConfiguration.h */,
+				9C43D50C2187037200235169 /* SGConfiguration.m */,
 			);
 			path = SGCommon;
 			sourceTree = "<group>";
@@ -1760,6 +1766,7 @@
 				9C8D4E48200DFFC700ED8A58 /* SGPlayerItem.h in Headers */,
 				9C95D2C12152386C00079B38 /* SGURLAsset.h in Headers */,
 				9C6C76012141323900970427 /* SGDiscardFilter.h in Headers */,
+				9C43D50D2187037200235169 /* SGConfiguration.h in Headers */,
 				9CAAC99F2133A6800065E364 /* SGVRViewport.h in Headers */,
 				9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9C2C559B2015B87400131E15 /* SGVideoFrame.h in Headers */,
@@ -2587,6 +2594,7 @@
 				9CF15E222011BC5400585326 /* SGAudioFrame.m in Sources */,
 				9C8D265C2019E1AC002770FA /* SGGLViewport.m in Sources */,
 				9CF63FC3211D8E33001B2684 /* SGAsset.m in Sources */,
+				9C43D50E2187037200235169 /* SGConfiguration.m in Sources */,
 				9C4663CD20D0F83600CADDA7 /* SGTime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

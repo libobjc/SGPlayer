@@ -16,7 +16,6 @@
 @property (nonatomic, strong) id object;
 
 @property (nonatomic, weak) id <SGPacketReadableDelegate> delegate;
-@property (nonatomic, copy) NSDictionary * options;
 
 - (NSError *)error;
 - (CMTime)duration;

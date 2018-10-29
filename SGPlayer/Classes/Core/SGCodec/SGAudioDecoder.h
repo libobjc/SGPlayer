@@ -10,8 +10,4 @@
 
 @interface SGAudioDecoder : NSObject <SGDecodable>
 
-@property (nonatomic, strong) NSDictionary * options;
-@property (nonatomic, assign) BOOL threadsAuto;
-@property (nonatomic, assign) BOOL refcountedFrames;
-
 @end
