@@ -545,22 +545,6 @@
 
 - (void)callbackForTimingIfNeeded
 {
-    if (self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused)
-    {
-        return;
-    }
-    if (self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused)
-    {
-        return;
-    }
-//    if (self.audioOutput.enable && !self.audioOutput.receivedFrame)
-//    {
-//        return;
-//    }
-//    if (self.videoOutput.enable && !self.videoOutput.receivedFrame)
-//    {
-//        return;
-//    }
     [self lock];
     if (self.error)
     {
@@ -681,6 +665,15 @@
         [self unlock];
         playbackCallback();
     }
+    if (self.currentItem.state == SGPlayerItemStateFinished)
+    {
+        [self lock];
+        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
+        SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];
+        [self unlock];
+        loadingCallback();
+        playbackCallback();
+    }
     else if (session.state == SGPlayerItemStateFailed)
     {
         [self lock];
@@ -692,20 +685,6 @@
 
 - (void)sessionDidChangeCapacity:(SGPlayerItem *)session
 {
-    if (self.currentItem.state == SGPlayerItemStateFinished)
-    {
-        [self lock];
-        SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateFinished];
-        [self unlock];
-        loadingCallback();
-    }
-    if (self.currentItem.state == SGPlayerItemStateFinished)
-    {
-        [self lock];
-        SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateFinished];
-        [self unlock];
-        playbackCallback();
-    }
     [self pauseOrResumeOutput];
     [self callbackForTimingIfNeeded];
 }
