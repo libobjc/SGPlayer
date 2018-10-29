@@ -23,7 +23,7 @@
 
 @property (nonatomic, copy) NSError * error;
 @property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, assign) NSUInteger seekingToken;
+@property (nonatomic, assign) NSUInteger seekingCount;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
 
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
@@ -99,7 +99,7 @@
 - (BOOL)seeking
 {
     [self lock];
-    BOOL ret = self.seekingToken != 0;
+    BOOL ret = self.seekingCount != 0;
     [self unlock];
     return ret;
 }
@@ -122,19 +122,19 @@
         [self unlock];
         return NO;
     }
-    self.seekingToken++;
-    NSInteger seekingToken = self.seekingToken;
+    self.seekingCount++;
+    NSInteger seekingToken = self.seekingCount;
     [self unlock];
     SGWeakSelf
     [self.frameOutput seekToTime:time completionHandler:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self lock];
-        if (seekingToken != self.seekingToken)
+        if (seekingToken != self.seekingCount)
         {
             [self unlock];
             return;
         }
-        self.seekingToken = 0;
+        self.seekingCount = 0;
         [self unlock];
         [self.audioRenderable flush];
         [self.videoRenderable flush];
@@ -160,60 +160,17 @@
     return ^{};
 }
 
-- (SGPlayerItemState)state
-{
-    return _state;
-}
-
-- (CMTime)duration
-{
-    return self.frameOutput.duration;
-}
-
- - (NSDictionary *)metadata
-{
-    return self.frameOutput.metadata;
-}
-
-- (NSArray <SGTrack *> *)tracks
-{
-    return self.frameOutput.tracks;
-}
-
-- (NSArray <SGTrack *> *)audioTracks
-{
-    return self.frameOutput.audioTracks;
-}
-
-- (NSArray <SGTrack *> *)videoTracks
-{
-    return self.frameOutput.videoTracks;
-}
-
-- (NSArray <SGTrack *> *)otherTracks
-{
-    return self.frameOutput.otherTracks;
-}
-
-- (NSArray <SGTrack *> *)selectedTracks
-{
-    return self.frameOutput.selectedTracks;
-}
-
-- (void)setSelectedTracks:(NSArray <SGTrack *> *)selectedTracks
-{
-    self.frameOutput.selectedTracks = selectedTracks;
-}
-
-- (SGTrack *)selectedAudioTrack
-{
-    return self.frameOutput.selectedAudioTrack;
-}
-
-- (SGTrack *)selectedVideoTrack
-{
-    return self.frameOutput.selectedVideoTrack;
-}
+SGGet0(SGPlayerItemState, state, _state);
+SGGet0Map(CMTime, duration, self.frameOutput);
+SGGet0Map(NSDictionary *, metadata, self.frameOutput);
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.frameOutput);
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput);
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput);
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput);
+SGGet0Map(NSArray <SGTrack *> *, selectedTracks, self.frameOutput);
+SGSet1Map(setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
+SGGet0Map(SGTrack *, selectedAudioTrack, self.frameOutput);
+SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
 
 - (SGCapacity *)bestCapacity
 {

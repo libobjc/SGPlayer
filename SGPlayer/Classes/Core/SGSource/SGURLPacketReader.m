@@ -8,6 +8,7 @@
 
 #import "SGURLPacketReader.h"
 #import "SGFormatContext.h"
+#import "SGMacro.h"
 
 @interface SGURLPacketReader () <SGFormatContextDelegate>
 
@@ -32,65 +33,18 @@
     return self;
 }
 
-- (NSError *)error
-{
-    return [self.formatContext error];
-}
-
-- (CMTime)duration
-{
-    return [self.formatContext duration];
-}
-
-- (NSDictionary *)metadata
-{
-    return [self.formatContext metadata];
-}
-
-- (NSArray <SGTrack *> *)tracks
-{
-    return [self.formatContext tracks];
-}
-
-- (NSArray <SGTrack *> *)audioTracks
-{
-    return [self.formatContext audioTracks];
-}
-
-- (NSArray <SGTrack *> *)videoTracks
-{
-    return [self.formatContext videoTracks];
-}
-
-- (NSArray <SGTrack *> *)otherTracks
-{
-    return [self.formatContext otherTracks];
-}
-
-- (NSError *)open
-{
-    return [self.formatContext open];
-}
-
-- (NSError *)close
-{
-    return [self.formatContext close];
-}
-
-- (NSError *)seekable
-{
-    return [self.formatContext seekable];
-}
-
-- (NSError *)seekToTime:(CMTime)time
-{
-    return [self.formatContext seekToTime:time];
-}
-
-- (NSError *)nextPacket:(SGPacket *)packet
-{
-    return [self.formatContext nextPacket:packet];
-}
+SGGet0Map(NSError *, error, self.formatContext);
+SGGet0Map(CMTime, duration, self.formatContext);
+SGGet0Map(NSDictionary *, metadata, self.formatContext);
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.formatContext);
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.formatContext);
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.formatContext);
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.formatContext);
+SGGet0Map(NSError *, open, self.formatContext);
+SGGet0Map(NSError *, close, self.formatContext);
+SGGet0Map(NSError *, seekable, self.formatContext);
+SGGet1Map(NSError *, seekToTime, CMTime, self.formatContext);
+SGGet1Map(NSError *, nextPacket, SGPacket *, self.formatContext);
 
 #pragma mark - SGFormatContextDelegate
 

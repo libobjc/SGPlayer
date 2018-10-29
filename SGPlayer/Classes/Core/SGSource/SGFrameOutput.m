@@ -56,45 +56,14 @@
     return ^{};
 }
 
-- (SGFrameOutputState)state
-{
-    return _state;
-}
-
-- (NSError *)error
-{
-    return self.packetOutput.error;
-}
-
-- (CMTime)duration
-{
-    return self.packetOutput.duration;
-}
-
-- (NSDictionary *)metadata
-{
-    return self.packetOutput.metadata;
-}
-
-- (NSArray <SGTrack *> *)tracks
-{
-    return self.packetOutput.tracks;
-}
-
-- (NSArray <SGTrack *> *)audioTracks
-{
-    return self.packetOutput.audioTracks;
-}
-
-- (NSArray <SGTrack *> *)videoTracks
-{
-    return self.packetOutput.videoTracks;
-}
-
-- (NSArray <SGTrack *> *)otherTracks
-{
-    return self.packetOutput.otherTracks;
-}
+SGGet0(SGFrameOutputState, state, _state);
+SGGet0Map(NSError *, error, self.packetOutput);
+SGGet0Map(CMTime, duration, self.packetOutput);
+SGGet0Map(NSDictionary *, metadata, self.packetOutput);
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.packetOutput);
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.packetOutput);
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.packetOutput);
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput);
 
 - (NSArray <SGTrack *> *)selectedTracks
 {

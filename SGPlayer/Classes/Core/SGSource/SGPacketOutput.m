@@ -82,45 +82,14 @@
     return ^{};
 }
 
-- (SGPacketOutputState)state
-{
-    return _state;
-}
-
-- (NSError *)error
-{
-    return self.readable.error;
-}
-
-- (CMTime)duration
-{
-    return self.readable.duration;
-}
-
-- (NSDictionary *)metadata
-{
-    return self.readable.metadata;
-}
-
-- (NSArray <SGTrack *> *)tracks
-{
-    return self.readable.tracks;
-}
-
-- (NSArray <SGTrack *> *)audioTracks
-{
-    return self.readable.audioTracks;
-}
-
-- (NSArray <SGTrack *> *)videoTracks
-{
-    return self.readable.videoTracks;
-}
-
-- (NSArray <SGTrack *> *)otherTracks
-{
-    return self.readable.otherTracks;
-}
+SGGet0(SGPacketOutputState, state, _state);
+SGGet0Map(NSError *, error, self.readable);
+SGGet0Map(CMTime, duration, self.readable);
+SGGet0Map(NSDictionary *, metadata, self.readable);
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.readable);
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.readable);
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.readable);
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable);
 
 #pragma mark - Interface
 

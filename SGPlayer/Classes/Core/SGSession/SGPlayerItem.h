@@ -30,8 +30,4 @@
 - (SGTrack *)selectedAudioTrack;
 - (SGTrack *)selectedVideoTrack;
 
-- (BOOL)seeking;
-- (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
-
 @end

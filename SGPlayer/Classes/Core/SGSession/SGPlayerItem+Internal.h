@@ -42,4 +42,8 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 - (BOOL)start;
 - (BOOL)close;
 
+- (BOOL)seeking;
+- (BOOL)seekable;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+
 @end
