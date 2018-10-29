@@ -26,6 +26,7 @@
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
@@ -53,6 +54,7 @@
     {
         _key = NO;
         self.rate = CMTimeMake(1, 1);
+        self.capacity = [[SGCapacity alloc] init];
         self.frameQueue = [[SGObjectQueue alloc] init];
         self.frameQueue.shouldSortObjects = YES;
         self.programPool = [[SGGLProgramPool alloc] init];
@@ -168,7 +170,7 @@
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
-    [self.delegate renderable:self didChangeCapacity:nil];
+    [self callbackForCapacity];
     return YES;
 }
 
@@ -187,7 +189,7 @@
     self.displayNewFrameCount = 0;
     [self unlock];
     [self.frameQueue flush];
-    [self.delegate renderable:self didChangeCapacity:nil];
+    [self callbackForCapacity];
     return YES;
 }
 
@@ -218,11 +220,6 @@
 - (BOOL)enough
 {
     return self.capacity.count >= 3;
-}
-
-- (SGCapacity *)capacity
-{
-    return self.frameQueue.capacity;
 }
 
 - (void)setViewport:(SGVRViewport *)viewport
@@ -326,7 +323,7 @@
                 [frame unlock];
                 frame = nil;
                 callback = ^{
-                    [self.delegate renderable:self didChangeCapacity:nil];
+                    [self callbackForCapacity];
                 };
             }
         }
@@ -345,7 +342,7 @@
                 {
                     self.renderCallback(frame);
                 }
-                [self.delegate renderable:self didChangeCapacity:nil];
+                [self callbackForCapacity];
             };
         }
     }
@@ -473,6 +470,14 @@
     [program unuse];
     [frame unlock];
     return YES;
+}
+
+#pragma mark - Callback
+
+- (void)callbackForCapacity
+{
+    self.capacity = self.frameQueue.capacity;
+    [self.delegate renderable:self didChangeCapacity:self.capacity];
 }
 
 #pragma mark - NSLocking

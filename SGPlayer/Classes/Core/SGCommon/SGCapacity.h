@@ -11,7 +11,7 @@
 
 @interface SGCapacity : NSObject
 
-@property (nonatomic, strong) id object;
+@property (nonatomic, weak) id object;
 
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) uint64_t size;

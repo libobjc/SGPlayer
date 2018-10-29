@@ -30,6 +30,7 @@
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
+@property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
@@ -66,6 +67,7 @@
         _finalRate = CMTimeMake(1, 1);
         _frameRate = CMTimeMake(1, 1);
         _currentFrameScale = CMTimeMake(1, 1);
+        self.capacity = [[SGCapacity alloc] init];
         self.frameQueue = [[SGObjectQueue alloc] init];
         self.currentFrameReadOffset = 0;
         self.currentPostPosition = kCMTimeZero;
@@ -251,7 +253,7 @@
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:result];
-    [self.delegate renderable:self didChangeCapacity:nil];
+    [self callbackForCapacity];
     [result unlock];
     return YES;
 }
@@ -273,7 +275,7 @@
     self.receivedFrame = NO;
     [self unlock];
     [self.frameQueue flush];
-    [self.delegate renderable:self didChangeCapacity:nil];
+    [self callbackForCapacity];
     return YES;
 }
 
@@ -308,11 +310,6 @@
 - (BOOL)enough
 {
     return self.capacity.count >= 5;
-}
-
-- (SGCapacity *)capacity
-{
-    return self.frameQueue.capacity;
 }
 
 - (void)setVolume:(float)volume
@@ -477,7 +474,7 @@
     [self unlock];
     if (hasNewFrame)
     {
-        [self.delegate renderable:self didChangeCapacity:nil];
+        [self callbackForCapacity];
     }
 }
 
@@ -506,6 +503,14 @@
         block();
     }
     [self unlock];
+}
+
+#pragma mark - Callback
+
+- (void)callbackForCapacity
+{
+    self.capacity = self.frameQueue.capacity;
+    [self.delegate renderable:self didChangeCapacity:self.capacity];
 }
 
 #pragma mark - NSLocking
