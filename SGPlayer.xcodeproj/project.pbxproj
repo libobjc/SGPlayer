@@ -191,6 +191,8 @@
 		9C41E7341E9756B0006E5A65 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C47936F1E71404A00AD4289 /* libswscale.a */; };
 		9C43D50D2187037200235169 /* SGConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C43D50B2187037200235169 /* SGConfiguration.h */; };
 		9C43D50E2187037200235169 /* SGConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C43D50C2187037200235169 /* SGConfiguration.m */; };
+		9C43D51121872D3F00235169 /* SGLock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C43D50F21872D3F00235169 /* SGLock.h */; };
+		9C43D51221872D3F00235169 /* SGLock.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C43D51021872D3F00235169 /* SGLock.m */; };
 		9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C4663CB20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
 		9C4663CC20D0F83600CADDA7 /* SGTime.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4663C820D0F83600CADDA7 /* SGTime.h */; };
@@ -814,6 +816,8 @@
 		9C3FB66920E32EA5003442EE /* SGGLTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLTimer.m; sourceTree = "<group>"; };
 		9C43D50B2187037200235169 /* SGConfiguration.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConfiguration.h; sourceTree = "<group>"; };
 		9C43D50C2187037200235169 /* SGConfiguration.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConfiguration.m; sourceTree = "<group>"; };
+		9C43D50F21872D3F00235169 /* SGLock.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGLock.h; sourceTree = "<group>"; };
+		9C43D51021872D3F00235169 /* SGLock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGLock.m; sourceTree = "<group>"; };
 		9C4663C820D0F83600CADDA7 /* SGTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGTime.h; sourceTree = "<group>"; };
 		9C4663C920D0F83600CADDA7 /* SGTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGTime.m; sourceTree = "<group>"; };
 		9C4793431E71402E00AD4289 /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS/libavcodec.a"; sourceTree = "<group>"; };
@@ -1422,6 +1426,8 @@
 		9CE6F5912004E37600D1F4C8 /* SGCommon */ = {
 			isa = PBXGroup;
 			children = (
+				9C43D50F21872D3F00235169 /* SGLock.h */,
+				9C43D51021872D3F00235169 /* SGLock.m */,
 				9C4663C820D0F83600CADDA7 /* SGTime.h */,
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
 				9C8D4E7E200E1ACA00ED8A58 /* SGError.h */,
@@ -1761,6 +1767,7 @@
 			files = (
 				9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */,
 				9C8D4E63200E0ACC00ED8A58 /* SGPacketOutput.h in Headers */,
+				9C43D51121872D3F00235169 /* SGLock.h in Headers */,
 				9C2C55AD2015D1D200131E15 /* SGPacket.h in Headers */,
 				9CF52CF7200F45D700950B81 /* SGTrack.h in Headers */,
 				9C8D4E48200DFFC700ED8A58 /* SGPlayerItem.h in Headers */,
@@ -2551,6 +2558,7 @@
 				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C03E5F1212E645B001F0E1B /* SGVRMatrixMaker.m in Sources */,
 				9C1944F42019AC4000184416 /* SGGLInternalModel.m in Sources */,
+				9C43D51221872D3F00235169 /* SGLock.m in Sources */,
 				9CF15E0A2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */,
 				9C13638F213934030025C72B /* SGGLBGRAProgram.m in Sources */,
 				9C1D2210201AC83F005147FB /* SGGLModelPool.m in Sources */,
