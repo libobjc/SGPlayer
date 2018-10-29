@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGStream.h"
+#import "SGTrack.h"
 #import "avformat.h"
 
 @interface SGFormatContext2 : NSObject
@@ -33,11 +33,11 @@
 @property (nonatomic, copy, readonly) NSDictionary * metadata;
 
 @property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
-@property (nonatomic, strong, readonly) NSArray <SGStream *> * streams;
-@property (nonatomic, strong, readonly) NSArray <SGStream *> * videoStreams;
-@property (nonatomic, strong, readonly) NSArray <SGStream *> * audioStreams;
-@property (nonatomic, strong, readonly) NSArray <SGStream *> * subtitleStreams;
-@property (nonatomic, strong, readonly) NSArray <SGStream *> * otherStreams;
+@property (nonatomic, strong, readonly) NSArray <SGTrack *> * tracks;
+@property (nonatomic, strong, readonly) NSArray <SGTrack *> * videoTracks;
+@property (nonatomic, strong, readonly) NSArray <SGTrack *> * audioTracks;
+@property (nonatomic, strong, readonly) NSArray <SGTrack *> * subtitleTracks;
+@property (nonatomic, strong, readonly) NSArray <SGTrack *> * otherTracks;
 
 - (BOOL)openWithOptions:(NSDictionary *)options opaque:(void *)opaque callback:(int (*)(void *))callback;
 - (void)destory;

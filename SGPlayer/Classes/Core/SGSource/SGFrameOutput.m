@@ -21,9 +21,9 @@
 }
 
 @property (nonatomic, strong) SGPacketOutput * packetOutput;
-@property (nonatomic, strong) NSArray * selectedStreamsInternal;
-@property (nonatomic, strong) SGStream * selectedAudioStream;
-@property (nonatomic, strong) SGStream * selectedVideoStream;
+@property (nonatomic, strong) NSArray * selectedTracksInternal;
+@property (nonatomic, strong) SGTrack * selectedAudioTrack;
+@property (nonatomic, strong) SGTrack * selectedVideoTrack;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
 @property (nonatomic, strong) NSMutableArray <NSNumber *> * decodersPaused;
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
@@ -76,69 +76,69 @@
     return self.packetOutput.metadata;
 }
 
-- (NSArray <SGStream *> *)streams
+- (NSArray <SGTrack *> *)tracks
 {
-    return self.packetOutput.streams;
+    return self.packetOutput.tracks;
 }
 
-- (NSArray <SGStream *> *)audioStreams
+- (NSArray <SGTrack *> *)audioTracks
 {
-    return self.packetOutput.audioStreams;
+    return self.packetOutput.audioTracks;
 }
 
-- (NSArray <SGStream *> *)videoStreams
+- (NSArray <SGTrack *> *)videoTracks
 {
-    return self.packetOutput.videoStreams;
+    return self.packetOutput.videoTracks;
 }
 
-- (NSArray <SGStream *> *)otherStreams
+- (NSArray <SGTrack *> *)otherTracks
 {
-    return self.packetOutput.otherStreams;
+    return self.packetOutput.otherTracks;
 }
 
-- (NSArray <SGStream *> *)selectedStreams
+- (NSArray <SGTrack *> *)selectedTracks
 {
     NSArray * ret = nil;
     [self lock];
-    ret = [self.selectedStreamsInternal copy];
+    ret = [self.selectedTracksInternal copy];
     [self unlock];
     return ret;
 }
 
-- (void)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+- (void)setSelectedTracks:(NSArray <SGTrack *> *)selectedTracks
 {
     [self lock];
-    self.selectedStreamsInternal = nil;
-    self.selectedAudioStream = nil;
-    self.selectedVideoStream = nil;
+    self.selectedTracksInternal = nil;
+    self.selectedAudioTrack = nil;
+    self.selectedVideoTrack = nil;
     NSMutableArray * ret = [NSMutableArray array];
-    for (SGStream * obj in selectedStreams) {
-        if (self.selectedAudioStream && self.selectedVideoStream) {
+    for (SGTrack * obj in selectedTracks) {
+        if (self.selectedAudioTrack && self.selectedVideoTrack) {
             break;
         }
-        if (!self.selectedAudioStream && obj.type == SGMediaTypeAudio) {
-            self.selectedAudioStream = obj;
+        if (!self.selectedAudioTrack && obj.type == SGMediaTypeAudio) {
+            self.selectedAudioTrack = obj;
             [ret addObject:obj];
-        } else if (!self.selectedVideoStream && obj.type == SGMediaTypeVideo) {
-            self.selectedVideoStream = obj;
+        } else if (!self.selectedVideoTrack && obj.type == SGMediaTypeVideo) {
+            self.selectedVideoTrack = obj;
             [ret addObject:obj];
         }
     }
-    [ret sortUsingComparator:^NSComparisonResult(SGStream * obj1, SGStream * obj2) {
+    [ret sortUsingComparator:^NSComparisonResult(SGTrack * obj1, SGTrack * obj2) {
         if (obj1.type == SGMediaTypeAudio) {
             return NSOrderedAscending;
         }
         return NSOrderedDescending;
     }];
-    self.selectedStreamsInternal = [ret copy];
+    self.selectedTracksInternal = [ret copy];
     [self unlock];
 }
 
-- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks
 {
     NSMutableArray * ret = [NSMutableArray array];
     for (SGAsyncDecoder * obj in self.decoders) {
-        if ([streams containsObject:obj.object]) {
+        if ([tracks containsObject:obj.object]) {
             SGCapacity * c = obj.capacity;
             c.object = obj.object;
             [ret addObject:c];
@@ -168,20 +168,20 @@
     return error;
 }
 
-- (NSError *)pause:(NSArray <SGStream *> *)streams
+- (NSError *)pause:(NSArray <SGTrack *> *)tracks
 {
     for (SGAsyncDecoder * obj in self.decoders) {
-        if ([streams containsObject:obj.object]) {
+        if ([tracks containsObject:obj.object]) {
             [obj pause];
         }
     }
     return nil;
 }
 
-- (NSError *)resume:(NSArray <SGStream *> *)streams
+- (NSError *)resume:(NSArray <SGTrack *> *)tracks
 {
     for (SGAsyncDecoder * obj in self.decoders) {
-        if ([streams containsObject:obj.object]) {
+        if ([tracks containsObject:obj.object]) {
             [obj resume];
         }
     }
@@ -226,14 +226,14 @@
         case SGPacketOutputStateOpened:
         {
             frameState = SGFrameOutputStateOpened;
-            NSMutableArray * streams = [NSMutableArray array];
-            if (self.audioStreams.firstObject) {
-                [streams addObject:self.audioStreams.firstObject];
+            NSMutableArray * tracks = [NSMutableArray array];
+            if (self.audioTracks.firstObject) {
+                [tracks addObject:self.audioTracks.firstObject];
             }
-            if (self.videoStreams.firstObject) {
-                [streams addObject:self.videoStreams.firstObject];
+            if (self.videoTracks.firstObject) {
+                [tracks addObject:self.videoTracks.firstObject];
             }
-            self.selectedStreams = [streams copy];
+            self.selectedTracks = [tracks copy];
             self.decoders = [NSMutableArray array];
             self.decodersPaused = [NSMutableArray array];
         }
@@ -267,27 +267,28 @@
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
     [self lock];
-    if (![self.selectedStreamsInternal containsObject:packet.stream]) {
+    if (![self.selectedTracksInternal containsObject:packet.track]) {
         [self unlock];
         return;
     }
     SGAsyncDecoder * decoder = nil;
     for (SGAsyncDecoder * obj in self.decoders) {
-        if (obj.object == packet.stream) {
+        if (obj.object == packet.track) {
             decoder = obj;
             break;
         }
     }
     if (!decoder) {
         id <SGDecodable> decodable = nil;
-        if (packet.stream.type == SGMediaTypeAudio) {
+        if (packet.track.type == SGMediaTypeAudio) {
             decodable = [[SGAudioDecoder alloc] init];
-        } else if (packet.stream.type == SGMediaTypeVideo) {
+        } else if (packet.track
+                   .type == SGMediaTypeVideo) {
             decodable = [[SGVideoDecoder alloc] init];
         }
         if (decodable) {
             SGAsyncDecoder * async = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
-            async.object = packet.stream;
+            async.object = packet.track;
             async.delegate = self;
             [async open];
             decoder = async;
@@ -323,7 +324,7 @@
     for (NSUInteger i = 0; i < self.decoders.count; i++) {
         SGAsyncDecoder * obj = [self.decoders objectAtIndex:i];
         BOOL value = [self.decodersPaused objectAtIndex:i].boolValue;
-        if ([self.selectedStreamsInternal containsObject:obj.object]) {
+        if ([self.selectedTracksInternal containsObject:obj.object]) {
             paused = paused && value;
         }
     }
@@ -333,7 +334,7 @@
     } else {
         [self.packetOutput resume];
     }
-    [self.delegate frameOutput:self didChangeCapacity:capacity stream:decoder.object];
+    [self.delegate frameOutput:self didChangeCapacity:capacity track:decoder.object];
     [self callbackForFinisehdIfNeeded];
 }
 
@@ -355,7 +356,7 @@
     if (finished) {
         [self lock];
         for (SGAsyncDecoder * obj in self.decoders) {
-            if ([self.selectedStreams containsObject:obj.object]) {
+            if ([self.selectedTracks containsObject:obj.object]) {
                 finished = finished && obj.capacity.count == 0;
             }
         }

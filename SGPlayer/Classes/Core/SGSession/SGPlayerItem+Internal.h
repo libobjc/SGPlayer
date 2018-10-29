@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 - (SGPlayerItemState)state;
 
 - (SGCapacity *)bestCapacity;
-- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables;
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks renderables:(NSArray <id <SGRenderable>> *)renderables;
 
 - (BOOL)open;
 - (BOOL)start;

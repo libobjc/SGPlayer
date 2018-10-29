@@ -245,7 +245,7 @@
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;
     }
-    [result configurateWithStream:audioFrame.stream];
+    [result configurateWithTrack:audioFrame.track];
     
     if (!self.receivedFrame)
     {

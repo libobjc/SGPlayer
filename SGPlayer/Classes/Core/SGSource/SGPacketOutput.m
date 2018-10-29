@@ -102,24 +102,24 @@
     return self.readable.metadata;
 }
 
-- (NSArray <SGStream *> *)streams
+- (NSArray <SGTrack *> *)tracks
 {
-    return self.readable.streams;
+    return self.readable.tracks;
 }
 
-- (NSArray <SGStream *> *)audioStreams
+- (NSArray <SGTrack *> *)audioTracks
 {
-    return self.readable.audioStreams;
+    return self.readable.audioTracks;
 }
 
-- (NSArray <SGStream *> *)videoStreams
+- (NSArray <SGTrack *> *)videoTracks
 {
-    return self.readable.videoStreams;
+    return self.readable.videoTracks;
 }
 
-- (NSArray <SGStream *> *)otherStreams
+- (NSArray <SGTrack *> *)otherTracks
 {
-    return self.readable.otherStreams;
+    return self.readable.otherTracks;
 }
 
 #pragma mark - Interface
@@ -334,11 +334,11 @@
                 }
                 else
                 {
-                    for (SGStream * obj in self.readable.streams)
+                    for (SGTrack * obj in self.readable.tracks)
                     {
                         if (obj.index == packet.core->stream_index)
                         {
-                            [packet configurateWithStream:obj];
+                            [packet configurateWithTrack:obj];
                             break;
                         }
                     }

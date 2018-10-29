@@ -13,6 +13,6 @@
 
 @property (nonatomic, assign, readonly) AVFrame * core;
 
-- (void)configurateWithStream:(SGStream *)stream;
+- (void)configurateWithTrack:(SGTrack *)track;
 
 @end

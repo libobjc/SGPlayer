@@ -7,7 +7,7 @@
 //
 
 #import "SGFormatContext.h"
-#import "SGStream+Internal.h"
+#import "SGTrack+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGConfiguration.h"
 #import "SGMapping.h"
@@ -33,10 +33,10 @@ static int SGFormatContextInterruptHandler(void * context)
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, copy) NSError * error;
 @property (nonatomic, copy) NSDictionary * metadata;
-@property (nonatomic, copy) NSArray <SGStream *> * streams;
-@property (nonatomic, copy) NSArray <SGStream *> * videoStreams;
-@property (nonatomic, copy) NSArray <SGStream *> * audioStreams;
-@property (nonatomic, copy) NSArray <SGStream *> * otherStreams;
+@property (nonatomic, copy) NSArray <SGTrack *> * tracks;
+@property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
+@property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
+@property (nonatomic, copy) NSArray <SGTrack *> * otherTracks;
 
 @end
 
@@ -86,39 +86,35 @@ static int SGFormatContextInterruptHandler(void * context)
     {
         self.metadata = SGDictionaryFF2NS(_formatContext->metadata);
     }
-    NSMutableArray <SGStream *> * streams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * subtitleStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * audioTracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
     for (int i = 0; i < _formatContext->nb_streams; i++)
     {
-        SGStream * obj = [[SGStream alloc] initWithCore:_formatContext->streams[i]];
-        [streams addObject:obj];
+        SGTrack * obj = [[SGTrack alloc] initWithCore:_formatContext->streams[i]];
+        [tracks addObject:obj];
         switch (obj.type)
         {
             case SGMediaTypeAudio:
-                [audioStreams addObject:obj];
+                [audioTracks addObject:obj];
                 break;
             case SGMediaTypeVideo:
                 if ((obj.disposition & AV_DISPOSITION_ATTACHED_PIC) == 0) {
-                    [videoStreams addObject:obj];
+                    [videoTracks addObject:obj];
                 } else {
-                    [otherStreams addObject:obj];
+                    [otherTracks addObject:obj];
                 }
                 break;
-            case SGMediaTypeSubtitle:
-                [subtitleStreams addObject:obj];
-                break;
             default:
-                [otherStreams addObject:obj];
+                [otherTracks addObject:obj];
                 break;
         }
     }
-    self.streams = [streams copy];
-    self.audioStreams = [audioStreams copy];
-    self.videoStreams = [videoStreams copy];
-    self.otherStreams = [otherStreams copy];
+    self.tracks = [tracks copy];
+    self.audioTracks = [audioTracks copy];
+    self.videoTracks = [videoTracks copy];
+    self.otherTracks = [otherTracks copy];
     return nil;
 }
 

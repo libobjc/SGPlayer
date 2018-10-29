@@ -10,7 +10,7 @@
 #define SGSource_h
 
 #import <Foundation/Foundation.h>
-#import "SGStream.h"
+#import "SGTrack.h"
 #import "SGPacket.h"
 
 @protocol SGSource;

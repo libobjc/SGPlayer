@@ -1,5 +1,5 @@
 //
-//  SGStream.h
+//  SGTrack.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
@@ -10,7 +10,7 @@
 #import "SGDefines.h"
 #import "SGTime.h"
 
-@interface SGStream : NSObject
+@interface SGTrack : NSObject
 
 @property (nonatomic, assign, readonly) void * coreptr;
 

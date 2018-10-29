@@ -70,19 +70,19 @@
     {
         av_frame_unref(self.core);
     }
-    _stream = nil;
+    _track = nil;
     _timeStamp = kCMTimeZero;
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
     _size = 0;
 }
 
-- (void)configurateWithStream:(SGStream *)stream
+- (void)configurateWithTrack:(SGTrack *)track
 {
-    _stream = stream;
-    _timeStamp = SGCMTimeMakeWithTimebase(self.core->best_effort_timestamp, stream.timebase);
-    _decodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->pkt_dts, stream.timebase);
-    _duration = SGCMTimeMakeWithTimebase(self.core->pkt_duration, stream.timebase);
+    _track = track;
+    _timeStamp = SGCMTimeMakeWithTimebase(self.core->best_effort_timestamp, track.timebase);
+    _decodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->pkt_dts, track.timebase);
+    _duration = SGCMTimeMakeWithTimebase(self.core->pkt_duration, track.timebase);
     _size = self.core->pkt_size;
 }
 

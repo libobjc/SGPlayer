@@ -65,9 +65,9 @@
     self->_pixelBuffer = nil;
 }
 
-- (void)configurateWithStream:(SGStream *)stream
+- (void)configurateWithTrack:(SGTrack *)track
 {
-    [super configurateWithStream:stream];
+    [super configurateWithTrack:track];
     
     _format = self.core->format;
     _width = self.core->width;

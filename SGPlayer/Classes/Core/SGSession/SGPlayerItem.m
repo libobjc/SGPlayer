@@ -175,53 +175,53 @@
     return self.frameOutput.metadata;
 }
 
-- (NSArray <SGStream *> *)streams
+- (NSArray <SGTrack *> *)tracks
 {
-    return self.frameOutput.streams;
+    return self.frameOutput.tracks;
 }
 
-- (NSArray <SGStream *> *)audioStreams
+- (NSArray <SGTrack *> *)audioTracks
 {
-    return self.frameOutput.audioStreams;
+    return self.frameOutput.audioTracks;
 }
 
-- (NSArray <SGStream *> *)videoStreams
+- (NSArray <SGTrack *> *)videoTracks
 {
-    return self.frameOutput.videoStreams;
+    return self.frameOutput.videoTracks;
 }
 
-- (NSArray <SGStream *> *)otherStreams
+- (NSArray <SGTrack *> *)otherTracks
 {
-    return self.frameOutput.otherStreams;
+    return self.frameOutput.otherTracks;
 }
 
-- (NSArray <SGStream *> *)selectedStreams
+- (NSArray <SGTrack *> *)selectedTracks
 {
-    return self.frameOutput.selectedStreams;
+    return self.frameOutput.selectedTracks;
 }
 
-- (void)setSelectedStreams:(NSArray <SGStream *> *)selectedStreams
+- (void)setSelectedTracks:(NSArray <SGTrack *> *)selectedTracks
 {
-    self.frameOutput.selectedStreams = selectedStreams;
+    self.frameOutput.selectedTracks = selectedTracks;
 }
 
-- (SGStream *)selectedAudioStream
+- (SGTrack *)selectedAudioTrack
 {
-    return self.frameOutput.selectedAudioStream;
+    return self.frameOutput.selectedAudioTrack;
 }
 
-- (SGStream *)selectedVideoStream
+- (SGTrack *)selectedVideoTrack
 {
-    return self.frameOutput.selectedVideoStream;
+    return self.frameOutput.selectedVideoTrack;
 }
 
 - (SGCapacity *)bestCapacity
 {
     SGCapacity * ret = [[SGCapacity alloc] init];
-    SGStream * stream = self.selectedAudioStream ? self.selectedAudioStream : self.selectedVideoStream;
+    SGTrack * track = self.selectedAudioTrack ? self.selectedAudioTrack : self.selectedVideoTrack;
     id <SGRenderable> renderable = self.audioRenderable != SGRenderableStateNone ? self.audioRenderable : self.videoRenderable;
-    if (stream && renderable) {
-        for (SGCapacity * obj in [self capacityWithStreams:@[stream] renderables:@[renderable]]) {
+    if (track && renderable) {
+        for (SGCapacity * obj in [self capacityWithTracks:@[track] renderables:@[renderable]]) {
             ret.duration = CMTimeAdd(ret.duration, obj.duration);
             ret.size += obj.size;
             ret.count += obj.count;
@@ -230,10 +230,10 @@
     return ret;
 }
 
-- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams renderables:(NSArray <id <SGRenderable>> *)renderables
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks renderables:(NSArray <id <SGRenderable>> *)renderables
 {
     NSMutableArray * ret = [NSMutableArray array];
-    for (SGCapacity * obj in [self.frameOutput capacityWithStreams:streams]) {
+    for (SGCapacity * obj in [self.frameOutput capacityWithTracks:tracks]) {
         [ret addObject:obj];
     }
     for (id <SGRenderable> obj in renderables) {
@@ -253,15 +253,15 @@
         case SGFrameOutputStateOpened:
         {
             [self lock];
-            if (self.selectedAudioStream)
+            if (self.selectedAudioTrack)
             {
                 self.audioRenderable.key = YES;
                 self.audioRenderable.delegate = self;
                 [self.audioRenderable open];
             }
-            if (self.selectedVideoStream)
+            if (self.selectedVideoTrack)
             {
-                self.videoRenderable.key = !self.selectedAudioStream;
+                self.videoRenderable.key = !self.selectedAudioTrack;
                 self.videoRenderable.delegate = self;
                 [self.videoRenderable open];
             }
@@ -297,18 +297,18 @@
     }
 }
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity stream:(SGStream *)stream
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
     [self.delegate sessionDidChangeCapacity:self];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
-    if (frame.stream.type == SGMediaTypeAudio)
+    if (frame.track.type == SGMediaTypeAudio)
     {
         [self.audioRenderable putFrame:frame];
     }
-    else if (frame.stream.type == SGMediaTypeVideo)
+    else if (frame.track.type == SGMediaTypeVideo)
     {
         [self.videoRenderable putFrame:frame];
     }
@@ -326,17 +326,17 @@
     if (renderable == self.audioRenderable)
     {
         if (self.audioRenderable.enough) {
-            [self.frameOutput pause:self.frameOutput.audioStreams];
+            [self.frameOutput pause:self.frameOutput.audioTracks];
         } else {
-            [self.frameOutput resume:self.frameOutput.audioStreams];
+            [self.frameOutput resume:self.frameOutput.audioTracks];
         }
     }
     else if (renderable == self.videoRenderable)
     {
         if (self.videoRenderable.enough) {
-            [self.frameOutput pause:self.frameOutput.videoStreams];
+            [self.frameOutput pause:self.frameOutput.videoTracks];
         } else {
-            [self.frameOutput resume:self.frameOutput.videoStreams];
+            [self.frameOutput resume:self.frameOutput.videoTracks];
         }
     }
     [self.delegate sessionDidChangeCapacity:self];

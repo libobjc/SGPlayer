@@ -13,7 +13,7 @@
 @interface SGAudioDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
-@property (nonatomic, strong) SGStream * stream;
+@property (nonatomic, strong) SGTrack * track;
 
 @end
 
@@ -21,7 +21,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithStream:self.stream frameClass:[SGAudioFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithTrack:self.track frameClass:[SGAudioFrame class]];
     [self.codecContext open];
 }
 
@@ -33,9 +33,9 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (packet && packet.stream != self.stream)
+    if (packet && packet.track != self.track)
     {
-        self.stream = packet.stream;
+        self.track = packet.track;
         [self destory];
         [self setup];
     }

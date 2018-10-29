@@ -27,10 +27,10 @@
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 
-- (NSArray <SGStream *> *)streams;
-- (NSArray <SGStream *> *)audioStreams;
-- (NSArray <SGStream *> *)videoStreams;
-- (NSArray <SGStream *> *)otherStreams;
+- (NSArray <SGTrack *> *)tracks;
+- (NSArray <SGTrack *> *)audioTracks;
+- (NSArray <SGTrack *> *)videoTracks;
+- (NSArray <SGTrack *> *)otherTracks;
 
 - (NSError *)open;
 - (NSError *)close;

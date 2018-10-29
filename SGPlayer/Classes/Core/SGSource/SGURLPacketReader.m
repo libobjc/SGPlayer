@@ -47,24 +47,24 @@
     return [self.formatContext metadata];
 }
 
-- (NSArray <SGStream *> *)streams
+- (NSArray <SGTrack *> *)tracks
 {
-    return [self.formatContext streams];
+    return [self.formatContext tracks];
 }
 
-- (NSArray <SGStream *> *)audioStreams
+- (NSArray <SGTrack *> *)audioTracks
 {
-    return [self.formatContext audioStreams];
+    return [self.formatContext audioTracks];
 }
 
-- (NSArray <SGStream *> *)videoStreams
+- (NSArray <SGTrack *> *)videoTracks
 {
-    return [self.formatContext videoStreams];
+    return [self.formatContext videoTracks];
 }
 
-- (NSArray <SGStream *> *)otherStreams
+- (NSArray <SGTrack *> *)otherTracks
 {
-    return [self.formatContext otherStreams];
+    return [self.formatContext otherTracks];
 }
 
 - (NSError *)open

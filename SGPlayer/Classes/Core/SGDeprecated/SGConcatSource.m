@@ -27,8 +27,8 @@
 @property (nonatomic, strong) SGFormatContext2 * formatContext;
 @property (nonatomic, assign) BOOL audioEnable;
 @property (nonatomic, assign) BOOL videoEnable;
-@property (nonatomic, strong) SGStream * audioStream;
-@property (nonatomic, strong) SGStream * videoStream;
+@property (nonatomic, strong) SGTrack * audioTrack;
+@property (nonatomic, strong) SGTrack * videoTrack;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
@@ -283,8 +283,8 @@ static int SGConcatSourceInterruptHandler(void * context)
 - (void)setCurrentFormatContext:(SGFormatContext2 *)formatContext
 {
     self.formatContext = formatContext;
-    self.audioStream = self.formatContext.audioStreams.firstObject;
-    self.videoStream = self.formatContext.videoStreams.firstObject;
+    self.audioTrack = self.formatContext.audioTracks.firstObject;
+    self.videoTrack = self.formatContext.videoTracks.firstObject;
 }
 
 #pragma mark - Open
@@ -442,21 +442,21 @@ static int SGConcatSourceInterruptHandler(void * context)
 //                }
 //                else
 //                {
-//                    SGStream * stream = nil;
-//                    for (SGStream * obj in self.formatContext.streams)
+//                    SGTrack * track = nil;
+//                    for (SGTrack * obj in self.formatContext.tracks)
 //                    {
-//                        if (obj.index == packet.corePacket->stream_index)
+//                        if (obj.index == packet.corePacket->track_index)
 //                        {
-//                            stream = obj;
+//                            track = obj;
 //                            break;
 //                        }
 //                    }
-//                    if ((self.audioEnable && stream == self.audioStream) ||
-//                        (self.videoEnable && stream == self.videoStream))
+//                    if ((self.audioEnable && track == self.audioTrack) ||
+//                        (self.videoEnable && track == self.videoTrack))
 //                    {
-////                        [packet fillWithMediaType:stream.mediaType
-////                                         codecpar:stream.coreStream->codecpar
-////                                         timebase:stream.timebase
+////                        [packet fillWithMediaType:track.mediaType
+////                                         codecpar:track.coreTrack->codecpar
+////                                         timebase:track.timebase
 ////                                            scale:self.formatContext.scale
 ////                                        startTime:self.formatContext.startTime
 ////                                        timeRange:self.formatContext.actualTimeRange];

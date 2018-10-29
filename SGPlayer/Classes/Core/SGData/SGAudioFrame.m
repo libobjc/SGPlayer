@@ -42,9 +42,9 @@
     }
 }
 
-- (void)configurateWithStream:(SGStream *)stream
+- (void)configurateWithTrack:(SGTrack *)track
 {
-    [super configurateWithStream:stream];
+    [super configurateWithTrack:track];
     
     _format = self.core->format;
     _nb_samples = self.core->nb_samples;

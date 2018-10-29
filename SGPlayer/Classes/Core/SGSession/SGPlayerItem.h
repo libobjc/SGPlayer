@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGAsset.h"
-#import "SGStream.h"
+#import "SGTrack.h"
 
 @interface SGPlayerItem : NSObject
 
@@ -21,14 +21,14 @@
 - (NSError *)error;
 - (NSDictionary *)metadata;
 
-- (NSArray <SGStream *> *)streams;
-- (NSArray <SGStream *> *)audioStreams;
-- (NSArray <SGStream *> *)videoStreams;
-- (NSArray <SGStream *> *)otherStreams;
+- (NSArray <SGTrack *> *)tracks;
+- (NSArray <SGTrack *> *)audioTracks;
+- (NSArray <SGTrack *> *)videoTracks;
+- (NSArray <SGTrack *> *)otherTracks;
 
-@property (nonatomic, copy) NSArray <SGStream *> * selectedStreams;
-- (SGStream *)selectedAudioStream;
-- (SGStream *)selectedVideoStream;
+@property (nonatomic, copy) NSArray <SGTrack *> * selectedTracks;
+- (SGTrack *)selectedAudioTrack;
+- (SGTrack *)selectedVideoTrack;
 
 - (BOOL)seeking;
 - (BOOL)seekable;

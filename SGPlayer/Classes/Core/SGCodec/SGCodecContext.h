@@ -15,7 +15,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithStream:(SGStream *)stream frameClass:(Class)frameClass;
+- (instancetype)initWithTrack:(SGTrack *)track frameClass:(Class)frameClass;
 
 @property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic, assign) BOOL threadsAuto;

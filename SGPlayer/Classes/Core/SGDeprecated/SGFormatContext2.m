@@ -9,7 +9,7 @@
 #import "SGFormatContext2.h"
 #import "SGMapping.h"
 #import "SGError.h"
-#import "SGStream+Internal.h"
+#import "SGTrack+Internal.h"
 
 @implementation SGFormatContext2
 
@@ -59,45 +59,45 @@
     {
         _metadata = SGDictionaryFF2NS(formatContext->metadata);
     }
-    NSMutableArray <SGStream *> * streams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * audioStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * videoStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * subtitleStreams = [NSMutableArray array];
-    NSMutableArray <SGStream *> * otherStreams = [NSMutableArray array];
-    for (int i = 0; i < formatContext->nb_streams; i++)
+    NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * audioTracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * subtitleTracks = [NSMutableArray array];
+    NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
+    for (int i = 0; i < formatContext->nb_tracks; i++)
     {
-        SGStream * obj = [[SGStream alloc] initWithCore:_coreFormatContext->streams[i]];
-        [streams addObject:obj];
+        SGTrack * obj = [[SGTrack alloc] initWithCore:_coreFormatContext->tracks[i]];
+        [tracks addObject:obj];
         switch (obj.core->codecpar->codec_type)
         {
             case AVMEDIA_TYPE_AUDIO:
                 _audioEnable = YES;
-                [audioStreams addObject:obj];
+                [audioTracks addObject:obj];
                 break;
             case AVMEDIA_TYPE_VIDEO:
                 if ((obj.core->disposition & AV_DISPOSITION_ATTACHED_PIC) == 0)
                 {
                     _videoEnable = YES;
-                    [videoStreams addObject:obj];
+                    [videoTracks addObject:obj];
                 }
                 else
                 {
-                    [otherStreams addObject:obj];
+                    [otherTracks addObject:obj];
                 }
                 break;
             case AVMEDIA_TYPE_SUBTITLE:
-                [subtitleStreams addObject:obj];
+                [subtitleTracks addObject:obj];
                 break;
             default:
-                [otherStreams addObject:obj];
+                [otherTracks addObject:obj];
                 break;
         }
     }
-    _streams = [streams copy];
-    _audioStreams = [audioStreams copy];
-    _videoStreams = [videoStreams copy];
-    _subtitleStreams = [subtitleStreams copy];
-    _otherStreams = [otherStreams copy];
+    _tracks = [tracks copy];
+    _audioTracks = [audioTracks copy];
+    _videoTracks = [videoTracks copy];
+    _subtitleTracks = [subtitleTracks copy];
+    _otherTracks = [otherTracks copy];
     _coreFormatContext = formatContext;
     return YES;
 }
@@ -151,8 +151,8 @@ BOOL SGCreateFormatContext2(AVFormatContext ** formatContext, NSURL * URL, NSDic
         return NO;
     }
     
-    suc = avformat_find_stream_info(fc, NULL);
-    err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
+    suc = avformat_find_track_info(fc, NULL);
+    err = SGEGetError(suc, SGOperationCodeFormatFindTrackInfo);
     if (err)
     {
         if (fc)

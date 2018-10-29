@@ -13,6 +13,6 @@
 
 @property (nonatomic, assign, readonly) AVPacket * core;
 
-- (void)configurateWithStream:(SGStream *)stream;
+- (void)configurateWithTrack:(SGTrack *)track;
 
 @end

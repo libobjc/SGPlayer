@@ -40,22 +40,22 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 
-- (NSArray <SGStream *> *)streams;
-- (NSArray <SGStream *> *)audioStreams;
-- (NSArray <SGStream *> *)videoStreams;
-- (NSArray <SGStream *> *)otherStreams;
+- (NSArray <SGTrack *> *)tracks;
+- (NSArray <SGTrack *> *)audioTracks;
+- (NSArray <SGTrack *> *)videoTracks;
+- (NSArray <SGTrack *> *)otherTracks;
 
-@property (nonatomic, copy) NSArray <SGStream *> * selectedStreams;
-- (SGStream *)selectedAudioStream;
-- (SGStream *)selectedVideoStream;
+@property (nonatomic, copy) NSArray <SGTrack *> * selectedTracks;
+- (SGTrack *)selectedAudioTrack;
+- (SGTrack *)selectedVideoTrack;
 
-- (NSArray <SGCapacity *> *)capacityWithStreams:(NSArray <SGStream *> *)streams;
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks;
 
 - (NSError *)open;
 - (NSError *)start;
 - (NSError *)close;
-- (NSError *)pause:(NSArray <SGStream *> *)streams;
-- (NSError *)resume:(NSArray <SGStream *> *)streams;
+- (NSError *)pause:(NSArray <SGTrack *> *)tracks;
+- (NSError *)resume:(NSArray <SGTrack *> *)tracks;
 - (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
@@ -64,7 +64,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 @protocol SGFrameOutputDelegate <NSObject>
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity stream:(SGStream *)stream;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame;
 
 @end

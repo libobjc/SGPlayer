@@ -1,16 +1,16 @@
 //
-//  SGStream.m
+//  SGTrack.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/17.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGStream.h"
-#import "SGStream+Internal.h"
+#import "SGTrack.h"
+#import "SGTrack+Internal.h"
 #import "SGMapping.h"
 
-@interface SGStream ()
+@interface SGTrack ()
 
 @property (nonatomic, assign) AVStream * core;
 @property (nonatomic, assign) void * coreptr;
@@ -21,7 +21,7 @@
 
 @end
 
-@implementation SGStream
+@implementation SGTrack
 
 - (instancetype)initWithCore:(AVStream *)core
 {
