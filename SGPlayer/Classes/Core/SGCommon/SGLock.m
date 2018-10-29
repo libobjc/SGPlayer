@@ -8,10 +8,18 @@
 
 #import "SGLock.h"
 
-BOOL SGLockEXE(id <NSLocking> locking,
-               BOOL (^verify)(void),
-               SGBasicBlock (^run)(void),
-               BOOL (^done)(SGBasicBlock block))
+BOOL SGLockEXE(id <NSLocking> locking, SGBasicBlock (^run)(void))
+{
+    [locking lock];
+    SGBasicBlock r = run();
+    [locking unlock];
+    if (r) {
+        r();
+    }
+    return YES;
+}
+
+BOOL SGLockCondEXE(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
 {
     [locking lock];
     BOOL suc = YES;
@@ -30,8 +38,10 @@ BOOL SGLockEXE(id <NSLocking> locking,
         }
     }
     [locking unlock];
-    if (done) {
-        return done(block);
+    if (finish) {
+        return finish(block);
+    } else if (block) {
+        block();
     }
     return YES;
 }
