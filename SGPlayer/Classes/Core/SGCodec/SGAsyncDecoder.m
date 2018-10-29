@@ -166,9 +166,9 @@ static SGPacket * flushPacket;
         [self unlock];
         return NO;
     }
+    self.waitingFlush = YES;
     [self unlock];
     [self.packetQueue flush];
-    self.waitingFlush = YES;
     [self.packetQueue putObjectSync:flushPacket];
     [self callbackForCapacity];
     return YES;
@@ -216,25 +216,27 @@ static SGPacket * flushPacket;
                 SGPacket * packet = [self.packetQueue getObjectSync];
                 if (packet == flushPacket)
                 {
-                    [self.decodable flush];
+                    [self lock];
                     self.waitingFlush = NO;
+                    [self unlock];
+                    [self.decodable flush];
                 }
                 else if (packet)
                 {
-                    if (!self.waitingFlush)
+                    NSArray <SGFrame *> * frames = [self.decodable decode:packet];
+                    [self lock];
+                    BOOL drop = self.waitingFlush;
+                    [self unlock];
+                    if (!drop)
                     {
-                        NSArray <SGFrame *> * frames = [self.decodable decode:packet];
                         for (SGFrame * frame in frames)
                         {
-                            if (!self.waitingFlush)
-                            {
-                                [self.delegate decoder:self didOutputFrame:frame];
-                            }
+                            [self.delegate decoder:self didOutputFrame:frame];
                             [frame unlock];
                         }
                     }
-                    [self callbackForCapacity];
                 }
+                [self callbackForCapacity];
                 [packet unlock];
                 continue;
             }
