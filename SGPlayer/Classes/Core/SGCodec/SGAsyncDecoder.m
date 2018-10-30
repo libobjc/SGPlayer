@@ -17,7 +17,6 @@
 }
 
 @property (nonatomic, strong) id <SGDecodable> decodable;
-@property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * packetQueue;
 @property (nonatomic, assign) BOOL waitingFlush;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -44,7 +43,6 @@ static SGPacket * flushPacket;
             [flushPacket lock];
         });
         self.decodable = decodable;
-        self.capacity = [[SGCapacity alloc] init];
         self.packetQueue = [[SGObjectQueue alloc] init];
         self.pausedCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
@@ -78,6 +76,11 @@ static SGPacket * flushPacket;
 - (SGAsyncDecoderState)state
 {
     return _state;
+}
+
+- (SGCapacity *)capacity
+{
+    return self.packetQueue.capacity;
 }
 
 #pragma mark - Interface
@@ -262,7 +265,6 @@ static SGPacket * flushPacket;
 
 - (void)callbackForCapacity
 {
-    self.capacity = self.packetQueue.capacity;
     [self.delegate decoder:self didChangeCapacity:self.capacity];
 }
 
