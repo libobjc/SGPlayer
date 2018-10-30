@@ -42,6 +42,11 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self destroy];
+}
+
 - (SGCapacity *)capacity
 {
     if (self.didDestoryed) {

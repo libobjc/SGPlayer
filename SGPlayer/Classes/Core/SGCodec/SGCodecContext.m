@@ -19,7 +19,7 @@
 @interface SGCodecContext ()
 
 @property (nonatomic, assign) AVCodecContext * codecContext;
-@property (nonatomic, assign) SGTrack * track;
+@property (nonatomic, strong) SGTrack * track;
 @property (nonatomic, strong) Class frameClass;
 
 @end
