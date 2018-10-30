@@ -1,21 +1,21 @@
 //
-//  SGSWSContext.m
+//  SGSWScale.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/28.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGSWSContext.h"
+#import "SGSWScale.h"
 #import "swscale.h"
 
-@interface SGSWSContext ()
+@interface SGSWScale ()
 
 @property (nonatomic, assign) struct SwsContext * context;
 
 @end
 
-@implementation SGSWSContext
+@implementation SGSWScale
 
 - (instancetype)init
 {
@@ -45,28 +45,18 @@
     self.context = sws_getCachedContext(self.context,
                                         self.width,
                                         self.height,
-                                        self.src_format,
+                                        self.i_format,
                                         self.width,
                                         self.height,
-                                        self.dst_format,
+                                        self.o_format,
                                         self.flags,
                                         NULL, NULL, NULL);
     return self.context ? YES : NO;
 }
 
-- (int)scaleWithSrc_data:(const uint8_t * const [])src_data
-            src_linesize:(const int [])src_linesize
-                dst_data:(uint8_t * const [])dst_data
-            dst_linesize:(const int [])dst_linesize
+- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize
 {
-    int result = sws_scale(self.context,
-                           src_data,
-                           src_linesize,
-                           0,
-                           self.height,
-                           dst_data,
-                           dst_linesize);
-    return result;
+    return sws_scale(self.context, i_data, i_linesize, 0, self.height, o_data, o_linesize);;
 }
 
 @end

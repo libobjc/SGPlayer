@@ -8,7 +8,7 @@
 
 #import "SGVideoFrame.h"
 #import "SGFrame+Internal.h"
-#import "SGSWSContext.h"
+#import "SGSWScale.h"
 #import "SGPlatform.h"
 #import "SGMapping.h"
 #import "imgutils.h"
@@ -42,7 +42,7 @@
 {
     NSLog(@"%s", __func__);
     
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < SGFramePlaneCount; i++)
     {
         av_buffer_unref(&_buffer[i]);
         _buffer[i] = nil;
@@ -189,9 +189,9 @@
         return nil;
     }
     
-    SGSWSContext * context = [[SGSWSContext alloc] init];
-    context.src_format = src_format;
-    context.dst_format = dst_format;
+    SGSWScale * context = [[SGSWScale alloc] init];
+    context.i_format = src_format;
+    context.o_format = dst_format;
     context.width = self.width;
     context.height = self.height;
     if (![context open])
@@ -204,7 +204,7 @@
     {
         return nil;
     }
-    result = [context scaleWithSrc_data:src_data src_linesize:src_linesize dst_data:dst_data dst_linesize:dst_linesize];
+    result = [context convert:src_data i_linesize:src_linesize o_data:dst_data o_linesize:dst_linesize];
     if (result < 0)
     {
         av_freep(dst_data);
