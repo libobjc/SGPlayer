@@ -218,6 +218,12 @@
 		9C5C98FE20D26BE10089C112 /* SGPlaybackClock.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackClock.m */; };
 		9C5C98FF20D26BE10089C112 /* SGPlaybackClock.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackClock.m */; };
 		9C5C990020D26BE10089C112 /* SGPlaybackClock.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGPlaybackClock.m */; };
+		9C66E1F621884E6B00B70DAA /* SGFrameFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */; };
+		9C66E1F721884E6B00B70DAA /* SGFrameFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */; };
+		9C66E1FA2188526200B70DAA /* SGAudioFrameFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */; };
+		9C66E1FB2188526200B70DAA /* SGAudioFrameFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C66E1F92188526200B70DAA /* SGAudioFrameFilter.m */; };
+		9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C66E1FC2188550D00B70DAA /* SGSWResample.h */; };
+		9C66E1FF2188550D00B70DAA /* SGSWResample.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C66E1FD2188550D00B70DAA /* SGSWResample.m */; };
 		9C6C76012141323900970427 /* SGDiscardFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6C75FF2141323900970427 /* SGDiscardFilter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C6C76022141323900970427 /* SGDiscardFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6C76002141323900970427 /* SGDiscardFilter.m */; };
 		9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
@@ -855,6 +861,12 @@
 		9C5C98FA20D26BE10089C112 /* SGPlaybackClock.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPlaybackClock.m; sourceTree = "<group>"; };
 		9C620D6721215EEF00845F2A /* SGFormatContext2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFormatContext2.h; sourceTree = "<group>"; };
 		9C620D6821215EEF00845F2A /* SGFormatContext2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFormatContext2.m; sourceTree = "<group>"; };
+		9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFrameFilter.h; sourceTree = "<group>"; };
+		9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrameFilter.m; sourceTree = "<group>"; };
+		9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioFrameFilter.h; sourceTree = "<group>"; };
+		9C66E1F92188526200B70DAA /* SGAudioFrameFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioFrameFilter.m; sourceTree = "<group>"; };
+		9C66E1FC2188550D00B70DAA /* SGSWResample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSWResample.h; sourceTree = "<group>"; };
+		9C66E1FD2188550D00B70DAA /* SGSWResample.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGSWResample.m; sourceTree = "<group>"; };
 		9C6C75FF2141323900970427 /* SGDiscardFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDiscardFilter.h; sourceTree = "<group>"; };
 		9C6C76002141323900970427 /* SGDiscardFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDiscardFilter.m; sourceTree = "<group>"; };
 		9C6E514D2018C6C100C87C54 /* SGGLModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLModel.h; sourceTree = "<group>"; };
@@ -1488,21 +1500,27 @@
 		9CF15DF320119D0300585326 /* SGData */ = {
 			isa = PBXGroup;
 			children = (
-				9CF52CF5200F45D700950B81 /* SGTrack.h */,
-				9CF52CF6200F45D700950B81 /* SGTrack.m */,
-				9CEBCC9B217EF8E900430024 /* SGTrack+Internal.h */,
-				9C2C55AB2015D1D200131E15 /* SGPacket.h */,
-				9C2C55AC2015D1D200131E15 /* SGPacket.m */,
-				9CEBCCA0217F109000430024 /* SGPacket+Internal.h */,
+				9CF15E1D2011BC5400585326 /* SGAudioFrame.h */,
+				9CF15E1E2011BC5400585326 /* SGAudioFrame.m */,
+				9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */,
+				9C66E1F92188526200B70DAA /* SGAudioFrameFilter.m */,
 				9C389ACB20108C2E003259FF /* SGFrame.h */,
 				9CA3CDB320E1F74300B852D0 /* SGFrame.m */,
 				9CEBCCA6217F19BE00430024 /* SGFrame+Internal.h */,
-				9CF15E1D2011BC5400585326 /* SGAudioFrame.h */,
-				9CF15E1E2011BC5400585326 /* SGAudioFrame.m */,
-				9C2C55992015B87400131E15 /* SGVideoFrame.h */,
-				9C2C559A2015B87400131E15 /* SGVideoFrame.m */,
+				9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */,
+				9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */,
+				9C2C55AB2015D1D200131E15 /* SGPacket.h */,
+				9C2C55AC2015D1D200131E15 /* SGPacket.m */,
+				9CEBCCA0217F109000430024 /* SGPacket+Internal.h */,
+				9C66E1FC2188550D00B70DAA /* SGSWResample.h */,
+				9C66E1FD2188550D00B70DAA /* SGSWResample.m */,
 				9C3748792135521D00572166 /* SGSWSContext.h */,
 				9C37487A2135521D00572166 /* SGSWSContext.m */,
+				9CF52CF5200F45D700950B81 /* SGTrack.h */,
+				9CF52CF6200F45D700950B81 /* SGTrack.m */,
+				9CEBCC9B217EF8E900430024 /* SGTrack+Internal.h */,
+				9C2C55992015B87400131E15 /* SGVideoFrame.h */,
+				9C2C559A2015B87400131E15 /* SGVideoFrame.m */,
 			);
 			path = SGData;
 			sourceTree = "<group>";
@@ -1794,6 +1812,7 @@
 				9CF99FA2212D187A008178BC /* parseutils.h in Headers */,
 				9CF99F6F212D187A008178BC /* opt.h in Headers */,
 				9CF99F2A212D187A008178BC /* cast5.h in Headers */,
+				9C66E1FA2188526200B70DAA /* SGAudioFrameFilter.h in Headers */,
 				9C95D2BE2152335400079B38 /* SGFormatContext.h in Headers */,
 				9C29D112217D741500343975 /* SGFrameOutput.h in Headers */,
 				9CF99F12212D187A008178BC /* lfg.h in Headers */,
@@ -1839,6 +1858,7 @@
 				9CF99FC6212D187A008178BC /* avstring.h in Headers */,
 				9CE6F53F2004D97D00D1F4C8 /* SGPLFImage.h in Headers */,
 				9CF99F36212D187A008178BC /* audio_fifo.h in Headers */,
+				9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */,
 				9CF99FF3212D187A008178BC /* d3d11va.h in Headers */,
 				9CF99F93212D187A008178BC /* encryption_info.h in Headers */,
 				9CF99F7E212D187A008178BC /* bswap.h in Headers */,
@@ -1933,6 +1953,7 @@
 				9C3082D0212521AB00B44298 /* SGAudioDecoder.h in Headers */,
 				9CF99FCF212D187A008178BC /* avformat.h in Headers */,
 				9CF99FB1212D187A008178BC /* aes_ctr.h in Headers */,
+				9C66E1F621884E6B00B70DAA /* SGFrameFilter.h in Headers */,
 				9CF99F51212D187A008178BC /* display.h in Headers */,
 				9CF99F0C212D187A008178BC /* motion_vector.h in Headers */,
 				9CF99EE2212D187A008178BC /* intfloat.h in Headers */,
@@ -2562,6 +2583,7 @@
 				9CF15E0A2011AE0700585326 /* SGPlaybackAudioRenderer.m in Sources */,
 				9C13638F213934030025C72B /* SGGLBGRAProgram.m in Sources */,
 				9C1D2210201AC83F005147FB /* SGGLModelPool.m in Sources */,
+				9C66E1F721884E6B00B70DAA /* SGFrameFilter.m in Sources */,
 				9CE68433200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
 				9CF52CFA200F45D700950B81 /* SGTrack.m in Sources */,
 				9C2536531FAB199500BBFA5C /* SGPlayer.m in Sources */,
@@ -2580,9 +2602,11 @@
 				9CE469B42151FB4F00528662 /* SGURLPacketReader.m in Sources */,
 				9C3082C4212518EC00B44298 /* SGVideoDecoder.m in Sources */,
 				9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
+				9C66E1FF2188550D00B70DAA /* SGSWResample.m in Sources */,
 				9C2C55A62015C1E100131E15 /* SGPlaybackVideoRenderer.m in Sources */,
 				9CE6F54F2004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
 				9C1945042019C6A100184416 /* SGGLYUV420PProgram.m in Sources */,
+				9C66E1FB2188526200B70DAA /* SGAudioFrameFilter.m in Sources */,
 				9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
 				9CB1F09F20178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9C8D4E66200E0ACC00ED8A58 /* SGPacketOutput.m in Sources */,
