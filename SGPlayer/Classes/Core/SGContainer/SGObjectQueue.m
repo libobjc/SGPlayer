@@ -32,8 +32,7 @@
 
 - (instancetype)initWithMaxCount:(NSUInteger)maxCount
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.maxCount = maxCount;
         self.duration = kCMTimeZero;
         self.objects = [NSMutableArray array];
@@ -45,6 +44,226 @@
 - (void)dealloc
 {
     [self destroy];
+}
+
+- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object
+{
+    return [self putObjectSync:object waitHandler:nil resumeHandler:nil];
+}
+
+- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+{
+    if (self.didDestoryed) {
+        return;
+    }
+    [self.condition lock];
+    while (self.objects.count >= self.maxCount) {
+        self.puttingObject = object;
+        if (waitHandler) {
+            waitHandler();
+        }
+        [self.condition wait];
+        if (resumeHandler) {
+            resumeHandler();
+        }
+        self.puttingObject = nil;
+        if (self.didDestoryed) {
+            [self.condition unlock];
+            return;
+        }
+    }
+    SGCapacity * capacity = nil;
+    if (object == self.cancelPutObject) {
+        self.cancelPutObject = nil;
+    } else {
+        capacity = [self putObject:object];
+        [self.condition signal];
+    }
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+}
+
+- (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object
+{
+    if (self.didDestoryed) {
+        return;
+    }
+    [self.condition lock];
+    if (self.objects.count >= self.maxCount) {
+        [self.condition unlock];
+        return;
+    }
+    SGCapacity * capacity = [self putObject:object];
+    [self.condition signal];
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+}
+
+- (SGCapacity *)putObject:(__kindof id <SGObjectQueueItem>)object
+{
+    [object lock];
+    [self.objects addObject:object];
+    if (self.shouldSortObjects) {
+        [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
+            return CMTimeCompare(obj1.timeStamp, obj2.timeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
+        }];
+    }
+    NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
+    self.duration = CMTimeAdd(self.duration, object.duration);
+    self.size += object.size;
+    SGCapacity * obj = [[SGCapacity alloc] init];
+    obj.duration = self.duration;
+    obj.size = self.size;
+    obj.count = self.objects.count;
+    return obj;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectSync
+{
+    return [self getObjectSyncWithWaitHandler:nil resumeHandler:nil];
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+{
+    [self.condition lock];
+    while (self.objects.count <= 0) {
+        if (waitHandler) {
+            waitHandler();
+        }
+        [self.condition wait];
+        if (resumeHandler) {
+            resumeHandler();
+        }
+        if (self.didDestoryed) {
+            [self.condition unlock];
+            return nil;
+        }
+    }
+    SGCapacity * capacity = nil;
+    id <SGObjectQueueItem> object = [self getObject:&capacity];
+    [self.condition signal];
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+    return object;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectAsync
+{
+    [self.condition lock];
+    if (self.objects.count <= 0 || self.didDestoryed) {
+        [self.condition unlock];
+        return nil;
+    }
+    SGCapacity * capacity = nil;
+    id <SGObjectQueueItem> object = [self getObject:&capacity];
+    [self.condition signal];
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+    return object;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+{
+    [self.condition lock];
+    while (self.objects.count <= 0) {
+        if (waitHandler) {
+            waitHandler();
+        }
+        [self.condition wait];
+        if (resumeHandler) {
+            resumeHandler();
+        }
+        if (self.didDestoryed) {
+            [self.condition unlock];
+            return nil;
+        }
+    }
+    SGCapacity * capacity = nil;
+    id <SGObjectQueueItem> object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    if (object) {
+        [self.condition signal];
+    }
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+    return object;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+{
+    [self.condition lock];
+    if (self.objects.count <= 0 || self.didDestoryed) {
+        [self.condition unlock];
+        return nil;
+    }
+    SGCapacity * capacity = nil;
+    id <SGObjectQueueItem> object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    if (object) {
+        [self.condition signal];
+    }
+    [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
+    return object;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+{
+    if (!ptsHandler) {
+        return [self getObject:capacity];
+    }
+    CMTime current = kCMTimeZero;
+    CMTime expect = kCMTimeZero;
+    if (!ptsHandler(&current, &expect)) {
+        return [self getObject:capacity];
+    }
+    id <SGObjectQueueItem> object = nil;
+    do {
+        CMTime first = self.objects.firstObject.timeStamp;
+        if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0) {
+            [object unlock];
+            object = [self getObject:capacity];
+            if (!object) {
+                break;
+            }
+            continue;
+        }
+        break;
+    } while (drop);
+    return object;
+}
+
+- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity
+{
+    if (!self.objects.firstObject) {
+        return nil;
+    }
+    id <SGObjectQueueItem> object = self.objects.firstObject;
+    [self.objects removeObjectAtIndex:0];
+    self.duration = CMTimeSubtract(self.duration, object.duration);
+    if (CMTimeCompare(self.duration, kCMTimeZero) < 0 || self.objects.count <= 0) {
+        self.duration = kCMTimeZero;
+    }
+    self.size -= object.size;
+    if (self.size <= 0 || self.objects.count <= 0) {
+        self.size = 0;
+    }
+    SGCapacity * obj = [[SGCapacity alloc] init];
+    obj.duration = self.duration;
+    obj.size = self.size;
+    obj.count = self.objects.count;
+    * capacity = obj;
+    return object;
 }
 
 - (SGCapacity *)capacity
@@ -61,233 +280,24 @@
     return ret;
 }
 
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object
-{
-    return [self putObjectSync:object waitHandler:nil resumeHandler:nil];
-}
-
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
-{
-    if (self.didDestoryed) {
-        return;
-    }
-    [self.condition lock];
-    while (self.objects.count >= self.maxCount)
-    {
-        self.puttingObject = object;
-        if (waitHandler)
-        {
-            waitHandler();
-        }
-        [self.condition wait];
-        if (resumeHandler)
-        {
-            resumeHandler();
-        }
-        self.puttingObject = nil;
-        if (self.didDestoryed)
-        {
-            [self.condition unlock];
-            return;
-        }
-    }
-    if (object == self.cancelPutObject)
-    {
-        self.cancelPutObject = nil;
-    }
-    else
-    {
-        [self putObject:object];
-        [self.condition signal];
-    }
-    [self.condition unlock];
-}
-
-- (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object
-{
-    if (self.didDestoryed) {
-        return;
-    }
-    [self.condition lock];
-    if (self.objects.count >= self.maxCount)
-    {
-        [self.condition unlock];
-        return;
-    }
-    [self putObject:object];
-    [self.condition signal];
-    [self.condition unlock];
-}
-
-- (void)putObject:(__kindof id <SGObjectQueueItem>)object
-{
-    [object lock];
-    [self.objects addObject:object];
-    if (self.shouldSortObjects)
-    {
-        [self.objects sortUsingComparator:^NSComparisonResult(id <SGObjectQueueItem> obj1, id <SGObjectQueueItem> obj2) {
-            return CMTimeCompare(obj1.timeStamp, obj2.timeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
-        }];
-    }
-    NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
-    self.duration = CMTimeAdd(self.duration, object.duration);
-    self.size += object.size;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectSync
-{
-    return [self getObjectSyncWithWaitHandler:nil resumeHandler:nil];
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
-{
-    [self.condition lock];
-    while (self.objects.count <= 0)
-    {
-        if (waitHandler)
-        {
-            waitHandler();
-        }
-        [self.condition wait];
-        if (resumeHandler)
-        {
-            resumeHandler();
-        }
-        if (self.didDestoryed)
-        {
-            [self.condition unlock];
-            return nil;
-        }
-    }
-    id <SGObjectQueueItem> object = [self getObject];
-    [self.condition signal];
-    [self.condition unlock];
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectAsync
-{
-    [self.condition lock];
-    if (self.objects.count <= 0 || self.didDestoryed)
-    {
-        [self.condition unlock];
-        return nil;
-    }
-    id <SGObjectQueueItem> object = [self getObject];
-    [self.condition signal];
-    [self.condition unlock];
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
-{
-    [self.condition lock];
-    while (self.objects.count <= 0)
-    {
-        if (waitHandler)
-        {
-            waitHandler();
-        }
-        [self.condition wait];
-        if (resumeHandler)
-        {
-            resumeHandler();
-        }
-        if (self.didDestoryed)
-        {
-            [self.condition unlock];
-            return nil;
-        }
-    }
-    id <SGObjectQueueItem> object = [self getObjectWithPTSHandler:ptsHandler drop:drop];
-    if (object)
-    {
-        [self.condition signal];
-    }
-    [self.condition unlock];
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
-{
-    [self.condition lock];
-    if (self.objects.count <= 0 || self.didDestoryed)
-    {
-        [self.condition unlock];
-        return nil;
-    }
-    id <SGObjectQueueItem> object = [self getObjectWithPTSHandler:ptsHandler drop:drop];
-    if (object)
-    {
-        [self.condition signal];
-    }
-    [self.condition unlock];
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
-{
-    if (!ptsHandler)
-    {
-        return [self getObject];
-    }
-    CMTime current = kCMTimeZero;
-    CMTime expect = kCMTimeZero;
-    if (!ptsHandler(&current, &expect))
-    {
-        return [self getObject];
-    }
-    id <SGObjectQueueItem> object = nil;
-    do {
-        CMTime first = self.objects.firstObject.timeStamp;
-        if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0)
-        {
-            [object unlock];
-            object = [self getObject];
-            if (!object) {
-                break;
-            }
-            continue;
-        }
-        break;
-    } while (drop);
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObject
-{
-    if (!self.objects.firstObject) {
-        return nil;
-    }
-    id <SGObjectQueueItem> object = self.objects.firstObject;
-    [self.objects removeObjectAtIndex:0];
-    self.duration = CMTimeSubtract(self.duration, object.duration);
-    if (CMTimeCompare(self.duration, kCMTimeZero) < 0 || self.objects.count <= 0) {
-        self.duration = kCMTimeZero;
-    }
-    self.size -= object.size;
-    if (self.size <= 0 || self.objects.count <= 0) {
-        self.size = 0;
-    }
-    return object;
-}
-
 - (void)flush
 {
     [self.condition lock];
-    for (id <SGObjectQueueItem> obj in self.objects)
-    {
+    for (id <SGObjectQueueItem> obj in self.objects) {
         [obj unlock];
     }
     [self.objects removeAllObjects];
     self.size = 0;
     self.duration = kCMTimeZero;
-    if (self.puttingObject)
-    {
+    if (self.puttingObject) {
         self.cancelPutObject = self.puttingObject;
     }
+    SGCapacity * capacity = [[SGCapacity alloc] init];
     [self.condition broadcast];
     [self.condition unlock];
+    if (capacity) {
+        [self.delegate objectQueue:self didChangeCapacity:capacity];
+    }
 }
 
 - (void)destroy

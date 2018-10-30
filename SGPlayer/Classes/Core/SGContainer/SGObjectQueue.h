@@ -18,14 +18,21 @@
 
 @end
 
+@class SGObjectQueue;
+
+@protocol SGObjectQueueDelegate <NSObject>
+
+- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity;
+
+@end
+
 @interface SGObjectQueue : NSObject
 
 - (instancetype)init;
 - (instancetype)initWithMaxCount:(NSUInteger)maxCount;
 
+@property (nonatomic, weak) id <SGObjectQueueDelegate> delegate;
 @property (nonatomic, assign) BOOL shouldSortObjects;
-
-- (SGCapacity *)capacity;
 
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
 - (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
@@ -37,6 +44,8 @@
 
 - (__kindof id <SGObjectQueueItem>)getObjectAsync;
 - (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+
+- (SGCapacity *)capacity;
 
 - (void)flush;
 - (void)destroy;

@@ -11,7 +11,7 @@
 #import "SGFrameOutput.h"
 #import "SGLock.h"
 
-@interface SGPlayerItem () <SGFrameOutputDelegate>
+@interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
 
 {
     SGPlayerItemState _state;
@@ -38,8 +38,9 @@
         self.frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self.frameOutput.delegate = self;
         self.audioQueue = [[SGObjectQueue alloc] init];
-        self.audioQueue.shouldSortObjects = YES;
+        self.audioQueue.delegate = self;
         self.videoQueue = [[SGObjectQueue alloc] init];
+        self.videoQueue.delegate = self;
         self.videoQueue.shouldSortObjects = YES;
     }
     return self;
@@ -141,9 +142,6 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
                 [self.videoFilter flush];
                 [self.audioQueue flush];
                 [self.videoQueue flush];
-                [self pauseAndResumeAudioTrack];
-                [self pauseAndResumeVideoTrack];
-                [self callbackForCapacity];
                 if (completionHandler) {
                     completionHandler(time, error);
                 }
@@ -155,22 +153,12 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 - (__kindof SGFrame *)nextAudioFrame
 {
-    SGFrame * ret = [self.audioQueue getObjectAsync];
-    if (ret) {
-        [self pauseAndResumeAudioTrack];
-        [self callbackForCapacity];
-    }
-    return ret;
+    return [self.audioQueue getObjectAsync];
 }
 
 - (__kindof SGFrame *)nextVideoFrameWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
 {
-    SGFrame * ret = [self.videoQueue getObjectAsyncWithPTSHandler:ptsHandler drop:drop];
-    if (ret) {
-        [self pauseAndResumeVideoTrack];
-        [self callbackForCapacity];
-    }
-    return ret;
+    return [self.videoQueue getObjectAsyncWithPTSHandler:ptsHandler drop:drop];
 }
 
 #pragma mark - Setter & Getter
@@ -261,7 +249,6 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
                 frame = [self.audioFilter convert:frame];
             }
             [self.audioQueue putObjectSync:frame];
-            [self pauseAndResumeAudioTrack];
         }
             break;
         case SGMediaTypeVideo: {
@@ -269,43 +256,37 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
                 frame = [self.videoFilter convert:frame];
             }
             [self.videoQueue putObjectSync:frame];
-            [self pauseAndResumeVideoTrack];
         }
             break;
         default:
             break;
     }
     [frame unlock];
-    [self callbackForCapacity];
 }
 
-#pragma mark - Paused & Resume
+#pragma mark - SGObjectQueueDelegate
 
-- (void)pauseAndResumeAudioTrack
+- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
-    if (self.audioQueue.capacity.count > 5) {
-        [self.frameOutput pause:self.frameOutput.audioTracks];
-    } else {
-        [self.frameOutput resume:self.frameOutput.audioTracks];
+    NSUInteger threshold = 0;
+    NSArray * tracks = nil;
+    if (objectQueue == self.audioQueue) {
+        threshold = 5;
+        tracks = self.frameOutput.audioTracks;
+    } else if (objectQueue == self.videoQueue) {
+        threshold = 3;
+        tracks = self.frameOutput.videoTracks;
     }
-}
-
-- (void)pauseAndResumeVideoTrack
-{
-    if (self.videoQueue.capacity.count > 3) {
-        [self.frameOutput pause:self.frameOutput.videoTracks];
+    if (capacity.count > threshold) {
+        [self.frameOutput pause:tracks];
     } else {
-        [self.frameOutput resume:self.frameOutput.videoTracks];
+        [self.frameOutput resume:tracks];
     }
-}
-
-#pragma mark - Callback
-
-- (void)callbackForCapacity
-{
     [self.delegate playerItemDidChangeCapacity:self];
     [self callbackForFinishedIfNeeded];
 }
+
+#pragma mark - Callback
 
 - (void)callbackForFinishedIfNeeded
 {
