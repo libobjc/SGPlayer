@@ -113,7 +113,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 {
     NSMutableArray * ret = [NSMutableArray array];
     for (SGAsyncDecoder * obj in self.decoders) {
-        if ([tracks containsObject:obj.object]) {
+        if ([tracks containsObject:obj.object] && [self.selectedTracksInternal containsObject:obj.object]) {
             SGCapacity * c = obj.capacity;
             c.object = obj.object;
             [ret addObject:c];
