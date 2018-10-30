@@ -622,11 +622,11 @@
 
 #pragma mark - SGPlayerItemDelegate
 
-- (void)playerItemDidChangeState:(SGPlayerItem *)session
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state
 {
-    if (session.state == SGPlayerItemStateOpened)
+    if (playerItem.state == SGPlayerItemStateOpened)
     {
-        [session start];
+        [playerItem start];
         [self lock];
         SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateFinished];
         SGBasicBlock loadingCallback = [self setLoadingState:SGLoadingStateLoading];
@@ -634,7 +634,7 @@
         prepareCallback();
         loadingCallback();
     }
-    else if (session.state == SGPlayerItemStateReading)
+    else if (playerItem.state == SGPlayerItemStateReading)
     {
         SGBasicBlock playbackCallback = ^{};
         [self lock];
@@ -654,17 +654,23 @@
         loadingCallback();
         playbackCallback();
     }
-    else if (session.state == SGPlayerItemStateFailed)
+    else if (playerItem.state == SGPlayerItemStateFailed)
     {
         [self lock];
-        SGBasicBlock failedCallback =  [self setError:session.error];
+        SGBasicBlock failedCallback =  [self setError:playerItem.error];
         [self unlock];
         failedCallback();
     }
 }
 
-- (void)playerItemDidChangeCapacity:(SGPlayerItem *)session
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
+//    if (track.type == SGMediaTypeAudio) {
+//        NSLog(@"audio duration : %f", CMTimeGetSeconds(capacity.duration));
+//    }
+//    if (track.type == SGMediaTypeVideo) {
+//        NSLog(@"video duration : %f", CMTimeGetSeconds(capacity.duration));
+//    }
     [self pauseOrResumeOutput];
     [self callbackForTimingIfNeeded];
 }

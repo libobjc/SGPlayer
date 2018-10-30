@@ -170,7 +170,7 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
     }
     _state = state;
     return ^{
-        [self.delegate playerItemDidChangeState:self];
+        [self.delegate playerItem:self didChangeState:state];
     };
 }
 
@@ -237,7 +237,16 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
-    [self.delegate playerItemDidChangeCapacity:self];
+    SGCapacity * additional = nil;
+    if (track == self.frameOutput.selectedAudioTrack) {
+        additional = self.audioQueue.capacity;
+    } else if (track == self.frameOutput.selectedVideoTrack) {
+        additional = self.videoQueue.capacity;
+    }
+    NSAssert(additional, @"Invalid additional.");
+    capacity = [capacity copy];
+    [capacity add:additional];
+    [self.delegate playerItem:self didChangeCapacity:capacity track:track];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -268,21 +277,24 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
+    SGTrack * track = nil;
     NSUInteger threshold = 0;
-    NSArray * tracks = nil;
     if (objectQueue == self.audioQueue) {
+        track = self.frameOutput.selectedAudioTrack;
         threshold = 5;
-        tracks = self.frameOutput.audioTracks;
     } else if (objectQueue == self.videoQueue) {
+        track = self.frameOutput.selectedVideoTrack;
         threshold = 3;
-        tracks = self.frameOutput.videoTracks;
     }
+    NSAssert(track, @"Invalid track.");
     if (capacity.count > threshold) {
-        [self.frameOutput pause:tracks];
+        [self.frameOutput pause:@[track]];
     } else {
-        [self.frameOutput resume:tracks];
+        [self.frameOutput resume:@[track]];
     }
-    [self.delegate playerItemDidChangeCapacity:self];
+    capacity = [capacity copy];
+    [capacity add:[self.frameOutput capacityWithTracks:@[track]].firstObject];
+    [self.delegate playerItem:self didChangeCapacity:capacity track:track];
     [self callbackForFinishedIfNeeded];
 }
 

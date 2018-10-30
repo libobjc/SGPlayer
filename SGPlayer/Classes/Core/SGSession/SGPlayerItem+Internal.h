@@ -23,8 +23,8 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 @protocol SGPlayerItemDelegate <NSObject>
 
-- (void)playerItemDidChangeState:(SGPlayerItem *)session;
-- (void)playerItemDidChangeCapacity:(SGPlayerItem *)session;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
 
 @end
 
