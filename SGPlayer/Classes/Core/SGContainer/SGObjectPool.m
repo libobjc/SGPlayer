@@ -10,7 +10,7 @@
 
 @interface SGObjectPool ()
 
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSMutableDictionary <NSString *, NSMutableSet <id <SGObjectPoolItem>> *> * pool;
 
 @end
@@ -29,9 +29,8 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
-        self.coreLock = [[NSRecursiveLock alloc] init];
+    if (self = [super init]) {
+        self.coreLock = [[NSLock alloc] init];
         self.pool = [NSMutableDictionary dictionary];
     }
     return self;
@@ -42,8 +41,7 @@
     [self.coreLock lock];
     NSString * className = NSStringFromClass(class);
     NSMutableSet <id <SGObjectPoolItem>> * set = [self.pool objectForKey:className];
-    if (!set)
-    {
+    if (!set) {
         set = [NSMutableSet set];
         [self.pool setObject:set forKey:className];
     }
