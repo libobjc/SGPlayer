@@ -47,6 +47,16 @@
     return self;
 }
 
+#pragma mark - Mapping
+
+SGGet0Map(NSError *, error, self.readable)
+SGGet0Map(CMTime, duration, self.readable)
+SGGet0Map(NSDictionary *, metadata, self.readable)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.readable)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.readable)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.readable)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
+
 #pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGPacketOutputState)state
@@ -82,14 +92,10 @@
     return ^{};
 }
 
-SGGet0(SGPacketOutputState, state, _state);
-SGGet0Map(NSError *, error, self.readable);
-SGGet0Map(CMTime, duration, self.readable);
-SGGet0Map(NSDictionary *, metadata, self.readable);
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.readable);
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.readable);
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.readable);
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable);
+- (SGPacketOutputState)state
+{
+    return _state;
+}
 
 #pragma mark - Interface
 

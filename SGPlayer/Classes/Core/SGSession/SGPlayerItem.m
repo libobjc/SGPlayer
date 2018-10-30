@@ -42,6 +42,19 @@
     return self;
 }
 
+#pragma mark - Mapping
+
+SGGet0Map(CMTime, duration, self.frameOutput)
+SGGet0Map(NSDictionary *, metadata, self.frameOutput)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.frameOutput)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput)
+SGGet0Map(NSArray <SGTrack *> *, selectedTracks, self.frameOutput)
+SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
+SGGet0Map(SGTrack *, selectedAudioTrack, self.frameOutput)
+SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput)
+
 #pragma mark - Interface
 
 - (BOOL)open
@@ -133,18 +146,6 @@
 
 #pragma mark - Setter & Getter
 
-SGGet0(SGPlayerItemState, state, _state);
-SGGet0Map(CMTime, duration, self.frameOutput);
-SGGet0Map(NSDictionary *, metadata, self.frameOutput);
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.frameOutput);
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput);
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput);
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput);
-SGGet0Map(NSArray <SGTrack *> *, selectedTracks, self.frameOutput);
-SGSet1Map(setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
-SGGet0Map(SGTrack *, selectedAudioTrack, self.frameOutput);
-SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
-
 - (SGBasicBlock)setState:(SGPlayerItemState)state
 {
     if (_state != state) {
@@ -153,7 +154,12 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
             [self.delegate playerItemDidChangeState:self];
         };
     }
-    return ^{};
+    return nil;
+}
+
+- (SGPlayerItemState)state
+{
+    return _state;
 }
 
 - (SGCapacity *)capacity
@@ -189,10 +195,8 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state
 {
-    switch (state)
-    {
-        case SGFrameOutputStateOpened:
-        {
+    switch (state) {
+        case SGFrameOutputStateOpened: {
             SGLockEXE10(self.coreLock, ^SGBasicBlock {
                 if (self.selectedAudioTrack) {
                     self.audioRenderable.key = YES;
@@ -208,8 +212,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
             });
         }
             break;
-        case SGFrameOutputStateReading:
-        {
+        case SGFrameOutputStateReading: {
             SGLockEXE10(self.coreLock, ^SGBasicBlock {
                 return [self setState:SGPlayerItemStateReading];
             });
@@ -218,8 +221,7 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput);
         case SGFrameOutputStateFinished:
             [self callbackForFinishedIfNeeded];
             break;
-        case SGFrameOutputStateFailed:
-        {
+        case SGFrameOutputStateFailed: {
             self.error = frameOutput.error;
             SGLockEXE10(self.coreLock, ^SGBasicBlock {
                 return [self setState:SGPlayerItemStateFailed];

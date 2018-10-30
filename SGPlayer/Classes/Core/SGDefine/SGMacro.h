@@ -26,12 +26,11 @@
 #define SGPlayerLog(...)
 #endif
 
-#define SGGet0(ret, name0, obj) - (ret)name0 {return obj;}
 #define SGGet0Map(ret, name0, obj) - (ret)name0 {return [obj name0];}
 #define SGGet1Map(ret, name0, t0, obj) - (ret)name0:(t0)n0 {return [obj name0:n0];}
 
-#define SGSet1Map(name0, t0, obj) - (void)name0:(t0)n0 {[obj name0:n0];}
-#define SGSet2Map(name0, t0, name1, t1, obj) - (void)name0:(t0)n0 name1:(t1)n1 {[obj name0:n0 name1:n1];}
+#define SGSet1Map(ret, name0, t0, obj) - (ret)name0:(t0)n0 {[obj name0:n0];}
+#define SGSet2Map(ret, name0, t0, name1, t1, obj) - (ret)name0:(t0)n0 name1:(t1)n1 {[obj name0:n0 name1:n1];}
 
 typedef void(^SGBasicBlock)(void);
 

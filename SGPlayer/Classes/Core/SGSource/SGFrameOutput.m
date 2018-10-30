@@ -42,6 +42,16 @@
     return self;
 }
 
+#pragma mark - Mapping
+
+SGGet0Map(NSError *, error, self.packetOutput)
+SGGet0Map(CMTime, duration, self.packetOutput)
+SGGet0Map(NSDictionary *, metadata, self.packetOutput)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.packetOutput)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.packetOutput)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.packetOutput)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
+
 #pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGFrameOutputState)state
@@ -56,14 +66,10 @@
     return ^{};
 }
 
-SGGet0(SGFrameOutputState, state, _state);
-SGGet0Map(NSError *, error, self.packetOutput);
-SGGet0Map(CMTime, duration, self.packetOutput);
-SGGet0Map(NSDictionary *, metadata, self.packetOutput);
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.packetOutput);
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.packetOutput);
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.packetOutput);
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput);
+- (SGFrameOutputState)state
+{
+    return _state;
+}
 
 - (NSArray <SGTrack *> *)selectedTracks
 {

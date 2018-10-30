@@ -33,18 +33,20 @@
     return self;
 }
 
-SGGet0Map(NSError *, error, self.formatContext);
-SGGet0Map(CMTime, duration, self.formatContext);
-SGGet0Map(NSDictionary *, metadata, self.formatContext);
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.formatContext);
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.formatContext);
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.formatContext);
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.formatContext);
-SGGet0Map(NSError *, open, self.formatContext);
-SGGet0Map(NSError *, close, self.formatContext);
-SGGet0Map(NSError *, seekable, self.formatContext);
-SGGet1Map(NSError *, seekToTime, CMTime, self.formatContext);
-SGGet1Map(NSError *, nextPacket, SGPacket *, self.formatContext);
+#pragma mark - Mapping
+
+SGGet0Map(NSError *, error, self.formatContext)
+SGGet0Map(CMTime, duration, self.formatContext)
+SGGet0Map(NSDictionary *, metadata, self.formatContext)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.formatContext)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.formatContext)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.formatContext)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.formatContext)
+SGGet0Map(NSError *, open, self.formatContext)
+SGGet0Map(NSError *, close, self.formatContext)
+SGGet0Map(NSError *, seekable, self.formatContext)
+SGGet1Map(NSError *, seekToTime, CMTime, self.formatContext)
+SGGet1Map(NSError *, nextPacket, SGPacket *, self.formatContext)
 
 #pragma mark - SGFormatContextDelegate
 
