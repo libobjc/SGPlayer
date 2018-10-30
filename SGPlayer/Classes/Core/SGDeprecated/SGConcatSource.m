@@ -193,7 +193,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.operationQueue = nil;
     self.openOperation = nil;
     self.readOperation = nil;
-    [self destoryFormatContext];
+    [self destroyFormatContext];
 }
 
 #pragma mark - Seeking
@@ -232,11 +232,11 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 #pragma mark - Internal
 
-- (void)destoryFormatContext
+- (void)destroyFormatContext
 {
     for (SGFormatContext2 * obj in self.formatContexts)
     {
-        [obj destory];
+        [obj destroy];
     }
     self.formatContext = nil;
     self.formatContexts = nil;

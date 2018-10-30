@@ -50,6 +50,8 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
 - (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
 - (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame;
+- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable;
+- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop;
 
 @end
 

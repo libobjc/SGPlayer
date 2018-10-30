@@ -17,8 +17,9 @@
 #import "SGVideoDecoder.h"
 #import "SGPlaybackAudioRenderer.h"
 #import "SGPlaybackVideoRenderer.h"
+#import "SGAudioFrameFilter.h"
 
-@interface SGPlayer () <NSLocking>
+@interface SGPlayer () <NSLocking, SGRenderableDelegate>
 
 @property (nonatomic, strong, readonly) SGPlayerItem * currentItem;
 @property (nonatomic, strong, readonly) NSError * error;
@@ -74,14 +75,14 @@
         self.displayMode = SGDisplayModePlane;
         self.viewport = [[SGVRViewport alloc] init];
         self.delegateQueue = [NSOperationQueue mainQueue];
-        [self destory];
+        [self destroy];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self destory];
+    [self destroy];
 }
 
 #pragma mark - Asset
@@ -144,12 +145,17 @@
     clock.delegate = self;
     
     SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] initWithClock:clock];
+    auidoRenderer.delegate = self;
+    auidoRenderer.key = YES;
     auidoRenderer.rate = self.rate;
     auidoRenderer.volume = self.volume;
     auidoRenderer.deviceDelay = self.deviceDelay;
     self.audioOutput = auidoRenderer;
+    [self.audioOutput open];
     
     SGPlaybackVideoRenderer * videoRenderer = [[SGPlaybackVideoRenderer alloc] initWithClock:clock];
+    videoRenderer.delegate = self;
+    videoRenderer.key = NO;
     videoRenderer.rate = self.rate;
     videoRenderer.view = self.view;
     videoRenderer.scalingMode = self.scalingMode;
@@ -158,10 +164,10 @@
     videoRenderer.renderCallback = self.displayRenderCallback;
     videoRenderer.viewport = self.viewport;
     self.videoOutput = videoRenderer;
+    [self.videoOutput open];
     
     self.currentItem.delegate = self;
-    self.currentItem.audioRenderable = auidoRenderer;
-    self.currentItem.videoRenderable = videoRenderer;
+    self.currentItem.audioFilter = [[SGAudioFrameFilter alloc] init];
     [self lock];
     SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStatePreparing];
     [self unlock];
@@ -299,7 +305,7 @@
 
 - (BOOL)stop
 {
-    [self destory];
+    [self destroy];
     [self lock];
     SGBasicBlock prepareCallback = [self setPrepareState:SGPrepareStateNone];
     SGBasicBlock playbackCallback = [self setPlaybackState:SGPlaybackStateNone];
@@ -598,7 +604,7 @@
     }
 }
 
-- (void)destory
+- (void)destroy
 {
     [SGActivity removeTarget:self];
     [self.currentItem close];
@@ -669,6 +675,28 @@
 {
     self.actualStartTime = playbackClock.startTime;
     [self callbackForTimingIfNeeded];
+}
+
+#pragma mark - SGRenderableDelegate
+
+- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state {}
+- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity {}
+- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame {}
+
+- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable
+{
+    if (renderable == self.audioOutput) {
+        return [self.currentItem nextAudioFrame];
+    }
+    return nil;
+}
+
+- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+{
+    if (renderable == self.videoOutput) {
+        return [self.currentItem nextVideoFrameWithPTSHandler:ptsHandler drop:drop];
+    }
+    return nil;
 }
 
 #pragma mark - NSLocking

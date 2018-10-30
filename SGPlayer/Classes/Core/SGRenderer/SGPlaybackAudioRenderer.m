@@ -29,7 +29,7 @@
 @property (nonatomic, assign) CMTime finalRate;
 @property (nonatomic, assign) CMTime frameRate;
 @property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
@@ -120,8 +120,8 @@
     [self.audioPlayer pause];
     callback();
     [self.frameQueue destroy];
-    [self destorySwrContextBuffer];
-    [self destorySwrContext];
+    [self destroySwrContextBuffer];
+    [self destroySwrContext];
     return YES;
 }
 
@@ -201,7 +201,7 @@
         self.outputNumberOfChannels = outputNumberOfChannels;
         self.outputChannelLayout = outputChannelLayout;
         
-        [self destorySwrContext];
+        [self destroySwrContext];
         [self setupSwrContext];
     }
     
@@ -369,11 +369,11 @@
     self.swrContextError = SGEGetError(result, SGOperationCodeAuidoSwrInit);
     if (self.swrContextError)
     {
-        [self destorySwrContext];
+        [self destroySwrContext];
     }
 }
 
-- (void)destorySwrContext
+- (void)destroySwrContext
 {
     if (self.swrContext)
     {
@@ -402,7 +402,7 @@
     }
 }
 
-- (void)destorySwrContextBuffer
+- (void)destroySwrContextBuffer
 {
     for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
     {
@@ -427,7 +427,7 @@
     {
         if (!self.currentFrame)
         {
-            self.currentFrame = [self.frameQueue getObjectAsync];
+            self.currentFrame = [self.delegate renderableNeedMoreFrame:self];
             hasNewFrame = YES;
         }
         if (!self.currentFrame)
@@ -521,7 +521,7 @@
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSLock alloc] init];
+        self.coreLock = [[NSRecursiveLock alloc] init];
     }
     [self.coreLock lock];
 }

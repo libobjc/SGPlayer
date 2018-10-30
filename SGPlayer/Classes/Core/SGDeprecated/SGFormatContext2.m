@@ -31,7 +31,7 @@
 
 - (void)dealloc
 {
-    [self destory];
+    [self destroy];
 }
 
 - (BOOL)openWithOptions:(NSDictionary *)options opaque:(void *)opaque callback:(int (*)(void *))callback
@@ -102,7 +102,7 @@
     return YES;
 }
 
-- (void)destory
+- (void)destroy
 {
     if (self.coreFormatContext)
     {

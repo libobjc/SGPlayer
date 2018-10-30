@@ -25,7 +25,7 @@
     [self.codecContext open];
 }
 
-- (void)destory
+- (void)destroy
 {
     [self.codecContext close];
     self.codecContext = nil;
@@ -36,7 +36,7 @@
     if (packet && packet.track != self.track)
     {
         self.track = packet.track;
-        [self destory];
+        [self destroy];
         [self setup];
     }
     return [self.codecContext decode:packet];

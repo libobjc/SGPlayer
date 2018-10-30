@@ -40,6 +40,6 @@
 @property (nonatomic, strong, readonly) NSArray <SGTrack *> * otherTracks;
 
 - (BOOL)openWithOptions:(NSDictionary *)options opaque:(void *)opaque callback:(int (*)(void *))callback;
-- (void)destory;
+- (void)destroy;
 
 @end

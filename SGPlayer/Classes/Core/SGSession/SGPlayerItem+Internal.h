@@ -8,6 +8,7 @@
 
 #import "SGPlayerItem.h"
 #import "SGRenderable.h"
+#import "SGFrameFilter.h"
 
 typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 {
@@ -30,13 +31,13 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 @interface SGPlayerItem (Internal)
 
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
-@property (nonatomic, strong) id <SGRenderable> audioRenderable;
-@property (nonatomic, strong) id <SGRenderable> videoRenderable;
+@property (nonatomic, strong) SGFrameFilter * audioFilter;
+@property (nonatomic, strong) SGFrameFilter * videoFilter;
 
 - (SGPlayerItemState)state;
 
 - (SGCapacity *)capacity;
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks renderables:(NSArray <id <SGRenderable>> *)renderables;
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks;
 
 - (BOOL)open;
 - (BOOL)start;
@@ -45,5 +46,8 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 - (BOOL)seeking;
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+
+- (__kindof SGFrame *)nextAudioFrame;
+- (__kindof SGFrame *)nextVideoFrameWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop;
 
 @end

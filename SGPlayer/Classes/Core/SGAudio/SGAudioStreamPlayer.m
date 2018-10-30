@@ -52,7 +52,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 
 - (void)dealloc
 {
-    [self destory];
+    [self destroy];
 }
 
 #pragma mark - Setup/Destory
@@ -135,7 +135,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     AUGraphInitialize(self.graph);
 }
 
-- (void)destory
+- (void)destroy
 {
     AUGraphStop(self.graph);
     AUGraphUninitialize(self.graph);

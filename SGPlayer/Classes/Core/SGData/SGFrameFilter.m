@@ -15,4 +15,14 @@
     return frame;
 }
 
+- (void)flush
+{
+    
+}
+
+- (void)destroy
+{
+    
+}
+
 @end

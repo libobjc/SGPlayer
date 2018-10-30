@@ -9,12 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@interface SGCapacity : NSObject
+@interface SGCapacity : NSObject <NSCopying>
 
 @property (nonatomic, weak) id object;
 
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) uint64_t size;
 @property (nonatomic, assign) uint64_t count;
+
+- (void)add:(SGCapacity *)capacity;
 
 @end

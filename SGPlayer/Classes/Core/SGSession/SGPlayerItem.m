@@ -11,7 +11,7 @@
 #import "SGFrameOutput.h"
 #import "SGLock.h"
 
-@interface SGPlayerItem () <SGFrameOutputDelegate, SGRenderableDelegate>
+@interface SGPlayerItem () <SGFrameOutputDelegate>
 
 {
     SGPlayerItemState _state;
@@ -21,9 +21,11 @@
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingCount;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
+@property (nonatomic, strong) SGObjectQueue * audioQueue;
+@property (nonatomic, strong) SGObjectQueue * videoQueue;
+@property (nonatomic, strong) SGFrameFilter * audioFilter;
+@property (nonatomic, strong) SGFrameFilter * videoFilter;
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
-@property (nonatomic, strong) id <SGRenderable> audioRenderable;
-@property (nonatomic, strong) id <SGRenderable> videoRenderable;
 
 @end
 
@@ -35,6 +37,10 @@
         self.coreLock = [[NSLock alloc] init];
         self.frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self.frameOutput.delegate = self;
+        self.audioQueue = [[SGObjectQueue alloc] init];
+        self.audioQueue.shouldSortObjects = YES;
+        self.videoQueue = [[SGObjectQueue alloc] init];
+        self.videoQueue.shouldSortObjects = YES;
     }
     return self;
 }
@@ -87,8 +93,10 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
     }, ^BOOL(SGBasicBlock block) {
         block();
         [self.frameOutput close];
-        [self.audioRenderable close];
-        [self.videoRenderable close];
+        [self.audioFilter destroy];
+        [self.videoFilter destroy];
+        [self.audioQueue destroy];
+        [self.videoQueue destroy];
         return YES;
     });
 }
@@ -129,8 +137,13 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
                 self.seekingCount = 0;
                 return nil;
             }, ^BOOL(SGBasicBlock block) {
-                [self.audioRenderable flush];
-                [self.videoRenderable flush];
+                [self.audioFilter flush];
+                [self.videoFilter flush];
+                [self.audioQueue flush];
+                [self.videoQueue flush];
+                [self pauseAndResumeAudioTrack];
+                [self pauseAndResumeVideoTrack];
+                [self callbackForCapacity];
                 if (completionHandler) {
                     completionHandler(time, error);
                 }
@@ -138,6 +151,26 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
             });
         }];
     });
+}
+
+- (__kindof SGFrame *)nextAudioFrame
+{
+    SGFrame * ret = [self.audioQueue getObjectAsync];
+    if (ret) {
+        [self pauseAndResumeAudioTrack];
+        [self callbackForCapacity];
+    }
+    return ret;
+}
+
+- (__kindof SGFrame *)nextVideoFrameWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+{
+    SGFrame * ret = [self.videoQueue getObjectAsyncWithPTSHandler:ptsHandler drop:drop];
+    if (ret) {
+        [self pauseAndResumeVideoTrack];
+        [self callbackForCapacity];
+    }
+    return ret;
 }
 
 #pragma mark - Setter & Getter
@@ -160,29 +193,24 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 - (SGCapacity *)capacity
 {
-    SGCapacity * ret = [[SGCapacity alloc] init];
     SGTrack * track = self.selectedAudioTrack ? self.selectedAudioTrack : self.selectedVideoTrack;
-    id <SGRenderable> renderable = self.audioRenderable != SGRenderableStateNone ? self.audioRenderable : self.videoRenderable;
-    if (track && renderable) {
-        for (SGCapacity * obj in [self capacityWithTracks:@[track] renderables:@[renderable]]) {
-            ret.duration = CMTimeAdd(ret.duration, obj.duration);
-            ret.size += obj.size;
-            ret.count += obj.count;
-        }
+    if (track) {
+        return [self capacityWithTracks:@[track]].firstObject;
     }
-    return ret;
+    return [[SGCapacity alloc] init];
 }
 
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks renderables:(NSArray <id <SGRenderable>> *)renderables
+- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks
 {
     NSMutableArray * ret = [NSMutableArray array];
     for (SGCapacity * obj in [self.frameOutput capacityWithTracks:tracks]) {
-        [ret addObject:obj];
-    }
-    for (id <SGRenderable> obj in renderables) {
-        SGCapacity * c = obj.capacity;
-        c.object = obj;
-        [ret addObject:c];
+        SGCapacity * o = [obj copy];
+        if (((SGTrack *)obj.object).type == SGMediaTypeAudio) {
+            [o add:self.audioQueue.capacity];
+        } else if (((SGTrack *)obj.object).type == SGMediaTypeVideo) {
+            [o add:self.videoQueue.capacity];
+        }
+        [ret addObject:o];
     }
     return [ret copy];
 }
@@ -194,16 +222,6 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
     switch (state) {
         case SGFrameOutputStateOpened: {
             SGLockEXE10(self.coreLock, ^SGBasicBlock {
-                if (self.selectedAudioTrack) {
-                    self.audioRenderable.key = YES;
-                    self.audioRenderable.delegate = self;
-                    [self.audioRenderable open];
-                }
-                if (self.selectedVideoTrack) {
-                    self.videoRenderable.key = !self.selectedAudioTrack;
-                    self.videoRenderable.delegate = self;
-                    [self.videoRenderable open];
-                }
                 return [self setState:SGPlayerItemStateOpened];
             });
         }
@@ -236,51 +254,64 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
-    if (frame.track.type == SGMediaTypeAudio) {
-        [self.audioRenderable putFrame:frame];
-    } else if (frame.track.type == SGMediaTypeVideo) {
-        [self.videoRenderable putFrame:frame];
+    [frame lock];
+    switch (frame.track.type) {
+        case SGMediaTypeAudio: {
+            if (self.audioFilter) {
+                frame = [self.audioFilter convert:frame];
+            }
+            [self.audioQueue putObjectSync:frame];
+            [self pauseAndResumeAudioTrack];
+        }
+            break;
+        case SGMediaTypeVideo: {
+            if (self.videoFilter) {
+                frame = [self.videoFilter convert:frame];
+            }
+            [self.videoQueue putObjectSync:frame];
+            [self pauseAndResumeVideoTrack];
+        }
+            break;
+        default:
+            break;
+    }
+    [frame unlock];
+    [self callbackForCapacity];
+}
+
+#pragma mark - Paused & Resume
+
+- (void)pauseAndResumeAudioTrack
+{
+    if (self.audioQueue.capacity.count > 5) {
+        [self.frameOutput pause:self.frameOutput.audioTracks];
+    } else {
+        [self.frameOutput resume:self.frameOutput.audioTracks];
     }
 }
 
-#pragma mark - SGRenderableDelegate
-
-- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
+- (void)pauseAndResumeVideoTrack
 {
-    
-}
-
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
-{
-    if (renderable == self.audioRenderable) {
-        if (self.audioRenderable.enough) {
-            [self.frameOutput pause:self.frameOutput.audioTracks];
-        } else {
-            [self.frameOutput resume:self.frameOutput.audioTracks];
-        }
-    } else if (renderable == self.videoRenderable) {
-        if (self.videoRenderable.enough) {
-            [self.frameOutput pause:self.frameOutput.videoTracks];
-        } else {
-            [self.frameOutput resume:self.frameOutput.videoTracks];
-        }
+    if (self.videoQueue.capacity.count > 3) {
+        [self.frameOutput pause:self.frameOutput.videoTracks];
+    } else {
+        [self.frameOutput resume:self.frameOutput.videoTracks];
     }
-    [self.delegate playerItemDidChangeCapacity:self];
-    [self callbackForFinishedIfNeeded];
-}
-
-- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame
-{
-    
 }
 
 #pragma mark - Callback
 
+- (void)callbackForCapacity
+{
+    [self.delegate playerItemDidChangeCapacity:self];
+    [self callbackForFinishedIfNeeded];
+}
+
 - (void)callbackForFinishedIfNeeded
 {
     if (self.frameOutput.state == SGFrameOutputStateFinished &&
-        self.audioRenderable.capacity.count == 0 &&
-        self.videoRenderable.capacity.count == 0) {
+        self.audioQueue.capacity.count == 0 &&
+        self.videoQueue.capacity.count == 0) {
         SGLockEXE10(self.coreLock, ^SGBasicBlock {
             return [self setState:SGPlayerItemStateFinished];
         });

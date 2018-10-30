@@ -26,7 +26,7 @@
 @property (nonatomic, strong) SGPlaybackClock * clock;
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSRecursiveLock * coreLock;
 @property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
@@ -302,7 +302,7 @@
     if (needFetchFrame)
     {
         SGWeakSelf
-        frame = [self.frameQueue getObjectAsyncWithPTSHandler:^BOOL(CMTime * current, CMTime * expect) {
+        frame = [self.delegate renderableNeedMoreFrame:self ptsHandler:^BOOL(CMTime * current, CMTime * expect) {
             SGStrongSelf
             if (!self.currentFrame)
             {
@@ -488,14 +488,14 @@
 {
     if (!self.coreLock)
     {
-        self.coreLock = [[NSLock alloc] init];
+        self.coreLock = [[NSRecursiveLock alloc] init];
     }
-    [self.coreLock lock];
+//    [self.coreLock lock];
 }
 
 - (void)unlock
 {
-    [self.coreLock unlock];
+//    [self.coreLock unlock];
 }
 
 @end
