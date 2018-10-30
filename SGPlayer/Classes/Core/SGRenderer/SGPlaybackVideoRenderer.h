@@ -14,7 +14,13 @@
 
 @interface SGPlaybackVideoRenderer : NSObject <SGRenderable>
 
-@property (nonatomic, strong) SGPlaybackClock * timeSync;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+- (instancetype)initWithClock:(SGPlaybackClock *)clock;
+
+- (SGPlaybackClock *)clock;
+
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, strong) SGPLFView * view;

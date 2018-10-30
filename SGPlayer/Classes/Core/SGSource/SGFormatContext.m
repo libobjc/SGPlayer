@@ -11,6 +11,7 @@
 #import "SGPacket+Internal.h"
 #import "SGConfiguration.h"
 #import "SGMapping.h"
+#import "SGFFmpeg.h"
 #import "SGError.h"
 
 static int SGFormatContextInterruptHandler(void * context)
@@ -72,6 +73,7 @@ static int SGFormatContextInterruptHandler(void * context)
     {
         return nil;
     }
+    SGFFmpegSetupIfNeeded();
     NSError * error = SGCreateFormatContext(&_formatContext,
                                             self.URL,
                                             self.options,

@@ -9,9 +9,6 @@
 #import "SGPlayerItem.h"
 #import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
-#import "SGMapping.h"
-#import "SGFFmpeg.h"
-#import "SGMacro.h"
 #import "SGLock.h"
 
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGRenderableDelegate>
@@ -51,15 +48,14 @@ SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, selectedTracks, self.frameOutput)
-SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 SGGet0Map(SGTrack *, selectedAudioTrack, self.frameOutput)
 SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput)
+SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 
 #pragma mark - Interface
 
 - (BOOL)open
 {
-    SGFFmpegSetupIfNeeded();
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self.state == SGPlayerItemStateNone;
     }, ^SGBasicBlock {
@@ -148,13 +144,13 @@ SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput)
 
 - (SGBasicBlock)setState:(SGPlayerItemState)state
 {
-    if (_state != state) {
-        _state = state;
-        return ^{
-            [self.delegate playerItemDidChangeState:self];
-        };
+    if (_state == state) {
+        return nil;
     }
-    return nil;
+    _state = state;
+    return ^{
+        [self.delegate playerItemDidChangeState:self];
+    };
 }
 
 - (SGPlayerItemState)state

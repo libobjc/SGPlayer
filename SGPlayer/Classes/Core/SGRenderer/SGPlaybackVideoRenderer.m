@@ -23,6 +23,7 @@
     SGRenderableState _state;
 }
 
+@property (nonatomic, strong) SGPlaybackClock * clock;
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
@@ -48,10 +49,11 @@
 @synthesize delegate = _delegate;
 @synthesize key = _key;
 
-- (instancetype)init
+- (instancetype)initWithClock:(SGPlaybackClock *)clock
 {
     if (self = [super init])
     {
+        self.clock = clock;
         _key = NO;
         self.rate = CMTimeMake(1, 1);
         self.capacity = [[SGCapacity alloc] init];
@@ -166,7 +168,7 @@
     SGVideoFrame * videoFrame = frame;
     if (self.key && !self.receivedFrame)
     {
-        [self.timeSync updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        [self.clock updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:videoFrame];
@@ -306,7 +308,7 @@
             {
                 return NO;
             }
-            CMTime time = self.key ? self.timeSync.unlimitedTime : self.timeSync.time;
+            CMTime time = self.key ? self.clock.unlimitedTime : self.clock.time;
             NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
             * current = self.currentFrame.timeStamp;
@@ -336,7 +338,7 @@
             callback = ^{
                 if (self.key)
                 {
-                    [self.timeSync updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
+                    [self.clock updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
                 }
                 if (self.renderCallback)
                 {

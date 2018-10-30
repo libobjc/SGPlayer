@@ -25,6 +25,7 @@
     int _swrContextBufferMallocSize[AV_NUM_DATA_POINTERS];
 }
 
+@property (nonatomic, strong) SGPlaybackClock * clock;
 @property (nonatomic, assign) CMTime finalRate;
 @property (nonatomic, assign) CMTime frameRate;
 @property (nonatomic, assign) BOOL receivedFrame;
@@ -57,10 +58,11 @@
 @synthesize delegate = _delegate;
 @synthesize key = _key;
 
-- (instancetype)init
+- (instancetype)initWithClock:(SGPlaybackClock *)clock
 {
     if (self = [super init])
     {
+        self.clock = clock;
         _key = NO;
         _rate = CMTimeMake(1, 1);
         _deviceDelay = CMTimeMake(0, 1);
@@ -249,7 +251,7 @@
     
     if (!self.receivedFrame)
     {
-        [self.timeSync updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
+        [self.clock updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     self.receivedFrame = YES;
     [self.frameQueue putObjectSync:result];
@@ -488,7 +490,7 @@
     CMTime deviceDelay = self.deviceDelay;
     dispatch_block_t block = ^{
         self.frameRate = frameRate;
-        [self.timeSync updateKeyTime:currentPostPosition duration:currentPostDuration rate:rate];
+        [self.clock updateKeyTime:currentPostPosition duration:currentPostDuration rate:rate];
     };
     if (CMTimeCompare(deviceDelay, kCMTimeZero) > 0)
     {
