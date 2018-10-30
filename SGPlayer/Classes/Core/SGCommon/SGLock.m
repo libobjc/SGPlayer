@@ -8,10 +8,23 @@
 
 #import "SGLock.h"
 
-BOOL SGLockEXE(id <NSLocking> locking, SGBasicBlock (^run)(void))
+BOOL SGLockEXE00(id <NSLocking> locking, void (^run)(void))
 {
     [locking lock];
-    SGBasicBlock r = run();
+    if (run) {
+        run();
+    }
+    [locking unlock];
+    return YES;
+}
+
+BOOL SGLockEXE10(id <NSLocking> locking, SGBasicBlock (^run)(void))
+{
+    [locking lock];
+    SGBasicBlock r = nil;
+    if (run) {
+        r = run();
+    }
     [locking unlock];
     if (r) {
         r();
@@ -19,29 +32,82 @@ BOOL SGLockEXE(id <NSLocking> locking, SGBasicBlock (^run)(void))
     return YES;
 }
 
-BOOL SGLockCondEXE(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
+BOOL SGLockEXE11(id <NSLocking> locking, SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
 {
     [locking lock];
-    BOOL suc = YES;
-    if (verify) {
-        suc = verify();
-    }
-    if (!suc) {
-        [locking unlock];
-        return NO;
-    }
-    SGBasicBlock block = ^{};
+    SGBasicBlock r = nil;
     if (run) {
-        SGBasicBlock r = run();
-        if (r) {
-            block = r;
-        }
+        r = run();
     }
     [locking unlock];
     if (finish) {
-        return finish(block);
-    } else if (block) {
-        block();
+        return finish(r);
+    } else if (r) {
+        r();
+    }
+    return YES;
+}
+
+BOOL SGLockCondEXE00(id <NSLocking> locking, BOOL (^verify)(void), void (^run)(void))
+{
+    [locking lock];
+    BOOL s = YES;
+    if (verify) {
+        s = verify();
+    }
+    if (!s) {
+        [locking unlock];
+        return NO;
+    }
+    if (run) {
+        run();
+    }
+    [locking unlock];
+    return YES;
+}
+
+BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void))
+{
+    [locking lock];
+    BOOL s = YES;
+    if (verify) {
+        s = verify();
+    }
+    if (!s) {
+        [locking unlock];
+        return NO;
+    }
+    SGBasicBlock r = nil;
+    if (run) {
+        r = run();
+    }
+    [locking unlock];
+    if (r) {
+        r();
+    }
+    return YES;
+}
+
+BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
+{
+    [locking lock];
+    BOOL s = YES;
+    if (verify) {
+        s = verify();
+    }
+    if (!s) {
+        [locking unlock];
+        return NO;
+    }
+    SGBasicBlock r = nil;
+    if (run) {
+        r = run();
+    }
+    [locking unlock];
+    if (finish) {
+        return finish(r);
+    } else if (r) {
+        r();
     }
     return YES;
 }
