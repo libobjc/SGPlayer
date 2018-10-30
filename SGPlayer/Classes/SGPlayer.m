@@ -143,15 +143,13 @@
     SGPlaybackClock * clock = [[SGPlaybackClock alloc] init];
     clock.delegate = self;
     
-    SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] init];
-    auidoRenderer.timeSync = clock;
+    SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] initWithClock:clock];
     auidoRenderer.rate = self.rate;
     auidoRenderer.volume = self.volume;
     auidoRenderer.deviceDelay = self.deviceDelay;
     self.audioOutput = auidoRenderer;
     
-    SGPlaybackVideoRenderer * videoRenderer = [[SGPlaybackVideoRenderer alloc] init];
-    videoRenderer.timeSync = clock;
+    SGPlaybackVideoRenderer * videoRenderer = [[SGPlaybackVideoRenderer alloc] initWithClock:clock];
     videoRenderer.rate = self.rate;
     videoRenderer.view = self.view;
     videoRenderer.scalingMode = self.scalingMode;
@@ -247,13 +245,13 @@
     {
         return self.duration;
     }
-    if ((self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused) && self.audioOutput.key && self.audioOutput.timeSync)
+    if ((self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused) && self.audioOutput.key && self.audioOutput.clock)
     {
-        return self.audioOutput.timeSync.time;
+        return self.audioOutput.clock.time;
     }
-    else if ((self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused) && self.videoOutput.key && self.videoOutput.timeSync)
+    else if ((self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused) && self.videoOutput.key && self.videoOutput.clock)
     {
-        return self.videoOutput.timeSync.keyTime;
+        return self.videoOutput.clock.keyTime;
     }
     return kCMTimeZero;
 }
@@ -605,7 +603,7 @@
     [SGActivity removeTarget:self];
     [self.currentItem close];
     _currentItem = nil;
-    self.audioOutput.timeSync.delegate = nil;
+    self.audioOutput.clock.delegate = nil;
     self.audioOutput = nil;
     self.videoOutput = nil;
     self.lastPlaybackTime = CMTimeMake(-1900, 1);
