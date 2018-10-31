@@ -93,7 +93,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     if (self.packetOutput.state == SGPacketOutputStateFinished &&
         (!self.selectedAudioTrack || self.audioFinished) &&
         (!self.selectedVideoTrack || self.videoFinished)) {
-        SGLockEXE10(self.coreLock, ^SGBasicBlock{
+        SGLockEXE10(self.coreLock, ^SGBasicBlock {
             return [self setState:SGFrameOutputStateFinished];
         });
     }
@@ -249,10 +249,11 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     if (!track) {
         return;
     }
-    SGLockCondEXE11(self.coreLock, ^BOOL{
+    capacity = [capacity copy];
+    SGLockCondEXE11(self.coreLock, ^BOOL {
         SGCapacity * last = [self.capacityMap objectForKey:track];
         return ![last isEqualToCapacity:capacity];
-    }, ^SGBasicBlock{
+    }, ^SGBasicBlock {
         [self.capacityMap setObject:capacity forKey:track];
         return nil;
     }, ^BOOL(SGBasicBlock block) {

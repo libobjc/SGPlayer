@@ -108,10 +108,10 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             self.videoFinished = YES;
         }
     }
-    return SGLockCondEXE11(self.coreLock, ^BOOL{
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
         SGCapacity * last = [self.capacityMap objectForKey:track];
         return ![last isEqualToCapacity:capacity];
-    }, ^SGBasicBlock{
+    }, ^SGBasicBlock {
         [self.capacityMap setObject:capacity forKey:track];
         return nil;
     }, ^BOOL(SGBasicBlock block) {
@@ -194,9 +194,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         return NO;
     }
     __block NSUInteger seekingCount = 0;
-    return SGLockCondEXE11(self.coreLock, ^BOOL{
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGPlayerItemStateReading || self->_state == SGPlayerItemStateFinished;
-    }, ^SGBasicBlock{
+    }, ^SGBasicBlock {
         self.seekingCount++;
         seekingCount = self.seekingCount;
         return nil;
@@ -267,6 +267,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
+    capacity = [capacity copy];
     SGCapacity * additional = nil;
     if (track == self.frameOutput.selectedAudioTrack) {
         additional = self.audioQueue.capacity;
@@ -274,7 +275,6 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         additional = self.videoQueue.capacity;
     }
     NSAssert(additional, @"Invalid additional.");
-    capacity = [capacity copy];
     [capacity add:additional];
     [self setCapacity:capacity track:track];
 }
@@ -317,13 +317,13 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         threshold = 3;
     }
     NSAssert(track, @"Invalid track.");
+    capacity = [capacity copy];
     if (capacity.count > threshold) {
         [self.frameOutput pause:track.type];
     } else {
         [self.frameOutput resume:track.type];
     }
     SGCapacity * additional = [self.frameOutput capacityWithTrack:track];
-    capacity = [capacity copy];
     [capacity add:additional];
     [self setCapacity:capacity track:track];
     [self setFinishedIfNeeded];

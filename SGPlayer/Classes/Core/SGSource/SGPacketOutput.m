@@ -11,8 +11,9 @@
 #import "SGPacket+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
+#import "SGLock.h"
 
-@interface SGPacketOutput () <NSLocking, SGPacketReadableDelegate>
+@interface SGPacketOutput () <SGPacketReadableDelegate>
 
 {
     SGPacketOutputState _state;
@@ -21,14 +22,14 @@
 @property (nonatomic, strong) SGAsset * asset;
 @property (nonatomic, strong) id <SGPacketReadable> readable;
 @property (nonatomic, strong) NSError * error;
-@property (nonatomic, assign) CMTime seekTimeStamp;
-@property (nonatomic, assign) CMTime seekingTimeStamp;
-@property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * openOperation;
 @property (nonatomic, strong) NSOperation * readOperation;
 @property (nonatomic, strong) NSCondition * pausedCondition;
+@property (nonatomic, assign) CMTime seekTimeStamp;
+@property (nonatomic, assign) CMTime seekingTimeStamp;
+@property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
 @end
 
@@ -36,10 +37,10 @@
 
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.asset = asset;
         self.readable = [self.asset newReadable];
+        self.coreLock = [[NSLock alloc] init];
         self.pausedCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
@@ -61,57 +62,49 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (SGBasicBlock)setState:(SGPacketOutputState)state
 {
-    if (_state != state)
-    {
-        SGPacketOutputState privious = _state;
-        _state = state;
-        if (privious == SGPacketOutputStatePaused)
-        {
-            [self.pausedCondition lock];
-            [self.pausedCondition broadcast];
-            [self.pausedCondition unlock];
-        }
-        else if (privious == SGPacketOutputStateOpened)
-        {
-            if (state == SGPacketOutputStateReading)
-            {
-                [self startReadThread];
-            }
-        }
-        else if (privious == SGPacketOutputStateFinished)
-        {
-            if (state == SGPacketOutputStateSeeking)
-            {
-                [self startReadThread];
-            }
-        }
-        return ^{
-            [self.delegate packetOutput:self didChangeState:state];
-        };
+    if (_state == state) {
+        return ^{};
     }
-    return ^{};
+    SGPacketOutputState privious = _state;
+    _state = state;
+    if (privious == SGPacketOutputStatePaused) {
+        [self.pausedCondition lock];
+        [self.pausedCondition broadcast];
+        [self.pausedCondition unlock];
+    } else if (privious == SGPacketOutputStateOpened ||
+               privious == SGPacketOutputStateFinished) {
+        if (state == SGPacketOutputStateReading ||
+            state == SGPacketOutputStateSeeking) {
+            [self startReadThread];
+        }
+    }
+    return ^{
+        [self.delegate packetOutput:self didChangeState:state];
+    };
 }
 
 - (SGPacketOutputState)state
 {
-    return _state;
+    __block SGPacketOutputState ret = SGPacketOutputStateNone;
+    SGLockEXE00(self.coreLock, ^{
+        ret = self->_state;
+    });
+    return ret;
 }
 
 #pragma mark - Interface
 
 - (BOOL)open
 {
-    [self lock];
-    if (self.state != SGPacketOutputStateNone)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGPacketOutputStateOpening];
-    [self unlock];
-    callback();
-    [self startOpenThread];
-    return YES;
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
+        return self->_state == SGPacketOutputStateNone;
+    }, ^SGBasicBlock {
+        return [self setState:SGPacketOutputStateOpening];
+    }, ^BOOL(SGBasicBlock block) {
+        block();
+        [self startOpenThread];
+        return YES;
+    });
 }
 
 - (BOOL)start
@@ -121,52 +114,38 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (BOOL)close
 {
-    [self lock];
-    if (self.state == SGPacketOutputStateClosed)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGPacketOutputStateClosed];
-    [self unlock];
-    callback();
-    [self.operationQueue cancelAllOperations];
-    [self.operationQueue waitUntilAllOperationsAreFinished];
-    self.operationQueue = nil;
-    self.openOperation = nil;
-    self.readOperation = nil;
-    [self.readable close];
-    return YES;
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
+        return self->_state != SGPacketOutputStateClosed;
+    }, ^SGBasicBlock {
+        return [self setState:SGPacketOutputStateClosed];
+    }, ^BOOL(SGBasicBlock block) {
+        block();
+        [self.operationQueue cancelAllOperations];
+        [self.operationQueue waitUntilAllOperationsAreFinished];
+        self.operationQueue = nil;
+        self.openOperation = nil;
+        self.readOperation = nil;
+        [self.readable close];
+        return YES;
+    });
 }
 
 - (BOOL)pause
 {
-    [self lock];
-    if (self.state != SGPacketOutputStateReading &&
-        self.state != SGPacketOutputStateSeeking)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGPacketOutputStatePaused];
-    [self unlock];
-    callback();
-    return YES;
+    return SGLockCondEXE10(self.coreLock, ^BOOL {
+        return self->_state == SGPacketOutputStateReading || self->_state == SGPacketOutputStateSeeking;
+    }, ^SGBasicBlock {
+        return [self setState:SGPacketOutputStatePaused];
+    });
 }
 
 - (BOOL)resume
 {
-    [self lock];
-    if (self.state != SGPacketOutputStatePaused &&
-        self.state != SGPacketOutputStateOpened)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGPacketOutputStateReading];
-    [self unlock];
-    callback();
-    return YES;
+    return SGLockCondEXE10(self.coreLock, ^BOOL {
+        return self->_state == SGPacketOutputStatePaused || self->_state == SGPacketOutputStateOpened;
+    }, ^SGBasicBlock {
+        return [self setState:SGPacketOutputStateReading];
+    });
 }
 
 #pragma mark - Seeking
@@ -178,25 +157,16 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
-    if (![self seekable])
-    {
+    if (![self seekable]) {
         return NO;
     }
-    [self lock];
-    if (self.state != SGPacketOutputStateReading &&
-        self.state != SGPacketOutputStatePaused &&
-        self.state != SGPacketOutputStateSeeking &&
-        self.state != SGPacketOutputStateFinished)
-    {
-        [self unlock];
-        return SGECreateError(SGErrorCodePacketOutputCannotSeek, SGOperationCodePacketOutputSeek);
-    }
-    SGBasicBlock callback = [self setState:SGPacketOutputStateSeeking];
-    self.seekTimeStamp = time;
-    self.seekCompletionHandler = completionHandler;
-    [self unlock];
-    callback();
-    return nil;
+    return SGLockCondEXE10(self.coreLock, ^BOOL {
+        return self->_state == SGPacketOutputStateReading || self->_state == SGPacketOutputStatePaused || self->_state == SGPacketOutputStateSeeking || self->_state == SGPacketOutputStateFinished;
+    }, ^SGBasicBlock {
+        self.seekTimeStamp = time;
+        self.seekCompletionHandler = completionHandler;
+        return [self setState:SGPacketOutputStateSeeking];
+    });
 }
 
 #pragma mark - Open
@@ -217,11 +187,9 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 - (void)openThread
 {
     self.error = [self.readable open];
-    [self lock];
-    SGPacketOutputState state = self.error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened;
-    SGBasicBlock callback = [self setState:state];
-    [self unlock];
-    callback();
+    SGLockEXE10(self.coreLock, ^SGBasicBlock {
+        return [self setState:self.error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
+    });
 }
 
 #pragma mark - Read
@@ -235,45 +203,37 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
     }];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
     self.readOperation.qualityOfService = NSQualityOfServiceUserInteractive;
-    self.readOperation.name = [NSString stringWithFormat:@"%@-Read-Queue", self.class];
+    self.readOperation.name = [NSString stringWithFormat:@"%@-readQueue", self.class];
     [self.readOperation addDependency:self.openOperation];
     [self.operationQueue addOperation:self.readOperation];
 }
 
 - (void)readThread
 {
-    while (YES)
-    {
-        @autoreleasepool
-        {
-            [self lock];
-            if (self.state == SGPacketOutputStateNone ||
-                self.state == SGPacketOutputStateFinished ||
-                self.state == SGPacketOutputStateClosed ||
-                self.state == SGPacketOutputStateFailed)
-            {
-                [self unlock];
+    while (YES) {
+        @autoreleasepool {
+            [self.coreLock lock];
+            if (self->_state == SGPacketOutputStateNone ||
+                self->_state == SGPacketOutputStateFinished ||
+                self->_state == SGPacketOutputStateClosed ||
+                self->_state == SGPacketOutputStateFailed) {
+                [self.coreLock unlock];
                 break;
-            }
-            else if (self.state == SGPacketOutputStatePaused)
-            {
+            } else if (self->_state == SGPacketOutputStatePaused) {
                 [self.pausedCondition lock];
-                [self unlock];
+                [self.coreLock unlock];
                 [self.pausedCondition wait];
                 [self.pausedCondition unlock];
                 continue;
-            }
-            else if (self.state == SGPacketOutputStateSeeking)
-            {
+            } else if (self->_state == SGPacketOutputStateSeeking) {
                 self.seekingTimeStamp = self.seekTimeStamp;
                 CMTime seekingTimeStamp = self.seekingTimeStamp;
-                [self unlock];
+                [self.coreLock unlock];
                 NSError * error = [self.readable seekToTime:seekingTimeStamp];
-                [self lock];
-                if (self.state == SGPacketOutputStateSeeking &&
-                    CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0)
-                {
-                    [self unlock];
+                [self.coreLock lock];
+                if (self->_state == SGPacketOutputStateSeeking &&
+                    CMTimeCompare(self.seekTimeStamp, seekingTimeStamp) != 0) {
+                    [self.coreLock unlock];
                     continue;
                 }
                 SGBasicBlock callback = [self setState:SGPacketOutputStateReading];
@@ -282,36 +242,27 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
                 self.seekTimeStamp = kCMTimeZero;
                 self.seekingTimeStamp = kCMTimeZero;
                 self.seekCompletionHandler = nil;
-                [self unlock];
-                if (seekCompletionHandler)
-                {
+                [self.coreLock unlock];
+                if (seekCompletionHandler) {
                     seekCompletionHandler(seekTimeStamp, error);
                 }
                 callback();
                 continue;
-            }
-            else if (self.state == SGPacketOutputStateReading)
-            {
-                [self unlock];
+            } else if (self->_state == SGPacketOutputStateReading) {
+                [self.coreLock unlock];
                 SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
                 NSError * error = [self.readable nextPacket:packet];
-                if (error)
-                {
-                    [self lock];
+                if (error) {
+                    [self.coreLock lock];
                     SGBasicBlock callback = ^{};
-                    if (self.state == SGPacketOutputStateReading)
-                    {
+                    if (self->_state == SGPacketOutputStateReading) {
                         callback = [self setState:SGPacketOutputStateFinished];
                     }
-                    [self unlock];
+                    [self.coreLock unlock];
                     callback();
-                }
-                else
-                {
-                    for (SGTrack * obj in self.readable.tracks)
-                    {
-                        if (obj.index == packet.core->stream_index)
-                        {
+                } else {
+                    for (SGTrack * obj in self.readable.tracks) {
+                        if (obj.index == packet.core->stream_index) {
                             [packet configurateWithTrack:obj];
                             break;
                         }
@@ -329,39 +280,18 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (BOOL)packetReadableShouldAbortBlockingFunctions:(id <SGPacketReadable>)packetReadable
 {
-    [self lock];
-    BOOL ret = NO;
-    switch (self.state)
-    {
-        case SGPacketOutputStateFinished:
-        case SGPacketOutputStateClosed:
-        case SGPacketOutputStateFailed:
-            ret = YES;
-            break;
-        case SGPacketOutputStateSeeking:
-            ret = CMTimeCompare(self.seekTimeStamp, self.seekingTimeStamp) != 0;
-            break;
-        default:
-            break;
-    }
-    [self unlock];
-    return ret;
-}
-
-#pragma mark - NSLocking
-
-- (void)lock
-{
-    if (!self.coreLock)
-    {
-        self.coreLock = [[NSLock alloc] init];
-    }
-    [self.coreLock lock];
-}
-
-- (void)unlock
-{
-    [self.coreLock unlock];
+    return SGLockCondEXE00(self.coreLock, ^BOOL {
+        switch (self->_state) {
+            case SGPacketOutputStateFinished:
+            case SGPacketOutputStateClosed:
+            case SGPacketOutputStateFailed:
+                return YES;
+            case SGPacketOutputStateSeeking:
+                return CMTimeCompare(self.seekTimeStamp, self.seekingTimeStamp) != 0;
+            default:
+                return NO;
+        }
+    }, nil);
 }
 
 @end

@@ -35,6 +35,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 @property (nonatomic, weak) id <SGPacketOutputDelegate> delegate;
 
 - (SGPacketOutputState)state;
+
 - (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
@@ -47,8 +48,10 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;
+
 - (BOOL)pause;
 - (BOOL)resume;
+
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
