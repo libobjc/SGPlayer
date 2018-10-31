@@ -387,7 +387,7 @@
 		9CE6F57B2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F57C2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
 		9CE6F57D2004D97D00D1F4C8 /* SGPlatform.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F52E2004D97C00D1F4C8 /* SGPlatform.h */; };
-		9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
+		9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE6F5A32004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9CE6F5A42004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
 		9CE6F5A52004E7ED00D1F4C8 /* SGMacro.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE6F5A12004E7ED00D1F4C8 /* SGMacro.h */; };
@@ -1789,6 +1789,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */,
 				9C8D4E63200E0ACC00ED8A58 /* SGPacketOutput.h in Headers */,
 				9C43D51121872D3F00235169 /* SGLock.h in Headers */,
@@ -1907,7 +1908,6 @@
 				9C2C55A32015C1E100131E15 /* SGPlaybackVideoRenderer.h in Headers */,
 				9CF99FED212D187A008178BC /* xvmc.h in Headers */,
 				9CF99F15212D187A008178BC /* avutil.h in Headers */,
-				9CE6F5A22004E7ED00D1F4C8 /* SGMacro.h in Headers */,
 				9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */,
 				9CF99FB4212D187A008178BC /* timestamp.h in Headers */,
 				9CF99F09212D187A008178BC /* sha.h in Headers */,

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGCapacity.h"
+#import "SGMacro.h"
 #import "SGTime.h"
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
@@ -34,20 +35,31 @@
 @property (nonatomic, weak) id <SGObjectQueueDelegate> delegate;
 @property (nonatomic, assign) BOOL shouldSortObjects;
 
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
-- (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;
-
-- (__kindof id <SGObjectQueueItem>)getObjectSync;
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
-
-- (__kindof id <SGObjectQueueItem>)getObjectAsync;
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
-
 - (SGCapacity *)capacity;
 
-- (void)flush;
-- (void)destroy;
+#pragma mark - Put Sync
+
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
+
+#pragma mark - Put Async
+
+- (SGBasicBlock)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;
+
+#pragma mark - Get Sync
+
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object;
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+
+#pragma mark - Get Async
+
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object;
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+
+#pragma mark - Common
+
+- (SGBasicBlock)flush;
+- (SGBasicBlock)destroy;
 
 @end

@@ -43,18 +43,41 @@
 
 - (void)dealloc
 {
-    [self destroy];
+    [self.condition lock];
+    for (id <SGObjectQueueItem> obj in self.objects) {
+        [obj unlock];
+    }
+    [self.objects removeAllObjects];
+    self.size = 0;
+    self.duration = kCMTimeZero;
+    self.puttingObject = nil;
+    self.cancelPutObject = nil;
+    [self.condition unlock];
 }
 
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object
+- (SGCapacity *)capacity
+{
+    if (self.didDestoryed) {
+        return [[SGCapacity alloc] init];
+    }
+    [self.condition lock];
+    SGCapacity * ret = [[SGCapacity alloc] init];
+    ret.duration = self.duration;
+    ret.size = self.size;
+    ret.count = self.objects.count;
+    [self.condition unlock];
+    return ret;
+}
+
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object
 {
     return [self putObjectSync:object waitHandler:nil resumeHandler:nil];
 }
 
-- (void)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
 {
     if (self.didDestoryed) {
-        return;
+        return ^{};
     }
     [self.condition lock];
     while (self.objects.count >= self.maxCount) {
@@ -69,7 +92,7 @@
         self.puttingObject = nil;
         if (self.didDestoryed) {
             [self.condition unlock];
-            return;
+            return ^{};
         }
     }
     SGCapacity * capacity = nil;
@@ -81,26 +104,32 @@
     }
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
+    return ^{};
 }
 
-- (void)putObjectAsync:(__kindof id <SGObjectQueueItem>)object
+- (SGBasicBlock)putObjectAsync:(__kindof id <SGObjectQueueItem>)object
 {
     if (self.didDestoryed) {
-        return;
+        return ^{};
     }
     [self.condition lock];
     if (self.objects.count >= self.maxCount) {
         [self.condition unlock];
-        return;
+        return ^{};
     }
     SGCapacity * capacity = [self putObject:object];
     [self.condition signal];
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
+    return ^{};
 }
 
 - (SGCapacity *)putObject:(__kindof id <SGObjectQueueItem>)object
@@ -122,12 +151,12 @@
     return obj;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectSync
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object
 {
-    return [self getObjectSyncWithWaitHandler:nil resumeHandler:nil];
+    return [self getObjectSync:object waitHandler:nil resumeHandler:nil];
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -140,37 +169,22 @@
         }
         if (self.didDestoryed) {
             [self.condition unlock];
-            return nil;
+            return ^{};
         }
     }
     SGCapacity * capacity = nil;
-    id <SGObjectQueueItem> object = [self getObject:&capacity];
+    * object = [self getObject:&capacity];
     [self.condition signal];
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
-    return object;
+    return ^{};
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectAsync
-{
-    [self.condition lock];
-    if (self.objects.count <= 0 || self.didDestoryed) {
-        [self.condition unlock];
-        return nil;
-    }
-    SGCapacity * capacity = nil;
-    id <SGObjectQueueItem> object = [self getObject:&capacity];
-    [self.condition signal];
-    [self.condition unlock];
-    if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
-    }
-    return object;
-}
-
-- (__kindof id <SGObjectQueueItem>)getObjectSyncWithWaitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -183,38 +197,61 @@
         }
         if (self.didDestoryed) {
             [self.condition unlock];
-            return nil;
+            return ^{};
         }
     }
     SGCapacity * capacity = nil;
-    id <SGObjectQueueItem> object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    * object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
     if (object) {
         [self.condition signal];
     }
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
-    return object;
+    return ^{};
 }
 
-- (__kindof id <SGObjectQueueItem>)getObjectAsyncWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
         [self.condition unlock];
-        return nil;
+        return ^{};
     }
     SGCapacity * capacity = nil;
-    id <SGObjectQueueItem> object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
-    if (object) {
+    * object = [self getObject:&capacity];
+    [self.condition signal];
+    [self.condition unlock];
+    if (capacity) {
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
+    }
+    return ^{};
+}
+
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+{
+    [self.condition lock];
+    if (self.objects.count <= 0 || self.didDestoryed) {
+        [self.condition unlock];
+        return ^{};
+    }
+    SGCapacity * capacity = nil;
+    * object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    if (* object) {
         [self.condition signal];
     }
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
-    return object;
+    return ^{};
 }
 
 - (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
@@ -266,21 +303,7 @@
     return object;
 }
 
-- (SGCapacity *)capacity
-{
-    if (self.didDestoryed) {
-        return [[SGCapacity alloc] init];
-    }
-    [self.condition lock];
-    SGCapacity * ret = [[SGCapacity alloc] init];
-    ret.duration = self.duration;
-    ret.size = self.size;
-    ret.count = self.objects.count;
-    [self.condition unlock];
-    return ret;
-}
-
-- (void)flush
+- (SGBasicBlock)flush
 {
     [self.condition lock];
     for (id <SGObjectQueueItem> obj in self.objects) {
@@ -296,15 +319,17 @@
     [self.condition broadcast];
     [self.condition unlock];
     if (capacity) {
-        [self.delegate objectQueue:self didChangeCapacity:capacity];
+        return ^{
+            [self.delegate objectQueue:self didChangeCapacity:capacity];
+        };
     }
+    return ^{};
 }
 
-- (void)destroy
+- (SGBasicBlock)destroy
 {
     self.didDestoryed = YES;
-    [self flush];
+    return [self flush];
 }
-
 
 @end

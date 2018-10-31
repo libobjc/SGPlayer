@@ -94,7 +94,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 {
     __block SGCapacity * ret = nil;
     SGLockEXE00(self.coreLock, ^{
-         ret = [self.capacityMap objectForKey:track];
+         ret = [[self.capacityMap objectForKey:track] copy];
     });
     return ret ? ret : [[SGCapacity alloc] init];
 }
@@ -168,8 +168,8 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         [self.frameOutput close];
         [self.audioFilter destroy];
         [self.videoFilter destroy];
-        [self.audioQueue destroy];
-        [self.videoQueue destroy];
+        [self.audioQueue destroy]();
+        [self.videoQueue destroy]();
         return YES;
     });
 }
@@ -212,8 +212,8 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             }, ^BOOL(SGBasicBlock block) {
                 [self.audioFilter flush];
                 [self.videoFilter flush];
-                [self.audioQueue flush];
-                [self.videoQueue flush];
+                [self.audioQueue flush]();
+                [self.videoQueue flush]();
                 if (completionHandler) {
                     completionHandler(time, error);
                 }
@@ -225,12 +225,16 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 - (__kindof SGFrame *)nextAudioFrame
 {
-    return [self.audioQueue getObjectAsync];
+    SGFrame * ret = nil;
+    [self.audioQueue getObjectAsync:&ret]();
+    return ret;
 }
 
 - (__kindof SGFrame *)nextVideoFrameWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
 {
-    return [self.videoQueue getObjectAsyncWithPTSHandler:ptsHandler drop:drop];
+    SGFrame * ret = nil;
+    [self.videoQueue getObjectAsync:&ret ptsHandler:ptsHandler drop:drop]();
+    return ret;
 }
 
 #pragma mark - SGFrameOutputDelegate
@@ -287,14 +291,14 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             if (self.audioFilter) {
                 frame = [self.audioFilter convert:frame];
             }
-            [self.audioQueue putObjectSync:frame];
+            [self.audioQueue putObjectSync:frame]();
         }
             break;
         case SGMediaTypeVideo: {
             if (self.videoFilter) {
                 frame = [self.videoFilter convert:frame];
             }
-            [self.videoQueue putObjectSync:frame];
+            [self.videoQueue putObjectSync:frame]();
         }
             break;
         default:

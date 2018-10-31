@@ -11,7 +11,7 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGAsyncDecoder ()
+@interface SGAsyncDecoder () <SGObjectQueueDelegate>
 
 {
     SGAsyncDecoderState _state;
@@ -20,6 +20,7 @@
 @property (nonatomic, strong) id <SGDecodable> decodable;
 @property (nonatomic, assign) BOOL waitingFlush;
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) SGObjectQueue * packetQueue;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
 @property (nonatomic, strong) NSOperation * decodeOperation;
@@ -45,6 +46,7 @@ static SGPacket * flushPacket;
         self.decodable = decodable;
         self.coreLock = [[NSLock alloc] init];
         self.packetQueue = [[SGObjectQueue alloc] init];
+        self.packetQueue.delegate = self;
         self.pausedCondition = [[NSCondition alloc] init];
         self.operationQueue = [[NSOperationQueue alloc] init];
         self.operationQueue.maxConcurrentOperationCount = 1;
@@ -83,7 +85,11 @@ static SGPacket * flushPacket;
 
 - (SGCapacity *)capacity
 {
-    return self.packetQueue.capacity;
+    __block SGCapacity * ret = nil;
+    SGLockEXE00(self.coreLock, ^{
+        ret = [self->_capacity copy];
+    });
+    return ret ? ret : [[SGCapacity alloc] init];
 }
 
 #pragma mark - Interface
@@ -109,7 +115,7 @@ static SGPacket * flushPacket;
         return [self setState:SGAsyncDecoderStateClosed];
     }, ^BOOL(SGBasicBlock block) {
         block();
-        [self.packetQueue destroy];
+        [self.packetQueue destroy]();
         [self.operationQueue cancelAllOperations];
         [self.operationQueue waitUntilAllOperationsAreFinished];
         self.operationQueue = nil;
@@ -144,8 +150,7 @@ static SGPacket * flushPacket;
         return nil;
     }, ^BOOL(SGBasicBlock block) {
         block();
-        [self.packetQueue putObjectSync:packet];
-        [self callbackForCapacity];
+        [self.packetQueue putObjectSync:packet]();
         return YES;
     });
 }
@@ -158,8 +163,7 @@ static SGPacket * flushPacket;
         return nil;
     }, ^BOOL(SGBasicBlock block) {
         block();
-        [self.packetQueue putObjectSync:finishPacket];
-        [self callbackForCapacity];
+        [self.packetQueue putObjectSync:finishPacket]();
         return YES;
     });
 }
@@ -174,8 +178,7 @@ static SGPacket * flushPacket;
     }, ^BOOL(SGBasicBlock block) {
         block();
         [self.packetQueue flush];
-        [self.packetQueue putObjectSync:flushPacket];
-        [self callbackForCapacity];
+        [self.packetQueue putObjectSync:flushPacket]();
         return YES;
     });
 }
@@ -212,7 +215,8 @@ static SGPacket * flushPacket;
                 continue;
             } else if (self->_state == SGAsyncDecoderStateDecoding) {
                 [self.coreLock unlock];
-                SGPacket * packet = [self.packetQueue getObjectSync];
+                SGPacket * packet = nil;
+                SGBasicBlock block = [self.packetQueue getObjectSync:&packet];
                 if (packet == flushPacket) {
                     [self.coreLock lock];
                     self.waitingFlush = NO;
@@ -232,19 +236,23 @@ static SGPacket * flushPacket;
                         [frame unlock];
                     }
                 }
-                [self callbackForCapacity];
                 [packet unlock];
+                block();
                 continue;
             }
         }
     }
 }
 
-#pragma mark - Callback
+#pragma mark - SGObjectQueueDelegate
 
-- (void)callbackForCapacity
+- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
-    [self.delegate decoder:self didChangeCapacity:self.capacity];
+    capacity = [capacity copy];
+    SGLockEXE00(self.coreLock, ^{
+        self.capacity = capacity;
+    });
+    [self.delegate decoder:self didChangeCapacity:capacity];
 }
 
 @end

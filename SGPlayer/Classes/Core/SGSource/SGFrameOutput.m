@@ -83,7 +83,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 {
     __block SGCapacity * ret = nil;
     SGLockEXE00(self.coreLock, ^{
-        ret = [self.capacityMap objectForKey:track];
+        ret = [[self.capacityMap objectForKey:track] copy];
     });
     return ret ? ret : [[SGCapacity alloc] init];
 }
