@@ -56,7 +56,7 @@
     return object;
 }
 
-- (void)comeback:(__kindof id <SGObjectPoolItem>)object
+- (void)comeback:(id <SGObjectPoolItem>)object
 {
     [self.coreLock lock];
     NSString * className = NSStringFromClass(object.class);

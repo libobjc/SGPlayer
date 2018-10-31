@@ -11,11 +11,13 @@
 #import "SGDefines.h"
 #import "SGTime.h"
 
-@protocol SGObjectQueueItem <NSObject, NSLocking>
+@protocol SGObjectQueueItem <NSObject>
 
 - (CMTime)timeStamp;
 - (CMTime)duration;
 - (uint64_t)size;
+- (void)lock;
+- (void)unlock;
 
 @end
 
@@ -39,23 +41,23 @@
 
 #pragma mark - Put Sync
 
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
+- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object;
+- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
 
 #pragma mark - Put Async
 
-- (SGBasicBlock)putObjectAsync:(__kindof id <SGObjectQueueItem>)object;
+- (SGBasicBlock)putObjectAsync:(id <SGObjectQueueItem>)object;
 
 #pragma mark - Get Sync
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock;
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object;
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock;
 
 #pragma mark - Get Async
 
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock;
+- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object;
+- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock;
 
 #pragma mark - Common
 

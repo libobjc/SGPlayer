@@ -690,8 +690,6 @@
 #pragma mark - SGRenderableDelegate
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state {}
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity {}
-- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame {}
 
 - (SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable clock:(SGClockBlock)clock
 {

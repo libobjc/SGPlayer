@@ -16,8 +16,8 @@
 
 @property (nonatomic, strong) NSCondition * condition;
 @property (nonatomic, strong) NSMutableArray <id <SGObjectQueueItem>> * objects;
-@property (nonatomic, strong) __kindof id <SGObjectQueueItem> puttingObject;
-@property (nonatomic, strong) __kindof id <SGObjectQueueItem> cancelPutObject;
+@property (nonatomic, strong) id <SGObjectQueueItem> puttingObject;
+@property (nonatomic, strong) id <SGObjectQueueItem> cancelPutObject;
 
 @property (nonatomic, assign) BOOL didDestoryed;
 
@@ -69,12 +69,12 @@
     return ret;
 }
 
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object
+- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object
 {
     return [self putObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after
+- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after
 {
     if (self.didDestoryed) {
         return ^{};
@@ -111,7 +111,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)putObjectAsync:(__kindof id <SGObjectQueueItem>)object
+- (SGBasicBlock)putObjectAsync:(id <SGObjectQueueItem>)object
 {
     if (self.didDestoryed) {
         return ^{};
@@ -132,7 +132,7 @@
     return ^{};
 }
 
-- (SGCapacity *)putObject:(__kindof id <SGObjectQueueItem>)object
+- (SGCapacity *)putObject:(id <SGObjectQueueItem>)object
 {
     [object lock];
     [self.objects addObject:object];
@@ -151,12 +151,12 @@
     return obj;
 }
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object
 {
     return [self getObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -184,7 +184,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock
+- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -214,7 +214,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object
+- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -233,7 +233,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock
+- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -254,7 +254,7 @@
     return ^{};
 }
 
-- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity clock:(SGClockBlock)clock
+- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity clock:(SGClockBlock)clock
 {
     CMTime current = kCMTimeZero;
     CMTime expect = kCMTimeZero;
@@ -278,7 +278,7 @@
     return object;
 }
 
-- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity
+- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity
 {
     if (!self.objects.firstObject) {
         return nil;

@@ -43,7 +43,7 @@
 + (instancetype)sharePool;
 
 - (__kindof id <SGObjectPoolItem>)objectWithClass:(Class)class;
-- (void)comeback:(__kindof id <SGObjectPoolItem>)object;
+- (void)comeback:(id <SGObjectPoolItem>)object;
 - (void)flush;
 
 @end
