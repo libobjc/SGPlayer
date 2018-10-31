@@ -249,9 +249,9 @@ static SGPacket * flushPacket;
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
     [capacity copy];
-    SGLockCondEXE11(self.coreLock, ^BOOL{
+    SGLockCondEXE11(self.coreLock, ^BOOL {
         return ![self->_capacity isEqualToCapacity:capacity];
-    }, ^SGBasicBlock{
+    }, ^SGBasicBlock {
         self.capacity = capacity;
         return nil;
     }, ^BOOL(SGBasicBlock block) {

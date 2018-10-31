@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGMacro.h"
+#import "SGDefines.h"
 
 BOOL SGLockEXE00(id <NSLocking> locking, void (^run)(void));
 BOOL SGLockEXE10(id <NSLocking> locking, SGBasicBlock (^run)(void));

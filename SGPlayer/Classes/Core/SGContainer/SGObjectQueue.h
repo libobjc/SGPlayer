@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGCapacity.h"
-#import "SGMacro.h"
+#import "SGDefines.h"
 #import "SGTime.h"
 
 @protocol SGObjectQueueItem <NSObject, NSLocking>
@@ -40,7 +40,7 @@
 #pragma mark - Put Sync
 
 - (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object;
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
 
 #pragma mark - Put Async
 
@@ -49,13 +49,13 @@
 #pragma mark - Get Sync
 
 - (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler;
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock;
 
 #pragma mark - Get Async
 
 - (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop;
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock;
 
 #pragma mark - Common
 

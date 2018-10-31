@@ -10,6 +10,7 @@
 #import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
 #import "SGPointerMap.h"
+#import "SGMacro.h"
 #import "SGLock.h"
 
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
@@ -225,17 +226,17 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     });
 }
 
-- (__kindof SGFrame *)nextAudioFrame
+- (SGFrame *)copyAudioFrame:(SGClockBlock)clock
 {
     SGFrame * ret = nil;
-    [self.audioQueue getObjectAsync:&ret]();
+    [self.audioQueue getObjectAsync:&ret clock:clock]();
     return ret;
 }
 
-- (__kindof SGFrame *)nextVideoFrameWithPTSHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
+- (SGFrame *)copyVideoFrame:(SGClockBlock)clock
 {
     SGFrame * ret = nil;
-    [self.videoQueue getObjectAsync:&ret ptsHandler:ptsHandler drop:drop]();
+    [self.videoQueue getObjectAsync:&ret clock:clock]();
     return ret;
 }
 

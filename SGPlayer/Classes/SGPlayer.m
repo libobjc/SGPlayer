@@ -693,18 +693,12 @@
 - (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity {}
 - (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame {}
 
-- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable
+- (SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable clock:(SGClockBlock)clock
 {
     if (renderable == self.audioOutput) {
-        return [self.currentItem nextAudioFrame];
-    }
-    return nil;
-}
-
-- (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop
-{
-    if (renderable == self.videoOutput) {
-        return [self.currentItem nextVideoFrameWithPTSHandler:ptsHandler drop:drop];
+        return [self.currentItem copyAudioFrame:clock];
+    } else if (renderable == self.videoOutput) {
+        return [self.currentItem copyVideoFrame:clock];
     }
     return nil;
 }

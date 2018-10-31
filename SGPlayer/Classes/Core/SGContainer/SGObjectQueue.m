@@ -71,10 +71,10 @@
 
 - (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object
 {
-    return [self putObjectSync:object waitHandler:nil resumeHandler:nil];
+    return [self putObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+- (SGBasicBlock)putObjectSync:(__kindof id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after
 {
     if (self.didDestoryed) {
         return ^{};
@@ -82,12 +82,12 @@
     [self.condition lock];
     while (self.objects.count >= self.maxCount) {
         self.puttingObject = object;
-        if (waitHandler) {
-            waitHandler();
+        if (before) {
+            before();
         }
         [self.condition wait];
-        if (resumeHandler) {
-            resumeHandler();
+        if (after) {
+            after();
         }
         self.puttingObject = nil;
         if (self.didDestoryed) {
@@ -153,19 +153,19 @@
 
 - (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object
 {
-    return [self getObjectSync:object waitHandler:nil resumeHandler:nil];
+    return [self getObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
-        if (waitHandler) {
-            waitHandler();
+        if (before) {
+            before();
         }
         [self.condition wait];
-        if (resumeHandler) {
-            resumeHandler();
+        if (after) {
+            after();
         }
         if (self.didDestoryed) {
             [self.condition unlock];
@@ -184,16 +184,16 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object waitHandler:(void (^)(void))waitHandler resumeHandler:(void (^)(void))resumeHandler ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+- (SGBasicBlock)getObjectSync:(__kindof id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
-        if (waitHandler) {
-            waitHandler();
+        if (before) {
+            before();
         }
         [self.condition wait];
-        if (resumeHandler) {
-            resumeHandler();
+        if (after) {
+            after();
         }
         if (self.didDestoryed) {
             [self.condition unlock];
@@ -201,7 +201,7 @@
         }
     }
     SGCapacity * capacity = nil;
-    * object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    * object = [self getObject:&capacity clock:clock];
     if (object) {
         [self.condition signal];
     }
@@ -233,7 +233,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+- (SGBasicBlock)getObjectAsync:(__kindof id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -241,7 +241,7 @@
         return ^{};
     }
     SGCapacity * capacity = nil;
-    * object = [self getObject:&capacity ptsHandler:ptsHandler drop:drop];
+    * object = [self getObject:&capacity clock:clock];
     if (* object) {
         [self.condition signal];
     }
@@ -254,14 +254,12 @@
     return ^{};
 }
 
-- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity ptsHandler:(BOOL(^)(CMTime * current, CMTime * expect))ptsHandler drop:(BOOL)drop
+- (__kindof id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity clock:(SGClockBlock)clock
 {
-    if (!ptsHandler) {
-        return [self getObject:capacity];
-    }
     CMTime current = kCMTimeZero;
     CMTime expect = kCMTimeZero;
-    if (!ptsHandler(&current, &expect)) {
+    BOOL drop = NO;
+    if (!clock || !clock(&current, &expect, &drop)) {
         return [self getObject:capacity];
     }
     id <SGObjectQueueItem> object = nil;

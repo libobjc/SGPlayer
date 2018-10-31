@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AVFoundation/AVFoundation.h>
 
 typedef NS_ENUM(NSUInteger, SGPrepareState)
 {
@@ -67,3 +68,6 @@ typedef NS_OPTIONS(NSUInteger, SGTimeOption)
     SGTimeOptionDuration = 1 << 2,
     SGTimeOptionActualStartTime = 1 << 3,
 };
+
+typedef void (^SGBasicBlock)(void);
+typedef BOOL (^SGClockBlock)(CMTime * current, CMTime * desire, BOOL * drop);

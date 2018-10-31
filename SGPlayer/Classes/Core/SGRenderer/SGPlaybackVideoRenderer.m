@@ -282,7 +282,7 @@
     if (needFetchFrame)
     {
         SGWeakSelf
-        frame = [self.delegate renderableNeedMoreFrame:self ptsHandler:^BOOL(CMTime * current, CMTime * expect) {
+        frame = [self.delegate renderableCopyFrame:self clock:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
             SGStrongSelf
             if (!self.currentFrame)
             {
@@ -292,8 +292,9 @@
             NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
             * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
             * current = self.currentFrame.timeStamp;
+            * drop = !self.key;
             return YES;
-        } drop:!self.key];
+        }];
         if (frame && self.discardFilter)
         {
             CMSampleTimingInfo timingInfo = {kCMTimeZero};

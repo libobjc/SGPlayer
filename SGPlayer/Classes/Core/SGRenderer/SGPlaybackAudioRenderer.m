@@ -110,7 +110,7 @@
 
 - (BOOL)close
 {
-    return SGLockCondEXE11(self.coreLock, ^BOOL{
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGRenderableStateClosed;
     }, ^SGBasicBlock {
         [self.currentFrame unlock];
@@ -177,7 +177,7 @@
     while (numberOfSamples > 0) {
         if (!self.currentFrame) {
             [self.coreLock unlock];
-            SGAudioFrame * frame = [self.delegate renderableNeedMoreFrame:self];
+            SGAudioFrame * frame = [self.delegate renderableCopyFrame:self clock:nil];
             [self.coreLock lock];
             self.currentFrame = frame;
         }
