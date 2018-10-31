@@ -46,6 +46,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
+// thread-unsafe
 @property (nonatomic, strong) SGTrack * selectedAudioTrack;
 @property (nonatomic, strong) SGTrack * selectedVideoTrack;
 
@@ -55,8 +56,8 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (BOOL)start;
 - (BOOL)close;
 
-- (BOOL)pause:(NSArray <SGTrack *> *)tracks;
-- (BOOL)resume:(NSArray <SGTrack *> *)tracks;
+- (BOOL)pause:(SGMediaType)type;
+- (BOOL)resume:(SGMediaType)type;
 
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;

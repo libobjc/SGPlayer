@@ -77,7 +77,11 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 - (SGPlayerItemState)state
 {
-    return _state;
+    __block SGPlayerItemState ret = SGPlayerItemStateNone;
+    SGLockEXE00(self.coreLock, ^{
+        ret = self->_state;
+    });
+    return ret;
 }
 
 - (SGCapacity *)capacity
@@ -132,7 +136,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 - (BOOL)open
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
-        return self.state == SGPlayerItemStateNone;
+        return self->_state == SGPlayerItemStateNone;
     }, ^SGBasicBlock {
         return [self setState:SGPlayerItemStateOpening];
     }, ^BOOL(SGBasicBlock block) {
@@ -144,7 +148,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 - (BOOL)start
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
-        return self.state == SGPlayerItemStateOpened;
+        return self->_state == SGPlayerItemStateOpened;
     }, ^SGBasicBlock {
         return [self setState:SGPlayerItemStateReading];;
     }, ^BOOL(SGBasicBlock block) {
@@ -156,7 +160,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 - (BOOL)close
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
-        return self.state != SGPlayerItemStateClosed;
+        return self->_state != SGPlayerItemStateClosed;
     }, ^SGBasicBlock {
         return [self setState:SGPlayerItemStateClosed];
     }, ^BOOL(SGBasicBlock block) {
@@ -181,7 +185,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 - (BOOL)seekable
 {
-    return !self.frameOutput.seekable;
+    return self.frameOutput.seekable;
 }
 
 - (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
@@ -191,7 +195,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     }
     __block NSUInteger seekingCount = 0;
     return SGLockCondEXE11(self.coreLock, ^BOOL{
-        return self.state == SGPlayerItemStateReading || self.state == SGPlayerItemStateFinished;
+        return self->_state == SGPlayerItemStateReading || self->_state == SGPlayerItemStateFinished;
     }, ^SGBasicBlock{
         self.seekingCount++;
         seekingCount = self.seekingCount;
@@ -314,9 +318,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     }
     NSAssert(track, @"Invalid track.");
     if (capacity.count > threshold) {
-        [self.frameOutput pause:@[track]];
+        [self.frameOutput pause:track.type];
     } else {
-        [self.frameOutput resume:@[track]];
+        [self.frameOutput resume:track.type];
     }
     SGCapacity * additional = [self.frameOutput capacityWithTrack:track];
     capacity = [capacity copy];
