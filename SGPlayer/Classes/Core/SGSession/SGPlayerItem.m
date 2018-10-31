@@ -18,6 +18,7 @@
     SGPlayerItemState _state;
 }
 
+@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 @property (nonatomic, strong) NSError * error;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingCount;
@@ -27,7 +28,8 @@
 @property (nonatomic, strong) SGObjectQueue * videoQueue;
 @property (nonatomic, strong) SGFrameFilter * audioFilter;
 @property (nonatomic, strong) SGFrameFilter * videoFilter;
-@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
+@property (nonatomic, assign) BOOL audioFinished;
+@property (nonatomic, assign) BOOL videoFinished;
 
 @end
 

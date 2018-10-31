@@ -164,54 +164,70 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
     SGLockEXE10(self.coreLock, ^SGBasicBlock {
-        SGBasicBlock block = ^{};
+        SGBasicBlock stateBlock = ^{};
+        SGBasicBlock audioBlock = ^{};
+        SGBasicBlock videoBlock = ^{};
         switch (state)
         {
             case SGPacketOutputStateNone:
-                block = [self setState:SGFrameOutputStateNone];
+                stateBlock = [self setState:SGFrameOutputStateNone];
                 break;
             case SGPacketOutputStateOpening:
-                block = [self setState:SGFrameOutputStateOpening];
+                stateBlock = [self setState:SGFrameOutputStateOpening];
                 break;
             case SGPacketOutputStateOpened:
             {
-                block = [self setState:SGFrameOutputStateOpened];
+                stateBlock = [self setState:SGFrameOutputStateOpened];
                 self.selectedAudioTrack = self.audioTracks.firstObject;
                 self.selectedVideoTrack = self.videoTracks.firstObject;
                 if (self.selectedAudioTrack) {
                     self.audioDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGAudioDecoder alloc] init]];
                     self.audioDecoder.delegate = self;
-                    [self.audioDecoder open];
+                    audioBlock = ^{
+                        [self.audioDecoder open];
+                    };
                 }
                 if (self.selectedVideoTrack) {
                     self.videoDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGVideoDecoder alloc] init]];
                     self.videoDecoder.delegate = self;
-                    [self.videoDecoder open];
+                    videoBlock = ^{
+                        [self.videoDecoder open];
+                    };
                 }
             }
                 break;
             case SGPacketOutputStateReading:
-                block = [self setState:SGFrameOutputStateReading];
+                stateBlock = [self setState:SGFrameOutputStateReading];
                 break;
             case SGPacketOutputStatePaused:
-                block = [self setState:SGFrameOutputStatePaused];
+                stateBlock = [self setState:SGFrameOutputStatePaused];
                 break;
             case SGPacketOutputStateSeeking:
-                block = [self setState:SGFrameOutputStateSeeking];
+                stateBlock = [self setState:SGFrameOutputStateSeeking];
                 break;
             case SGPacketOutputStateFinished:
-                [self.audioDecoder finish];
-                [self.videoDecoder finish];
+            {
+                audioBlock = ^{
+                    [self.audioDecoder finish];
+                };
+                videoBlock = ^{
+                    [self.videoDecoder finish];
+                };
+            }
                 break;
             case SGPacketOutputStateClosed:
-                block = [self setState:SGFrameOutputStateClosed];
+                stateBlock = [self setState:SGFrameOutputStateClosed];
                 break;
             case SGPacketOutputStateFailed:
                 self.error = packetOutput.error;
-                block = [self setState:SGFrameOutputStateFailed];
+                stateBlock = [self setState:SGFrameOutputStateFailed];
                 break;
         }
-        return block;
+        return ^{
+            stateBlock();
+            audioBlock();
+            videoBlock();
+        };
     });
 }
 
