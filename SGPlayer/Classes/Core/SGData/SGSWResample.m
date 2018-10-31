@@ -43,8 +43,7 @@
         self.o_format == 0 ||
         self.o_sample_rate == 0 ||
         self.o_channels == 0 ||
-        self.o_channel_layout == 0)
-    {
+        self.o_channel_layout == 0) {
         return NO;
     }
     self.swrContext = swr_alloc_set_opts(NULL,
@@ -55,8 +54,7 @@
                                          self.i_format,
                                          self.i_sample_rate,
                                          0, NULL);
-    if (swr_init(self.swrContext) < 0)
-    {
+    if (swr_init(self.swrContext) < 0) {
         return NO;
     }
     return YES;

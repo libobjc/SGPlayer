@@ -43,8 +43,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.coreLock = [[NSLock alloc] init];
         self.targets = [NSMutableSet set];
     }
@@ -53,13 +52,11 @@
 
 - (void)addTarget:(id)target
 {
-    if (!target)
-    {
+    if (!target) {
         return;
     }
     [self.coreLock lock];
-    if (![self.targets containsObject:[self token:target]])
-    {
+    if (![self.targets containsObject:[self token:target]]) {
         [self.targets addObject:[self token:target]];
     }
     [self reload];
@@ -68,13 +65,11 @@
 
 - (void)removeTarget:(id)target
 {
-    if (!target)
-    {
+    if (!target) {
         return;
     }
     [self.coreLock lock];
-    if ([self.targets containsObject:[self token:target]])
-    {
+    if ([self.targets containsObject:[self token:target]]) {
         [self.targets removeObject:[self token:target]];
     }
     [self reload];

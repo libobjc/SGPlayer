@@ -37,8 +37,7 @@
     NSAssert(self.lockingCount <= 0, @"SGFrame, must be unlocked before release");
     
     [self clear];
-    if (self.core)
-    {
+    if (self.core) {
         av_frame_free(&_core);
         _core = NULL;
     }
@@ -57,8 +56,7 @@
     [self.coreLock lock];
     self.lockingCount--;
     [self.coreLock unlock];
-    if (self.lockingCount <= 0)
-    {
+    if (self.lockingCount <= 0) {
         self.lockingCount = 0;
         [[SGObjectPool sharePool] comeback:self];
     }
@@ -66,8 +64,7 @@
 
 - (void)clear
 {
-    if (self.core)
-    {
+    if (self.core) {
         av_frame_unref(self.core);
     }
     _track = nil;

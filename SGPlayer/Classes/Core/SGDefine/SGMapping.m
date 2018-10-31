@@ -10,8 +10,7 @@
 
 SGGLModelType SGDisplay2Model(SGDisplayMode displayMode)
 {
-    switch (displayMode)
-    {
+    switch (displayMode) {
         case SGDisplayModePlane:
             return SGGLModelTypePlane;
         case SGDisplayModeVR:
@@ -23,12 +22,10 @@ SGGLModelType SGDisplay2Model(SGDisplayMode displayMode)
 
 SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
 {
-    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer)
-    {
+    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer) {
         format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
     }
-    switch (format)
-    {
+    switch (format) {
         case AV_PIX_FMT_YUV420P:
             return SGGLProgramTypeYUV420P;
         case AV_PIX_FMT_NV12:
@@ -42,12 +39,10 @@ SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pix
 
 SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
 {
-    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer)
-    {
+    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer) {
         format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
     }
-    switch (format)
-    {
+    switch (format) {
         case AV_PIX_FMT_YUV420P:
             return SGGLTextureTypeYUV420P;
         case AV_PIX_FMT_NV12:
@@ -59,8 +54,7 @@ SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pix
 
 SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
 {
-    switch (scalingMode)
-    {
+    switch (scalingMode) {
         case SGScalingModeResize:
             return SGGLViewportModeResize;
         case SGScalingModeResizeAspect:
@@ -73,8 +67,7 @@ SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
 
 SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType)
 {
-    switch (mediaType)
-    {
+    switch (mediaType) {
         case AVMEDIA_TYPE_AUDIO:
             return SGMediaTypeAudio;
         case AVMEDIA_TYPE_VIDEO:
@@ -88,8 +81,7 @@ SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType)
 
 enum AVMediaType SGMediaTypeSG2FF(SGMediaType mediaType)
 {
-    switch (mediaType)
-    {
+    switch (mediaType) {
         case SGMediaTypeAudio:
             return AVMEDIA_TYPE_AUDIO;
         case SGMediaTypeVideo:
@@ -103,8 +95,7 @@ enum AVMediaType SGMediaTypeSG2FF(SGMediaType mediaType)
 
 OSType SGPixelFormatFF2AV(enum AVPixelFormat format)
 {
-    switch (format)
-    {
+    switch (format) {
         case AV_PIX_FMT_MONOBLACK:
             return kCVPixelFormatType_1Monochrome;
         case AV_PIX_FMT_RGB555BE:
@@ -159,8 +150,7 @@ OSType SGPixelFormatFF2AV(enum AVPixelFormat format)
 
 enum AVPixelFormat SGPixelFormatAV2FF(OSType format)
 {
-    switch (format)
-    {
+    switch (format) {
         case kCVPixelFormatType_1Monochrome:
             return AV_PIX_FMT_MONOBLACK;
         case kCVPixelFormatType_16BE555:
@@ -217,12 +207,9 @@ AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary)
 {
     __block AVDictionary * ret = NULL;
     [dictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([obj isKindOfClass:[NSNumber class]])
-        {
+        if ([obj isKindOfClass:[NSNumber class]]) {
             av_dict_set_int(&ret, [key UTF8String], [obj integerValue], 0);
-        }
-        else if ([obj isKindOfClass:[NSString class]])
-        {
+        } else if ([obj isKindOfClass:[NSString class]]) {
             av_dict_set(&ret, [key UTF8String], [obj UTF8String], 0);
         }
     }];
@@ -233,14 +220,12 @@ NSDictionary * SGDictionaryFF2NS(AVDictionary * dictionary)
 {
     NSMutableDictionary * ret = [NSMutableDictionary dictionary];
     AVDictionaryEntry * entry = NULL;
-    while ((entry = av_dict_get(dictionary, "", entry, AV_DICT_IGNORE_SUFFIX)))
-    {
+    while ((entry = av_dict_get(dictionary, "", entry, AV_DICT_IGNORE_SUFFIX))) {
         NSString * key = [NSString stringWithUTF8String:entry->key];
         NSString * value = [NSString stringWithUTF8String:entry->value];
         [ret setObject:value forKey:key];
     }
-    if (ret.count <= 0)
-    {
+    if (ret.count <= 0) {
         ret = nil;
     }
     return [ret copy];

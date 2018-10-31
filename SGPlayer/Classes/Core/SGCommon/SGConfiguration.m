@@ -23,8 +23,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.formatContextOptions = @{@"user-agent" : @"SGPlayer",
                                       @"timeout" : @(20 * 1000 * 1000),
                                       @"reconnect" : @(1)};

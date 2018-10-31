@@ -35,8 +35,7 @@
     _sample_rate = 0;
     _channels = 0;
     _channel_layout = 0;
-    for (int i = 0; i < SGFramePlaneCount; i++)
-    {
+    for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = nil;
         self->_linesize[i] = 0;
     }
@@ -51,8 +50,7 @@
     _sample_rate = self.core->sample_rate;
     _channels = self.core->channels;
     _channel_layout = self.core->channel_layout;
-    for (int i = 0; i < SGFramePlaneCount; i++)
-    {
+    for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = self.core->data[i];
         self->_linesize[i] = self.core->linesize[i];
     }

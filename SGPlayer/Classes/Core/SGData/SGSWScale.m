@@ -19,8 +19,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.flags = SWS_FAST_BILINEAR;
     }
     return self;
@@ -28,8 +27,7 @@
 
 - (void)dealloc
 {
-    if (self.context)
-    {
+    if (self.context) {
         sws_freeContext(self.context);
         self.context = nil;
     }
@@ -38,8 +36,7 @@
 - (BOOL)open
 {
     if (self.width == 0 ||
-        self.height == 0)
-    {
+        self.height == 0) {
         return NO;
     }
     self.context = sws_getCachedContext(self.context,

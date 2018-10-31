@@ -25,8 +25,7 @@
 
 - (instancetype)initWithCore:(AVStream *)core
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.core = core;
         self.coreptr = self.core;
         self.type = SGMediaTypeFF2SG(self.core->codecpar->codec_type);

@@ -13,8 +13,7 @@ static NSString * const SGErrorUserInfoKeyOperation = @"SGErrorUserInfoKeyOperat
 
 NSError * SGEGetError(int result, SGOperationCode operation)
 {
-    if (result >= 0)
-    {
+    if (result >= 0) {
         return nil;
     }
     char * data = malloc(256);

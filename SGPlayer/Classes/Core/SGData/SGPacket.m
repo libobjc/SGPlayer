@@ -22,8 +22,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.coreLock = [[NSLock alloc] init];
         self.core = av_packet_alloc();
         self.coreptr = self.core;
@@ -37,8 +36,7 @@
     NSAssert(self.lockingCount <= 0, @"SGPacket, must be unlocked before release");
     
     [self clear];
-    if (self.core)
-    {
+    if (self.core) {
         av_packet_free(&_core);
         self.core = nil;
     }
@@ -57,8 +55,7 @@
     [self.coreLock lock];
     self.lockingCount--;
     [self.coreLock unlock];
-    if (self.lockingCount <= 0)
-    {
+    if (self.lockingCount <= 0) {
         self.lockingCount = 0;
         [[SGObjectPool sharePool] comeback:self];
     }
@@ -66,8 +63,7 @@
 
 - (void)clear
 {
-    if (self.core)
-    {
+    if (self.core) {
         av_packet_unref(self.core);
     }
     _track = nil;

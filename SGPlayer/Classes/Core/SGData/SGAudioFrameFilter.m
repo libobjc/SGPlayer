@@ -33,8 +33,7 @@
 
 - (__kindof SGFrame *)convert:(__kindof SGFrame *)frame
 {
-    if (![frame isKindOfClass:[SGAudioFrame class]])
-    {
+    if (![frame isKindOfClass:[SGAudioFrame class]]) {
         return [super convert:frame];
     }
     SGAudioFrame * audioFrame = frame;
@@ -45,8 +44,7 @@
         self.swrContext.o_format != self.format ||
         self.swrContext.o_sample_rate != self.sample_rate ||
         self.swrContext.o_channels != self.channels ||
-        self.swrContext.o_channel_layout != self.channel_layout)
-    {
+        self.swrContext.o_channel_layout != self.channel_layout) {
         self.swrContext = nil;
         SGSWResample * swrContext = [[SGSWResample alloc] init];
         swrContext.i_format = audioFrame.format;
@@ -61,8 +59,7 @@
             self.swrContext = swrContext;
         }
     }
-    if (!self.swrContext)
-    {
+    if (!self.swrContext) {
         return [super convert:frame];
     }
     int nb_samples = [self.swrContext convert:audioFrame->_data nb_samples:audioFrame.nb_samples];
@@ -75,8 +72,7 @@
     result.core->channel_layout = self.channel_layout;
     result.core->nb_samples = nb_samples;
     av_frame_copy_props(result.core, audioFrame.core);
-    for (int i = 0; i < nb_planar; i++)
-    {
+    for (int i = 0; i < nb_planar; i++) {
         uint8_t * data = av_mallocz(linesize);
         [self.swrContext copy:data linesize:linesize planar:i];
         AVBufferRef * buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
