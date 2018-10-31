@@ -29,19 +29,15 @@
 static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, const enum AVPixelFormat * fmt)
 {
     SGCodecContext * self = (__bridge SGCodecContext *)s->opaque;
-    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++)
-    {
-        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX)
-        {
+    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
+        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
             AVBufferRef * device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
-            if (!device_ctx)
-            {
+            if (!device_ctx) {
                 break;
             }
             AVBufferRef * frames_ctx = av_hwframe_ctx_alloc(device_ctx);
             av_buffer_unref(&device_ctx);
-            if (!frames_ctx)
-            {
+            if (!frames_ctx) {
                 break;
             }
             AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
@@ -50,8 +46,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             frames_ctx_data->width = s->width;
             frames_ctx_data->height = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);
-            if (err < 0)
-            {
+            if (err < 0) {
                 av_buffer_unref(&frames_ctx);
                 break;
             }
@@ -65,16 +60,14 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 - (AVCodecContext *)createCcodecContext
 {
     AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
-    if (!codecContext)
-    {
+    if (!codecContext) {
         return nil;
     }
     codecContext->opaque = (__bridge void *)self;
     
     int result = avcodec_parameters_to_context(codecContext, self.track.core->codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
-    if (error)
-    {
+    if (error) {
         avcodec_free_context(&codecContext);
         return nil;
     }
@@ -85,8 +78,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     }
     
     AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
-    if (!codec)
-    {
+    if (!codec) {
         avcodec_free_context(&codecContext);
         return nil;
     }
@@ -94,27 +86,23 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     
     AVDictionary * opts = SGDictionaryNS2FF(self.options);
     if (self.threadsAuto &&
-        !av_dict_get(opts, "threads", NULL, 0))
-    {
+        !av_dict_get(opts, "threads", NULL, 0)) {
         av_dict_set(&opts, "threads", "auto", 0);
     }
     if (self.refcountedFrames &&
         !av_dict_get(opts, "refcounted_frames", NULL, 0) &&
-        (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO))
-    {
+        (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO)) {
         av_dict_set(&opts, "refcounted_frames", "1", 0);
     }
     
     result = avcodec_open2(codecContext, codec, &opts);
     
-    if (opts)
-    {
+    if (opts) {
         av_dict_free(&opts);
     }
     
     error = SGEGetError(result, SGOperationCodeCodecOpen2);
-    if (error)
-    {
+    if (error) {
         avcodec_free_context(&codecContext);
         return nil;
     }
@@ -124,8 +112,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (instancetype)initWithTrack:(SGTrack *)track frameClass:(Class)frameClass
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
         self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
         self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
@@ -145,17 +132,14 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (BOOL)open
 {
-    if (!self.track)
-    {
+    if (!self.track) {
         return NO;
     }
-    if (!self.frameClass)
-    {
+    if (!self.frameClass) {
         return NO;
     }
     self.codecContext = [self createCcodecContext];
-    if (!self.codecContext)
-    {
+    if (!self.codecContext) {
         return NO;
     }
     return YES;
@@ -163,16 +147,14 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (void)flush
 {
-    if (self.codecContext)
-    {
+    if (self.codecContext) {
         avcodec_flush_buffers(self.codecContext);
     }
 }
 
 - (void)close
 {
-    if (self.codecContext)
-    {
+    if (self.codecContext) {
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
@@ -180,27 +162,21 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (!self.codecContext)
-    {
+    if (!self.codecContext) {
         return nil;
     }
     int result = avcodec_send_packet(self.codecContext, packet ? packet.core : NULL);
-    if (result < 0)
-    {
+    if (result < 0) {
         return nil;
     }
     NSMutableArray * array = nil;
-    while (result != AVERROR(EAGAIN))
-    {
+    while (result != AVERROR(EAGAIN)) {
         __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
-        if (result < 0)
-        {
+        if (result < 0) {
             [frame unlock];
             break;
-        }
-        else
-        {
+        } else {
             if (!array) {
                 array = [NSMutableArray array];
             }

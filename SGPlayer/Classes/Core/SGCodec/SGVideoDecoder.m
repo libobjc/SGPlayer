@@ -39,8 +39,7 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (packet && packet.track != self.track)
-    {
+    if (packet && packet.track != self.track) {
         self.track = packet.track;
         [self destroy];
         [self setup];
