@@ -20,8 +20,7 @@
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.URL = URL;
     }
     return self;
