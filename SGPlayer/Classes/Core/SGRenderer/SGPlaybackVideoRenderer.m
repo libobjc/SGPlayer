@@ -27,8 +27,6 @@
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
-@property (nonatomic, strong) SGCapacity * capacity;
-@property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGVideoFrame * currentFrame;
 @property (nonatomic, strong) SGGLTimer * renderTimer;
 @property (nonatomic, strong) SGGLDisplayLink * displayLink;
@@ -56,9 +54,6 @@
         self.clock = clock;
         _key = NO;
         self.rate = CMTimeMake(1, 1);
-        self.capacity = [[SGCapacity alloc] init];
-        self.frameQueue = [[SGObjectQueue alloc] init];
-        self.frameQueue.shouldSortObjects = YES;
         self.programPool = [[SGGLProgramPool alloc] init];
         self.modelPool = [[SGGLModelPool alloc] init];
         self.matrixMaker = [[SGVRMatrixMaker alloc] init];
@@ -116,7 +111,6 @@
     self.displayNewFrameCount = 0;
     [self unlock];
     callback();
-    [self.frameQueue destroy];
     return YES;
 }
 
@@ -171,8 +165,6 @@
         [self.clock updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
     }
     self.receivedFrame = YES;
-    [self.frameQueue putObjectSync:videoFrame];
-    [self callbackForCapacity];
     return YES;
 }
 
@@ -190,8 +182,6 @@
     self.receivedFrame = NO;
     self.displayNewFrameCount = 0;
     [self unlock];
-    [self.frameQueue flush];
-    [self callbackForCapacity];
     return YES;
 }
 
@@ -212,16 +202,6 @@
 - (SGRenderableState)state
 {
     return _state;
-}
-
-- (NSError *)error
-{
-    return nil;
-}
-
-- (BOOL)enough
-{
-    return self.capacity.count >= 3;
 }
 
 - (void)setViewport:(SGVRViewport *)viewport
@@ -325,7 +305,7 @@
                 [frame unlock];
                 frame = nil;
                 callback = ^{
-                    [self callbackForCapacity];
+//                    [self callbackForCapacity];
                 };
             }
         }
@@ -344,7 +324,7 @@
                 {
                     self.renderCallback(frame);
                 }
-                [self callbackForCapacity];
+//                [self callbackForCapacity];
             };
         }
     }
@@ -472,14 +452,6 @@
     [program unuse];
     [frame unlock];
     return YES;
-}
-
-#pragma mark - Callback
-
-- (void)callbackForCapacity
-{
-    self.capacity = self.frameQueue.capacity;
-    [self.delegate renderable:self didChangeCapacity:self.capacity];
 }
 
 #pragma mark - NSLocking

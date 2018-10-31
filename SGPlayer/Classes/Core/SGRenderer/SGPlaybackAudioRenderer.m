@@ -8,47 +8,24 @@
 
 #import "SGPlaybackAudioRenderer.h"
 #import "SGAudioStreamPlayer.h"
-#import "SGFrame+Internal.h"
 #import "SGAudioFrame.h"
-#import "SGMapping.h"
-#import "swresample.h"
-#import "swscale.h"
-#import "SGError.h"
-#import "SGMacro.h"
+#import "SGLock.h"
 
-@interface SGPlaybackAudioRenderer () <NSLocking, SGAudioStreamPlayerDelegate>
+@interface SGPlaybackAudioRenderer () <SGAudioStreamPlayerDelegate>
 
 {
     SGRenderableState _state;
-    void * _swrContextBufferData[AV_NUM_DATA_POINTERS];
-    int _swrContextBufferLinesize[AV_NUM_DATA_POINTERS];
-    int _swrContextBufferMallocSize[AV_NUM_DATA_POINTERS];
 }
 
 @property (nonatomic, strong) SGPlaybackClock * clock;
-@property (nonatomic, assign) CMTime finalRate;
-@property (nonatomic, assign) CMTime frameRate;
 @property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
+@property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
-@property (nonatomic, strong) SGCapacity * capacity;
-@property (nonatomic, strong) SGObjectQueue * frameQueue;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
 @property (nonatomic, assign) int32_t currentFrameReadOffset;
-@property (nonatomic, assign) CMTime currentFrameScale;
 @property (nonatomic, assign) CMTime currentPostPosition;
 @property (nonatomic, assign) CMTime currentPostDuration;
-@property (nonatomic, assign) SwrContext * swrContext;
-@property (nonatomic, strong) NSError * swrContextError;
-@property (nonatomic, assign) enum AVSampleFormat inputFormat;
-@property (nonatomic, assign) int inputSampleRate;
-@property (nonatomic, assign) int inputNumberOfChannels;
-@property (nonatomic, assign) int64_t inputChannelLayout;
-@property (nonatomic, assign) enum AVSampleFormat outputFormat;
-@property (nonatomic, assign) int outputSampleRate;
-@property (nonatomic, assign) int outputNumberOfChannels;
-@property (nonatomic, assign) int64_t outputChannelLayout;
 
 @end
 
@@ -60,17 +37,12 @@
 
 - (instancetype)initWithClock:(SGPlaybackClock *)clock
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.clock = clock;
         _key = NO;
         _rate = CMTimeMake(1, 1);
         _deviceDelay = CMTimeMake(0, 1);
-        _finalRate = CMTimeMake(1, 1);
-        _frameRate = CMTimeMake(1, 1);
-        _currentFrameScale = CMTimeMake(1, 1);
-        self.capacity = [[SGCapacity alloc] init];
-        self.frameQueue = [[SGObjectQueue alloc] init];
+        self.coreLock = [[NSLock alloc] init];
         self.currentFrameReadOffset = 0;
         self.currentPostPosition = kCMTimeZero;
         self.currentPostDuration = kCMTimeZero;
@@ -85,233 +57,26 @@
     [self close];
 }
 
-#pragma mark - Interface
-
-- (BOOL)open
-{
-    [self lock];
-    if (self.state != SGRenderableStateNone)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
-    [self unlock];
-    callback();
-    return YES;
-}
-
-- (BOOL)close
-{
-    [self lock];
-    if (self.state == SGRenderableStateClosed)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGRenderableStateClosed];
-    [self.currentFrame unlock];
-    self.currentFrame = nil;
-    self.currentFrameReadOffset = 0;
-    self.currentPostPosition = kCMTimeZero;
-    self.currentPostDuration = kCMTimeZero;
-    self.receivedFrame = NO;
-    [self unlock];
-    [self.audioPlayer pause];
-    callback();
-    [self.frameQueue destroy];
-    [self destroySwrContextBuffer];
-    [self destroySwrContext];
-    return YES;
-}
-
-- (BOOL)pause
-{
-    [self lock];
-    if (self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
-    [self unlock];
-    [self.audioPlayer pause];
-    callback();
-    return YES;
-}
-
-- (BOOL)resume
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBasicBlock callback = [self setState:SGRenderableStateRendering];
-    [self unlock];
-    [self.audioPlayer play];
-    callback();
-    return YES;
-}
-
-- (BOOL)putFrame:(__kindof SGFrame *)frame
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused &&
-        self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    [self unlock];
-    
-    if (![frame isKindOfClass:[SGAudioFrame class]])
-    {
-        return NO;
-    }
-    SGAudioFrame * audioFrame = frame;
-    
-    enum AVSampleFormat inputFormat = audioFrame.format;
-    int inputSampleRate = audioFrame.sample_rate;
-    int inputNumberOfChannels = audioFrame.channels;
-    int64_t inputChannelLayout = audioFrame.channel_layout;
-    
-    enum AVSampleFormat outputFormat = AV_SAMPLE_FMT_FLTP;
-    int outputSampleRate = self.audioPlayer.asbd.mSampleRate;
-    int outputNumberOfChannels = self.audioPlayer.asbd.mChannelsPerFrame;
-    int64_t outputChannelLayout = av_get_default_channel_layout(outputNumberOfChannels);
-    
-    if (self.inputFormat != inputFormat ||
-        self.inputSampleRate != inputSampleRate ||
-        self.inputNumberOfChannels != inputNumberOfChannels ||
-        self.inputChannelLayout != inputChannelLayout ||
-        self.outputFormat != outputFormat ||
-        self.outputSampleRate != outputSampleRate ||
-        self.outputNumberOfChannels != outputNumberOfChannels ||
-        self.outputChannelLayout != outputChannelLayout)
-    {
-        self.inputFormat = inputFormat;
-        self.inputSampleRate = inputSampleRate;
-        self.inputNumberOfChannels = inputNumberOfChannels;
-        self.inputChannelLayout = inputChannelLayout;
-        
-        self.outputFormat = outputFormat;
-        self.outputSampleRate = outputSampleRate;
-        self.outputNumberOfChannels = outputNumberOfChannels;
-        self.outputChannelLayout = outputChannelLayout;
-        
-        [self destroySwrContext];
-        [self setupSwrContext];
-    }
-    
-    if (!self.swrContext)
-    {
-        return NO;
-    }
-
-    int preferNumberOfSamples = swr_get_out_samples(self.swrContext, audioFrame.nb_samples);
-    if (preferNumberOfSamples <= 0 && audioFrame.nb_samples > 0)
-    {
-        float numberOfChannelsRatio = self.outputNumberOfChannels / self.inputNumberOfChannels;
-        float sampleRateRatio = self.outputSampleRate / self.inputSampleRate;
-        float ratio = sampleRateRatio * numberOfChannelsRatio;
-        preferNumberOfSamples = audioFrame.nb_samples * ratio;
-    }
-    int bufferSize = av_samples_get_buffer_size(NULL,
-                                                self.outputNumberOfChannels,
-                                                preferNumberOfSamples,
-                                                self.outputFormat,
-                                                0);
-    [self setupSwrContextBufferIfNeeded:bufferSize];
-    int numberOfSamples = swr_convert(self.swrContext,
-                                      (uint8_t **)_swrContextBufferData,
-                                      preferNumberOfSamples,
-                                      (const uint8_t **)audioFrame->_data,
-                                      audioFrame.nb_samples);
-    [self updateSwrContextBufferLinsize:numberOfSamples * sizeof(float)];
-
-    SGAudioFrame * result = [[SGObjectPool sharePool] objectWithClass:[SGAudioFrame class]];
-    result.core->format = self.outputFormat;
-    result.core->channels = self.outputNumberOfChannels;
-    result.core->channel_layout = self.outputChannelLayout;
-    result.core->nb_samples = numberOfSamples;
-    av_frame_copy_props(result.core, audioFrame.core);
-    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
-    {
-        int size = _swrContextBufferLinesize[i];
-        uint8_t * data = av_mallocz(size);
-        memcpy(data, _swrContextBufferData[i], size);
-        AVBufferRef * buffer = av_buffer_create(data, size, av_buffer_default_free, NULL, 0);
-        result.core->buf[i] = buffer;
-        result.core->data[i] = buffer->data;
-        result.core->linesize[i] = buffer->size;
-    }
-    [result configurateWithTrack:audioFrame.track];
-    
-    if (!self.receivedFrame)
-    {
-        [self.clock updateKeyTime:result.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
-    }
-    self.receivedFrame = YES;
-    [self.frameQueue putObjectSync:result];
-    [self callbackForCapacity];
-    [result unlock];
-    return YES;
-}
-
-- (BOOL)flush
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused &&
-        self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    [self.currentFrame unlock];
-    self.currentFrame = nil;
-    self.currentFrameReadOffset = 0;
-    self.currentPostPosition = kCMTimeZero;
-    self.currentPostDuration = kCMTimeZero;
-    self.receivedFrame = NO;
-    [self unlock];
-    [self.frameQueue flush];
-    [self callbackForCapacity];
-    return YES;
-}
-
 #pragma mark - Setter & Getter
 
 - (SGBasicBlock)setState:(SGRenderableState)state
 {
-    if (_state != state)
-    {
-        _state = state;
-        return ^{
-            [self.delegate renderable:self didChangeState:state];
-        };
+    if (_state == state) {
+        return ^{};
     }
-    return ^{};
+    _state = state;
+    return ^{
+        [self.delegate renderable:self didChangeState:state];
+    };
 }
 
 - (SGRenderableState)state
 {
-    return _state;
-}
-
-- (NSError *)error
-{
-    if (self.audioPlayer.error)
-    {
-        return self.audioPlayer.error;
-    }
-    return self.swrContextError;
-}
-
-- (BOOL)enough
-{
-    return self.capacity.count >= 5;
+    __block SGRenderableState ret = SGRenderableStateNone;
+    SGLockEXE00(self.coreLock, ^{
+        ret = self->_state;
+    });
+    return ret;
 }
 
 - (void)setVolume:(float)volume
@@ -326,131 +91,112 @@
 
 - (void)setRate:(CMTime)rate
 {
-    if (CMTimeCompare(_rate, rate) != 0)
-    {
+    if (CMTimeCompare(_rate, rate) != 0) {
         _rate = rate;
-        [self updatePlayerRate];
+        [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:nil];
     }
 }
 
-- (void)setFrameRate:(CMTime)frameRate
+#pragma mark - Interface
+
+- (BOOL)open
 {
-    if (CMTimeCompare(_frameRate, frameRate) != 0)
-    {
-        _frameRate = frameRate;
-        [self updatePlayerRate];
-    }
+    return SGLockCondEXE10(self.coreLock, ^BOOL {
+        return self->_state == SGRenderableStateNone;
+    }, ^SGBasicBlock {
+        return [self setState:SGRenderableStatePaused];
+    });
 }
 
-- (void)updatePlayerRate
+- (BOOL)close
 {
-    CMTime rate = SGCMTimeMultiply(self.rate, self.frameRate);
-    NSError * error = nil;
-    [self.audioPlayer setRate:CMTimeGetSeconds(rate) error:&error];
+    return SGLockCondEXE11(self.coreLock, ^BOOL{
+        return self->_state != SGRenderableStateClosed;
+    }, ^SGBasicBlock {
+        [self.currentFrame unlock];
+        self.currentFrame = nil;
+        self.currentFrameReadOffset = 0;
+        self.currentPostPosition = kCMTimeZero;
+        self.currentPostDuration = kCMTimeZero;
+        self.receivedFrame = NO;
+        return [self setState:SGRenderableStateClosed];
+    }, ^BOOL(SGBasicBlock block) {
+        [self.audioPlayer pause];
+        block();
+        return YES;
+    });
 }
 
-#pragma mark - swr
-
-- (void)setupSwrContext
+- (BOOL)pause
 {
-    if (self.swrContextError || self.swrContext)
-    {
-        return;
-    }
-    self.swrContext = swr_alloc_set_opts(NULL,
-                                         self.outputChannelLayout,
-                                         self.outputFormat,
-                                         self.outputSampleRate,
-                                         self.inputChannelLayout,
-                                         self.inputFormat,
-                                         self.inputSampleRate,
-                                         0, NULL);
-    int result = swr_init(self.swrContext);
-    self.swrContextError = SGEGetError(result, SGOperationCodeAuidoSwrInit);
-    if (self.swrContextError)
-    {
-        [self destroySwrContext];
-    }
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
+        return self->_state == SGRenderableStateRendering;
+    }, ^SGBasicBlock {
+        return [self setState:SGRenderableStatePaused];
+    }, ^BOOL(SGBasicBlock block) {
+        [self.audioPlayer pause];
+        block();
+        return YES;
+    });
 }
 
-- (void)destroySwrContext
+- (BOOL)resume
 {
-    if (self.swrContext)
-    {
-        swr_free(&_swrContext);
-        self.swrContext = nil;
-    }
+    return SGLockCondEXE11(self.coreLock, ^BOOL {
+        return self->_state == SGRenderableStatePaused;
+    }, ^SGBasicBlock {
+        return [self setState:SGRenderableStateRendering];
+    }, ^BOOL(SGBasicBlock block) {
+        [self.audioPlayer play];
+        block();
+        return YES;
+    });
 }
 
-- (void)setupSwrContextBufferIfNeeded:(int)bufferSize
+- (BOOL)flush
 {
-    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
-    {
-        if (_swrContextBufferMallocSize[i] < bufferSize)
-        {
-            _swrContextBufferMallocSize[i] = bufferSize;
-            _swrContextBufferData[i] = realloc(_swrContextBufferData[i], bufferSize);
-        }
-    }
-}
-
-- (void)updateSwrContextBufferLinsize:(int)linesize
-{
-    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
-    {
-        _swrContextBufferLinesize[i] = (i < self.outputNumberOfChannels) ? linesize : 0;
-    }
-}
-
-- (void)destroySwrContextBuffer
-{
-    for (int i = 0; i < AV_NUM_DATA_POINTERS; i++)
-    {
-        if (_swrContextBufferData[i])
-        {
-            free(_swrContextBufferData[i]);
-            _swrContextBufferData[i] = NULL;
-        }
-        _swrContextBufferLinesize[i] = 0;
-        _swrContextBufferMallocSize[i] = 0;
-    }
+    SGLockCondEXE00(self.coreLock, ^BOOL {
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering;
+    }, ^{
+        [self.currentFrame unlock];
+        self.currentFrame = nil;
+        self.currentFrameReadOffset = 0;
+        self.currentPostPosition = kCMTimeZero;
+        self.currentPostDuration = kCMTimeZero;
+        self.receivedFrame = NO;
+    });
+    return YES;
 }
 
 #pragma mark - SGAudioStreamPlayerDelegate
 
 - (void)audioPlayer:(SGAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
 {
-    BOOL hasNewFrame = NO;
-    [self lock];
+    [self.coreLock lock];
     NSUInteger ioDataWriteOffset = 0;
-    while (numberOfSamples > 0)
-    {
-        if (!self.currentFrame)
-        {
-            self.currentFrame = [self.delegate renderableNeedMoreFrame:self];
-            hasNewFrame = YES;
+    while (numberOfSamples > 0) {
+        if (!self.currentFrame) {
+            [self.coreLock unlock];
+            SGAudioFrame * frame = [self.delegate renderableNeedMoreFrame:self];
+            [self.coreLock lock];
+            self.currentFrame = frame;
         }
-        if (!self.currentFrame)
-        {
+        if (!self.currentFrame) {
             break;
         }
-        self.currentFrameScale = CMTimeMake(1, 1);
         
         int32_t residueLinesize = self.currentFrame->_linesize[0] - self.currentFrameReadOffset;
         int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
         int32_t framesToCopy = bytesToCopy / sizeof(float);
         
-        for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.nb_samples; i++)
-        {
-            if (self.currentFrame->_linesize[i] - self.currentFrameReadOffset >= bytesToCopy)
-            {
+        for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.nb_samples; i++) {
+            if (self.currentFrame->_linesize[i] - self.currentFrameReadOffset >= bytesToCopy) {
                 Byte * bytes = (Byte *)self.currentFrame->_data[i] + self.currentFrameReadOffset;
                 memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
         }
         
-        if (ioDataWriteOffset == 0)
-        {
+        if (ioDataWriteOffset == 0) {
             self.currentPostDuration = kCMTimeZero;
             CMTime duration = CMTimeMultiplyByRatio(self.currentFrame.duration, self.currentFrameReadOffset, self.currentFrame->_linesize[0]);
             self.currentPostPosition = CMTimeAdd(self.currentFrame.timeStamp, duration);
@@ -462,72 +208,35 @@
         numberOfSamples -= framesToCopy;
         ioDataWriteOffset += bytesToCopy;
         
-        if (bytesToCopy < residueLinesize)
-        {
+        if (bytesToCopy < residueLinesize) {
             self.currentFrameReadOffset += bytesToCopy;
-        }
-        else
-        {
+        } else {
             [self.currentFrame unlock];
             self.currentFrame = nil;
             self.currentFrameReadOffset = 0;
         }
     }
-    [self unlock];
-    if (hasNewFrame)
-    {
-        [self callbackForCapacity];
-    }
+    [self.coreLock unlock];
 }
 
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
 {
-    [self lock];
-    CMTime frameRate = SGCMTimeDivide(CMTimeMake(1, 1), self.currentFrameScale);
+    [self.coreLock lock];
     CMTime currentPostPosition = self.currentPostPosition;
     CMTime currentPostDuration = self.currentPostDuration;
     CMTime rate = self.rate;
     CMTime deviceDelay = self.deviceDelay;
     dispatch_block_t block = ^{
-        self.frameRate = frameRate;
         [self.clock updateKeyTime:currentPostPosition duration:currentPostDuration rate:rate];
     };
-    if (CMTimeCompare(deviceDelay, kCMTimeZero) > 0)
-    {
-        if (!self.delegateQueue)
-        {
+    if (CMTimeCompare(deviceDelay, kCMTimeZero) > 0) {
+        if (!self.delegateQueue) {
             self.delegateQueue = dispatch_queue_create("SGPlaybackAudioRenderer-DelegateQueue", DISPATCH_QUEUE_SERIAL);
         }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(deviceDelay) * NSEC_PER_SEC)), self.delegateQueue, block);
-    }
-    else
-    {
+    } else {
         block();
     }
-    [self unlock];
-}
-
-#pragma mark - Callback
-
-- (void)callbackForCapacity
-{
-    self.capacity = self.frameQueue.capacity;
-    [self.delegate renderable:self didChangeCapacity:self.capacity];
-}
-
-#pragma mark - NSLocking
-
-- (void)lock
-{
-    if (!self.coreLock)
-    {
-        self.coreLock = [[NSRecursiveLock alloc] init];
-    }
-    [self.coreLock lock];
-}
-
-- (void)unlock
-{
     [self.coreLock unlock];
 }
 

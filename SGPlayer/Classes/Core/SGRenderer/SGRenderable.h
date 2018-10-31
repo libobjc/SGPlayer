@@ -31,16 +31,11 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 @property (nonatomic, assign) BOOL key;
 
 - (SGRenderableState)state;
-- (NSError *)error;
-- (BOOL)enough;
-- (SGCapacity *)capacity;
 
 - (BOOL)open;
 - (BOOL)close;
 - (BOOL)pause;
 - (BOOL)resume;
-
-- (BOOL)putFrame:(__kindof SGFrame *)frame;
 - (BOOL)flush;
 
 @end
@@ -48,8 +43,6 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 @protocol SGRenderableDelegate <NSObject>
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
-- (void)renderable:(id <SGRenderable>)renderable didRenderFrame:(__kindof SGFrame *)frame;
 - (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable;
 - (__kindof SGFrame *)renderableNeedMoreFrame:(id <SGRenderable>)renderable ptsHandler:(BOOL (^)(CMTime *, CMTime *))ptsHandler drop:(BOOL)drop;
 
