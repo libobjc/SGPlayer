@@ -10,6 +10,7 @@
 
 @interface SGPointerMap ()
 
+@property (nonatomic, strong) NSMutableDictionary * keys;
 @property (nonatomic, strong) NSMutableDictionary * objects;
 
 @end
@@ -19,6 +20,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
+        self.keys = [[NSMutableDictionary alloc] init];
         self.objects = [[NSMutableDictionary alloc] init];
     }
     return self;
@@ -27,25 +29,34 @@
 - (void)setObject:(id)object forKey:(id)key
 {
     NSAssert(object, @"Invalid object");
-    [self.objects setObject:object forKey:[self keyForObject:key]];
+    NSString * p = [self pointerForObject:key];
+    [self.keys setObject:key forKey:p];
+    [self.objects setObject:object forKey:p];
 }
 
 - (id)objectForKey:(id)key
 {
-    return [self.objects objectForKey:[self keyForObject:key]];
+    if (!key) {
+        return nil;
+    }
+    NSString * p = [self pointerForObject:key];
+    return [self.objects objectForKey:p];
 }
 
 - (void)removeObjectForKey:(id)key
 {
-    [self.objects removeObjectForKey:[self keyForObject:key]];
+    NSString * p = [self pointerForObject:key];
+    [self.keys removeObjectForKey:p];
+    [self.objects removeObjectForKey:p];
 }
 
 - (void)removeAllObjects
 {
+    [self.keys removeAllObjects];
     [self.objects removeAllObjects];
 }
 
-- (NSString *)keyForObject:(id)object
+- (NSString *)pointerForObject:(id)object
 {
     NSAssert(object, @"Invalid key");
     return [NSString stringWithFormat:@"%p", object];
