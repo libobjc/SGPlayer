@@ -46,7 +46,7 @@
 //        [assets addObject:asset2];
 //    }
 //    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithAssets:assets];
-    SGURLAsset * asset = [[SGURLAsset alloc] initWithURL:contentURL1];
+//    SGURLAsset * asset = [[SGURLAsset alloc] initWithURL:contentURL1];
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
@@ -75,7 +75,8 @@
 //        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
     }];
     
-    [self.player replaceWithAsset:asset];
+//    [self.player replaceWithAsset:asset];
+    [self.player replaceWithURL:contentURL1];
     [self.player play];
 }
 
@@ -111,18 +112,18 @@
 - (IBAction)progressTouchUp:(id)sender
 {
     self.progressSilderTouching = NO;
-    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
-    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+    CMTime time = CMTimeMultiplyByFloat64(self.player.currentItem.duration, self.progressSilder.value);
+    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.currentItem.duration, self.progressSilder.value);
     [self.player seekToTime:time completionHandler:nil];
     [self.player2 seekToTime:time2 completionHandler:nil];
 }
 
 - (IBAction)progressValueChanged:(id)sender
 {
-    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
-    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-    [self.player seekToTime:time completionHandler:nil];
-    [self.player2 seekToTime:time2 completionHandler:nil];
+//    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
+//    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
+//    [self.player seekToTime:time completionHandler:nil];
+//    [self.player2 seekToTime:time2 completionHandler:nil];
 }
 
 #pragma mark - SGPlayerDelegate
@@ -163,7 +164,7 @@
     if (option & SGTimeOptionPlayback)
     {
         CMTime playbackTime = player.playbackTime;
-        CMTime duration = player.duration;
+        CMTime duration = player.currentItem.duration;
         if (!self.progressSilderTouching)
         {
             self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(duration);
