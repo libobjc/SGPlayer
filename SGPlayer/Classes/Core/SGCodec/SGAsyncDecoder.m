@@ -115,7 +115,7 @@ static SGPacket * flushPacket;
         return [self setState:SGAsyncDecoderStateClosed];
     }, ^BOOL(SGBasicBlock block) {
         block();
-        [self.packetQueue destroy]();
+        [self.packetQueue destroy];
         [self.operationQueue cancelAllOperations];
         [self.operationQueue waitUntilAllOperationsAreFinished];
         self.operationQueue = nil;
@@ -248,11 +248,16 @@ static SGPacket * flushPacket;
 
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
-    capacity = [capacity copy];
-    SGLockEXE00(self.coreLock, ^{
+    [capacity copy];
+    SGLockCondEXE11(self.coreLock, ^BOOL{
+        return ![self->_capacity isEqualToCapacity:capacity];
+    }, ^SGBasicBlock{
         self.capacity = capacity;
+        return nil;
+    }, ^BOOL(SGBasicBlock block) {
+        [self.delegate decoder:self didChangeCapacity:[capacity copy]];
+        return YES;
     });
-    [self.delegate decoder:self didChangeCapacity:capacity];
 }
 
 @end

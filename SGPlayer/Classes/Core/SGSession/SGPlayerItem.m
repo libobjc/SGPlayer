@@ -117,7 +117,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         [self.capacityMap setObject:capacity forKey:track];
         return nil;
     }, ^BOOL(SGBasicBlock block) {
-        [self.delegate playerItem:self didChangeCapacity:capacity track:track];
+        [self.delegate playerItem:self didChangeCapacity:[capacity copy] track:track];
         return YES;
     });
 }
@@ -170,8 +170,8 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         [self.frameOutput close];
         [self.audioFilter destroy];
         [self.videoFilter destroy];
-        [self.audioQueue destroy]();
-        [self.videoQueue destroy]();
+        [self.audioQueue destroy];
+        [self.videoQueue destroy];
         return YES;
     });
 }

@@ -287,7 +287,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
         } else {
             [self.packetOutput resume];
         }
-        [self.delegate frameOutput:self didChangeCapacity:capacity track:track];
+        [self.delegate frameOutput:self didChangeCapacity:[capacity copy] track:track];
         [self setFinishedIfNeeded];
         return YES;
     });

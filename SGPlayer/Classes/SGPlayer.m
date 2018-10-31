@@ -362,6 +362,8 @@
             self.seekFinishedTimeInterval = [NSDate date].timeIntervalSince1970;
         }
         [self unlock];
+        [self.audioOutput flush];
+        [self.videoOutput flush];
         [self pauseOrResumeOutput];
         if (completionHandler)
         {
@@ -608,6 +610,8 @@
 {
     [SGActivity removeTarget:self];
     [self.currentItem close];
+    [self.audioOutput close];
+    [self.videoOutput close];
     _currentItem = nil;
     self.audioOutput.clock.delegate = nil;
     self.audioOutput = nil;
