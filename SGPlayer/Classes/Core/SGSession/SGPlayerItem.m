@@ -169,7 +169,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 - (SGBasicBlock)setState:(SGPlayerItemState)state
 {
     if (_state == state) {
-        return nil;
+        return ^{};
     }
     _state = state;
     return ^{
@@ -202,7 +202,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     return capacity;
 }
 
-- (void)updateCapacity:(SGCapacity *)capacity track:(SGTrack *)track
+- (void)setCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
     if (self.frameOutput.state == SGFrameOutputStateFinished && capacity.count == 0) {
         if (track.type == SGMediaTypeAudio) {
@@ -217,6 +217,17 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     }
     [self.capacityMap setObject:capacity forKey:track];
     [self.delegate playerItem:self didChangeCapacity:capacity track:track];
+}
+
+- (void)setFinishedIfNeeded
+{
+    if (self.frameOutput.state == SGFrameOutputStateFinished &&
+        (!self.selectedAudioTrack || self.audioFinished) &&
+        (!self.selectedVideoTrack || self.videoFinished)) {
+        SGLockEXE10(self.coreLock, ^SGBasicBlock {
+            return [self setState:SGPlayerItemStateFinished];
+        });
+    }
 }
 
 #pragma mark - SGFrameOutputDelegate
@@ -237,7 +248,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         }
             break;
         case SGFrameOutputStateFinished:
-            [self callbackForFinishedIfNeeded];
+            [self setFinishedIfNeeded];
             break;
         case SGFrameOutputStateFailed: {
             self.error = frameOutput.error;
@@ -262,7 +273,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     NSAssert(additional, @"Invalid additional.");
     capacity = [capacity copy];
     [capacity add:additional];
-    [self updateCapacity:capacity track:track];
+    [self setCapacity:capacity track:track];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -311,21 +322,8 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     SGCapacity * additional = [self.frameOutput capacityWithTrack:track];
     capacity = [capacity copy];
     [capacity add:additional];
-    [self updateCapacity:capacity track:track];
-    [self callbackForFinishedIfNeeded];
-}
-
-#pragma mark - Callback
-
-- (void)callbackForFinishedIfNeeded
-{
-    if (self.frameOutput.state == SGFrameOutputStateFinished &&
-        (!self.selectedAudioTrack || self.audioFinished) &&
-        (!self.selectedVideoTrack || self.videoFinished)) {
-        SGLockEXE10(self.coreLock, ^SGBasicBlock {
-            return [self setState:SGPlayerItemStateFinished];
-        });
-    }
+    [self setCapacity:capacity track:track];
+    [self setFinishedIfNeeded];
 }
 
 @end

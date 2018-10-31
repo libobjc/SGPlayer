@@ -41,7 +41,7 @@ BOOL SGLockEXE11(id <NSLocking> locking, SGBasicBlock (^run)(void), BOOL (^finis
     }
     [locking unlock];
     if (finish) {
-        return finish(r);
+        return finish(r ? r : ^{});
     } else if (r) {
         r();
     }
@@ -105,7 +105,7 @@ BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock 
     }
     [locking unlock];
     if (finish) {
-        return finish(r);
+        return finish(r ? r : ^{});
     } else if (r) {
         r();
     }
