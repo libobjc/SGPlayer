@@ -27,6 +27,8 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 
 - (instancetype)initWithDecodable:(id <SGDecodable>)decodable;
 
+- (id <SGDecodable>)decodable;
+
 @property (nonatomic, weak) id object;
 @property (nonatomic, weak) id <SGAsyncDecoderDelegate> delegate;
 

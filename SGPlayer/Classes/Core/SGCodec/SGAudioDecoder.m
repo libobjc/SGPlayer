@@ -19,6 +19,11 @@
 
 @implementation SGAudioDecoder
 
+- (SGMediaType)type
+{
+    return SGMediaTypeAudio;
+}
+
 - (void)setup
 {
     self.codecContext = [[SGCodecContext alloc] initWithTrack:self.track frameClass:[SGAudioFrame class]];

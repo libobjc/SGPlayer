@@ -20,6 +20,11 @@
 
 @implementation SGVideoDecoder
 
+- (SGMediaType)type
+{
+    return SGMediaTypeVideo;
+}
+
 - (void)setup
 {
     self.codecContext = [[SGCodecContext alloc] initWithTrack:self.track frameClass:[SGVideoFrame class]];
