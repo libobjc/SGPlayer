@@ -21,9 +21,6 @@
 }
 
 @property (nonatomic, strong) SGPacketOutput * packetOutput;
-@property (nonatomic, strong) NSArray * selectedTracksInternal;
-@property (nonatomic, strong) SGTrack * selectedAudioTrack;
-@property (nonatomic, strong) SGTrack * selectedVideoTrack;
 @property (nonatomic, strong) NSMutableArray <SGAsyncDecoder *> * decoders;
 @property (nonatomic, strong) NSMutableArray <NSNumber *> * decodersPaused;
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
@@ -71,55 +68,16 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     return _state;
 }
 
-- (NSArray <SGTrack *> *)selectedTracks
+- (SGCapacity *)capacityWithTrack:(SGTrack *)track
 {
-    NSArray * ret = nil;
-    [self lock];
-    ret = [self.selectedTracksInternal copy];
-    [self unlock];
-    return ret;
-}
-
-- (void)setSelectedTracks:(NSArray <SGTrack *> *)selectedTracks
-{
-    [self lock];
-    self.selectedTracksInternal = nil;
-    self.selectedAudioTrack = nil;
-    self.selectedVideoTrack = nil;
-    NSMutableArray * ret = [NSMutableArray array];
-    for (SGTrack * obj in selectedTracks) {
-        if (self.selectedAudioTrack && self.selectedVideoTrack) {
-            break;
-        }
-        if (!self.selectedAudioTrack && obj.type == SGMediaTypeAudio) {
-            self.selectedAudioTrack = obj;
-            [ret addObject:obj];
-        } else if (!self.selectedVideoTrack && obj.type == SGMediaTypeVideo) {
-            self.selectedVideoTrack = obj;
-            [ret addObject:obj];
-        }
-    }
-    [ret sortUsingComparator:^NSComparisonResult(SGTrack * obj1, SGTrack * obj2) {
-        if (obj1.type == SGMediaTypeAudio) {
-            return NSOrderedAscending;
-        }
-        return NSOrderedDescending;
-    }];
-    self.selectedTracksInternal = [ret copy];
-    [self unlock];
-}
-
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks
-{
-    NSMutableArray * ret = [NSMutableArray array];
     for (SGAsyncDecoder * obj in self.decoders) {
-        if ([tracks containsObject:obj.object] && [self.selectedTracksInternal containsObject:obj.object]) {
-            SGCapacity * c = obj.capacity;
+        if (obj.object == track && (track == self.selectedAudioTrack || track == self.selectedVideoTrack)) {
+            SGCapacity * c = [obj.capacity copy];
             c.object = obj.object;
-            [ret addObject:c];
+            return c;
         }
     }
-    return [ret copy];
+    return [[SGCapacity alloc] init];
 }
 
 #pragma mark - Interface
@@ -201,14 +159,8 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
         case SGPacketOutputStateOpened:
         {
             frameState = SGFrameOutputStateOpened;
-            NSMutableArray * tracks = [NSMutableArray array];
-            if (self.audioTracks.firstObject) {
-                [tracks addObject:self.audioTracks.firstObject];
-            }
-            if (self.videoTracks.firstObject) {
-                [tracks addObject:self.videoTracks.firstObject];
-            }
-            self.selectedTracks = [tracks copy];
+            self.selectedAudioTrack = self.audioTracks.firstObject;
+            self.selectedVideoTrack = self.videoTracks.firstObject;
             self.decoders = [NSMutableArray array];
             self.decodersPaused = [NSMutableArray array];
         }
@@ -242,7 +194,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
     [self lock];
-    if (![self.selectedTracksInternal containsObject:packet.track]) {
+    if (packet.track != self.selectedAudioTrack && packet.track != self.selectedVideoTrack) {
         [self unlock];
         return;
     }
@@ -299,7 +251,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     for (NSUInteger i = 0; i < self.decoders.count; i++) {
         SGAsyncDecoder * obj = [self.decoders objectAtIndex:i];
         BOOL value = [self.decodersPaused objectAtIndex:i].boolValue;
-        if ([self.selectedTracksInternal containsObject:obj.object]) {
+        if (obj.object == self.selectedAudioTrack || obj.object == self.selectedVideoTrack) {
             paused = paused && value;
         }
     }
@@ -331,7 +283,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     if (finished) {
         [self lock];
         for (SGAsyncDecoder * obj in self.decoders) {
-            if ([self.selectedTracks containsObject:obj.object]) {
+            if (obj.object == self.selectedAudioTrack || obj.object == self.selectedVideoTrack) {
                 finished = finished && obj.capacity.count == 0;
             }
         }

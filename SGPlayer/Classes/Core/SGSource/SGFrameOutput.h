@@ -45,11 +45,10 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
-@property (nonatomic, copy) NSArray <SGTrack *> * selectedTracks;
-- (SGTrack *)selectedAudioTrack;
-- (SGTrack *)selectedVideoTrack;
+@property (nonatomic, strong) SGTrack * selectedAudioTrack;
+@property (nonatomic, strong) SGTrack * selectedVideoTrack;
 
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks;
+- (SGCapacity *)capacityWithTrack:(SGTrack *)track;
 
 - (NSError *)open;
 - (NSError *)start;

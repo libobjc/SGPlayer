@@ -54,10 +54,10 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput)
-SGGet0Map(NSArray <SGTrack *> *, selectedTracks, self.frameOutput)
 SGGet0Map(SGTrack *, selectedAudioTrack, self.frameOutput)
 SGGet0Map(SGTrack *, selectedVideoTrack, self.frameOutput)
-SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
+SGSet1Map(void, setSelectedAudioTrack, SGTrack *, self.frameOutput)
+SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 #pragma mark - Interface
 
@@ -183,24 +183,32 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 {
     SGTrack * track = self.selectedAudioTrack ? self.selectedAudioTrack : self.selectedVideoTrack;
     if (track) {
-        return [self capacityWithTracks:@[track]].firstObject;
+        return [self capacityWithTrack:track];
     }
     return [[SGCapacity alloc] init];
 }
 
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks
+- (SGCapacity *)capacityWithTrack:(SGTrack *)track
 {
-    NSMutableArray * ret = [NSMutableArray array];
-    for (SGCapacity * obj in [self.frameOutput capacityWithTracks:tracks]) {
-        SGCapacity * o = [obj copy];
-        if (((SGTrack *)obj.object).type == SGMediaTypeAudio) {
-            [o add:self.audioQueue.capacity];
-        } else if (((SGTrack *)obj.object).type == SGMediaTypeVideo) {
-            [o add:self.videoQueue.capacity];
-        }
-        [ret addObject:o];
+    SGCapacity * capacity = [self.frameOutput capacityWithTrack:track];
+    if (track.type == SGMediaTypeAudio) {
+        [capacity add:self.audioQueue.capacity];
+    } else if (track.type == SGMediaTypeVideo) {
+        [capacity add:self.videoQueue.capacity];
     }
-    return [ret copy];
+    return capacity;
+}
+
+- (void)updateCapacity:(SGCapacity *)capacity track:(SGTrack *)track
+{
+    if (self.frameOutput.state == SGFrameOutputStateFinished && capacity.count == 0) {
+        if (track.type == SGMediaTypeAudio) {
+            self.audioFinished = YES;
+        } else if (track.type == SGMediaTypeVideo) {
+            self.videoFinished = YES;
+        }
+    }
+    [self.delegate playerItem:self didChangeCapacity:capacity track:track];
 }
 
 #pragma mark - SGFrameOutputDelegate
@@ -246,7 +254,7 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
     NSAssert(additional, @"Invalid additional.");
     capacity = [capacity copy];
     [capacity add:additional];
-    [self.delegate playerItem:self didChangeCapacity:capacity track:track];
+    [self updateCapacity:capacity track:track];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
@@ -292,9 +300,10 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
     } else {
         [self.frameOutput resume:@[track]];
     }
+    SGCapacity * additional = [self.frameOutput capacityWithTrack:track];
     capacity = [capacity copy];
-    [capacity add:[self.frameOutput capacityWithTracks:@[track]].firstObject];
-    [self.delegate playerItem:self didChangeCapacity:capacity track:track];
+    [capacity add:additional];
+    [self updateCapacity:capacity track:track];
     [self callbackForFinishedIfNeeded];
 }
 
@@ -303,8 +312,8 @@ SGSet1Map(void, setSelectedTracks, NSArray <SGTrack *> *, self.frameOutput)
 - (void)callbackForFinishedIfNeeded
 {
     if (self.frameOutput.state == SGFrameOutputStateFinished &&
-        self.audioQueue.capacity.count == 0 &&
-        self.videoQueue.capacity.count == 0) {
+        (!self.selectedAudioTrack || self.audioFinished) &&
+        (!self.selectedVideoTrack || self.videoFinished)) {
         SGLockEXE10(self.coreLock, ^SGBasicBlock {
             return [self setState:SGPlayerItemStateFinished];
         });

@@ -665,12 +665,12 @@
 
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
-//    if (track.type == SGMediaTypeAudio) {
-//        NSLog(@"audio duration : %f", CMTimeGetSeconds(capacity.duration));
-//    }
-//    if (track.type == SGMediaTypeVideo) {
-//        NSLog(@"video duration : %f", CMTimeGetSeconds(capacity.duration));
-//    }
+    if (track.type == SGMediaTypeAudio) {
+        NSLog(@"audio duration : %f", CMTimeGetSeconds(capacity.duration));
+    }
+    if (track.type == SGMediaTypeVideo) {
+        NSLog(@"video duration : %f", CMTimeGetSeconds(capacity.duration));
+    }
     [self pauseOrResumeOutput];
     [self callbackForTimingIfNeeded];
 }

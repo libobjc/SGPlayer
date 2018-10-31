@@ -33,11 +33,13 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 @property (nonatomic, strong) SGFrameFilter * audioFilter;
 @property (nonatomic, strong) SGFrameFilter * videoFilter;
+@property (nonatomic, assign) BOOL audioFinished;
+@property (nonatomic, assign) BOOL videoFinished;
 
 - (SGPlayerItemState)state;
 
 - (SGCapacity *)capacity;
-- (NSArray <SGCapacity *> *)capacityWithTracks:(NSArray <SGTrack *> *)tracks;
+- (SGCapacity *)capacityWithTrack:(SGTrack *)track;
 
 - (BOOL)open;
 - (BOOL)start;
