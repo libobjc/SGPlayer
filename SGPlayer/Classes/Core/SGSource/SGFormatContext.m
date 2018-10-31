@@ -17,8 +17,7 @@
 static int SGFormatContextInterruptHandler(void * context)
 {
     SGFormatContext * obj = (__bridge SGFormatContext *)context;
-    if ([obj.delegate respondsToSelector:@selector(formatContextShouldAbortBlockingFunctions:)])
-    {
+    if ([obj.delegate respondsToSelector:@selector(formatContextShouldAbortBlockingFunctions:)]) {
         BOOL ret = [obj.delegate formatContextShouldAbortBlockingFunctions:obj];
         return ret ? 1 : 0;
     }
@@ -44,8 +43,7 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.URL = URL;
         self.options = [SGConfiguration defaultConfiguration].formatContextOptions;
     }
@@ -59,8 +57,7 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (CMTime)duration
 {
-    if (_formatContext && _formatContext->duration > 0)
-    {
+    if (_formatContext && _formatContext->duration > 0) {
         return CMTimeMake(_formatContext->duration, AV_TIME_BASE);
     }
     return kCMTimeZero;
@@ -68,8 +65,7 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (NSError *)open
 {
-    if (_formatContext)
-    {
+    if (_formatContext) {
         return nil;
     }
     SGFFmpegSetupIfNeeded();
@@ -82,20 +78,17 @@ static int SGFormatContextInterruptHandler(void * context)
     {
         return error;
     }
-    if (_formatContext && _formatContext->metadata)
-    {
+    if (_formatContext && _formatContext->metadata) {
         self.metadata = SGDictionaryFF2NS(_formatContext->metadata);
     }
     NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
     NSMutableArray <SGTrack *> * audioTracks = [NSMutableArray array];
     NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
     NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
-    for (int i = 0; i < _formatContext->nb_streams; i++)
-    {
+    for (int i = 0; i < _formatContext->nb_streams; i++) {
         SGTrack * obj = [[SGTrack alloc] initWithCore:_formatContext->streams[i]];
         [tracks addObject:obj];
-        switch (obj.type)
-        {
+        switch (obj.type) {
             case SGMediaTypeAudio:
                 [audioTracks addObject:obj];
                 break;
@@ -120,8 +113,7 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (NSError *)close
 {
-    if (_formatContext)
-    {
+    if (_formatContext) {
         avformat_close_input(&_formatContext);
         _formatContext = NULL;
     }
@@ -130,10 +122,8 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (NSError *)seekable
 {
-    if (_formatContext)
-    {
-        if (_formatContext->pb && _formatContext->pb->seekable > 0)
-        {
+    if (_formatContext) {
+        if (_formatContext->pb && _formatContext->pb->seekable > 0) {
             return nil;
         }
         return SGECreateError(SGErrorCodeFormatNotSeekable, SGOperationCodeFormatGetSeekable);
@@ -144,12 +134,10 @@ static int SGFormatContextInterruptHandler(void * context)
 - (NSError *)seekToTime:(CMTime)time
 {
     NSError * error = [self seekable];
-    if (error)
-    {
+    if (error) {
         return error;
     }
-    if (_formatContext)
-    {
+    if (_formatContext) {
         int64_t timeStamp = AV_TIME_BASE * time.value / time.timescale;
         int ret = av_seek_frame(_formatContext, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
@@ -159,8 +147,7 @@ static int SGFormatContextInterruptHandler(void * context)
 
 - (NSError *)nextPacket:(SGPacket *)packet
 {
-    if (_formatContext)
-    {
+    if (_formatContext) {
         int ret = av_read_frame(_formatContext, packet.core);
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }
@@ -170,8 +157,7 @@ static int SGFormatContextInterruptHandler(void * context)
 NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *))
 {
     AVFormatContext * fc = avformat_alloc_context();
-    if (!fc)
-    {
+    if (!fc) {
         return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
     }
     
@@ -183,23 +169,19 @@ NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, N
     
     AVDictionary * opts = SGDictionaryNS2FF(options);
     if ([lowercaseURLString hasPrefix:@"rtmp"] ||
-        [lowercaseURLString hasPrefix:@"rtsp"])
-    {
+        [lowercaseURLString hasPrefix:@"rtsp"]) {
         av_dict_set(&opts, "timeout", NULL, 0);
     }
     
     int suc = avformat_open_input(&fc, URLString.UTF8String, NULL, &opts);
     
-    if (opts)
-    {
+    if (opts) {
         av_dict_free(&opts);
     }
     
     NSError * err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
-    if (err)
-    {
-        if (fc)
-        {
+    if (err) {
+        if (fc) {
             avformat_free_context(fc);
         }
         return err;
@@ -207,10 +189,8 @@ NSError * SGCreateFormatContext(AVFormatContext ** formatContext, NSURL * URL, N
     
     suc = avformat_find_stream_info(fc, NULL);
     err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
-    if (err)
-    {
-        if (fc)
-        {
+    if (err) {
+        if (fc) {
             avformat_close_input(&fc);
             avformat_free_context(fc);
         }

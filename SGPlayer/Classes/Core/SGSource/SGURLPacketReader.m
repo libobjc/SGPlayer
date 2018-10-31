@@ -24,8 +24,7 @@
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.URL = URL;
         self.formatContext = [[SGFormatContext alloc] initWithURL:self.URL];
         self.formatContext.delegate = self;
@@ -51,8 +50,7 @@ SGGet1Map(NSError *, nextPacket, SGPacket *, self.formatContext)
 
 - (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext
 {
-    if ([self.delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)])
-    {
+    if ([self.delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)]) {
         return [self.delegate packetReadableShouldAbortBlockingFunctions:self];
     }
     return NO;
