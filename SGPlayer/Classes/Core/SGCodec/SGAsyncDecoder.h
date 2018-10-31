@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
 
 - (BOOL)open;
 - (BOOL)close;
+
 - (BOOL)pause;
 - (BOOL)resume;
 

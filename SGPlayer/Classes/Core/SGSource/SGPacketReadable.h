@@ -27,8 +27,10 @@
 
 - (NSError *)open;
 - (NSError *)close;
+
 - (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time;
+
 - (NSError *)nextPacket:(SGPacket *)packet;
 
 @end
