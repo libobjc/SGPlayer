@@ -269,7 +269,7 @@
 - (SGCapacity *)capacity
 {
     if (self.didDestoryed) {
-        return nil;
+        return [[SGCapacity alloc] init];
     }
     [self.condition lock];
     SGCapacity * ret = [[SGCapacity alloc] init];

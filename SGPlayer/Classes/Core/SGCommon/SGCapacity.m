@@ -37,4 +37,9 @@
     self.count += capacity.count;
 }
 
+- (BOOL)isEqualToCapacity:(SGCapacity *)capacity
+{
+    return CMTimeCompare(self.duration, capacity.duration) == 0 && self.size == capacity.size && self.count == capacity.count;
+}
+
 @end

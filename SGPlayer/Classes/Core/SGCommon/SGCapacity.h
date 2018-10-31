@@ -18,5 +18,6 @@
 @property (nonatomic, assign) uint64_t count;
 
 - (void)add:(SGCapacity *)capacity;
+- (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
 
 @end

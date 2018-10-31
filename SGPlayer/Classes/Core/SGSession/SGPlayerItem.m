@@ -9,6 +9,7 @@
 #import "SGPlayerItem.h"
 #import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
+#import "SGPointerMap.h"
 #import "SGLock.h"
 
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
@@ -20,6 +21,7 @@
 @property (nonatomic, copy) NSError * error;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, assign) NSUInteger seekingCount;
+@property (nonatomic, strong) SGPointerMap * capacityMap;
 @property (nonatomic, strong) SGFrameOutput * frameOutput;
 @property (nonatomic, strong) SGObjectQueue * audioQueue;
 @property (nonatomic, strong) SGObjectQueue * videoQueue;
@@ -35,6 +37,7 @@
 {
     if (self = [super init]) {
         self.coreLock = [[NSLock alloc] init];
+        self.capacityMap = [[SGPointerMap alloc] init];
         self.frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self.frameOutput.delegate = self;
         self.audioQueue = [[SGObjectQueue alloc] init];
@@ -208,6 +211,11 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             self.videoFinished = YES;
         }
     }
+    SGCapacity * last = [self.capacityMap objectForKey:track];
+    if ([last isEqualToCapacity:capacity]) {
+        return;
+    }
+    [self.capacityMap setObject:capacity forKey:track];
     [self.delegate playerItem:self didChangeCapacity:capacity track:track];
 }
 
