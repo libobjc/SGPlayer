@@ -249,8 +249,11 @@ static SGPacket * flushPacket;
                         for (SGFrame * frame in frames)
                         {
                             [self.delegate decoder:self didOutputFrame:frame];
-                            [frame unlock];
                         }
+                    }
+                    for (SGFrame * frame in frames)
+                    {
+                        [frame unlock];
                     }
                 }
                 [self callbackForCapacity];

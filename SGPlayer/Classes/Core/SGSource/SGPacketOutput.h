@@ -44,13 +44,13 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
-- (NSError *)open;
-- (NSError *)start;
-- (NSError *)close;
-- (NSError *)pause;
-- (NSError *)resume;
-- (NSError *)seekable;
-- (NSError *)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+- (BOOL)open;
+- (BOOL)start;
+- (BOOL)close;
+- (BOOL)pause;
+- (BOOL)resume;
+- (BOOL)seekable;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end
 

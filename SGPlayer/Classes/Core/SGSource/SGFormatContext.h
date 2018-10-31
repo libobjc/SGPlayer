@@ -23,7 +23,6 @@
 @property (nonatomic, weak) id <SGFormatContextDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
-- (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 

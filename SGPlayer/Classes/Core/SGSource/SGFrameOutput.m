@@ -82,53 +82,53 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 
 #pragma mark - Interface
 
-- (NSError *)open
+- (BOOL)open
 {
     return [self.packetOutput open];
 }
 
-- (NSError *)start
+- (BOOL)start
 {
     return [self.packetOutput start];
 }
 
-- (NSError *)close
+- (BOOL)close
 {
-    NSError * error = [self.packetOutput close];
+    [self.packetOutput close];
     for (SGAsyncDecoder * obj in self.decoders) {
         [obj close];
     }
-    return error;
+    return YES;
 }
 
-- (NSError *)pause:(NSArray <SGTrack *> *)tracks
+- (BOOL)pause:(NSArray <SGTrack *> *)tracks
 {
     for (SGAsyncDecoder * obj in self.decoders) {
         if ([tracks containsObject:obj.object]) {
             [obj pause];
         }
     }
-    return nil;
+    return YES;
 }
 
-- (NSError *)resume:(NSArray <SGTrack *> *)tracks
+- (BOOL)resume:(NSArray <SGTrack *> *)tracks
 {
     for (SGAsyncDecoder * obj in self.decoders) {
         if ([tracks containsObject:obj.object]) {
             [obj resume];
         }
     }
-    return nil;
+    return YES;
 }
 
 #pragma mark - Seeking
 
-- (NSError *)seekable
+- (BOOL)seekable
 {
     return [self.packetOutput seekable];
 }
 
-- (NSError *)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
 {
     SGWeakSelf
     return [self.packetOutput seekToTime:time completionHandler:^(CMTime time, NSError *error) {

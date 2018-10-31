@@ -32,7 +32,6 @@ static int SGFormatContextInterruptHandler(void * context)
 }
 
 @property (nonatomic, copy) NSURL * URL;
-@property (nonatomic, copy) NSError * error;
 @property (nonatomic, copy) NSDictionary * metadata;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
@@ -81,7 +80,6 @@ static int SGFormatContextInterruptHandler(void * context)
                                             SGFormatContextInterruptHandler);
     if (error)
     {
-        self.error = error;
         return error;
     }
     if (_formatContext && _formatContext->metadata)

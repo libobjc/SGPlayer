@@ -35,7 +35,6 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(NSError *, error, self.formatContext)
 SGGet0Map(CMTime, duration, self.formatContext)
 SGGet0Map(NSDictionary *, metadata, self.formatContext)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.formatContext)

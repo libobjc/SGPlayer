@@ -36,6 +36,7 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 @property (nonatomic, weak) id <SGFrameOutputDelegate> delegate;
 
 - (SGFrameOutputState)state;
+
 - (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
@@ -50,13 +51,15 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 
 - (SGCapacity *)capacityWithTrack:(SGTrack *)track;
 
-- (NSError *)open;
-- (NSError *)start;
-- (NSError *)close;
-- (NSError *)pause:(NSArray <SGTrack *> *)tracks;
-- (NSError *)resume:(NSArray <SGTrack *> *)tracks;
-- (NSError *)seekable;
-- (NSError *)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+- (BOOL)open;
+- (BOOL)start;
+- (BOOL)close;
+
+- (BOOL)pause:(NSArray <SGTrack *> *)tracks;
+- (BOOL)resume:(NSArray <SGTrack *> *)tracks;
+
+- (BOOL)seekable;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
 
 @end
 
@@ -64,6 +67,6 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame;
 
 @end

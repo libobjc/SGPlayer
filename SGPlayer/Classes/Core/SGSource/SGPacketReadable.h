@@ -17,7 +17,6 @@
 
 @property (nonatomic, weak) id <SGPacketReadableDelegate> delegate;
 
-- (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 
