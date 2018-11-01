@@ -690,8 +690,9 @@
 #pragma mark - SGRenderableDelegate
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state {}
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity {}
 
-- (SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable timeReader:(SGTimeReaderBlock)timeReader
+- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader
 {
     if (renderable == self.audioOutput) {
         return [self.currentItem copyAudioFrame:timeReader];

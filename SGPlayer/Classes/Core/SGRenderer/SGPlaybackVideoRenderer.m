@@ -204,6 +204,11 @@
     return _state;
 }
 
+- (SGCapacity *)capacity
+{
+    return nil;
+}
+
 - (void)setViewport:(SGVRViewport *)viewport
 {
     self.matrixMaker.viewport = viewport;
@@ -282,7 +287,7 @@
     if (needFetchFrame)
     {
         SGWeakSelf
-        frame = [self.delegate renderableCopyFrame:self timeReader:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
+        frame = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
             SGStrongSelf
             if (!self.currentFrame)
             {

@@ -31,11 +31,14 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 @property (nonatomic, assign) BOOL key;
 
 - (SGRenderableState)state;
+- (SGCapacity *)capacity;
 
 - (BOOL)open;
 - (BOOL)close;
+
 - (BOOL)pause;
 - (BOOL)resume;
+
 - (BOOL)flush;
 
 @end
@@ -43,7 +46,8 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 @protocol SGRenderableDelegate <NSObject>
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
-- (__kindof SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable timeReader:(SGTimeReaderBlock)timeReader;
+- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
+- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader;
 
 @end
 

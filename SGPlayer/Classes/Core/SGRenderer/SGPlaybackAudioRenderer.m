@@ -79,6 +79,11 @@
     return ret;
 }
 
+- (SGCapacity *)capacity
+{
+    return nil;
+}
+
 - (void)setVolume:(float)volume
 {
     [self.audioPlayer setVolume:volume error:nil];
@@ -177,7 +182,7 @@
     while (numberOfSamples > 0) {
         if (!self.currentFrame) {
             [self.coreLock unlock];
-            SGAudioFrame * frame = [self.delegate renderableCopyFrame:self timeReader:nil];
+            SGAudioFrame * frame = [self.delegate renderable:self fetchFrame:nil];
             [self.coreLock lock];
             self.currentFrame = frame;
         }
