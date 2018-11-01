@@ -184,8 +184,9 @@
         [self.coreLock unlock];
         return;
     }
+    uint32_t nb_samples_left = nb_samples;
     while (YES) {
-        if (nb_samples <= 0) {
+        if (nb_samples_left <= 0) {
             [self.coreLock unlock];
             break;
         }
@@ -199,8 +200,8 @@
             self.frame = frame;
         }
         NSAssert(self.frame.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
-        int32_t nb_samples_left = self.frame.nb_samples - self.frame_nb_samples_copied;
-        int32_t nb_samples_to_copy = MIN(nb_samples, nb_samples_left);
+        int32_t frame_nb_samples_left = self.frame.nb_samples - self.frame_nb_samples_copied;
+        int32_t nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
         for (int i = 0; i < data->mNumberBuffers && i < self.frame.channels; i++) {
             uint32_t data_offset = self.render_nb_samples_copied * (uint32_t)sizeof(float);
             uint32_t frame_offset = self.frame_nb_samples_copied * (uint32_t)sizeof(float);
@@ -220,7 +221,15 @@
             self.frame = nil;
             self.frame_nb_samples_copied = 0;
         }
-        nb_samples -= nb_samples_to_copy;
+        nb_samples_left -= nb_samples_to_copy;
+    }
+    uint32_t nb_samples_copied = nb_samples - nb_samples_left;
+    for (int i = 0; i < data->mNumberBuffers; i++) {
+        uint32_t size_copied = nb_samples_copied * (uint32_t)sizeof(float);
+        uint32_t size_left = data->mBuffers[i].mDataByteSize - size_copied;
+        if (size_left > 0) {
+            memset(data->mBuffers[i].mData + size_copied, 0, size_left);
+        }
     }
 }
 

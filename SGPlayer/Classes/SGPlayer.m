@@ -686,7 +686,7 @@
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state {}
 
-- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
+- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
 {
     NSLog(@"audio capacity : %f, %d", CMTimeGetSeconds(capacity.duration), capacity.count);
 }

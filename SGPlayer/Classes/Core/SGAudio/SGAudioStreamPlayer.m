@@ -269,10 +269,6 @@ OSStatus inputCallback(void * inRefCon,
                        AudioBufferList * ioData)
 {
     SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
-    for (int i = 0; i < ioData->mNumberBuffers; i++)
-    {
-        memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
-    }
     [obj.delegate audioStreamPlayer:obj render:inTimeStamp data:ioData nb_samples:inNumberFrames];
     return noErr;
 }
