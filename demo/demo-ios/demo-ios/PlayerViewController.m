@@ -114,8 +114,8 @@
     self.progressSilderTouching = NO;
     CMTime time = CMTimeMultiplyByFloat64(self.player.currentItem.duration, self.progressSilder.value);
     CMTime time2 = CMTimeMultiplyByFloat64(self.player2.currentItem.duration, self.progressSilder.value);
-    [self.player seekToTime:time completionHandler:nil];
-    [self.player2 seekToTime:time2 completionHandler:nil];
+    [self.player seekToTime:time result:nil];
+    [self.player2 seekToTime:time2 result:nil];
 }
 
 - (IBAction)progressValueChanged:(id)sender

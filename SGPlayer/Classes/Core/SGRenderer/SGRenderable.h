@@ -43,7 +43,7 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 @protocol SGRenderableDelegate <NSObject>
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
-- (__kindof SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable clock:(SGClockBlock)clock;
+- (__kindof SGFrame *)renderableCopyFrame:(id <SGRenderable>)renderable timeReader:(SGTimeReaderBlock)timeReader;
 
 @end
 

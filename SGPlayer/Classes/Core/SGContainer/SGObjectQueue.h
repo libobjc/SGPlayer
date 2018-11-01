@@ -41,27 +41,27 @@
 
 #pragma mark - Put Sync
 
-- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object;
-- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
+- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object;
+- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after;
 
 #pragma mark - Put Async
 
-- (SGBasicBlock)putObjectAsync:(id <SGObjectQueueItem>)object;
+- (SGBlock)putObjectAsync:(id <SGObjectQueueItem>)object;
 
 #pragma mark - Get Sync
 
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after;
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock;
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object;
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after;
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReaderBlock)timeReader;
 
 #pragma mark - Get Async
 
-- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object;
-- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock;
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object;
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReaderBlock)timeReader;
 
 #pragma mark - Common
 
-- (SGBasicBlock)flush;
-- (SGBasicBlock)destroy;
+- (SGBlock)flush;
+- (SGBlock)destroy;
 
 @end

@@ -47,9 +47,9 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState)
 
 - (BOOL)seeking;
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
 
-- (__kindof SGFrame *)copyAudioFrame:(SGClockBlock)clock;
-- (__kindof SGFrame *)copyVideoFrame:(SGClockBlock)clock;
+- (__kindof SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader;
+- (__kindof SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader;
 
 @end

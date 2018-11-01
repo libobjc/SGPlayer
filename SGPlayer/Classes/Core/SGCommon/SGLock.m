@@ -18,10 +18,10 @@ BOOL SGLockEXE00(id <NSLocking> locking, void (^run)(void))
     return YES;
 }
 
-BOOL SGLockEXE10(id <NSLocking> locking, SGBasicBlock (^run)(void))
+BOOL SGLockEXE10(id <NSLocking> locking, SGBlock (^run)(void))
 {
     [locking lock];
-    SGBasicBlock r = nil;
+    SGBlock r = nil;
     if (run) {
         r = run();
     }
@@ -32,10 +32,10 @@ BOOL SGLockEXE10(id <NSLocking> locking, SGBasicBlock (^run)(void))
     return YES;
 }
 
-BOOL SGLockEXE11(id <NSLocking> locking, SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
+BOOL SGLockEXE11(id <NSLocking> locking, SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
 {
     [locking lock];
-    SGBasicBlock r = nil;
+    SGBlock r = nil;
     if (run) {
         r = run();
     }
@@ -66,7 +66,7 @@ BOOL SGLockCondEXE00(id <NSLocking> locking, BOOL (^verify)(void), void (^run)(v
     return YES;
 }
 
-BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void))
+BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void))
 {
     [locking lock];
     BOOL s = YES;
@@ -77,7 +77,7 @@ BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock 
         [locking unlock];
         return NO;
     }
-    SGBasicBlock r = nil;
+    SGBlock r = nil;
     if (run) {
         r = run();
     }
@@ -88,7 +88,7 @@ BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock 
     return YES;
 }
 
-BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock (^run)(void), BOOL (^finish)(SGBasicBlock block))
+BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
 {
     [locking lock];
     BOOL s = YES;
@@ -99,7 +99,7 @@ BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBasicBlock 
         [locking unlock];
         return NO;
     }
-    SGBasicBlock r = nil;
+    SGBlock r = nil;
     if (run) {
         r = run();
     }

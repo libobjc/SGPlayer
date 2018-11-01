@@ -69,12 +69,12 @@
     return ret;
 }
 
-- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object
+- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object
 {
     return [self putObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBasicBlock)before after:(SGBasicBlock)after
+- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after
 {
     if (self.didDestoryed) {
         return ^{};
@@ -111,7 +111,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)putObjectAsync:(id <SGObjectQueueItem>)object
+- (SGBlock)putObjectAsync:(id <SGObjectQueueItem>)object
 {
     if (self.didDestoryed) {
         return ^{};
@@ -151,12 +151,12 @@
     return obj;
 }
 
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object
 {
     return [self getObjectSync:object before:nil after:nil];
 }
 
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -184,7 +184,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBasicBlock)before after:(SGBasicBlock)after clock:(SGClockBlock)clock
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReaderBlock)timeReader
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -201,7 +201,7 @@
         }
     }
     SGCapacity * capacity = nil;
-    * object = [self getObject:&capacity clock:clock];
+    * object = [self getObject:&capacity timeReader:timeReader];
     if (object) {
         [self.condition signal];
     }
@@ -214,7 +214,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -233,7 +233,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)getObjectAsync:(id <SGObjectQueueItem> *)object clock:(SGClockBlock)clock
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReaderBlock)timeReader
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -241,7 +241,7 @@
         return ^{};
     }
     SGCapacity * capacity = nil;
-    * object = [self getObject:&capacity clock:clock];
+    * object = [self getObject:&capacity timeReader:timeReader];
     if (* object) {
         [self.condition signal];
     }
@@ -254,12 +254,12 @@
     return ^{};
 }
 
-- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity clock:(SGClockBlock)clock
+- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReaderBlock)timeReader
 {
     CMTime current = kCMTimeZero;
     CMTime expect = kCMTimeZero;
     BOOL drop = NO;
-    if (!clock || !clock(&current, &expect, &drop)) {
+    if (!timeReader || !timeReader(&current, &expect, &drop)) {
         return [self getObject:capacity];
     }
     id <SGObjectQueueItem> object = nil;
@@ -301,7 +301,7 @@
     return object;
 }
 
-- (SGBasicBlock)flush
+- (SGBlock)flush
 {
     [self.condition lock];
     for (id <SGObjectQueueItem> obj in self.objects) {
@@ -324,7 +324,7 @@
     return ^{};
 }
 
-- (SGBasicBlock)destroy
+- (SGBlock)destroy
 {
     self.didDestoryed = YES;
     return [self flush];

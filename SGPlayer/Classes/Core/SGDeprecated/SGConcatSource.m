@@ -89,7 +89,7 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGSourceState)state
+- (SGBlock)setState:(SGSourceState)state
 {
     if (_state != state)
     {
@@ -130,7 +130,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSourceStateOpening];
+    SGBlock callback = [self setState:SGSourceStateOpening];
     [self unlock];
     callback();
     [self startOpenThread];
@@ -144,7 +144,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSourceStateReading];
+    SGBlock callback = [self setState:SGSourceStateReading];
     [self unlock];
     callback();
     [self startReadThread];
@@ -159,7 +159,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSourceStatePaused];
+    SGBlock callback = [self setState:SGSourceStatePaused];
     [self unlock];
     callback();
 }
@@ -172,7 +172,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSourceStateReading];
+    SGBlock callback = [self setState:SGSourceStateReading];
     [self unlock];
     callback();
 }
@@ -185,7 +185,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return;
     }
-    SGBasicBlock callback = [self setState:SGSourceStateClosed];
+    SGBlock callback = [self setState:SGSourceStateClosed];
     [self unlock];
     callback();
     [self.operationQueue cancelAllOperations];
@@ -207,7 +207,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(SGSeekResultBlock)completionHandler
 {
     if (![self seekableToTime:time])
     {
@@ -222,7 +222,7 @@ static int SGConcatSourceInterruptHandler(void * context)
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGSourceStateSeeking];
+    SGBlock callback = [self setState:SGSourceStateSeeking];
     self.seekTimeStamp = time;
     self.seekCompletionHandler = completionHandler;
     [self unlock];
@@ -339,7 +339,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     self.videoEnable = videoEnable;
     [self lock];
     SGSourceState state = self.error ? SGSourceStateFailed : SGSourceStateOpened;
-    SGBasicBlock callback = [self setState:state];
+    SGBlock callback = [self setState:state];
     [self unlock];
     [self changeToNextFormatContext];
     callback();
@@ -397,7 +397,7 @@ static int SGConcatSourceInterruptHandler(void * context)
                     [self unlock];
                     continue;
                 }
-                SGBasicBlock callback = [self setState:SGSourceStateReading];
+                SGBlock callback = [self setState:SGSourceStateReading];
                 CMTime seekTimeStamp = self.seekTimeStamp;
                 void(^seekCompletionHandler)(CMTime, NSError *) = self.seekCompletionHandler;
                 self.seekTimeStamp = kCMTimeZero;
@@ -422,7 +422,7 @@ static int SGConcatSourceInterruptHandler(void * context)
 //                    if (readResult != AVERROR_EXIT)
 //                    {
 //                        [self lock];
-//                        SGBasicBlock callback = ^{};
+//                        SGBlock callback = ^{};
 //                        if (self.state == SGSourceStateReading)
 //                        {
 //                            if (self.formatContext == self.formatContexts.lastObject)

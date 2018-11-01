@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (BOOL)resume;
 
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void(^)(CMTime time, NSError * error))completionHandler;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
 
 @end
 

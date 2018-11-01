@@ -57,7 +57,7 @@ static SGPacket * flushPacket;
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGAsyncDecoderState)state
+- (SGBlock)setState:(SGAsyncDecoderState)state
 {
     if (_state == state) {
         return ^{};
@@ -98,9 +98,9 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGAsyncDecoderStateNone;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGAsyncDecoderStateDecoding];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self startDecodeThread];
         return YES;
@@ -111,9 +111,9 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGAsyncDecoderStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGAsyncDecoderStateClosed];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self.packetQueue destroy];
         [self.operationQueue cancelAllOperations];
@@ -128,7 +128,7 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE10(self.coreLock, ^BOOL {
         return self->_state == SGAsyncDecoderStateDecoding;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGAsyncDecoderStatePaused];
     });
 }
@@ -137,7 +137,7 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE10(self.coreLock, ^BOOL {
         return self->_state == SGAsyncDecoderStatePaused;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGAsyncDecoderStateDecoding];
     });
 }
@@ -146,9 +146,9 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGAsyncDecoderStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self.packetQueue putObjectSync:packet]();
         return YES;
@@ -159,9 +159,9 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGAsyncDecoderStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self.packetQueue putObjectSync:finishPacket]();
         return YES;
@@ -172,10 +172,10 @@ static SGPacket * flushPacket;
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGAsyncDecoderStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         self.waitingFlush = YES;
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self.packetQueue flush];
         [self.packetQueue putObjectSync:flushPacket]();
@@ -216,7 +216,7 @@ static SGPacket * flushPacket;
             } else if (self->_state == SGAsyncDecoderStateDecoding) {
                 [self.coreLock unlock];
                 SGPacket * packet = nil;
-                SGBasicBlock block = [self.packetQueue getObjectSync:&packet];
+                SGBlock block = [self.packetQueue getObjectSync:&packet];
                 if (packet == flushPacket) {
                     [self.coreLock lock];
                     self.waitingFlush = NO;
@@ -251,10 +251,10 @@ static SGPacket * flushPacket;
     [capacity copy];
     SGLockCondEXE11(self.coreLock, ^BOOL {
         return ![self->_capacity isEqualToCapacity:capacity];
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         self.capacity = capacity;
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         [self.delegate decoder:self didChangeCapacity:[capacity copy]];
         return YES;
     });

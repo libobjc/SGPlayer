@@ -59,7 +59,7 @@
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGRenderableState)state
+- (SGBlock)setState:(SGRenderableState)state
 {
     if (_state == state) {
         return ^{};
@@ -103,7 +103,7 @@
 {
     return SGLockCondEXE10(self.coreLock, ^BOOL {
         return self->_state == SGRenderableStateNone;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     });
 }
@@ -112,7 +112,7 @@
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGRenderableStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         [self.currentFrame unlock];
         self.currentFrame = nil;
         self.currentFrameReadOffset = 0;
@@ -120,7 +120,7 @@
         self.currentPostDuration = kCMTimeZero;
         self.receivedFrame = NO;
         return [self setState:SGRenderableStateClosed];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         [self.audioPlayer pause];
         block();
         return YES;
@@ -131,9 +131,9 @@
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGRenderableStateRendering;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         [self.audioPlayer pause];
         block();
         return YES;
@@ -144,9 +144,9 @@
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGRenderableStatePaused;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         [self.audioPlayer play];
         block();
         return YES;
@@ -177,7 +177,7 @@
     while (numberOfSamples > 0) {
         if (!self.currentFrame) {
             [self.coreLock unlock];
-            SGAudioFrame * frame = [self.delegate renderableCopyFrame:self clock:nil];
+            SGAudioFrame * frame = [self.delegate renderableCopyFrame:self timeReader:nil];
             [self.coreLock lock];
             self.currentFrame = frame;
         }

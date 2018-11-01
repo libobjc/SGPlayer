@@ -59,7 +59,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGFrameOutputState)state
+- (SGBlock)setState:(SGFrameOutputState)state
 {
     if (_state == state) {
         return ^{};
@@ -93,7 +93,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     if (self.packetOutput.state == SGPacketOutputStateFinished &&
         (!self.selectedAudioTrack || self.audioFinished) &&
         (!self.selectedVideoTrack || self.videoFinished)) {
-        SGLockEXE10(self.coreLock, ^SGBasicBlock {
+        SGLockEXE10(self.coreLock, ^SGBlock {
             return [self setState:SGFrameOutputStateFinished];
         });
     }
@@ -146,15 +146,15 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     return [self.packetOutput seekable];
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
     SGWeakSelf
-    return [self.packetOutput seekToTime:time completionHandler:^(CMTime time, NSError *error) {
+    return [self.packetOutput seekToTime:time result:^(CMTime time, NSError * error) {
         SGStrongSelf
         [self.audioDecoder flush];
         [self.videoDecoder flush];
-        if (completionHandler) {
-            completionHandler(time, error);
+        if (result) {
+            result(time, error);
         }
     }];
 }
@@ -163,10 +163,10 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
-    SGLockEXE10(self.coreLock, ^SGBasicBlock {
-        SGBasicBlock stateBlock = ^{};
-        SGBasicBlock audioBlock = ^{};
-        SGBasicBlock videoBlock = ^{};
+    SGLockEXE10(self.coreLock, ^SGBlock {
+        SGBlock stateBlock = ^{};
+        SGBlock audioBlock = ^{};
+        SGBlock videoBlock = ^{};
         switch (state)
         {
             case SGPacketOutputStateNone:
@@ -269,10 +269,10 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
     SGLockCondEXE11(self.coreLock, ^BOOL {
         SGCapacity * last = [self.capacityMap objectForKey:track];
         return ![last isEqualToCapacity:capacity];
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         [self.capacityMap setObject:capacity forKey:track];
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         BOOL paused = capacity.count > 30 && CMTimeCompare(capacity.duration, CMTimeMake(1, 1)) > 0;
         BOOL finished = self.packetOutput.state == SGPacketOutputStateFinished && capacity.count == 0;
         if (track.type == SGMediaTypeAudio) {

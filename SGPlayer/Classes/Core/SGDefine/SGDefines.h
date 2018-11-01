@@ -69,5 +69,6 @@ typedef NS_OPTIONS(NSUInteger, SGTimeOption)
     SGTimeOptionActualStartTime = 1 << 3,
 };
 
-typedef void (^SGBasicBlock)(void);
-typedef BOOL (^SGClockBlock)(CMTime * current, CMTime * desire, BOOL * drop);
+typedef void (^SGBlock)(void);
+typedef void (^SGSeekResultBlock)(CMTime time, NSError * error);
+typedef BOOL (^SGTimeReaderBlock)(CMTime * current, CMTime * desire, BOOL * drop);

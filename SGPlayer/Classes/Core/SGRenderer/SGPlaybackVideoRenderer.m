@@ -81,7 +81,7 @@
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
+    SGBlock callback = [self setState:SGRenderableStatePaused];
     self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
     SGWeakSelf
     NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval) / (NSTimeInterval)self.displayIncreasedCoefficient;
@@ -104,7 +104,7 @@
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGRenderableStateClosed];
+    SGBlock callback = [self setState:SGRenderableStateClosed];
     [self.currentFrame unlock];
     self.currentFrame = nil;
     self.receivedFrame = NO;
@@ -122,7 +122,7 @@
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGRenderableStatePaused];
+    SGBlock callback = [self setState:SGRenderableStatePaused];
     self.paused = YES;
     [self unlock];
     callback();
@@ -137,7 +137,7 @@
         [self unlock];
         return NO;
     }
-    SGBasicBlock callback = [self setState:SGRenderableStateRendering];
+    SGBlock callback = [self setState:SGRenderableStateRendering];
     self.paused = NO;
     [self unlock];
     callback();
@@ -187,7 +187,7 @@
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGRenderableState)state
+- (SGBlock)setState:(SGRenderableState)state
 {
     if (_state != state)
     {
@@ -277,12 +277,12 @@
 {
     [self lock];
     SGVideoFrame * frame = nil;
-    SGBasicBlock callback = ^{};
+    SGBlock callback = ^{};
     BOOL needFetchFrame = !self.key || !self.paused || (self.displayNewFrameCount == 0);
     if (needFetchFrame)
     {
         SGWeakSelf
-        frame = [self.delegate renderableCopyFrame:self clock:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
+        frame = [self.delegate renderableCopyFrame:self timeReader:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
             SGStrongSelf
             if (!self.currentFrame)
             {

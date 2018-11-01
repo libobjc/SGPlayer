@@ -67,7 +67,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 #pragma mark - Setter & Getter
 
-- (SGBasicBlock)setState:(SGPlayerItemState)state
+- (SGBlock)setState:(SGPlayerItemState)state
 {
     if (_state == state) {
         return ^{};
@@ -114,10 +114,10 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         SGCapacity * last = [self.capacityMap objectForKey:track];
         return ![last isEqualToCapacity:capacity];
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         [self.capacityMap setObject:capacity forKey:track];
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         [self.delegate playerItem:self didChangeCapacity:[capacity copy] track:track];
         return YES;
     });
@@ -128,7 +128,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     if (self.frameOutput.state == SGFrameOutputStateFinished &&
         (!self.selectedAudioTrack || self.audioFinished) &&
         (!self.selectedVideoTrack || self.videoFinished)) {
-        SGLockEXE10(self.coreLock, ^SGBasicBlock {
+        SGLockEXE10(self.coreLock, ^SGBlock {
             return [self setState:SGPlayerItemStateFinished];
         });
     }
@@ -140,9 +140,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGPlayerItemStateNone;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGPlayerItemStateOpening];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         return ![self.frameOutput open];
     });
@@ -152,9 +152,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGPlayerItemStateOpened;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGPlayerItemStateReading];;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         return ![self.frameOutput start];
     });
@@ -164,9 +164,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 {
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state != SGPlayerItemStateClosed;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         return [self setState:SGPlayerItemStateClosed];
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         block();
         [self.frameOutput close];
         [self.audioFilter destroy];
@@ -191,7 +191,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     return self.frameOutput.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(void (^)(CMTime, NSError *))completionHandler
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
     if (![self seekable]) {
         return NO;
@@ -199,26 +199,26 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     __block NSUInteger seekingCount = 0;
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         return self->_state == SGPlayerItemStateReading || self->_state == SGPlayerItemStateFinished;
-    }, ^SGBasicBlock {
+    }, ^SGBlock {
         self.seekingCount++;
         seekingCount = self.seekingCount;
         return nil;
-    }, ^BOOL(SGBasicBlock block) {
+    }, ^BOOL(SGBlock block) {
         SGWeakSelf
-        return ![self.frameOutput seekToTime:time completionHandler:^(CMTime time, NSError * error) {
+        return ![self.frameOutput seekToTime:time result:^(CMTime time, NSError * error) {
             SGStrongSelf
             SGLockCondEXE11(self.coreLock, ^BOOL {
                 return seekingCount == self.seekingCount;
-            }, ^SGBasicBlock {
+            }, ^SGBlock {
                 self.seekingCount = 0;
                 return nil;
-            }, ^BOOL(SGBasicBlock block) {
+            }, ^BOOL(SGBlock block) {
                 [self.audioFilter flush];
                 [self.videoFilter flush];
                 [self.audioQueue flush]();
                 [self.videoQueue flush]();
-                if (completionHandler) {
-                    completionHandler(time, error);
+                if (result) {
+                    result(time, error);
                 }
                 return YES;
             });
@@ -226,17 +226,17 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     });
 }
 
-- (SGFrame *)copyAudioFrame:(SGClockBlock)clock
+- (SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader
 {
     SGFrame * ret = nil;
-    [self.audioQueue getObjectAsync:&ret clock:clock]();
+    [self.audioQueue getObjectAsync:&ret timeReader:timeReader]();
     return ret;
 }
 
-- (SGFrame *)copyVideoFrame:(SGClockBlock)clock
+- (SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader
 {
     SGFrame * ret = nil;
-    [self.videoQueue getObjectAsync:&ret clock:clock]();
+    [self.videoQueue getObjectAsync:&ret timeReader:timeReader]();
     return ret;
 }
 
@@ -246,13 +246,13 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 {
     switch (state) {
         case SGFrameOutputStateOpened: {
-            SGLockEXE10(self.coreLock, ^SGBasicBlock {
+            SGLockEXE10(self.coreLock, ^SGBlock {
                 return [self setState:SGPlayerItemStateOpened];
             });
         }
             break;
         case SGFrameOutputStateReading: {
-            SGLockEXE10(self.coreLock, ^SGBasicBlock {
+            SGLockEXE10(self.coreLock, ^SGBlock {
                 return [self setState:SGPlayerItemStateReading];
             });
         }
@@ -262,7 +262,7 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             break;
         case SGFrameOutputStateFailed: {
             self.error = frameOutput.error;
-            SGLockEXE10(self.coreLock, ^SGBasicBlock {
+            SGLockEXE10(self.coreLock, ^SGBlock {
                 return [self setState:SGPlayerItemStateFailed];
             });
         }
