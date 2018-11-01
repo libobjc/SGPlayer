@@ -215,8 +215,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
             }, ^BOOL(SGBlock block) {
                 [self.audioFilter flush];
                 [self.videoFilter flush];
-                [self.audioQueue flush]();
-                [self.videoQueue flush]();
+                SGBlock b1 = [self.audioQueue flush];
+                SGBlock b2 = [self.videoQueue flush];
+                b1(); b2();
                 if (result) {
                     result(time, error);
                 }
