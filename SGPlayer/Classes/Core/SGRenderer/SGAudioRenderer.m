@@ -1,26 +1,30 @@
 //
-//  SGPlaybackAudioRenderer.m
+//  SGAudioRenderer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGPlaybackAudioRenderer.h"
+#import "SGAudioRenderer.h"
+#import "SGRenderer+Internal.h"
 #import "SGAudioStreamPlayer.h"
+#import "SGAudioFrameFilter.h"
 #import "SGAudioFrame.h"
 #import "samplefmt.h"
 #import "SGLock.h"
 
-@interface SGPlaybackAudioRenderer () <SGAudioStreamPlayerDelegate>
+@interface SGAudioRenderer () <SGAudioStreamPlayerDelegate>
 
 {
     SGRenderableState _state;
 }
 
-@property (nonatomic, strong) SGPlaybackClock * clock;
+@property (nonatomic, strong) SGClock * clock;
+@property (nonatomic, assign) CMTime rate;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGCapacity * capacity;
+@property (nonatomic, strong) SGAudioFrameFilter * filter;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
 @property (nonatomic, strong) SGAudioFrame * frame;
 @property (nonatomic, assign) int32_t frame_nb_samples_copied;
@@ -30,21 +34,23 @@
 
 @end
 
-@implementation SGPlaybackAudioRenderer
+@implementation SGAudioRenderer
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
 @synthesize key = _key;
 
-- (instancetype)initWithClock:(SGPlaybackClock *)clock
+- (instancetype)initWithClock:(SGClock *)clock
 {
     if (self = [super init]) {
         self.clock = clock;
+        self.volume = 1.0f;
         self.rate = CMTimeMake(1, 1);
         self.frame_nb_samples_copied = 0;
         self.render_timeStamp = kCMTimeZero;
         self.render_duration = kCMTimeZero;
         self.coreLock = [[NSLock alloc] init];
+        self.filter = [[SGAudioFrameFilter alloc] init];
         self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
@@ -248,8 +254,6 @@
     }
     SGCapacity * capacity = [[SGCapacity alloc] init];
     capacity.duration = CMTimeAdd(render_duration, frame_duration);
-    capacity.size = 0;
-    capacity.count = 1;
     SGBlock capacityBlock = ^{};
     if (![capacity isEqualToCapacity:self->_capacity]) {
         self.capacity = capacity;

@@ -9,26 +9,26 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-typedef NS_ENUM(NSUInteger, SGPrepareState)
+typedef NS_ENUM(NSUInteger, SGPlayerStatus)
 {
-    SGPrepareStateNone,
-    SGPrepareStatePreparing,
-    SGPrepareStateFinished,
+    SGPlayerStatusNone,
+    SGPlayerStatusPreparing,
+    SGPlayerStatusReady,
+    SGPlayerStatusFailed,
 };
 
-typedef NS_ENUM(NSUInteger, SGPlaybackState)
+typedef NS_OPTIONS(NSUInteger, SGPlaybackState)
 {
-    SGPlaybackStateNone,
-    SGPlaybackStatePlaying,
-    SGPlaybackStatePaused,
-    SGPlaybackStateFinished,
+    SGPlaybackStatePlaying = 1 << 0,
+    SGPlaybackStateSeeking = 1 << 1,
+    SGPlaybackStateFinished = 1 << 2,
 };
 
 typedef NS_ENUM(NSUInteger, SGLoadingState)
 {
     SGLoadingStateNone,
-    SGLoadingStateLoading,
-    SGLoadingStatePaused,
+    SGLoadingStatePlaybale,
+    SGLoadingStateStalled,
     SGLoadingStateFinished,
 };
 
@@ -66,7 +66,6 @@ typedef NS_OPTIONS(NSUInteger, SGTimeOption)
     SGTimeOptionPlayback = 1 << 0,
     SGTimeOptionLoaded = 1 << 1,
     SGTimeOptionDuration = 1 << 2,
-    SGTimeOptionActualStartTime = 1 << 3,
 };
 
 typedef void (^SGBlock)(void);

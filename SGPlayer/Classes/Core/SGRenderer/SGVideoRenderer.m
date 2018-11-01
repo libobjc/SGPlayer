@@ -1,12 +1,13 @@
 //
-//  SGPlaybackVideoRenderer.m
+//  SGVideoRenderer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGPlaybackVideoRenderer.h"
+#import "SGVideoRenderer.h"
+#import "SGRenderer+Internal.h"
 #import "SGMapping.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLProgramPool.h"
@@ -17,13 +18,14 @@
 #import "SGVRMatrixMaker.h"
 #import "SGMacro.h"
 
-@interface SGPlaybackVideoRenderer () <NSLocking, SGGLViewDelegate>
+@interface SGVideoRenderer () <NSLocking, SGGLViewDelegate>
 
 {
     SGRenderableState _state;
 }
 
-@property (nonatomic, strong) SGPlaybackClock * clock;
+@property (nonatomic, strong) SGClock * clock;
+@property (nonatomic, assign) CMTime rate;
 @property (nonatomic, assign) BOOL paused;
 @property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSRecursiveLock * coreLock;
@@ -41,19 +43,21 @@
 
 @end
 
-@implementation SGPlaybackVideoRenderer
+@implementation SGVideoRenderer
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
 @synthesize key = _key;
 
-- (instancetype)initWithClock:(SGPlaybackClock *)clock
+- (instancetype)initWithClock:(SGClock *)clock
 {
     if (self = [super init])
     {
         self.clock = clock;
-        _key = NO;
         self.rate = CMTimeMake(1, 1);
+        self.displayMode = SGDisplayModePlane;
+        self.scalingMode = SGScalingModeResizeAspect;
+        self.viewport = [[SGVRViewport alloc] init];
         self.programPool = [[SGGLProgramPool alloc] init];
         self.modelPool = [[SGGLModelPool alloc] init];
         self.matrixMaker = [[SGVRMatrixMaker alloc] init];
@@ -317,7 +321,7 @@
         }
         if (frame)
         {
-            NSAssert(self.currentFrame != frame, @"SGPlaybackVideoRenderer : Frame can't equal to currentTime.");
+            NSAssert(self.currentFrame != frame, @"SGVideoRenderer : Frame can't equal to currentTime.");
             self.displayNewFrameCount += 1;
             [self.currentFrame unlock];
             self.currentFrame = frame;

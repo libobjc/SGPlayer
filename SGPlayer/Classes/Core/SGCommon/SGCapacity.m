@@ -38,7 +38,12 @@
 
 - (BOOL)isEqualToCapacity:(SGCapacity *)capacity
 {
-    return CMTimeCompare(self.duration, capacity.duration) == 0 && self.size == capacity.size && self.count == capacity.count;
+    return self.count == capacity.count && self.size == capacity.size && CMTimeCompare(self.duration, capacity.duration) == 0;
+}
+
+- (BOOL)isEmpty
+{
+    return self.count == 0 && self.size == 0 && CMTimeCompare(self.duration, kCMTimeZero) == 0;
 }
 
 @end

@@ -22,6 +22,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGVRViewport.h>
 #import <SGPlayer/SGTime.h>
 #import <SGPlayer/SGDiscardFilter.h>
+#import <SGPlayer/SGAudioRenderer.h>
+#import <SGPlayer/SGVideoRenderer.h>
 #else
 #import "SGDefines.h"
 #import "SGFFDefines.h"
@@ -42,6 +44,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, assign) NSInteger tag;
 @property (nonatomic, strong) id object;
 
+- (SGPlayerStatus)status;
+- (NSError *)error;
+
 @end
 
 #pragma mark - Asset
@@ -49,22 +54,21 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Asset)
 
 - (SGPlayerItem *)currentItem;
-
-- (CMTime)actualStartTime;
+- (CMTime)duration;
 
 - (BOOL)replaceWithURL:(NSURL *)URL;
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
 - (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item;
+
+- (void)waitUntilReady;
+
+- (BOOL)stop;
 
 @end
 
 #pragma mark - Prepare
 
 @interface SGPlayer (Prepare)
-
-- (SGPrepareState)prepareState;
-
-- (void)waitUntilFinishedPrepare;
 
 @end
 
@@ -73,30 +77,13 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Playback)
 
 - (SGPlaybackState)playbackState;
+- (CMTime)currentTime;
 
-- (CMTime)playbackTime;
-
-/**
- *  Default value is (1, 1).
- */
 @property (nonatomic, assign) CMTime rate;
 
 - (BOOL)play;
 - (BOOL)pause;
-- (BOOL)stop;
 
-@end
-
-#pragma mark - Seeking
-
-@interface SGPlayer (Seeking)
-
-/**
- *  Default value is NO.
- */
-@property (nonatomic, assign) BOOL highFrequencySeeking;
-
-- (BOOL)seeking;
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
 
@@ -107,71 +94,16 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Loading)
 
 - (SGLoadingState)loadingState;
-
 - (CMTime)loadedTime;
 
 @end
 
-#pragma mark - Audio
+#pragma mark - Renderer
 
-@interface SGPlayer (Audio)
+@interface SGPlayer (Renderer)
 
-/**
- *  Default value is 1.0.
- */
-@property (nonatomic, assign) float volume;
-
-/**
- *  Default value is (1, 20).
- */
-@property (nonatomic, assign) CMTime deviceDelay;
-
-@end
-
-#pragma mark - Video
-
-@interface SGPlayer (Video)
-
-/**
- *  The instance of View for display visula output.
- */
-@property (nonatomic, strong) UIView * view;
-
-/**
- *  Default value is SGScalingModeResizeAspect.
- */
-@property (nonatomic, assign) SGScalingMode scalingMode;
-
-/**
- *  Default value is SGDisplayModePlane.
- */
-@property (nonatomic, assign) SGDisplayMode displayMode;
-
-/**
- *  VR Viewport.
- */
-@property (nonatomic, strong) SGVRViewport * viewport;
-
-/**
- *  Callback on main thread.
- */
-@property (nonatomic, copy) BOOL (^displayDiscardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-
-/**
- *  Callback on main thread.
- */
-@property (nonatomic, copy) void (^displayRenderCallback)(SGVideoFrame * frame);
-
-/**
- *  nullable.
- */
-- (UIImage *)originalImage;
-
-/**
- *  Must be called on the main thread.
- *  nullable.
- */
-- (UIImage *)snapshot;
+- (SGAudioRenderer *)audioRenderer;
+- (SGVideoRenderer *)videoRenderer;
 
 @end
 
@@ -180,9 +112,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @protocol SGPlayerDelegate <NSObject>
 
 @optional
-- (void)player:(SGPlayer *)player didChangeState:(SGStateOption)option;
+- (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status;
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state;
+- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state;
 - (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option;
-- (void)player:(SGPlayer *)player didFail:(NSError *)error;
 
 @end
 

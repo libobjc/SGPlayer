@@ -1,5 +1,5 @@
 //
-//  SGPlaybackClock.h
+//  SGClock.h
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
@@ -9,22 +9,25 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@class SGPlaybackClock;
+@class SGClock;
 
-@protocol SGPlaybackClockDelegate <NSObject>
+@protocol SGClockDelegate <NSObject>
 
-- (void)playbackClockDidChangeStartTime:(SGPlaybackClock *)playbackClock;
+- (void)playbackClockDidChangeStartTime:(SGClock *)playbackClock;
 
 @end
 
-@interface SGPlaybackClock : NSObject
+@interface SGClock : NSObject
 
-@property (nonatomic, weak) id <SGPlaybackClockDelegate> delegate;
+@property (nonatomic, weak) id <SGClockDelegate> delegate;
 
 @property (nonatomic, assign, readonly) CMTime time;
 @property (nonatomic, assign, readonly) CMTime unlimitedTime;
 @property (nonatomic, assign, readonly) CMTime keyTime;
 @property (nonatomic, assign, readonly) CMTime startTime;
+
+- (BOOL)open;
+- (BOOL)close;
 
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate;
 - (void)flush;

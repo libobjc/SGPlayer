@@ -19,5 +19,6 @@
 
 - (void)add:(SGCapacity *)capacity;
 - (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
+- (BOOL)isEmpty;
 
 @end

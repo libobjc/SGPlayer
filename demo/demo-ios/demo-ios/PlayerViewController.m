@@ -50,7 +50,7 @@
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
-    self.player.view = self.view1;
+    self.player.videoRenderer.view = self.view1;
     
 //    self.player.hardwareDecodeH264 = NO;
     
@@ -71,7 +71,7 @@
 //        return [discardFilter discardWithTimeStamp:timingInfo.presentationTimeStamp];
 //    }];
     
-    [self.player setDisplayRenderCallback:^(SGVideoFrame * frame) {
+    [self.player.videoRenderer setRenderCallback:^(SGVideoFrame * frame) {
 //        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
     }];
     
@@ -83,8 +83,8 @@
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    self.player.view.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
-    self.player2.view.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) / 2, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
+    self.player.videoRenderer.view.frame = CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
+    self.player2.videoRenderer.view.frame = CGRectMake(0, CGRectGetHeight(self.view.bounds) / 2, CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds) / 2);
 }
 
 - (IBAction)back:(id)sender
@@ -128,58 +128,51 @@
 
 #pragma mark - SGPlayerDelegate
 
-- (void)player:(SGPlayer *)player didChangeState:(SGStateOption)option
+- (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status
 {
-    if (option & SGStateOptionPrepare)
-    {
-        NSLog(@"prepareState, %ld", player.prepareState);
+    NSLog(@"%s, %ld", __func__, status);
+}
+
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
+{
+    NSLog(@"%s, playing  : %ld", __func__, state & SGPlaybackStatePlaying);
+    NSLog(@"%s, seeking  : %ld", __func__, state & SGPlaybackStateSeeking);
+    NSLog(@"%s, finished : %ld", __func__, state & SGPlaybackStateFinished);
+    if (state & SGPlaybackStateFinished) {
+        self.stateLabel.text = @"Finished";
+    } else if (state & SGPlaybackStatePlaying) {
+        self.stateLabel.text = @"Playing";
+    } else {
+        self.stateLabel.text = @"Paused";
     }
-    else if (option & SGStateOptionPlayback)
-    {
-        NSLog(@"playbackState, %ld", player.playbackState);
-        switch (player.playbackState)
-        {
-            case SGPlaybackStateNone:
-                self.stateLabel.text = @"Idle";
-                break;
-            case SGPlaybackStatePlaying:
-                self.stateLabel.text = @"Playing";
-                break;
-            case SGPlaybackStatePaused:
-                self.stateLabel.text = @"Paused";
-                break;
-            case SGPlaybackStateFinished:
-                self.stateLabel.text = @"Finished";
-                break;
-        }
-    }
-    else if (option & SGStateOptionLoading)
-    {
-        NSLog(@"loadingState, %ld", player.loadingState);
-    }
+}
+
+- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state
+{
+    NSLog(@"%s, %ld", __func__, state);
 }
 
 - (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option
 {
-    if (option & SGTimeOptionPlayback)
-    {
-        CMTime playbackTime = player.playbackTime;
-        CMTime duration = player.currentItem.duration;
-        if (!self.progressSilderTouching)
-        {
-            self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(duration);
-        }
-        self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(playbackTime)];
-        self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
-    }
-    else if (option & SGTimeOptionLoaded)
-    {
-        
-    }
-    else if (option & SGTimeOptionDuration)
-    {
-        
-    }
+//    if (option & SGTimeOptionPlayback)
+//    {
+//        CMTime playbackTime = player.playbackTime;
+//        CMTime duration = player.currentItem.duration;
+//        if (!self.progressSilderTouching)
+//        {
+//            self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(duration);
+//        }
+//        self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(playbackTime)];
+//        self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
+//    }
+//    else if (option & SGTimeOptionLoaded)
+//    {
+//
+//    }
+//    else if (option & SGTimeOptionDuration)
+//    {
+//
+//    }
 }
 
 - (void)player:(SGPlayer *)player didFailed:(NSError *)error

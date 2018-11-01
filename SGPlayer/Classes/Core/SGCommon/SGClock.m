@@ -1,14 +1,14 @@
 //
-//  SGPlaybackClock.m
+//  SGClock.m
 //  SGPlayer
 //
 //  Created by Single on 2018/6/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGPlaybackClock.h"
+#import "SGClock.h"
 
-@interface SGPlaybackClock ()
+@interface SGClock ()
 
 @property (nonatomic, assign) CMTime keyTime;
 @property (nonatomic, assign) CMTime keyDuration;
@@ -17,7 +17,7 @@
 
 @end
 
-@implementation SGPlaybackClock
+@implementation SGClock
 
 - (instancetype)init
 {
@@ -51,6 +51,16 @@
     interval = SGCMTimeMultiply(interval, self.keyRate);
     CMTime position = CMTimeAdd(self.keyTime, interval);
     return position;
+}
+
+- (BOOL)open
+{
+    return YES;
+}
+
+- (BOOL)close
+{
+    return YES;
 }
 
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate

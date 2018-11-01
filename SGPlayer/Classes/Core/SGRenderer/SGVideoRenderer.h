@@ -1,25 +1,17 @@
 //
-//  SGPlaybackVideoRenderer.h
+//  SGVideoRenderer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/22.
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGRenderable.h"
-#import "SGPlatform.h"
+#import <Foundation/Foundation.h>
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
-#import "SGPlaybackClock.h"
+#import "SGPlatform.h"
 
-@interface SGPlaybackVideoRenderer : NSObject <SGRenderable>
-
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithClock:(SGPlaybackClock *)clock;
-
-@property (nonatomic, assign) CMTime rate;
+@interface SGVideoRenderer : NSObject
 
 @property (nonatomic, strong) SGPLFView * view;
 @property (nonatomic, assign) SGScalingMode scalingMode;
