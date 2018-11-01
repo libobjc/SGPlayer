@@ -17,6 +17,7 @@
 }
 
 @property (nonatomic, assign, readonly) int format;         // AVSampleFormat
+@property (nonatomic, assign, readonly) int is_planar;
 @property (nonatomic, assign, readonly) int nb_samples;
 @property (nonatomic, assign, readonly) int sample_rate;
 @property (nonatomic, assign, readonly) int channels;

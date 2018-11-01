@@ -31,6 +31,7 @@
     [super clear];
     
     _format = AV_SAMPLE_FMT_NONE;
+    _is_planar = 0;
     _nb_samples = 0;
     _sample_rate = 0;
     _channels = 0;
@@ -46,6 +47,7 @@
     [super configurateWithTrack:track];
     
     _format = self.core->format;
+    _is_planar = av_sample_fmt_is_planar(self.core->format);
     _nb_samples = self.core->nb_samples;
     _sample_rate = self.core->sample_rate;
     _channels = self.core->channels;
