@@ -149,7 +149,7 @@
     auidoRenderer.key = YES;
     auidoRenderer.rate = self.rate;
     auidoRenderer.volume = self.volume;
-    auidoRenderer.deviceDelay = self.deviceDelay;
+    auidoRenderer.delay = self.deviceDelay;
     self.audioOutput = auidoRenderer;
     [self.audioOutput open];
     
@@ -434,7 +434,7 @@
     if (CMTimeCompare(_deviceDelay, deviceDelay) != 0)
     {
         _deviceDelay = deviceDelay;
-        self.audioOutput.deviceDelay = deviceDelay;
+        self.audioOutput.delay = deviceDelay;
     }
 }
 

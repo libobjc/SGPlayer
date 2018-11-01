@@ -13,12 +13,10 @@
 
 @protocol SGAudioStreamPlayerDelegate <NSObject>
 
-- (void)audioPlayer:(SGAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples;
-
 @optional
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer prepareSample:(const AudioTimeStamp *)timestamp;
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp;
-- (void)audioStreamPlayerDidFailed:(SGAudioStreamPlayer *)audioDataPlayer;
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player preRender:(const AudioTimeStamp *)timestamp;
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(uint32_t)nb_samples;
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp;
 
 @end
 

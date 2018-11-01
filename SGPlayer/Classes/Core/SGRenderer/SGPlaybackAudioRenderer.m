@@ -18,10 +18,11 @@
 }
 
 @property (nonatomic, strong) SGPlaybackClock * clock;
-@property (nonatomic, assign) BOOL receivedFrame;
 @property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
+
 @property (nonatomic, strong) SGAudioFrame * currentFrame;
 @property (nonatomic, assign) int32_t currentFrameReadOffset;
 @property (nonatomic, assign) CMTime currentPostPosition;
@@ -39,9 +40,8 @@
 {
     if (self = [super init]) {
         self.clock = clock;
-        _key = NO;
-        _rate = CMTimeMake(1, 1);
-        _deviceDelay = CMTimeMake(0, 1);
+        self.rate = CMTimeMake(1, 1);
+        self.delay = CMTimeMake(0, 1);
         self.coreLock = [[NSLock alloc] init];
         self.currentFrameReadOffset = 0;
         self.currentPostPosition = kCMTimeZero;
@@ -81,17 +81,19 @@
 
 - (SGCapacity *)capacity
 {
-    return nil;
+    __block SGCapacity * ret = nil;
+    SGLockEXE00(self.coreLock, ^{
+        ret = [self->_capacity copy];
+    });
+    return ret ? ret : [[SGCapacity alloc] init];
 }
 
 - (void)setVolume:(float)volume
 {
-    [self.audioPlayer setVolume:volume error:nil];
-}
-
-- (float)volume
-{
-    return self.audioPlayer.volume;
+    if (_volume != volume) {
+        _volume = volume;
+        [self.audioPlayer setVolume:volume error:nil];
+    }
 }
 
 - (void)setRate:(CMTime)rate
@@ -123,7 +125,6 @@
         self.currentFrameReadOffset = 0;
         self.currentPostPosition = kCMTimeZero;
         self.currentPostDuration = kCMTimeZero;
-        self.receivedFrame = NO;
         return [self setState:SGRenderableStateClosed];
     }, ^BOOL(SGBlock block) {
         [self.audioPlayer pause];
@@ -168,18 +169,17 @@
         self.currentFrameReadOffset = 0;
         self.currentPostPosition = kCMTimeZero;
         self.currentPostDuration = kCMTimeZero;
-        self.receivedFrame = NO;
     });
     return YES;
 }
 
 #pragma mark - SGAudioStreamPlayerDelegate
 
-- (void)audioPlayer:(SGAudioStreamPlayer *)audioPlayer inputSample:(const AudioTimeStamp *)timestamp ioData:(AudioBufferList *)ioData numberOfSamples:(UInt32)numberOfSamples
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(uint32_t)nb_samples
 {
     [self.coreLock lock];
     NSUInteger ioDataWriteOffset = 0;
-    while (numberOfSamples > 0) {
+    while (nb_samples > 0) {
         if (!self.currentFrame) {
             [self.coreLock unlock];
             SGAudioFrame * frame = [self.delegate renderable:self fetchFrame:nil];
@@ -191,13 +191,13 @@
         }
         
         int32_t residueLinesize = self.currentFrame->_linesize[0] - self.currentFrameReadOffset;
-        int32_t bytesToCopy = MIN(numberOfSamples * (int32_t)sizeof(float), residueLinesize);
+        int32_t bytesToCopy = MIN(nb_samples * (int32_t)sizeof(float), residueLinesize);
         int32_t framesToCopy = bytesToCopy / sizeof(float);
         
-        for (int i = 0; i < ioData->mNumberBuffers && i < self.currentFrame.nb_samples; i++) {
+        for (int i = 0; i < data->mNumberBuffers && i < self.currentFrame.nb_samples; i++) {
             if (self.currentFrame->_linesize[i] - self.currentFrameReadOffset >= bytesToCopy) {
                 Byte * bytes = (Byte *)self.currentFrame->_data[i] + self.currentFrameReadOffset;
-                memcpy(ioData->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
+                memcpy(data->mBuffers[i].mData + ioDataWriteOffset, bytes, bytesToCopy);
             }
         }
         
@@ -210,7 +210,7 @@
         duration = SGCMTimeMultiply(duration, CMTimeMake(1, 1));
         self.currentPostDuration = CMTimeAdd(self.currentPostDuration, duration);
         
-        numberOfSamples -= framesToCopy;
+        nb_samples -= framesToCopy;
         ioDataWriteOffset += bytesToCopy;
         
         if (bytesToCopy < residueLinesize) {
@@ -224,21 +224,21 @@
     [self.coreLock unlock];
 }
 
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)audioDataPlayer postSample:(const AudioTimeStamp *)timestamp
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp
 {
     [self.coreLock lock];
     CMTime currentPostPosition = self.currentPostPosition;
     CMTime currentPostDuration = self.currentPostDuration;
     CMTime rate = self.rate;
-    CMTime deviceDelay = self.deviceDelay;
+    CMTime delay = self.delay;
     dispatch_block_t block = ^{
         [self.clock updateKeyTime:currentPostPosition duration:currentPostDuration rate:rate];
     };
-    if (CMTimeCompare(deviceDelay, kCMTimeZero) > 0) {
+    if (CMTimeCompare(delay, kCMTimeZero) > 0) {
         if (!self.delegateQueue) {
             self.delegateQueue = dispatch_queue_create("SGPlaybackAudioRenderer-DelegateQueue", DISPATCH_QUEUE_SERIAL);
         }
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(deviceDelay) * NSEC_PER_SEC)), self.delegateQueue, block);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(delay) * NSEC_PER_SEC)), self.delegateQueue, block);
     } else {
         block();
     }

@@ -18,8 +18,8 @@
 
 - (SGPlaybackClock *)clock;
 
-@property (nonatomic, assign) CMTime rate;
 @property (nonatomic, assign) float volume;
-@property (nonatomic, assign) CMTime deviceDelay;
+@property (nonatomic, assign) CMTime rate;
+@property (nonatomic, assign) CMTime delay;
 
 @end

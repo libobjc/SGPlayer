@@ -120,17 +120,14 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     if (![self setAsbd:[SGAudioStreamPlayer defaultASBD] error:&error])
     {
        _error = error;
-        [self callbackForFailed];
     }
     if (![self setVolume:1.0 error:&error])
     {
         _error = error;
-        [self callbackForFailed];
     }
     if (![self setRate:1.0 error:&error])
     {
         _error = error;
-        [self callbackForFailed];
     }
     AUGraphInitialize(self.graph);
 }
@@ -264,14 +261,6 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 
 #pragma mark - Callback
 
-- (void)callbackForFailed
-{
-    if ([self.delegate respondsToSelector:@selector(audioStreamPlayerDidFailed:)])
-    {
-        [self.delegate audioStreamPlayerDidFailed:self];
-    }
-}
-
 OSStatus inputCallback(void * inRefCon,
                        AudioUnitRenderActionFlags * ioActionFlags,
                        const AudioTimeStamp * inTimeStamp,
@@ -284,7 +273,7 @@ OSStatus inputCallback(void * inRefCon,
     {
         memset(ioData->mBuffers[i].mData, 0, ioData->mBuffers[i].mDataByteSize);
     }
-    [obj.delegate audioPlayer:obj inputSample:inTimeStamp ioData:ioData numberOfSamples:inNumberFrames];
+    [obj.delegate audioStreamPlayer:obj render:inTimeStamp data:ioData nb_samples:inNumberFrames];
     return noErr;
 }
 
@@ -298,16 +287,16 @@ OSStatus outputRenderCallback(void * inRefCon,
     SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
     if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:prepareSample:)])
+        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:preRender:)])
         {
-            [obj.delegate audioStreamPlayer:obj prepareSample:inTimeStamp];
+            [obj.delegate audioStreamPlayer:obj preRender:inTimeStamp];
         }
     }
     else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
     {
-        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postSample:)])
+        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postRender:)])
         {
-            [obj.delegate audioStreamPlayer:obj postSample:inTimeStamp];
+            [obj.delegate audioStreamPlayer:obj postRender:inTimeStamp];
         }
     }
     return noErr;
