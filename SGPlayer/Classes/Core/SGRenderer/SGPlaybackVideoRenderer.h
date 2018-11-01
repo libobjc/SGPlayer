@@ -19,8 +19,6 @@
 
 - (instancetype)initWithClock:(SGPlaybackClock *)clock;
 
-- (SGPlaybackClock *)clock;
-
 @property (nonatomic, assign) CMTime rate;
 
 @property (nonatomic, strong) SGPLFView * view;

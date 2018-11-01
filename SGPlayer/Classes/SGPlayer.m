@@ -56,6 +56,7 @@
 @property (nonatomic, assign) CMTime lastDuration;
 @property (nonatomic, assign) CMTime lastActualStartTime;
 
+@property (nonatomic, strong) SGPlaybackClock * clock;
 @property (nonatomic, strong) SGPlaybackAudioRenderer * audioOutput;
 @property (nonatomic, strong) SGPlaybackVideoRenderer * videoOutput;
 
@@ -143,13 +144,13 @@
     
     SGPlaybackClock * clock = [[SGPlaybackClock alloc] init];
     clock.delegate = self;
+    self.clock = clock;
     
     SGPlaybackAudioRenderer * auidoRenderer = [[SGPlaybackAudioRenderer alloc] initWithClock:clock];
     auidoRenderer.delegate = self;
     auidoRenderer.key = YES;
     auidoRenderer.rate = self.rate;
     auidoRenderer.volume = self.volume;
-    auidoRenderer.delay = self.deviceDelay;
     self.audioOutput = auidoRenderer;
     [self.audioOutput open];
     
@@ -251,13 +252,8 @@
     {
         return self.duration;
     }
-    if ((self.audioOutput.state == SGRenderableStateRendering || self.audioOutput.state == SGRenderableStatePaused) && self.audioOutput.key && self.audioOutput.clock)
-    {
-        return self.audioOutput.clock.time;
-    }
-    else if ((self.videoOutput.state == SGRenderableStateRendering || self.videoOutput.state == SGRenderableStatePaused) && self.videoOutput.key && self.videoOutput.clock)
-    {
-        return self.videoOutput.clock.keyTime;
+    if (self.clock) {
+        return self.clock.time;
     }
     return kCMTimeZero;
 }
@@ -434,7 +430,6 @@
     if (CMTimeCompare(_deviceDelay, deviceDelay) != 0)
     {
         _deviceDelay = deviceDelay;
-        self.audioOutput.delay = deviceDelay;
     }
 }
 
@@ -613,7 +608,7 @@
     [self.audioOutput close];
     [self.videoOutput close];
     _currentItem = nil;
-    self.audioOutput.clock.delegate = nil;
+    self.clock = nil;
     self.audioOutput = nil;
     self.videoOutput = nil;
     self.lastPlaybackTime = CMTimeMake(-1900, 1);
@@ -669,9 +664,9 @@
 
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
-    if (track.type == SGMediaTypeAudio) {
-        NSLog(@"audio duration : %f, %lld, %lld", CMTimeGetSeconds(capacity.duration), capacity.size, capacity.count);
-    }
+//    if (track.type == SGMediaTypeAudio) {
+//        NSLog(@"audio duration : %f, %lld, %lld", CMTimeGetSeconds(capacity.duration), capacity.size, capacity.count);
+//    }
 //    if (track.type == SGMediaTypeVideo) {
 //        NSLog(@"video duration : %f, %lld, %lld", CMTimeGetSeconds(capacity.duration), capacity.size, capacity.count);
 //    }
@@ -690,7 +685,11 @@
 #pragma mark - SGRenderableDelegate
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state {}
-- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity {}
+
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
+{
+    NSLog(@"audio capacity : %f, %d", CMTimeGetSeconds(capacity.duration), capacity.count);
+}
 
 - (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader
 {

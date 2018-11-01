@@ -21,11 +21,10 @@
 @property (nonatomic, strong) SGPlaybackClock * clock;
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic, strong) SGCapacity * capacity;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;
 @property (nonatomic, strong) SGAudioStreamPlayer * audioPlayer;
-
 @property (nonatomic, strong) SGAudioFrame * frame;
 @property (nonatomic, assign) int32_t frame_nb_samples_copied;
+@property (nonatomic, assign) int32_t render_nb_samples_copied;
 @property (nonatomic, assign) CMTime render_timeStamp;
 @property (nonatomic, assign) CMTime render_duration;
 
@@ -42,12 +41,10 @@
     if (self = [super init]) {
         self.clock = clock;
         self.rate = CMTimeMake(1, 1);
-        self.delay = CMTimeMake(0, 1);
         self.frame_nb_samples_copied = 0;
         self.render_timeStamp = kCMTimeZero;
         self.render_duration = kCMTimeZero;
         self.coreLock = [[NSLock alloc] init];
-        self.delegateQueue = dispatch_queue_create("SGPlaybackAudioRenderer-delegateQueue", DISPATCH_QUEUE_SERIAL);
         self.audioPlayer = [[SGAudioStreamPlayer alloc] init];
         self.audioPlayer.delegate = self;
     }
@@ -180,17 +177,23 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(uint32_t)nb_samples
 {
     [self.coreLock lock];
+    self.render_nb_samples_copied = 0;
+    self.render_timeStamp = kCMTimeZero;
+    self.render_duration = kCMTimeZero;
     if (self->_state != SGRenderableStateRendering) {
         [self.coreLock unlock];
         return;
     }
-    uint32_t nb_samples_copied = 0;
-    while (nb_samples > 0) {
+    while (YES) {
+        if (nb_samples <= 0) {
+            [self.coreLock unlock];
+            break;
+        }
         if (!self.frame) {
             [self.coreLock unlock];
             SGAudioFrame * frame = [self.delegate renderable:self fetchFrame:nil];
             if (!frame) {
-                return;
+                break;
             }
             [self.coreLock lock];
             self.frame = frame;
@@ -199,47 +202,55 @@
         int32_t nb_samples_left = self.frame.nb_samples - self.frame_nb_samples_copied;
         int32_t nb_samples_to_copy = MIN(nb_samples, nb_samples_left);
         for (int i = 0; i < data->mNumberBuffers && i < self.frame.channels; i++) {
-            uint32_t data_offset = nb_samples_copied * (uint32_t)sizeof(float);
+            uint32_t data_offset = self.render_nb_samples_copied * (uint32_t)sizeof(float);
             uint32_t frame_offset = self.frame_nb_samples_copied * (uint32_t)sizeof(float);
             uint32_t size_to_copy = nb_samples_to_copy * (uint32_t)sizeof(float);
             memcpy(data->mBuffers[i].mData + data_offset, self.frame->_data[i] + frame_offset, size_to_copy);
         }
-        if (nb_samples_copied == 0) {
+        if (self.render_nb_samples_copied == 0) {
             CMTime duration = CMTimeMultiplyByRatio(self.frame.duration, self.frame_nb_samples_copied, self.frame.nb_samples);
             self.render_timeStamp = CMTimeAdd(self.frame.timeStamp, duration);
-            self.render_duration = kCMTimeZero;
         }
         CMTime duration = CMTimeMultiplyByRatio(self.frame.duration, nb_samples_to_copy, self.frame.nb_samples);
         self.render_duration = CMTimeAdd(self.render_duration, duration);
-        nb_samples -= nb_samples_to_copy;
-        nb_samples_copied += nb_samples_to_copy;
+        self.render_nb_samples_copied += nb_samples_to_copy;
         self.frame_nb_samples_copied += nb_samples_to_copy;
         if (self.frame.nb_samples <= self.frame_nb_samples_copied) {
             [self.frame unlock];
             self.frame = nil;
             self.frame_nb_samples_copied = 0;
         }
+        nb_samples -= nb_samples_to_copy;
     }
-    [self.coreLock unlock];
 }
 
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp
 {
     [self.coreLock lock];
+    CMTime rate = self.rate;
     CMTime render_timeStamp = self.render_timeStamp;
     CMTime render_duration = self.render_duration;
-    CMTime rate = self.rate;
-    CMTime delay = self.delay;
-    [self.coreLock unlock];
-    dispatch_block_t block = ^{
-        [self.clock updateKeyTime:render_timeStamp duration:render_duration rate:rate];
-    };
-    if (CMTimeCompare(delay, kCMTimeZero) > 0) {
-        dispatch_time_t time = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(CMTimeGetSeconds(delay) * NSEC_PER_SEC));
-        dispatch_after(time, self.delegateQueue, block);
-    } else {
-        block();
+    CMTime frame_duration = !self.frame ? kCMTimeZero : CMTimeMultiplyByRatio(self.frame.duration, self.frame.nb_samples - self.frame_nb_samples_copied, self.frame.nb_samples);
+    SGBlock clockBlock = ^{};
+    if (self->_state == SGRenderableStateRendering && self.render_nb_samples_copied) {
+        clockBlock = ^{
+            [self.clock updateKeyTime:render_timeStamp duration:render_duration rate:rate];
+        };
     }
+    SGCapacity * capacity = [[SGCapacity alloc] init];
+    capacity.duration = CMTimeAdd(render_duration, frame_duration);
+    capacity.size = 0;
+    capacity.count = 1;
+    SGBlock capacityBlock = ^{};
+    if (![capacity isEqualToCapacity:self->_capacity]) {
+        self.capacity = capacity;
+        capacityBlock = ^{
+            [self.delegate renderable:self didChangeCapacity:[capacity copy]];
+        };
+    }
+    [self.coreLock unlock];
+    clockBlock();
+    capacityBlock();
 }
 
 @end

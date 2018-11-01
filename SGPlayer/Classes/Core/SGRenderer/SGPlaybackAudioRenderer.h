@@ -16,10 +16,7 @@
 
 - (instancetype)initWithClock:(SGPlaybackClock *)clock;
 
-- (SGPlaybackClock *)clock;
-
 @property (nonatomic, assign) float volume;
 @property (nonatomic, assign) CMTime rate;
-@property (nonatomic, assign) CMTime delay;
 
 @end
