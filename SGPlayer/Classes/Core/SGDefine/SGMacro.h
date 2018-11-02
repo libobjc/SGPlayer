@@ -17,8 +17,8 @@
 #define SGPLAYER_EXTERN extern
 #endif
 
-#define SGWeakSelf __weak typeof(self) weakSelf = self;
-#define SGStrongSelf __strong typeof(weakSelf) self = weakSelf;
+#define SGWeakify(obj) __weak typeof(obj) weak_obj = obj;
+#define SGStrongify(obj) __strong typeof(weak_obj) obj = weak_obj;
 
 #ifdef DEBUG
 #define SGPlayerLog(...) NSLog(__VA_ARGS__)

@@ -187,9 +187,9 @@ static SGPacket * flushPacket;
 
 - (void)startDecodeThread
 {
-    SGWeakSelf
+    SGWeakify(self)
     self.decodeOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self decodeThread];
     }];
     self.decodeOperation.queuePriority = NSOperationQueuePriorityVeryHigh;

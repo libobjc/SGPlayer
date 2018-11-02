@@ -87,10 +87,10 @@
     }
     SGBlock callback = [self setState:SGRenderableStatePaused];
     self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
-    SGWeakSelf
+    SGWeakify(self)
     NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval) / (NSTimeInterval)self.displayIncreasedCoefficient;
     self.renderTimer = [SGGLTimer timerWithTimeInterval:timeInterval handler:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self renderTimerHandler];
     }];
     [self unlock];
@@ -290,9 +290,9 @@
     BOOL needFetchFrame = !self.key || !self.paused || (self.displayNewFrameCount == 0);
     if (needFetchFrame)
     {
-        SGWeakSelf
+        SGWeakify(self)
         frame = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
-            SGStrongSelf
+            SGStrongify(self)
             if (!self.currentFrame)
             {
                 return NO;

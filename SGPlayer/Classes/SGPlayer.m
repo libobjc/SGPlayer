@@ -397,9 +397,9 @@ SGGet0Map(BOOL, seekable, self.currentItem);
     if (!ret) {
         return NO;
     }
-    SGWeakSelf
+    SGWeakify(self)
     return [self.currentItem seekToTime:time result:^(CMTime time, NSError * error) {
-        SGStrongSelf
+        SGStrongify(self)
         if (!error) {
             [self.clock flush];
             [self.audioRenderer flush];

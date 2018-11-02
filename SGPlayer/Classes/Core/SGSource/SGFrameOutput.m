@@ -148,9 +148,9 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
-    SGWeakSelf
+    SGWeakify(self)
     return [self.packetOutput seekToTime:time result:^(CMTime time, NSError * error) {
-        SGStrongSelf
+        SGStrongify(self)
         [self.audioDecoder flush];
         [self.videoDecoder flush];
         if (result) {

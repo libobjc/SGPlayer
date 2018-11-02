@@ -199,9 +199,9 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         seekingCount = self.seekingCount;
         return nil;
     }, ^BOOL(SGBlock block) {
-        SGWeakSelf
+        SGWeakify(self)
         return ![self.frameOutput seekToTime:time result:^(CMTime time, NSError * error) {
-            SGStrongSelf
+            SGStrongify(self)
             SGLockCondEXE11(self.coreLock, ^BOOL {
                 return seekingCount == self.seekingCount;
             }, ^SGBlock {

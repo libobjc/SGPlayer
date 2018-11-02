@@ -173,9 +173,9 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (void)startOpenThread
 {
-    SGWeakSelf
+    SGWeakify(self)
     self.openOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self openThread];
     }];
     self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
@@ -196,9 +196,9 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (void)startReadThread
 {
-    SGWeakSelf
+    SGWeakify(self)
     self.readOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self readThread];
     }];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;

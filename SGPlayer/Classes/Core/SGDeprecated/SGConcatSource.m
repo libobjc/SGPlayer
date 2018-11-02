@@ -291,9 +291,9 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 - (void)startOpenThread
 {
-    SGWeakSelf
+    SGWeakify(self)
     self.openOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self openThread];
     }];
     self.openOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
@@ -349,9 +349,9 @@ static int SGConcatSourceInterruptHandler(void * context)
 
 - (void)startReadThread
 {
-    SGWeakSelf
+    SGWeakify(self)
     self.readOperation = [NSBlockOperation blockOperationWithBlock:^{
-        SGStrongSelf
+        SGStrongify(self)
         [self readThread];
     }];
     self.readOperation.queuePriority = NSOperationQueuePriorityVeryHigh;
