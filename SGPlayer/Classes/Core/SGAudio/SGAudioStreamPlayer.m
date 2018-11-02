@@ -268,8 +268,10 @@ OSStatus inputCallback(void * inRefCon,
                        UInt32 inNumberFrames,
                        AudioBufferList * ioData)
 {
-    SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
-    [obj.delegate audioStreamPlayer:obj render:inTimeStamp data:ioData nb_samples:inNumberFrames];
+    @autoreleasepool {
+        SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
+        [obj.delegate audioStreamPlayer:obj render:inTimeStamp data:ioData nb_samples:inNumberFrames];
+    }
     return noErr;
 }
 
@@ -280,19 +282,21 @@ OSStatus outputRenderCallback(void * inRefCon,
                               UInt32 inNumberFrames,
                               AudioBufferList * ioData)
 {
-    SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
-    if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
-    {
-        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:preRender:)])
+    @autoreleasepool {
+        SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
+        if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
         {
-            [obj.delegate audioStreamPlayer:obj preRender:inTimeStamp];
+            if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:preRender:)])
+            {
+                [obj.delegate audioStreamPlayer:obj preRender:inTimeStamp];
+            }
         }
-    }
-    else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
-    {
-        if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postRender:)])
+        else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
         {
-            [obj.delegate audioStreamPlayer:obj postRender:inTimeStamp];
+            if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postRender:)])
+            {
+                [obj.delegate audioStreamPlayer:obj postRender:inTimeStamp];
+            }
         }
     }
     return noErr;

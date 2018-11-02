@@ -64,10 +64,18 @@
 
 - (void)dealloc
 {
-    NSAssert([NSThread isMainThread], @"Main thread only.");
+    
     [self.fetchTimer invalidate];
     [self.drawTimer invalidate];
-    [self.glView removeFromSuperview];
+    if ([NSThread isMainThread]) {
+        [self.glView removeFromSuperview];
+    } else {
+        SGGLView * glView = self.glView;
+        self.glView = nil;
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [glView removeFromSuperview];
+        });
+    }
     [self close];
     SGLockEXE00(self.lock, ^{
         [self->_drawed_frame unlock];
