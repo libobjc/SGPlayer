@@ -9,7 +9,6 @@
 #import "SGAudioRenderer.h"
 #import "SGRenderer+Internal.h"
 #import "SGAudioStreamPlayer.h"
-#import "SGAudioFrameFilter.h"
 #import "SGAudioFrame.h"
 #import "samplefmt.h"
 #import "SGLock.h"

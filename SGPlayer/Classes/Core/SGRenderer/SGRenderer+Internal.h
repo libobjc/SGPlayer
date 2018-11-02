@@ -7,6 +7,7 @@
 //
 
 #import "SGRenderable.h"
+#import "SGAudioFrameFilter.h"
 #import "SGAudioRenderer.h"
 #import "SGVideoRenderer.h"
 #import "SGClock.h"

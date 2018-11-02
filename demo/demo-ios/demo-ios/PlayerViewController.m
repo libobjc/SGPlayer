@@ -124,8 +124,8 @@
 {
 //    CMTime time = CMTimeMultiplyByFloat64(self.player.duration, self.progressSilder.value);
 //    CMTime time2 = CMTimeMultiplyByFloat64(self.player2.duration, self.progressSilder.value);
-//    [self.player seekToTime:time completionHandler:nil];
-//    [self.player2 seekToTime:time2 completionHandler:nil];
+//    [self.player seekToTime:time result:nil];
+//    [self.player2 seekToTime:time2 result:nil];
 }
 
 #pragma mark - SGPlayerDelegate
@@ -137,9 +137,7 @@
 
 - (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
 {
-//    NSLog(@"%s, playing  : %ld", __func__, state & SGPlaybackStatePlaying);
-//    NSLog(@"%s, seeking  : %ld", __func__, state & SGPlaybackStateSeeking);
-//    NSLog(@"%s, finished : %ld", __func__, state & SGPlaybackStateFinished);
+    NSLog(@"%s, playing  : %ld, %ld, %ld", __func__, state & SGPlaybackStatePlaying, state & SGPlaybackStateSeeking, state & SGPlaybackStateFinished);
     if (state & SGPlaybackStateFinished) {
         self.stateLabel.text = @"Finished";
     } else if (state & SGPlaybackStatePlaying) {
@@ -151,12 +149,12 @@
 
 - (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state
 {
-    NSLog(@"%s, %ld", __func__, state);
+//    NSLog(@"%s, %ld", __func__, state);
 }
 
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time
 {
-//    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
+    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
     self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
