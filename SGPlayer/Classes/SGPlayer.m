@@ -9,7 +9,6 @@
 #import "SGPlayer.h"
 #import "SGPlayerItem+Internal.h"
 #import "SGRenderer+Internal.h"
-#import "SGAudioFrameFilter.h"
 #import "SGActivity.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -34,6 +33,7 @@
 
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGClock * clock;
+@property (nonatomic, strong) NSCondition * waitCondition;
 @property (nonatomic, strong) SGAudioRenderer * audioRenderer;
 @property (nonatomic, strong) SGVideoRenderer * videoRenderer;
 
@@ -52,6 +52,7 @@
         self.lock = [[NSLock alloc] init];
         self.clock = [[SGClock alloc] init];
         self.clock.delegate = self;
+        self.waitCondition = [[NSCondition alloc] init];
         self.audioRenderer = [[SGAudioRenderer alloc] initWithClock:self.clock];
         self.audioRenderer.delegate = self;
         self.audioRenderer.key = YES;
@@ -104,7 +105,18 @@
 
 - (void)waitUntilReady
 {
-    
+    [self.waitCondition lock];
+    while (YES) {
+        BOOL ret = SGLockCondEXE00(self.lock, ^BOOL{
+            return self->_status == SGPlayerStatusPreparing;
+        }, nil);
+        if (ret) {
+            [self.waitCondition wait];
+            continue;
+        }
+        break;
+    }
+    [self.waitCondition unlock];
 }
 
 - (BOOL)stop
@@ -146,6 +158,9 @@
     }
     _status = status;
     return ^{
+        [self.waitCondition lock];
+        [self.waitCondition broadcast];
+        [self.waitCondition unlock];
         [self callback:^{
             if ([self.delegate respondsToSelector:@selector(player:didChangeStatus:)]) {
                 [self.delegate player:self didChangeStatus:status];

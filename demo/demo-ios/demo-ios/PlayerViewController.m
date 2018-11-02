@@ -77,6 +77,8 @@
     
 //    [self.player replaceWithAsset:asset];
     [self.player replaceWithURL:contentURL1];
+    [self.player waitUntilReady];
+    NSLog(@"duration : %f", CMTimeGetSeconds(self.player.duration));
     [self.player play];
 }
 
