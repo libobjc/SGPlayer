@@ -492,7 +492,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         SGLockEXE10(self.lock, ^SGBlock {
             CMTime duration = capacity.duration;
             CMTime time = CMTimeAdd(self->_current_time, duration);
-            return [self setLoadedTime:time loadedDuration:duration];
+            SGBlock b1 = [self setLoadedTime:time loadedDuration:duration];
+            SGBlock b2 = [self setLoadingState:(capacity.isEmpty || self->_loading_state == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale];
+            return ^{
+                b1(); b2();
+            };
         });
     }
 }

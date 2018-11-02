@@ -130,14 +130,14 @@
 
 - (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status
 {
-    NSLog(@"%s, %ld", __func__, status);
+//    NSLog(@"%s, %ld", __func__, status);
 }
 
 - (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
 {
-    NSLog(@"%s, playing  : %ld", __func__, state & SGPlaybackStatePlaying);
-    NSLog(@"%s, seeking  : %ld", __func__, state & SGPlaybackStateSeeking);
-    NSLog(@"%s, finished : %ld", __func__, state & SGPlaybackStateFinished);
+//    NSLog(@"%s, playing  : %ld", __func__, state & SGPlaybackStatePlaying);
+//    NSLog(@"%s, seeking  : %ld", __func__, state & SGPlaybackStateSeeking);
+//    NSLog(@"%s, finished : %ld", __func__, state & SGPlaybackStateFinished);
     if (state & SGPlaybackStateFinished) {
         self.stateLabel.text = @"Finished";
     } else if (state & SGPlaybackStatePlaying) {
@@ -155,34 +155,13 @@
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time
 {
 //    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
+    self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
+    self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }
 
 - (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration
 {
-    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
-}
-
-- (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option
-{
-//    if (option & SGTimeOptionPlayback)
-//    {
-//        CMTime playbackTime = player.playbackTime;
-//        CMTime duration = player.currentItem.duration;
-//        if (!self.progressSilderTouching)
-//        {
-//            self.progressSilder.value = CMTimeGetSeconds(playbackTime) / CMTimeGetSeconds(duration);
-//        }
-//        self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(playbackTime)];
-//        self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
-//    }
-//    else if (option & SGTimeOptionLoaded)
-//    {
-//
-//    }
-//    else if (option & SGTimeOptionDuration)
-//    {
-//
-//    }
+//    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
