@@ -22,8 +22,8 @@
     int32_t _is_video_finished;
     int32_t _is_current_time_valid;
     CMTime _rate;
-    CMTime _current_time;
     CMTime _loaded_time;
+    CMTime _current_time;
     CMTime _loaded_duration;
     SGPlayerStatus _status;
     SGLoadingState _loading_state;
@@ -49,8 +49,8 @@
 {
     if (self = [super init]) {
         [self stop];
+        self->_rate = CMTimeMake(1, 1);
         self.delegateQueue = [NSOperationQueue mainQueue];
-        self.rate = CMTimeMake(1, 1);
         self.lock = [[NSLock alloc] init];
         self.clock = [[SGClock alloc] init];
         self.clock.delegate = self;
@@ -61,9 +61,6 @@
         self.videoRenderer = [[SGVideoRenderer alloc] initWithClock:self.clock];
         self.videoRenderer.delegate = self;
         self.videoRenderer.key = NO;
-        [self.clock open];
-        [self.audioRenderer open];
-        [self.videoRenderer open];
     }
     return self;
 }
@@ -144,9 +141,9 @@
         SGBlock b3 = [self setLoadingState:SGLoadingStateNone];
         return ^{
             [item close];
-            [self.clock flush];
-            [self.audioRenderer flush];
-            [self.videoRenderer flush];
+            [self.clock close];
+            [self.audioRenderer close];
+            [self.videoRenderer close];
             b1(); b2(); b3();
         };
     });
@@ -368,7 +365,7 @@
 {
     [SGActivity addTarget:self];
     return SGLockCondEXE10(self.lock, ^BOOL {
-        return !self->_error;
+        return self->_status == SGPlayerStatusReady;
     }, ^SGBlock {
         self->_is_playing = 1;
         return [self setPlaybackState];
@@ -379,7 +376,7 @@
 {
     [SGActivity removeTarget:self];
     return SGLockCondEXE10(self.lock, ^BOOL {
-        return !self->_error;
+        return self->_status == SGPlayerStatusReady;
     }, ^SGBlock {
         self->_is_playing = 0;
         return [self setPlaybackState];
@@ -490,6 +487,13 @@ SGGet0Map(BOOL, seekable, self.currentItem);
                 b2 = [self setStatus:SGPlayerStatusReady];
                 b3 = [self setLoadingState:SGLoadingStateStalled];
                 b1 = ^{
+                    [self.clock open];
+                    if (playerItem.selectedAudioTrack) {
+                        [self.audioRenderer open];
+                    }
+                    if (playerItem.selectedVideoTrack) {
+                        [self.videoRenderer open];
+                    }
                     [playerItem start];
                 };
             }

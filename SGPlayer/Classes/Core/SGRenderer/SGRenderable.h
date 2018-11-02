@@ -20,7 +20,6 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
     SGRenderableStateNone,
     SGRenderableStateRendering,
     SGRenderableStatePaused,
-    SGRenderableStateClosed,
     SGRenderableStateFailed,
 };
 

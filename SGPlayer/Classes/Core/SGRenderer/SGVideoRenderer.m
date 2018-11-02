@@ -102,19 +102,19 @@
 
 - (BOOL)close
 {
-    [self lock];
-    if (self.state == SGRenderableStateClosed)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBlock callback = [self setState:SGRenderableStateClosed];
-    [self.currentFrame unlock];
-    self.currentFrame = nil;
-    self.receivedFrame = NO;
-    self.displayNewFrameCount = 0;
-    [self unlock];
-    callback();
+//    [self lock];
+//    if (self.state == SGRenderableStateClosed)
+//    {
+//        [self unlock];
+//        return NO;
+//    }
+//    SGBlock callback = [self setState:SGRenderableStateClosed];
+//    [self.currentFrame unlock];
+//    self.currentFrame = nil;
+//    self.receivedFrame = NO;
+//    self.displayNewFrameCount = 0;
+//    [self unlock];
+//    callback();
     return YES;
 }
 
