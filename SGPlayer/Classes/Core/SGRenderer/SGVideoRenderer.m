@@ -8,38 +8,36 @@
 
 #import "SGVideoRenderer.h"
 #import "SGRenderer+Internal.h"
-#import "SGMapping.h"
 #import "SGGLDisplayLink.h"
 #import "SGGLProgramPool.h"
-#import "SGGLModelPool.h"
-#import "SGGLViewport.h"
-#import "SGGLTimer.h"
-#import "SGGLView.h"
 #import "SGVRMatrixMaker.h"
+#import "SGGLModelPool.h"
+#import "SGGLTimer.h"
+#import "SGMapping.h"
+#import "SGGLView.h"
 #import "SGMacro.h"
+#import "SGLock.h"
 
-@interface SGVideoRenderer () <NSLocking, SGGLViewDelegate>
+@interface SGVideoRenderer () <SGGLViewDelegate>
 
 {
     SGRenderableState _state;
+    float64_t _invalid_media_time;
+    __strong SGCapacity * _capacity;
+    __strong SGVideoFrame * _fetched_frame;
+    __strong SGVideoFrame * _drawed_frame;
 }
 
+@property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGClock * clock;
 @property (nonatomic, assign) CMTime rate;
-@property (nonatomic, assign) BOOL paused;
-@property (nonatomic, assign) BOOL receivedFrame;
-@property (nonatomic, strong) NSRecursiveLock * coreLock;
-@property (nonatomic, strong) SGVideoFrame * currentFrame;
-@property (nonatomic, strong) SGGLTimer * renderTimer;
-@property (nonatomic, strong) SGGLDisplayLink * displayLink;
-@property (nonatomic, strong) SGVRMatrixMaker * matrixMaker;
+@property (nonatomic, strong) SGGLTimer * fetchTimer;
+@property (nonatomic, strong) SGGLDisplayLink * drawTimer;
 @property (nonatomic, strong) SGGLView * glView;
 @property (nonatomic, strong) SGGLModelPool * modelPool;
 @property (nonatomic, strong) SGGLProgramPool * programPool;
+@property (nonatomic, strong) SGVRMatrixMaker * matrixMaker;
 @property (nonatomic, strong) SGGLTextureUploader * glUploader;
-@property (nonatomic, assign) NSUInteger displayIncreasedCoefficient;
-@property (nonatomic, assign) NSUInteger displayCallbackCount;
-@property (nonatomic, assign) NSUInteger displayNewFrameCount;
 
 @end
 
@@ -51,171 +49,61 @@
 
 - (instancetype)initWithClock:(SGClock *)clock
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.clock = clock;
         self.rate = CMTimeMake(1, 1);
-        self.displayMode = SGDisplayModePlane;
         self.scalingMode = SGScalingModeResizeAspect;
-        self.viewport = [[SGVRViewport alloc] init];
-        self.programPool = [[SGGLProgramPool alloc] init];
-        self.modelPool = [[SGGLModelPool alloc] init];
-        self.matrixMaker = [[SGVRMatrixMaker alloc] init];
+        self.displayMode = SGDisplayModePlane;
         self.displayInterval = CMTimeMake(1, 60);
-        self.displayIncreasedCoefficient = 2;
+        self.modelPool = [[SGGLModelPool alloc] init];
+        self.programPool = [[SGGLProgramPool alloc] init];
+        self.matrixMaker = [[SGVRMatrixMaker alloc] init];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [self.renderTimer invalidate];
-    [self.displayLink invalidate];
+    NSAssert([NSThread isMainThread], @"Main thread only.");
+    [self.fetchTimer invalidate];
+    [self.drawTimer invalidate];
     [self.glView removeFromSuperview];
     [self close];
-}
-
-#pragma mark - Interface
-
-- (BOOL)open
-{
-    [self lock];
-    if (self.state != SGRenderableStateNone)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBlock callback = [self setState:SGRenderableStatePaused];
-    self.displayLink = [SGGLDisplayLink displayLinkWithHandler:nil];
-    SGWeakify(self)
-    NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval) / (NSTimeInterval)self.displayIncreasedCoefficient;
-    self.renderTimer = [SGGLTimer timerWithTimeInterval:timeInterval handler:^{
-        SGStrongify(self)
-        [self renderTimerHandler];
-    }];
-    [self unlock];
-    callback();
-    self.displayLink.paused = NO;
-    self.renderTimer.paused = NO;
-    return YES;
-}
-
-- (BOOL)close
-{
-//    [self lock];
-//    if (self.state == SGRenderableStateClosed)
-//    {
-//        [self unlock];
-//        return NO;
-//    }
-//    SGBlock callback = [self setState:SGRenderableStateClosed];
-//    [self.currentFrame unlock];
-//    self.currentFrame = nil;
-//    self.receivedFrame = NO;
-//    self.displayNewFrameCount = 0;
-//    [self unlock];
-//    callback();
-    return YES;
-}
-
-- (BOOL)pause
-{
-    [self lock];
-    if (self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBlock callback = [self setState:SGRenderableStatePaused];
-    self.paused = YES;
-    [self unlock];
-    callback();
-    return YES;
-}
-
-- (BOOL)resume
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused)
-    {
-        [self unlock];
-        return NO;
-    }
-    SGBlock callback = [self setState:SGRenderableStateRendering];
-    self.paused = NO;
-    [self unlock];
-    callback();
-    return YES;
-}
-
-- (BOOL)putFrame:(__kindof SGFrame *)frame
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused &&
-        self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    [self unlock];
-    
-    if (![frame isKindOfClass:[SGVideoFrame class]])
-    {
-        return NO;
-    }
-    SGVideoFrame * videoFrame = frame;
-    if (self.key && !self.receivedFrame)
-    {
-        [self.clock updateKeyTime:videoFrame.timeStamp duration:kCMTimeZero rate:CMTimeMake(1, 1)];
-    }
-    self.receivedFrame = YES;
-    return YES;
-}
-
-- (BOOL)flush
-{
-    [self lock];
-    if (self.state != SGRenderableStatePaused &&
-        self.state != SGRenderableStateRendering)
-    {
-        [self unlock];
-        return NO;
-    }
-    [self.currentFrame unlock];
-    self.currentFrame = nil;
-    self.receivedFrame = NO;
-    self.displayNewFrameCount = 0;
-    [self unlock];
-    return YES;
+    SGLockEXE00(self.lock, ^{
+        [self->_drawed_frame unlock];
+        self->_drawed_frame = nil;
+    });
 }
 
 #pragma mark - Setter & Getter
 
 - (SGBlock)setState:(SGRenderableState)state
 {
-    if (_state != state)
-    {
-        _state = state;
-        return ^{
-            [self.delegate renderable:self didChangeState:state];
-        };
+    if (_state == state) {
+        return ^{};
     }
-    return ^{};
+    _state = state;
+    return ^{
+        [self.delegate renderable:self didChangeState:state];
+    };
 }
 
 - (SGRenderableState)state
 {
-    return _state;
+    __block SGRenderableState ret = SGRenderableStateNone;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_state;
+    });
+    return ret;
 }
 
 - (SGCapacity *)capacity
 {
-    return nil;
-}
-
-- (void)setViewport:(SGVRViewport *)viewport
-{
-    self.matrixMaker.viewport = viewport;
+    __block SGCapacity * ret = nil;
+    SGLockEXE00(self.lock, ^{
+        ret = [self->_capacity copy];
+    });
+    return ret ? ret : [[SGCapacity alloc] init];
 }
 
 - (SGVRViewport *)viewport
@@ -225,18 +113,21 @@
 
 - (UIImage *)originalImage
 {
-    [self lock];
-    SGVideoFrame * videoFrame = self.currentFrame;
-    if (!videoFrame)
-    {
-        [self unlock];
-        return nil;
-    }
-    [videoFrame lock];
-    [self unlock];
-    UIImage * image = [videoFrame image];
-    [videoFrame unlock];
-    return image;
+    __block UIImage * ret = nil;
+    SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_drawed_frame;
+    }, ^SGBlock{
+        SGVideoFrame * frame = self->_drawed_frame;
+        [frame lock];
+        return ^{
+            ret = [frame image];
+            [frame unlock];
+        };
+    }, ^BOOL(SGBlock block) {
+        block();
+        return YES;
+    });
+    return ret;
 }
 
 - (UIImage *)snapshot
@@ -251,115 +142,164 @@
     return image;
 }
 
+#pragma mark - Interface
+
+- (BOOL)open
+{
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateNone;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStatePaused];
+    }, ^BOOL(SGBlock block) {
+        block();
+        SGWeakify(self)
+        NSTimeInterval timeInterval = CMTimeGetSeconds(self.displayInterval);
+        self.drawTimer = [[SGGLDisplayLink alloc] initWithTimeInterval:timeInterval handler:^{
+            SGStrongify(self);
+            [self drawTimerHandler];
+        }];
+        self.fetchTimer = [[SGGLTimer alloc] initWithTimeInterval:timeInterval / 2.0f handler:^{
+            SGStrongify(self)
+            [self fetchTimerHandler];
+        }];
+        self.fetchTimer.paused = NO;
+        self.drawTimer.paused = NO;
+        return YES;
+    });
+}
+
+- (BOOL)close
+{
+    return SGLockEXE11(self.lock, ^SGBlock {
+        [self->_fetched_frame unlock];
+        self->_fetched_frame = nil;
+        self->_invalid_media_time = 0;
+        return [self setState:SGRenderableStateNone];
+    }, ^BOOL(SGBlock block) {
+        [self.fetchTimer invalidate];
+        [self.drawTimer invalidate];
+        self.fetchTimer = nil;
+        self.drawTimer = nil;
+        block();
+        return YES;
+    });
+}
+
+- (BOOL)pause
+{
+    return SGLockCondEXE10(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStatePaused];
+    });
+}
+
+- (BOOL)resume
+{
+    return SGLockCondEXE10(self.lock, ^BOOL {
+        return self->_state == SGRenderableStatePaused;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStateRendering];
+    });
+}
+
+- (BOOL)flush
+{
+    SGLockCondEXE00(self.lock, ^BOOL {
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering;
+    }, ^ {
+        [self->_fetched_frame unlock];
+        self->_fetched_frame = nil;
+        self->_invalid_media_time = 0;
+    });
+    return YES;
+}
+
 #pragma mark - Internal
 
 - (void)updateGLViewIfNeeded
 {
-    if (self.view)
-    {
-        if (!self.glView)
-        {
+    if (self.view) {
+        if (!self.glView) {
             self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
             self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
             self.glView.delegate = self;
         }
-        if (self.glView.superview != self.view)
-        {
+        if (self.glView.superview != self.view) {
             [self.view addSubview:self.glView];
         }
         SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
         if (layerSize.width != self.glView.displaySize.width ||
-            layerSize.height != self.glView.displaySize.height)
-        {
+            layerSize.height != self.glView.displaySize.height) {
             self.glView.frame = self.view.bounds;
         }
-    }
-    else
-    {
+    } else {
         [self.glView removeFromSuperview];
     }
 }
 
 #pragma mark - Render
 
-- (void)renderTimerHandler
+- (void)fetchTimerHandler
 {
-    [self lock];
-    SGVideoFrame * frame = nil;
-    SGBlock callback = ^{};
-    BOOL needFetchFrame = !self.key || !self.paused || (self.displayNewFrameCount == 0);
-    if (needFetchFrame)
-    {
-        SGWeakify(self)
-        frame = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * expect, BOOL * drop) {
-            SGStrongify(self)
-            if (!self.currentFrame)
-            {
-                return NO;
-            }
-            CMTime time = self.key ? self.clock.unlimitedTime : self.clock.time;
-            NSTimeInterval nextVSyncInterval = MAX(self.displayLink.nextVSyncTimestamp - CACurrentMediaTime(), 0);
-            * expect = CMTimeAdd(time, SGCMTimeMakeWithSeconds(nextVSyncInterval));
-            * current = self.currentFrame.timeStamp;
-            * drop = !self.key;
+    __block float64_t next_media_time = self.drawTimer.nextVSyncTimestamp;
+    __block float64_t current_media_time = CACurrentMediaTime();
+    SGWeakify(self)
+    SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * desire, BOOL * drop) {
+        SGStrongify(self)
+        __block CMTime t = kCMTimeZero;
+        return SGLockCondEXE11(self.lock, ^BOOL {
+            return self->_fetched_frame;
+        }, ^SGBlock {
+            t = self->_fetched_frame.timeStamp;
+            return nil;
+        }, ^BOOL(SGBlock block) {
+            CMTime time = self.clock.time;
+            next_media_time = self.drawTimer.nextVSyncTimestamp;
+            current_media_time = CACurrentMediaTime();
+            * desire = CMTimeAdd(time, SGCMTimeMakeWithSeconds(next_media_time - current_media_time));
+            * current = t;
+            * drop = YES;
             return YES;
-        }];
-        if (frame && self.discardFilter)
-        {
-            CMSampleTimingInfo timingInfo = {kCMTimeZero};
-            timingInfo.presentationTimeStamp = frame.timeStamp;
-            timingInfo.decodeTimeStamp = frame.decodeTimeStamp;
-            timingInfo.duration = frame.duration;
-            if (self.discardFilter(timingInfo, self.displayNewFrameCount))
-            {
-                [frame unlock];
-                frame = nil;
-                callback = ^{
-//                    [self callbackForCapacity];
-                };
-            }
+        });
+    }];
+    SGLockEXE10(self.lock, ^SGBlock {
+        SGCapacity * capacity = [[SGCapacity alloc] init];
+        if (ret) {
+            [self->_fetched_frame unlock];
+            self->_fetched_frame = ret;
+            self->_invalid_media_time = next_media_time + CMTimeGetSeconds(ret.duration);
+            capacity.duration = ret.duration;
+        } else if (current_media_time >= self->_invalid_media_time) {
+            [self->_fetched_frame unlock];
+            self->_fetched_frame = nil;
+            self->_invalid_media_time = 0;
         }
-        if (frame)
-        {
-            NSAssert(self.currentFrame != frame, @"SGVideoRenderer : Frame can't equal to currentTime.");
-            self.displayNewFrameCount += 1;
-            [self.currentFrame unlock];
-            self.currentFrame = frame;
-            callback = ^{
-                if (self.key)
-                {
-                    [self.clock updateKeyTime:self.currentFrame.timeStamp duration:self.currentFrame.duration rate:self.rate];
-                }
-                if (self.renderCallback)
-                {
-                    self.renderCallback(frame);
-                }
-//                [self callbackForCapacity];
+        SGBlock b1 = ^{};
+        if (![capacity isEqualToCapacity:self->_capacity]) {
+            self->_capacity = capacity;
+            b1 = ^{
+                [self.delegate renderable:self didChangeCapacity:[capacity copy]];
             };
         }
-    }
+        return b1;
+    });
     [self updateGLViewIfNeeded];
-    self.displayCallbackCount += 1;
-    if (!frame)
-    {
-        BOOL delivery = (self.displayCallbackCount % self.displayIncreasedCoefficient) == 0;
-        BOOL viewReady = (self.glView.superview && !self.glView.rendered);
-        BOOL isVR = self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox;
-        BOOL VRReady = (isVR && self.matrixMaker.ready);
-        BOOL needRedraw = delivery && (viewReady || VRReady);
-        if (needRedraw)
-        {
-            frame = self.currentFrame;
-        }
-    }
-    [frame lock];
-    [self unlock];
-    callback();
-    if (frame)
-    {
+}
+
+- (void)drawTimerHandler
+{
+    BOOL ret = SGLockCondEXE10(self.lock, ^BOOL{
+        return self->_fetched_frame;
+    }, ^SGBlock {
+        [self->_fetched_frame lock];
+        [self->_drawed_frame unlock];
+        self->_drawed_frame = self->_fetched_frame;
+        return nil;
+    });
+    if (ret && self.glView.superview) {
         [self draw];
     }
-    [frame unlock];
 }
 
 #pragma mark - SGGLView
@@ -367,8 +307,7 @@
 - (BOOL)draw
 {
 #if SGPLATFORM_TARGET_OS_IPHONE
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground)
-    {
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
         return [self.glView display];
     }
     return NO;
@@ -379,37 +318,31 @@
 
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
-    [self lock];
-    SGVideoFrame * frame = self.currentFrame;
-    if (!frame || frame.width == 0 || frame.height == 0)
-    {
-        [self unlock];
+    [self.lock lock];
+    SGVideoFrame * frame = self->_drawed_frame;
+    if (!frame || frame.width == 0 || frame.height == 0) {
+        [self.lock unlock];
         return NO;
     }
     [frame lock];
-    [self unlock];
+    [self.lock unlock];
     SGGLSize textureSize = {frame.width, frame.height};
     SGDisplayMode displayMode = self.displayMode;
     id <SGGLModel> model = [self.modelPool modelWithType:SGDisplay2Model(displayMode)];
     id <SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format, frame->_pixelBuffer)];
-    if (!model || !program)
-    {
+    if (!model || !program) {
         [frame unlock];
         return NO;
     }
     [program use];
     [program bindVariable];
     BOOL success = NO;
-    if (frame->_pixelBuffer)
-    {
+    if (frame->_pixelBuffer) {
         success = [self.glUploader uploadWithCVPixelBuffer:frame->_pixelBuffer];
-    }
-    else
-    {
+    } else {
         success = [self.glUploader uploadWithType:SGFormat2Texture(frame.format, frame->_pixelBuffer) data:frame->_data size:textureSize];
     }
-    if (!success)
-    {
+    if (!success) {
         [model unbind];
         [program unuse];
         [frame unlock];
@@ -418,17 +351,14 @@
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     [model bindPosition_location:program.position_location
       textureCoordinate_location:program.textureCoordinate_location];
-    switch (displayMode)
-    {
-        case SGDisplayModePlane:
-        {
+    switch (displayMode) {
+        case SGDisplayModePlane: {
             [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
             [SGGLViewport updateWithLayerSize:size scale:glView.glScale textureSize:textureSize mode:SGScaling2Viewport(self.scalingMode)];
             [model draw];
         }
             break;
-        case SGDisplayModeVR:
-        {
+        case SGDisplayModeVR: {
             double aspect = (float)size.width / (float)size.height;
             GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
             if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix])
@@ -440,13 +370,11 @@
             [model draw];
         }
             break;
-        case SGDisplayModeVRBox:
-        {
+        case SGDisplayModeVRBox: {
             double aspect = (float)size.width / (float)size.height / 2;
             GLKMatrix4 modelViewProjectionMatrix1 = GLKMatrix4Identity;
             GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Identity;
-            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix1 matrix2:&modelViewProjectionMatrix2])
-            {
+            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix1 matrix2:&modelViewProjectionMatrix2]) {
                 break;
             }
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix1];
@@ -462,22 +390,6 @@
     [program unuse];
     [frame unlock];
     return YES;
-}
-
-#pragma mark - NSLocking
-
-- (void)lock
-{
-    if (!self.coreLock)
-    {
-        self.coreLock = [[NSRecursiveLock alloc] init];
-    }
-//    [self.coreLock lock];
-}
-
-- (void)unlock
-{
-//    [self.coreLock unlock];
 }
 
 @end

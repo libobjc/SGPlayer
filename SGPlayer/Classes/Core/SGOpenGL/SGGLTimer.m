@@ -17,11 +17,6 @@
 
 @implementation SGGLTimer
 
-+ (instancetype)timerWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler
-{
-    return [[self alloc] initWithTimeInterval:timeInterval handler:handler];
-}
-
 - (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler
 {
     if (self = [super init])

@@ -18,17 +18,17 @@
 
 @implementation SGGLDisplayLink
 
-+ (instancetype)displayLinkWithHandler:(void (^)(void))handler;
-{
-    return [[SGGLDisplayLink alloc] initWithHandler:handler];
-}
-
-- (instancetype)initWithHandler:(void (^)(void))handler
+- (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler
 {
     if (self = [super init])
     {
         self.handler = handler;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
+        if (@available(iOS 10.0, *)) {
+            self.displayLink.preferredFramesPerSecond = 1.0f / timeInterval;
+        } else {
+            self.displayLink.frameInterval = 1.0f / timeInterval;
+        }
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     return self;

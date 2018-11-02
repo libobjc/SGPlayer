@@ -10,7 +10,7 @@
 
 @interface SGGLDisplayLink : NSObject
 
-+ (instancetype)displayLinkWithHandler:(void (^)(void))handler;
+- (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler;
 
 @property(nonatomic, assign) BOOL paused;
 

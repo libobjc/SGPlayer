@@ -28,6 +28,11 @@
 
 @implementation PlayerViewController
 
+- (void)dealloc
+{
+    
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -71,9 +76,9 @@
 //        return [discardFilter discardWithTimeStamp:timingInfo.presentationTimeStamp];
 //    }];
     
-    [self.player.videoRenderer setRenderCallback:^(SGVideoFrame * frame) {
+//    [self.player.videoRenderer setRenderCallback:^(SGVideoFrame * frame) {
 //        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
-    }];
+//    }];
     
 //    [self.player replaceWithAsset:asset];
     [self.player replaceWithURL:contentURL1];
@@ -149,7 +154,7 @@
 
 - (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state
 {
-//    NSLog(@"%s, %ld", __func__, state);
+    NSLog(@"%s, %ld", __func__, state);
 }
 
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time
@@ -161,7 +166,7 @@
 
 - (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration
 {
-    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
+//    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

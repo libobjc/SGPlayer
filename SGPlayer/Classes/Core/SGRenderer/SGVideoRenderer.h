@@ -13,15 +13,14 @@
 
 @interface SGVideoRenderer : NSObject
 
-@property (nonatomic, strong) SGPLFView * view;
-@property (nonatomic, assign) SGScalingMode scalingMode;
-@property (nonatomic, assign) SGDisplayMode displayMode;
-@property (nonatomic, strong) SGVRViewport * viewport;
-@property (nonatomic, assign) CMTime displayInterval;
-@property (nonatomic, copy) BOOL (^discardFilter)(CMSampleTimingInfo timingInfo, NSUInteger index);
-@property (nonatomic, copy) void (^renderCallback)(SGVideoFrame * frame);
+@property (nonatomic, strong) SGPLFView * view;             // Main thread only.
+@property (nonatomic, assign) SGScalingMode scalingMode;    // Main thread only.
+@property (nonatomic, assign) SGDisplayMode displayMode;    // Main thread only.
+@property (nonatomic, assign) CMTime displayInterval;       // Main thread only.
 
-- (UIImage *)originalImage;
-- (UIImage *)snapshot;
+- (SGVRViewport *)viewport;     // Main thread only.
+
+- (UIImage *)originalImage;     // Main thread only.
+- (UIImage *)snapshot;          // Main thread only.
 
 @end

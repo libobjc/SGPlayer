@@ -214,8 +214,7 @@
     if (_is_seeking) {
         playbackState |= SGPlaybackStateSeeking;
     }
-//    if (_is_audio_finished && _is_video_finished) {
-    if (_is_audio_finished) {
+    if (_is_audio_finished && _is_video_finished) {
         playbackState |= SGPlaybackStateFinished;
     }
     if (_playback_state == playbackState) {
