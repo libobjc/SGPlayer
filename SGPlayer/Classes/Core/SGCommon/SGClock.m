@@ -65,18 +65,19 @@
 
 - (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate
 {
-    if (CMTIME_IS_INVALID(self.startTime))
-    {
-        _startTime = time;
-        if ([self.delegate respondsToSelector:@selector(playbackClockDidChangeStartTime:)])
-        {
-            [self.delegate playbackClockDidChangeStartTime:self];
-        }
-    }
+//    if (CMTIME_IS_INVALID(self.startTime))
+//    {
+//        _startTime = time;
+//        if ([self.delegate respondsToSelector:@selector(playbackClockDidChangeStartTime:)])
+//        {
+//            [self.delegate playbackClockDidChangeStartTime:self];
+//        }
+//    }
     self.keyTime = time;
     self.keyDuration = duration;
     self.keyRate = rate;
     self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
+    [self.delegate clock:self didChcnageCurrentTime:time];
 }
 
 - (void)flush

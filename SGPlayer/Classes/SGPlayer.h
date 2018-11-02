@@ -49,9 +49,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @end
 
-#pragma mark - Asset
+#pragma mark - Item
 
-@interface SGPlayer (Asset)
+@interface SGPlayer (Item)
 
 - (SGPlayerItem *)currentItem;
 - (CMTime)duration;
@@ -94,7 +94,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Loading)
 
 - (SGLoadingState)loadingState;
-- (CMTime)loadedTime;
+- (BOOL)loadedTime:(CMTime *)loadedTime loadedDuration:(CMTime *)loadedDuration;
 
 @end
 
@@ -113,9 +113,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @optional
 - (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status;
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state;
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state;
-- (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option;
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)playbackState;
+- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState;
+- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime;
+- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration;
 
 @end
 

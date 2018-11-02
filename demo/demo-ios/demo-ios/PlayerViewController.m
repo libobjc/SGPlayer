@@ -152,6 +152,16 @@
     NSLog(@"%s, %ld", __func__, state);
 }
 
+- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time
+{
+//    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
+}
+
+- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration
+{
+    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
+}
+
 - (void)player:(SGPlayer *)player didChangeTime:(SGTimeOption)option
 {
 //    if (option & SGTimeOptionPlayback)
@@ -173,11 +183,6 @@
 //    {
 //
 //    }
-}
-
-- (void)player:(SGPlayer *)player didFailed:(NSError *)error
-{
-    NSLog(@"%s, %@", __func__, error);
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds

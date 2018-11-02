@@ -14,30 +14,31 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGPlayer () <SGPlayerItemDelegate, SGRenderableDelegate>
+@interface SGPlayer () <SGClockDelegate, SGRenderableDelegate, SGPlayerItemDelegate>
 
 {
-    BOOL _playing;
-    BOOL _seeking;
-    BOOL _finished;
+    BOOL _is_playing;
+    BOOL _is_seeking;
+    BOOL _is_audio_finished;
+    BOOL _is_video_finished;
     CMTime _rate;
+    CMTime _current_time;
+    CMTime _loaded_time;
+    CMTime _loaded_duration;
     SGPlayerStatus _status;
-    SGPlaybackState _playbackState;
-    SGLoadingState _loadingState;
+    SGLoadingState _loading_state;
+    SGPlaybackState _playback_state;
+    __strong NSError * _error;
+    __strong SGPlayerItem * _current_item;
 }
 
-@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue * delegateQueue;
-@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGClock * clock;
 @property (nonatomic, strong) SGAudioRenderer * audioRenderer;
 @property (nonatomic, strong) SGVideoRenderer * videoRenderer;
 
-@property (nonatomic, strong) NSError * error;
-@property (nonatomic, strong) SGPlayerItem * currentItem;
-@property (nonatomic, assign) CMTime lastPlaybackTime;
-@property (nonatomic, assign) CMTime lastLoadedTime;
-@property (nonatomic, assign) CMTime lastDuration;
+@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
+@property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end
 
@@ -46,18 +47,17 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        [self destroy];
-        self.rate = CMTimeMake(1, 1);
         self.delegateQueue = [NSOperationQueue mainQueue];
+        self.rate = CMTimeMake(1, 1);
+        self.lock = [[NSLock alloc] init];
         self.clock = [[SGClock alloc] init];
+        self.clock.delegate = self;
         self.audioRenderer = [[SGAudioRenderer alloc] initWithClock:self.clock];
         self.audioRenderer.delegate = self;
         self.audioRenderer.key = YES;
-        self.audioRenderer.rate = self.rate;
         self.videoRenderer = [[SGVideoRenderer alloc] initWithClock:self.clock];
         self.videoRenderer.delegate = self;
         self.videoRenderer.key = NO;
-        self.videoRenderer.rate = self.rate;
         [self.clock open];
         [self.audioRenderer open];
         [self.videoRenderer open];
@@ -74,7 +74,7 @@
     [self.videoRenderer close];
 }
 
-#pragma mark - Asset
+#pragma mark - Item
 
 - (BOOL)replaceWithURL:(NSURL *)URL
 {
@@ -92,10 +92,10 @@
     if (!item) {
         return NO;
     }
-    return SGLockEXE11(self.coreLock, ^SGBlock {
-        self->_currentItem = item;
-        self->_currentItem.delegate = self;
-        self->_currentItem.audioFilter = self.audioRenderer.filter;
+    return SGLockEXE11(self.lock, ^SGBlock {
+        self->_current_item = item;
+        self->_current_item.delegate = self;
+        self->_current_item.audioFilter = self.audioRenderer.filter;
         return nil;
     }, ^BOOL(SGBlock block) {
         return [item open];
@@ -109,39 +109,30 @@
 
 - (BOOL)stop
 {
-    [self destroy];
-    return SGLockEXE11(self.coreLock, ^SGBlock {
+    [SGActivity removeTarget:self];
+    return SGLockEXE10(self.lock, ^SGBlock {
+        SGPlayerItem * item = self->_current_item;
+        self->_is_playing = NO;
+        self->_is_seeking = NO;
+        self->_is_audio_finished = NO;
+        self->_is_video_finished = NO;
+        self->_current_time = kCMTimeInvalid;
+        self->_loaded_time = kCMTimeInvalid;
+        self->_loaded_duration = kCMTimeInvalid;
+        self->_status = SGPlayerStatusNone;
+        self->_loading_state = SGLoadingStateNone;
+        self->_playback_state = 0;
+        self->_error = nil;
+        self->_current_item = nil;
         SGBlock b1 = [self setStatus:SGPlayerStatusNone];
         SGBlock b2 = [self setPlaybackState];
         SGBlock b3 = [self setLoadingState:SGLoadingStateNone];
-        return ^{
-            b1(); b2(); b3();
-        };
-    }, ^BOOL(SGBlock block) {
-        block();
-        return YES;
-    });
-}
-
-- (void)destroy
-{
-    [SGActivity removeTarget:self];
-    __block SGPlayerItem * item = nil;
-    SGLockEXE10(self.coreLock, ^SGBlock{
-        item = self->_currentItem;
-        self->_currentItem = nil;
-        self->_playing = NO;
-        self->_seeking = NO;
-        self->_finished = NO;
-        self->_error = nil;
-        self->_lastPlaybackTime = CMTimeMake(-1900, 1);
-        self->_lastLoadedTime = CMTimeMake(-1900, 1);
-        self->_lastDuration = CMTimeMake(-1900, 1);
         return ^{
             [item close];
             [self.clock flush];
             [self.audioRenderer flush];
             [self.videoRenderer flush];
+            b1(); b2(); b3();
         };
     });
 }
@@ -166,7 +157,7 @@
 - (SGPlayerStatus)status
 {
     __block SGPlayerStatus ret = SGPlayerStatusNone;
-    SGLockEXE00(self.coreLock, ^{
+    SGLockEXE00(self.lock, ^{
         ret = self->_status;
     });
     return ret;
@@ -175,8 +166,8 @@
 - (NSError *)error
 {
     __block NSError * ret = nil;
-    SGLockEXE00(self.coreLock, ^{
-        ret = self->_error;
+    SGLockEXE00(self.lock, ^{
+        ret = [self->_error copy];
     });
     return ret;
 }
@@ -184,44 +175,57 @@
 - (SGPlayerItem *)currentItem
 {
     __block SGPlayerItem * ret = nil;
-    SGLockEXE00(self.coreLock, ^{
-        ret = self->_currentItem;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_current_item;
     });
     return ret;
 }
 
-SGGet0Map(CMTime, duration, self.currentItem);
+- (CMTime)duration
+{
+    CMTime ret = self.currentItem.duration;
+    if (CMTIME_IS_VALID(ret)) {
+        return ret;
+    }
+    return kCMTimeZero;
+}
 
 - (SGBlock)setPlaybackState
 {
     SGPlaybackState playbackState = 0;
-    if (_playing) {
+    if (_is_playing) {
         playbackState |= SGPlaybackStatePlaying;
     }
-    if (_seeking) {
+    if (_is_seeking) {
         playbackState |= SGPlaybackStateSeeking;
     }
-    if (_finished) {
+//    if (_audioFinished && _videoFinished) {
+    if (_is_audio_finished) {
         playbackState |= SGPlaybackStateFinished;
     }
-    if (_playbackState == playbackState) {
+    if (_playback_state == playbackState) {
         return ^{};
     }
-    _playbackState = playbackState;
-    SGBlock renderer = ^{};
-    if (_playbackState & SGPlaybackStatePlaying) {
-        renderer = ^{
+    _playback_state = playbackState;
+    SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
+    if (playbackState & SGPlaybackStateFinished) {
+        CMTime duration = self->_current_item.duration;
+        b1 = [self setLoadedTime:duration loadedDuration:kCMTimeZero];
+        b2 = [self setCurrentTime:duration];
+    }
+    if (playbackState & SGPlaybackStatePlaying) {
+        b3 = ^{
             [self.audioRenderer resume];
             [self.videoRenderer resume];
         };
     } else {
-        renderer = ^{
+        b3 = ^{
             [self.audioRenderer pause];
             [self.videoRenderer pause];
         };
     }
     return ^{
-        renderer();
+        b1(); b2(); b3();
         [self callback:^{
             if ([self.delegate respondsToSelector:@selector(player:didChangePlaybackState:)]) {
                 [self.delegate player:self didChangePlaybackState:playbackState];
@@ -233,18 +237,18 @@ SGGet0Map(CMTime, duration, self.currentItem);
 - (SGPlaybackState)playbackState
 {
     __block SGPlaybackState ret = 0;
-    SGLockEXE00(self.coreLock, ^{
-        ret = self->_playbackState;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_playback_state;
     });
     return ret;
 }
 
 - (SGBlock)setLoadingState:(SGLoadingState)loadingState
 {
-    if (_loadingState == loadingState) {
+    if (_loading_state == loadingState) {
         return ^{};
     }
-    _loadingState = loadingState;
+    _loading_state = loadingState;
     return ^{
         [self callback:^{
             if ([self.delegate respondsToSelector:@selector(player:didChangeLoadingState:)]) {
@@ -257,17 +261,70 @@ SGGet0Map(CMTime, duration, self.currentItem);
 - (SGLoadingState)loadingState
 {
     __block SGLoadingState ret = SGLoadingStateNone;
-    SGLockEXE00(self.coreLock, ^{
-        ret = self->_loadingState;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_loading_state;
     });
     return ret;
 }
 
+- (SGBlock)setCurrentTime:(CMTime)currentTime
+{
+    if (CMTimeCompare(_current_time, currentTime) == 0) {
+        return ^{};
+    }
+    _current_time = currentTime;
+    return ^{
+        [self callback:^{
+            if ([self.delegate respondsToSelector:@selector(player:didChangeCurrentTime:)]) {
+                [self.delegate player:self didChangeCurrentTime:currentTime];
+            }
+        }];
+    };
+}
+
+- (CMTime)currentTime
+{
+    __block CMTime ret = kCMTimeZero;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_current_time;
+    });
+    return ret;
+}
+
+- (SGBlock)setLoadedTime:(CMTime)loadedTime loadedDuration:(CMTime)loadedDuration
+{
+    if (CMTimeCompare(_loaded_time, loadedTime) == 0 && CMTimeCompare(_loaded_duration, loadedDuration) == 0) {
+        return ^{};
+    }
+    _loaded_time = loadedTime;
+    _loaded_duration = loadedDuration;
+    return ^{
+        [self callback:^{
+            if ([self.delegate respondsToSelector:@selector(player:didChangeLoadedTime:loadedDuuration:)]) {
+                [self.delegate player:self didChangeLoadedTime:loadedTime loadedDuuration:loadedDuration];
+            }
+        }];
+    };
+}
+
+- (BOOL)loadedTime:(CMTime *)loadedTime loadedDuration:(CMTime *)loadedDuration
+{
+    SGLockEXE00(self.lock, ^{
+        if (loadedTime) {
+            * loadedTime = self->_loaded_time;
+        }
+        if (loadedDuration) {
+            * loadedDuration = self->_loaded_duration;
+        }
+    });
+    return YES;
+}
+
 - (void)setRate:(CMTime)rate
 {
-    SGLockCondEXE11(self.coreLock, ^BOOL{
+    SGLockCondEXE11(self.lock, ^BOOL {
         return CMTimeCompare(self->_rate, rate) != 0;
-    }, ^SGBlock{
+    }, ^SGBlock {
         self->_rate = rate;
         return nil;
     }, ^BOOL(SGBlock block) {
@@ -280,23 +337,10 @@ SGGet0Map(CMTime, duration, self.currentItem);
 - (CMTime)rate
 {
     __block CMTime ret = kCMTimeZero;
-    SGLockEXE00(self.coreLock, ^{
+    SGLockEXE00(self.lock, ^{
         ret = self->_rate;
     });
     return ret;
-}
-
-- (void)setFinishedIfNeeded
-{
-    if (self.currentItem.state == SGPlayerItemStateFinished &&
-//        self.audioRenderer.capacity.isEmpty &&
-//        self.videoRenderer.capacity.isEmpty) {
-        self.audioRenderer.capacity.isEmpty) {
-        SGLockEXE10(self.coreLock, ^SGBlock {
-            self->_finished = YES;
-            return [self setPlaybackState];
-        });
-    }
 }
 
 #pragma mark - Control
@@ -304,10 +348,10 @@ SGGet0Map(CMTime, duration, self.currentItem);
 - (BOOL)play
 {
     [SGActivity addTarget:self];
-    return SGLockCondEXE10(self.coreLock, ^BOOL{
+    return SGLockCondEXE10(self.lock, ^BOOL {
         return !self->_error;
     }, ^SGBlock {
-        self->_playing = YES;
+        self->_is_playing = YES;
         return [self setPlaybackState];
     });
 }
@@ -315,10 +359,10 @@ SGGet0Map(CMTime, duration, self.currentItem);
 - (BOOL)pause
 {
     [SGActivity removeTarget:self];
-    return SGLockCondEXE10(self.coreLock, ^BOOL{
+    return SGLockCondEXE10(self.lock, ^BOOL {
         return !self->_error;
     }, ^SGBlock {
-        self->_playing = NO;
+        self->_is_playing = NO;
         return [self setPlaybackState];
     });
 }
@@ -343,6 +387,116 @@ SGGet0Map(BOOL, seekable, self.currentItem);
     }];
 }
 
+#pragma mark - SGClockDelegate
+
+- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime
+{
+    SGLockEXE10(self.lock, ^SGBlock {
+        return [self setCurrentTime:currentTime];
+    });
+}
+
+#pragma mark - SGRenderableDelegate
+
+- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
+{
+    NSAssert(state != SGRenderableStateFailed, @"Invaild renderer, %@", renderable);
+}
+
+- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
+{
+    if (capacity.isEmpty) {
+        SGLockCondEXE10(self.lock, ^BOOL{
+            if (renderable == self.audioRenderer) {
+                return self->_current_item.audioFinished;
+            } else if (renderable == self.videoRenderer) {
+                return self->_current_item.videoFinished;
+            }
+            return NO;
+        }, ^SGBlock{
+            if (renderable == self.audioRenderer) {
+                self->_is_audio_finished = YES;
+            } else if (renderable == self.videoRenderer) {
+                self->_is_video_finished = YES;
+            }
+            return [self setPlaybackState];
+        });
+    }
+}
+
+- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader
+{
+    if (renderable == self.audioRenderer) {
+        return [self.currentItem copyAudioFrame:timeReader];
+    } else if (renderable == self.videoRenderer) {
+        return [self.currentItem copyVideoFrame:timeReader];
+    }
+    return nil;
+}
+
+#pragma mark - SGPlayerItemDelegate
+
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state
+{
+    SGLockEXE10(self.lock, ^SGBlock {
+        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
+        switch (state) {
+            case SGPlayerItemStateOpening: {
+                b1 = [self setStatus:SGPlayerStatusPreparing];
+            }
+                break;
+            case SGPlayerItemStateOpened: {
+                b2 = [self setStatus:SGPlayerStatusReady];
+                b3 = [self setLoadingState:SGLoadingStateStalled];
+                b1 = ^{
+                    [playerItem start];
+                };
+            }
+                break;
+            case SGPlayerItemStateReading: {
+                self->_is_audio_finished = NO;
+                self->_is_video_finished = NO;
+                b1 = [self setPlaybackState];
+            }
+                break;
+            case SGPlayerItemStateFinished: {
+                b1 = [self setLoadingState:SGLoadingStateFinished];
+            }
+                break;
+            case SGPlayerItemStateFailed: {
+                self->_error = [playerItem.error copy];
+                b1 = [self setStatus:SGPlayerStatusFailed];
+            }
+                break;
+            default:
+                break;
+        }
+        return ^{
+            b1(); b2(); b3();
+        };
+    });
+}
+
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
+{
+    BOOL should = NO;
+    if (track.type == SGMediaTypeAudio &&
+        !playerItem.audioFinished) {
+        should = YES;
+    } else if (track.type == SGMediaTypeVideo &&
+               !playerItem.videoFinished &&
+               (!playerItem.selectedAudioTrack || playerItem.audioFinished)) {
+        should = YES;
+    }
+    if (should) {
+        SGLockEXE10(self.lock, ^SGBlock {
+            CMTime duration = capacity.duration;
+            CMTime time = CMTimeAdd(self->_current_time, duration);
+            return [self setLoadedTime:time loadedDuration:duration];
+        });
+    }
+}
+
 #pragma mark - Delegate
 
 - (void)callback:(void (^)(void))block
@@ -358,120 +512,6 @@ SGGet0Map(BOOL, seekable, self.currentItem);
     } else {
         block();
     }
-}
-
-- (void)callbackForTimingIfNeeded
-{
-//    [self.coreLock lock];
-//    if (self.error)
-//    {
-//        [self.coreLock unlock];
-//        return;
-//    }
-//    [self.coreLock unlock];
-//    SGTimeOption option = 0;
-//    CMTime playbackTime = self.playbackTime;
-//    CMTime loadedTime = self.loadedTime;
-//    CMTime duration = self.currentItem.duration;
-//    if (CMTIME_IS_VALID(playbackTime) &&
-//        CMTimeCompare(playbackTime, self.lastPlaybackTime) != 0)
-//    {
-//        option |= SGTimeOptionPlayback;
-//    }
-//    if (CMTIME_IS_VALID(loadedTime) &&
-//        CMTimeCompare(loadedTime, self.lastLoadedTime) != 0)
-//    {
-//        option |= SGTimeOptionLoaded;
-//    }
-//    if (CMTIME_IS_VALID(duration) &&
-//        CMTimeCompare(duration, self.lastDuration) != 0)
-//    {
-//        option |= SGTimeOptionDuration;
-//    }
-//    if (option != 0)
-//    {
-//        self.lastPlaybackTime = playbackTime;
-//        self.lastLoadedTime = loadedTime;
-//        self.lastDuration = duration;
-//        [self callback:^{
-//            if ([self.delegate respondsToSelector:@selector(player:didChangeTime:)])
-//            {
-//                [self.delegate player:self didChangeTime:option];
-//            }
-//        }];
-//    }
-}
-
-#pragma mark - SGPlayerItemDelegate
-
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state
-{
-    SGLockEXE10(self.coreLock, ^SGBlock {
-        SGBlock before = ^{}, prepare = ^{}, loading = ^{}, playback = ^{}, after = ^{};
-        switch (state) {
-            case SGPlayerItemStateOpening: {
-                prepare = [self setStatus:SGPlayerStatusPreparing];
-            }
-                break;
-            case SGPlayerItemStateOpened: {
-                prepare = [self setStatus:SGPlayerStatusReady];
-                loading = [self setLoadingState:SGLoadingStateStalled];
-                before = ^{
-                    [playerItem start];
-                };
-            }
-                break;
-            case SGPlayerItemStateReading: {
-                self->_finished = NO;
-                playback = [self setPlaybackState];
-            }
-                break;
-            case SGPlayerItemStateFinished: {
-                loading = [self setLoadingState:SGLoadingStateFinished];
-                [self setFinishedIfNeeded];
-            }
-                break;
-            case SGPlayerItemStateFailed: {
-                self->_error = playerItem.error;
-                prepare = [self setStatus:SGPlayerStatusFailed];
-            }
-                break;
-            default:
-                break;
-        }
-        return ^{
-            before(); prepare(); loading(); playback(); after();
-        };
-    });
-}
-
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
-{
-    [self callbackForTimingIfNeeded];
-}
-
-#pragma mark - SGRenderableDelegate
-
-- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
-{
-    
-}
-
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
-{
-    if (capacity.isEmpty) {
-        [self setFinishedIfNeeded];
-    }
-}
-
-- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader
-{
-    if (renderable == self.audioRenderer) {
-        return [self.currentItem copyAudioFrame:timeReader];
-    } else if (renderable == self.videoRenderer) {
-        return [self.currentItem copyVideoFrame:timeReader];
-    }
-    return nil;
 }
 
 @end

@@ -104,34 +104,29 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
 
 - (BOOL)setCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
-    if (self.frameOutput.state == SGFrameOutputStateFinished && capacity.count == 0) {
-        if (track.type == SGMediaTypeAudio) {
-            self.audioFinished = YES;
-        } else if (track.type == SGMediaTypeVideo) {
-            self.videoFinished = YES;
-        }
+    BOOL finished = self.frameOutput.state == SGFrameOutputStateFinished && capacity.count == 0;
+    if (track.type == SGMediaTypeAudio) {
+        self.audioFinished = finished;
+    } else if (track.type == SGMediaTypeVideo) {
+        self.videoFinished = finished;
+    }
+    // TODO: thread-safe
+    SGBlock finished_block = ^{};
+    if ((!self.selectedAudioTrack || self.audioFinished) &&
+        (!self.selectedVideoTrack || self.videoFinished)) {
+        finished_block = [self setState:SGPlayerItemStateFinished];
     }
     return SGLockCondEXE11(self.coreLock, ^BOOL {
         SGCapacity * last = [self.capacityMap objectForKey:track];
         return ![last isEqualToCapacity:capacity];
     }, ^SGBlock {
         [self.capacityMap setObject:capacity forKey:track];
-        return nil;
+        return finished_block;
     }, ^BOOL(SGBlock block) {
         [self.delegate playerItem:self didChangeCapacity:[capacity copy] track:track];
+        block();
         return YES;
     });
-}
-
-- (void)setFinishedIfNeeded
-{
-    if (self.frameOutput.state == SGFrameOutputStateFinished &&
-        (!self.selectedAudioTrack || self.audioFinished) &&
-        (!self.selectedVideoTrack || self.videoFinished)) {
-        SGLockEXE10(self.coreLock, ^SGBlock {
-            return [self setState:SGPlayerItemStateFinished];
-        });
-    }
 }
 
 #pragma mark - Interface
@@ -259,7 +254,6 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         }
             break;
         case SGFrameOutputStateFinished:
-            [self setFinishedIfNeeded];
             break;
         case SGFrameOutputStateFailed: {
             self.error = frameOutput.error;
@@ -334,7 +328,6 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
     SGCapacity * additional = [self.frameOutput capacityWithTrack:track];
     [capacity add:additional];
     [self setCapacity:capacity track:track];
-    [self setFinishedIfNeeded];
 }
 
 @end

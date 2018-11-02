@@ -13,7 +13,8 @@
 
 @protocol SGClockDelegate <NSObject>
 
-- (void)playbackClockDidChangeStartTime:(SGClock *)playbackClock;
+//- (void)playbackClockDidChangeStartTime:(SGClock *)playbackClock;
+- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
 
 @end
 
