@@ -20,6 +20,7 @@
     int32_t _is_seeking;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
+    int32_t _is_current_time_valid;
     CMTime _rate;
     CMTime _current_time;
     CMTime _loaded_time;
@@ -47,6 +48,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
+        [self stop];
         self.delegateQueue = [NSOperationQueue mainQueue];
         self.rate = CMTimeMake(1, 1);
         self.lock = [[NSLock alloc] init];
@@ -128,6 +130,7 @@
         self->_is_seeking = 0;
         self->_is_audio_finished = 0;
         self->_is_video_finished = 0;
+        self->_is_current_time_valid = 0;
         self->_current_time = kCMTimeInvalid;
         self->_loaded_time = kCMTimeInvalid;
         self->_loaded_duration = kCMTimeInvalid;
@@ -287,6 +290,7 @@
     if (CMTimeCompare(_current_time, currentTime) == 0) {
         return ^{};
     }
+    _is_current_time_valid = 1;
     _current_time = currentTime;
     return ^{
         [self callback:^{
@@ -386,7 +390,7 @@ SGGet0Map(BOOL, seekable, self.currentItem);
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
-    __block int64_t is_seeking = 0;
+    __block int32_t is_seeking = 0;
     BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
         return self->_status == SGPlayerStatusReady;
     }, ^SGBlock {
@@ -417,6 +421,7 @@ SGGet0Map(BOOL, seekable, self.currentItem);
             if (!error) {
                 self->_is_audio_finished = 0;
                 self->_is_video_finished = 0;
+                self->_is_current_time_valid = 0;
             }
             return [self setPlaybackState];
         });
@@ -525,7 +530,9 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         should = YES;
     }
     if (should) {
-        SGLockEXE10(self.lock, ^SGBlock {
+        SGLockCondEXE10(self.lock, ^BOOL {
+            return self->_is_current_time_valid;
+        }, ^SGBlock {
             CMTime duration = capacity.duration;
             CMTime time = CMTimeAdd(self->_current_time, duration);
             SGBlock b1 = [self setLoadedTime:time loadedDuration:duration];
