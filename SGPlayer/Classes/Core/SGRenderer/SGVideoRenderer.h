@@ -18,6 +18,7 @@
 @property (nonatomic, assign) SGScalingMode scalingMode;    // Main thread only.
 @property (nonatomic, assign) SGDisplayMode displayMode;    // Main thread only.
 @property (nonatomic, assign) CMTime displayInterval;       // Main thread only.
+@property (nonatomic, copy) void (^frameOutput)(SGVideoFrame * frame);       // Main thread only.
 
 - (UIImage *)originalImage;     // Main thread only.
 - (UIImage *)snapshot;          // Main thread only.

@@ -74,9 +74,9 @@
 //        return [discardFilter discardWithTimeStamp:timingInfo.presentationTimeStamp];
 //    }];
     
-//    [self.player.videoRenderer setRenderCallback:^(SGVideoFrame * frame) {
-//        NSLog(@"Render : %f", CMTimeGetSeconds(frame.timeStamp));
-//    }];
+    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
+        NSLog(@"frame output : %f", CMTimeGetSeconds(frame.timeStamp));
+    }];
     
 //    [self.player replaceWithAsset:asset];
     [self.player replaceWithURL:contentURL1];

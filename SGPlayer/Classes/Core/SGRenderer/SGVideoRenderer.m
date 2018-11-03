@@ -22,7 +22,8 @@
 
 {
     SGRenderableState _state;
-    int32_t _is_update_frame;
+    int32_t _is_update_frame_draw;
+    int32_t _is_update_frame_output;
     int64_t _nb_frames_draw;
     int64_t _nb_frames_fetch;
     double _media_time_timeout;
@@ -199,7 +200,8 @@
         SGBlock b2 = [self setState:SGRenderableStateNone];
         [self->_current_frame unlock];
         self->_current_frame = nil;
-        self->_is_update_frame = 0;
+        self->_is_update_frame_draw = 0;
+        self->_is_update_frame_output = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
         return ^{
@@ -259,7 +261,8 @@
     SGLockCondEXE00(self.lock, ^BOOL {
         return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
     }, ^ {
-        self->_is_update_frame = 0;
+        self->_is_update_frame_draw = 0;
+        self->_is_update_frame_output = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
     });
@@ -302,7 +305,8 @@
         if (ret) {
             [self->_current_frame unlock];
             self->_current_frame = ret;
-            self->_is_update_frame = 1;
+            self->_is_update_frame_draw = 1;
+            self->_is_update_frame_output = 1;
             self->_nb_frames_fetch += 1;
             self->_media_time_timeout = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
             [self.clock setVideoCurrentTime:self->_current_frame.timeStamp];
@@ -323,24 +327,41 @@
 
 - (void)drawTimerHandler
 {
-    BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
-        return self->_is_update_frame || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox);
-    }, nil);
-    if (!ret) {
-        return;
-    }
-    [self addGLViewIfNeeded];
-    if (!self.glView.superview) {
-        return;
-    }
-    if ([self display]) {
+    __block BOOL draw_ret = NO;
+    SGLockEXE11(self.lock, ^SGBlock{
+        SGBlock b1 = ^{}, b2 = ^{};
+        if (self->_is_update_frame_output && self->_current_frame) {
+            SGVideoFrame * frame = self->_current_frame;
+            [frame lock];
+            b1 = ^{
+                if (self.frameOutput) {
+                    self.frameOutput(frame);
+                }
+                [frame unlock];
+            };
+        }
+        if ((self->_is_update_frame_draw || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox)) && self->_current_frame) {
+            b2 = ^{
+                [self addGLViewIfNeeded];
+                if (self.glView.superview) {
+                    draw_ret = [self display];
+                }
+            };
+        }
+        return ^{
+            b1(); b2();
+        };
+    }, ^BOOL(SGBlock block) {
+        block();
         SGLockEXE00(self.lock, ^{
-            if (self->_is_update_frame) {
-                self->_is_update_frame = 0;
+            self->_is_update_frame_output = 0;
+            if (draw_ret && self->_is_update_frame_draw) {
+                self->_is_update_frame_draw = 0;
                 self->_nb_frames_draw += 1;
             }
         });
-    }
+        return YES;
+    });
 }
 
 #pragma mark - SGGLView
