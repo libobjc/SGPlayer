@@ -22,20 +22,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGVRViewport.h>
 #import <SGPlayer/SGTime.h>
 #import <SGPlayer/SGClock.h>
-#import <SGPlayer/SGDiscardFilter.h>
 #import <SGPlayer/SGAudioRenderer.h>
 #import <SGPlayer/SGVideoRenderer.h>
-#else
-#import "SGDefines.h"
-#import "SGFFDefines.h"
-#import "SGAsset.h"
-#import "SGURLAsset.h"
-#import "SGFrame.h"
-#import "SGAudioFrame.h"
-#import "SGVideoFrame.h"
-#import "SGVRViewport.h"
-#import "SGTime.h"
-#import "SGDiscardFilter.h"
 #endif
 
 #pragma mark - SGPlayer

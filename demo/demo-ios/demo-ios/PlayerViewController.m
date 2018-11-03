@@ -60,9 +60,6 @@
     
 //    self.player.hardwareDecodeH264 = NO;
     
-    SGDiscardFilter * discardFilter = [[SGDiscardFilter alloc] init];
-    discardFilter.minimumInterval = CMTimeMake(1, 30);
-    
 //    [self.player setCodecDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key) {
 //        if (index == 0) {
 //            [discardFilter flush];
