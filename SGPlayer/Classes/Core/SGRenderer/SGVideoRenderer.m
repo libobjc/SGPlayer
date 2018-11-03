@@ -276,7 +276,7 @@
     if (!should_fetch) {
         return;
     }
-    BOOL video_master = [self.clock videoMaster];
+    BOOL video_only = [self.clock videoOnly];
     __block double media_time_next = self.drawTimer.nextVSyncTimestamp;
     __block double media_time_current = CACurrentMediaTime();
     SGWeakify(self)
@@ -286,7 +286,7 @@
         return SGLockCondEXE11(self.lock, ^BOOL {
             return self->_current_frame &&
             self->_nb_frames_fetch != 0 &&
-            (!video_master || (video_master && media_time_next < self->_media_time_timeout));
+            (!video_only || (video_only && media_time_next < self->_media_time_timeout));
         }, ^SGBlock {
             time_current = self->_current_frame.timeStamp;
             return nil;

@@ -22,6 +22,7 @@
     CMTime _time;
     CMTime _duration;
     CMTime _last_time;
+    CMTime _audio_video_offset;
     double _media_time;
 }
 
@@ -36,6 +37,7 @@
 {
     if (self = [super init]) {
         self->_rate = CMTimeMake(1, 1);
+        self->_audio_video_offset = kCMTimeZero;
         self.lock = [[NSLock alloc] init];
     }
     return self;
@@ -57,6 +59,22 @@
     return ret;
 }
 
+- (void)setAudio_video_offset:(CMTime)audio_video_offset
+{
+    SGLockEXE00(self.lock, ^{
+        self->_audio_video_offset = audio_video_offset;
+    });
+}
+
+- (CMTime)audio_video_offset
+{
+    __block CMTime ret = kCMTimeZero;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_audio_video_offset;
+    });
+    return ret;
+}
+
 - (CMTime)currentTime
 {
     __block CMTime ret = kCMTimeZero;
@@ -65,11 +83,12 @@
             CMTimeCompare(self->_duration, kCMTimeZero) <= 0) {
             ret = self->_time;
         } else {
-            double _media_time_current = CACurrentMediaTime();
-            CMTime duration = SGCMTimeMakeWithSeconds(_media_time_current - self->_media_time);
+            double media_time_current = CACurrentMediaTime();
+            CMTime duration = SGCMTimeMakeWithSeconds(media_time_current - self->_media_time);
             duration = SGCMTimeMultiply(duration, self->_rate);
             duration = CMTimeMinimum(self->_duration, duration);
-            ret = CMTimeAdd(self->_time, duration);
+            CMTime time = CMTimeAdd(self->_time, self->_audio_video_offset);
+            ret = CMTimeAdd(time, duration);
         }
     });
     return ret;
@@ -146,14 +165,7 @@
     });
 }
 
-- (BOOL)audioMaster
-{
-    return SGLockCondEXE00(self.lock, ^BOOL{
-        return !self->_is_audio_finished && self->_nb_audio_update && !self->_nb_video_update;
-    }, nil);
-}
-
-- (BOOL)videoMaster
+- (BOOL)videoOnly
 {
     return SGLockCondEXE00(self.lock, ^BOOL{
         return !self->_is_video_finished && ((!self->_nb_audio_update && self->_nb_video_update) || self->_is_audio_finished);

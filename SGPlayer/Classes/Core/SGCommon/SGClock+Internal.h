@@ -28,8 +28,7 @@
 - (BOOL)markAudioIsFinished;
 - (BOOL)markVideoIsFinished;
 
-- (BOOL)audioMaster;
-- (BOOL)videoMaster;
+- (BOOL)videoOnly;
 
 @end
 
