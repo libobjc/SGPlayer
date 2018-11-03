@@ -88,7 +88,7 @@
     return SGLockEXE00(self.lock, ^{
         self->_nb_audio_update = 0;
         self->_nb_video_update = 0;
-        self->_last_time = kCMTimeZero;
+        self->_last_time = kCMTimeInvalid;
         self->_time = kCMTimeZero;
         self->_duration = kCMTimeZero;
         self->_media_time = 0;
