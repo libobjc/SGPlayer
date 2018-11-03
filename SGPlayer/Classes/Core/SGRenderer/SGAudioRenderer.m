@@ -88,28 +88,6 @@
     return ret ? ret : [[SGCapacity alloc] init];
 }
 
-- (void)setVolume:(double)volume
-{
-    SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_volume != volume;
-    }, ^SGBlock {
-        self->_volume = volume;
-        return nil;
-    }, ^BOOL(SGBlock block) {
-        [self.player setVolume:volume error:nil];
-        return YES;
-    });
-}
-
-- (double)volume
-{
-    __block double ret = 1.0f;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_volume;
-    });
-    return ret;
-}
-
 - (void)setRate:(CMTime)rate
 {
     SGLockCondEXE11(self.lock, ^BOOL {
@@ -128,6 +106,28 @@
     __block CMTime ret = CMTimeMake(1, 1);
     SGLockEXE00(self.lock, ^{
         ret = self->_rate;
+    });
+    return ret;
+}
+
+- (void)setVolume:(double)volume
+{
+    SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_volume != volume;
+    }, ^SGBlock {
+        self->_volume = volume;
+        return nil;
+    }, ^BOOL(SGBlock block) {
+        [self.player setVolume:volume error:nil];
+        return YES;
+    });
+}
+
+- (double)volume
+{
+    __block double ret = 1.0f;
+    SGLockEXE00(self.lock, ^{
+        ret = self->_volume;
     });
     return ret;
 }

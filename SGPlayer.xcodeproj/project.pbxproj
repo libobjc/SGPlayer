@@ -116,6 +116,8 @@
 		9C2536531FAB199500BBFA5C /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C25364F1FAB199500BBFA5C /* SGPlayer.m */; };
 		9C2536541FAB199500BBFA5C /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C25364F1FAB199500BBFA5C /* SGPlayer.m */; };
 		9C2536551FAB199500BBFA5C /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C25364F1FAB199500BBFA5C /* SGPlayer.m */; };
+		9C26CF57218D787D009FFCC4 /* SGClock+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */; };
+		9C26CF58218D7A2B009FFCC4 /* SGClock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGClock.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C29D112217D741500343975 /* SGFrameOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C29D110217D741500343975 /* SGFrameOutput.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C29D113217D741500343975 /* SGFrameOutput.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C29D111217D741500343975 /* SGFrameOutput.m */; };
 		9C2C55932015911600131E15 /* SGObjectPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C2C55912015911600131E15 /* SGObjectPool.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -212,7 +214,6 @@
 		9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
 		9C5C6CAE2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
 		9C5C6CAF2018952300863EB5 /* SGGLDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6CA92018952300863EB5 /* SGGLDisplayLink.m */; };
-		9C5C98FB20D26BE10089C112 /* SGClock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGClock.h */; };
 		9C5C98FC20D26BE10089C112 /* SGClock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGClock.h */; };
 		9C5C98FD20D26BE10089C112 /* SGClock.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C98F920D26BE10089C112 /* SGClock.h */; };
 		9C5C98FE20D26BE10089C112 /* SGClock.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C98FA20D26BE10089C112 /* SGClock.m */; };
@@ -798,6 +799,7 @@
 		9C1D2229201B1DA2005147FB /* SGMapping.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMapping.m; sourceTree = "<group>"; };
 		9C25364E1FAB199500BBFA5C /* SGPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9C25364F1FAB199500BBFA5C /* SGPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayer.m; sourceTree = "<group>"; };
+		9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SGClock+Internal.h"; sourceTree = "<group>"; };
 		9C29D110217D741500343975 /* SGFrameOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFrameOutput.h; sourceTree = "<group>"; };
 		9C29D111217D741500343975 /* SGFrameOutput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrameOutput.m; sourceTree = "<group>"; };
 		9C2C55912015911600131E15 /* SGObjectPool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGObjectPool.h; sourceTree = "<group>"; };
@@ -1454,6 +1456,7 @@
 				9C8D4E7F200E1ACA00ED8A58 /* SGError.m */,
 				9C5C98F920D26BE10089C112 /* SGClock.h */,
 				9C5C98FA20D26BE10089C112 /* SGClock.m */,
+				9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */,
 				9C329AA82005E3F800252B10 /* SGActivity.h */,
 				9C329AA92005E3F800252B10 /* SGActivity.m */,
 				9CC649FD2181A8C000453B3E /* SGCapacity.h */,
@@ -1815,6 +1818,7 @@
 				9CF99F18212D187A008178BC /* xtea.h in Headers */,
 				9CF15E1F2011BC5400585326 /* SGAudioFrame.h in Headers */,
 				9CF9A008212D187A008178BC /* dxva2.h in Headers */,
+				9C26CF57218D787D009FFCC4 /* SGClock+Internal.h in Headers */,
 				9CF63FC2211D8E33001B2684 /* SGAsset.h in Headers */,
 				9CF99FF9212D187A008178BC /* jni.h in Headers */,
 				9CA0F56420E0E24000501478 /* SGDefines.h in Headers */,
@@ -1824,6 +1828,7 @@
 				9CF99F6F212D187A008178BC /* opt.h in Headers */,
 				9CF99F2A212D187A008178BC /* cast5.h in Headers */,
 				9C66E1FA2188526200B70DAA /* SGAudioFrameFilter.h in Headers */,
+				9C26CF58218D7A2B009FFCC4 /* SGClock.h in Headers */,
 				9C95D2BE2152335400079B38 /* SGFormatContext.h in Headers */,
 				9C29D112217D741500343975 /* SGFrameOutput.h in Headers */,
 				9CF99F12212D187A008178BC /* lfg.h in Headers */,
@@ -1942,7 +1947,6 @@
 				9CF99EF1212D187A008178BC /* replaygain.h in Headers */,
 				9CF99F8D212D187A008178BC /* des.h in Headers */,
 				9CF99F7B212D187A008178BC /* macros.h in Headers */,
-				9C5C98FB20D26BE10089C112 /* SGClock.h in Headers */,
 				9CF99F45212D187A008178BC /* hwcontext_d3d11va.h in Headers */,
 				9CF99FBD212D187A008178BC /* hash.h in Headers */,
 				9C8D4E80200E1ACA00ED8A58 /* SGError.h in Headers */,

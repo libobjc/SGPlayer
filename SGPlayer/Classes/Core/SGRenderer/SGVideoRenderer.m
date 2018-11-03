@@ -26,13 +26,13 @@
     int64_t _nb_frames_draw;
     int64_t _nb_frames_fetch;
     double _media_time_timeout;
+    CMTime _rate;
     __strong SGCapacity * _capacity;
     __strong SGVideoFrame * _current_frame;
 }
 
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGClock * clock;
-@property (nonatomic, assign) CMTime rate;
 @property (nonatomic, strong) SGGLTimer * fetchTimer;
 @property (nonatomic, strong) SGGLDisplayLink * drawTimer;
 @property (nonatomic, strong) SGGLView * glView;
@@ -53,7 +53,8 @@
 {
     if (self = [super init]) {
         self.clock = clock;
-        self.rate = CMTimeMake(1, 1);
+        self->_rate = CMTimeMake(1, 1);
+        self.lock = [[NSLock alloc] init];
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
         self.displayInterval = CMTimeMake(1, 60);
@@ -104,6 +105,27 @@
         ret = [self->_capacity copy];
     });
     return ret ? ret : [[SGCapacity alloc] init];
+}
+
+- (void)setRate:(CMTime)rate
+{
+    SGLockEXE00(self.lock, ^{
+        self->_rate = rate;
+    });
+}
+
+- (CMTime)rate
+{
+    __block CMTime ret = CMTimeMake(1, 1);
+    SGLockEXE00(self.lock, ^{
+        ret = self->_rate;
+    });
+    return ret;
+}
+
+- (void)setViewport:(SGVRViewport *)viewport
+{
+    self.matrixMaker.viewport = viewport;
 }
 
 - (SGVRViewport *)viewport

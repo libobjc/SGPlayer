@@ -14,11 +14,10 @@
 @interface SGVideoRenderer : NSObject
 
 @property (nonatomic, strong) SGPLFView * view;             // Main thread only.
+@property (nonatomic, strong) SGVRViewport * viewport;      // Main thread only.
 @property (nonatomic, assign) SGScalingMode scalingMode;    // Main thread only.
 @property (nonatomic, assign) SGDisplayMode displayMode;    // Main thread only.
 @property (nonatomic, assign) CMTime displayInterval;       // Main thread only.
-
-- (SGVRViewport *)viewport;     // Main thread only.
 
 - (UIImage *)originalImage;     // Main thread only.
 - (UIImage *)snapshot;          // Main thread only.

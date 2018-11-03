@@ -344,6 +344,7 @@
         self->_rate = rate;
         return nil;
     }, ^BOOL(SGBlock block) {
+        self.clock.rate = rate;
         self.audioRenderer.rate = rate;
         self.videoRenderer.rate = rate;
         return YES;

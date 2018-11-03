@@ -7,6 +7,8 @@
 //
 
 #import "SGClock.h"
+#import "SGClock+Internal.h"
+#import "SGTime.h"
 #import "SGLock.h"
 
 @interface SGClock ()
@@ -20,6 +22,7 @@
 }
 
 @property (nonatomic, strong) NSLock * lock;
+@property (nonatomic, weak) id <SGClockDelegate> delegate;
 
 @end
 

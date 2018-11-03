@@ -7,28 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGTime.h"
-
-@protocol SGClockDelegate;
+#import <AVFoundation/AVFoundation.h>
 
 @interface SGClock : NSObject
-
-@property (nonatomic, weak) id <SGClockDelegate> delegate;
-
-@property (nonatomic, assign) CMTime rate;
-
-- (CMTime)currentTime;
-
-- (BOOL)open;
-- (BOOL)close;
-
-- (BOOL)setTime:(CMTime)time duration:(CMTime)duration;
-- (BOOL)flush;
-
-@end
-
-@protocol SGClockDelegate <NSObject>
-
-- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
 
 @end

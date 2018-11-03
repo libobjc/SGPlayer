@@ -21,6 +21,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGVideoFrame.h>
 #import <SGPlayer/SGVRViewport.h>
 #import <SGPlayer/SGTime.h>
+#import <SGPlayer/SGClock.h>
 #import <SGPlayer/SGDiscardFilter.h>
 #import <SGPlayer/SGAudioRenderer.h>
 #import <SGPlayer/SGVideoRenderer.h>
@@ -102,6 +103,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Renderer)
 
+- (SGClock *)clock;
 - (SGAudioRenderer *)audioRenderer;
 - (SGVideoRenderer *)videoRenderer;
 
