@@ -20,8 +20,6 @@
 
 {
     SGFrameOutputState _state;
-    BOOL _audio_paused;
-    BOOL _video_paused;
     BOOL _audio_finished;
     BOOL _video_finished;
     __strong NSError * _error;
@@ -358,22 +356,20 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
         return ![last isEqualToCapacity:capacity];
     }, ^SGBlock {
         [self.capacityMap setObject:capacity forKey:track];
-        return nil;
+        SGCapacity * audio_capacity = track == self->_selected_audio_track ? capacity : [self.capacityMap objectForKey:self->_selected_audio_track];
+        SGCapacity * video_capacity = track == self->_selected_video_track ? capacity : [self.capacityMap objectForKey:self->_selected_video_track];
+        self->_audio_finished = audio_capacity.isEmpty && self.packetOutput.state == SGPacketOutputStateFinished;
+        self->_video_finished = video_capacity.isEmpty && self.packetOutput.state == SGPacketOutputStateFinished;
+        BOOL pause = (audio_capacity.size + video_capacity.size > 15 * 1024 * 1024) || (audio_capacity.isEnough && video_capacity.isEnough);
+        return ^{
+            if (pause) {
+                [self.packetOutput pause];
+            } else {
+                [self.packetOutput resume];
+            }
+        };
     }, ^BOOL(SGBlock block) {
-        BOOL paused = capacity.count > 30 && CMTimeCompare(capacity.duration, CMTimeMake(1, 1)) > 0;
-        BOOL finished = self.packetOutput.state == SGPacketOutputStateFinished && capacity.isEmpty;
-        if (track.type == SGMediaTypeAudio) {
-            self->_audio_paused = paused;
-            self->_audio_finished = finished;
-        } else if (track.type == SGMediaTypeVideo) {
-            self->_video_paused = paused;
-            self->_video_finished = finished;
-        }
-        if (self->_audio_paused && self->_video_paused) {
-            [self.packetOutput pause];
-        } else {
-            [self.packetOutput resume];
-        }
+        block();
         [self.delegate frameOutput:self didChangeCapacity:[capacity copy] track:track];
         [self setFinishedIfNeeded];
         return YES;

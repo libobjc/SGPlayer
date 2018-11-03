@@ -61,6 +61,8 @@
 
 - (void)setAudio_video_offset:(CMTime)audio_video_offset
 {
+    audio_video_offset = CMTimeMinimum(audio_video_offset, CMTimeMake(2, 1));
+    audio_video_offset = CMTimeMaximum(audio_video_offset, CMTimeMake(-2, 1));
     SGLockEXE00(self.lock, ^{
         self->_audio_video_offset = audio_video_offset;
     });

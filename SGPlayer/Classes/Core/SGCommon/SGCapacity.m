@@ -41,6 +41,11 @@
     return self.count == capacity.count && self.size == capacity.size && CMTimeCompare(self.duration, capacity.duration) == 0;
 }
 
+- (BOOL)isEnough
+{
+    return self.count > 25 && CMTimeCompare(self.duration, CMTimeMake(1, 1)) > 0;
+}
+
 - (BOOL)isEmpty
 {
     return self.count == 0 && self.size == 0 && CMTimeCompare(self.duration, kCMTimeZero) == 0;
