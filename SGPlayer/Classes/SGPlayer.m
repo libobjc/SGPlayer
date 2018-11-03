@@ -232,7 +232,12 @@
         b1 = [self setLoadedTime:duration loadedDuration:kCMTimeZero];
         b2 = [self setCurrentTime:duration];
     }
-    if (playbackState & SGPlaybackStatePlaying) {
+    if (playbackState & SGPlaybackStateFinished) {
+        b3 = ^{
+            [self.audioRenderer finish];
+            [self.videoRenderer finish];
+        };
+    } else if (playbackState & SGPlaybackStatePlaying) {
         b3 = ^{
             [self.audioRenderer resume];
             [self.videoRenderer resume];

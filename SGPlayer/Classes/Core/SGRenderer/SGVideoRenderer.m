@@ -226,10 +226,27 @@
 
 - (BOOL)resume
 {
-    return SGLockCondEXE10(self.lock, ^BOOL {
+    return SGLockCondEXE11(self.lock, ^BOOL {
         return self->_state == SGRenderableStatePaused;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
+    }, ^BOOL(SGBlock block) {
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
+        return YES;
+    });
+}
+
+- (BOOL)finish
+{
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStatePaused];
+    }, ^BOOL(SGBlock block) {
+        self.drawTimer.paused = YES;
+        self.fetchTimer.paused = YES;
+        return YES;
     });
 }
 

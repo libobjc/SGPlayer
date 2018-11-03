@@ -37,6 +37,7 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 
 - (BOOL)pause;
 - (BOOL)resume;
+- (BOOL)finish;
 
 - (BOOL)flush;
 

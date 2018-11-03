@@ -199,6 +199,11 @@
     });
 }
 
+- (BOOL)finish
+{
+    return [self pause];
+}
+
 - (BOOL)flush
 {
     SGLockCondEXE00(self.lock, ^BOOL {
