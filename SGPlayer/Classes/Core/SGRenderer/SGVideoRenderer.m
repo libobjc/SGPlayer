@@ -326,10 +326,10 @@
     BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
         return self->_is_update_frame || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox);
     }, nil);
-    
-    if (ret) {
-        [self addGLViewIfNeeded];
+    if (!ret) {
+        return;
     }
+    [self addGLViewIfNeeded];
     if (!self.glView.superview) {
         return;
     }
