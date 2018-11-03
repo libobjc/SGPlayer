@@ -13,7 +13,8 @@
 
 @protocol SGGLViewDelegate <NSObject>
 
-- (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size;
+- (BOOL)glView:(SGGLView *)glView display:(SGGLSize)size;
+- (BOOL)glView:(SGGLView *)glView clear:(SGGLSize)size;
 
 @end
 
@@ -21,9 +22,8 @@
 
 @property (nonatomic, weak) id <SGGLViewDelegate> delegate;
 @property (nonatomic, assign, readonly) SGGLSize displaySize;
-@property (nonatomic, assign, readonly) BOOL rendered;
 
 - (BOOL)display;
-- (void)clear;
+- (BOOL)clear;
 
 @end

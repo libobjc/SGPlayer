@@ -52,24 +52,37 @@
     SGPLGLContextSetCurrentContext(self.context);
     glBindFramebuffer(GL_FRAMEBUFFER, self.displayFramebuffer);
     glViewport(0, 0, self.displaySize.width * self.glScale, self.displaySize.height * self.glScale);
-    BOOL success = [self.delegate glView:self draw:self.displaySize];
+    BOOL success = [self.delegate glView:self display:self.displaySize];
     if (success)
     {
         glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
         [self present];
-        _rendered = YES;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     return success;
 }
 
-- (void)clear
+- (BOOL)clear
 {
     SGPLGLContextSetCurrentContext(self.context);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glBindFramebuffer(GL_FRAMEBUFFER, self.displayFramebuffer);
+    glViewport(0, 0, self.displaySize.width * self.glScale, self.displaySize.height * self.glScale);
+    BOOL success = NO;
+    if ([self.delegate respondsToSelector:@selector(glView:clear:)])
+    {
+        success = [self.delegate glView:self clear:self.displaySize];
+    }
+    if (!success)
+    {
+        glClearColor(0, 0, 0, 1);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+    glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
     [self present];
-    _rendered = NO;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glBindRenderbuffer(GL_RENDERBUFFER, 0);
+    return YES;
 }
 
 - (void)setupFramebuffer
@@ -86,7 +99,6 @@
     glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
     [self renderbufferStorage];
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, self.displayRenderbuffer);
-    _rendered = NO;
 }
 
 - (void)destroyFramebuffer
@@ -102,7 +114,6 @@
         glDeleteRenderbuffers(1, &_displayRenderbuffer);
         self.displayRenderbuffer = 0;
     }
-    _rendered = NO;
 }
 
 @end

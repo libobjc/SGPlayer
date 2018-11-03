@@ -67,17 +67,12 @@
 - (void)dealloc
 {
     [self.fetchTimer invalidate];
+    self.fetchTimer = nil;
     [self.drawTimer invalidate];
-    if ([NSThread isMainThread]) {
-        [self.glView removeFromSuperview];
-    } else {
-        SGGLView * glView = self.glView;
-        self.glView = nil;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [glView removeFromSuperview];
-        });
-    }
-    [self close];
+    self.drawTimer = nil;
+    [self->_current_frame unlock];
+    self->_current_frame = nil;
+    [self performSelectorOnMainThread:@selector(removeGLViewIfNeeded) withObject:nil waitUntilDone:YES];
 }
 
 #pragma mark - Setter & Getter
@@ -176,17 +171,23 @@
 - (BOOL)close
 {
     return SGLockEXE11(self.lock, ^SGBlock {
+        SGBlock b1 = self->_nb_frames_draw ? ^{
+            [self performSelectorOnMainThread:@selector(clear) withObject:nil waitUntilDone:YES];
+        } : ^{};
+        SGBlock b2 = [self setState:SGRenderableStateNone];
         [self->_current_frame unlock];
         self->_current_frame = nil;
         self->_is_update_frame = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
         self->_media_time_timeout = 0;
-        return [self setState:SGRenderableStateNone];
+        return ^{
+            b1(); b2();
+        };
     }, ^BOOL(SGBlock block) {
         [self.fetchTimer invalidate];
-        [self.drawTimer invalidate];
         self.fetchTimer = nil;
+        [self.drawTimer invalidate];
         self.drawTimer = nil;
         block();
         return YES;
@@ -222,29 +223,6 @@
         self->_media_time_timeout = 0;
     });
     return YES;
-}
-
-#pragma mark - Internal
-
-- (void)updateGLViewIfNeeded
-{
-    if (self.view) {
-        if (!self.glView) {
-            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
-            self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
-            self.glView.delegate = self;
-        }
-        if (self.glView.superview != self.view) {
-            [self.view addSubview:self.glView];
-        }
-        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
-        if (layerSize.width != self.glView.displaySize.width ||
-            layerSize.height != self.glView.displaySize.height) {
-            self.glView.frame = self.view.bounds;
-        }
-    } else {
-        [self.glView removeFromSuperview];
-    }
 }
 
 #pragma mark - Render
@@ -299,28 +277,61 @@
         }
         return b1;
     });
-    [self updateGLViewIfNeeded];
+    [self setGLViewIfNeeded];
 }
 
 - (void)drawTimerHandler
 {
     BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
+        if (self->_state == SGRenderableStateNone) {
+            [self.drawTimer invalidate];
+            self.drawTimer = nil;
+            [self.glView clear];
+            return NO;
+        }
         return self->_is_update_frame || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox);
     }, nil);
     if (ret && self.glView.superview) {
-        [self draw];
-        SGLockEXE00(self.lock, ^{
-            if (self->_is_update_frame) {
-                self->_is_update_frame = 0;
-                self->_nb_frames_draw += 1;
-            }
-        });
+        if ([self display]) {
+            SGLockEXE00(self.lock, ^{
+                if (self->_is_update_frame) {
+                    self->_is_update_frame = 0;
+                    self->_nb_frames_draw += 1;
+                }
+            });
+        }
     }
 }
 
 #pragma mark - SGGLView
 
-- (BOOL)draw
+- (void)setGLViewIfNeeded
+{
+    if (self.view) {
+        if (!self.glView) {
+            self.glView = [[SGGLView alloc] initWithFrame:self.view.bounds];
+            self.glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self.glView.context];
+            self.glView.delegate = self;
+        }
+        if (self.glView.superview != self.view) {
+            [self.view addSubview:self.glView];
+        }
+        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
+        if (layerSize.width != self.glView.displaySize.width ||
+            layerSize.height != self.glView.displaySize.height) {
+            self.glView.frame = self.view.bounds;
+        }
+    } else {
+        [self.glView removeFromSuperview];
+    }
+}
+
+- (void)removeGLViewIfNeeded
+{
+    [self.glView removeFromSuperview];
+}
+
+- (BOOL)display
 {
 #if SGPLATFORM_TARGET_OS_IPHONE
     if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
@@ -332,7 +343,19 @@
 #endif
 }
 
-- (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
+- (BOOL)clear
+{
+#if SGPLATFORM_TARGET_OS_IPHONE
+    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
+        return [self.glView clear];
+    }
+    return NO;
+#else
+    return [self.glView clear];
+#endif
+}
+
+- (BOOL)glView:(SGGLView *)glView display:(SGGLSize)size
 {
     [self.lock lock];
     SGVideoFrame * frame = self->_current_frame;
@@ -364,6 +387,7 @@
         [frame unlock];
         return NO;
     }
+    glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     [model bindPosition_location:program.position_location
       textureCoordinate_location:program.textureCoordinate_location];
@@ -405,6 +429,13 @@
     [model unbind];
     [program unuse];
     [frame unlock];
+    return YES;
+}
+
+- (BOOL)glView:(SGGLView *)glView clear:(SGGLSize)size
+{
+    glClearColor(0, 0, 0, 1);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     return YES;
 }
 
