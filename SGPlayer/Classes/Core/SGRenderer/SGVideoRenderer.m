@@ -57,7 +57,7 @@
         self.lock = [[NSLock alloc] init];
         self.scalingMode = SGScalingModeResizeAspect;
         self.displayMode = SGDisplayModePlane;
-        self.displayInterval = CMTimeMake(1, 60);
+        self.displayInterval = CMTimeMake(1, 30);
         self.modelPool = [[SGGLModelPool alloc] init];
         self.programPool = [[SGGLProgramPool alloc] init];
         self.matrixMaker = [[SGVRMatrixMaker alloc] init];
