@@ -19,7 +19,7 @@
     SGRenderableState _state;
     int32_t _nb_samples_copied_frame;
     int32_t _nb_samples_copied_render;
-    float _volume;
+    double _volume;
     CMTime _rate;
     CMTime _render_time;
     CMTime _render_duration;
@@ -88,7 +88,7 @@
     return ret ? ret : [[SGCapacity alloc] init];
 }
 
-- (void)setVolume:(float)volume
+- (void)setVolume:(double)volume
 {
     SGLockCondEXE11(self.lock, ^BOOL {
         return self->_volume != volume;
@@ -101,9 +101,9 @@
     });
 }
 
-- (float)volume
+- (double)volume
 {
-    __block float ret = 1.0f;
+    __block double ret = 1.0f;
     SGLockEXE00(self.lock, ^{
         ret = self->_volume;
     });
@@ -121,6 +121,15 @@
         [self.player setRate:CMTimeGetSeconds(rate) error:nil];
         return YES;
     });
+}
+
+- (CMTime)rate
+{
+    __block CMTime ret = CMTimeMake(1, 1);
+    SGLockEXE00(self.lock, ^{
+        ret = self->_rate;
+    });
+    return ret;
 }
 
 #pragma mark - Interface
@@ -269,14 +278,13 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp
 {
     [self.lock lock];
-    CMTime rate = self->_rate;
     CMTime render_timeStamp = self->_render_time;
-    CMTime render_duration = self->_render_duration;
+    CMTime render_duration = SGCMTimeMultiply(self->_render_duration, self->_rate);
     CMTime frame_duration = !self->_current_frame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_current_frame.duration, self->_current_frame.nb_samples - self->_nb_samples_copied_frame, self->_current_frame.nb_samples);
     SGBlock clockBlock = ^{};
     if (self->_state == SGRenderableStateRendering && self->_nb_samples_copied_render) {
         clockBlock = ^{
-            [self.clock updateKeyTime:render_timeStamp duration:render_duration rate:rate];
+            [self.clock setTime:render_timeStamp duration:render_duration];
         };
     }
     SGCapacity * capacity = [[SGCapacity alloc] init];

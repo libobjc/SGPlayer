@@ -288,10 +288,11 @@
     }
     _is_current_time_valid = 1;
     _current_time = currentTime;
+    CMTime duration = self->_current_item.duration;
     return ^{
         [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangeCurrentTime:)]) {
-                [self.delegate player:self didChangeCurrentTime:currentTime];
+            if ([self.delegate respondsToSelector:@selector(player:didChangeCurrentTime:duration:)]) {
+                [self.delegate player:self didChangeCurrentTime:currentTime duration:duration];
             }
         }];
     };

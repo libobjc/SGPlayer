@@ -10,6 +10,6 @@
 
 @interface SGAudioRenderer : NSObject
 
-@property (nonatomic, assign) float volume;
+@property (nonatomic, assign) double volume;
 
 @end

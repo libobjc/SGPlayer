@@ -7,13 +7,19 @@
 //
 
 #import "SGClock.h"
+#import "SGLock.h"
 
 @interface SGClock ()
 
-@property (nonatomic, assign) CMTime keyTime;
-@property (nonatomic, assign) CMTime keyDuration;
-@property (nonatomic, assign) CMTime keyRate;
-@property (nonatomic, assign) CMTime keyMediaTime;
+{
+    CMTime _rate;
+    CMTime _time;
+    CMTime _duration;
+    CMTime _last_time;
+    double _media_time;
+}
+
+@property (nonatomic, strong) NSLock * lock;
 
 @end
 
@@ -21,71 +27,79 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
-        _startTime = kCMTimeInvalid;
-        [self flush];
+    if (self = [super init]) {
+        self->_rate = CMTimeMake(1, 1);
+        self.lock = [[NSLock alloc] init];
     }
     return self;
 }
 
-- (CMTime)time
+- (void)setRate:(CMTime)rate
 {
-    if (CMTIME_IS_INVALID(self.keyDuration) ||
-        CMTimeCompare(self.keyDuration, kCMTimeZero) <= 0)
-    {
-        return self.keyTime;
-    }
-    CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
-    CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
-    interval = SGCMTimeMultiply(interval, self.keyRate);
-    interval = CMTimeMinimum(self.keyDuration, interval);
-    CMTime position = CMTimeAdd(self.keyTime, interval);
-    return position;
+    SGLockEXE00(self.lock, ^{
+        self->_rate = rate;
+    });
 }
 
-- (CMTime)unlimitedTime
+- (CMTime)rate
 {
-    CMTime mediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
-    CMTime interval = CMTimeSubtract(mediaTime, self.keyMediaTime);
-    interval = SGCMTimeMultiply(interval, self.keyRate);
-    CMTime position = CMTimeAdd(self.keyTime, interval);
-    return position;
+    __block CMTime ret = CMTimeMake(1, 1);
+    SGLockEXE00(self.lock, ^{
+        ret = self->_rate;
+    });
+    return ret;
+}
+
+- (CMTime)currentTime
+{
+    __block CMTime ret = kCMTimeZero;
+    SGLockEXE00(self.lock, ^{
+        if (CMTIME_IS_INVALID(self->_duration) ||
+            CMTimeCompare(self->_duration, kCMTimeZero) <= 0) {
+            ret = self->_time;
+        } else {
+            double _media_time_current = CACurrentMediaTime();
+            CMTime duration = SGCMTimeMakeWithSeconds(_media_time_current - self->_media_time);
+            duration = SGCMTimeMultiply(duration, self->_rate);
+            duration = CMTimeMinimum(self->_duration, duration);
+            ret = CMTimeAdd(self->_time, duration);
+        }
+    });
+    return ret;
 }
 
 - (BOOL)open
 {
-    return YES;
+    return [self flush];
 }
 
 - (BOOL)close
 {
-    return YES;
+    return [self flush];
 }
 
-- (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate
+- (BOOL)setTime:(CMTime)time duration:(CMTime)duration
 {
-//    if (CMTIME_IS_INVALID(self.startTime))
-//    {
-//        _startTime = time;
-//        if ([self.delegate respondsToSelector:@selector(playbackClockDidChangeStartTime:)])
-//        {
-//            [self.delegate playbackClockDidChangeStartTime:self];
-//        }
-//    }
-    self.keyTime = time;
-    self.keyDuration = duration;
-    self.keyRate = rate;
-    self.keyMediaTime = SGCMTimeMakeWithSeconds(CACurrentMediaTime());
-    [self.delegate clock:self didChcnageCurrentTime:time];
+    return SGLockEXE10(self.lock, ^SGBlock {
+        CMTime last_time = self->_last_time;
+        self->_last_time = self->_time;
+        self->_time = time;
+        self->_duration = duration;
+        self->_media_time = CACurrentMediaTime();
+        return CMTimeCompare(time, last_time) != 0 ? ^{
+            [self.delegate clock:self didChcnageCurrentTime:time];
+        } : ^{};
+    });
 }
 
-- (void)flush
+- (BOOL)flush
 {
-    self.keyTime = kCMTimeZero;
-    self.keyDuration = kCMTimeZero;
-    self.keyRate = kCMTimeZero;
-    self.keyMediaTime = kCMTimeZero;
+    return SGLockEXE00(self.lock, ^{
+        self->_last_time = kCMTimeZero;
+        self->_time = kCMTimeZero;
+        self->_duration = kCMTimeZero;
+        self->_media_time = 0;
+    });
 }
 
 @end

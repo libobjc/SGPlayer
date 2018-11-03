@@ -158,9 +158,12 @@
     NSLog(@"%s, %ld", __func__, state);
 }
 
-- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time
+- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time duration:(CMTime)duration
 {
     NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
+    if (!self.progressSilderTouching) {
+        self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
+    }
     self.currentTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(time)];
     self.totalTimeLabel.text = [self timeStringFromSeconds:CMTimeGetSeconds(player.duration)];
 }

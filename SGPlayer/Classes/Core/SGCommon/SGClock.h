@@ -9,28 +9,26 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@class SGClock;
-
-@protocol SGClockDelegate <NSObject>
-
-//- (void)playbackClockDidChangeStartTime:(SGClock *)playbackClock;
-- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
-
-@end
+@protocol SGClockDelegate;
 
 @interface SGClock : NSObject
 
 @property (nonatomic, weak) id <SGClockDelegate> delegate;
 
-@property (nonatomic, assign, readonly) CMTime time;
-@property (nonatomic, assign, readonly) CMTime unlimitedTime;
-@property (nonatomic, assign, readonly) CMTime keyTime;
-@property (nonatomic, assign, readonly) CMTime startTime;
+@property (nonatomic, assign) CMTime rate;
+
+- (CMTime)currentTime;
 
 - (BOOL)open;
 - (BOOL)close;
 
-- (void)updateKeyTime:(CMTime)time duration:(CMTime)duration rate:(CMTime)rate;
-- (void)flush;
+- (BOOL)setTime:(CMTime)time duration:(CMTime)duration;
+- (BOOL)flush;
+
+@end
+
+@protocol SGClockDelegate <NSObject>
+
+- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
 
 @end

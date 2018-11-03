@@ -25,7 +25,7 @@
     int32_t _is_update_frame;
     int64_t _nb_frames_draw;
     int64_t _nb_frames_fetch;
-    float64_t _media_time_timeout;
+    double _media_time_timeout;
     __strong SGCapacity * _capacity;
     __strong SGVideoFrame * _current_frame;
 }
@@ -235,8 +235,8 @@
     if (!should_fetch) {
         return;
     }
-    __block float64_t media_time_next = self.drawTimer.nextVSyncTimestamp;
-    __block float64_t media_time_current = CACurrentMediaTime();
+    __block double media_time_next = self.drawTimer.nextVSyncTimestamp;
+    __block double media_time_current = CACurrentMediaTime();
     SGWeakify(self)
     SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * desire, BOOL * drop) {
         SGStrongify(self)
@@ -247,7 +247,7 @@
             time_current = self->_current_frame.timeStamp;
             return nil;
         }, ^BOOL(SGBlock block) {
-            CMTime time = self.clock.time;
+            CMTime time = self.clock.currentTime;
             media_time_next = self.drawTimer.nextVSyncTimestamp;
             media_time_current = CACurrentMediaTime();
             * desire = CMTimeAdd(time, SGCMTimeMakeWithSeconds(media_time_next - media_time_current));
@@ -277,7 +277,7 @@
         }
         return b1;
     });
-    [self setGLViewIfNeeded];
+    [self addGLViewIfNeeded];
 }
 
 - (void)drawTimerHandler
@@ -305,7 +305,7 @@
 
 #pragma mark - SGGLView
 
-- (void)setGLViewIfNeeded
+- (void)addGLViewIfNeeded
 {
     if (self.view) {
         if (!self.glView) {
