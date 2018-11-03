@@ -14,16 +14,18 @@
 @interface SGClock ()
 
 {
+    int32_t _is_paused;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
     int32_t _nb_audio_update;
     int32_t _nb_video_update;
     CMTime _rate;
     CMTime _time;
-    CMTime _duration;
     CMTime _last_time;
     CMTime _audio_video_offset;
     double _media_time;
+    double _media_time_pause;
+    double _invalid_duration;
 }
 
 @property (nonatomic, strong) NSLock * lock;
@@ -81,15 +83,23 @@
 {
     __block CMTime ret = kCMTimeZero;
     SGLockEXE00(self.lock, ^{
-        if (CMTIME_IS_INVALID(self->_duration) ||
-            CMTimeCompare(self->_duration, kCMTimeZero) <= 0) {
+        ret = self->_time;
+    });
+    return ret;
+}
+
+- (CMTime)preferredVideoTime
+{
+    __block CMTime ret = kCMTimeZero;
+    SGLockEXE00(self.lock, ^{
+        if (self->_media_time == 0) {
             ret = self->_time;
         } else {
-            double media_time_current = CACurrentMediaTime();
-            CMTime duration = SGCMTimeMakeWithSeconds(media_time_current - self->_media_time);
+            double media_time_current = self->_is_paused ? self->_media_time_pause : CACurrentMediaTime();
+            CMTime duration = SGCMTimeMakeWithSeconds(media_time_current - self->_invalid_duration - self->_media_time);
             duration = SGCMTimeMultiply(duration, self->_rate);
-            duration = CMTimeMinimum(self->_duration, duration);
-            CMTime time = CMTimeAdd(self->_time, self->_audio_video_offset);
+            duration = CMTimeMaximum(duration, kCMTimeZero);
+            CMTime time = CMTimeAdd(self->_time, self->_nb_audio_update ? self->_audio_video_offset : kCMTimeZero);
             ret = CMTimeAdd(time, duration);
         }
     });
@@ -106,6 +116,26 @@
     return [self flush];
 }
 
+- (BOOL)pause
+{
+    return SGLockCondEXE00(self.lock, ^BOOL{
+        return !self->_is_paused;
+    }, ^{
+        self->_is_paused = 1;
+        self->_media_time_pause = CACurrentMediaTime();
+    });
+}
+
+- (BOOL)resume
+{
+    return SGLockCondEXE00(self.lock, ^BOOL{
+        return self->_is_paused;
+    }, ^{
+        self->_is_paused = 0;
+        self->_invalid_duration += CACurrentMediaTime() - self->_media_time_pause;
+    });
+}
+
 - (BOOL)flush
 {
     return SGLockEXE00(self.lock, ^{
@@ -115,63 +145,43 @@
         self->_nb_video_update = 0;
         self->_last_time = kCMTimeInvalid;
         self->_time = kCMTimeZero;
-        self->_duration = kCMTimeZero;
         self->_media_time = 0;
     });
 }
 
-- (BOOL)setAudioTime:(CMTime)time duration:(CMTime)duration
+- (BOOL)setAudioCurrentTime:(CMTime)time
 {
     return SGLockEXE10(self.lock, ^SGBlock {
-        CMTime last_time = self->_last_time;
         self->_nb_audio_update += 1;
-        self->_time = time;
-        self->_duration = duration;
-        self->_last_time = self->_time;
-        self->_media_time = CACurrentMediaTime();
-        return CMTimeCompare(time, last_time) != 0 ? ^{
-            [self.delegate clock:self didChcnageCurrentTime:time];
-        } : ^{};
+        return [self setCurrentTime:time];
     });
     return YES;
 }
 
-- (BOOL)setVideoTime:(CMTime)time duration:(CMTime)duration
+- (BOOL)setVideoCurrentTime:(CMTime)time
 {
     return SGLockCondEXE10(self.lock, ^BOOL {
         return !self->_nb_audio_update;
     }, ^SGBlock {
-        CMTime last_time = self->_last_time;
         self->_nb_video_update += 1;
-        self->_time = time;
-        self->_duration = duration;
-        self->_last_time = self->_time;
-        self->_media_time = CACurrentMediaTime();
-        return CMTimeCompare(time, last_time) != 0 ? ^{
-            [self.delegate clock:self didChcnageCurrentTime:time];
-        } : ^{};
+        return [self setCurrentTime:time];
     });
 }
 
-- (BOOL)markAudioIsFinished
+- (SGBlock)setCurrentTime:(CMTime)time
 {
-    return SGLockEXE00(self.lock, ^{
-        self->_is_audio_finished = 1;
-    });
-}
-
-- (BOOL)markVideoIsFinished
-{
-    return SGLockEXE00(self.lock, ^{
-        self->_is_video_finished = 1;
-    });
-}
-
-- (BOOL)videoOnly
-{
-    return SGLockCondEXE00(self.lock, ^BOOL{
-        return !self->_is_video_finished && ((!self->_nb_audio_update && self->_nb_video_update) || self->_is_audio_finished);
-    }, nil);
+    CMTime last_time = self->_last_time;
+    double media_time = CACurrentMediaTime();
+    self->_time = time;
+    self->_last_time = self->_time;
+    self->_media_time = media_time;
+    if (self->_is_paused) {
+        self->_media_time_pause = media_time;
+    }
+    self->_invalid_duration = 0;
+    return CMTimeCompare(time, last_time) != 0 ? ^{
+        [self.delegate clock:self didChcnageCurrentTime:time];
+    } : ^{};
 }
 
 @end

@@ -239,11 +239,13 @@
         };
     } else if (playbackState & SGPlaybackStatePlaying) {
         b3 = ^{
+            [self.clock resume];
             [self.audioRenderer resume];
             [self.videoRenderer resume];
         };
     } else {
         b3 = ^{
+            [self.clock pause];
             [self.audioRenderer pause];
             [self.videoRenderer pause];
         };
@@ -465,11 +467,9 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         SGLockEXE10(self.lock, ^SGBlock {
             if (self.audioRenderer.capacity.isEmpty && self->_current_item.audioFinished) {
                 self->_is_audio_finished = 1;
-                [self.clock markAudioIsFinished];
             }
             if (self.videoRenderer.capacity.isEmpty && self->_current_item.videoFinished) {
                 self->_is_video_finished = 1;
-                [self.clock markVideoIsFinished];
             }
             return [self setPlaybackState];
         });

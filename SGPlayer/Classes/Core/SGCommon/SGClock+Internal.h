@@ -17,18 +17,18 @@
 @property (nonatomic, assign) CMTime rate;
 
 - (CMTime)currentTime;
+- (CMTime)preferredVideoTime;
 
 - (BOOL)open;
 - (BOOL)close;
+
+- (BOOL)pause;
+- (BOOL)resume;
+
 - (BOOL)flush;
 
-- (BOOL)setAudioTime:(CMTime)time duration:(CMTime)duration;
-- (BOOL)setVideoTime:(CMTime)time duration:(CMTime)duration;
-
-- (BOOL)markAudioIsFinished;
-- (BOOL)markVideoIsFinished;
-
-- (BOOL)videoOnly;
+- (BOOL)setAudioCurrentTime:(CMTime)time;
+- (BOOL)setVideoCurrentTime:(CMTime)time;
 
 @end
 

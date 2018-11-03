@@ -158,9 +158,9 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
 - (void)setFinishedIfNeeded
 {
     if (self.packetOutput.state == SGPacketOutputStateFinished) {
-        SGLockCondEXE10(self.lock, ^BOOL{
+        SGLockCondEXE10(self.lock, ^BOOL {
             return (!self.audioAvailable || self->_audio_finished) && (!self.videoAvailable || self->_video_finished);
-        }, ^SGBlock{
+        }, ^SGBlock {
             return [self setState:SGFrameOutputStateFinished];
         });
     }
