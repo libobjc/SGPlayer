@@ -14,6 +14,8 @@
 @interface SGClock ()
 
 {
+    int32_t _nb_audio_update;
+    int32_t _nb_video_update;
     CMTime _rate;
     CMTime _time;
     CMTime _duration;
@@ -81,27 +83,48 @@
     return [self flush];
 }
 
-- (BOOL)setTime:(CMTime)time duration:(CMTime)duration
+- (BOOL)flush
+{
+    return SGLockEXE00(self.lock, ^{
+        self->_nb_audio_update = 0;
+        self->_nb_video_update = 0;
+        self->_last_time = kCMTimeZero;
+        self->_time = kCMTimeZero;
+        self->_duration = kCMTimeZero;
+        self->_media_time = 0;
+    });
+}
+
+- (BOOL)setAudioTime:(CMTime)time duration:(CMTime)duration
 {
     return SGLockEXE10(self.lock, ^SGBlock {
         CMTime last_time = self->_last_time;
-        self->_last_time = self->_time;
+        self->_nb_audio_update += 1;
         self->_time = time;
         self->_duration = duration;
+        self->_last_time = self->_time;
         self->_media_time = CACurrentMediaTime();
         return CMTimeCompare(time, last_time) != 0 ? ^{
             [self.delegate clock:self didChcnageCurrentTime:time];
         } : ^{};
     });
+    return YES;
 }
 
-- (BOOL)flush
+- (BOOL)setVideoTime:(CMTime)time duration:(CMTime)duration
 {
-    return SGLockEXE00(self.lock, ^{
-        self->_last_time = kCMTimeZero;
-        self->_time = kCMTimeZero;
-        self->_duration = kCMTimeZero;
-        self->_media_time = 0;
+    return SGLockCondEXE10(self.lock, ^BOOL {
+        return !self->_nb_audio_update;
+    }, ^SGBlock {
+        CMTime last_time = self->_last_time;
+        self->_nb_video_update += 1;
+        self->_time = time;
+        self->_duration = duration;
+        self->_last_time = self->_time;
+        self->_media_time = CACurrentMediaTime();
+        return CMTimeCompare(time, last_time) != 0 ? ^{
+            [self.delegate clock:self didChcnageCurrentTime:time];
+        } : ^{};
     });
 }
 

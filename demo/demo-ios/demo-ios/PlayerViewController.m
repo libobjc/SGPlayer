@@ -160,7 +160,7 @@
 
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)time duration:(CMTime)duration
 {
-    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
+//    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(time));
     if (!self.progressSilderTouching) {
         self.progressSilder.value = CMTimeGetSeconds(time) / CMTimeGetSeconds(duration);
     }

@@ -284,7 +284,7 @@
     SGBlock clockBlock = ^{};
     if (self->_state == SGRenderableStateRendering && self->_nb_samples_copied_render) {
         clockBlock = ^{
-            [self.clock setTime:render_timeStamp duration:render_duration];
+            [self.clock setAudioTime:render_timeStamp duration:render_duration];
         };
     }
     SGCapacity * capacity = [[SGCapacity alloc] init];

@@ -138,7 +138,7 @@
     __block UIImage * ret = nil;
     SGLockCondEXE11(self.lock, ^BOOL {
         return self->_current_frame;
-    }, ^SGBlock{
+    }, ^SGBlock {
         SGVideoFrame * frame = self->_current_frame;
         [frame lock];
         return ^{
@@ -305,12 +305,6 @@
 - (void)drawTimerHandler
 {
     BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
-        if (self->_state == SGRenderableStateNone) {
-            [self.drawTimer invalidate];
-            self.drawTimer = nil;
-            [self.glView clear];
-            return NO;
-        }
         return self->_is_update_frame || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox);
     }, nil);
     if (ret && self.glView.superview) {
@@ -319,6 +313,7 @@
                 if (self->_is_update_frame) {
                     self->_is_update_frame = 0;
                     self->_nb_frames_draw += 1;
+                    [self.clock setVideoTime:self->_current_frame.timeStamp duration:SGCMTimeMultiply(self->_current_frame.duration, self->_rate)];
                 }
             });
         }

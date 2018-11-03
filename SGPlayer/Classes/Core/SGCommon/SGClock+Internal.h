@@ -20,9 +20,10 @@
 
 - (BOOL)open;
 - (BOOL)close;
-
-- (BOOL)setTime:(CMTime)time duration:(CMTime)duration;
 - (BOOL)flush;
+
+- (BOOL)setAudioTime:(CMTime)time duration:(CMTime)duration;
+- (BOOL)setVideoTime:(CMTime)time duration:(CMTime)duration;
 
 @end
 
