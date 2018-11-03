@@ -412,26 +412,33 @@ SGGet0Map(BOOL, seekable, self.currentItem);
     SGWeakify(self)
     return [self.currentItem seekToTime:time result:^(CMTime time, NSError * error) {
         SGStrongify(self)
-        if (!error) {
-            [self.clock flush];
-            [self.audioRenderer flush];
-            [self.videoRenderer flush];
-        }
-        if (result) {
-            [self callback:^{
-                result(time, error);
-            }];
-        }
-        SGLockCondEXE10(self.lock, ^BOOL {
+        SGLockCondEXE11(self.lock, ^BOOL {
             return is_seeking == self->_is_seeking;
         }, ^SGBlock {
+            SGBlock b1 = ^{}, b2 = ^{};
             self->_is_seeking = 0;
             if (!error) {
                 self->_is_audio_finished = 0;
                 self->_is_video_finished = 0;
                 self->_is_current_time_valid = 0;
+                b1 = ^{
+                    [self.clock flush];
+                    [self.audioRenderer flush];
+                    [self.videoRenderer flush];
+                };
             }
-            return [self setPlaybackState];
+            b2 = [self setPlaybackState];
+            return ^{
+                b1(); b2();
+            };
+        }, ^BOOL(SGBlock block) {
+            block();
+            if (result) {
+                [self callback:^{
+                    result(time, error);
+                }];
+            }
+            return YES;
         });
     }];
 }
@@ -458,9 +465,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         SGLockEXE10(self.lock, ^SGBlock {
             if (self.audioRenderer.capacity.isEmpty && self->_current_item.audioFinished) {
                 self->_is_audio_finished = 1;
+                [self.clock markAudioIsFinished];
             }
             if (self.videoRenderer.capacity.isEmpty && self->_current_item.videoFinished) {
                 self->_is_video_finished = 1;
+                [self.clock markVideoIsFinished];
             }
             return [self setPlaybackState];
         });
@@ -506,8 +515,6 @@ SGGet0Map(BOOL, seekable, self.currentItem);
             }
                 break;
             case SGPlayerItemStateReading: {
-                self->_is_audio_finished = 0;
-                self->_is_video_finished = 0;
                 b1 = [self setPlaybackState];
             }
                 break;

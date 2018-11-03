@@ -361,7 +361,7 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
         return nil;
     }, ^BOOL(SGBlock block) {
         BOOL paused = capacity.count > 30 && CMTimeCompare(capacity.duration, CMTimeMake(1, 1)) > 0;
-        BOOL finished = self.packetOutput.state == SGPacketOutputStateFinished && capacity.count == 0;
+        BOOL finished = self.packetOutput.state == SGPacketOutputStateFinished && capacity.isEmpty;
         if (track.type == SGMediaTypeAudio) {
             self->_audio_paused = paused;
             self->_audio_finished = finished;

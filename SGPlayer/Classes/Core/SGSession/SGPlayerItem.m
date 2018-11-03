@@ -179,12 +179,12 @@ SGGet0Map(BOOL, videoAvailable, self.frameOutput)
         return ![last isEqualToCapacity:capacity];
     }, ^SGBlock {
         [self.capacityMap setObject:capacity forKey:track];
-        if (capacity.count == 0 && self.frameOutput.state == SGFrameOutputStateFinished) {
-            self->_audio_finished = ((SGCapacity *)[self.capacityMap objectForKey:self->_selected_audio_track]).isEmpty;
-            self->_video_finished = ((SGCapacity *)[self.capacityMap objectForKey:self->_selected_video_track]).isEmpty;
-            if (self->_audio_finished && self->_video_finished) {
-                return [self setState:SGPlayerItemStateFinished];
-            }
+        SGCapacity * audio_capacity = track == self->_selected_audio_track ? capacity : [self.capacityMap objectForKey:self->_selected_audio_track];
+        SGCapacity * video_capacity = track == self->_selected_video_track ? capacity : [self.capacityMap objectForKey:self->_selected_video_track];
+        self->_audio_finished = audio_capacity.isEmpty && self.frameOutput.audioFinished;
+        self->_video_finished = video_capacity.isEmpty && self.frameOutput.videoFinished;
+        if (self->_audio_finished && self->_video_finished) {
+            return [self setState:SGPlayerItemStateFinished];
         }
         return nil;
     }, ^BOOL(SGBlock block) {

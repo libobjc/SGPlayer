@@ -14,6 +14,8 @@
 @interface SGClock ()
 
 {
+    int32_t _is_audio_finished;
+    int32_t _is_video_finished;
     int32_t _nb_audio_update;
     int32_t _nb_video_update;
     CMTime _rate;
@@ -86,6 +88,8 @@
 - (BOOL)flush
 {
     return SGLockEXE00(self.lock, ^{
+        self->_is_audio_finished = 0;
+        self->_is_video_finished = 0;
         self->_nb_audio_update = 0;
         self->_nb_video_update = 0;
         self->_last_time = kCMTimeInvalid;
@@ -128,17 +132,31 @@
     });
 }
 
+- (BOOL)markAudioIsFinished
+{
+    return SGLockEXE00(self.lock, ^{
+        self->_is_audio_finished = 1;
+    });
+}
+
+- (BOOL)markVideoIsFinished
+{
+    return SGLockEXE00(self.lock, ^{
+        self->_is_video_finished = 1;
+    });
+}
+
 - (BOOL)audioMaster
 {
     return SGLockCondEXE00(self.lock, ^BOOL{
-        return self->_nb_audio_update && !self->_nb_video_update;
+        return !self->_is_audio_finished && self->_nb_audio_update && !self->_nb_video_update;
     }, nil);
 }
 
 - (BOOL)videoMaster
 {
     return SGLockCondEXE00(self.lock, ^BOOL{
-        return !self->_nb_audio_update && self->_nb_video_update;
+        return !self->_is_video_finished && ((!self->_nb_audio_update && self->_nb_video_update) || self->_is_audio_finished);
     }, nil);
 }
 

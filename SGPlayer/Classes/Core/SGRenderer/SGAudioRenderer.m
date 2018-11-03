@@ -176,7 +176,7 @@
 - (BOOL)pause
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering;
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
@@ -189,7 +189,7 @@
 - (BOOL)resume
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused;
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
@@ -201,13 +201,21 @@
 
 - (BOOL)finish
 {
-    return [self pause];
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStateFinished];
+    }, ^BOOL(SGBlock block) {
+        [self.player pause];
+        block();
+        return YES;
+    });
 }
 
 - (BOOL)flush
 {
     SGLockCondEXE00(self.lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering;
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
     }, ^{
         [self->_current_frame unlock];
         self->_current_frame = nil;

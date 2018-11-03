@@ -11,4 +11,6 @@
 
 @interface SGClock : NSObject
 
+@property (nonatomic, assign) CMTime audio_video_offset;
+
 @end

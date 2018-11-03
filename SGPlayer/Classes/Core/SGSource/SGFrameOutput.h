@@ -52,6 +52,9 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState)
 @property (nonatomic, strong) SGTrack * selectedAudioTrack;
 @property (nonatomic, strong) SGTrack * selectedVideoTrack;
 
+- (BOOL)audioFinished;
+- (BOOL)videoFinished;
+
 - (SGCapacity *)capacityWithTrack:(SGTrack *)track;
 
 - (BOOL)open;

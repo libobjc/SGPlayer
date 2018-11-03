@@ -25,6 +25,9 @@
 - (BOOL)setAudioTime:(CMTime)time duration:(CMTime)duration;
 - (BOOL)setVideoTime:(CMTime)time duration:(CMTime)duration;
 
+- (BOOL)markAudioIsFinished;
+- (BOOL)markVideoIsFinished;
+
 - (BOOL)audioMaster;
 - (BOOL)videoMaster;
 

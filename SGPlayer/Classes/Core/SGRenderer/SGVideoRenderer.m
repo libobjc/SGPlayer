@@ -217,17 +217,21 @@
 
 - (BOOL)pause
 {
-    return SGLockCondEXE10(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering;
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
+    }, ^BOOL(SGBlock block) {
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
+        return YES;
     });
 }
 
 - (BOOL)resume
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused;
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
@@ -240,9 +244,9 @@
 - (BOOL)finish
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering;
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
     }, ^SGBlock {
-        return [self setState:SGRenderableStatePaused];
+        return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
         self.drawTimer.paused = YES;
         self.fetchTimer.paused = YES;
@@ -253,7 +257,7 @@
 - (BOOL)flush
 {
     SGLockCondEXE00(self.lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering;
+        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
     }, ^ {
         self->_is_update_frame = 0;
         self->_nb_frames_draw = 0;
