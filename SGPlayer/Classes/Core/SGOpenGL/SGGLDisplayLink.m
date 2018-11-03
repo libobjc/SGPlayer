@@ -27,7 +27,7 @@
         if (@available(iOS 10.0, *)) {
             self.displayLink.preferredFramesPerSecond = 1.0f / timeInterval;
         } else {
-            self.displayLink.frameInterval = 1.0f / timeInterval;
+            self.displayLink.frameInterval = 60 * timeInterval;
         }
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
