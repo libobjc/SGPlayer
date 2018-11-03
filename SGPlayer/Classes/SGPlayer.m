@@ -18,6 +18,8 @@
 {
     int32_t _is_playing;
     int32_t _is_seeking;
+    int32_t _is_audio_available;
+    int32_t _is_video_available;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
     int32_t _is_current_time_valid;
@@ -125,6 +127,8 @@
         SGPlayerItem * item = self->_current_item;
         self->_is_playing = 0;
         self->_is_seeking = 0;
+        self->_is_audio_available = 0;
+        self->_is_video_available = 0;
         self->_is_audio_finished = 0;
         self->_is_video_finished = 0;
         self->_is_current_time_valid = 0;
@@ -214,7 +218,8 @@
     if (_is_seeking) {
         playbackState |= SGPlaybackStateSeeking;
     }
-    if (_is_audio_finished && _is_video_finished) {
+    if ((!_is_audio_available || _is_audio_finished) &&
+        (!_is_video_available ||  _is_video_finished)) {
         playbackState |= SGPlaybackStateFinished;
     }
     if (_playback_state == playbackState) {
@@ -490,9 +495,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
                 b1 = ^{
                     [self.clock open];
                     if (playerItem.selectedAudioTrack) {
+                        self->_is_audio_available = 1;
                         [self.audioRenderer open];
                     }
                     if (playerItem.selectedVideoTrack) {
+                        self->_is_video_available = 1;
                         [self.videoRenderer open];
                     }
                     [playerItem start];

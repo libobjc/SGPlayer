@@ -202,7 +202,6 @@
         self->_is_update_frame = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
-        self->_media_time_timeout = 0;
         return ^{
             b1(); b2();
         };
@@ -242,7 +241,6 @@
         self->_is_update_frame = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
-        self->_media_time_timeout = 0;
     });
     return YES;
 }
@@ -257,6 +255,7 @@
     if (!should_fetch) {
         return;
     }
+    BOOL video_master = [self.clock videoMaster];
     __block double media_time_next = self.drawTimer.nextVSyncTimestamp;
     __block double media_time_current = CACurrentMediaTime();
     SGWeakify(self)
@@ -264,7 +263,9 @@
         SGStrongify(self)
         __block CMTime time_current = kCMTimeZero;
         return SGLockCondEXE11(self.lock, ^BOOL {
-            return self->_current_frame && self->_nb_frames_fetch != 0;
+            return self->_current_frame &&
+            self->_nb_frames_fetch != 0 &&
+            (!video_master || (video_master && media_time_next < self->_media_time_timeout));
         }, ^SGBlock {
             time_current = self->_current_frame.timeStamp;
             return nil;
@@ -285,10 +286,10 @@
             self->_current_frame = ret;
             self->_is_update_frame = 1;
             self->_nb_frames_fetch += 1;
-            self->_media_time_timeout = media_time_next + CMTimeGetSeconds(ret.duration);
+            self->_media_time_timeout = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
             capacity.duration = ret.duration;
-        } else if (media_time_current >= self->_media_time_timeout) {
-            self->_media_time_timeout = 0;
+        } else if (media_time_current < self->_media_time_timeout) {
+            capacity.duration = SGCMTimeMakeWithSeconds(self->_media_time_timeout - media_time_current);
         }
         SGBlock b1 = ^{};
         if (![capacity isEqualToCapacity:self->_capacity]) {

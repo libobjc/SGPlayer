@@ -128,4 +128,18 @@
     });
 }
 
+- (BOOL)audioMaster
+{
+    return SGLockCondEXE00(self.lock, ^BOOL{
+        return self->_nb_audio_update && !self->_nb_video_update;
+    }, nil);
+}
+
+- (BOOL)videoMaster
+{
+    return SGLockCondEXE00(self.lock, ^BOOL{
+        return !self->_nb_audio_update && self->_nb_video_update;
+    }, nil);
+}
+
 @end

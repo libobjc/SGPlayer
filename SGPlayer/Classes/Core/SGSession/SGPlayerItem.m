@@ -318,7 +318,10 @@ SGSet1Map(void, setSelectedVideoTrack, SGTrack *, self.frameOutput)
         track = self.frameOutput.selectedVideoTrack;
         threshold = 3;
     }
-    NSAssert(track, @"Invalid track.");
+    if (!track) {
+//        NSAssert(track, @"Invalid track.");
+        return;
+    }
     capacity = [capacity copy];
     if (capacity.count > threshold) {
         [self.frameOutput pause:track.type];
