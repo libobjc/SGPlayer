@@ -111,6 +111,15 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Delegate
 
+@protocol SGPlayerDelegate;
+
+@interface SGPlayer (Delegate)
+
+@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
+@property (nonatomic, strong) NSOperationQueue * delegateQueue;
+
+@end
+
 @protocol SGPlayerDelegate <NSObject>
 
 @optional
@@ -119,12 +128,5 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState;
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime duration:(CMTime)duration;
 - (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration;
-
-@end
-
-@interface SGPlayer (Delegate)
-
-@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end
