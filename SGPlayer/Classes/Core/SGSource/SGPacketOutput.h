@@ -45,6 +45,9 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState)
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
+- (BOOL)audioAvailable;
+- (BOOL)videoAvailable;
+
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;

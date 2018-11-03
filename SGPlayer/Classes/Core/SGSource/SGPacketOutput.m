@@ -57,6 +57,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.readable)
 SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.readable)
 SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.readable)
 SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
+SGGet0Map(BOOL, audioAvailable, self.readable)
+SGGet0Map(BOOL, videoAvailable, self.readable)
 
 #pragma mark - Setter & Getter
 

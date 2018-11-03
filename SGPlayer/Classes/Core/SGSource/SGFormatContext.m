@@ -36,6 +36,8 @@ static int SGFormatContextInterruptHandler(void * context)
 @property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * otherTracks;
+@property (nonatomic, assign) BOOL audioAvailable;
+@property (nonatomic, assign) BOOL videoAvailable;
 
 @end
 
@@ -108,6 +110,8 @@ static int SGFormatContextInterruptHandler(void * context)
     self.audioTracks = [audioTracks copy];
     self.videoTracks = [videoTracks copy];
     self.otherTracks = [otherTracks copy];
+    self.audioAvailable = self.audioTracks.count > 0;
+    self.videoAvailable = self.videoTracks.count > 0;
     return nil;
 }
 

@@ -26,7 +26,9 @@
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
-// thread-unsafe
+- (BOOL)audioAvailable;
+- (BOOL)videoAvailable;
+
 @property (nonatomic, strong) SGTrack * selectedAudioTrack;
 @property (nonatomic, strong) SGTrack * selectedVideoTrack;
 

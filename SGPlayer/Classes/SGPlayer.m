@@ -455,17 +455,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
 - (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
 {
     if (capacity.isEmpty) {
-        SGLockCondEXE10(self.lock, ^BOOL {
-            if (renderable == self.audioRenderer) {
-                return self->_current_item.audioFinished;
-            } else if (renderable == self.videoRenderer) {
-                return self->_current_item.videoFinished;
-            }
-            return NO;
-        }, ^SGBlock {
-            if (renderable == self.audioRenderer) {
+        SGLockEXE10(self.lock, ^SGBlock {
+            if (self.audioRenderer.capacity.isEmpty && self->_current_item.audioFinished) {
                 self->_is_audio_finished = 1;
-            } else if (renderable == self.videoRenderer) {
+            }
+            if (self.videoRenderer.capacity.isEmpty && self->_current_item.videoFinished) {
                 self->_is_video_finished = 1;
             }
             return [self setPlaybackState];
@@ -499,11 +493,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
                 b3 = [self setLoadingState:SGLoadingStateStalled];
                 b1 = ^{
                     [self.clock open];
-                    if (playerItem.selectedAudioTrack) {
+                    if (playerItem.audioAvailable) {
                         self->_is_audio_available = 1;
                         [self.audioRenderer open];
                     }
-                    if (playerItem.selectedVideoTrack) {
+                    if (playerItem.videoAvailable) {
                         self->_is_video_available = 1;
                         [self.videoRenderer open];
                     }
@@ -543,7 +537,7 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         should = YES;
     } else if (track.type == SGMediaTypeVideo &&
                !playerItem.videoFinished &&
-               (!playerItem.selectedAudioTrack || playerItem.audioFinished)) {
+               (!playerItem.audioAvailable || playerItem.audioFinished)) {
         should = YES;
     }
     if (should) {

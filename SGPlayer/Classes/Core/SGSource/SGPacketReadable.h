@@ -25,6 +25,9 @@
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
+- (BOOL)audioAvailable;
+- (BOOL)videoAvailable;
+
 - (NSError *)open;
 - (NSError *)close;
 
