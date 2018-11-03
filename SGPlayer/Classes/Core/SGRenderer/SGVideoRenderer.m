@@ -343,7 +343,7 @@
         if ((self->_is_update_frame_draw || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox)) && self->_current_frame) {
             b2 = ^{
                 [self addGLViewIfNeeded];
-                if (self.glView.superview) {
+                if (self.glView.superview && self.glView.displaySize.width > 0) {
                     draw_ret = [self display];
                 }
             };
