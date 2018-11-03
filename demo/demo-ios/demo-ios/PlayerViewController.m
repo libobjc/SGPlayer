@@ -39,7 +39,7 @@
     self.view.backgroundColor = [UIColor blackColor];
     
     NSURL * contentURL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+//    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
 //    NSMutableArray * assets = [NSMutableArray array];
 //    for (int i = 0; i < 1; i++)
@@ -56,6 +56,7 @@
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.videoRenderer.view = self.view1;
+//    self.player.videoRenderer.displayMode = SGDisplayModeVR;
     
 //    self.player.hardwareDecodeH264 = NO;
     

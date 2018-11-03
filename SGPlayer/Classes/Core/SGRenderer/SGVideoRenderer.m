@@ -22,10 +22,12 @@
 
 {
     SGRenderableState _state;
-    float64_t _invalid_media_time;
+    int32_t _is_update_frame;
+    int64_t _nb_frames_draw;
+    int64_t _nb_frames_fetch;
+    float64_t _media_time_timeout;
     __strong SGCapacity * _capacity;
-    __strong SGVideoFrame * _fetched_frame;
-    __strong SGVideoFrame * _drawed_frame;
+    __strong SGVideoFrame * _current_frame;
 }
 
 @property (nonatomic, strong) NSLock * lock;
@@ -64,7 +66,6 @@
 
 - (void)dealloc
 {
-    
     [self.fetchTimer invalidate];
     [self.drawTimer invalidate];
     if ([NSThread isMainThread]) {
@@ -77,10 +78,6 @@
         });
     }
     [self close];
-    SGLockEXE00(self.lock, ^{
-        [self->_drawed_frame unlock];
-        self->_drawed_frame = nil;
-    });
 }
 
 #pragma mark - Setter & Getter
@@ -123,9 +120,9 @@
 {
     __block UIImage * ret = nil;
     SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_drawed_frame;
+        return self->_current_frame;
     }, ^SGBlock{
-        SGVideoFrame * frame = self->_drawed_frame;
+        SGVideoFrame * frame = self->_current_frame;
         [frame lock];
         return ^{
             ret = [frame image];
@@ -179,9 +176,12 @@
 - (BOOL)close
 {
     return SGLockEXE11(self.lock, ^SGBlock {
-        [self->_fetched_frame unlock];
-        self->_fetched_frame = nil;
-        self->_invalid_media_time = 0;
+        [self->_current_frame unlock];
+        self->_current_frame = nil;
+        self->_is_update_frame = 0;
+        self->_nb_frames_draw = 0;
+        self->_nb_frames_fetch = 0;
+        self->_media_time_timeout = 0;
         return [self setState:SGRenderableStateNone];
     }, ^BOOL(SGBlock block) {
         [self.fetchTimer invalidate];
@@ -216,9 +216,10 @@
     SGLockCondEXE00(self.lock, ^BOOL {
         return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering;
     }, ^ {
-        [self->_fetched_frame unlock];
-        self->_fetched_frame = nil;
-        self->_invalid_media_time = 0;
+        self->_is_update_frame = 0;
+        self->_nb_frames_draw = 0;
+        self->_nb_frames_fetch = 0;
+        self->_media_time_timeout = 0;
     });
     return YES;
 }
@@ -250,23 +251,29 @@
 
 - (void)fetchTimerHandler
 {
-    __block float64_t next_media_time = self.drawTimer.nextVSyncTimestamp;
-    __block float64_t current_media_time = CACurrentMediaTime();
+    BOOL should_fetch = SGLockCondEXE00(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || (self->_state == SGRenderableStatePaused && self->_nb_frames_fetch == 0);
+    }, nil);
+    if (!should_fetch) {
+        return;
+    }
+    __block float64_t media_time_next = self.drawTimer.nextVSyncTimestamp;
+    __block float64_t media_time_current = CACurrentMediaTime();
     SGWeakify(self)
     SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * desire, BOOL * drop) {
         SGStrongify(self)
-        __block CMTime t = kCMTimeZero;
+        __block CMTime time_current = kCMTimeZero;
         return SGLockCondEXE11(self.lock, ^BOOL {
-            return self->_fetched_frame;
+            return self->_current_frame && self->_nb_frames_fetch != 0;
         }, ^SGBlock {
-            t = self->_fetched_frame.timeStamp;
+            time_current = self->_current_frame.timeStamp;
             return nil;
         }, ^BOOL(SGBlock block) {
             CMTime time = self.clock.time;
-            next_media_time = self.drawTimer.nextVSyncTimestamp;
-            current_media_time = CACurrentMediaTime();
-            * desire = CMTimeAdd(time, SGCMTimeMakeWithSeconds(next_media_time - current_media_time));
-            * current = t;
+            media_time_next = self.drawTimer.nextVSyncTimestamp;
+            media_time_current = CACurrentMediaTime();
+            * desire = CMTimeAdd(time, SGCMTimeMakeWithSeconds(media_time_next - media_time_current));
+            * current = time_current;
             * drop = YES;
             return YES;
         });
@@ -274,14 +281,14 @@
     SGLockEXE10(self.lock, ^SGBlock {
         SGCapacity * capacity = [[SGCapacity alloc] init];
         if (ret) {
-            [self->_fetched_frame unlock];
-            self->_fetched_frame = ret;
-            self->_invalid_media_time = next_media_time + CMTimeGetSeconds(ret.duration);
+            [self->_current_frame unlock];
+            self->_current_frame = ret;
+            self->_is_update_frame = 1;
+            self->_nb_frames_fetch += 1;
+            self->_media_time_timeout = media_time_next + CMTimeGetSeconds(ret.duration);
             capacity.duration = ret.duration;
-        } else if (current_media_time >= self->_invalid_media_time) {
-            [self->_fetched_frame unlock];
-            self->_fetched_frame = nil;
-            self->_invalid_media_time = 0;
+        } else if (media_time_current >= self->_media_time_timeout) {
+            self->_media_time_timeout = 0;
         }
         SGBlock b1 = ^{};
         if (![capacity isEqualToCapacity:self->_capacity]) {
@@ -297,16 +304,17 @@
 
 - (void)drawTimerHandler
 {
-    BOOL ret = SGLockCondEXE10(self.lock, ^BOOL{
-        return self->_fetched_frame;
-    }, ^SGBlock {
-        [self->_fetched_frame lock];
-        [self->_drawed_frame unlock];
-        self->_drawed_frame = self->_fetched_frame;
-        return nil;
-    });
+    BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
+        return self->_is_update_frame || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox);
+    }, nil);
     if (ret && self.glView.superview) {
         [self draw];
+        SGLockEXE00(self.lock, ^{
+            if (self->_is_update_frame) {
+                self->_is_update_frame = 0;
+                self->_nb_frames_draw += 1;
+            }
+        });
     }
 }
 
@@ -327,7 +335,7 @@
 - (BOOL)glView:(SGGLView *)glView draw:(SGGLSize)size
 {
     [self.lock lock];
-    SGVideoFrame * frame = self->_drawed_frame;
+    SGVideoFrame * frame = self->_current_frame;
     if (!frame || frame.width == 0 || frame.height == 0) {
         [self.lock unlock];
         return NO;
