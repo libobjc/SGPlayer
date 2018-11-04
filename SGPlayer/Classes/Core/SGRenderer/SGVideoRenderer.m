@@ -250,32 +250,45 @@
     }, ^SGBlock {
         return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
-        self.drawTimer.paused = YES;
-        self.fetchTimer.paused = YES;
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
         return YES;
     });
 }
 
 - (BOOL)flush
 {
-    SGLockCondEXE00(self.lock, ^BOOL {
+    return SGLockCondEXE11(self.lock, ^BOOL {
         return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
-    }, ^ {
+    }, ^SGBlock {
         self->_is_update_frame_draw = 0;
         self->_is_update_frame_output = 0;
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
+        return nil;
+    }, ^BOOL(SGBlock block) {
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
+        return YES;
     });
-    return YES;
 }
 
 #pragma mark - Render
 
 - (void)fetchTimerHandler
 {
-    BOOL should_fetch = SGLockCondEXE00(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || (self->_state == SGRenderableStatePaused && self->_nb_frames_fetch == 0);
-    }, nil);
+    BOOL should_fetch = NO;
+    BOOL should_pause = NO;
+    [self.lock lock];
+    if (self->_state == SGRenderableStateRendering || (self->_state == SGRenderableStatePaused && self->_nb_frames_fetch == 0)) {
+        should_fetch = YES;
+    } else if (self->_state != SGRenderableStateRendering) {
+        should_pause = YES;
+    }
+    [self.lock unlock];
+    if (should_pause) {
+        self.fetchTimer.paused = YES;
+    }
     if (!should_fetch) {
         return;
     }
@@ -354,12 +367,19 @@
         };
     }, ^BOOL(SGBlock block) {
         block();
-        SGLockEXE00(self.lock, ^{
+        SGLockEXE10(self.lock, ^SGBlock {
             self->_is_update_frame_output = 0;
             if (draw_ret && self->_is_update_frame_draw) {
                 self->_is_update_frame_draw = 0;
                 self->_nb_frames_draw += 1;
             }
+            SGBlock b1 = ^{};
+            if (self->_state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_nb_frames_draw) {
+                b1 = ^{
+                    self.drawTimer.paused = YES;
+                };
+            }
+            return b1;
         });
         return YES;
     });
