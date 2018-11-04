@@ -18,8 +18,8 @@
     int32_t _is_audio_stalled;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
-    int32_t _nb_audio_update;
-    int32_t _nb_video_update;
+    int32_t _nb_set_audio_time;
+    int32_t _nb_set_video_time;
     CMTime _rate;
     CMTime _audio_time;
     CMTime _video_time;
@@ -127,8 +127,8 @@
         self->_is_audio_stalled = 0;
         self->_is_audio_finished = 0;
         self->_is_video_finished = 0;
-        self->_nb_audio_update = 0;
-        self->_nb_video_update = 0;
+        self->_nb_set_audio_time = 0;
+        self->_nb_set_video_time = 0;
         self->_audio_time = kCMTimeZero;
         self->_video_time = kCMTimeZero;
         self->_current_time = kCMTimeZero;
@@ -140,7 +140,7 @@
 - (BOOL)setAudioCurrentTime:(CMTime)time
 {
     return SGLockEXE10(self.lock, ^SGBlock {
-        self->_nb_audio_update += 1;
+        self->_nb_set_audio_time += 1;
         self->_audio_time = time;
         self->_audio_media_time = CACurrentMediaTime();
         return [self setCurrentTime:self->_audio_time mediaTime:self->_audio_media_time];
@@ -151,10 +151,10 @@
 - (BOOL)setVideoCurrentTime:(CMTime)time
 {
     return SGLockEXE10(self.lock, ^SGBlock {
-        self->_nb_video_update += 1;
+        self->_nb_set_video_time += 1;
         self->_video_time = time;
         self->_video_media_time = CACurrentMediaTime();
-        if (!self->_nb_audio_update || self->_is_audio_stalled) {
+        if (!self->_nb_set_audio_time || self->_is_audio_stalled) {
             return [self setCurrentTime:self->_video_time mediaTime:self->_video_media_time];
         }
         return ^{};
@@ -164,10 +164,9 @@
 - (SGBlock)setCurrentTime:(CMTime)time mediaTime:(double)mediaTime
 {
     CMTime current_time = self->_current_time;
-    double media_time = CACurrentMediaTime();
     self->_current_time = time;
     if (self->_is_paused) {
-        self->_pause_media_time = media_time;
+        self->_pause_media_time = mediaTime;
     }
     self->_invalid_duration = 0;
     return CMTimeCompare(time, current_time) != 0 ? ^{
@@ -188,13 +187,13 @@
     __block CMTime offset_value = kCMTimeZero;
     SGLockEXE00(self.lock, ^{
         double current_media_time = self->_is_paused ? self->_pause_media_time : CACurrentMediaTime();
-        if (self->_nb_audio_update && !self->_is_audio_stalled) {
+        if (self->_nb_set_audio_time && !self->_is_audio_stalled) {
             CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_audio_media_time - self->_invalid_duration);
             duration = SGCMTimeMultiply(duration, self->_rate);
             duration = CMTimeMaximum(duration, kCMTimeZero);
             time_value = CMTimeAdd(self->_audio_time, duration);
             offset_value = self->_audio_video_offset;
-        } else if (self->_nb_video_update || self->_is_audio_stalled) {
+        } else if (self->_nb_set_video_time || self->_is_audio_stalled) {
             CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_video_media_time - self->_invalid_duration);
             duration = SGCMTimeMultiply(duration, self->_rate);
             duration = CMTimeMaximum(duration, kCMTimeZero);
