@@ -138,7 +138,7 @@
 {
     __block UIImage * ret = nil;
     SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_current_frame;
+        return self->_current_frame != nil;
     }, ^SGBlock {
         SGVideoFrame * frame = self->_current_frame;
         [frame lock];
@@ -279,7 +279,6 @@
     if (!should_fetch) {
         return;
     }
-    __block double media_time_next = self.drawTimer.nextVSyncTimestamp;
     __block double media_time_current = CACurrentMediaTime();
     SGWeakify(self)
     SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * desire, BOOL * drop) {
@@ -291,10 +290,12 @@
             time_current = self->_current_frame.timeStamp;
             return nil;
         }, ^BOOL(SGBlock block) {
-            CMTime time = [self.clock preferredVideoTime];
-            media_time_next = self.drawTimer.nextVSyncTimestamp;
+            CMTime time = kCMTimeZero;
+            CMTime offset = kCMTimeZero;
+            [self.clock preferredVideoTime:&time offset:&offset];
+            double media_time_next = self.drawTimer.nextVSyncTimestamp;
             media_time_current = CACurrentMediaTime();
-            * desire = CMTimeAdd(time, CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
+            * desire = CMTimeAdd(CMTimeAdd(time, offset), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
             * current = time_current;
             * drop = YES;
             return YES;

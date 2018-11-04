@@ -295,10 +295,16 @@
     CMTime render_duration = SGCMTimeMultiply(self->_render_duration, self->_rate);
     CMTime frame_duration = !self->_current_frame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_current_frame.duration, self->_current_frame.nb_samples - self->_nb_samples_copied_frame, self->_current_frame.nb_samples);
     SGBlock clockBlock = ^{};
-    if (self->_state == SGRenderableStateRendering && self->_nb_samples_copied_render) {
-        clockBlock = ^{
-            [self.clock setAudioCurrentTime:render_timeStamp];
-        };
+    if (self->_state == SGRenderableStateRendering) {
+        if (self->_nb_samples_copied_render) {
+            clockBlock = ^{
+                [self.clock setAudioCurrentTime:render_timeStamp];
+            };
+        } else {
+            clockBlock = ^{
+                [self.clock markAsAudioStalled];
+            };
+        }
     }
     SGCapacity * capacity = [[SGCapacity alloc] init];
     capacity.duration = CMTimeAdd(render_duration, frame_duration);

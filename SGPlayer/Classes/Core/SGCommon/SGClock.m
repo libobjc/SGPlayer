@@ -15,16 +15,19 @@
 
 {
     int32_t _is_paused;
+    int32_t _is_audio_stalled;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
     int32_t _nb_audio_update;
     int32_t _nb_video_update;
     CMTime _rate;
-    CMTime _time;
-    CMTime _last_time;
+    CMTime _audio_time;
+    CMTime _video_time;
+    CMTime _current_time;
     CMTime _audio_video_offset;
-    double _media_time;
-    double _media_time_pause;
+    double _audio_media_time;
+    double _video_media_time;
+    double _pause_media_time;
     double _invalid_duration;
 }
 
@@ -83,25 +86,7 @@
 {
     __block CMTime ret = kCMTimeZero;
     SGLockEXE00(self.lock, ^{
-        ret = self->_time;
-    });
-    return ret;
-}
-
-- (CMTime)preferredVideoTime
-{
-    __block CMTime ret = kCMTimeZero;
-    SGLockEXE00(self.lock, ^{
-        if (self->_media_time == 0) {
-            ret = self->_time;
-        } else {
-            double media_time_current = self->_is_paused ? self->_media_time_pause : CACurrentMediaTime();
-            CMTime duration = SGCMTimeMakeWithSeconds(media_time_current - self->_invalid_duration - self->_media_time);
-            duration = SGCMTimeMultiply(duration, self->_rate);
-            duration = CMTimeMaximum(duration, kCMTimeZero);
-            CMTime time = CMTimeAdd(self->_time, self->_nb_audio_update ? self->_audio_video_offset : kCMTimeZero);
-            ret = CMTimeAdd(time, duration);
-        }
+        ret = self->_current_time;
     });
     return ret;
 }
@@ -122,7 +107,7 @@
         return !self->_is_paused;
     }, ^{
         self->_is_paused = 1;
-        self->_media_time_pause = CACurrentMediaTime();
+        self->_pause_media_time = CACurrentMediaTime();
     });
 }
 
@@ -132,20 +117,23 @@
         return self->_is_paused;
     }, ^{
         self->_is_paused = 0;
-        self->_invalid_duration += CACurrentMediaTime() - self->_media_time_pause;
+        self->_invalid_duration += CACurrentMediaTime() - self->_pause_media_time;
     });
 }
 
 - (BOOL)flush
 {
     return SGLockEXE00(self.lock, ^{
+        self->_is_audio_stalled = 0;
         self->_is_audio_finished = 0;
         self->_is_video_finished = 0;
         self->_nb_audio_update = 0;
         self->_nb_video_update = 0;
-        self->_last_time = kCMTimeInvalid;
-        self->_time = kCMTimeZero;
-        self->_media_time = 0;
+        self->_audio_time = kCMTimeZero;
+        self->_video_time = kCMTimeZero;
+        self->_current_time = kCMTimeZero;
+        self->_audio_media_time = 0;
+        self->_video_media_time = 0;
     });
 }
 
@@ -153,35 +141,69 @@
 {
     return SGLockEXE10(self.lock, ^SGBlock {
         self->_nb_audio_update += 1;
-        return [self setCurrentTime:time];
+        self->_audio_time = time;
+        self->_audio_media_time = CACurrentMediaTime();
+        return [self setCurrentTime:self->_audio_time mediaTime:self->_audio_media_time];
     });
     return YES;
 }
 
 - (BOOL)setVideoCurrentTime:(CMTime)time
 {
-    return SGLockCondEXE10(self.lock, ^BOOL {
-        return !self->_nb_audio_update;
-    }, ^SGBlock {
+    return SGLockEXE10(self.lock, ^SGBlock {
         self->_nb_video_update += 1;
-        return [self setCurrentTime:time];
+        self->_video_time = time;
+        self->_video_media_time = CACurrentMediaTime();
+        if (!self->_nb_audio_update || self->_is_audio_stalled) {
+            return [self setCurrentTime:self->_video_time mediaTime:self->_video_media_time];
+        }
+        return ^{};
     });
 }
 
-- (SGBlock)setCurrentTime:(CMTime)time
+- (SGBlock)setCurrentTime:(CMTime)time mediaTime:(double)mediaTime
 {
-    CMTime last_time = self->_last_time;
+    CMTime current_time = self->_current_time;
     double media_time = CACurrentMediaTime();
-    self->_time = time;
-    self->_last_time = self->_time;
-    self->_media_time = media_time;
+    self->_current_time = time;
     if (self->_is_paused) {
-        self->_media_time_pause = media_time;
+        self->_pause_media_time = media_time;
     }
     self->_invalid_duration = 0;
-    return CMTimeCompare(time, last_time) != 0 ? ^{
+    return CMTimeCompare(time, current_time) != 0 ? ^{
         [self.delegate clock:self didChcnageCurrentTime:time];
     } : ^{};
+}
+
+- (BOOL)markAsAudioStalled
+{
+    return SGLockEXE00(self.lock, ^{
+        self->_is_audio_stalled = 1;
+    });
+}
+
+- (BOOL)preferredVideoTime:(CMTime *)time offset:(CMTime *)offset
+{
+    __block CMTime time_value = kCMTimeZero;
+    __block CMTime offset_value = kCMTimeZero;
+    SGLockEXE00(self.lock, ^{
+        double current_media_time = self->_is_paused ? self->_pause_media_time : CACurrentMediaTime();
+        if (self->_nb_audio_update && !self->_is_audio_stalled) {
+            CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_audio_media_time - self->_invalid_duration);
+            duration = SGCMTimeMultiply(duration, self->_rate);
+            duration = CMTimeMaximum(duration, kCMTimeZero);
+            time_value = CMTimeAdd(self->_audio_time, duration);
+            offset_value = self->_audio_video_offset;
+        } else if (self->_nb_video_update || self->_is_audio_stalled) {
+            CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_video_media_time - self->_invalid_duration);
+            duration = SGCMTimeMultiply(duration, self->_rate);
+            duration = CMTimeMaximum(duration, kCMTimeZero);
+            time_value = CMTimeAdd(self->_video_time, duration);
+        }
+    });
+    * time = time_value;
+    * offset = offset_value;
+    return YES;
 }
 
 @end

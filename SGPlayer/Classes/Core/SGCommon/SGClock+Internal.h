@@ -7,6 +7,7 @@
 //
 
 #import "SGClock.h"
+#import "SGDefines.h"
 
 @protocol SGClockDelegate;
 
@@ -17,18 +18,18 @@
 @property (nonatomic, assign) CMTime rate;
 
 - (CMTime)currentTime;
-- (CMTime)preferredVideoTime;
 
 - (BOOL)open;
 - (BOOL)close;
-
 - (BOOL)pause;
 - (BOOL)resume;
-
 - (BOOL)flush;
 
 - (BOOL)setAudioCurrentTime:(CMTime)time;
 - (BOOL)setVideoCurrentTime:(CMTime)time;
+- (BOOL)markAsAudioStalled;
+
+- (BOOL)preferredVideoTime:(CMTime *)time offset:(CMTime *)offset;
 
 @end
 
