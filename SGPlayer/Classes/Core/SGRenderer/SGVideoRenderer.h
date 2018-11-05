@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SGVideoFrame.h"
 #import "SGVRViewport.h"
-#import "SGPlatform.h"
+#import "SGPLFImage.h"
+#import "SGPLFView.h"
 
 @interface SGVideoRenderer : NSObject
 
@@ -20,7 +21,7 @@
 @property (nonatomic, assign) CMTime displayInterval;       // Main thread only.
 @property (nonatomic, copy) void (^frameOutput)(SGVideoFrame * frame);       // Main thread only.
 
-- (UIImage *)originalImage;     // Main thread only.
-- (UIImage *)snapshot;          // Main thread only.
+- (SGPLFImage *)originalImage;     // Main thread only.
+- (SGPLFImage *)snapshot;          // Main thread only.
 
 @end

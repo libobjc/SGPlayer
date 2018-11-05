@@ -7,23 +7,34 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
 
 #if __has_include(<SGPlayer/SGPlayer.h>)
+
 FOUNDATION_EXPORT double SGPlayerVersionNumber;
 FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
+
 #import <SGPlayer/SGDefines.h>
+#import <SGPlayer/SGTime.h>
+#import <SGPlayer/SGTrack.h>
 #import <SGPlayer/SGAsset.h>
 #import <SGPlayer/SGURLAsset.h>
 #import <SGPlayer/SGPlayerItem.h>
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
 #import <SGPlayer/SGVideoFrame.h>
-#import <SGPlayer/SGVRViewport.h>
-#import <SGPlayer/SGTime.h>
 #import <SGPlayer/SGClock.h>
 #import <SGPlayer/SGAudioRenderer.h>
 #import <SGPlayer/SGVideoRenderer.h>
+#import <SGPlayer/SGVRViewport.h>
+#import <SGPlayer/SGCapacity.h>
+#import <SGPlayer/SGObjectPool.h>
+#import <SGPlayer/SGObjectQueue.h>
+#import <SGPlayer/SGPLFTargets.h>
+#import <SGPlayer/SGPLFObject.h>
+#import <SGPlayer/SGPLFImage.h>
+#import <SGPlayer/SGPLFColor.h>
+#import <SGPlayer/SGPLFView.h>
+
 #endif
 
 #pragma mark - SGPlayer
