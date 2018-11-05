@@ -9,6 +9,8 @@
 #import "SGGLTextureUploader.h"
 #import "SGPLFOpenGL.h"
 #import "SGMapping.h"
+#import "imgutils.h"
+#import "buffer.h"
 
 static int gl_texture[3] = {
     GL_TEXTURE0,
@@ -19,6 +21,7 @@ static int gl_texture[3] = {
 @interface SGGLTextureUploader ()
 
 {
+    AVBufferRef * _resample_buffers[SGFramePlaneCount];
     GLuint _gl_texture_ids[3];
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     CVOpenGLESTextureCacheRef _openGLESTextureCache;
@@ -38,12 +41,19 @@ static int gl_texture[3] = {
 {
     if (self = [super init]) {
         self.context = context;
+        for (int i = 0; i < 8; i++) {
+            _resample_buffers[i] = nil;
+        }
     }
     return self;
 }
 
 - (void)dealloc
 {
+    for (int i = 0; i < SGFramePlaneCount; i++) {
+        av_buffer_unref(&_resample_buffers[i]);
+        _resample_buffers[i] = nil;
+    }
     if (_gl_texture_ids[0]) {
         glDeleteTextures(3, _gl_texture_ids);
         _gl_texture_ids[0] = 0;
@@ -68,7 +78,7 @@ static int gl_texture[3] = {
 
 - (BOOL)uploadWithVideoFrame:(SGVideoFrame *)frame
 {
-    enum AVPixelFormat format = AV_PIX_FMT_NONE;
+    enum AVPixelFormat format = frame.format;
     uint8_t * data[SGFramePlaneCount] = {0};
     int linesize[SGFramePlaneCount] = {0};
     if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame->_pixelBuffer) {
@@ -91,41 +101,71 @@ static int gl_texture[3] = {
             linesize[0] = (int)CVPixelBufferGetBytesPerRow(frame->_pixelBuffer);
         }
         CVPixelBufferUnlockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
+    } else {
+        for (int i = 0; i < SGFramePlaneCount; i++) {
+            data[i] = frame->_data[i];
+            linesize[i] = frame->_linesize[i];
+        }
     }
     return [self uploadWithFormat:format data:data linesize:linesize width:frame.width height:frame.height];
 }
 
-- (BOOL)uploadWithFormat:(enum AVPixelFormat)format data:(uint8_t **)data linesize:(int *)linesize width:(int)width height:(int)height
+- (BOOL)uploadWithFormat:(enum AVPixelFormat)format data:(uint8_t **)data_src linesize:(int *)linesize_src width:(int)width height:(int)height
 {
-    int planes = 0;
-    int widths[SGFramePlaneCount]  = {0};
-    int heights[SGFramePlaneCount] = {0};
+    uint8_t * data[SGFramePlaneCount] = {0};
+    int linesize[SGFramePlaneCount] = {0};
+    int linecount[SGFramePlaneCount] = {0};
     int formats[SGFramePlaneCount] = {0};
+    int planes = 0;
     if (format == AV_PIX_FMT_YUV420P) {
-        planes = 3;
-        widths[0] = width;
-        widths[1] = width / 2;
-        widths[2] = width / 2;
-        heights[0] = height;
-        heights[1] = height / 2;
-        heights[2] = height / 2;
+        linesize[0] = width;
+        linesize[1] = width / 2;
+        linesize[2] = width / 2;
+        linecount[0] = height;
+        linecount[1] = height / 2;
+        linecount[2] = height / 2;
         formats[0] = GL_LUMINANCE;
         formats[1] = GL_LUMINANCE;
         formats[2] = GL_LUMINANCE;
+        planes = 3;
     } else if (format == AV_PIX_FMT_NV12) {
-        planes = 2;
-        widths[0] = width;
-        widths[1] = width / 2;
-        heights[0] = height;
-        heights[1] = height / 2;
+        linesize[0] = width;
+        linesize[1] = width / 2;
+        linecount[0] = height;
+        linecount[1] = height / 2;
         formats[0] = GL_LUMINANCE;
         formats[1] = GL_LUMINANCE_ALPHA;
+        planes = 2;
     } else {
         return NO;
     }
+    BOOL resample = NO;
+    for (int i = 0; i < planes; i++) {
+        resample = resample || (linesize_src[i] != linesize[i]);
+    }
+    if (resample) {
+        for (int i = 0; i < planes; i++) {
+            int size = linesize[i] * linecount[i] * sizeof(uint8_t);
+            if (!_resample_buffers[i] || _resample_buffers[i]->size < size) {
+                av_buffer_realloc(&_resample_buffers[i], size);
+            }
+            av_image_copy_plane(_resample_buffers[i]->data,
+                                linesize[i],
+                                data_src[i],
+                                linesize_src[i],
+                                linesize[i] * sizeof(uint8_t),
+                                linecount[i]);
+            data[i] = _resample_buffers[i]->data;
+        }
+    } else {
+        for (int i = 0; i < SGFramePlaneCount; i++) {
+            data[i] = data_src[i];
+            linesize[i] = linesize_src[i];
+        }
+    }
     return [self uploadWithData:data
-                         widths:widths
-                        heights:heights
+                         widths:linesize
+                        heights:linecount
                 internalFormats:formats
                         formats:formats
                           count:planes];
