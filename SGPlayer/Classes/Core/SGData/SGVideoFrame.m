@@ -117,7 +117,7 @@
     }
 }
 
-- (UIImage *)image
+- (SGPLFImage *)image
 {
     if (self.width == 0 || self.height == 0) {
         return nil;

@@ -129,9 +129,9 @@
     return self.matrixMaker.viewport;
 }
 
-- (UIImage *)originalImage
+- (SGPLFImage *)originalImage
 {
-    __block UIImage * ret = nil;
+    __block SGPLFImage * ret = nil;
     SGLockCondEXE11(self.lock, ^BOOL {
         return self->_current_frame != nil;
     }, ^SGBlock {
@@ -148,14 +148,14 @@
     return ret;
 }
 
-- (UIImage *)snapshot
+- (SGPLFImage *)snapshot
 {
     CGSize size = CGSizeMake(self.glView.displaySize.width,
                              self.glView.displaySize.height);
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
     [self.glView drawViewHierarchyInRect:rect afterScreenUpdates:YES];
-    UIImage * image = UIGraphicsGetImageFromCurrentImageContext();
+    SGPLFImage * image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return image;
 }

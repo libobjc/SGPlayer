@@ -7,6 +7,7 @@
 //
 
 #import "SGFrame.h"
+#import "SGPLFImage.h"
 
 @interface SGVideoFrame : SGFrame
 
@@ -22,6 +23,6 @@
 @property (nonatomic, assign, readonly) int height;
 @property (nonatomic, assign, readonly) int key_frame;
 
-- (UIImage *)image;
+- (SGPLFImage *)image;
 
 @end
