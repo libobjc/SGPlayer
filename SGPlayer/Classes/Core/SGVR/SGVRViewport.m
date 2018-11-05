@@ -12,8 +12,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.degress = 60;
         self.x = 0;
         self.y = 0;

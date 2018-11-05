@@ -482,8 +482,7 @@
         case SGDisplayModeVR: {
             double aspect = (float)size.width / (float)size.height;
             GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
-            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix])
-            {
+            if (![self.matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix]) {
                 break;
             }
             [program updateModelViewProjectionMatrix:modelViewProjectionMatrix];
