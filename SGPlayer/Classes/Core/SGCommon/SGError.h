@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger, SGErrorCode)
+typedef NS_ENUM(uint32_t, SGErrorCode)
 {
     SGErrorCodeUnknown,
     SGErrorCodeNoValidFormat,
@@ -21,7 +21,7 @@ typedef NS_ENUM(NSUInteger, SGErrorCode)
     SGErrorCodePacketOutputCannotSeek
 };
 
-typedef NS_ENUM(NSUInteger, SGOperationCode)
+typedef NS_ENUM(uint32_t, SGOperationCode)
 {
     SGOperationCodeUnknown,
     SGOperationCodeFormatCreate,
@@ -42,4 +42,4 @@ typedef NS_ENUM(NSUInteger, SGOperationCode)
 };
 
 NSError * SGEGetError(int result, SGOperationCode operation);
-NSError * SGECreateError(NSUInteger code, SGOperationCode operation);
+NSError * SGECreateError(int64_t code, SGOperationCode operation);

@@ -10,7 +10,7 @@
 
 @interface SGObjectQueue ()
 
-@property (nonatomic, assign) NSUInteger maxCount;
+@property (nonatomic, assign) uint64_t maxCount;
 @property (nonatomic, assign) CMTime duration;
 @property (nonatomic, assign) uint64_t size;
 
@@ -27,10 +27,10 @@
 
 - (instancetype)init
 {
-    return [self initWithMaxCount:NSUIntegerMax];
+    return [self initWithMaxCount:UINT64_MAX];
 }
 
-- (instancetype)initWithMaxCount:(NSUInteger)maxCount
+- (instancetype)initWithMaxCount:(uint64_t)maxCount
 {
     if (self = [super init]) {
         self.maxCount = maxCount;

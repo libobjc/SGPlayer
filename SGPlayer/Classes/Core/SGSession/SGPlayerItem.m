@@ -354,7 +354,7 @@ SGGet0Map(BOOL, videoAvailable, self.frameOutput)
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
     __block SGTrack * track = nil;
-    __block NSUInteger threshold = 0;
+    __block uint32_t threshold = 0;
     SGLockEXE00(self.lock, ^{
         if (objectQueue == self.audioQueue) {
             track = self->_selected_audio_track;

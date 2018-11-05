@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-typedef NS_ENUM(NSUInteger, SGPlayerStatus)
+typedef NS_ENUM(uint32_t, SGPlayerStatus)
 {
     SGPlayerStatusNone,
     SGPlayerStatusPreparing,
@@ -17,14 +17,14 @@ typedef NS_ENUM(NSUInteger, SGPlayerStatus)
     SGPlayerStatusFailed,
 };
 
-typedef NS_OPTIONS(NSUInteger, SGPlaybackState)
+typedef NS_OPTIONS(uint32_t, SGPlaybackState)
 {
     SGPlaybackStatePlaying = 1 << 0,
     SGPlaybackStateSeeking = 1 << 1,
     SGPlaybackStateFinished = 1 << 2,
 };
 
-typedef NS_ENUM(NSUInteger, SGLoadingState)
+typedef NS_ENUM(uint32_t, SGLoadingState)
 {
     SGLoadingStateNone,
     SGLoadingStatePlaybale,
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, SGLoadingState)
     SGLoadingStateFinished,
 };
 
-typedef NS_ENUM(NSUInteger, SGMediaType)
+typedef NS_ENUM(uint32_t, SGMediaType)
 {
     SGMediaTypeUnknown,
     SGMediaTypeAudio,
@@ -40,32 +40,18 @@ typedef NS_ENUM(NSUInteger, SGMediaType)
     SGMediaTypeSubtitle,
 };
 
-typedef NS_ENUM(NSUInteger, SGDisplayMode)
+typedef NS_ENUM(uint32_t, SGDisplayMode)
 {
     SGDisplayModePlane,
     SGDisplayModeVR,
     SGDisplayModeVRBox,
 };
 
-typedef NS_ENUM(NSUInteger, SGScalingMode)
+typedef NS_ENUM(uint32_t, SGScalingMode)
 {
     SGScalingModeResize,
     SGScalingModeResizeAspect,
     SGScalingModeResizeAspectFill,
-};
-
-typedef NS_OPTIONS(NSUInteger, SGStateOption)
-{
-    SGStateOptionPrepare = 1 << 0,
-    SGStateOptionPlayback = 1 << 1,
-    SGStateOptionLoading = 1 << 2,
-};
-
-typedef NS_OPTIONS(NSUInteger, SGTimeOption)
-{
-    SGTimeOptionPlayback = 1 << 0,
-    SGTimeOptionLoaded = 1 << 1,
-    SGTimeOptionDuration = 1 << 2,
 };
 
 typedef void (^SGBlock)(void);

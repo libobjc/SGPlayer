@@ -11,7 +11,7 @@
 
 #import "SGPLFOpenGL.h"
 
-typedef NS_ENUM(NSUInteger, SGGLModelType)
+typedef NS_ENUM(uint32_t, SGGLModelType)
 {
     SGGLModelTypeUnknown,
     SGGLModelTypePlane,

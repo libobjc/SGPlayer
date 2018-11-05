@@ -23,7 +23,7 @@ NSError * SGEGetError(int result, SGOperationCode operation)
     return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
 
-NSError * SGECreateError(NSUInteger code, SGOperationCode operation)
+NSError * SGECreateError(int64_t code, SGOperationCode operation)
 {
-    return [NSError errorWithDomain:@"SGPlayer-Error-SGErrorCode" code:code userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
+    return [NSError errorWithDomain:@"SGPlayer-Error-SGErrorCode" code:(NSInteger)code userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }

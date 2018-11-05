@@ -16,7 +16,7 @@
 @protocol SGSource;
 @protocol SGSourceDelegate;
 
-typedef NS_ENUM(NSUInteger, SGSourceState)
+typedef NS_ENUM(uint32_t, SGSourceState)
 {
     SGSourceStateNone,
     SGSourceStateOpening,

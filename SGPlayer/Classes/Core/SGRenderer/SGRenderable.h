@@ -15,7 +15,7 @@
 
 @protocol SGRenderableDelegate;
 
-typedef NS_ENUM(NSUInteger, SGRenderableState)
+typedef NS_ENUM(uint32_t, SGRenderableState)
 {
     SGRenderableStateNone,
     SGRenderableStateRendering,

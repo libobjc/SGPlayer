@@ -13,7 +13,7 @@
 
 @protocol SGFrameOutputDelegate;
 
-typedef NS_ENUM(NSUInteger, SGFrameOutputState)
+typedef NS_ENUM(uint32_t, SGFrameOutputState)
 {
     SGFrameOutputStateNone,
     SGFrameOutputStateOpening,

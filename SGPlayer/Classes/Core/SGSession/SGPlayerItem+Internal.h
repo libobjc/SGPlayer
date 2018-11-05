@@ -10,7 +10,7 @@
 #import "SGRenderable.h"
 #import "SGFrameFilter.h"
 
-typedef NS_ENUM(NSUInteger, SGPlayerItemState)
+typedef NS_ENUM(uint32_t, SGPlayerItemState)
 {
     SGPlayerItemStateNone,
     SGPlayerItemStateOpening,

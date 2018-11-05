@@ -11,7 +11,7 @@
 
 #import "SGPLFOpenGL.h"
 
-typedef NS_ENUM(NSUInteger, SGGLProgramType)
+typedef NS_ENUM(uint32_t, SGGLProgramType)
 {
     SGGLProgramTypeUnknown,
     SGGLProgramTypeYUV420P,

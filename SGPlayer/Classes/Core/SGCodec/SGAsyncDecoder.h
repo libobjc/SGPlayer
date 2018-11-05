@@ -12,7 +12,7 @@
 
 @protocol SGAsyncDecoderDelegate;
 
-typedef NS_ENUM(NSUInteger, SGAsyncDecoderState)
+typedef NS_ENUM(uint32_t, SGAsyncDecoderState)
 {
     SGAsyncDecoderStateNone,
     SGAsyncDecoderStateDecoding,

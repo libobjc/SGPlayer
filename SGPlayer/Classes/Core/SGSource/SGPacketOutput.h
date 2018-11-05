@@ -12,7 +12,7 @@
 
 @protocol SGPacketOutputDelegate;
 
-typedef NS_ENUM(NSUInteger, SGPacketOutputState)
+typedef NS_ENUM(uint32_t, SGPacketOutputState)
 {
     SGPacketOutputStateNone,
     SGPacketOutputStateOpening,
