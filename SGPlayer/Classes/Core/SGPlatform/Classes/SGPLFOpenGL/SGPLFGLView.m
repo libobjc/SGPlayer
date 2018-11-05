@@ -17,14 +17,15 @@
 {
     if (self = [super initWithFrame:frameRect]) {
         self.glScale = 1.0f;
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layoutSubviews) name:NSViewBoundsDidChangeNotification object:nil];
+        [self layoutSubviews];
     }
     return self;
 }
 
-- (void)dealloc
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super resizeWithOldSuperviewSize:oldSize];
+    [self layoutSubviews];
 }
 
 - (void)layoutSubviews

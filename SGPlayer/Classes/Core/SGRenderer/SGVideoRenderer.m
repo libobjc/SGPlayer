@@ -342,7 +342,7 @@
                 [frame unlock];
             };
         }
-        if ((self->_is_update_frame_draw || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox)) && self->_current_frame) {
+        if ((self->_is_update_frame_draw || !self.glView.framesDisplayed || (self.displayMode == SGDisplayModeVR || self.displayMode == SGDisplayModeVRBox)) && self->_current_frame) {
             b2 = ^{
                 [self addGLViewIfNeeded];
                 if (self.glView.superview && self.glView.displaySize.width > 0) {
@@ -362,7 +362,7 @@
                 self->_nb_frames_draw += 1;
             }
             SGBlock b1 = ^{};
-            if (self->_state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_nb_frames_draw) {
+            if (self->_state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_nb_frames_draw && self.glView.framesDisplayed) {
                 b1 = ^{
                     self.drawTimer.paused = YES;
                 };
@@ -384,12 +384,13 @@
             self.glView.delegate = self;
         }
         if (self.glView.superview != self.view) {
-            [self.view addSubview:self.glView];
-        }
-        SGGLSize layerSize = {CGRectGetWidth(self.view.bounds), CGRectGetHeight(self.view.bounds)};
-        if (layerSize.width != self.glView.displaySize.width ||
-            layerSize.height != self.glView.displaySize.height) {
-            self.glView.frame = self.view.bounds;
+            SGPLFViewInsertSubview(self.view, self.glView, 0);
+            self.glView.translatesAutoresizingMaskIntoConstraints = NO;
+            NSLayoutConstraint * c1 = [NSLayoutConstraint constraintWithItem:self.glView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
+            NSLayoutConstraint * c2 = [NSLayoutConstraint constraintWithItem:self.glView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
+            NSLayoutConstraint * c3 = [NSLayoutConstraint constraintWithItem:self.glView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
+            NSLayoutConstraint * c4 = [NSLayoutConstraint constraintWithItem:self.glView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0];
+            [self.view addConstraints:@[c1, c2, c3, c4]];
         }
     } else {
         [self.glView removeFromSuperview];
@@ -506,6 +507,16 @@
     glClearColor(0, 0, 0, 1);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     return YES;
+}
+
+- (void)glViewDidFlush:(SGGLView *)glView
+{
+    SGLockCondEXE00(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
+    }, ^ {
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
+    });
 }
 
 @end
