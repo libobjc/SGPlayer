@@ -176,7 +176,7 @@
 				TargetAttributes = {
 					9CB925131E7942AC00DE6721 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = SWXNKT9754;
+						DevelopmentTeam = KAGR32AB25;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -347,11 +347,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SWXNKT9754;
+				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Debug;
@@ -361,11 +361,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = SWXNKT9754;
+				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-macos";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
 			name = Release;

@@ -12,6 +12,15 @@
 		9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C6901FC21901D3C00B546E3 /* Main.storyboard */; };
 		9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C6901FF21901D3D00B546E3 /* Assets.xcassets */; };
 		9C69020321901D3D00B546E3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C69020221901D3D00B546E3 /* main.m */; };
+		9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C86356921902E5000D730EC /* SGPlayer.framework */; };
+		9C8637E52190479A00D730EC /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E42190479A00D730EC /* CoreMedia.framework */; };
+		9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E62190479F00D730EC /* AudioToolbox.framework */; };
+		9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E8219047A400D730EC /* VideoToolbox.framework */; };
+		9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EA219047A900D730EC /* libbz2.tbd */; };
+		9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EC219047AE00D730EC /* libz.tbd */; };
+		9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EE219047B400D730EC /* libiconv.tbd */; };
+		9C8637F32190487900D730EC /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C8637F12190487900D730EC /* i-see-fire.mp4 */; };
+		9C8637F42190487A00D730EC /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C8637F22190487900D730EC /* google-help-vr.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +33,15 @@
 		9C6901FF21901D3D00B546E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C69020121901D3D00B546E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9C69020221901D3D00B546E3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9C86356921902E5000D730EC /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C8637E42190479A00D730EC /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		9C8637E62190479F00D730EC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9C8637E8219047A400D730EC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		9C8637EA219047A900D730EC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		9C8637EC219047AE00D730EC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		9C8637EE219047B400D730EC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		9C8637F12190487900D730EC /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
+		9C8637F22190487900D730EC /* google-help-vr.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "google-help-vr.mp4"; path = "../../../demo-assset/google-help-vr.mp4"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +49,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */,
+				9C8637E52190479A00D730EC /* CoreMedia.framework in Frameworks */,
+				9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */,
+				9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */,
+				9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */,
+				9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */,
+				9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -42,6 +67,7 @@
 			children = (
 				9C6901F521901D3C00B546E3 /* demo-tvos */,
 				9C6901F421901D3C00B546E3 /* Products */,
+				9C86356821902E5000D730EC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -64,8 +90,32 @@
 				9C6901FF21901D3D00B546E3 /* Assets.xcassets */,
 				9C69020121901D3D00B546E3 /* Info.plist */,
 				9C69020221901D3D00B546E3 /* main.m */,
+				9C8637F02190485B00D730EC /* Supporting Files */,
 			);
 			path = "demo-tvos";
+			sourceTree = "<group>";
+		};
+		9C86356821902E5000D730EC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9C8637EE219047B400D730EC /* libiconv.tbd */,
+				9C8637EC219047AE00D730EC /* libz.tbd */,
+				9C8637EA219047A900D730EC /* libbz2.tbd */,
+				9C8637E8219047A400D730EC /* VideoToolbox.framework */,
+				9C8637E62190479F00D730EC /* AudioToolbox.framework */,
+				9C8637E42190479A00D730EC /* CoreMedia.framework */,
+				9C86356921902E5000D730EC /* SGPlayer.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9C8637F02190485B00D730EC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9C8637F22190487900D730EC /* google-help-vr.mp4 */,
+				9C8637F12190487900D730EC /* i-see-fire.mp4 */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -126,7 +176,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */,
+				9C8637F42190487A00D730EC /* google-help-vr.mp4 in Resources */,
 				9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */,
+				9C8637F32190487900D730EC /* i-see-fire.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

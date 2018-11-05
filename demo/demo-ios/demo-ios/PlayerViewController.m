@@ -36,53 +36,31 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [UIColor blackColor];
     
-    NSURL * contentURL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-//    NSURL * contentURL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
-    
-//    NSMutableArray * assets = [NSMutableArray array];
-//    for (int i = 0; i < 1; i++)
-//    {
-//        SGURLAsset2 * asset1 = [[SGURLAsset2 alloc] initWithURL:contentURL1];
-////        asset1.scale = CMTimeMake(1, 3);
-//        SGURLAsset2 * asset2 = [[SGURLAsset2 alloc] initWithURL:contentURL2];
-//        [assets addObject:asset1];
-//        [assets addObject:asset2];
-//    }
-//    SGConcatAsset * asset = [[SGConcatAsset alloc] initWithAssets:assets];
-//    SGURLAsset * asset = [[SGURLAsset alloc] initWithURL:contentURL1];
+    NSURL * URL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
+    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.videoRenderer.view = self.view1;
 //    self.player.videoRenderer.displayMode = SGDisplayModeVR;
-    
-//    self.player.hardwareDecodeH264 = NO;
-    
-//    [self.player setCodecDiscardPacketFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index, BOOL key) {
-//        if (index == 0) {
-//            [discardFilter flush];
-//        }
-//        return [discardFilter discardWithTimeStamp:timingInfo.decodeTimeStamp];
+//    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
+//        NSLog(@"1 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
 //    }];
-    
-//    [self.player setDisplayDiscardFilter:^BOOL(CMSampleTimingInfo timingInfo, NSUInteger index) {
-//        if (index == 0) {
-//            [discardFilter flush];
-//        }
-//        return [discardFilter discardWithTimeStamp:timingInfo.presentationTimeStamp];
-//    }];
-    
-    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
-        NSLog(@"frame output : %f", CMTimeGetSeconds(frame.timeStamp));
-    }];
-    
-//    [self.player replaceWithAsset:asset];
-    [self.player replaceWithURL:contentURL1];
+    [self.player replaceWithURL:URL1];
     [self.player waitUntilReady];
-    NSLog(@"duration : %f", CMTimeGetSeconds(self.player.duration));
     [self.player play];
+    
+    self.player2 = [[SGPlayer alloc] init];
+//    self.player2.delegate = self;
+    self.player2.videoRenderer.view = self.view2;
+    self.player2.videoRenderer.displayMode = SGDisplayModeVR;
+    [self.player2.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
+        NSLog(@"2 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
+    }];
+    [self.player2 replaceWithURL:URL2];
+    [self.player2 waitUntilReady];
+    [self.player2 play];
 }
 
 - (void)viewDidLayoutSubviews
@@ -140,7 +118,7 @@
 
 - (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
 {
-    NSLog(@"%s, playing  : %ld, %ld, %ld", __func__, state & SGPlaybackStatePlaying, state & SGPlaybackStateSeeking, state & SGPlaybackStateFinished);
+    NSLog(@"%s, playing  : %d, %d, %d", __func__, state & SGPlaybackStatePlaying, state & SGPlaybackStateSeeking, state & SGPlaybackStateFinished);
     if (state & SGPlaybackStateFinished) {
         self.stateLabel.text = @"Finished";
     } else if (state & SGPlaybackStatePlaying) {
@@ -152,7 +130,7 @@
 
 - (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state
 {
-    NSLog(@"%s, %ld", __func__, state);
+    NSLog(@"%s, %d", __func__, state);
 }
 
 - (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime duration:(CMTime)duration
