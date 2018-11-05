@@ -7,21 +7,16 @@
 //
 
 #import "SGPLFObject.h"
-
 #import "SGPLFImage.h"
 #import "SGPLFColor.h"
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 typedef NSView SGPLFView;
-
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 typedef UIView SGPLFView;
-
 
 #endif
 

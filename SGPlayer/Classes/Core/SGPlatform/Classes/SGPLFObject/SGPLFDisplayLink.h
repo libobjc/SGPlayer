@@ -10,7 +10,6 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 @interface SGPLFDisplayLink : NSObject
 
 + (SGPLFDisplayLink *)displayLinkWithTarget:(id)target selector:(SEL)sel;
@@ -22,11 +21,8 @@
 
 @end
 
-
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 typedef CADisplayLink SGPLFDisplayLink;
-
 
 #endif

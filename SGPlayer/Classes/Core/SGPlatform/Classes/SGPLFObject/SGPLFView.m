@@ -11,7 +11,6 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 void SGPLFViewSetBackgroundColor(SGPLFView * view, SGPLFColor * color)
 {
     view.wantsLayer = YES;
@@ -48,9 +47,7 @@ SGPLFImage * SGPLFViewGetCurrentSnapshot(SGPLFView * view)
     return image;
 }
 
-
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-
 
 void SGPLFViewSetBackgroundColor(SGPLFView * view, SGPLFColor * color)
 {
@@ -66,6 +63,5 @@ SGPLFImage * SGPLFViewGetCurrentSnapshot(SGPLFView * view)
 {
     return nil;
 }
-
 
 #endif

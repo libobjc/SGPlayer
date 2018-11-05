@@ -7,21 +7,16 @@
 //
 
 #import "SGPLFObject.h"
-
 #import <CoreVideo/CoreVideo.h>
 #import <CoreImage/CoreImage.h>
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 typedef NSImage SGPLFImage;
-
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 typedef UIImage SGPLFImage;
-
 
 #endif
 

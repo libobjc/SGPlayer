@@ -8,9 +8,7 @@
 
 #import "SGPLFGLView.h"
 
-
 #if SGPLATFORM_TARGET_OS_MAC
-
 
 @implementation SGPLFGLView
 
@@ -31,9 +29,7 @@
 
 @end
 
-
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-
 
 @implementation SGPLFGLView
 
@@ -71,6 +67,5 @@
 }
 
 @end
-
 
 #endif

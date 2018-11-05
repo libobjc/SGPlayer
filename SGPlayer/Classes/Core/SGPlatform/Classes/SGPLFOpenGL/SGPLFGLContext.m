@@ -10,7 +10,6 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 NSOpenGLPixelFormat * SGPLFGLContextGetPixelFormat(SGPLFGLContext * context)
 {
     return context.pixelFormat;
@@ -37,9 +36,7 @@ void SGPLGLContextSetCurrentContext(SGPLFGLContext * context)
     }
 }
 
-
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-
 
 SGPLFGLContext * SGPLFGLContextAllocInit(void)
 {
@@ -50,6 +47,5 @@ void SGPLGLContextSetCurrentContext(SGPLFGLContext * context)
 {
     [EAGLContext setCurrentContext:context];
 }
-
 
 #endif

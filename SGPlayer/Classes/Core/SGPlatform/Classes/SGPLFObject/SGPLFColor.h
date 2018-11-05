@@ -10,14 +10,10 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 typedef NSColor SGPLFColor;
-
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 typedef UIColor SGPLFColor;
-
 
 #endif

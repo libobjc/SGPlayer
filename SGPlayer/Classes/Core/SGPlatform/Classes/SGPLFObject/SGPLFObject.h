@@ -13,15 +13,11 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 #import <Cocoa/Cocoa.h>
-
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 #import <UIKit/UIKit.h>
-
 
 #endif
 

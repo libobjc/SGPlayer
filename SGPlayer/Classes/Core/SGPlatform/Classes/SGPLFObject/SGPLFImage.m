@@ -10,7 +10,6 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 SGPLFImage * SGPLFImageWithCGImage(CGImageRef image)
 {
     return [[NSImage alloc] initWithCGImage:image size:CGSizeMake(CGImageGetWidth(image), CGImageGetHeight(image))];
@@ -36,9 +35,7 @@ CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
     }
 }
 
-
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-
 
 SGPLFImage * SGPLFImageWithCGImage(CGImageRef image)
 {
@@ -59,7 +56,6 @@ CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 }
 
 #endif
-
 
 CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 {

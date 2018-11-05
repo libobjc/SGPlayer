@@ -10,15 +10,11 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 typedef NSScreen SGPLFScreen;
-
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
-
 typedef UIScreen SGPLFScreen;
-
 
 #endif
 

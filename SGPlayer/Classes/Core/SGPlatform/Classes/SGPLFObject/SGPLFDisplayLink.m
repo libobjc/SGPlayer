@@ -11,7 +11,6 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-
 @interface SGPLFDisplayLink ()
 
 {
@@ -32,8 +31,7 @@
 
 - (instancetype)initWithTarget:(id)target selector:(SEL)selector
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         _displayLink = nil;
         self.target = target;
         self.selector = selector;
@@ -47,8 +45,7 @@
 
 - (void)setPaused:(BOOL)paused
 {
-    if (_displayLink)
-    {
+    if (_displayLink) {
         if (paused) {
             CVDisplayLinkStop(_displayLink);
         } else {
@@ -59,8 +56,7 @@
 
 - (BOOL)paused
 {
-    if (_displayLink)
-    {
+    if (_displayLink) {
         return !CVDisplayLinkIsRunning(_displayLink);
     }
     return YES;
@@ -74,8 +70,7 @@
 - (void)invalidate
 {
     self.paused = YES;
-    if (_displayLink)
-    {
+    if (_displayLink) {
         CVDisplayLinkRelease(_displayLink);
         _displayLink = nil;
     }
@@ -104,7 +99,6 @@ static CVReturn displayLinkCallback(CVDisplayLinkRef displayLinkRef,
 }
 
 @end
-
 
 #endif
 

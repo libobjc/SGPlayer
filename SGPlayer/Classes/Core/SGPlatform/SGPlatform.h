@@ -8,20 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-
 // Target Conditionals
 #import "SGPLFTargets.h"
 
-
-// UIKit and AppKit Objects
+// UIKit & AppKit Objects
 #import "SGPLFObject.h"
-
 #import "SGPLFView.h"
 #import "SGPLFImage.h"
 #import "SGPLFColor.h"
 #import "SGPLFScreen.h"
 #import "SGPLFDisplayLink.h"
-
 
 // OpenGL
 #import "SGPLFOpenGL.h"
