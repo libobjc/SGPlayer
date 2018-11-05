@@ -21,12 +21,14 @@
 
 @property (nonatomic, strong) CAEAGLLayer * glLayer;
 
+- (void)renderbufferStorage;
+
 #endif
 
 @property (nonatomic, strong) SGPLFGLContext * context;
 @property (nonatomic, assign) double glScale;
 
-- (void)renderbufferStorage;
+- (void)prepare;
 - (void)present;
 
 @end

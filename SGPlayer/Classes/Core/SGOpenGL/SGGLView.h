@@ -15,6 +15,7 @@
 
 - (BOOL)glView:(SGGLView *)glView display:(SGGLSize)size;
 - (BOOL)glView:(SGGLView *)glView clear:(SGGLSize)size;
+- (void)glViewDidFlush:(SGGLView *)glView;
 
 @end
 
@@ -22,6 +23,7 @@
 
 @property (nonatomic, weak) id <SGGLViewDelegate> delegate;
 @property (nonatomic, assign, readonly) SGGLSize displaySize;
+@property (nonatomic, assign, readonly) int64_t framesDisplayed;
 
 - (BOOL)display;
 - (BOOL)clear;

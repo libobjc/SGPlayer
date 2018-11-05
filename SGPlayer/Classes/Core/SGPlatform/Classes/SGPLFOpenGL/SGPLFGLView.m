@@ -16,16 +16,15 @@
 - (instancetype)initWithFrame:(NSRect)frameRect
 {
     if (self = [super initWithFrame:frameRect]) {
-        self.glScale = SGPLFScreenGetScale();
-        [self layoutSubviews];
+        self.glScale = 1.0f;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(layoutSubviews) name:NSViewBoundsDidChangeNotification object:nil];
     }
     return self;
 }
 
-- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
+- (void)dealloc
 {
-    [super resizeWithOldSuperviewSize:oldSize];
-    [self layoutSubviews];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)layoutSubviews
@@ -43,9 +42,9 @@
     return self.openGLContext;
 }
 
-- (void)renderbufferStorage
+- (void)prepare
 {
-    
+    [self prepareOpenGL];
 }
 
 - (void)present
@@ -83,6 +82,11 @@
 - (void)renderbufferStorage
 {
     [self.context renderbufferStorage:GL_RENDERBUFFER fromDrawable:self.glLayer];
+}
+
+- (void)prepare
+{
+    
 }
 
 - (void)present
