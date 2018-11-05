@@ -179,6 +179,15 @@
 		9C8637CE219045C000D730EC /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8637CC219045C000D730EC /* error.h */; };
 		9C8637D0219045CF00D730EC /* samplefmt.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8637CF219045CF00D730EC /* samplefmt.h */; };
 		9C8637D1219045CF00D730EC /* samplefmt.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8637CF219045CF00D730EC /* samplefmt.h */; };
+		9C8637DB2190476600D730EC /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D22190476600D730EC /* libswresample.a */; };
+		9C8637DC2190476600D730EC /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D32190476600D730EC /* libssl.a */; };
+		9C8637DD2190476600D730EC /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D42190476600D730EC /* libcrypto.a */; };
+		9C8637DE2190476600D730EC /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D52190476600D730EC /* libavutil.a */; };
+		9C8637DF2190476600D730EC /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D62190476600D730EC /* libavdevice.a */; };
+		9C8637E02190476600D730EC /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D72190476600D730EC /* libavcodec.a */; };
+		9C8637E12190476600D730EC /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D82190476600D730EC /* libavfilter.a */; };
+		9C8637E22190476600D730EC /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637D92190476600D730EC /* libavformat.a */; };
+		9C8637E32190476600D730EC /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637DA2190476600D730EC /* libswscale.a */; };
 		9C89C81E2189574000D64916 /* SGPointerMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C89C81C2189574000D64916 /* SGPointerMap.h */; };
 		9C89C81F2189574000D64916 /* SGPointerMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C89C81D2189574000D64916 /* SGPointerMap.m */; };
 		9C8D26592019E1AC002770FA /* SGGLViewport.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D26572019E1AC002770FA /* SGGLViewport.h */; };
@@ -566,6 +575,15 @@
 		9C8637C92190455A00D730EC /* imgutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = imgutils.h; sourceTree = "<group>"; };
 		9C8637CC219045C000D730EC /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
 		9C8637CF219045CF00D730EC /* samplefmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = samplefmt.h; sourceTree = "<group>"; };
+		9C8637D22190476600D730EC /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libswresample.a"; sourceTree = "<group>"; };
+		9C8637D32190476600D730EC /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libssl.a"; sourceTree = "<group>"; };
+		9C8637D42190476600D730EC /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libcrypto.a"; sourceTree = "<group>"; };
+		9C8637D52190476600D730EC /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libavutil.a"; sourceTree = "<group>"; };
+		9C8637D62190476600D730EC /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libavdevice.a"; sourceTree = "<group>"; };
+		9C8637D72190476600D730EC /* libavcodec.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavcodec.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libavcodec.a"; sourceTree = "<group>"; };
+		9C8637D82190476600D730EC /* libavfilter.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavfilter.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libavfilter.a"; sourceTree = "<group>"; };
+		9C8637D92190476600D730EC /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libavformat.a"; sourceTree = "<group>"; };
+		9C8637DA2190476600D730EC /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-tvOS/libswscale.a"; sourceTree = "<group>"; };
 		9C89C81C2189574000D64916 /* SGPointerMap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPointerMap.h; sourceTree = "<group>"; };
 		9C89C81D2189574000D64916 /* SGPointerMap.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPointerMap.m; sourceTree = "<group>"; };
 		9C8D26532019DC7F002770FA /* SGGLDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDefines.h; sourceTree = "<group>"; };
@@ -616,7 +634,6 @@
 		9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDiscardFilter.m; sourceTree = "<group>"; };
 		9CD79E9A218FF8B200E39A7D /* SGOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGOpenGL.h; sourceTree = "<group>"; };
 		9CD79FA62190068E00E39A7D /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9CD79FA72190068E00E39A7D /* SGPlayer iOS copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SGPlayer iOS copy-Info.plist"; path = "/Users/single/Documents/project/github/SGPlayer/SGPlayer iOS copy-Info.plist"; sourceTree = "<absolute>"; };
 		9CDFC3E4218B10F00065C826 /* SGRenderer+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGRenderer+Internal.h"; sourceTree = "<group>"; };
 		9CE469B12151FB4F00528662 /* SGURLPacketReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLPacketReader.h; sourceTree = "<group>"; };
 		9CE469B22151FB4F00528662 /* SGURLPacketReader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLPacketReader.m; sourceTree = "<group>"; };
@@ -674,6 +691,15 @@
 				9CD79EDB2190068E00E39A7D /* UIKit.framework in Frameworks */,
 				9CD79EDC2190068E00E39A7D /* AVFoundation.framework in Frameworks */,
 				9CD79EDD2190068E00E39A7D /* Foundation.framework in Frameworks */,
+				9C8637DB2190476600D730EC /* libswresample.a in Frameworks */,
+				9C8637DC2190476600D730EC /* libssl.a in Frameworks */,
+				9C8637DD2190476600D730EC /* libcrypto.a in Frameworks */,
+				9C8637DE2190476600D730EC /* libavutil.a in Frameworks */,
+				9C8637DF2190476600D730EC /* libavdevice.a in Frameworks */,
+				9C8637E02190476600D730EC /* libavcodec.a in Frameworks */,
+				9C8637E12190476600D730EC /* libavfilter.a in Frameworks */,
+				9C8637E22190476600D730EC /* libavformat.a in Frameworks */,
+				9C8637E32190476600D730EC /* libswscale.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -802,20 +828,29 @@
 				9CF9A020212D1D34008178BC /* libavcodec.a */,
 				9CF9A022212D1D35008178BC /* libavfilter.a */,
 				9C8636592190408300D730EC /* libavcodec.a */,
+				9C8637D72190476600D730EC /* libavcodec.a */,
 				9C8636522190408300D730EC /* libavdevice.a */,
 				9C8636582190408300D730EC /* libavfilter.a */,
 				9CF9A01D212D1D34008178BC /* libavformat.a */,
+				9C8637D62190476600D730EC /* libavdevice.a */,
+				9C8637D82190476600D730EC /* libavfilter.a */,
+				9C8637D92190476600D730EC /* libavformat.a */,
 				9CF9A01F212D1D34008178BC /* libavutil.a */,
+				9C8637D52190476600D730EC /* libavutil.a */,
 				9CF9A023212D1D35008178BC /* libcrypto.a */,
 				9C8636552190408300D730EC /* libavutil.a */,
 				9C8636572190408300D730EC /* libcrypto.a */,
+				9C8637D42190476600D730EC /* libcrypto.a */,
 				9CF9A01C212D1D34008178BC /* libssl.a */,
+				9C8637D32190476600D730EC /* libssl.a */,
 				9CF9A021212D1D34008178BC /* libswresample.a */,
 				9C8636542190408300D730EC /* libssl.a */,
 				9C8636562190408300D730EC /* libswresample.a */,
 				9CF9A01E212D1D34008178BC /* libswscale.a */,
 				9C8636512190408300D730EC /* libavformat.a */,
 				9C8636532190408300D730EC /* libswscale.a */,
+				9C8637D22190476600D730EC /* libswresample.a */,
+				9C8637DA2190476600D730EC /* libswscale.a */,
 				9CCC5F1D200C9BA200E833DA /* UIKit.framework */,
 				9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */,
 				9CCC5F19200C9B9400E833DA /* Foundation.framework */,
@@ -1106,7 +1141,6 @@
 				9CEFA6D81E7122BF00835CAB /* SGPlayer */,
 				9CEFA6D71E7122BF00835CAB /* Products */,
 				9C4793421E71402E00AD4289 /* Frameworks */,
-				9CD79FA72190068E00E39A7D /* SGPlayer iOS copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
