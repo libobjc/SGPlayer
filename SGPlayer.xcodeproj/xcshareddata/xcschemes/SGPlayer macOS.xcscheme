@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9CEFA6E11E7125C800835CAB"
+               BlueprintIdentifier = "9C8637F521904A0900D730EC"
                BuildableName = "SGPlayer.framework"
                BlueprintName = "SGPlayer macOS"
                ReferencedContainer = "container:SGPlayer.xcodeproj">
@@ -45,7 +45,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9CEFA6E11E7125C800835CAB"
+            BlueprintIdentifier = "9C8637F521904A0900D730EC"
             BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer macOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">
@@ -63,7 +63,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9CEFA6E11E7125C800835CAB"
+            BlueprintIdentifier = "9C8637F521904A0900D730EC"
             BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer macOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">

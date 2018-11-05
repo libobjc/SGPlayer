@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
-               BuildableName = "SGPlayer tvOS.framework"
+               BuildableName = "SGPlayer.framework"
                BlueprintName = "SGPlayer tvOS"
                ReferencedContainer = "container:SGPlayer.xcodeproj">
             </BuildableReference>
@@ -46,7 +46,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
-            BuildableName = "SGPlayer tvOS.framework"
+            BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer tvOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">
          </BuildableReference>
@@ -64,7 +64,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
-            BuildableName = "SGPlayer tvOS.framework"
+            BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer tvOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">
          </BuildableReference>

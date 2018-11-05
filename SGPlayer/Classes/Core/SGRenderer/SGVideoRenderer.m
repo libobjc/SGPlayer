@@ -150,14 +150,7 @@
 
 - (SGPLFImage *)snapshot
 {
-    CGSize size = CGSizeMake(self.glView.displaySize.width,
-                             self.glView.displaySize.height);
-    CGRect rect = CGRectMake(0, 0, size.width, size.height);
-    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
-    [self.glView drawViewHierarchyInRect:rect afterScreenUpdates:YES];
-    SGPLFImage * image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return image;
+    return SGPLFViewGetCurrentSnapshot(self.glView);
 }
 
 #pragma mark - Interface

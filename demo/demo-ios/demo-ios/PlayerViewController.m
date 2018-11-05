@@ -8,7 +8,6 @@
 
 #import "PlayerViewController.h"
 #import <SGPlayer/SGPlayer.h>
-//#import <SGAVPlayer/SGAVPlayer.h>
 
 @interface PlayerViewController () <SGPlayerDelegate>
 
@@ -40,6 +39,7 @@
     NSURL * URL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
     NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
+    [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
     self.player.videoRenderer.view = self.view1;

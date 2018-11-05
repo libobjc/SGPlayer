@@ -62,6 +62,25 @@
     return YES;
 }
 
+- (NSTimeInterval)timestamp
+{
+    if (_displayLink) {
+        CVTimeStamp t = {};
+        if (CVDisplayLinkGetCurrentTime(_displayLink, &t) == kCVReturnSuccess && t.flags & kCVTimeStampHostTimeValid) {
+            return t.hostTime / NSEC_PER_SEC;
+        };
+    }
+    return 0;
+}
+
+- (NSTimeInterval)duration
+{
+    if (_displayLink) {
+        return CVDisplayLinkGetActualOutputVideoRefreshPeriod(_displayLink);
+    }
+    return 0;
+}
+
 - (void)addToRunLoop:(NSRunLoop *)runloop forMode:(NSRunLoopMode)mode
 {
     
@@ -69,8 +88,8 @@
 
 - (void)invalidate
 {
-    self.paused = YES;
     if (_displayLink) {
+        CVDisplayLinkStop(_displayLink);
         CVDisplayLinkRelease(_displayLink);
         _displayLink = nil;
     }

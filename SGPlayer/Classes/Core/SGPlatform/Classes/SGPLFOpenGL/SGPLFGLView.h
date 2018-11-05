@@ -13,14 +13,17 @@
 
 @interface SGPLFGLView : NSOpenGLView
 
+- (void)layoutSubviews;
+
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
 @interface SGPLFGLView : UIView
 
+@property (nonatomic, strong) CAEAGLLayer * glLayer;
+
 #endif
 
 @property (nonatomic, strong) SGPLFGLContext * context;
-@property (nonatomic, strong) CAEAGLLayer * glLayer;
 @property (nonatomic, assign) double glScale;
 
 - (void)renderbufferStorage;

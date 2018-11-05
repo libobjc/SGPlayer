@@ -23,11 +23,13 @@
     if (self = [super init]) {
         self.handler = handler;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         if (@available(iOS 10.0, *)) {
             self.displayLink.preferredFramesPerSecond = 1.0f / timeInterval;
         } else {
             self.displayLink.frameInterval = 60 * timeInterval;
         }
+#endif
         [self.displayLink addToRunLoop:[NSRunLoop mainRunLoop] forMode:NSRunLoopCommonModes];
     }
     return self;
@@ -53,7 +55,7 @@
 
 - (BOOL)paused
 {
-    return self.displayLink.isPaused;
+    return self.displayLink.paused;
 }
 
 - (double)timestamp

@@ -7,11 +7,12 @@
 //
 
 #import "PlayerViewController.h"
-#import <SGAVPlayer/SGAVPlayer.h>
+#import <SGPlayer/SGPlayer.h>
 
-@interface PlayerViewController ()
+@interface PlayerViewController () <SGPlayerDelegate>
 
-@property (nonatomic, strong) SGAVPlayer * player;
+@property (nonatomic, strong) SGPlayer * player;
+
 @property (weak) IBOutlet NSTextField *totalTimeLabel;
 @property (weak) IBOutlet NSTextField *currentTimeLabel;
 @property (weak) IBOutlet NSSlider *progressSilder;
@@ -37,23 +38,18 @@
 
 - (void)setup
 {
-    self.player = [[SGAVPlayer alloc] init];
-    [self sg_registerNotificationForPlayer:self.player
-                       playbackStateAction:@selector(playbackStateAction:)
-                           loadStateAction:@selector(loadStateAction:)
-                         currentTimeAction:@selector(currentTimeAction:)
-                              loadedAction:@selector(loadedTimeAction:)
-                               errorAction:@selector(errorAction:)];
-    [self.view addSubview:self.player.view positioned:NSWindowBelow relativeTo:nil];
+    NSURL * URL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
     
-    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-    //    NSURL * contentURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
-    [self.player replaceWithContentURL:contentURL];
-}
-
-- (void)viewDidLayout
-{
-    self.player.view.frame = self.view.bounds;
+    self.player = [[SGPlayer alloc] init];
+    self.player.delegate = self;
+    self.player.videoRenderer.view = self.view;
+//    self.player.videoRenderer.displayMode = SGDisplayModeVR;
+//    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
+//        NSLog(@"frame output : %f", CMTimeGetSeconds(frame.timeStamp));
+//    }];
+    [self.player replaceWithURL:URL];
+    [self.player waitUntilReady];
+    [self.player play];
 }
 
 - (IBAction)play:(id)sender
@@ -66,84 +62,39 @@
     [self.player pause];
 }
 
-- (void)playbackStateAction:(NSNotification *)notification
+- (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status
 {
-    SGPlaybackStateModel * playbackStateModel = [notification.userInfo sg_playbackStateModel];
-    
-    NSString * text;
-    switch (playbackStateModel.current) {
-        case SGPlaybackStateNone:
-            text = @"Idle";
-            break;
-        case SGPlaybackStatePlaying:
-            text = @"Playing";
-            break;
-        case SGPlaybackStateSeeking:
-            text = @"Seeking";
-            break;
-        case SGPlaybackStatePaused:
-            text = @"Paused";
-            break;
-        case SGPlaybackStateInterrupted:
-            text = @"Interrupted";
-            break;
-        case SGPlaybackStateStopped:
-            text = @"Stopped";
-            break;
-        case SGPlaybackStateFinished:
-            text = @"Finished";
-            break;
-        case SGPlaybackStateFailed:
-            text = @"Failed";
-            break;
-    }
-    self.stateLabel.stringValue = text;
-    
-    NSLog(@"%s, %ld", __func__, playbackStateModel.current);
+//    NSLog(@"%s, %ld", __func__, status);
 }
 
-- (void)loadStateAction:(NSNotification *)notification
+- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
 {
-    SGPlaybackStateModel * loadStateModel = [notification.userInfo sg_playbackStateModel];
-    
-    NSLog(@"%s, %ld", __func__, loadStateModel.current);
-    
-    if (loadStateModel.current == SGLoadingStatePlayable && self.player.playbackState == SGLoadingStateNone) {
-        [self.player play];
+//    NSLog(@"%s, playing  : %d, %d, %d", __func__, state & SGPlaybackStatePlaying, state & SGPlaybackStateSeeking, state & SGPlaybackStateFinished);
+    if (state & SGPlaybackStateFinished) {
+        self.stateLabel.stringValue = @"Finished";
+    } else if (state & SGPlaybackStatePlaying) {
+        self.stateLabel.stringValue = @"Playing";
+    } else {
+        self.stateLabel.stringValue = @"Paused";
     }
 }
 
-- (void)currentTimeAction:(NSNotification *)notification
+- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime duration:(CMTime)duration
 {
-    SGTimeModel * currentTimeModel = [notification.userInfo sg_currentTimeModel];
-    
-    NSLog(@"%s, %f", __func__, currentTimeModel.current);
-    
-    self.progressSilder.doubleValue = currentTimeModel.percent;
-    self.currentTimeLabel.stringValue = [self timeStringFromSeconds:currentTimeModel.current];
-    self.totalTimeLabel.stringValue = [self timeStringFromSeconds:currentTimeModel.duration];
+//    NSLog(@"%s, %f", __func__, CMTimeGetSeconds(currentTime));
+    self.progressSilder.doubleValue = CMTimeGetSeconds(currentTime) / CMTimeGetSeconds(duration);
+    self.currentTimeLabel.stringValue = [self timeStringFromSeconds:CMTimeGetSeconds(currentTime)];
+    self.totalTimeLabel.stringValue = [self timeStringFromSeconds:CMTimeGetSeconds(duration)];
 }
 
-- (void)loadedTimeAction:(NSNotification *)notification
+- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration
 {
-    SGTimeModel * loadedTimeModel = [notification.userInfo sg_loadedTimeModel];
-    NSLog(@"%s, %f", __func__, loadedTimeModel.current);
-}
-
-- (void)errorAction:(NSNotification *)notification
-{
-    NSError * error = [notification.userInfo sg_error];
-    NSLog(@"%s, %@", __func__, error);
+//    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
 }
 
 - (NSString *)timeStringFromSeconds:(CGFloat)seconds
 {
     return [NSString stringWithFormat:@"%ld:%.2ld", (long)seconds / 60, (long)seconds % 60];
-}
-
-- (void)dealloc
-{
-    [self sg_removeNotificationForPlayer:self.player];
 }
 
 @end

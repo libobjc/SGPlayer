@@ -7,10 +7,31 @@
 //
 
 #import "SGPLFGLView.h"
+#import "SGPLFScreen.h"
 
 #if SGPLATFORM_TARGET_OS_MAC
 
 @implementation SGPLFGLView
+
+- (instancetype)initWithFrame:(NSRect)frameRect
+{
+    if (self = [super initWithFrame:frameRect]) {
+        self.glScale = SGPLFScreenGetScale();
+        [self layoutSubviews];
+    }
+    return self;
+}
+
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
+{
+    [super resizeWithOldSuperviewSize:oldSize];
+    [self layoutSubviews];
+}
+
+- (void)layoutSubviews
+{
+    
+}
 
 - (void)setContext:(SGPLFGLContext *)context
 {
@@ -20,6 +41,11 @@
 - (SGPLFGLContext *)context
 {
     return self.openGLContext;
+}
+
+- (void)renderbufferStorage
+{
+    
 }
 
 - (void)present
@@ -40,12 +66,10 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    if (self = [super initWithFrame:frame])
-    {
+    if (self = [super initWithFrame:frame]) {
         self.glScale = 1.0f;
-        if ([self respondsToSelector:@selector(setContentScaleFactor:)])
-        {
-            self.contentScaleFactor = [[UIScreen mainScreen] scale];
+        if ([self respondsToSelector:@selector(setContentScaleFactor:)]) {
+            self.contentScaleFactor = SGPLFScreenGetScale();
             self.glScale = self.contentScaleFactor;
         }
         

@@ -7,7 +7,6 @@
 //
 
 #import "SGActivity.h"
-#import <UIKit/UIKit.h>
 
 @interface SGActivity ()
 

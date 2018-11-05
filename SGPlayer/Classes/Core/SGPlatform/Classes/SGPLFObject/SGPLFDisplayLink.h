@@ -16,6 +16,9 @@
 
 @property (nonatomic, assign) BOOL paused;
 
+@property (nonatomic, assign, readonly) NSTimeInterval timestamp;
+@property (nonatomic, assign, readonly) NSTimeInterval duration;
+
 - (void)addToRunLoop:(NSRunLoop *)runloop forMode:(NSRunLoopMode)mode;
 - (void)invalidate;
 
