@@ -140,7 +140,11 @@ static int gl_texture[3] = {
         linesize[0] = width;
         linesize[1] = width;
         formats[0] = GL_LUMINANCE;
+#if SGPLATFORM_TARGET_OS_MAC
         formats[1] = GL_LUMINANCE_ALPHA;
+#else
+        formats[1] = GL_RG_EXT;
+#endif
         planes = 2;
     } else {
         return NO;
