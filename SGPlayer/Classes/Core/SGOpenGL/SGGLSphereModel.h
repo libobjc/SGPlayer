@@ -6,8 +6,8 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGGLInternalModel.h"
+#import "SGGLBasicModel.h"
 
-@interface SGGLSphereModel : SGGLInternalModel
+@interface SGGLSphereModel : SGGLBasicModel
 
 @end

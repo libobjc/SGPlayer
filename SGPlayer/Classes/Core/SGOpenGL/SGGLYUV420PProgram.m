@@ -1,5 +1,5 @@
 //
-//  SGGLYUV420Program.m
+//  SGGLYUV420PProgram.m
 //  SGPlayer
 //
 //  Created by Single on 2018/1/25.

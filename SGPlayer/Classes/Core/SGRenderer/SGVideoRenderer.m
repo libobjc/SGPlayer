@@ -8,13 +8,9 @@
 
 #import "SGVideoRenderer.h"
 #import "SGRenderer+Internal.h"
-#import "SGGLDisplayLink.h"
-#import "SGGLProgramPool.h"
 #import "SGVRMatrixMaker.h"
-#import "SGGLModelPool.h"
-#import "SGGLTimer.h"
 #import "SGMapping.h"
-#import "SGGLView.h"
+#import "SGOpenGL.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 

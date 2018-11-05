@@ -21,4 +21,5 @@
 
 // OpenGL
 #import "SGPLFOpenGL.h"
+#import "SGPLFGLView.h"
 #import "SGPLFGLContext.h"

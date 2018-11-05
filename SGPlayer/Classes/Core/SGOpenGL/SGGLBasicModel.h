@@ -1,5 +1,5 @@
 //
-//  SGGLInternalModel.h
+//  SGGLBasicModel.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/25.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGGLModel.h"
 
-@interface SGGLInternalModel : NSObject <SGGLModel>
+@interface SGGLBasicModel : NSObject <SGGLModel>
 
 - (GLushort *)indexes_data;
 - (GLfloat *)vertices_data;

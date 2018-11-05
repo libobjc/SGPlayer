@@ -27,18 +27,18 @@
 		9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
 		9C1944ED2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
 		9C1944EE2019A9AA00184416 /* SGGLSphereModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E82019A9AA00184416 /* SGGLSphereModel.m */; };
-		9C1944F12019AC4000184416 /* SGGLInternalModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLInternalModel.h */; };
-		9C1944F22019AC4000184416 /* SGGLInternalModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLInternalModel.h */; };
-		9C1944F32019AC4000184416 /* SGGLInternalModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLInternalModel.h */; };
-		9C1944F42019AC4000184416 /* SGGLInternalModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLInternalModel.m */; };
-		9C1944F52019AC4000184416 /* SGGLInternalModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLInternalModel.m */; };
-		9C1944F62019AC4000184416 /* SGGLInternalModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLInternalModel.m */; };
-		9C1944F92019C09D00184416 /* SGGLInternalProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLInternalProgram.h */; };
-		9C1944FA2019C09D00184416 /* SGGLInternalProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLInternalProgram.h */; };
-		9C1944FB2019C09D00184416 /* SGGLInternalProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLInternalProgram.h */; };
-		9C1944FC2019C09D00184416 /* SGGLInternalProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLInternalProgram.m */; };
-		9C1944FD2019C09D00184416 /* SGGLInternalProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLInternalProgram.m */; };
-		9C1944FE2019C09D00184416 /* SGGLInternalProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLInternalProgram.m */; };
+		9C1944F12019AC4000184416 /* SGGLBasicModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLBasicModel.h */; };
+		9C1944F22019AC4000184416 /* SGGLBasicModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLBasicModel.h */; };
+		9C1944F32019AC4000184416 /* SGGLBasicModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944EF2019AC4000184416 /* SGGLBasicModel.h */; };
+		9C1944F42019AC4000184416 /* SGGLBasicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLBasicModel.m */; };
+		9C1944F52019AC4000184416 /* SGGLBasicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLBasicModel.m */; };
+		9C1944F62019AC4000184416 /* SGGLBasicModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F02019AC4000184416 /* SGGLBasicModel.m */; };
+		9C1944F92019C09D00184416 /* SGGLBasicProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLBasicProgram.h */; };
+		9C1944FA2019C09D00184416 /* SGGLBasicProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLBasicProgram.h */; };
+		9C1944FB2019C09D00184416 /* SGGLBasicProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944F72019C09D00184416 /* SGGLBasicProgram.h */; };
+		9C1944FC2019C09D00184416 /* SGGLBasicProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLBasicProgram.m */; };
+		9C1944FD2019C09D00184416 /* SGGLBasicProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLBasicProgram.m */; };
+		9C1944FE2019C09D00184416 /* SGGLBasicProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944F82019C09D00184416 /* SGGLBasicProgram.m */; };
 		9C1945012019C6A100184416 /* SGGLYUV420PProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944FF2019C6A100184416 /* SGGLYUV420PProgram.h */; };
 		9C1945022019C6A100184416 /* SGGLYUV420PProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944FF2019C6A100184416 /* SGGLYUV420PProgram.h */; };
 		9C1945032019C6A100184416 /* SGGLYUV420PProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944FF2019C6A100184416 /* SGGLYUV420PProgram.h */; };
@@ -259,6 +259,7 @@
 		9CCC5F25200C9BD500E833DA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F19200C9B9400E833DA /* Foundation.framework */; };
 		9CCC5F26200C9BD900E833DA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */; };
 		9CCC5F27200C9BE100E833DA /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CCC5F1D200C9BA200E833DA /* UIKit.framework */; };
+		9CD79E9B218FF8B200E39A7D /* SGOpenGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CD79E9A218FF8B200E39A7D /* SGOpenGL.h */; };
 		9CDFC3E6218B10F00065C826 /* SGRenderer+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CDFC3E4218B10F00065C826 /* SGRenderer+Internal.h */; };
 		9CE469B32151FB4F00528662 /* SGURLPacketReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE469B12151FB4F00528662 /* SGURLPacketReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CE469B42151FB4F00528662 /* SGURLPacketReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE469B22151FB4F00528662 /* SGURLPacketReader.m */; };
@@ -702,10 +703,10 @@
 		9C1944E020198CEC00184416 /* SGGLPlaneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLPlaneModel.m; sourceTree = "<group>"; };
 		9C1944E72019A9AA00184416 /* SGGLSphereModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLSphereModel.h; sourceTree = "<group>"; };
 		9C1944E82019A9AA00184416 /* SGGLSphereModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLSphereModel.m; sourceTree = "<group>"; };
-		9C1944EF2019AC4000184416 /* SGGLInternalModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLInternalModel.h; sourceTree = "<group>"; };
-		9C1944F02019AC4000184416 /* SGGLInternalModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLInternalModel.m; sourceTree = "<group>"; };
-		9C1944F72019C09D00184416 /* SGGLInternalProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLInternalProgram.h; sourceTree = "<group>"; };
-		9C1944F82019C09D00184416 /* SGGLInternalProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLInternalProgram.m; sourceTree = "<group>"; };
+		9C1944EF2019AC4000184416 /* SGGLBasicModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLBasicModel.h; sourceTree = "<group>"; };
+		9C1944F02019AC4000184416 /* SGGLBasicModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLBasicModel.m; sourceTree = "<group>"; };
+		9C1944F72019C09D00184416 /* SGGLBasicProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLBasicProgram.h; sourceTree = "<group>"; };
+		9C1944F82019C09D00184416 /* SGGLBasicProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLBasicProgram.m; sourceTree = "<group>"; };
 		9C1944FF2019C6A100184416 /* SGGLYUV420PProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLYUV420PProgram.h; sourceTree = "<group>"; };
 		9C1945002019C6A100184416 /* SGGLYUV420PProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLYUV420PProgram.m; sourceTree = "<group>"; };
 		9C1945072019D22800184416 /* SGGLNV12Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLNV12Program.h; sourceTree = "<group>"; };
@@ -839,6 +840,7 @@
 		9CD79E97218FE20300E39A7D /* SGFormatContext2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFormatContext2.h; sourceTree = "<group>"; };
 		9CD79E98218FE20300E39A7D /* SGSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSource.h; sourceTree = "<group>"; };
 		9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDiscardFilter.m; sourceTree = "<group>"; };
+		9CD79E9A218FF8B200E39A7D /* SGOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGOpenGL.h; sourceTree = "<group>"; };
 		9CDFC3E4218B10F00065C826 /* SGRenderer+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGRenderer+Internal.h"; sourceTree = "<group>"; };
 		9CE469B12151FB4F00528662 /* SGURLPacketReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLPacketReader.h; sourceTree = "<group>"; };
 		9CE469B22151FB4F00528662 /* SGURLPacketReader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLPacketReader.m; sourceTree = "<group>"; };
@@ -1199,6 +1201,7 @@
 		9C5C6C9620182A0900863EB5 /* SGOpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				9CD79E9A218FF8B200E39A7D /* SGOpenGL.h */,
 				9C8D26532019DC7F002770FA /* SGGLDefines.h */,
 				9C5C6C9720182A4800863EB5 /* SGGLView.h */,
 				9C5C6C9820182A4800863EB5 /* SGGLView.m */,
@@ -1211,8 +1214,8 @@
 				9C6E514D2018C6C100C87C54 /* SGGLModel.h */,
 				9C1D220B201AC83F005147FB /* SGGLModelPool.h */,
 				9C1D220C201AC83F005147FB /* SGGLModelPool.m */,
-				9C1944EF2019AC4000184416 /* SGGLInternalModel.h */,
-				9C1944F02019AC4000184416 /* SGGLInternalModel.m */,
+				9C1944EF2019AC4000184416 /* SGGLBasicModel.h */,
+				9C1944F02019AC4000184416 /* SGGLBasicModel.m */,
 				9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */,
 				9C1944E020198CEC00184416 /* SGGLPlaneModel.m */,
 				9C1944E72019A9AA00184416 /* SGGLSphereModel.h */,
@@ -1220,8 +1223,8 @@
 				9C1D221B201ACA13005147FB /* SGGLProgram.h */,
 				9C1D2213201AC9FA005147FB /* SGGLProgramPool.h */,
 				9C1D2214201AC9FA005147FB /* SGGLProgramPool.m */,
-				9C1944F72019C09D00184416 /* SGGLInternalProgram.h */,
-				9C1944F82019C09D00184416 /* SGGLInternalProgram.m */,
+				9C1944F72019C09D00184416 /* SGGLBasicProgram.h */,
+				9C1944F82019C09D00184416 /* SGGLBasicProgram.m */,
 				9C1944FF2019C6A100184416 /* SGGLYUV420PProgram.h */,
 				9C1945002019C6A100184416 /* SGGLYUV420PProgram.m */,
 				9C1945072019D22800184416 /* SGGLNV12Program.h */,
@@ -1297,17 +1300,17 @@
 		9CE6F5192004D97C00D1F4C8 /* SGPLFObject */ = {
 			isa = PBXGroup;
 			children = (
-				9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */,
-				9CE6F51B2004D97C00D1F4C8 /* SGPLFColor.m */,
-				9CE6F51C2004D97C00D1F4C8 /* SGPLFDisplayLink.h */,
-				9CE6F51D2004D97C00D1F4C8 /* SGPLFDisplayLink.m */,
-				9CE6F51E2004D97C00D1F4C8 /* SGPLFImage.h */,
-				9CE6F51F2004D97C00D1F4C8 /* SGPLFImage.m */,
 				9CE6F5202004D97C00D1F4C8 /* SGPLFObject.h */,
-				9CE6F5212004D97C00D1F4C8 /* SGPLFScreen.h */,
-				9CE6F5222004D97C00D1F4C8 /* SGPLFScreen.m */,
 				9CE6F5232004D97C00D1F4C8 /* SGPLFView.h */,
 				9CE6F5242004D97C00D1F4C8 /* SGPLFView.m */,
+				9CE6F51E2004D97C00D1F4C8 /* SGPLFImage.h */,
+				9CE6F51F2004D97C00D1F4C8 /* SGPLFImage.m */,
+				9CE6F51A2004D97C00D1F4C8 /* SGPLFColor.h */,
+				9CE6F51B2004D97C00D1F4C8 /* SGPLFColor.m */,
+				9CE6F5212004D97C00D1F4C8 /* SGPLFScreen.h */,
+				9CE6F5222004D97C00D1F4C8 /* SGPLFScreen.m */,
+				9CE6F51C2004D97C00D1F4C8 /* SGPLFDisplayLink.h */,
+				9CE6F51D2004D97C00D1F4C8 /* SGPLFDisplayLink.m */,
 			);
 			path = SGPLFObject;
 			sourceTree = "<group>";
@@ -1315,11 +1318,11 @@
 		9CE6F5252004D97C00D1F4C8 /* SGPLFOpenGL */ = {
 			isa = PBXGroup;
 			children = (
+				9CE6F52C2004D97C00D1F4C8 /* SGPLFOpenGL.h */,
 				9CB1F09E20178B0D00102A69 /* SGPLFGLView.h */,
 				9CB1F09D20178B0D00102A69 /* SGPLFGLView.m */,
 				9CE6F5262004D97C00D1F4C8 /* SGPLFGLContext.h */,
 				9CE6F5272004D97C00D1F4C8 /* SGPLFGLContext.m */,
-				9CE6F52C2004D97C00D1F4C8 /* SGPLFOpenGL.h */,
 			);
 			path = SGPLFOpenGL;
 			sourceTree = "<group>";
@@ -1687,6 +1690,7 @@
 				9CF99F1E212D187A008178BC /* hwcontext_vdpau.h in Headers */,
 				9CEBCC9D217EF8E900430024 /* SGTrack+Internal.h in Headers */,
 				9CF99F9F212D187A008178BC /* mem.h in Headers */,
+				9CD79E9B218FF8B200E39A7D /* SGOpenGL.h in Headers */,
 				9CF99FE7212D187A008178BC /* vaapi.h in Headers */,
 				9CF99EFD212D187A008178BC /* samplefmt.h in Headers */,
 				9CF99ECD212D187A008178BC /* version.h in Headers */,
@@ -1727,7 +1731,7 @@
 				9CF99F72212D187A008178BC /* mastering_display_metadata.h in Headers */,
 				9CF99F39212D187A008178BC /* tree.h in Headers */,
 				9C89C81E2189574000D64916 /* SGPointerMap.h in Headers */,
-				9C1944F92019C09D00184416 /* SGGLInternalProgram.h in Headers */,
+				9C1944F92019C09D00184416 /* SGGLBasicProgram.h in Headers */,
 				9CF99EE8212D187A008178BC /* fifo.h in Headers */,
 				9CF99F42212D187A008178BC /* adler32.h in Headers */,
 				9C5C6C9920182A4800863EB5 /* SGGLView.h in Headers */,
@@ -1774,7 +1778,7 @@
 				9CF99EF4212D187A008178BC /* version.h in Headers */,
 				9C1945012019C6A100184416 /* SGGLYUV420PProgram.h in Headers */,
 				9CF99F27212D187A008178BC /* md5.h in Headers */,
-				9C1944F12019AC4000184416 /* SGGLInternalModel.h in Headers */,
+				9C1944F12019AC4000184416 /* SGGLBasicModel.h in Headers */,
 				9CF99F03212D187A008178BC /* base64.h in Headers */,
 				9CF99F5A212D187A008178BC /* pixelutils.h in Headers */,
 				9CF9A011212D187A008178BC /* swresample.h in Headers */,
@@ -1844,7 +1848,7 @@
 				9C4663CB20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9C2C55B62015D92100131E15 /* SGObjectQueue.h in Headers */,
 				9CF99F1F212D187A008178BC /* hwcontext_vdpau.h in Headers */,
-				9C1944FA2019C09D00184416 /* SGGLInternalProgram.h in Headers */,
+				9C1944FA2019C09D00184416 /* SGGLBasicProgram.h in Headers */,
 				9CA0F56520E0E24000501478 /* SGDefines.h in Headers */,
 				9CE6F57C2004D97D00D1F4C8 /* SGPlatform.h in Headers */,
 				9CF99F04212D187A008178BC /* base64.h in Headers */,
@@ -1911,7 +1915,7 @@
 				9CE6F5742004D97D00D1F4C8 /* SGPLFOpenGL.h in Headers */,
 				9CF9A003212D187A008178BC /* ac3_parser.h in Headers */,
 				9CE6F5782004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
-				9C1944F22019AC4000184416 /* SGGLInternalModel.h in Headers */,
+				9C1944F22019AC4000184416 /* SGGLBasicModel.h in Headers */,
 				9CF99FC7212D187A008178BC /* avstring.h in Headers */,
 				9CF99F7C212D187A008178BC /* macros.h in Headers */,
 				9CF15DE620118E1100585326 /* SGAsyncDecoder.h in Headers */,
@@ -1986,7 +1990,7 @@
 				9CF99EE4212D187A008178BC /* intfloat.h in Headers */,
 				9CF99F47212D187A008178BC /* hwcontext_d3d11va.h in Headers */,
 				9CF99FE0212D187A008178BC /* version.h in Headers */,
-				9C1944FB2019C09D00184416 /* SGGLInternalProgram.h in Headers */,
+				9C1944FB2019C09D00184416 /* SGGLBasicProgram.h in Headers */,
 				9CF99F32212D187A008178BC /* spherical.h in Headers */,
 				9CF9A010212D187A008178BC /* version.h in Headers */,
 				9CF15E212011BC5400585326 /* SGAudioFrame.h in Headers */,
@@ -2008,7 +2012,7 @@
 				9CF99F80212D187A008178BC /* bswap.h in Headers */,
 				9CF9A00A212D187A008178BC /* dxva2.h in Headers */,
 				9CE6F5792004D97D00D1F4C8 /* SGPLFTargets.h in Headers */,
-				9C1944F32019AC4000184416 /* SGGLInternalModel.h in Headers */,
+				9C1944F32019AC4000184416 /* SGGLBasicModel.h in Headers */,
 				9CF99F20212D187A008178BC /* hwcontext_vdpau.h in Headers */,
 				9CF15E042011ADB500585326 /* SGRenderable.h in Headers */,
 				9C5C6C9B20182A4800863EB5 /* SGGLView.h in Headers */,
@@ -2267,7 +2271,7 @@
 				9CA3CDB420E1F74300B852D0 /* SGFrame.m in Sources */,
 				9C2C55B02015D1D200131E15 /* SGPacket.m in Sources */,
 				9C2C55962015911600131E15 /* SGObjectPool.m in Sources */,
-				9C1944FC2019C09D00184416 /* SGGLInternalProgram.m in Sources */,
+				9C1944FC2019C09D00184416 /* SGGLBasicProgram.m in Sources */,
 				9C2C559E2015B87400131E15 /* SGVideoFrame.m in Sources */,
 				9C5C98FE20D26BE10089C112 /* SGClock.m in Sources */,
 				9CE6F5432004D97D00D1F4C8 /* SGPLFImage.m in Sources */,
@@ -2275,7 +2279,7 @@
 				9C8D26642019F297002770FA /* SGGLTextureUploader.m in Sources */,
 				9C1944EC2019A9AA00184416 /* SGGLSphereModel.m in Sources */,
 				9C03E5F1212E645B001F0E1B /* SGVRMatrixMaker.m in Sources */,
-				9C1944F42019AC4000184416 /* SGGLInternalModel.m in Sources */,
+				9C1944F42019AC4000184416 /* SGGLBasicModel.m in Sources */,
 				9C89C81F2189574000D64916 /* SGPointerMap.m in Sources */,
 				9C43D51221872D3F00235169 /* SGLock.m in Sources */,
 				9CF15E0A2011AE0700585326 /* SGAudioRenderer.m in Sources */,
@@ -2335,7 +2339,7 @@
 				9CB1F0A020178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9C8D4E4C200DFFC700ED8A58 /* SGPlayerItem.m in Sources */,
 				9CE68434200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
-				9C1944F52019AC4000184416 /* SGGLInternalModel.m in Sources */,
+				9C1944F52019AC4000184416 /* SGGLBasicModel.m in Sources */,
 				9C1D2211201AC83F005147FB /* SGGLModelPool.m in Sources */,
 				9C2C559F2015B87400131E15 /* SGVideoFrame.m in Sources */,
 				9C8D4E67200E0ACC00ED8A58 /* SGPacketOutput.m in Sources */,
@@ -2343,7 +2347,7 @@
 				9CE6F53C2004D97D00D1F4C8 /* SGPLFDisplayLink.m in Sources */,
 				9C8D4E84200E1ACA00ED8A58 /* SGError.m in Sources */,
 				9C5C6CAE2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
-				9C1944FD2019C09D00184416 /* SGGLInternalProgram.m in Sources */,
+				9C1944FD2019C09D00184416 /* SGGLBasicProgram.m in Sources */,
 				9CB61F632112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
 				9CF52CFB200F45D700950B81 /* SGTrack.m in Sources */,
 				9CE6F5502004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
@@ -2392,7 +2396,7 @@
 				9C4663CF20D0F83600CADDA7 /* SGTime.m in Sources */,
 				9C1945062019C6A100184416 /* SGGLYUV420PProgram.m in Sources */,
 				9C1D2212201AC83F005147FB /* SGGLModelPool.m in Sources */,
-				9C1944F62019AC4000184416 /* SGGLInternalModel.m in Sources */,
+				9C1944F62019AC4000184416 /* SGGLBasicModel.m in Sources */,
 				9CF15E0C2011AE0700585326 /* SGAudioRenderer.m in Sources */,
 				9CF52CFC200F45D700950B81 /* SGTrack.m in Sources */,
 				9CE6F5512004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
@@ -2411,7 +2415,7 @@
 				9CAAC9A42133A6800065E364 /* SGVRViewport.m in Sources */,
 				9C2C55B22015D1D200131E15 /* SGPacket.m in Sources */,
 				9C2C55A02015B87400131E15 /* SGVideoFrame.m in Sources */,
-				9C1944FE2019C09D00184416 /* SGGLInternalProgram.m in Sources */,
+				9C1944FE2019C09D00184416 /* SGGLBasicProgram.m in Sources */,
 				9C5C6C9E20182A4800863EB5 /* SGGLView.m in Sources */,
 				9C1D221A201AC9FA005147FB /* SGGLProgramPool.m in Sources */,
 				9C2C55BA2015D92100131E15 /* SGObjectQueue.m in Sources */,

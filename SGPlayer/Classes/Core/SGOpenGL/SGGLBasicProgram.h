@@ -1,5 +1,5 @@
 //
-//  SGGLInternalProgram.h
+//  SGGLBasicProgram.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/25.
@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGGLProgram.h"
 
-@interface SGGLInternalProgram : NSObject <SGGLProgram>
+@interface SGGLBasicProgram : NSObject <SGGLProgram>
 
 @property (nonatomic, assign, readonly) GLint programID;
 

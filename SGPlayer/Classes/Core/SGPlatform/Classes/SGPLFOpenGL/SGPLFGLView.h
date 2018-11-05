@@ -7,7 +7,6 @@
 //
 
 #import "SGPLFOpenGL.h"
-
 #import "SGPLFGLContext.h"
 
 #if SGPLATFORM_TARGET_OS_MAC

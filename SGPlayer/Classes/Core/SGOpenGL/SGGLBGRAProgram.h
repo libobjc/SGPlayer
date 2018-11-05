@@ -6,9 +6,9 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGGLInternalProgram.h"
+#import "SGGLBasicProgram.h"
 
-@interface SGGLBGRAProgram : SGGLInternalProgram
+@interface SGGLBGRAProgram : SGGLBasicProgram
 
 @property (nonatomic, assign) GLint sampler_location;
 

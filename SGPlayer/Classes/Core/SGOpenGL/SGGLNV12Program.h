@@ -6,9 +6,9 @@
 //  Copyright © 2018年 single. All rights reserved.
 //
 
-#import "SGGLInternalProgram.h"
+#import "SGGLBasicProgram.h"
 
-@interface SGGLNV12Program : SGGLInternalProgram
+@interface SGGLNV12Program : SGGLBasicProgram
 
 @property (nonatomic, assign) GLint samplerY_location;
 @property (nonatomic, assign) GLint samplerUV_location;
