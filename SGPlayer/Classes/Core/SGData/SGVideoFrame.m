@@ -9,10 +9,8 @@
 #import "SGVideoFrame.h"
 #import "SGFrame+Internal.h"
 #import "SGSWScale.h"
-#import "SGPlatform.h"
 #import "SGMapping.h"
 #import "imgutils.h"
-#import <VideoToolbox/VideoToolbox.h>
 
 @interface SGVideoFrame ()
 

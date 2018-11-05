@@ -7,7 +7,7 @@
 //
 
 #import "SGAudioStreamPlayer.h"
-#import "SGPlatform.h"
+#import "SGPLFTargets.h"
 
 static int const SGAudioStreamPlayerMaximumFramesPerSlice = 4096;
 static int const SGAudioStreamPlayerMaximumChannels = 2;

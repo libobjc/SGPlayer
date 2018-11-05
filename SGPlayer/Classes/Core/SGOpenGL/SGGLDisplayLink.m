@@ -7,7 +7,7 @@
 //
 
 #import "SGGLDisplayLink.h"
-#import "SGPlatform.h"
+#import "SGPLFDisplayLink.h"
 
 @interface SGGLDisplayLink ()
 
