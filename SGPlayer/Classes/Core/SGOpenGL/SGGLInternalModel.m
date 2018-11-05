@@ -29,8 +29,7 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         _indexes_buffer_data = [self indexes_data];
         _vertices_buffer_data = [self vertices_data];
         _textureCoordinates_buffer_data = [self textureCoordinates_data];
@@ -57,18 +56,15 @@
 
 - (void)dealloc
 {
-    if (_indexes_buffer_id)
-    {
+    if (_indexes_buffer_id) {
         glDeleteBuffers(1, &_indexes_buffer_id);
         _indexes_buffer_id = 0;
     }
-    if (_vertices_buffer_id)
-    {
+    if (_vertices_buffer_id) {
         glDeleteBuffers(1, &_vertices_buffer_id);
         _vertices_buffer_id = 0;
     }
-    if (_textureCoordinates_buffer_id)
-    {
+    if (_textureCoordinates_buffer_id) {
         glDeleteBuffers(1, &_textureCoordinates_buffer_id);
         _textureCoordinates_buffer_id = 0;
     }

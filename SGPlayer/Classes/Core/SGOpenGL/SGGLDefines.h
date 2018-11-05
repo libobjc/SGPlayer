@@ -9,7 +9,6 @@
 #ifndef SGGLDefines_h
 #define SGGLDefines_h
 
-
 #import <Foundation/Foundation.h>
 
 typedef struct SGGLSize {

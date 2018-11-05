@@ -13,7 +13,6 @@
 
 @property (nonatomic, assign, readonly) GLint programID;
 
-
 #pragma mark - Override
 
 @property (nonatomic, assign, readonly) const char * vertexShaderString;

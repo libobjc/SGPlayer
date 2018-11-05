@@ -23,8 +23,7 @@
 
 - (id <SGGLProgram>)programWithType:(SGGLProgramType)type
 {
-    switch (type)
-    {
+    switch (type) {
         case SGGLProgramTypeUnknown:
             return nil;
         case SGGLProgramTypeYUV420P:
@@ -39,8 +38,7 @@
 
 - (SGGLYUV420PProgram *)yuv420p
 {
-    if (!_yuv420p)
-    {
+    if (!_yuv420p) {
         _yuv420p = [[SGGLYUV420PProgram alloc] init];
     }
     return _yuv420p;
@@ -48,8 +46,7 @@
 
 - (SGGLNV12Program *)nv12
 {
-    if (!_nv12)
-    {
+    if (!_nv12)  {
         _nv12 = [[SGGLNV12Program alloc] init];
     }
     return _nv12;
@@ -57,8 +54,7 @@
 
 - (SGGLBGRAProgram *)bgra
 {
-    if (!_bgra)
-    {
+    if (!_bgra) {
         _bgra = [[SGGLBGRAProgram alloc] init];
     }
     return _bgra;

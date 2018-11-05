@@ -21,8 +21,7 @@
 
 - (id <SGGLModel>)modelWithType:(SGGLModelType)type
 {
-    switch (type)
-    {
+    switch (type) {
         case SGGLModelTypeUnknown:
             return nil;
         case SGGLModelTypePlane:
@@ -35,8 +34,7 @@
 
 - (SGGLPlaneModel *)plane
 {
-    if (!_plane)
-    {
+    if (!_plane) {
         _plane = [[SGGLPlaneModel alloc] init];
     }
     return _plane;
@@ -44,8 +42,7 @@
 
 - (SGGLSphereModel *)sphere
 {
-    if (!_sphere)
-    {
+    if (!_sphere) {
         _sphere = [[SGGLSphereModel alloc] init];
     }
     return _sphere;

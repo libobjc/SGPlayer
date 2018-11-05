@@ -9,8 +9,7 @@
 #import "SGGLTextureUploader.h"
 #import "SGPLFOpenGL.h"
 
-static int gl_texture[3] =
-{
+static int gl_texture[3] = {
     GL_TEXTURE0,
     GL_TEXTURE1,
     GL_TEXTURE2,
@@ -32,8 +31,7 @@ static int gl_texture[3] =
 
 - (instancetype)initWithGLContext:(SGPLFGLContext *)context
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.context = context;
     }
     return self;
@@ -41,15 +39,13 @@ static int gl_texture[3] =
 
 - (void)dealloc
 {
-    if (_gl_texture_ids[0])
-    {
+    if (_gl_texture_ids[0]) {
         glDeleteTextures(3, _gl_texture_ids);
         _gl_texture_ids[0] = 0;
         _gl_texture_ids[1] = 0;
         _gl_texture_ids[1] = 0;
     }
-    if (_openGLESTextureCache)
-    {
+    if (_openGLESTextureCache) {
         CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
         CFRelease(_openGLESTextureCache);
         _openGLESTextureCache = NULL;
@@ -66,11 +62,9 @@ static int gl_texture[3] =
 
 - (void)setupOpenGLESTextureCacheIfNeeded
 {
-    if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed)
-    {
+    if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed) {
         CVReturn result = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, self.context, NULL, &_openGLESTextureCache);
-        if (result != noErr)
-        {
+        if (result != noErr) {
             self.setupOpenGLESTextureCacheFailed = YES;
         }
     }
@@ -81,8 +75,7 @@ static int gl_texture[3] =
                   size:(SGGLSize)size
 {
     [self setupGLTextureIfNeeded];
-    if (type == SGGLTextureTypeYUV420P)
-    {
+    if (type == SGGLTextureTypeYUV420P) {
         static int count = 3;
         int widths[3]  = {size.width, size.width / 2, size.width / 2};
         int heights[3] = {size.height, size.height / 2, size.height / 2};
@@ -93,9 +86,7 @@ static int gl_texture[3] =
                     internalFormats:formats
                             formats:formats
                               count:count];
-    }
-    else if (type == SGGLTextureTypeNV12)
-    {
+    } else if (type == SGGLTextureTypeNV12) {
         static int count = 2;
         int widths[2]  = {size.width, size.width / 2};
         int heights[2] = {size.height, size.height / 2};
@@ -118,8 +109,7 @@ static int gl_texture[3] =
                  count:(int)count
 {
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
         glActiveTexture(gl_texture[i]);
         glBindTexture(GL_TEXTURE_2D, _gl_texture_ids[i]);
         glTexImage2D(GL_TEXTURE_2D, 0, internalFormats[i], widths[i], heights[i], 0, formats[i], GL_UNSIGNED_BYTE, data[i]);
@@ -134,16 +124,14 @@ static int gl_texture[3] =
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
     [self setupOpenGLESTextureCacheIfNeeded];
-    if (!_openGLESTextureCache)
-    {
+    if (!_openGLESTextureCache) {
         return NO;
     }
     CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
     GLsizei width = (int)CVPixelBufferGetWidth(pixelBuffer);
     GLsizei height = (int)CVPixelBufferGetHeight(pixelBuffer);
     OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
-    if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)
-    {
+    if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
         static int count = 2;
         int widths[2]  = {width, width / 2};
         int heights[2] = {height, height / 2};
@@ -154,9 +142,7 @@ static int gl_texture[3] =
                              internalFormats:formats
                                      formats:formats
                                        count:count];
-    }
-    else if (format == kCVPixelFormatType_32BGRA)
-    {
+    } else if (format == kCVPixelFormatType_32BGRA) {
         static int count = 1;
         int widths[1]  = {width};
         int heights[1] = {height};
@@ -181,8 +167,7 @@ static int gl_texture[3] =
 {
     CVPixelBufferRetain(pixelBuffer);
     BOOL success = YES;
-    for (int i = 0; i < count; i++)
-    {
+    for (int i = 0; i < count; i++) {
         CVReturn result;
         CVOpenGLESTextureRef texture;
         glActiveTexture(gl_texture[i]);
@@ -198,21 +183,18 @@ static int gl_texture[3] =
                                                               GL_UNSIGNED_BYTE,
                                                               i,
                                                               &texture);
-        if (result == kCVReturnSuccess)
-        {
+        if (result == kCVReturnSuccess) {
             glBindTexture(CVOpenGLESTextureGetTarget(texture), CVOpenGLESTextureGetName(texture));
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
-        if (texture)
-        {
+        if (texture) {
             CFRelease(texture);
             texture = NULL;
         }
-        if (result != kCVReturnSuccess)
-        {
+        if (result != kCVReturnSuccess) {
             success = NO;
             break;
         }

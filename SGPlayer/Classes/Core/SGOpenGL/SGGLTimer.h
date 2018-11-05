@@ -10,7 +10,7 @@
 
 @interface SGGLTimer : NSObject
 
-- (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler;
+- (instancetype)initWithTimeInterval:(double)timeInterval handler:(void (^)(void))handler;
 
 @property (nonatomic, assign) BOOL paused;
 

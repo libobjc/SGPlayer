@@ -33,29 +33,23 @@ static int const vertices_count = (slices_count + 1) * (parallels_count + 1);
         textureCoordinates_data = malloc(sizeof(GLfloat) * 2 * vertices_count);
         
         int runCount = 0;
-        for (int i = 0; i < parallels_count + 1; i++)
-        {
-            for (int j = 0; j < slices_count + 1; j++)
-            {
+        for (int i = 0; i < parallels_count + 1; i++) {
+            for (int j = 0; j < slices_count + 1; j++) {
                 int vertex = (i * (slices_count + 1) + j) * 3;
-                if (vertices_data)
-                {
+                if (vertices_data) {
                     vertices_data[vertex + 0] = radius * sinf(step * (float)i) * cosf(step * (float)j);
                     vertices_data[vertex + 1] = radius * cosf(step * (float)i);
                     vertices_data[vertex + 2] = radius * sinf(step * (float)i) * sinf(step * (float)j);
                 }
-                if (textureCoordinates_data)
-                {
+                if (textureCoordinates_data) {
                     int textureIndex = (i * (slices_count + 1) + j) * 2;
                     textureCoordinates_data[textureIndex + 0] = (float)j / (float)slices_count;
                     textureCoordinates_data[textureIndex + 1] = ((float)i / (float)parallels_count);
                 }
-                if (indexes_data && i < parallels_count && j < slices_count)
-                {
+                if (indexes_data && i < parallels_count && j < slices_count) {
                     indexes_data[runCount++] = i * (slices_count + 1) + j;
                     indexes_data[runCount++] = (i + 1) * (slices_count + 1) + j;
                     indexes_data[runCount++] = (i + 1) * (slices_count + 1) + (j + 1);
-                    
                     indexes_data[runCount++] = i * (slices_count + 1) + j;
                     indexes_data[runCount++] = (i + 1) * (slices_count + 1) + (j + 1);
                     indexes_data[runCount++] = i * (slices_count + 1) + (j + 1);

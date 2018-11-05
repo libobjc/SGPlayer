@@ -13,30 +13,25 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         _programID = glCreateProgram();
         
         GLuint vertexShaderID;
         GLuint fragmentShaderID;
-        if (![self compileShader:&vertexShaderID type:GL_VERTEX_SHADER string:[self vertexShaderString]])
-        {
+        if (![self compileShader:&vertexShaderID type:GL_VERTEX_SHADER string:[self vertexShaderString]]) {
             SGPlayerLog(@"load vertex shader failure");
         }
-        if (![self compileShader:&fragmentShaderID type:GL_FRAGMENT_SHADER string:[self fragmentShaderString]])
-        {
+        if (![self compileShader:&fragmentShaderID type:GL_FRAGMENT_SHADER string:[self fragmentShaderString]]) {
             SGPlayerLog(@"load fragment shader failure");
         }
         glAttachShader(_programID, vertexShaderID);
         glAttachShader(_programID, fragmentShaderID);
         glLinkProgram(_programID);
-        if (vertexShaderID)
-        {
+        if (vertexShaderID) {
             glDeleteShader(vertexShaderID);
             vertexShaderID = 0;
         }
-        if (fragmentShaderID)
-        {
+        if (fragmentShaderID) {
             glDeleteShader(fragmentShaderID);
             fragmentShaderID = 0;
         }
@@ -47,8 +42,7 @@
 
 - (void)dealloc
 {
-    if (_programID)
-    {
+    if (_programID) {
         glDeleteProgram(_programID);
         _programID = 0;
     }
@@ -74,8 +68,7 @@
 
 - (BOOL)compileShader:(GLuint *)shader type:(GLenum)type string:(const char *)shaderString
 {
-    if (!shaderString)
-    {
+    if (!shaderString) {
         SGPlayerLog(@"Failed to load shader");
         return NO;
     }
@@ -84,12 +77,10 @@
     glShaderSource(* shader, 1, &shaderString, NULL);
     glCompileShader(* shader);
     glGetShaderiv(* shader, GL_COMPILE_STATUS, &status);
-    if (status != GL_TRUE)
-    {
+    if (status != GL_TRUE) {
         GLint logLength;
         glGetShaderiv(* shader, GL_INFO_LOG_LENGTH, &logLength);
-        if (logLength > 0)
-        {
+        if (logLength > 0) {
             GLchar * log = (GLchar *)malloc(logLength);
             glGetShaderInfoLog(* shader, logLength, &logLength, log);
             SGPlayerLog(@"Shader compile log:\n%s", log);

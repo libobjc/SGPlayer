@@ -20,8 +20,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
 {
-    if (self = [super initWithFrame:frame])
-    {
+    if (self = [super initWithFrame:frame]) {
         self.context = SGPLFGLContextAllocInit();
         SGPLGLContextSetCurrentContext(self.context);
         glClearColor(0, 0, 0, 1);
@@ -39,8 +38,7 @@
     [super layoutSubviews];
     SGGLSize layerSize = {CGRectGetWidth(self.bounds), CGRectGetHeight(self.bounds)};
     if (layerSize.width != self.displaySize.width ||
-        layerSize.height != self.displaySize.width)
-    {
+        layerSize.height != self.displaySize.width) {
         self.displaySize = layerSize;
         [self destroyFramebuffer];
         [self setupFramebuffer];
@@ -53,8 +51,7 @@
     glBindFramebuffer(GL_FRAMEBUFFER, self.displayFramebuffer);
     glViewport(0, 0, self.displaySize.width * self.glScale, self.displaySize.height * self.glScale);
     BOOL success = [self.delegate glView:self display:self.displaySize];
-    if (success)
-    {
+    if (success) {
         glBindRenderbuffer(GL_RENDERBUFFER, self.displayRenderbuffer);
         [self present];
     }
@@ -69,12 +66,10 @@
     glBindFramebuffer(GL_FRAMEBUFFER, self.displayFramebuffer);
     glViewport(0, 0, self.displaySize.width * self.glScale, self.displaySize.height * self.glScale);
     BOOL success = NO;
-    if ([self.delegate respondsToSelector:@selector(glView:clear:)])
-    {
+    if ([self.delegate respondsToSelector:@selector(glView:clear:)]) {
         success = [self.delegate glView:self clear:self.displaySize];
     }
-    if (!success)
-    {
+    if (!success) {
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
@@ -88,8 +83,7 @@
 - (void)setupFramebuffer
 {
     if (self.displaySize.width == 0 ||
-        self.displaySize.height == 0)
-    {
+        self.displaySize.height == 0) {
         return;
     }
     SGPLGLContextSetCurrentContext(self.context);
@@ -104,13 +98,11 @@
 - (void)destroyFramebuffer
 {
     SGPLGLContextSetCurrentContext(self.context);
-    if (_displayFramebuffer)
-    {
+    if (_displayFramebuffer) {
         glDeleteFramebuffers(1, &_displayFramebuffer);
         _displayFramebuffer = 0;
     }
-    if (self.displayRenderbuffer)
-    {
+    if (self.displayRenderbuffer) {
         glDeleteRenderbuffers(1, &_displayRenderbuffer);
         self.displayRenderbuffer = 0;
     }

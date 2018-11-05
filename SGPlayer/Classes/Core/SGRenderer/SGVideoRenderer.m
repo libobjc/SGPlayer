@@ -305,7 +305,7 @@
             CMTime time = kCMTimeZero;
             CMTime offset = kCMTimeZero;
             [self.clock preferredVideoTime:&time offset:&offset];
-            double media_time_next = self.drawTimer.nextVSyncTimestamp;
+            double media_time_next = [self.drawTimer nextTimestamp];
             media_time_current = CACurrentMediaTime();
             * desire = CMTimeAdd(CMTimeAdd(time, offset), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
             * current = time_current;

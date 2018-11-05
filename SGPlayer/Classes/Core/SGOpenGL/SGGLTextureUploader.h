@@ -11,8 +11,7 @@
 #import "SGPLFGLContext.h"
 #import "SGGLDefines.h"
 
-typedef NS_ENUM(uint32_t, SGGLTextureType)
-{
+typedef NS_ENUM(uint32_t, SGGLTextureType) {
     SGGLTextureTypeUnknown,
     SGGLTextureTypeYUV420P,
     SGGLTextureTypeNV12,

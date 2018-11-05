@@ -11,17 +11,16 @@
 
 @interface SGGLDisplayLink ()
 
-@property (nonatomic, copy) void(^handler)(void);
+@property (nonatomic, copy) void (^handler)(void);
 @property (nonatomic, strong) SGPLFDisplayLink * displayLink;
 
 @end
 
 @implementation SGGLDisplayLink
 
-- (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler
+- (instancetype)initWithTimeInterval:(double)timeInterval handler:(void (^)(void))handler
 {
-    if (self = [super init])
-    {
+    if (self = [super init]) {
         self.handler = handler;
         self.displayLink = [SGPLFDisplayLink displayLinkWithTarget:self selector:@selector(displayLinkHandler)];
         if (@available(iOS 10.0, *)) {
@@ -57,17 +56,17 @@
     return self.displayLink.isPaused;
 }
 
-- (NSTimeInterval)timestamp
+- (double)timestamp
 {
     return self.displayLink.timestamp;
 }
 
-- (NSTimeInterval)duration
+- (double)duration
 {
     return self.displayLink.duration;
 }
 
-- (NSTimeInterval)nextVSyncTimestamp
+- (double)nextTimestamp
 {
     return self.displayLink.timestamp + self.displayLink.duration;
 }

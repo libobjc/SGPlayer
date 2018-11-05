@@ -10,13 +10,13 @@
 
 @interface SGGLDisplayLink : NSObject
 
-- (instancetype)initWithTimeInterval:(NSTimeInterval)timeInterval handler:(void (^)(void))handler;
+- (instancetype)initWithTimeInterval:(double)timeInterval handler:(void (^)(void))handler;
 
 @property(nonatomic, assign) BOOL paused;
 
-@property (nonatomic, assign, readonly) NSTimeInterval timestamp;
-@property (nonatomic, assign, readonly) NSTimeInterval duration;
-@property (nonatomic, assign, readonly) NSTimeInterval nextVSyncTimestamp;
+@property (nonatomic, assign, readonly) double timestamp;
+@property (nonatomic, assign, readonly) double duration;
+@property (nonatomic, assign, readonly) double nextTimestamp;
 
 - (void)invalidate;
 
