@@ -23,7 +23,7 @@
 		9C886BBA1E78F13E00F2CFD1 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */; };
 		9C886BBC1E78F14300F2CFD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBB1E78F14300F2CFD1 /* libz.tbd */; };
 		9C886BBE1E78F14700F2CFD1 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBD1E78F14700F2CFD1 /* libbz2.tbd */; };
-		9CB695142190680E00196E54 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB695132190680E00196E54 /* SGPlayer.framework */; };
+		9C8A0E342190A687006F7AE8 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9824A41FAB073B00142215 /* SGPlayer.framework */; };
 		9CD7E10321801C0700814E1B /* thinking-out-loud.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10121801C0700814E1B /* thinking-out-loud.mp4 */; };
 		9CD7E10421801C0700814E1B /* love-yourself.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10221801C0700814E1B /* love-yourself.mp4 */; };
 		9CD7E10621801C5700814E1B /* countdown-ktv.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10521801C5700814E1B /* countdown-ktv.mp4 */; };
@@ -74,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CB695142190680E00196E54 /* SGPlayer.framework in Frameworks */,
+				9C8A0E342190A687006F7AE8 /* SGPlayer.framework in Frameworks */,
 				9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */,
 				9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */,

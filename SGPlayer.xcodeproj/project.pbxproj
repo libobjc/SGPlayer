@@ -81,15 +81,6 @@
 		9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C66E1FC2188550D00B70DAA /* SGSWResample.h */; };
 		9C66E1FF2188550D00B70DAA /* SGSWResample.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C66E1FD2188550D00B70DAA /* SGSWResample.m */; };
 		9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
-		9C86365A2190408300D730EC /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636512190408300D730EC /* libavformat.a */; };
-		9C86365B2190408300D730EC /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636522190408300D730EC /* libavdevice.a */; };
-		9C86365C2190408300D730EC /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636532190408300D730EC /* libswscale.a */; };
-		9C86365D2190408300D730EC /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636542190408300D730EC /* libssl.a */; };
-		9C86365E2190408300D730EC /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636552190408300D730EC /* libavutil.a */; };
-		9C86365F2190408300D730EC /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636562190408300D730EC /* libswresample.a */; };
-		9C8636602190408300D730EC /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636572190408300D730EC /* libcrypto.a */; };
-		9C8636612190408300D730EC /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636582190408300D730EC /* libavfilter.a */; };
-		9C8636622190408300D730EC /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636592190408300D730EC /* libavcodec.a */; };
 		9C8636F6219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C8636F7219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C863788219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8636C0219043EA00D730EC /* version.h */; };
@@ -296,6 +287,24 @@
 		9C8638BC21904D2900D730EC /* SGPLFDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8638B921904D2900D730EC /* SGPLFDisplayLink.h */; };
 		9C89C81E2189574000D64916 /* SGPointerMap.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C89C81C2189574000D64916 /* SGPointerMap.h */; };
 		9C89C81F2189574000D64916 /* SGPointerMap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C89C81D2189574000D64916 /* SGPointerMap.m */; };
+		9C8A0E29219094B5006F7AE8 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AC21904AF700D730EC /* libavcodec.a */; };
+		9C8A0E2A219094B5006F7AE8 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AD21904AF700D730EC /* libavdevice.a */; };
+		9C8A0E2B219094B5006F7AE8 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AF21904AF700D730EC /* libavfilter.a */; };
+		9C8A0E2C219094B5006F7AE8 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A821904AF700D730EC /* libavformat.a */; };
+		9C8A0E2D219094B5006F7AE8 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AA21904AF700D730EC /* libavutil.a */; };
+		9C8A0E2E219094B5006F7AE8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A921904AF700D730EC /* libcrypto.a */; };
+		9C8A0E2F219094B5006F7AE8 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A721904AF700D730EC /* libssl.a */; };
+		9C8A0E30219094B5006F7AE8 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AB21904AF700D730EC /* libswresample.a */; };
+		9C8A0E31219094B5006F7AE8 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AE21904AF700D730EC /* libswscale.a */; };
+		9C8A0E352190A6E0006F7AE8 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636592190408300D730EC /* libavcodec.a */; };
+		9C8A0E362190A6E0006F7AE8 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636522190408300D730EC /* libavdevice.a */; };
+		9C8A0E372190A6E0006F7AE8 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636582190408300D730EC /* libavfilter.a */; };
+		9C8A0E382190A6E0006F7AE8 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636512190408300D730EC /* libavformat.a */; };
+		9C8A0E392190A6E0006F7AE8 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636552190408300D730EC /* libavutil.a */; };
+		9C8A0E3A2190A6E0006F7AE8 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636572190408300D730EC /* libcrypto.a */; };
+		9C8A0E3B2190A6E0006F7AE8 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636542190408300D730EC /* libssl.a */; };
+		9C8A0E3C2190A6E0006F7AE8 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636562190408300D730EC /* libswresample.a */; };
+		9C8A0E3D2190A6E0006F7AE8 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8636532190408300D730EC /* libswscale.a */; };
 		9C8D26592019E1AC002770FA /* SGGLViewport.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D26572019E1AC002770FA /* SGGLViewport.h */; };
 		9C8D265C2019E1AC002770FA /* SGGLViewport.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C8D26582019E1AC002770FA /* SGGLViewport.m */; };
 		9C8D26612019F297002770FA /* SGGLTextureUploader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8D265F2019F297002770FA /* SGGLTextureUploader.h */; };
@@ -318,14 +327,6 @@
 		9CB1F0A220178B0E00102A69 /* SGPLFGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CB1F09E20178B0D00102A69 /* SGPLFGLView.h */; };
 		9CB61F5F2112B93C00F5BE6B /* SGFFmpeg.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CB61F5D2112B93C00F5BE6B /* SGFFmpeg.h */; };
 		9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB61F5E2112B93C00F5BE6B /* SGFFmpeg.m */; };
-		9CB6950B219067EA00196E54 /* libavcodec.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AC21904AF700D730EC /* libavcodec.a */; };
-		9CB6950C219067EA00196E54 /* libavfilter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AF21904AF700D730EC /* libavfilter.a */; };
-		9CB6950D219067EA00196E54 /* libavformat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A821904AF700D730EC /* libavformat.a */; };
-		9CB6950E219067EA00196E54 /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AA21904AF700D730EC /* libavutil.a */; };
-		9CB6950F219067EA00196E54 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A921904AF700D730EC /* libcrypto.a */; };
-		9CB69510219067EA00196E54 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638A721904AF700D730EC /* libssl.a */; };
-		9CB69511219067EA00196E54 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AB21904AF700D730EC /* libswresample.a */; };
-		9CB69512219067EA00196E54 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8638AE21904AF700D730EC /* libswscale.a */; };
 		9CC649FB21818D8C00453B3E /* SGPlayerItem+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CC649F921818D8C00453B3E /* SGPlayerItem+Internal.h */; };
 		9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CC649FD2181A8C000453B3E /* SGCapacity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CC64A002181A8C000453B3E /* SGCapacity.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CC649FE2181A8C000453B3E /* SGCapacity.m */; };
@@ -763,14 +764,15 @@
 				9C86383421904A0900D730EC /* UIKit.framework in Frameworks */,
 				9C86383521904A0900D730EC /* AVFoundation.framework in Frameworks */,
 				9C86383621904A0900D730EC /* Foundation.framework in Frameworks */,
-				9CB6950B219067EA00196E54 /* libavcodec.a in Frameworks */,
-				9CB6950C219067EA00196E54 /* libavfilter.a in Frameworks */,
-				9CB6950D219067EA00196E54 /* libavformat.a in Frameworks */,
-				9CB6950E219067EA00196E54 /* libavutil.a in Frameworks */,
-				9CB6950F219067EA00196E54 /* libcrypto.a in Frameworks */,
-				9CB69510219067EA00196E54 /* libssl.a in Frameworks */,
-				9CB69511219067EA00196E54 /* libswresample.a in Frameworks */,
-				9CB69512219067EA00196E54 /* libswscale.a in Frameworks */,
+				9C8A0E29219094B5006F7AE8 /* libavcodec.a in Frameworks */,
+				9C8A0E2A219094B5006F7AE8 /* libavdevice.a in Frameworks */,
+				9C8A0E2B219094B5006F7AE8 /* libavfilter.a in Frameworks */,
+				9C8A0E2C219094B5006F7AE8 /* libavformat.a in Frameworks */,
+				9C8A0E2D219094B5006F7AE8 /* libavutil.a in Frameworks */,
+				9C8A0E2E219094B5006F7AE8 /* libcrypto.a in Frameworks */,
+				9C8A0E2F219094B5006F7AE8 /* libssl.a in Frameworks */,
+				9C8A0E30219094B5006F7AE8 /* libswresample.a in Frameworks */,
+				9C8A0E31219094B5006F7AE8 /* libswscale.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -800,15 +802,15 @@
 				9CCC5F21200C9BBB00E833DA /* UIKit.framework in Frameworks */,
 				9CCC5F20200C9BB700E833DA /* AVFoundation.framework in Frameworks */,
 				9CCC5F1F200C9BB200E833DA /* Foundation.framework in Frameworks */,
-				9C86365A2190408300D730EC /* libavformat.a in Frameworks */,
-				9C86365B2190408300D730EC /* libavdevice.a in Frameworks */,
-				9C86365C2190408300D730EC /* libswscale.a in Frameworks */,
-				9C86365D2190408300D730EC /* libssl.a in Frameworks */,
-				9C86365E2190408300D730EC /* libavutil.a in Frameworks */,
-				9C86365F2190408300D730EC /* libswresample.a in Frameworks */,
-				9C8636602190408300D730EC /* libcrypto.a in Frameworks */,
-				9C8636612190408300D730EC /* libavfilter.a in Frameworks */,
-				9C8636622190408300D730EC /* libavcodec.a in Frameworks */,
+				9C8A0E352190A6E0006F7AE8 /* libavcodec.a in Frameworks */,
+				9C8A0E362190A6E0006F7AE8 /* libavdevice.a in Frameworks */,
+				9C8A0E372190A6E0006F7AE8 /* libavfilter.a in Frameworks */,
+				9C8A0E382190A6E0006F7AE8 /* libavformat.a in Frameworks */,
+				9C8A0E392190A6E0006F7AE8 /* libavutil.a in Frameworks */,
+				9C8A0E3A2190A6E0006F7AE8 /* libcrypto.a in Frameworks */,
+				9C8A0E3B2190A6E0006F7AE8 /* libssl.a in Frameworks */,
+				9C8A0E3C2190A6E0006F7AE8 /* libswresample.a in Frameworks */,
+				9C8A0E3D2190A6E0006F7AE8 /* libswscale.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

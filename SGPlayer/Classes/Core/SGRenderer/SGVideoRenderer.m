@@ -446,12 +446,7 @@
     }
     [program use];
     [program bindVariable];
-    BOOL success = NO;
-    if (frame->_pixelBuffer) {
-        success = [self.glUploader uploadWithCVPixelBuffer:frame->_pixelBuffer];
-    } else {
-        success = [self.glUploader uploadWithType:SGFormat2Texture(frame.format, frame->_pixelBuffer) data:frame->_data size:textureSize];
-    }
+    BOOL success = [self.glUploader uploadWithVideoFrame:frame];
     if (!success) {
         [model unbind];
         [program unuse];

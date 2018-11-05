@@ -8,6 +8,7 @@
 
 #import "SGGLTextureUploader.h"
 #import "SGPLFOpenGL.h"
+#import "SGMapping.h"
 
 static int gl_texture[3] = {
     GL_TEXTURE0,
@@ -19,11 +20,15 @@ static int gl_texture[3] = {
 
 {
     GLuint _gl_texture_ids[3];
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     CVOpenGLESTextureCacheRef _openGLESTextureCache;
+#endif
 }
 
 @property (nonatomic, strong) SGPLFGLContext * context;
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 @property (nonatomic, assign) BOOL setupOpenGLESTextureCacheFailed;
+#endif
 
 @end
 
@@ -45,60 +50,85 @@ static int gl_texture[3] = {
         _gl_texture_ids[1] = 0;
         _gl_texture_ids[1] = 0;
     }
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     if (_openGLESTextureCache) {
         CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
         CFRelease(_openGLESTextureCache);
         _openGLESTextureCache = NULL;
     }
+#endif
 }
 
 - (void)setupGLTextureIfNeeded
 {
-    if (!_gl_texture_ids[0])
-    {
+    if (!_gl_texture_ids[0]) {
         glGenTextures(3, _gl_texture_ids);
     }
 }
 
-- (void)setupOpenGLESTextureCacheIfNeeded
+- (BOOL)uploadWithVideoFrame:(SGVideoFrame *)frame
 {
-    if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed) {
-        CVReturn result = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, self.context, NULL, &_openGLESTextureCache);
-        if (result != noErr) {
-            self.setupOpenGLESTextureCacheFailed = YES;
+    enum AVPixelFormat format = AV_PIX_FMT_NONE;
+    uint8_t * data[SGFramePlaneCount] = {0};
+    int linesize[SGFramePlaneCount] = {0};
+    if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame->_pixelBuffer) {
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+        return [self uploadWithCVPixelBuffer:frame->_pixelBuffer];
+#endif
+        CVReturn err = CVPixelBufferLockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
+        if (err != kCVReturnSuccess) {
+            return NO;
         }
+        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(frame->_pixelBuffer));
+        if (CVPixelBufferIsPlanar(frame->_pixelBuffer)) {
+            int planes = (int)CVPixelBufferGetPlaneCount(frame->_pixelBuffer);
+            for (int i = 0; i < planes; i++) {
+                data[i]     = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(frame->_pixelBuffer, i);
+                linesize[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(frame->_pixelBuffer, i);
+            }
+        } else {
+            data[0] = (uint8_t *)CVPixelBufferGetBaseAddress(frame->_pixelBuffer);
+            linesize[0] = (int)CVPixelBufferGetBytesPerRow(frame->_pixelBuffer);
+        }
+        CVPixelBufferUnlockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
     }
+    return [self uploadWithFormat:format data:data linesize:linesize width:frame.width height:frame.height];
 }
 
-- (BOOL)uploadWithType:(SGGLTextureType)type
-                  data:(uint8_t **)data
-                  size:(SGGLSize)size
+- (BOOL)uploadWithFormat:(enum AVPixelFormat)format data:(uint8_t **)data linesize:(int *)linesize width:(int)width height:(int)height
 {
-    [self setupGLTextureIfNeeded];
-    if (type == SGGLTextureTypeYUV420P) {
-        static int count = 3;
-        int widths[3]  = {size.width, size.width / 2, size.width / 2};
-        int heights[3] = {size.height, size.height / 2, size.height / 2};
-        int formats[3] = {GL_LUMINANCE, GL_LUMINANCE, GL_LUMINANCE};
-        return [self uploadWithData:data
-                             widths:widths
-                            heights:heights
-                    internalFormats:formats
-                            formats:formats
-                              count:count];
-    } else if (type == SGGLTextureTypeNV12) {
-        static int count = 2;
-        int widths[2]  = {size.width, size.width / 2};
-        int heights[2] = {size.height, size.height / 2};
-        int formats[2] = {GL_LUMINANCE, GL_LUMINANCE_ALPHA};
-        return [self uploadWithData:data
-                             widths:widths
-                            heights:heights
-                    internalFormats:formats
-                            formats:formats
-                              count:count];
+    int planes = 0;
+    int widths[SGFramePlaneCount]  = {0};
+    int heights[SGFramePlaneCount] = {0};
+    int formats[SGFramePlaneCount] = {0};
+    if (format == AV_PIX_FMT_YUV420P) {
+        planes = 3;
+        widths[0] = width;
+        widths[1] = width / 2;
+        widths[2] = width / 2;
+        heights[0] = height;
+        heights[1] = height / 2;
+        heights[2] = height / 2;
+        formats[0] = GL_LUMINANCE;
+        formats[1] = GL_LUMINANCE;
+        formats[2] = GL_LUMINANCE;
+    } else if (format == AV_PIX_FMT_NV12) {
+        planes = 2;
+        widths[0] = width;
+        widths[1] = width / 2;
+        heights[0] = height;
+        heights[1] = height / 2;
+        formats[0] = GL_LUMINANCE;
+        formats[1] = GL_LUMINANCE_ALPHA;
+    } else {
+        return NO;
     }
-    return NO;
+    return [self uploadWithData:data
+                         widths:widths
+                        heights:heights
+                internalFormats:formats
+                        formats:formats
+                          count:planes];
 }
 
 - (BOOL)uploadWithData:(uint8_t **)data
@@ -108,6 +138,7 @@ static int gl_texture[3] = {
                formats:(int *)formats
                  count:(int)count
 {
+    [self setupGLTextureIfNeeded];
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     for (int i = 0; i < count; i++) {
         glActiveTexture(gl_texture[i]);
@@ -121,6 +152,17 @@ static int gl_texture[3] = {
     return YES;
 }
 
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+- (void)setupOpenGLESTextureCacheIfNeeded
+{
+    if (!_openGLESTextureCache && !self.setupOpenGLESTextureCacheFailed) {
+        CVReturn result = CVOpenGLESTextureCacheCreate(kCFAllocatorDefault, NULL, self.context, NULL, &_openGLESTextureCache);
+        if (result != noErr) {
+            self.setupOpenGLESTextureCacheFailed = YES;
+        }
+    }
+}
+
 - (BOOL)uploadWithCVPixelBuffer:(CVPixelBufferRef)pixelBuffer
 {
     [self setupOpenGLESTextureCacheIfNeeded];
@@ -128,9 +170,9 @@ static int gl_texture[3] = {
         return NO;
     }
     CVOpenGLESTextureCacheFlush(_openGLESTextureCache, 0);
+    OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
     GLsizei width = (int)CVPixelBufferGetWidth(pixelBuffer);
     GLsizei height = (int)CVPixelBufferGetHeight(pixelBuffer);
-    OSType format = CVPixelBufferGetPixelFormatType(pixelBuffer);
     if (format == kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange) {
         static int count = 2;
         int widths[2]  = {width, width / 2};
@@ -202,5 +244,6 @@ static int gl_texture[3] = {
     CVPixelBufferRelease(pixelBuffer);
     return YES;
 }
+#endif
 
 @end

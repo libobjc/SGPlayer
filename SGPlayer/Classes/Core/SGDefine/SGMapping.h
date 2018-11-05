@@ -19,7 +19,6 @@
 // FF/SG -> GL
 SGGLModelType SGDisplay2Model(SGDisplayMode displayMode);
 SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer);
-SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer);
 SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode);
 
 // FF <-> SG

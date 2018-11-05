@@ -37,21 +37,6 @@ SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pix
     }
 }
 
-SGGLTextureType SGFormat2Texture(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
-{
-    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer) {
-        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
-    }
-    switch (format) {
-        case AV_PIX_FMT_YUV420P:
-            return SGGLTextureTypeYUV420P;
-        case AV_PIX_FMT_NV12:
-            return SGGLTextureTypeNV12;
-        default:
-            return SGGLTextureTypeUnknown;
-    }
-}
-
 SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
 {
     switch (scalingMode) {
