@@ -28,7 +28,6 @@ typedef NS_ENUM(NSUInteger, SGRenderableState)
 
 @property (nonatomic, weak) id object;
 @property (nonatomic, weak) id <SGRenderableDelegate> delegate;
-@property (nonatomic, assign) BOOL key;
 
 - (SGRenderableState)state;
 - (SGCapacity *)capacity;

@@ -48,7 +48,6 @@
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
-@synthesize key = _key;
 
 - (instancetype)initWithClock:(SGClock *)clock
 {
@@ -342,7 +341,7 @@
 - (void)drawTimerHandler
 {
     __block BOOL draw_ret = NO;
-    SGLockEXE11(self.lock, ^SGBlock{
+    SGLockEXE11(self.lock, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{};
         if (self->_is_update_frame_output && self->_current_frame) {
             SGVideoFrame * frame = self->_current_frame;

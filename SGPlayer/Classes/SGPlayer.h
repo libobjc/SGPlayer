@@ -30,8 +30,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer : NSObject
 
-@property (nonatomic, assign) NSInteger tag;
-@property (nonatomic, strong) id object;
+@property (nonatomic) NSInteger tag;
+@property (nonatomic, weak) id object;
 
 - (SGPlayerStatus)status;
 - (NSError *)error;

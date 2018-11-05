@@ -38,7 +38,6 @@
 
 @synthesize object = _object;
 @synthesize delegate = _delegate;
-@synthesize key = _key;
 
 - (instancetype)initWithClock:(SGClock *)clock
 {

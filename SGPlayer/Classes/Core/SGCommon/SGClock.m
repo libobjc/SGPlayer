@@ -103,7 +103,7 @@
 
 - (BOOL)pause
 {
-    return SGLockCondEXE00(self.lock, ^BOOL{
+    return SGLockCondEXE00(self.lock, ^BOOL {
         return !self->_is_paused;
     }, ^{
         self->_is_paused = 1;
@@ -113,7 +113,7 @@
 
 - (BOOL)resume
 {
-    return SGLockCondEXE00(self.lock, ^BOOL{
+    return SGLockCondEXE00(self.lock, ^BOOL {
         return self->_is_paused;
     }, ^{
         self->_is_paused = 0;

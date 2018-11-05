@@ -59,10 +59,8 @@
         self.waitCondition = [[NSCondition alloc] init];
         self.audioRenderer = [[SGAudioRenderer alloc] initWithClock:self.clock];
         self.audioRenderer.delegate = self;
-        self.audioRenderer.key = YES;
         self.videoRenderer = [[SGVideoRenderer alloc] initWithClock:self.clock];
         self.videoRenderer.delegate = self;
-        self.videoRenderer.key = NO;
     }
     return self;
 }

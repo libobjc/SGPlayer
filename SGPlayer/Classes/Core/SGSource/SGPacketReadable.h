@@ -13,8 +13,7 @@
 
 @protocol SGPacketReadable <NSObject>
 
-@property (nonatomic, strong) id object;
-
+@property (nonatomic, weak) id object;
 @property (nonatomic, weak) id <SGPacketReadableDelegate> delegate;
 
 - (CMTime)duration;
