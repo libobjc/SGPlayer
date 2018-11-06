@@ -117,6 +117,7 @@ static int gl_texture[3] = {
     int widths[SGFramePlaneCount] = {0};
     int heights[SGFramePlaneCount] = {0};
     int formats[SGFramePlaneCount] = {0};
+    int internalFormats[SGFramePlaneCount] = {0};
     int planes = 0;
     if (format == AV_PIX_FMT_YUV420P) {
         widths[0] = width;
@@ -125,27 +126,47 @@ static int gl_texture[3] = {
         heights[0] = height;
         heights[1] = height / 2;
         heights[2] = height / 2;
-        linesize[0] = width;
-        linesize[1] = width / 2;
-        linesize[2] = width / 2;
+        linesize[0] = sizeof(uint8_t) * 1 * width;
+        linesize[1] = sizeof(uint8_t) * 1 * width / 2;
+        linesize[2] = sizeof(uint8_t) * 1 * width / 2;
         formats[0] = GL_LUMINANCE;
         formats[1] = GL_LUMINANCE;
         formats[2] = GL_LUMINANCE;
+        internalFormats[0] = GL_LUMINANCE;
+        internalFormats[1] = GL_LUMINANCE;
+        internalFormats[2] = GL_LUMINANCE;
         planes = 3;
     } else if (format == AV_PIX_FMT_NV12) {
         widths[0] = width;
         widths[1] = width / 2;
         heights[0] = height;
         heights[1] = height / 2;
-        linesize[0] = width;
-        linesize[1] = width;
+        linesize[0] = sizeof(uint8_t) * 1 * width;
+        linesize[1] = sizeof(uint8_t) * 1 * width;
         formats[0] = GL_LUMINANCE;
+        internalFormats[0] = GL_LUMINANCE;
 #if SGPLATFORM_TARGET_OS_MAC
         formats[1] = GL_LUMINANCE_ALPHA;
+        internalFormats[1] = GL_LUMINANCE_ALPHA;
 #else
         formats[1] = GL_RG_EXT;
+        internalFormats[1] = GL_RG_EXT;
 #endif
         planes = 2;
+    } else if (format == AV_PIX_FMT_BGRA) {
+        widths[0] = width;
+        heights[0] = height;
+        linesize[0] = sizeof(uint8_t) * 4 * width;
+        formats[0] = GL_BGRA;
+        internalFormats[0] = GL_RGBA;
+        planes = 1;
+    } else if (format == AV_PIX_FMT_RGBA) {
+        widths[0] = width;
+        heights[0] = height;
+        linesize[0] = sizeof(uint8_t) * 4 * width;
+        formats[0] = GL_RGBA;
+        internalFormats[0] = GL_RGBA;
+        planes = 1;
     } else {
         return NO;
     }
@@ -176,7 +197,7 @@ static int gl_texture[3] = {
     return [self uploadWithData:data
                          widths:widths
                         heights:heights
-                internalFormats:formats
+                internalFormats:internalFormats
                         formats:formats
                           count:planes];
 }
