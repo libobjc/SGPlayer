@@ -213,17 +213,21 @@
 
 - (BOOL)flush
 {
-    SGLockCondEXE00(self.lock, ^BOOL {
+    return SGLockCondEXE11(self.lock, ^BOOL {
         return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
-    }, ^{
+    }, ^SGBlock {
         [self->_current_frame unlock];
         self->_current_frame = nil;
         self->_nb_samples_copied_frame = 0;
         self->_nb_samples_copied_render = 0;
         self->_render_time = kCMTimeZero;
         self->_render_duration = kCMTimeZero;
+        return ^{};
+    }, ^BOOL(SGBlock block) {
+        [self.player flush];
+        block();
+        return YES;
     });
-    return YES;
 }
 
 #pragma mark - SGAudioStreamPlayerDelegate

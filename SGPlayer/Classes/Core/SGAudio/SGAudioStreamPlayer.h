@@ -50,5 +50,6 @@
 
 - (void)play;
 - (void)pause;
+- (void)flush;
 
 @end

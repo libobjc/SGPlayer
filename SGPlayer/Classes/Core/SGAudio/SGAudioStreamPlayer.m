@@ -158,6 +158,22 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     }
 }
 
+- (void)flush
+{
+    if (self.audioUnitForTimePitch)
+    {
+        AudioUnitReset(self.audioUnitForTimePitch, kAudioUnitScope_Global, 0);
+    }
+    if (self.audioUnitForMixer)
+    {
+        AudioUnitReset(self.audioUnitForMixer, kAudioUnitScope_Global, 0);
+    }
+    if (self.audioUnitForOutput)
+    {
+        AudioUnitReset(self.audioUnitForOutput, kAudioUnitScope_Global, 0);
+    }
+}
+
 #pragma mark - Setter & Getter
 
 - (BOOL)playing
