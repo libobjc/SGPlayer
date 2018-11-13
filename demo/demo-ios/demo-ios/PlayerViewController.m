@@ -37,7 +37,7 @@
     [super viewDidLoad];
     
     NSURL * URL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
-    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
+//    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
     [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;
     self.player = [[SGPlayer alloc] init];
@@ -51,16 +51,16 @@
     [self.player waitUntilReady];
     [self.player play];
     
-    self.player2 = [[SGPlayer alloc] init];
+//    self.player2 = [[SGPlayer alloc] init];
 //    self.player2.delegate = self;
-    self.player2.videoRenderer.view = self.view2;
-    self.player2.videoRenderer.displayMode = SGDisplayModeVR;
-    [self.player2.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
-        NSLog(@"2 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
-    }];
-    [self.player2 replaceWithURL:URL2];
-    [self.player2 waitUntilReady];
-    [self.player2 play];
+//    self.player2.videoRenderer.view = self.view2;
+//    self.player2.videoRenderer.displayMode = SGDisplayModeVR;
+//    [self.player2.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
+//        NSLog(@"2 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
+//    }];
+//    [self.player2 replaceWithURL:URL2];
+//    [self.player2 waitUntilReady];
+//    [self.player2 play];
 }
 
 - (void)viewDidLayoutSubviews

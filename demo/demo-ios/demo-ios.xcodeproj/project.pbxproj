@@ -26,8 +26,6 @@
 		9C8A0E342190A687006F7AE8 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9824A41FAB073B00142215 /* SGPlayer.framework */; };
 		9CD7E10321801C0700814E1B /* thinking-out-loud.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10121801C0700814E1B /* thinking-out-loud.mp4 */; };
 		9CD7E10421801C0700814E1B /* love-yourself.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10221801C0700814E1B /* love-yourself.mp4 */; };
-		9CD7E10621801C5700814E1B /* countdown-ktv.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E10521801C5700814E1B /* countdown-ktv.mp4 */; };
-		9CD7E1082180261200814E1B /* i-see-fire-h265.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9CD7E1072180261200814E1B /* i-see-fire-h265.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -65,8 +63,6 @@
 		9CB695132190680E00196E54 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CD7E10121801C0700814E1B /* thinking-out-loud.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "thinking-out-loud.mp4"; path = "../../../../../../../Movies/Movie/thinking-out-loud.mp4"; sourceTree = "<group>"; };
 		9CD7E10221801C0700814E1B /* love-yourself.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "love-yourself.mp4"; path = "../../../../../../../Movies/Movie/love-yourself.mp4"; sourceTree = "<group>"; };
-		9CD7E10521801C5700814E1B /* countdown-ktv.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "countdown-ktv.mp4"; path = "../../../../../../../Desktop/Video/countdown-ktv.mp4"; sourceTree = "<group>"; };
-		9CD7E1072180261200814E1B /* i-see-fire-h265.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire-h265.mp4"; path = "../../../../../../../Desktop/Video/i-see-fire-h265.mp4"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,12 +122,10 @@
 		9C886B961E78EC9F00F2CFD1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				9CD7E10521801C5700814E1B /* countdown-ktv.mp4 */,
 				9CD7E10221801C0700814E1B /* love-yourself.mp4 */,
 				9CD7E10121801C0700814E1B /* thinking-out-loud.mp4 */,
 				9C36DD441E79538500959FDA /* google-help-vr.mp4 */,
 				9C36DD451E79538500959FDA /* i-see-fire.mp4 */,
-				9CD7E1072180261200814E1B /* i-see-fire-h265.mp4 */,
 				9C886B971E78EC9F00F2CFD1 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -228,10 +222,8 @@
 				9C886BA61E78EC9F00F2CFD1 /* LaunchScreen.storyboard in Resources */,
 				9C886BA31E78EC9F00F2CFD1 /* Assets.xcassets in Resources */,
 				9C36DD461E79538500959FDA /* google-help-vr.mp4 in Resources */,
-				9CD7E10621801C5700814E1B /* countdown-ktv.mp4 in Resources */,
 				9C886BA11E78EC9F00F2CFD1 /* Main.storyboard in Resources */,
 				9CD7E10421801C0700814E1B /* love-yourself.mp4 in Resources */,
-				9CD7E1082180261200814E1B /* i-see-fire-h265.mp4 in Resources */,
 				9C02F6521E79293A00932489 /* PlayerViewController.xib in Resources */,
 				9CD7E10321801C0700814E1B /* thinking-out-loud.mp4 in Resources */,
 				9C36DD471E79538500959FDA /* i-see-fire.mp4 in Resources */,
