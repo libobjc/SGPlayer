@@ -84,7 +84,7 @@ static int gl_texture[3] = {
     if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame->_pixelBuffer) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         return [self uploadWithCVPixelBuffer:frame->_pixelBuffer];
-#endif
+#else
         CVReturn err = CVPixelBufferLockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (err != kCVReturnSuccess) {
             return NO;
@@ -101,6 +101,7 @@ static int gl_texture[3] = {
             linesize[0] = (int)CVPixelBufferGetBytesPerRow(frame->_pixelBuffer);
         }
         CVPixelBufferUnlockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
+#endif
     } else {
         for (int i = 0; i < SGFramePlaneCount; i++) {
             data[i] = frame->_data[i];

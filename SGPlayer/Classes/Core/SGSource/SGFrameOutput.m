@@ -186,7 +186,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
         return [self setState:SGFrameOutputStateReading];
     }, ^BOOL(SGBlock block) {
         block();
-        return [self.packetOutput start];
+        return [self.packetOutput resume];
     });
 }
 

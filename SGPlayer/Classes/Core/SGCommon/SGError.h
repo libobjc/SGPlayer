@@ -18,7 +18,8 @@ typedef NS_ENUM(uint32_t, SGErrorCode)
     SGErrorCodePacketOutputCannotClose,
     SGErrorCodePacketOutputCannotPause,
     SGErrorCodePacketOutputCannotResume,
-    SGErrorCodePacketOutputCannotSeek
+    SGErrorCodePacketOutputCannotSeek,
+    SGErrorCodePacketOutputCancelSeek,
 };
 
 typedef NS_ENUM(uint32_t, SGOperationCode)

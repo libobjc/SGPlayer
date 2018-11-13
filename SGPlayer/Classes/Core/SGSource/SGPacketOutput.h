@@ -41,7 +41,6 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState) {
 - (NSArray <SGTrack *> *)otherTracks;
 
 - (BOOL)open;
-- (BOOL)start;
 - (BOOL)close;
 - (BOOL)pause;
 - (BOOL)resume;

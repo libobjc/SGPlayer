@@ -19,7 +19,6 @@
 
 @implementation SGURLPacketReader
 
-@synthesize object = _object;
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithURL:(NSURL *)URL
