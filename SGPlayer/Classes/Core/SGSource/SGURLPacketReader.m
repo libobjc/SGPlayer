@@ -13,7 +13,7 @@
 @interface SGURLPacketReader () <SGFormatContextDelegate>
 
 @property (nonatomic, copy) NSURL * URL;
-@property (nonatomic, strong) SGFormatContext * formatContext;
+@property (nonatomic, strong) SGFormatContext * context;
 
 @end
 
@@ -25,35 +25,33 @@
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init]) {
-        self.URL = URL;
-        self.formatContext = [[SGFormatContext alloc] initWithURL:self.URL];
-        self.formatContext.delegate = self;
+        _URL = URL;
+        _context = [[SGFormatContext alloc] initWithURL:URL];
+        _context.delegate = self;
     }
     return self;
 }
 
 #pragma mark - Mapping
 
-SGGet0Map(CMTime, duration, self.formatContext)
-SGGet0Map(NSDictionary *, metadata, self.formatContext)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.formatContext)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.formatContext)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.formatContext)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.formatContext)
-SGGet0Map(BOOL, audioAvailable, self.formatContext)
-SGGet0Map(BOOL, videoAvailable, self.formatContext)
-SGGet0Map(NSError *, open, self.formatContext)
-SGGet0Map(NSError *, close, self.formatContext)
-SGGet0Map(NSError *, seekable, self.formatContext)
-SGGet1Map(NSError *, seekToTime, CMTime, self.formatContext)
-SGGet1Map(NSError *, nextPacket, SGPacket *, self.formatContext)
+SGGet0Map(CMTime, duration, _context)
+SGGet0Map(NSDictionary *, metadata, _context)
+SGGet0Map(NSArray <SGTrack *> *, tracks, _context)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, _context)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, _context)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, _context)
+SGGet0Map(NSError *, open, _context)
+SGGet0Map(NSError *, close, _context)
+SGGet0Map(NSError *, seekable, _context)
+SGGet1Map(NSError *, seekToTime, CMTime, _context)
+SGGet1Map(NSError *, nextPacket, SGPacket *, _context)
 
 #pragma mark - SGFormatContextDelegate
 
 - (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext
 {
-    if ([self.delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)]) {
-        return [self.delegate packetReadableShouldAbortBlockingFunctions:self];
+    if ([_delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)]) {
+        return [_delegate packetReadableShouldAbortBlockingFunctions:self];
     }
     return NO;
 }

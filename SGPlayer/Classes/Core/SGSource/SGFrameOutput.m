@@ -56,8 +56,6 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.packetOutput)
 SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.packetOutput)
 SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.packetOutput)
 SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
-SGGet0Map(BOOL, audioAvailable, self.packetOutput)
-SGGet0Map(BOOL, videoAvailable, self.packetOutput)
 
 #pragma mark - Setter & Getter
 
@@ -159,7 +157,7 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
 {
     if (self.packetOutput.state == SGPacketOutputStateFinished) {
         SGLockCondEXE10(self.lock, ^BOOL {
-            return (!self.audioAvailable || self->_audio_finished) && (!self.videoAvailable || self->_video_finished);
+            return (self.audioTracks.count == 0 || self->_audio_finished) && (self.videoTracks.count == 0 || self->_video_finished);
         }, ^SGBlock {
             return [self setState:SGFrameOutputStateFinished];
         });
@@ -264,7 +262,7 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
                 break;
             case SGPacketOutputStateOpened: {
                 b1 = [self setState:SGFrameOutputStateOpened];
-                if (packetOutput.audioAvailable) {
+                if (packetOutput.audioTracks.count > 0) {
                     self->_selected_audio_track = packetOutput.audioTracks.firstObject;
                     self.audioDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGAudioDecoder alloc] init]];
                     self.audioDecoder.delegate = self;
@@ -272,7 +270,7 @@ SGGet0Map(BOOL, videoAvailable, self.packetOutput)
                         [self.audioDecoder open];
                     };
                 }
-                if (packetOutput.videoAvailable) {
+                if (packetOutput.videoTracks.count > 0) {
                     self->_selected_video_track = packetOutput.videoTracks.firstObject;
                     self.videoDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGVideoDecoder alloc] init]];
                     self.videoDecoder.delegate = self;

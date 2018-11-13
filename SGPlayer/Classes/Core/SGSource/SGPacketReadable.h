@@ -18,21 +18,15 @@
 
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-
 - (NSArray <SGTrack *> *)tracks;
 - (NSArray <SGTrack *> *)audioTracks;
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
-- (BOOL)audioAvailable;
-- (BOOL)videoAvailable;
-
 - (NSError *)open;
 - (NSError *)close;
-
 - (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time;
-
 - (NSError *)nextPacket:(SGPacket *)packet;
 
 @end

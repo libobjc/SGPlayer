@@ -7,13 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAsset.h"
 #import "SGPacket.h"
+#import "SGAsset.h"
 
 @protocol SGPacketOutputDelegate;
 
-typedef NS_ENUM(uint32_t, SGPacketOutputState)
-{
+typedef NS_ENUM(uint32_t, SGPacketOutputState) {
     SGPacketOutputStateNone,
     SGPacketOutputStateOpening,
     SGPacketOutputStateOpened,
@@ -27,34 +26,25 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState)
 
 @interface SGPacketOutput : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
-
 - (instancetype)initWithAsset:(SGAsset *)asset;
 
 @property (nonatomic, weak) id <SGPacketOutputDelegate> delegate;
 
 - (SGPacketOutputState)state;
-
 - (NSError *)error;
+
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-
 - (NSArray <SGTrack *> *)tracks;
 - (NSArray <SGTrack *> *)audioTracks;
 - (NSArray <SGTrack *> *)videoTracks;
 - (NSArray <SGTrack *> *)otherTracks;
 
-- (BOOL)audioAvailable;
-- (BOOL)videoAvailable;
-
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;
-
 - (BOOL)pause;
 - (BOOL)resume;
-
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
 
