@@ -12,7 +12,7 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGPacketOutput () <SGPacketReadableDelegate>
+@interface SGPacketOutput () <SGDemuxableDelegate>
 
 {
     SGPacketOutputState _state;
@@ -20,7 +20,7 @@
 }
 
 @property (nonatomic, strong) SGAsset * asset;
-@property (nonatomic, strong) id <SGPacketReadable> readable;
+@property (nonatomic, strong) id <SGDemuxable> demuxable;
 
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) NSCondition * wakeup;
@@ -38,7 +38,7 @@
 {
     if (self = [super init]) {
         self.asset = asset;
-        self.readable = [self.asset newReadable];
+        self.demuxable = [self.asset newDemuxable];
         self.lock = [[NSLock alloc] init];
         self.wakeup = [[NSCondition alloc] init];
     }
@@ -47,12 +47,12 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(CMTime, duration, self.readable)
-SGGet0Map(NSDictionary *, metadata, self.readable)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.readable)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.readable)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.readable)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
+SGGet0Map(CMTime, duration, self.demuxable)
+SGGet0Map(NSDictionary *, metadata, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
 
 #pragma mark - Setter & Getter
 
@@ -117,7 +117,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
         [self.queue cancelAllOperations];
         [self.queue waitUntilAllOperationsAreFinished];
         self.queue = nil;
-        [self.readable close];
+        [self.demuxable close];
         return YES;
     });
 }
@@ -144,7 +144,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 - (BOOL)seekable
 {
-    return [self.readable seekable] == nil;
+    return [self.demuxable seekable] == nil;
 }
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
@@ -188,7 +188,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
                 break;
             } else if (self->_state == SGPacketOutputStateOpening) {
                 [self.lock unlock];
-                NSError * error = [self.readable open];
+                NSError * error = [self.demuxable open];
                 SGLockEXE10(self.lock, ^SGBlock{
                     self->_error = error;
                     return [self setState:error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
@@ -206,7 +206,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
                 self.seekingTime = self.seekTime;
                 CMTime seekingTime = self.seekingTime;
                 [self.lock unlock];
-                NSError * error = [self.readable seekToTime:seekingTime];
+                NSError * error = [self.demuxable seekToTime:seekingTime];
                 [self.lock lock];
                 if (self->_state == SGPacketOutputStateSeeking &&
                     CMTimeCompare(self.seekTime, seekingTime) != 0) {
@@ -231,7 +231,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
             } else if (self->_state == SGPacketOutputStateReading) {
                 [self.lock unlock];
                 SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-                NSError * error = [self.readable nextPacket:packet];
+                NSError * error = [self.demuxable nextPacket:packet];
                 if (error) {
                     [self.lock lock];
                     SGBlock callback = ^{};
@@ -252,7 +252,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
 
 #pragma mark - SGPacketReaderDelegate
 
-- (BOOL)packetReadableShouldAbortBlockingFunctions:(id <SGPacketReadable>)packetReadable
+- (BOOL)demuxableShouldAbortBlockingFunctions:(id <SGDemuxable>)demuxable
 {
     return SGLockCondEXE00(self.lock, ^BOOL {
         switch (self->_state) {

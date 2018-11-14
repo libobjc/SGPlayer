@@ -8,7 +8,7 @@
 
 #import "SGURLAsset.h"
 #import "SGAsset+Internal.h"
-#import "SGURLPacketReader.h"
+#import "SGURLDemuxer.h"
 
 @interface SGURLAsset ()
 
@@ -26,9 +26,9 @@
     return self;
 }
 
-- (id <SGPacketReadable>)newReadable
+- (id <SGDemuxable>)newDemuxable
 {
-    return [[SGURLPacketReader alloc] initWithURL:self.URL];
+    return [[SGURLDemuxer alloc] initWithURL:self.URL];
 }
 
 @end

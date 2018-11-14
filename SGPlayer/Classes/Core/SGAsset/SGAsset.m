@@ -11,7 +11,7 @@
 
 @implementation SGAsset
 
-- (id <SGPacketReadable>)newReadable
+- (id <SGDemuxable>)newReadable
 {
     return nil;
 }

@@ -1,15 +1,15 @@
 //
-//  SGAsset+Internal.h
+//  SGSegment+Internal.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/9/25.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGAsset.h"
+#import "SGSegment.h"
 #import "SGDemuxable.h"
 
-@interface SGAsset (Internal)
+@interface SGSegment (Internal)
 
 - (id <SGDemuxable>)newDemuxable;
 

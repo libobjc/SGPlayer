@@ -1,17 +1,17 @@
 //
-//  SGFormatContext.m
+//  SGURLDemuxer.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/13.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFormatContext2.h"
+#import "SGURLDemuxer2.h"
 #import "SGMapping.h"
 #import "SGError.h"
 #import "SGTrack+Internal.h"
 
-@implementation SGFormatContext2
+@implementation SGURLDemuxer2
 
 - (instancetype)initWithURL:(NSURL *)URL scale:(CMTime)scale startTime:(CMTime)startTime preferredTimeRange:(CMTimeRange)preferredTimeRange
 {

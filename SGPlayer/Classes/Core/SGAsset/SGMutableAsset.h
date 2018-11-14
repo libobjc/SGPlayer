@@ -6,8 +6,14 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import <SGPlayer/SGPlayer.h>
+#import "SGAsset.h"
+#import "SGSegment.h"
+#import "SGDefines.h"
 
 @interface SGMutableAsset : SGAsset
+
+- (int64_t)addTrack;
+
+- (BOOL)insertSegment:(SGSegment *)segment trackID:(int64_t)trackID;
 
 @end

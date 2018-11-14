@@ -1,12 +1,12 @@
 //
-//  SGFormatContext.m
+//  SGURLDemuxer.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/13.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFormatContext.h"
+#import "SGURLDemuxer.h"
 #import "SGTrack+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGConfiguration.h"
@@ -14,17 +14,17 @@
 #import "SGFFmpeg.h"
 #import "SGError.h"
 
-static int SGFormatContextInterruptHandler(void * context)
+static int SGURLDemuxerInterruptHandler(void * context)
 {
-    SGFormatContext * self = (__bridge SGFormatContext *)context;
-    if ([self.delegate respondsToSelector:@selector(formatContextShouldAbortBlockingFunctions:)]) {
-        BOOL ret = [self.delegate formatContextShouldAbortBlockingFunctions:self];
+    SGURLDemuxer * self = (__bridge SGURLDemuxer *)context;
+    if ([self.delegate respondsToSelector:@selector(demuxableShouldAbortBlockingFunctions:)]) {
+        BOOL ret = [self.delegate demuxableShouldAbortBlockingFunctions:self];
         return ret ? 1 : 0;
     }
     return 0;
 }
 
-@interface SGFormatContext ()
+@interface SGURLDemuxer ()
 
 {
     AVFormatContext * _context;
@@ -39,7 +39,10 @@ static int SGFormatContextInterruptHandler(void * context)
 
 @end
 
-@implementation SGFormatContext
+@implementation SGURLDemuxer
+
+@synthesize delegate = _delegate;
+@synthesize options = _options;
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
@@ -81,7 +84,7 @@ static int SGFormatContextInterruptHandler(void * context)
         return nil;
     }
     SGFFmpegSetupIfNeeded();
-    NSError * error = SGCreateFormatContext(&_context, self.URL, self.options, (__bridge void *)self, SGFormatContextInterruptHandler);
+    NSError * error = SGCreateFormatContext(&_context, self.URL, self.options, (__bridge void *)self, SGURLDemuxerInterruptHandler);
     if (error) {
         return error;
     }

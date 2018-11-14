@@ -1,5 +1,5 @@
 //
-//  SGFormatContext.h
+//  SGURLDemuxer.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/13.
@@ -10,7 +10,7 @@
 #import "SGTrack.h"
 #import "avformat.h"
 
-@interface SGFormatContext2 : NSObject
+@interface SGURLDemuxer2 : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

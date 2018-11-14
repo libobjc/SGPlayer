@@ -1,21 +1,19 @@
 //
-//  SGFormatContext.h
+//  SGDemuxable.h
 //  SGPlayer iOS
 //
-//  Created by Single on 2018/8/13.
+//  Created by Single on 2018/9/25.
 //  Copyright © 2018 single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 #import "SGPacket.h"
 
-@protocol SGFormatContextDelegate;
+@protocol SGDemuxableDelegate;
 
-@interface SGFormatContext : NSObject
+@protocol SGDemuxable <NSObject>
 
-- (instancetype)initWithURL:(NSURL *)URL;
-
-@property (nonatomic, weak) id <SGFormatContextDelegate> delegate;
+@property (nonatomic, weak) id <SGDemuxableDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
 - (CMTime)duration;
@@ -33,8 +31,8 @@
 
 @end
 
-@protocol SGFormatContextDelegate <NSObject>
+@protocol SGDemuxableDelegate <NSObject>
 
-- (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext;
+- (BOOL)demuxableShouldAbortBlockingFunctions:(id <SGDemuxable>)demuxable;
 
 @end

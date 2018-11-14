@@ -39,6 +39,12 @@
     NSURL * URL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
 //    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
+    SGMutableAsset * asset = [[SGMutableAsset alloc] init];
+    int64_t trackID = [asset addTrack];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0] trackID:trackID];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0] trackID:trackID];
+//    return;
+    
     [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;
     self.player = [[SGPlayer alloc] init];
     self.player.delegate = self;
@@ -47,7 +53,8 @@
 //    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
 //        NSLog(@"1 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
 //    }];
-    [self.player replaceWithURL:URL1];
+//    [self.player replaceWithURL:URL1];
+    [self.player replaceWithAsset:asset];
     [self.player waitUntilReady];
     [self.player play];
     
