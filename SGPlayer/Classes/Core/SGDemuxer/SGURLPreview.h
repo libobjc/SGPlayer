@@ -1,21 +1,21 @@
 //
-//  SGFormatContext.h
-//  SGPlayer iOS
+//  SGURLPreview.h
+//  SGPlayer
 //
-//  Created by Single on 2018/8/13.
+//  Created by Single on 2018/11/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPacket.h"
+#import "SGTrack.h"
 
-@protocol SGFormatContextDelegate;
+@protocol SGURLPreviewDelegate;
 
-@interface SGFormatContext : NSObject
+@interface SGURLPreview : NSObject
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
-@property (nonatomic, weak) id <SGFormatContextDelegate> delegate;
+@property (nonatomic, weak) id <SGURLPreviewDelegate> delegate;
 @property (nonatomic, copy) NSDictionary * options;
 
 - (CMTime)duration;
@@ -28,13 +28,11 @@
 
 - (NSError *)open;
 - (NSError *)close;
-- (NSError *)seekToTime:(CMTime)time;
-- (NSError *)nextPacket:(SGPacket *)packet;
 
 @end
 
-@protocol SGFormatContextDelegate <NSObject>
+@protocol SGURLPreviewDelegate <NSObject>
 
-- (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext;
+- (BOOL)URLPreviewShouldAbortBlockingFunctions:(SGURLPreview *)URLPreview;
 
 @end

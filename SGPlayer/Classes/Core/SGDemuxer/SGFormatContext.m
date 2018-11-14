@@ -63,6 +63,18 @@ static int SGFormatContextInterruptHandler(void * context)
     return kCMTimeZero;
 }
 
+- (NSError *)seekable
+{
+    if (_context) {
+        if (_context->pb && _context->pb->seekable > 0) {
+            return nil;
+        }
+        return SGECreateError(SGErrorCodeFormatNotSeekable, SGOperationCodeFormatGetSeekable);
+    }
+    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatGetSeekable);
+}
+
+
 - (NSError *)open
 {
     if (_context) {
@@ -113,17 +125,6 @@ static int SGFormatContextInterruptHandler(void * context)
         _context = NULL;
     }
     return nil;
-}
-
-- (NSError *)seekable
-{
-    if (_context) {
-        if (_context->pb && _context->pb->seekable > 0) {
-            return nil;
-        }
-        return SGECreateError(SGErrorCodeFormatNotSeekable, SGOperationCodeFormatGetSeekable);
-    }
-    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatGetSeekable);
 }
 
 - (NSError *)seekToTime:(CMTime)time

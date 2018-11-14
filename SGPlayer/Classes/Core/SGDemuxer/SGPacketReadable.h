@@ -16,6 +16,7 @@
 @property (nonatomic, weak) id <SGPacketReadableDelegate> delegate;
 
 - (CMTime)duration;
+- (NSError *)seekable;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
 - (NSArray <SGTrack *> *)audioTracks;
@@ -24,7 +25,6 @@
 
 - (NSError *)open;
 - (NSError *)close;
-- (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time;
 - (NSError *)nextPacket:(SGPacket *)packet;
 

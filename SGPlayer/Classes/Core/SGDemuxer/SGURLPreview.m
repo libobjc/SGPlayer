@@ -1,25 +1,23 @@
 //
-//  SGURLPacketReader.m
-//  SGPlayer iOS
+//  SGURLPreview.m
+//  SGPlayer
 //
-//  Created by Single on 2018/9/19.
+//  Created by Single on 2018/11/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGURLPacketReader.h"
+#import "SGURLPreview.h"
 #import "SGFormatContext.h"
 #import "SGMacro.h"
 
-@interface SGURLPacketReader () <SGFormatContextDelegate>
+@interface SGURLPreview () <SGFormatContextDelegate>
 
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, strong) SGFormatContext * context;
 
 @end
 
-@implementation SGURLPacketReader
-
-@synthesize delegate = _delegate;
+@implementation SGURLPreview
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
@@ -47,15 +45,13 @@ SGGet0Map(NSArray <SGTrack *> *, videoTracks, _context)
 SGGet0Map(NSArray <SGTrack *> *, otherTracks, _context)
 SGGet0Map(NSError *, open, _context)
 SGGet0Map(NSError *, close, _context)
-SGGet1Map(NSError *, seekToTime, CMTime, _context)
-SGGet1Map(NSError *, nextPacket, SGPacket *, _context)
 
 #pragma mark - SGFormatContextDelegate
 
 - (BOOL)formatContextShouldAbortBlockingFunctions:(SGFormatContext *)formatContext
 {
-    if ([_delegate respondsToSelector:@selector(packetReadableShouldAbortBlockingFunctions:)]) {
-        return [_delegate packetReadableShouldAbortBlockingFunctions:self];
+    if ([_delegate respondsToSelector:@selector(URLPreviewShouldAbortBlockingFunctions:)]) {
+        return [_delegate URLPreviewShouldAbortBlockingFunctions:self];
     }
     return NO;
 }

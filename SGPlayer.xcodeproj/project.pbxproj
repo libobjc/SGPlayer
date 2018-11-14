@@ -84,6 +84,12 @@
 		9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C66E1FC2188550D00B70DAA /* SGSWResample.h */; };
 		9C66E1FF2188550D00B70DAA /* SGSWResample.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C66E1FD2188550D00B70DAA /* SGSWResample.m */; };
 		9C6E514E2018C6C100C87C54 /* SGGLModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6E514D2018C6C100C87C54 /* SGGLModel.h */; };
+		9C6F9021219BDE53001051CE /* SGURLPreview.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6F901F219BDE53001051CE /* SGURLPreview.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C6F9022219BDE53001051CE /* SGURLPreview.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6F901F219BDE53001051CE /* SGURLPreview.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C6F9023219BDE53001051CE /* SGURLPreview.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C6F901F219BDE53001051CE /* SGURLPreview.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C6F9024219BDE53001051CE /* SGURLPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9020219BDE53001051CE /* SGURLPreview.m */; };
+		9C6F9025219BDE53001051CE /* SGURLPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9020219BDE53001051CE /* SGURLPreview.m */; };
+		9C6F9026219BDE53001051CE /* SGURLPreview.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9020219BDE53001051CE /* SGURLPreview.m */; };
 		9C8636F6219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C8636F7219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C863788219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8636C0219043EA00D730EC /* version.h */; };
@@ -616,6 +622,8 @@
 		9C66E1FC2188550D00B70DAA /* SGSWResample.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSWResample.h; sourceTree = "<group>"; };
 		9C66E1FD2188550D00B70DAA /* SGSWResample.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGSWResample.m; sourceTree = "<group>"; };
 		9C6E514D2018C6C100C87C54 /* SGGLModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLModel.h; sourceTree = "<group>"; };
+		9C6F901F219BDE53001051CE /* SGURLPreview.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLPreview.h; sourceTree = "<group>"; };
+		9C6F9020219BDE53001051CE /* SGURLPreview.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLPreview.m; sourceTree = "<group>"; };
 		9C8636512190408300D730EC /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libavformat.a"; sourceTree = "<group>"; };
 		9C8636522190408300D730EC /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libavdevice.a"; sourceTree = "<group>"; };
 		9C8636532190408300D730EC /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libswscale.a"; sourceTree = "<group>"; };
@@ -1116,6 +1124,8 @@
 		9C8D4E5C200E0A0600ED8A58 /* SGDemuxer */ = {
 			isa = PBXGroup;
 			children = (
+				9C6F901F219BDE53001051CE /* SGURLPreview.h */,
+				9C6F9020219BDE53001051CE /* SGURLPreview.m */,
 				9C0DF027215A2FB9007142DB /* SGPacketReadable.h */,
 				9CE469B12151FB4F00528662 /* SGURLPacketReader.h */,
 				9CE469B22151FB4F00528662 /* SGURLPacketReader.m */,
@@ -1305,9 +1315,9 @@
 			children = (
 				9CF63FC0211D8E33001B2684 /* SGAsset.h */,
 				9CF63FC1211D8E33001B2684 /* SGAsset.m */,
+				9C0B6CB1217D823500900F1E /* SGAsset+Internal.h */,
 				9C95D2BF2152386C00079B38 /* SGURLAsset.h */,
 				9C95D2C02152386C00079B38 /* SGURLAsset.m */,
-				9C0B6CB1217D823500900F1E /* SGAsset+Internal.h */,
 			);
 			path = SGAsset;
 			sourceTree = "<group>";
@@ -1319,6 +1329,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6F9022219BDE53001051CE /* SGURLPreview.h in Headers */,
 				9C86384D21904A0900D730EC /* SGConfiguration.h in Headers */,
 				9C86384121904A0900D730EC /* version.h in Headers */,
 				9C86384221904A0900D730EC /* avio.h in Headers */,
@@ -1422,6 +1433,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6F9023219BDE53001051CE /* SGURLPreview.h in Headers */,
 				9CD79EF02190068E00E39A7D /* SGConfiguration.h in Headers */,
 				9C86378D219043EA00D730EC /* avformat.h in Headers */,
 				9CD79EE72190068E00E39A7D /* SGCapacity.h in Headers */,
@@ -1525,6 +1537,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6F9021219BDE53001051CE /* SGURLPreview.h in Headers */,
 				9C43D50D2187037200235169 /* SGConfiguration.h in Headers */,
 				9C8637B6219043EA00D730EC /* version.h in Headers */,
 				9C86378A219043EA00D730EC /* avio.h in Headers */,
@@ -1751,6 +1764,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6F9025219BDE53001051CE /* SGURLPreview.m in Sources */,
 				9C8637F721904A0900D730EC /* SGPlayerItem.m in Sources */,
 				9C8637F821904A0900D730EC /* SGFrame.m in Sources */,
 				9C8637F921904A0900D730EC /* SGPacket.m in Sources */,
@@ -1817,6 +1831,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C6F9026219BDE53001051CE /* SGURLPreview.m in Sources */,
 				9CD79E9E2190068E00E39A7D /* SGPlayerItem.m in Sources */,
 				9CD79E9F2190068E00E39A7D /* SGFrame.m in Sources */,
 				9CD79EA02190068E00E39A7D /* SGPacket.m in Sources */,
@@ -1935,6 +1950,7 @@
 				9C3082C821251AC200B44298 /* SGCodecContext.m in Sources */,
 				9CE6F55F2004D97D00D1F4C8 /* SGPLFGLContext.m in Sources */,
 				9CF15DE820118E1100585326 /* SGAsyncDecoder.m in Sources */,
+				9C6F9024219BDE53001051CE /* SGURLPreview.m in Sources */,
 				9C5C6C9C20182A4800863EB5 /* SGGLView.m in Sources */,
 				9CAAC9A22133A6800065E364 /* SGVRViewport.m in Sources */,
 				9CE6F53B2004D97D00D1F4C8 /* SGPLFDisplayLink.m in Sources */,
