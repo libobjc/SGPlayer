@@ -884,12 +884,13 @@
 				9CEBCC9F217F018100430024 /* SGDeprecated */,
 				9CF63FBF211D8E26001B2684 /* SGAsset */,
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
-				9C8D4E5C200E0A0600ED8A58 /* SGSource */,
-				9C8D4E69200E101D00ED8A58 /* SGCodec */,
+				9C8D4E5C200E0A0600ED8A58 /* SGDemuxer */,
+				9C8D4E69200E101D00ED8A58 /* SGDecoder */,
 				9CF15DF420119FBE00585326 /* SGRenderer */,
-				9CBD0BA7201625010094CFC7 /* SGAudio */,
+				9CBD0BA7201625010094CFC7 /* SGAudioEngine */,
 				9C129F2A211857C800B816DC /* SGContainer */,
 				9CF15DF320119D0300585326 /* SGData */,
+				9C6F901E219BDCDC001051CE /* SGProcessor */,
 				9C3082D821255CA400B44298 /* SGDefine */,
 				9CE6F5912004E37600D1F4C8 /* SGCommon */,
 				9C5C6C9620182A0900863EB5 /* SGOpenGL */,
@@ -984,6 +985,10 @@
 				9C8D4E46200DFFC700ED8A58 /* SGPlayerItem.h */,
 				9C8D4E47200DFFC700ED8A58 /* SGPlayerItem.m */,
 				9CC649F921818D8C00453B3E /* SGPlayerItem+Internal.h */,
+				9C29D110217D741500343975 /* SGFrameOutput.h */,
+				9C29D111217D741500343975 /* SGFrameOutput.m */,
+				9C8D4E61200E0ACC00ED8A58 /* SGPacketOutput.h */,
+				9C8D4E62200E0ACC00ED8A58 /* SGPacketOutput.m */,
 			);
 			path = SGSession;
 			sourceTree = "<group>";
@@ -1025,6 +1030,21 @@
 				9C8D26602019F297002770FA /* SGGLTextureUploader.m */,
 			);
 			path = SGOpenGL;
+			sourceTree = "<group>";
+		};
+		9C6F901E219BDCDC001051CE /* SGProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */,
+				9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */,
+				9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */,
+				9C66E1F92188526200B70DAA /* SGAudioFrameFilter.m */,
+				9C66E1FC2188550D00B70DAA /* SGSWResample.h */,
+				9C66E1FD2188550D00B70DAA /* SGSWResample.m */,
+				9C3748792135521D00572166 /* SGSWScale.h */,
+				9C37487A2135521D00572166 /* SGSWScale.m */,
+			);
+			path = SGProcessor;
 			sourceTree = "<group>";
 		};
 		9C863665219043EA00D730EC /* include */ = {
@@ -1093,23 +1113,19 @@
 			path = libswresample;
 			sourceTree = "<group>";
 		};
-		9C8D4E5C200E0A0600ED8A58 /* SGSource */ = {
+		9C8D4E5C200E0A0600ED8A58 /* SGDemuxer */ = {
 			isa = PBXGroup;
 			children = (
-				9C29D110217D741500343975 /* SGFrameOutput.h */,
-				9C29D111217D741500343975 /* SGFrameOutput.m */,
-				9C8D4E61200E0ACC00ED8A58 /* SGPacketOutput.h */,
-				9C8D4E62200E0ACC00ED8A58 /* SGPacketOutput.m */,
 				9C0DF027215A2FB9007142DB /* SGPacketReadable.h */,
 				9CE469B12151FB4F00528662 /* SGURLPacketReader.h */,
 				9CE469B22151FB4F00528662 /* SGURLPacketReader.m */,
 				9C95D2BC2152335400079B38 /* SGFormatContext.h */,
 				9C95D2BB2152335400079B38 /* SGFormatContext.m */,
 			);
-			path = SGSource;
+			path = SGDemuxer;
 			sourceTree = "<group>";
 		};
-		9C8D4E69200E101D00ED8A58 /* SGCodec */ = {
+		9C8D4E69200E101D00ED8A58 /* SGDecoder */ = {
 			isa = PBXGroup;
 			children = (
 				9C0B6CB5217DBA1800900F1E /* SGDecodable.h */,
@@ -1122,16 +1138,16 @@
 				9C3082C521251AC200B44298 /* SGCodecContext.h */,
 				9C3082C621251AC200B44298 /* SGCodecContext.m */,
 			);
-			path = SGCodec;
+			path = SGDecoder;
 			sourceTree = "<group>";
 		};
-		9CBD0BA7201625010094CFC7 /* SGAudio */ = {
+		9CBD0BA7201625010094CFC7 /* SGAudioEngine */ = {
 			isa = PBXGroup;
 			children = (
 				9CE6842E200DD12F007BD834 /* SGAudioStreamPlayer.h */,
 				9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */,
 			);
-			path = SGAudio;
+			path = SGAudioEngine;
 			sourceTree = "<group>";
 		};
 		9CE6F5172004D97C00D1F4C8 /* SGPlatform */ = {
@@ -1192,13 +1208,8 @@
 				9C4663C920D0F83600CADDA7 /* SGTime.m */,
 				9C8D4E7E200E1ACA00ED8A58 /* SGError.h */,
 				9C8D4E7F200E1ACA00ED8A58 /* SGError.m */,
-				9C5C98F920D26BE10089C112 /* SGClock.h */,
-				9C5C98FA20D26BE10089C112 /* SGClock.m */,
-				9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */,
 				9C329AA82005E3F800252B10 /* SGActivity.h */,
 				9C329AA92005E3F800252B10 /* SGActivity.m */,
-				9CC649FD2181A8C000453B3E /* SGCapacity.h */,
-				9CC649FE2181A8C000453B3E /* SGCapacity.m */,
 				9C43D50B2187037200235169 /* SGConfiguration.h */,
 				9C43D50C2187037200235169 /* SGConfiguration.m */,
 			);
@@ -1267,14 +1278,8 @@
 				9CF15E1E2011BC5400585326 /* SGAudioFrame.m */,
 				9C2C55992015B87400131E15 /* SGVideoFrame.h */,
 				9C2C559A2015B87400131E15 /* SGVideoFrame.m */,
-				9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */,
-				9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */,
-				9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */,
-				9C66E1F92188526200B70DAA /* SGAudioFrameFilter.m */,
-				9C66E1FC2188550D00B70DAA /* SGSWResample.h */,
-				9C66E1FD2188550D00B70DAA /* SGSWResample.m */,
-				9C3748792135521D00572166 /* SGSWScale.h */,
-				9C37487A2135521D00572166 /* SGSWScale.m */,
+				9CC649FD2181A8C000453B3E /* SGCapacity.h */,
+				9CC649FE2181A8C000453B3E /* SGCapacity.m */,
 			);
 			path = SGData;
 			sourceTree = "<group>";
@@ -1282,6 +1287,9 @@
 		9CF15DF420119FBE00585326 /* SGRenderer */ = {
 			isa = PBXGroup;
 			children = (
+				9C5C98F920D26BE10089C112 /* SGClock.h */,
+				9C5C98FA20D26BE10089C112 /* SGClock.m */,
+				9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */,
 				9CF15E012011ADB500585326 /* SGRenderable.h */,
 				9CDFC3E4218B10F00065C826 /* SGRenderer+Internal.h */,
 				9CF15E052011AE0700585326 /* SGAudioRenderer.h */,
