@@ -144,6 +144,14 @@ static int SGFormatContextInterruptHandler(void * context)
 {
     if (_context) {
         int ret = av_read_frame(_context, packet.core);
+        if (ret >= 0) {
+            for (SGTrack * obj in self.tracks) {
+                if (obj.index == packet.core->stream_index) {
+                    [packet configurateWithTrack:obj];
+                    break;
+                }
+            }
+        }
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatReadFrame);

@@ -8,7 +8,6 @@
 
 #import "SGPacketOutput.h"
 #import "SGAsset+Internal.h"
-#import "SGPacket+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -242,12 +241,6 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.readable)
                     [self.lock unlock];
                     callback();
                 } else {
-                    for (SGTrack * obj in self.readable.tracks) {
-                        if (obj.index == packet.core->stream_index) {
-                            [packet configurateWithTrack:obj];
-                            break;
-                        }
-                    }
                     [self.delegate packetOutput:self didOutputPacket:packet];
                 }
                 [packet unlock];
