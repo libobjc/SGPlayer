@@ -48,7 +48,6 @@
         self.audioQueue.delegate = self;
         self.videoQueue = [[SGObjectQueue alloc] init];
         self.videoQueue.delegate = self;
-        self.videoQueue.shouldSortObjects = YES;
     }
     return self;
 }

@@ -8,6 +8,7 @@
 
 #import "SGConcatDemuxer.h"
 #import "SGConcatDemuxerUnit.h"
+#import "SGPacket+Internal.h"
 #import "SGError.h"
 
 @interface SGConcatDemuxer ()
@@ -16,12 +17,13 @@
 @property (nonatomic, strong) NSArray <SGConcatDemuxerUnit *> * units;
 @property (nonatomic) SGMediaType type;
 @property (nonatomic) CMTime duration;
+@property (nonatomic) uint32_t index;
 
 @end
 
 @implementation SGConcatDemuxer
 
-- (instancetype)initWithType:(SGMediaType)type segments:(NSArray <SGSegment *> *)segments
+- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index segments:(NSArray <SGSegment *> *)segments
 {
     if (self = [super init]) {
         NSMutableArray * units = [NSMutableArray array];
@@ -30,6 +32,7 @@
         }
         self.units = [units copy];
         self.type = type;
+        self.index = index;
     }
     return self;
 }
@@ -139,6 +142,7 @@
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
+            [packet setIndex:self.index];
             break;
         }
         if (self.currentUnit == self.units.lastObject) {

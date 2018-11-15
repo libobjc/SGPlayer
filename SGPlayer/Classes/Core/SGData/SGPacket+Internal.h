@@ -16,5 +16,6 @@
 
 - (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
 - (void)setTimeLayout:(SGTimeLayout *)timeLayout;
+- (void)setIndex:(uint32_t)index;
 
 @end

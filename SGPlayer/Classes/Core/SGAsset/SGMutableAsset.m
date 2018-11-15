@@ -28,13 +28,13 @@
         for (SGSegment * segment in segments) {
             [obj addObject:[segment copy]];
         }
-        SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithType:type segments:obj];
+        SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithType:type index:i segments:obj];
         return demuxer;
     }
     return nil;
 }
 
-- (int64_t)addTrack:(SGMediaType)type
+- (int32_t)addTrack:(SGMediaType)type
 {
     if (!self.types) {
         self.types = [NSMutableArray array];
@@ -44,10 +44,10 @@
     }
     [self.types addObject:@(type)];
     [self.tracks addObject:[NSMutableArray array]];
-    return self.tracks.count - 1;
+    return (int32_t)self.tracks.count - 1;
 }
 
-- (BOOL)insertSegment:(SGSegment *)segment trackID:(int64_t)trackID
+- (BOOL)insertSegment:(SGSegment *)segment trackID:(int32_t)trackID
 {
     if (trackID < 0 || trackID >= self.tracks.count) {
         return NO;

@@ -11,6 +11,6 @@
 
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
-- (instancetype)initWithType:(SGMediaType)type segments:(NSArray <SGSegment *> *)segments;
+- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index segments:(NSArray <SGSegment *> *)segments;
 
 @end

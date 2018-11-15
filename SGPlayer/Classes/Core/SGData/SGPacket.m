@@ -104,4 +104,9 @@
     _duration = [timeLayout applyToDuration:_duration];
 }
 
+- (void)setIndex:(uint32_t)index
+{
+    _index = index;
+}
+
 @end
