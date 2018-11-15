@@ -26,7 +26,7 @@
 #define SGPlayerLog(...)
 #endif
 
-#define SGGet0Map(ret, name0, obj) - (ret)name0 {return [obj name0];}
+#define SGGet0Map(ret, name0, obj) - (ret)name0 {return obj.name0;}
 #define SGGet1Map(ret, name0, t0, obj) - (ret)name0:(t0)n0 {return [obj name0:n0];}
 
 #define SGSet1Map(ret, name0, t0, obj) - (ret)name0:(t0)n0 {[obj name0:n0];}

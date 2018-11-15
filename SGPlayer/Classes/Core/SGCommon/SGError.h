@@ -20,6 +20,8 @@ typedef NS_ENUM(uint32_t, SGErrorCode)
     SGErrorCodePacketOutputCannotResume,
     SGErrorCodePacketOutputCannotSeek,
     SGErrorCodePacketOutputCancelSeek,
+    SGErrorCodeURLDemuxerFunnelFinished,
+    SGErrorCodeConcatDemuxerUnitInvaildDuration,
 };
 
 typedef NS_ENUM(uint32_t, SGOperationCode)
@@ -39,7 +41,9 @@ typedef NS_ENUM(uint32_t, SGOperationCode)
     SGOperationCodePacketOutputClose,
     SGOperationCodePacketOutputPause,
     SGOperationCodePacketOutputResmue,
-    SGOperationCodePacketOutputSeek
+    SGOperationCodePacketOutputSeek,
+    SGOperationCodeURLDemuxerFunnelNext,
+    SGOperationCodeConcatDemuxerUnitOpen,
 };
 
 NSError * SGEGetError(int result, SGOperationCode operation);

@@ -9,6 +9,12 @@
 #import "SGSegment.h"
 #import "SGSegment+Internal.h"
 
+@interface SGSegment ()
+
+@property (nonatomic) SGMediaType type;
+
+@end
+
 @implementation SGSegment
 
 - (id)copyWithZone:(NSZone *)zone

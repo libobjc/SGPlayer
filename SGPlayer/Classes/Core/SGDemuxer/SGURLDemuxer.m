@@ -33,8 +33,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, copy) NSDictionary * metadata;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
+@property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * otherTracks;
 
 @end

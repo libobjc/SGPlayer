@@ -7,7 +7,6 @@
 //
 
 #import "SGPacketOutput.h"
-#import "SGAsset+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -19,7 +18,6 @@
     __strong NSError * _error;
 }
 
-@property (nonatomic, strong) SGAsset * asset;
 @property (nonatomic, strong) id <SGDemuxable> demuxable;
 
 @property (nonatomic, strong) NSLock * lock;
@@ -34,11 +32,11 @@
 
 @implementation SGPacketOutput
 
-- (instancetype)initWithAsset:(SGAsset *)asset
+- (instancetype)initWithDemuxable:(id <SGDemuxable>)demuxable
 {
     if (self = [super init]) {
-        self.asset = asset;
-        self.demuxable = [self.asset newDemuxable];
+        self.demuxable = demuxable;
+        self.demuxable.delegate = self;
         self.lock = [[NSLock alloc] init];
         self.wakeup = [[NSCondition alloc] init];
     }

@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPacket.h"
-#import "SGAsset.h"
+#import "SGDemuxable.h"
 
 @protocol SGPacketOutputDelegate;
 
@@ -26,7 +25,7 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState) {
 
 @interface SGPacketOutput : NSObject
 
-- (instancetype)initWithAsset:(SGAsset *)asset;
+- (instancetype)initWithDemuxable:(id <SGDemuxable>)demuxable;
 
 @property (nonatomic, weak) id <SGPacketOutputDelegate> delegate;
 

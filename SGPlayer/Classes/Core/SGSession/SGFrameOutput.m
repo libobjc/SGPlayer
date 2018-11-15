@@ -7,6 +7,7 @@
 //
 
 #import "SGFrameOutput.h"
+#import "SGAsset+Internal.h"
 #import "SGPacketOutput.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
@@ -42,7 +43,7 @@
     if (self = [super init]) {
         self.lock = [[NSLock alloc] init];
         self.capacityMap = [[SGPointerMap alloc] init];
-        self.packetOutput = [[SGPacketOutput alloc] initWithAsset:asset];
+        self.packetOutput = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
         self.packetOutput.delegate = self;
     }
     return self;

@@ -12,7 +12,7 @@
 
 - (instancetype)initWithURL:(NSURL *)URL;
 
-@property (nonatomic) CMTimeRange timeRange;
-@property (nonatomic, strong) NSArray <NSNumber *> * indexes;
+@property (nonatomic) CMTimeRange desireTimeRange;
+@property (nonatomic, strong) NSArray <NSNumber *> * desireIndexes;
 
 @end

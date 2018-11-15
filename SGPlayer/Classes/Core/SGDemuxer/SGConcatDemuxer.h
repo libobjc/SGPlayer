@@ -7,10 +7,10 @@
 //
 
 #import "SGDemuxable.h"
-#import "SGConcatDemuxerUnit.h"
+#import "SGSegment.h"
 
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
-- (instancetype)initWithUnits:(NSArray <SGConcatDemuxerUnit *> *)units;
+- (instancetype)initWithType:(SGMediaType)type segments:(NSArray <SGSegment *> *)segments;
 
 @end

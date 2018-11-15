@@ -7,10 +7,14 @@
 //
 
 #import "SGConcatDemuxerUnit.h"
+#import "SGSegment+Internal.h"
+#import "SGError.h"
+#import "SGMacro.h"
 
 @interface SGConcatDemuxerUnit ()
 
-@property (nonatomic, strong) SGSegment * segment;
+@property (nonatomic, strong) id <SGDemuxable> demuxable;
+@property (nonatomic) CMTime duration;
 
 @end
 
@@ -19,9 +23,54 @@
 - (instancetype)initWithSegment:(SGSegment *)segment
 {
     if (self = [super init]) {
-        self.segment = segment;
+        _scale = segment.scale;
+        self.demuxable = [segment newDemuxable];
+        if (!self.demuxable) {
+            CMTime duration = segment.timeRange.duration;
+            NSAssert(CMTIME_IS_VALID(duration), @"Invaild timeRange.");
+            self.duration = duration;
+        }
     }
     return self;
+}
+
+SGGet0Map(id <SGDemuxableDelegate>, delegate, self.demuxable)
+SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxable)
+SGGet0Map(NSDictionary *, options, self.demuxable)
+SGSet1Map(void, setOptions, NSDictionary *, self.demuxable)
+SGGet0Map(NSError *, seekable, self.demuxable)
+SGGet0Map(NSDictionary *, metadata, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.demuxable)
+SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
+
+- (NSError *)open
+{
+    if (!self.demuxable) {
+        return nil;
+    }
+    NSError * ret = [self.demuxable open];
+    if (ret) {
+        return ret;
+    }
+    self.duration = self.demuxable.duration;
+    return nil;
+}
+
+- (NSError *)close
+{
+    return [self.demuxable close];
+}
+
+- (NSError *)seekToTime:(CMTime)time
+{
+    return [self.demuxable seekToTime:time];
+}
+
+- (NSError *)nextPacket:(SGPacket *)packet
+{
+    return [self.demuxable nextPacket:packet];
 }
 
 @end
