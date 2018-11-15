@@ -9,17 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "SGObjectQueue.h"
 #import "SGObjectPool.h"
-#import "SGTrack.h"
 
 static int const SGFramePlaneCount = 8;
 
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, readonly) void * core_ptr;
+@property (nonatomic, readonly) void * coreptr;
 
 @property (nonatomic, readonly) SGMediaType type;
-@property (nonatomic, readonly) int32_t index;
-
 @property (nonatomic, readonly) CMTime timeStamp;
 @property (nonatomic, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, readonly) CMTime duration;

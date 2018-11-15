@@ -10,6 +10,7 @@
 #import "SGCapacity.h"
 #import "SGAsset.h"
 #import "SGFrame.h"
+#import "SGTrack.h"
 
 @protocol SGFrameOutputDelegate;
 

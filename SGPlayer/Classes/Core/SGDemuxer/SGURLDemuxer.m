@@ -151,7 +151,7 @@ static int SGURLDemuxerInterruptHandler(void * context)
         if (ret >= 0) {
             for (SGTrack * obj in self.tracks) {
                 if (obj.index == packet.core->stream_index) {
-                    [packet configurateWithType:obj.type timebase:obj.core->time_base codecpar:obj.core->codecpar];
+                    [packet setTimebase:obj.core->time_base codecpar:obj.core->codecpar];
                     break;
                 }
             }

@@ -15,7 +15,7 @@
 @interface SGURLDemuxerFunnel ()
 
 @property (nonatomic, strong) SGURLDemuxer * demuxer;
-@property (nonatomic, strong) SGTimeTransform * timeTransform;
+@property (nonatomic, strong) SGTimeLayout * timeLayout;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
@@ -81,7 +81,7 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.audioTracks = [audioTracks copy];
     self.videoTracks = [videoTracks copy];
     self.otherTracks = [otherTracks copy];
-    self.timeTransform = [[SGTimeTransform alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
+    self.timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
     return nil;
 }
 
@@ -98,6 +98,10 @@ SGGet0Map(NSError *, close, self.demuxer)
         if (ret) {
             break;
         }
+        if (![self.desireIndexes containsObject:@(packet.index)]) {
+            [packet clear];
+            continue;
+        }
         if (CMTimeCompare(packet.timeStamp, self.actualTimeRange.start) < 0) {
             [packet clear];
             continue;
@@ -108,7 +112,7 @@ SGGet0Map(NSError *, close, self.demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [packet applyTimeTransform:self.timeTransform];
+        [packet setTimeLayout:self.timeLayout];
         break;
     }
     return ret;

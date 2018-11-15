@@ -12,12 +12,9 @@
 
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, readonly) void * core_ptr;
-@property (nonatomic, readonly) void * codecpar_ptr;
+@property (nonatomic, readonly) void * coreptr;
 
-@property (nonatomic, readonly) SGMediaType type;
 @property (nonatomic, readonly) int32_t index;
-
 @property (nonatomic, readonly) CMTime timeStamp;
 @property (nonatomic, readonly) CMTime decodeTimeStamp;
 @property (nonatomic, readonly) CMTime duration;

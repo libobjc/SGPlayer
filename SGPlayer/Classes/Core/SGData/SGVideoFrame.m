@@ -14,6 +14,11 @@
 
 @implementation SGVideoFrame
 
+- (SGMediaType)type
+{
+    return SGMediaTypeVideo;
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -42,9 +47,9 @@
     self->_pixelBuffer = nil;
 }
 
-- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index
+- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
 {
-    [super configurateWithType:type timebase:timebase index:index];
+    [super setTimebase:timebase codecpar:codecpar];
     
     _format = self.core->format;
     _width = self.core->width;

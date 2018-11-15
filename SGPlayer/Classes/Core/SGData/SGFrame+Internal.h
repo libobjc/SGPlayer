@@ -7,18 +7,14 @@
 //
 
 #import "SGFrame.h"
-#import "SGTimeTransform.h"
-#import "frame.h"
+#import "SGCodecpar.h"
 
 @interface SGFrame (Internal)
 
 @property (nonatomic, readonly) AVFrame * core;
-@property (nonatomic, readonly) AVRational timebase;
-@property (nonatomic, strong, readonly) NSArray <SGTimeTransform *> * timeTransforms;
+@property (nonatomic, readonly, copy) SGCodecpar * codecpar;
 
-- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index;
-
-- (void)applyTimeTransforms:(NSArray <SGTimeTransform *> *)timeTransforms;
-- (void)applyTimeTransform:(SGTimeTransform *)timeTransform;
+- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
+- (void)setTimeLayout:(SGTimeLayout *)timeLayout;
 
 @end

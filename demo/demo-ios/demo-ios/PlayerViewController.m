@@ -40,9 +40,9 @@
 //    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
     SGMutableAsset * asset = [[SGMutableAsset alloc] init];
-    int64_t trackID = [asset addTrack];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0] trackID:trackID];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0] trackID:trackID];
+    int64_t trackID = [asset addTrack:SGMediaTypeVideo];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
 //    return;
     
     [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;

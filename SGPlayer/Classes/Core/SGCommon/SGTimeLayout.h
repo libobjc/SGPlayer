@@ -1,5 +1,5 @@
 //
-//  SGTimeTransform.h
+//  SGTimeLayout.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/15.
@@ -9,12 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@interface SGTimeTransform : NSObject
+@interface SGTimeLayout : NSObject <NSCopying>
 
 - (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale;
 
 @property (nonatomic, readonly) CMTime start;
 @property (nonatomic, readonly) CMTime scale;
+
+- (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout;
 
 - (CMTime)applyToTimeStamp:(CMTime)timeStamp;
 - (CMTime)applyToDuration:(CMTime)duration;

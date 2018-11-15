@@ -7,14 +7,14 @@
 //
 
 #import "SGAudioDecoder.h"
+#import "SGPacket+Internal.h"
 #import "SGCodecContext.h"
 #import "SGAudioFrame.h"
 
 @interface SGAudioDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
-@property (nonatomic) AVCodecParameters * codecpar;
-@property (nonatomic) AVRational timebase;
+@property (nonatomic, strong) SGCodecpar * codecpar;
 
 @end
 
@@ -27,7 +27,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithTimebase:self.timebase codecpar:self.codecpar frameClass:[SGAudioFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithCodecpar:[self.codecpar copy] frameClass:[SGAudioFrame class]];
     [self.codecContext open];
 }
 
@@ -39,11 +39,10 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (packet && (packet.codecpar != self.codecpar || av_cmp_q(packet.timebase, self.timebase) != 0)) {
-        self.codecpar = packet.codecpar;
-        self.timebase = packet.timebase;
+    SGCodecpar * codecpar = packet.codecpar;
+    if (codecpar && ![codecpar isEqualToCodecpar:self.codecpar]) {
+        self.codecpar = codecpar;
         [self destroy];
-        [self setup];
     }
     return [self.codecContext decode:packet];
 }

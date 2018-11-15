@@ -12,13 +12,13 @@
 
 @interface SGFrame ()
 
+{
+    AVFrame * _frame;
+    __strong SGCodecpar * _codecpar;
+}
+
 @property (nonatomic, strong) NSLock * coreLock;
 @property (nonatomic) NSInteger lockingCount;
-
-@property (nonatomic) AVFrame * core;
-@property (nonatomic) void * core_ptr;
-@property (nonatomic) AVRational timebase;
-@property (nonatomic) NSMutableArray <SGTimeTransform *> * timeTransforms;
 
 @end
 
@@ -26,11 +26,10 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
-        self.coreLock = [[NSLock alloc] init];
-        self.core = av_frame_alloc();
-        self.core_ptr = self.core;
+    if (self = [super init]) {
+        _frame = av_frame_alloc();
+        _codecpar = [[SGCodecpar alloc] init];
+        _coreLock = [[NSLock alloc] init];
         [self clear];
     }
     return self;
@@ -38,79 +37,67 @@
 
 - (void)dealloc
 {
-    NSAssert(self.lockingCount <= 0, @"SGFrame, must be unlocked before release");
+    NSAssert(_lockingCount <= 0, @"SGFrame, must be unlocked before release");
     
     [self clear];
-    if (self.core) {
-        av_frame_free(&_core);
-        _core = NULL;
+    if (_frame) {
+        av_frame_free(&_frame);
+        _frame = nil;
     }
-    self.core_ptr = nil;
 }
+
+- (void *)coreptr {return _frame;}
+- (AVFrame *)core {return _frame;}
+- (SGCodecpar *)codecpar {return [_codecpar copy];}
 
 - (void)lock
 {
-    [self.coreLock lock];
-    self.lockingCount++;
-    [self.coreLock unlock];
+    [_coreLock lock];
+    _lockingCount++;
+    [_coreLock unlock];
 }
 
 - (void)unlock
 {
-    [self.coreLock lock];
-    self.lockingCount--;
-    [self.coreLock unlock];
-    if (self.lockingCount <= 0) {
-        self.lockingCount = 0;
+    [_coreLock lock];
+    _lockingCount--;
+    [_coreLock unlock];
+    if (_lockingCount <= 0) {
+        _lockingCount = 0;
         [[SGObjectPool sharePool] comeback:self];
     }
 }
 
 - (void)clear
 {
-    if (self.core) {
-        av_frame_unref(self.core);
+    if (_frame) {
+        av_frame_unref(_frame);
     }
-    _type = SGMediaTypeUnknown;
-    _index = -1;
     _timeStamp = kCMTimeZero;
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
     _size = 0;
-    _timebase = av_make_q(0, 1);
-    [_timeTransforms removeAllObjects];
+    [_codecpar clear];
 }
 
-- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index
+- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
 {
-    _type = type;
-    _index = index;
-    _timeStamp = CMTimeMake(self.core->best_effort_timestamp * timebase.num, timebase.den);
-    _decodeTimeStamp = CMTimeMake(self.core->pkt_dts * timebase.num, timebase.den);
-    _duration = CMTimeMake(self.core->pkt_duration * timebase.num, timebase.den);
-    _size = self.core->pkt_size;
-    _timebase = timebase;
+    _timeStamp = CMTimeMake(_frame->best_effort_timestamp * timebase.num, timebase.den);
+    _decodeTimeStamp = CMTimeMake(_frame->pkt_dts * timebase.num, timebase.den);
+    _duration = CMTimeMake(_frame->pkt_duration * timebase.num, timebase.den);
+    _size = _frame->pkt_size;
+    [_codecpar setTimebase:timebase codecpar:codecpar];
 }
 
-- (void)applyTimeTransforms:(NSArray <SGTimeTransform *> *)timeTransforms
+- (void)setTimeLayout:(SGTimeLayout *)timeLayout
 {
-    for (SGTimeTransform * obj in timeTransforms) {
-        [self applyTimeTransform:obj];
-    }
-}
-
-- (void)applyTimeTransform:(SGTimeTransform *)timeTransform
-{
-    if (!timeTransform) {
+    if (!timeLayout) {
         return;
     }
-    if (!_timeTransforms) {
-        _timeTransforms = [NSMutableArray array];
-    }
-    [self.timeTransforms addObject:timeTransform];
-    _timeStamp = [timeTransform applyToTimeStamp:_timeStamp];
-    _decodeTimeStamp = [timeTransform applyToTimeStamp:_decodeTimeStamp];
-    _duration = [timeTransform applyToDuration:_duration];
+    [_codecpar setTimeLayout:timeLayout];
+    _timeStamp = [timeLayout applyToTimeStamp:_timeStamp];
+    _decodeTimeStamp = [timeLayout applyToTimeStamp:_decodeTimeStamp];
+    _duration = [timeLayout applyToDuration:_duration];
 }
 
 @end

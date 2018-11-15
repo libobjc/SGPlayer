@@ -12,6 +12,11 @@
 
 @implementation SGAudioFrame
 
+- (SGMediaType)type
+{
+    return SGMediaTypeAudio;
+}
+
 - (instancetype)init
 {
     if (self = [super init])
@@ -42,9 +47,9 @@
     }
 }
 
-- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index
+- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
 {
-    [super configurateWithType:type timebase:timebase index:index];
+    [super setTimebase:timebase codecpar:codecpar];
     
     _format = self.core->format;
     _is_planar = av_sample_fmt_is_planar(self.core->format);

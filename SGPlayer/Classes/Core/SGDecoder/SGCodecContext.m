@@ -18,11 +18,9 @@
 
 @interface SGCodecContext ()
 
-@property (nonatomic) AVCodecContext * codecContext;
-@property (nonatomic) AVCodecParameters * codecpar;
-@property (nonatomic) AVRational timebase;
+@property (nonatomic, strong) SGCodecpar * codecpar;
 @property (nonatomic, strong) Class frameClass;
-@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SGPacket *> * packets;
+@property (nonatomic) AVCodecContext * codecContext;
 
 @end
 
@@ -67,15 +65,15 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     }
     codecContext->opaque = (__bridge void *)self;
     
-    int result = avcodec_parameters_to_context(codecContext, self.codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.codecpar.codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = self.timebase;
-    if ((self.hardwareDecodeH264 && self.codecpar->codec_id == AV_CODEC_ID_H264) ||
-        (self.hardwareDecodeH265 && self.codecpar->codec_id == AV_CODEC_ID_H265)) {
+    codecContext->pkt_timebase = self.codecpar.timebase;
+    if ((self.hardwareDecodeH264 && self.codecpar.codecpar->codec_id == AV_CODEC_ID_H264) ||
+        (self.hardwareDecodeH265 && self.codecpar.codecpar->codec_id == AV_CODEC_ID_H265)) {
         codecContext->get_format = SGCodecContextGetFormat;
     }
     
@@ -112,7 +110,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     return codecContext;
 }
 
-- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass
+- (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass
 {
     if (self = [super init]) {
         self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
@@ -121,10 +119,8 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
         self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
         self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
-        self.timebase = timebase;
         self.codecpar = codecpar;
         self.frameClass = frameClass;
-        self.packets = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -154,10 +150,6 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     if (self.codecContext) {
         avcodec_flush_buffers(self.codecContext);
     }
-    [self.packets enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGPacket * obj, BOOL * stop) {
-        [obj unlock];
-    }];
-    [self.packets removeAllObjects];
 }
 
 - (void)close
@@ -166,10 +158,6 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
-    [self.packets enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGPacket * obj, BOOL * stop) {
-        [obj unlock];
-    }];
-    [self.packets removeAllObjects];
 }
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
@@ -181,10 +169,6 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     if (result < 0) {
         return nil;
     }
-    if (packet) {
-        [packet lock];
-        [self.packets setObject:packet forKey:@(packet.core->pos)];
-    }
     NSMutableArray * array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
         __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
@@ -193,13 +177,11 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             [frame unlock];
             break;
         } else {
-            SGPacket * obj = [self.packets objectForKey:@(frame.core->pkt_pos)];
-            NSAssert(obj, @"Invalid Packet Position.");
-            [frame configurateWithType:obj.type timebase:obj.timebase index:obj.index];
-            [frame applyTimeTransforms:obj.timeTransforms];
+            [frame setTimebase:self.codecpar.timebase codecpar:self.codecpar.codecpar];
+            for (SGTimeLayout * obj in self.codecpar.timeLayouts) {
+                [frame setTimeLayout:obj];
+            }
             [array addObject:frame];
-            [self.packets removeObjectForKey:@(frame.core->pkt_pos)];
-            [obj unlock];
         }
     }
     return array;
