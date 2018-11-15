@@ -15,12 +15,14 @@ static int const SGFramePlaneCount = 8;
 
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, assign, readonly) void * coreptr;
+@property (nonatomic, readonly) void * core_ptr;
 
-@property (nonatomic, strong, readonly) SGTrack * track;
-@property (nonatomic, assign, readonly) CMTime timeStamp;
-@property (nonatomic, assign, readonly) CMTime decodeTimeStamp;
-@property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, assign, readonly) uint64_t size;
+@property (nonatomic, readonly) SGMediaType type;
+@property (nonatomic, readonly) int32_t index;
+
+@property (nonatomic, readonly) CMTime timeStamp;
+@property (nonatomic, readonly) CMTime decodeTimeStamp;
+@property (nonatomic, readonly) CMTime duration;
+@property (nonatomic, readonly) uint64_t size;
 
 @end

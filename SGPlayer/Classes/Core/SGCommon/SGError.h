@@ -21,6 +21,7 @@ typedef NS_ENUM(uint32_t, SGErrorCode)
     SGErrorCodePacketOutputCannotSeek,
     SGErrorCodePacketOutputCancelSeek,
     SGErrorCodeURLDemuxerFunnelFinished,
+    SGErrorCodeConcatDemuxerNotFoundUnit,
     SGErrorCodeConcatDemuxerUnitInvaildDuration,
 };
 
@@ -43,6 +44,7 @@ typedef NS_ENUM(uint32_t, SGOperationCode)
     SGOperationCodePacketOutputResmue,
     SGOperationCodePacketOutputSeek,
     SGOperationCodeURLDemuxerFunnelNext,
+    SGOperationCodeURLDemuxerSeek,
     SGOperationCodeConcatDemuxerUnitOpen,
 };
 

@@ -75,9 +75,8 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
     if (ret) {
         return ret;
     }
-    SGTimeTransform * transform = [[SGTimeTransform alloc] init];
-    transform.start = self.timeRange.start;
-    [packet applyTransform:transform];
+    SGTimeTransform * transform = [[SGTimeTransform alloc] initWithStart:self.timeRange.start scale:kCMTimeInvalid];
+    [packet applyTimeTransform:transform];
     return nil;
 }
 

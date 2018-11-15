@@ -42,9 +42,9 @@
     self->_pixelBuffer = nil;
 }
 
-- (void)configurateWithTrack:(SGTrack *)track
+- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index
 {
-    [super configurateWithTrack:track];
+    [super configurateWithType:type timebase:timebase index:index];
     
     _format = self.core->format;
     _width = self.core->width;

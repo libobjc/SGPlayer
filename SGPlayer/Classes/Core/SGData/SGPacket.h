@@ -16,7 +16,7 @@
 @property (nonatomic, readonly) void * codecpar_ptr;
 
 @property (nonatomic, readonly) SGMediaType type;
-@property (nonatomic, readonly) uint64_t index;
+@property (nonatomic, readonly) int32_t index;
 
 @property (nonatomic, readonly) CMTime timeStamp;
 @property (nonatomic, readonly) CMTime decodeTimeStamp;

@@ -12,9 +12,14 @@
 
 - (instancetype)init
 {
+    return [self initWithStart:kCMTimeInvalid scale:kCMTimeInvalid];
+}
+
+- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale
+{
     if (self = [super init]) {
-        self.start = kCMTimeInvalid;
-        self.scale = kCMTimeInvalid;
+        _start = start;
+        _scale = scale;
     }
     return self;
 }

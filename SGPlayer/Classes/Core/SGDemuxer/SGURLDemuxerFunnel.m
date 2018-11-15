@@ -15,7 +15,7 @@
 @interface SGURLDemuxerFunnel ()
 
 @property (nonatomic, strong) SGURLDemuxer * demuxer;
-@property (nonatomic, strong) SGTimeTransform * transform;
+@property (nonatomic, strong) SGTimeTransform * timeTransform;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
@@ -81,14 +81,13 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.audioTracks = [audioTracks copy];
     self.videoTracks = [videoTracks copy];
     self.otherTracks = [otherTracks copy];
-    self.transform = [[SGTimeTransform alloc] init];
-    self.transform.start = CMTimeMultiply(self.actualTimeRange.start, -1);
+    self.timeTransform = [[SGTimeTransform alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    return [self seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
+    return [self.demuxer seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
 }
 
 - (NSError *)nextPacket:(SGPacket *)packet
@@ -109,7 +108,7 @@ SGGet0Map(NSError *, close, self.demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [packet applyTransform:self.transform];
+        [packet applyTimeTransform:self.timeTransform];
         break;
     }
     return ret;

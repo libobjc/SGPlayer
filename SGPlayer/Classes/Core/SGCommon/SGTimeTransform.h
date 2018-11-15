@@ -11,8 +11,10 @@
 
 @interface SGTimeTransform : NSObject
 
-@property (nonatomic) CMTime start;
-@property (nonatomic) CMTime scale;
+- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale;
+
+@property (nonatomic, readonly) CMTime start;
+@property (nonatomic, readonly) CMTime scale;
 
 - (CMTime)applyToTimeStamp:(CMTime)timeStamp;
 - (CMTime)applyToDuration:(CMTime)duration;

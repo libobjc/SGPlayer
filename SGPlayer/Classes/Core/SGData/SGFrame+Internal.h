@@ -7,12 +7,18 @@
 //
 
 #import "SGFrame.h"
+#import "SGTimeTransform.h"
 #import "frame.h"
 
 @interface SGFrame (Internal)
 
-@property (nonatomic, assign, readonly) AVFrame * core;
+@property (nonatomic, readonly) AVFrame * core;
+@property (nonatomic, readonly) AVRational timebase;
+@property (nonatomic, strong, readonly) NSArray <SGTimeTransform *> * timeTransforms;
 
-- (void)configurateWithTrack:(SGTrack *)track;
+- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index;
+
+- (void)applyTimeTransforms:(NSArray <SGTimeTransform *> *)timeTransforms;
+- (void)applyTimeTransform:(SGTimeTransform *)timeTransform;
 
 @end

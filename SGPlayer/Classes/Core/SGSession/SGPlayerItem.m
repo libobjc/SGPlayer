@@ -326,7 +326,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput)
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
     [frame lock];
-    switch (frame.track.type) {
+    switch (frame.type) {
         case SGMediaTypeAudio: {
             if (self.audioFilter) {
                 frame = [self.audioFilter convert:frame];

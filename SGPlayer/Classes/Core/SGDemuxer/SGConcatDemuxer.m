@@ -8,6 +8,7 @@
 
 #import "SGConcatDemuxer.h"
 #import "SGConcatDemuxerUnit.h"
+#import "SGError.h"
 
 @interface SGConcatDemuxer ()
 
@@ -102,6 +103,7 @@
     }
     self.duration = duration;
     self.currentUnit = self.units.firstObject;
+    [self.currentUnit seekToTime:kCMTimeZero];
     return ret;
 }
 
@@ -115,11 +117,19 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    SGConcatDemuxerUnit * unit = nil;
     for (SGConcatDemuxerUnit * obj in self.units) {
-        if (CMTimeRangeContainsTime(obj.timeRange, time)) {
-            self.currentUnit = obj;
+        if (CMTimeRangeContainsTime(obj.timeRange, time) ||
+            CMTimeCompare(CMTimeRangeGetEnd(obj.timeRange), time) == 0) {
+            unit = obj;
+            break;
         }
     }
+    if (!unit) {
+        return SGECreateError(SGErrorCodeConcatDemuxerNotFoundUnit,
+                              SGOperationCodeURLDemuxerSeek);
+    }
+    self.currentUnit = unit;
     return [self.currentUnit seekToTime:CMTimeSubtract(time, self.currentUnit.timeRange.start)];
 }
 
@@ -129,14 +139,13 @@
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
-            NSLog(@"pts : %f", CMTimeGetSeconds(packet.timeStamp));
             break;
         }
         if (self.currentUnit == self.units.lastObject) {
             break;
         }
         self.currentUnit = [self.units objectAtIndex:[self.units indexOfObject:self.currentUnit] + 1];
-        ret = nil;
+        [self.currentUnit seekToTime:kCMTimeZero];
         continue;
     }
     return ret;

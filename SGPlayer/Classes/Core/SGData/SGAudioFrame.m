@@ -42,9 +42,9 @@
     }
 }
 
-- (void)configurateWithTrack:(SGTrack *)track
+- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase index:(int32_t)index
 {
-    [super configurateWithTrack:track];
+    [super configurateWithType:type timebase:timebase index:index];
     
     _format = self.core->format;
     _is_planar = av_sample_fmt_is_planar(self.core->format);

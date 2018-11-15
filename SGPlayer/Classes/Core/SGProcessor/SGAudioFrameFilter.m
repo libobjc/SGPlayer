@@ -80,7 +80,8 @@
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;
     }
-    [result configurateWithTrack:audioFrame.track];
+    [result configurateWithType:audioFrame.type timebase:audioFrame.timebase index:audioFrame.index];
+    [result applyTimeTransforms:audioFrame.timeTransforms];
     [frame unlock];
     return result;
 }

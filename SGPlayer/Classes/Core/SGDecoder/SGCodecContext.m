@@ -22,6 +22,7 @@
 @property (nonatomic) AVCodecParameters * codecpar;
 @property (nonatomic) AVRational timebase;
 @property (nonatomic, strong) Class frameClass;
+@property (nonatomic, strong) NSMutableDictionary <NSNumber *, SGPacket *> * packets;
 
 @end
 
@@ -123,6 +124,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         self.timebase = timebase;
         self.codecpar = codecpar;
         self.frameClass = frameClass;
+        self.packets = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -152,6 +154,10 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     if (self.codecContext) {
         avcodec_flush_buffers(self.codecContext);
     }
+    [self.packets enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGPacket * obj, BOOL * stop) {
+        [obj unlock];
+    }];
+    [self.packets removeAllObjects];
 }
 
 - (void)close
@@ -160,6 +166,10 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         avcodec_close(self.codecContext);
         self.codecContext = nil;
     }
+    [self.packets enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGPacket * obj, BOOL * stop) {
+        [obj unlock];
+    }];
+    [self.packets removeAllObjects];
 }
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
@@ -171,7 +181,11 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     if (result < 0) {
         return nil;
     }
-    NSMutableArray * array = nil;
+    if (packet) {
+        [packet lock];
+        [self.packets setObject:packet forKey:@(packet.core->pos)];
+    }
+    NSMutableArray * array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
         __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
@@ -179,11 +193,13 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
             [frame unlock];
             break;
         } else {
-            if (!array) {
-                array = [NSMutableArray array];
-            }
-            [frame configurateWithTrack:self.track];
+            SGPacket * obj = [self.packets objectForKey:@(frame.core->pkt_pos)];
+            NSAssert(obj, @"Invalid Packet Position.");
+            [frame configurateWithType:obj.type timebase:obj.timebase index:obj.index];
+            [frame applyTimeTransforms:obj.timeTransforms];
             [array addObject:frame];
+            [self.packets removeObjectForKey:@(frame.core->pkt_pos)];
+            [obj unlock];
         }
     }
     return array;

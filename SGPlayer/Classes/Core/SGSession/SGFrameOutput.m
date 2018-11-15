@@ -315,9 +315,14 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 {
     __block SGAsyncDecoder * decoder = nil;
     SGLockEXE00(self.lock, ^{
-        if (packet.track == self->_selected_audio_track) {
+//        if (packet.track == self->_selected_audio_track) {
+//            decoder = self.audioDecoder;
+//        } else if (packet.track == self->_selected_video_track) {
+//            decoder = self.videoDecoder;
+//        }
+        if (packet.type == SGMediaTypeAudio) {
             decoder = self.audioDecoder;
-        } else if (packet.track == self->_selected_video_track) {
+        } else if (packet.type == SGMediaTypeVideo) {
             decoder = self.videoDecoder;
         }
     });

@@ -12,13 +12,15 @@
 
 @interface SGPacket ()
 
+@property (nonatomic, strong) NSLock * coreLock;
+@property (nonatomic) NSInteger lockingCount;
+
 @property (nonatomic) AVPacket * core;
 @property (nonatomic) void * core_ptr;
 @property (nonatomic) void * codecpar_ptr;
-@property (nonatomic) AVCodecParameters * codecpar;
 @property (nonatomic) AVRational timebase;
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, assign) NSInteger lockingCount;
+@property (nonatomic) AVCodecParameters * codecpar;
+@property (nonatomic) NSMutableArray <SGTimeTransform *> * timeTransforms;
 
 @end
 
@@ -71,42 +73,52 @@
         av_packet_unref(self.core);
     }
     _type = SGMediaTypeUnknown;
+    _index = -1;
     _timeStamp = kCMTimeZero;
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
-    _index = -1;
     _size = 0;
-    
+    _timebase = av_make_q(0, 1);
     _codecpar = nil;
     _codecpar_ptr = nil;
-    _timebase = av_make_q(0, 1);
+    [_timeTransforms removeAllObjects];
 }
 
-- (void)configurateWithTrack:(SGTrack *)track
+- (void)configurateWithType:(SGMediaType)type timebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
 {
     if (self.core->pts == AV_NOPTS_VALUE) {
         self.core->pts = self.core->dts;
     }
-    _type = track.type;
-    _timeStamp = SGCMTimeMakeWithTimebase(self.core->pts, track.timebase);
-    _decodeTimeStamp = SGCMTimeMakeWithTimebase(self.core->dts, track.timebase);
-    _duration = SGCMTimeMakeWithTimebase(self.core->duration, track.timebase);
-    _index = track.index;
+    _type = type;
+    _index = self.core->stream_index;
+    _timeStamp = CMTimeMake(self.core->pts * timebase.num, timebase.den);
+    _decodeTimeStamp = CMTimeMake(self.core->dts * timebase.num, timebase.den);
+    _duration = CMTimeMake(self.core->duration * timebase.num, timebase.den);
     _size = self.core->size;
-    
-    _codecpar = track.core->codecpar;
-    _codecpar_ptr = track.core->codecpar;
-    _timebase = track.core->time_base;
+    _timebase = timebase;
+    _codecpar = codecpar;
+    _codecpar_ptr = codecpar;
 }
 
-- (void)applyTransform:(SGTimeTransform *)transform
+- (void)applyTimeTransforms:(NSArray <SGTimeTransform *> *)timeTransforms
 {
-    if (!transform) {
+    for (SGTimeTransform * obj in timeTransforms) {
+        [self applyTimeTransform:obj];
+    }
+}
+
+- (void)applyTimeTransform:(SGTimeTransform *)timeTransform
+{
+    if (!timeTransform) {
         return;
     }
-    _timeStamp = [transform applyToTimeStamp:_timeStamp];
-    _decodeTimeStamp = [transform applyToTimeStamp:_decodeTimeStamp];
-    _duration = [transform applyToDuration:_duration];
+    if (!_timeTransforms) {
+        _timeTransforms = [NSMutableArray array];
+    }
+    [_timeTransforms addObject:timeTransform];
+    _timeStamp = [timeTransform applyToTimeStamp:_timeStamp];
+    _decodeTimeStamp = [timeTransform applyToTimeStamp:_decodeTimeStamp];
+    _duration = [timeTransform applyToDuration:_duration];
 }
 
 @end
