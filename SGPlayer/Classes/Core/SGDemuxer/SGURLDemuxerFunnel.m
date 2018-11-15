@@ -8,12 +8,14 @@
 
 #import "SGURLDemuxerFunnel.h"
 #import "SGURLDemuxer.h"
+#import "SGPacket+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
 @interface SGURLDemuxerFunnel ()
 
 @property (nonatomic, strong) SGURLDemuxer * demuxer;
+@property (nonatomic, strong) SGTimeTransform * transform;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
 @property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
@@ -79,6 +81,8 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.audioTracks = [audioTracks copy];
     self.videoTracks = [videoTracks copy];
     self.otherTracks = [otherTracks copy];
+    self.transform = [[SGTimeTransform alloc] init];
+    self.transform.start = CMTimeMultiply(self.actualTimeRange.start, -1);
     return nil;
 }
 
@@ -105,6 +109,7 @@ SGGet0Map(NSError *, close, self.demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
+        [packet applyTransform:self.transform];
         break;
     }
     return ret;

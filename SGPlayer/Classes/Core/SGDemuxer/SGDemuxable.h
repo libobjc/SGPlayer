@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGPacket.h"
+#import "SGTrack.h"
 
 @protocol SGDemuxableDelegate;
 

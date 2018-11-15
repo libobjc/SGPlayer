@@ -18,8 +18,9 @@
 
 @interface SGCodecContext ()
 
-@property (nonatomic, assign) AVCodecContext * codecContext;
-@property (nonatomic, strong) SGTrack * track;
+@property (nonatomic) AVCodecContext * codecContext;
+@property (nonatomic) AVCodecParameters * codecpar;
+@property (nonatomic) AVRational timebase;
 @property (nonatomic, strong) Class frameClass;
 
 @end
@@ -65,15 +66,15 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     }
     codecContext->opaque = (__bridge void *)self;
     
-    int result = avcodec_parameters_to_context(codecContext, self.track.core->codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = self.track.core->time_base;
-    if ((self.hardwareDecodeH264 && self.track.core->codecpar->codec_id == AV_CODEC_ID_H264) ||
-        (self.hardwareDecodeH265 && self.track.core->codecpar->codec_id == AV_CODEC_ID_H265)) {
+    codecContext->pkt_timebase = self.timebase;
+    if ((self.hardwareDecodeH264 && self.codecpar->codec_id == AV_CODEC_ID_H264) ||
+        (self.hardwareDecodeH265 && self.codecpar->codec_id == AV_CODEC_ID_H265)) {
         codecContext->get_format = SGCodecContextGetFormat;
     }
     
@@ -110,7 +111,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     return codecContext;
 }
 
-- (instancetype)initWithTrack:(SGTrack *)track frameClass:(Class)frameClass
+- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass
 {
     if (self = [super init]) {
         self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
@@ -119,7 +120,8 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
         self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
         self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
         self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
-        self.track = track;
+        self.timebase = timebase;
+        self.codecpar = codecpar;
         self.frameClass = frameClass;
     }
     return self;
@@ -132,7 +134,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
 
 - (BOOL)open
 {
-    if (!self.track) {
+    if (!self.codecpar) {
         return NO;
     }
     if (!self.frameClass) {

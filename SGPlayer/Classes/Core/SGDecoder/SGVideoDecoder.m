@@ -9,12 +9,12 @@
 #import "SGVideoDecoder.h"
 #import "SGCodecContext.h"
 #import "SGVideoFrame.h"
-#import "SGMapping.h"
 
 @interface SGVideoDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
-@property (nonatomic, strong) SGTrack * track;
+@property (nonatomic) AVCodecParameters * codecpar;
+@property (nonatomic) AVRational timebase;
 
 @end
 
@@ -27,7 +27,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithTrack:self.track frameClass:[SGVideoFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithTimebase:self.timebase codecpar:self.codecpar frameClass:[SGVideoFrame class]];
     [self.codecContext open];
 }
 
@@ -39,8 +39,9 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    if (packet && packet.track != self.track) {
-        self.track = packet.track;
+    if (packet && (packet.codecpar != self.codecpar || av_cmp_q(packet.timebase, self.timebase) != 0)) {
+        self.codecpar = packet.codecpar;
+        self.timebase = packet.timebase;
         [self destroy];
         [self setup];
     }

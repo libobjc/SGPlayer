@@ -8,6 +8,7 @@
 
 #import "SGConcatDemuxerUnit.h"
 #import "SGSegment+Internal.h"
+#import "SGPacket+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
@@ -70,7 +71,14 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
 
 - (NSError *)nextPacket:(SGPacket *)packet
 {
-    return [self.demuxable nextPacket:packet];
+    NSError * ret = [self.demuxable nextPacket:packet];
+    if (ret) {
+        return ret;
+    }
+    SGTimeTransform * transform = [[SGTimeTransform alloc] init];
+    transform.start = self.timeRange.start;
+    [packet applyTransform:transform];
+    return nil;
 }
 
 @end

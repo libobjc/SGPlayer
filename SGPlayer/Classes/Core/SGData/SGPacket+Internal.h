@@ -7,12 +7,17 @@
 //
 
 #import "SGPacket.h"
+#import "SGTimeTransform.h"
+#import "SGTrack.h"
 #import "avcodec.h"
 
 @interface SGPacket (Internal)
 
-@property (nonatomic, assign, readonly) AVPacket * core;
+@property (nonatomic, readonly) AVPacket * core;
+@property (nonatomic, readonly) AVCodecParameters * codecpar;
+@property (nonatomic, readonly) AVRational timebase;
 
 - (void)configurateWithTrack:(SGTrack *)track;
+- (void)applyTransform:(SGTimeTransform *)timeTransform;
 
 @end

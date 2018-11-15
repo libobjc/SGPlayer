@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGPacket.h"
+#import "SGPacket+Internal.h"
 #import "SGFrame.h"
 
 @interface SGCodecContext : NSObject
@@ -15,7 +15,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithTrack:(SGTrack *)track frameClass:(Class)frameClass;
+- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass;
 
 @property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic, assign) BOOL threadsAuto;
