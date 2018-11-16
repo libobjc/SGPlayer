@@ -43,6 +43,13 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self setState:SGPacketOutputStateClosed];
+    [self.queue cancelAllOperations];
+    [self.queue waitUntilAllOperationsAreFinished];
+}
+
 #pragma mark - Mapping
 
 SGGet0Map(CMTime, duration, self.demuxable)
@@ -111,8 +118,6 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
         block();
         [self.queue cancelAllOperations];
         [self.queue waitUntilAllOperationsAreFinished];
-        self.queue = nil;
-        [self.demuxable close];
         return YES;
     });
 }
@@ -184,10 +189,11 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
             } else if (self->_state == SGPacketOutputStateOpening) {
                 [self.lock unlock];
                 NSError * error = [self.demuxable open];
-                SGLockEXE10(self.lock, ^SGBlock{
-                    self->_error = error;
-                    return [self setState:error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
-                });
+                [self.lock lock];
+                self->_error = error;
+                SGBlock b1 = [self setState:error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
+                [self.lock unlock];
+                b1();
                 continue;
             } else if (self->_state == SGPacketOutputStateOpened ||
                        self->_state == SGPacketOutputStatePaused ||
@@ -229,12 +235,12 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
                 NSError * error = [self.demuxable nextPacket:packet];
                 if (error) {
                     [self.lock lock];
-                    SGBlock callback = ^{};
+                    SGBlock b1 = ^{};
                     if (self->_state == SGPacketOutputStateReading) {
-                        callback = [self setState:SGPacketOutputStateFinished];
+                        b1 = [self setState:SGPacketOutputStateFinished];
                     }
                     [self.lock unlock];
-                    callback();
+                    b1();
                 } else {
                     [self.delegate packetOutput:self didOutputPacket:packet];
                 }
@@ -243,6 +249,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
             }
         }
     }
+    [self.demuxable close];
 }
 
 #pragma mark - SGPacketReaderDelegate
