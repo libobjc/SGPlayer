@@ -8,7 +8,6 @@
 
 #import "SGClock.h"
 #import "SGClock+Internal.h"
-#import "SGTime.h"
 #import "SGLock.h"
 
 @interface SGClock ()
@@ -24,7 +23,7 @@
     CMTime _audio_time;
     CMTime _video_time;
     CMTime _current_time;
-    CMTime _audio_video_offset;
+    CMTime _video_advanced_duration;
     double _audio_media_time;
     double _video_media_time;
     double _pause_media_time;
@@ -42,7 +41,7 @@
 {
     if (self = [super init]) {
         self->_rate = CMTimeMake(1, 1);
-        self->_audio_video_offset = kCMTimeZero;
+        self->_video_advanced_duration = kCMTimeZero;
         self.lock = [[NSLock alloc] init];
     }
     return self;
@@ -64,20 +63,20 @@
     return ret;
 }
 
-- (void)setAudio_video_offset:(CMTime)audio_video_offset
+- (void)setVideoAdvancedDuration:(CMTime)videoAdvancedDuration
 {
-    audio_video_offset = CMTimeMinimum(audio_video_offset, CMTimeMake(2, 1));
-    audio_video_offset = CMTimeMaximum(audio_video_offset, CMTimeMake(-2, 1));
+    videoAdvancedDuration = CMTimeMinimum(videoAdvancedDuration, CMTimeMake(2, 1));
+    videoAdvancedDuration = CMTimeMaximum(videoAdvancedDuration, CMTimeMake(-2, 1));
     SGLockEXE00(self.lock, ^{
-        self->_audio_video_offset = audio_video_offset;
+        self->_video_advanced_duration = videoAdvancedDuration;
     });
 }
 
-- (CMTime)audio_video_offset
+- (CMTime)videoAdvancedDuration
 {
     __block CMTime ret = kCMTimeZero;
     SGLockEXE00(self.lock, ^{
-        ret = self->_audio_video_offset;
+        ret = self->_video_advanced_duration;
     });
     return ret;
 }
@@ -181,27 +180,27 @@
     });
 }
 
-- (BOOL)preferredVideoTime:(CMTime *)time offset:(CMTime *)offset
+- (BOOL)preferredVideoTime:(CMTime *)time advanced:(CMTime *)advanced
 {
-    __block CMTime time_value = kCMTimeZero;
-    __block CMTime offset_value = kCMTimeZero;
+    __block CMTime ret_time = kCMTimeZero;
+    __block CMTime ret_advanced = kCMTimeZero;
     SGLockEXE00(self.lock, ^{
         double current_media_time = self->_is_paused ? self->_pause_media_time : CACurrentMediaTime();
         if (self->_nb_set_audio_time && !self->_is_audio_stalled) {
             CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_audio_media_time - self->_invalid_duration);
             duration = SGCMTimeMultiply(duration, self->_rate);
             duration = CMTimeMaximum(duration, kCMTimeZero);
-            time_value = CMTimeAdd(self->_audio_time, duration);
-            offset_value = self->_audio_video_offset;
+            ret_time = CMTimeAdd(self->_audio_time, duration);
+            ret_advanced = self->_video_advanced_duration;
         } else if (self->_nb_set_video_time || self->_is_audio_stalled) {
             CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_video_media_time - self->_invalid_duration);
             duration = SGCMTimeMultiply(duration, self->_rate);
             duration = CMTimeMaximum(duration, kCMTimeZero);
-            time_value = CMTimeAdd(self->_video_time, duration);
+            ret_time = CMTimeAdd(self->_video_time, duration);
         }
     });
-    * time = time_value;
-    * offset = offset_value;
+    * time = ret_time;
+    * advanced = ret_advanced;
     return YES;
 }
 

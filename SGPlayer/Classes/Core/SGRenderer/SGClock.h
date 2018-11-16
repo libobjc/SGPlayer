@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
+#import "SGTime.h"
 
 @interface SGClock : NSObject
 
-@property (nonatomic) CMTime audio_video_offset;        // [-2, 2];
+@property (nonatomic) CMTime videoAdvancedDuration;        // [-2, 2];
 
 @end

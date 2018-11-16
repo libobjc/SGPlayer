@@ -29,7 +29,7 @@
 - (BOOL)setVideoCurrentTime:(CMTime)time;
 - (BOOL)markAsAudioStalled;
 
-- (BOOL)preferredVideoTime:(CMTime *)time offset:(CMTime *)offset;
+- (BOOL)preferredVideoTime:(CMTime *)time advanced:(CMTime *)advanced;
 
 @end
 

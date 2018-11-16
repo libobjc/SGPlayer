@@ -291,11 +291,11 @@
             return nil;
         }, ^BOOL(SGBlock block) {
             CMTime time = kCMTimeZero;
-            CMTime offset = kCMTimeZero;
-            [self.clock preferredVideoTime:&time offset:&offset];
+            CMTime advanced = kCMTimeZero;
+            [self.clock preferredVideoTime:&time advanced:&advanced];
             double media_time_next = [self.drawTimer nextTimestamp];
             media_time_current = CACurrentMediaTime();
-            * desire = CMTimeAdd(CMTimeAdd(time, offset), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
+            * desire = CMTimeAdd(CMTimeAdd(time, advanced), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
             * current = time_current;
             * drop = YES;
             return YES;
