@@ -12,10 +12,10 @@
 @interface SGMotionSensor ()
 
 @property (nonatomic, strong) CMMotionManager * manager;
-@property (nonatomic, assign) UIInterfaceOrientation orientation;
-@property (nonatomic, assign) GLKMatrix4 deviceToDisplay;
-@property (nonatomic, assign) GLKMatrix4 worldToInertialReferenceFrame;
-@property (nonatomic, assign) CGFloat defalutRotateY;
+@property (nonatomic) UIInterfaceOrientation orientation;
+@property (nonatomic) GLKMatrix4 deviceToDisplay;
+@property (nonatomic) GLKMatrix4 worldToInertialReferenceFrame;
+@property (nonatomic) CGFloat defalutRotateY;
 
 @end
 

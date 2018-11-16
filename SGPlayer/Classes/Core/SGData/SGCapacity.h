@@ -11,11 +11,9 @@
 
 @interface SGCapacity : NSObject <NSCopying>
 
-@property (nonatomic, weak) id object;
-
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) uint64_t size;
-@property (nonatomic, assign) uint64_t count;
+@property (nonatomic) CMTime duration;
+@property (nonatomic) uint64_t size;
+@property (nonatomic) uint64_t count;
 
 - (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
 - (BOOL)isEnough;

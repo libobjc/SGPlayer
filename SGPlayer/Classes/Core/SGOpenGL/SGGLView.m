@@ -10,10 +10,10 @@
 
 @interface SGGLView ()
 
-@property (nonatomic, assign) SGGLSize displaySize;
+@property (nonatomic) SGGLSize displaySize;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-@property (nonatomic, assign) GLuint displayFramebuffer;
-@property (nonatomic, assign) GLuint displayRenderbuffer;
+@property (nonatomic) GLuint displayFramebuffer;
+@property (nonatomic) GLuint displayRenderbuffer;
 #endif
 
 @end

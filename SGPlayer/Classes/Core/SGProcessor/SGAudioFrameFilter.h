@@ -10,9 +10,9 @@
 
 @interface SGAudioFrameFilter : SGFrameFilter
 
-@property (nonatomic, assign) int format;         // AVSampleFormat
-@property (nonatomic, assign) int sample_rate;
-@property (nonatomic, assign) int channels;
-@property (nonatomic, assign) uint64_t channel_layout;
+@property (nonatomic) int format;         // AVSampleFormat
+@property (nonatomic) int sample_rate;
+@property (nonatomic) int channels;
+@property (nonatomic) uint64_t channel_layout;
 
 @end

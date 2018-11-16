@@ -10,8 +10,8 @@
 
 @interface SGGLYUV420PProgram : SGGLBasicProgram
 
-@property (nonatomic, assign) GLint samplerY_location;
-@property (nonatomic, assign) GLint samplerU_location;
-@property (nonatomic, assign) GLint samplerV_location;
+@property (nonatomic) GLint samplerY_location;
+@property (nonatomic) GLint samplerU_location;
+@property (nonatomic) GLint samplerV_location;
 
 @end

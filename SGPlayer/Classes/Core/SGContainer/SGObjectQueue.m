@@ -10,16 +10,16 @@
 
 @interface SGObjectQueue ()
 
-@property (nonatomic, assign) uint64_t maxCount;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) uint64_t size;
+@property (nonatomic) uint64_t maxCount;
+@property (nonatomic) CMTime duration;
+@property (nonatomic) uint64_t size;
 
 @property (nonatomic, strong) NSCondition * condition;
 @property (nonatomic, strong) NSMutableArray <id <SGObjectQueueItem>> * objects;
 @property (nonatomic, strong) id <SGObjectQueueItem> puttingObject;
 @property (nonatomic, strong) id <SGObjectQueueItem> cancelPutObject;
 
-@property (nonatomic, assign) BOOL didDestoryed;
+@property (nonatomic) BOOL didDestoryed;
 
 @end
 

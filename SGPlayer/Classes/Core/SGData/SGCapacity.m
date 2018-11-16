@@ -29,26 +29,50 @@
     return obj;
 }
 
+- (BOOL)isEqualToCapacity:(SGCapacity *)capacity
+{
+    if (self.count != capacity.count) {
+        return NO;
+    }
+    if (self.size != capacity.size) {
+        return NO;
+    }
+    if (CMTimeCompare(self.duration, capacity.duration) != 0) {
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)isEnough
+{
+    if (self.count < 30) {
+        return NO;
+    }
+    if (CMTimeCompare(self.duration, CMTimeMake(1, 1)) < 0) {
+        return NO;
+    }
+    return YES;
+}
+
+- (BOOL)isEmpty
+{
+    if (self.count != 0) {
+        return NO;
+    }
+    if (self.size != 0) {
+        return NO;
+    }
+    if (CMTimeCompare(self.duration, kCMTimeZero) != 0) {
+        return NO;
+    }
+    return YES;
+}
+
 - (void)add:(SGCapacity *)capacity
 {
     self.duration = CMTimeAdd(self.duration, capacity.duration);
     self.size += capacity.size;
     self.count += capacity.count;
-}
-
-- (BOOL)isEqualToCapacity:(SGCapacity *)capacity
-{
-    return self.count == capacity.count && self.size == capacity.size && CMTimeCompare(self.duration, capacity.duration) == 0;
-}
-
-- (BOOL)isEnough
-{
-    return self.count > 25 && CMTimeCompare(self.duration, CMTimeMake(1, 1)) > 0;
-}
-
-- (BOOL)isEmpty
-{
-    return self.count == 0 && self.size == 0 && CMTimeCompare(self.duration, kCMTimeZero) == 0;
 }
 
 @end

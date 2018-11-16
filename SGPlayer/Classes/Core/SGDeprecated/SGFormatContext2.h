@@ -19,20 +19,20 @@
 
 @property (nonatomic, strong, readonly) NSURL * URL;
 
-@property (nonatomic, assign, readonly) CMTime scale;
-@property (nonatomic, assign, readonly) CMTime startTime;
-@property (nonatomic, assign, readonly) CMTimeRange actualTimeRange;
-@property (nonatomic, assign, readonly) CMTimeRange preferredTimeRange;
+@property (nonatomic, readonly) CMTime scale;
+@property (nonatomic, readonly) CMTime startTime;
+@property (nonatomic, readonly) CMTimeRange actualTimeRange;
+@property (nonatomic, readonly) CMTimeRange preferredTimeRange;
 
-@property (nonatomic, assign, readonly) CMTime duration;
-@property (nonatomic, assign, readonly) CMTime originalDuration;
-@property (nonatomic, assign, readonly) BOOL seekable;
-@property (nonatomic, assign, readonly) BOOL audioEnable;
-@property (nonatomic, assign, readonly) BOOL videoEnable;
+@property (nonatomic, readonly) CMTime duration;
+@property (nonatomic, readonly) CMTime originalDuration;
+@property (nonatomic, readonly) BOOL seekable;
+@property (nonatomic, readonly) BOOL audioEnable;
+@property (nonatomic, readonly) BOOL videoEnable;
 @property (nonatomic, copy, readonly) NSError * error;
 @property (nonatomic, copy, readonly) NSDictionary * metadata;
 
-@property (nonatomic, assign, readonly) AVFormatContext * coreFormatContext;
+@property (nonatomic, readonly) AVFormatContext * coreFormatContext;
 @property (nonatomic, strong, readonly) NSArray <SGTrack *> * tracks;
 @property (nonatomic, strong, readonly) NSArray <SGTrack *> * videoTracks;
 @property (nonatomic, strong, readonly) NSArray <SGTrack *> * audioTracks;

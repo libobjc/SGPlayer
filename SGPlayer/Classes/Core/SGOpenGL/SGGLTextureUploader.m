@@ -30,7 +30,7 @@ static int gl_texture[3] = {
 
 @property (nonatomic, strong) SGPLFGLContext * context;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-@property (nonatomic, assign) BOOL setupOpenGLESTextureCacheFailed;
+@property (nonatomic) BOOL setupOpenGLESTextureCacheFailed;
 #endif
 
 @end

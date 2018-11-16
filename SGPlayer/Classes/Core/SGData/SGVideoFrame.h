@@ -18,10 +18,10 @@
     CVPixelBufferRef _pixelBuffer;
 }
 
-@property (nonatomic, assign, readonly) int format;     // AVPixelFormat
-@property (nonatomic, assign, readonly) int width;
-@property (nonatomic, assign, readonly) int height;
-@property (nonatomic, assign, readonly) int key_frame;
+@property (nonatomic, readonly) int format;     // AVPixelFormat
+@property (nonatomic, readonly) int width;
+@property (nonatomic, readonly) int height;
+@property (nonatomic, readonly) int key_frame;
 
 - (SGPLFImage *)image;
 

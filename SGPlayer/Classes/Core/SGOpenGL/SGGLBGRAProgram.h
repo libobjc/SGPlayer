@@ -10,6 +10,6 @@
 
 @interface SGGLBGRAProgram : SGGLBasicProgram
 
-@property (nonatomic, assign) GLint sampler_location;
+@property (nonatomic) GLint sampler_location;
 
 @end

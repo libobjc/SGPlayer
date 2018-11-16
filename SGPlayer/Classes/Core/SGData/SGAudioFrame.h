@@ -16,11 +16,11 @@
     int _linesize[SGFramePlaneCount];
 }
 
-@property (nonatomic, assign, readonly) int format;         // AVSampleFormat
-@property (nonatomic, assign, readonly) int is_planar;
-@property (nonatomic, assign, readonly) int nb_samples;
-@property (nonatomic, assign, readonly) int sample_rate;
-@property (nonatomic, assign, readonly) int channels;
-@property (nonatomic, assign, readonly) uint64_t channel_layout;
+@property (nonatomic, readonly) int format;         // AVSampleFormat
+@property (nonatomic, readonly) int is_planar;
+@property (nonatomic, readonly) int nb_samples;
+@property (nonatomic, readonly) int sample_rate;
+@property (nonatomic, readonly) int channels;
+@property (nonatomic, readonly) uint64_t channel_layout;
 
 @end

@@ -28,25 +28,25 @@
 /**
  *  Volume.
  */
-@property (nonatomic, assign, readonly) float volume;
+@property (nonatomic, readonly) float volume;
 - (BOOL)setVolume:(float)volume error:(NSError **)error;
 
 /**
  *  Rate.
  */
-@property (nonatomic, assign, readonly) float rate;
+@property (nonatomic, readonly) float rate;
 - (BOOL)setRate:(float)rate error:(NSError **)error;
 
 /**
  *  Audio Stream Basic Description.
  */
-@property (nonatomic, assign, readonly) AudioStreamBasicDescription asbd;
+@property (nonatomic, readonly) AudioStreamBasicDescription asbd;
 - (BOOL)setAsbd:(AudioStreamBasicDescription)asbd error:(NSError **)error;
 
 /**
  *  Playback.
  */
-@property (nonatomic, assign, readonly) BOOL playing;
+@property (nonatomic, readonly) BOOL playing;
 
 - (void)play;
 - (void)pause;

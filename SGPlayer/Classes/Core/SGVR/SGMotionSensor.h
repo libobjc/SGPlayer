@@ -11,8 +11,8 @@
 
 @interface SGMotionSensor : NSObject
 
-@property (nonatomic, assign, readonly) BOOL ready;
-@property (nonatomic, assign, readonly) GLKMatrix4 matrix;
+@property (nonatomic, readonly) BOOL ready;
+@property (nonatomic, readonly) GLKMatrix4 matrix;
 
 - (void)start;
 - (void)stop;

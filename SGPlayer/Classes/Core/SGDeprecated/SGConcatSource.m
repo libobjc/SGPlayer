@@ -15,18 +15,18 @@
 @interface SGConcatSource ()
 
 @property (nonatomic, strong) SGConcatAsset * asset;
-@property (nonatomic, assign, readonly) SGSourceState state;
+@property (nonatomic, readonly) SGSourceState state;
 @property (nonatomic, strong) NSError * error;
-@property (nonatomic, assign) CMTime duration;
-@property (nonatomic, assign) BOOL seekable;
-@property (nonatomic, assign) CMTime seekTimeStamp;
-@property (nonatomic, assign) CMTime seekingTimeStamp;
+@property (nonatomic) CMTime duration;
+@property (nonatomic) BOOL seekable;
+@property (nonatomic) CMTime seekTimeStamp;
+@property (nonatomic) CMTime seekingTimeStamp;
 @property (nonatomic, copy) void(^seekCompletionHandler)(CMTime, NSError *);
 
 @property (nonatomic, strong) NSArray <SGURLDemuxer2 *> * formatContexts;
 @property (nonatomic, strong) SGURLDemuxer2 * formatContext;
-@property (nonatomic, assign) BOOL audioEnable;
-@property (nonatomic, assign) BOOL videoEnable;
+@property (nonatomic) BOOL audioEnable;
+@property (nonatomic) BOOL videoEnable;
 @property (nonatomic, strong) SGTrack * audioTrack;
 @property (nonatomic, strong) SGTrack * videoTrack;
 @property (nonatomic, strong) NSLock * coreLock;

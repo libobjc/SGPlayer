@@ -12,7 +12,7 @@
 
 - (instancetype)initWithTimeInterval:(double)timeInterval handler:(void (^)(void))handler;
 
-@property (nonatomic, assign) BOOL paused;
+@property (nonatomic) BOOL paused;
 
 - (void)invalidate;
 

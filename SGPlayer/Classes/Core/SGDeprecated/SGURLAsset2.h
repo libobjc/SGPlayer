@@ -17,7 +17,7 @@
 - (instancetype)initWithURL:(NSURL *)URL;
 
 @property (nonatomic, strong, readonly) NSURL * URL;
-@property (nonatomic, assign) CMTime scale;             // Default value is (1, 1).
-@property (nonatomic, assign) CMTimeRange timeRange;    // Default value is (kCMTimeNegativeInfinity, kCMTimePositiveInfinity)).
+@property (nonatomic) CMTime scale;             // Default value is (1, 1).
+@property (nonatomic) CMTimeRange timeRange;    // Default value is (kCMTimeNegativeInfinity, kCMTimePositiveInfinity)).
 
 @end

@@ -14,13 +14,13 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 
 @interface SGAudioStreamPlayer ()
 
-@property (nonatomic, assign) AUGraph graph;
-@property (nonatomic, assign) AUNode nodeForTimePitch;
-@property (nonatomic, assign) AUNode nodeForMixer;
-@property (nonatomic, assign) AUNode nodeForOutput;
-@property (nonatomic, assign) AudioUnit audioUnitForTimePitch;
-@property (nonatomic, assign) AudioUnit audioUnitForMixer;
-@property (nonatomic, assign) AudioUnit audioUnitForOutput;
+@property (nonatomic) AUGraph graph;
+@property (nonatomic) AUNode nodeForTimePitch;
+@property (nonatomic) AUNode nodeForMixer;
+@property (nonatomic) AUNode nodeForOutput;
+@property (nonatomic) AudioUnit audioUnitForTimePitch;
+@property (nonatomic) AudioUnit audioUnitForMixer;
+@property (nonatomic) AudioUnit audioUnitForOutput;
 
 @end
 

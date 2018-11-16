@@ -10,8 +10,8 @@
 
 @interface SGGLNV12Program : SGGLBasicProgram
 
-@property (nonatomic, assign) GLint samplerY_location;
-@property (nonatomic, assign) GLint samplerUV_location;
-@property (nonatomic, assign) GLint colorConversionMatrix_location;
+@property (nonatomic) GLint samplerY_location;
+@property (nonatomic) GLint samplerUV_location;
+@property (nonatomic) GLint colorConversionMatrix_location;
 
 @end

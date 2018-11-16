@@ -11,16 +11,16 @@
 
 @interface SGGLBasicProgram : NSObject <SGGLProgram>
 
-@property (nonatomic, assign, readonly) GLint programID;
+@property (nonatomic, readonly) GLint programID;
 
 #pragma mark - Override
 
-@property (nonatomic, assign, readonly) const char * vertexShaderString;
-@property (nonatomic, assign, readonly) const char * fragmentShaderString;
+@property (nonatomic, readonly) const char * vertexShaderString;
+@property (nonatomic, readonly) const char * fragmentShaderString;
 
-@property (nonatomic, assign) GLint position_location;
-@property (nonatomic, assign) GLint textureCoordinate_location;
-@property (nonatomic, assign) GLint modelViewProjectionMatrix_location;
+@property (nonatomic) GLint position_location;
+@property (nonatomic) GLint textureCoordinate_location;
+@property (nonatomic) GLint modelViewProjectionMatrix_location;
 
 - (void)loadVariable;
 

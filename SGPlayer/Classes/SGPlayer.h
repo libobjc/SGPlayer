@@ -77,7 +77,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (SGPlaybackState)playbackState;
 - (CMTime)currentTime;
 
-@property (nonatomic, assign) CMTime rate;
+@property (nonatomic) CMTime rate;
 
 - (BOOL)play;
 - (BOOL)pause;

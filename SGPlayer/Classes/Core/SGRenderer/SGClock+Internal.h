@@ -15,7 +15,7 @@
 
 @property (nonatomic, weak) id <SGClockDelegate> delegate;
 
-@property (nonatomic, assign) CMTime rate;
+@property (nonatomic) CMTime rate;
 
 - (CMTime)currentTime;
 

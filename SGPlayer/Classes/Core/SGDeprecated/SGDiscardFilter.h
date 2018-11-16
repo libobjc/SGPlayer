@@ -11,7 +11,7 @@
 
 @interface SGDiscardFilter : NSObject
 
-@property (nonatomic, assign) CMTime minimumInterval;
+@property (nonatomic) CMTime minimumInterval;
 
 - (BOOL)discardWithTimeStamp:(CMTime)timeStamp;
 

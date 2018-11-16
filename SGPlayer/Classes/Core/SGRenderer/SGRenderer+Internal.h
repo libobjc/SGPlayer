@@ -21,7 +21,7 @@
 
 - (instancetype)initWithClock:(SGClock *)clock;
 
-@property (nonatomic, assign) CMTime rate;
+@property (nonatomic) CMTime rate;
 
 - (SGAudioFrameFilter *)filter;
 
@@ -34,6 +34,6 @@
 
 - (instancetype)initWithClock:(SGClock *)clock;
 
-@property (nonatomic, assign) CMTime rate;
+@property (nonatomic) CMTime rate;
 
 @end

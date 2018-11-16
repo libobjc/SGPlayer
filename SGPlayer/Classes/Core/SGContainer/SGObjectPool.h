@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #define SGObjectPoolItemInterface \
-@property (nonatomic, assign) NSInteger lockingCount;\
+@property (nonatomic) NSInteger lockingCount;\
 
 #define SGObjectPoolItemImplementation \
 - (void)lock\

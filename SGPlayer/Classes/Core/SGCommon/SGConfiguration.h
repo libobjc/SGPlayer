@@ -14,10 +14,10 @@
 
 @property (nonatomic, copy) NSDictionary * formatContextOptions;
 @property (nonatomic, copy) NSDictionary * codecContextOptions;
-@property (nonatomic, assign) BOOL threadsAuto;
-@property (nonatomic, assign) BOOL refcountedFrames;
-@property (nonatomic, assign) BOOL hardwareDecodeH264;
-@property (nonatomic, assign) BOOL hardwareDecodeH265;
-@property (nonatomic, assign) OSType preferredPixelFormat;
+@property (nonatomic) BOOL threadsAuto;
+@property (nonatomic) BOOL refcountedFrames;
+@property (nonatomic) BOOL hardwareDecodeH264;
+@property (nonatomic) BOOL hardwareDecodeH265;
+@property (nonatomic) OSType preferredPixelFormat;
 
 @end

@@ -10,11 +10,11 @@
 
 @interface SGSWScale : NSObject
 
-@property (nonatomic, assign) int i_format;       // AVPixelFormat
-@property (nonatomic, assign) int o_format;       // AVPixelFormat
-@property (nonatomic, assign) int width;
-@property (nonatomic, assign) int height;
-@property (nonatomic, assign) int flags;            // SWS_FAST_BILINEAR
+@property (nonatomic) int i_format;       // AVPixelFormat
+@property (nonatomic) int o_format;       // AVPixelFormat
+@property (nonatomic) int width;
+@property (nonatomic) int height;
+@property (nonatomic) int flags;            // SWS_FAST_BILINEAR
 
 - (BOOL)open;
 

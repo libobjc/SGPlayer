@@ -17,11 +17,11 @@
 #if SGPLATFORM_TARGET_OS_IPHONE
 @property (nonatomic, strong) SGMotionSensor * sensor;
 #endif
-@property (nonatomic, assign) BOOL lastMatrix1Available;
-@property (nonatomic, assign) BOOL lastMatrix2Available;
-@property (nonatomic, assign) GLKMatrix4 lastMatrix11;
-@property (nonatomic, assign) GLKMatrix4 lastMatrix21;
-@property (nonatomic, assign) GLKMatrix4 lastMatrix22;
+@property (nonatomic) BOOL lastMatrix1Available;
+@property (nonatomic) BOOL lastMatrix2Available;
+@property (nonatomic) GLKMatrix4 lastMatrix11;
+@property (nonatomic) GLKMatrix4 lastMatrix21;
+@property (nonatomic) GLKMatrix4 lastMatrix22;
 
 @end
 

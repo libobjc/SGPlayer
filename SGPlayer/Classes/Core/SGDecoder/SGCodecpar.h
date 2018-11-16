@@ -20,6 +20,7 @@
 
 - (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
 - (void)setTimeLayout:(SGTimeLayout *)timeLayout;
+
 - (void)clear;
 
 @end

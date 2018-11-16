@@ -42,7 +42,6 @@
 
 @implementation SGVideoRenderer
 
-@synthesize object = _object;
 @synthesize delegate = _delegate;
 
 - (instancetype)initWithClock:(SGClock *)clock

@@ -16,10 +16,10 @@
 
 @property (nonatomic, strong) SGPLFView * view;             // Main thread only.
 @property (nonatomic, strong) SGVRViewport * viewport;      // Main thread only.
-@property (nonatomic, assign) SGScalingMode scalingMode;    // Main thread only.
-@property (nonatomic, assign) SGDisplayMode displayMode;    // Main thread only.
-@property (nonatomic, assign) CMTime displayInterval;       // Main thread only.
 @property (nonatomic, copy) void (^frameOutput)(SGVideoFrame * frame);       // Main thread only.
+@property (nonatomic) SGScalingMode scalingMode;    // Main thread only.
+@property (nonatomic) SGDisplayMode displayMode;    // Main thread only.
+@property (nonatomic) CMTime displayInterval;       // Main thread only.
 
 - (SGPLFImage *)originalImage;     // Main thread only.
 - (SGPLFImage *)snapshot;          // Main thread only.

@@ -35,7 +35,7 @@
 - (instancetype)initWithMaxCount:(uint64_t)maxCount;
 
 @property (nonatomic, weak) id <SGObjectQueueDelegate> delegate;
-@property (nonatomic, assign) BOOL shouldSortObjects;
+@property (nonatomic) BOOL shouldSortObjects;
 
 - (SGCapacity *)capacity;
 

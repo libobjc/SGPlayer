@@ -10,7 +10,7 @@
 
 @interface SGDiscardFilter ()
 
-@property (nonatomic, assign) CMTime lastTimeStamp;
+@property (nonatomic) CMTime lastTimeStamp;
 
 @end
 

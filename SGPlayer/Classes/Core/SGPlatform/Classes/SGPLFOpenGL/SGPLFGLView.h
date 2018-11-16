@@ -26,7 +26,7 @@
 #endif
 
 @property (nonatomic, strong) SGPLFGLContext * context;
-@property (nonatomic, assign) double glScale;
+@property (nonatomic) double glScale;
 
 - (void)prepare;
 - (void)present;

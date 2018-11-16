@@ -18,7 +18,7 @@
 }
 
 @property (nonatomic, weak) id target;
-@property (nonatomic, assign) SEL selector;
+@property (nonatomic) SEL selector;
 
 @end
 

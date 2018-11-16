@@ -16,7 +16,7 @@
     AVBufferRef * _buffer[SGFramePlaneCount];
 }
 
-@property (nonatomic, assign) SwrContext * swrContext;
+@property (nonatomic) SwrContext * swrContext;
 
 @end
 

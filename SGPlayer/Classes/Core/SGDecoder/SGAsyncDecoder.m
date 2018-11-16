@@ -18,12 +18,12 @@
 }
 
 @property (nonatomic, strong) id <SGDecodable> decodable;
-@property (nonatomic, assign) BOOL waitingFlush;
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGCapacity * capacity;
 @property (nonatomic, strong) NSCondition * wakeup;
 @property (nonatomic, strong) SGObjectQueue * packetQueue;
 @property (nonatomic, strong) NSOperationQueue * operationQueue;
+@property (nonatomic) BOOL waitingFlush;
 
 @end
 

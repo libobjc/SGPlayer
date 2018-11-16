@@ -26,7 +26,6 @@ typedef NS_ENUM(uint32_t, SGRenderableState)
 
 @protocol SGRenderable <NSObject>
 
-@property (nonatomic, weak) id object;
 @property (nonatomic, weak) id <SGRenderableDelegate> delegate;
 
 - (SGRenderableState)state;

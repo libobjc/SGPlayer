@@ -11,7 +11,7 @@
 
 @interface SGSWScale ()
 
-@property (nonatomic, assign) struct SwsContext * context;
+@property (nonatomic) struct SwsContext * context;
 
 @end
 

@@ -10,15 +10,15 @@
 
 @interface SGSWResample : NSObject
 
-@property (nonatomic, assign) int i_format;         // AVSampleFormat
-@property (nonatomic, assign) int i_sample_rate;
-@property (nonatomic, assign) int i_channels;
-@property (nonatomic, assign) uint64_t i_channel_layout;
+@property (nonatomic) int i_format;         // AVSampleFormat
+@property (nonatomic) int i_sample_rate;
+@property (nonatomic) int i_channels;
+@property (nonatomic) uint64_t i_channel_layout;
 
-@property (nonatomic, assign) int o_format;         // AVSampleFormat
-@property (nonatomic, assign) int o_sample_rate;
-@property (nonatomic, assign) int o_channels;
-@property (nonatomic, assign) uint64_t o_channel_layout;
+@property (nonatomic) int o_format;         // AVSampleFormat
+@property (nonatomic) int o_sample_rate;
+@property (nonatomic) int o_channels;
+@property (nonatomic) uint64_t o_channel_layout;
 
 - (BOOL)open;
 
