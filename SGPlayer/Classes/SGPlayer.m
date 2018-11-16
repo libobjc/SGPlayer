@@ -521,6 +521,13 @@
                 break;
             case SGPlayerItemStateFinished: {
                 b1 = [self setLoadingState:SGLoadingStateFinished];
+                if (self.audioRenderer.capacity.isEmpty) {
+                    self->_is_audio_finished = 1;
+                }
+                if (self.videoRenderer.capacity.isEmpty) {
+                    self->_is_video_finished = 1;
+                }
+                b2 = [self setPlaybackState];
             }
                 break;
             case SGPlayerItemStateFailed: {

@@ -355,8 +355,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
         [self.capacitys setObject:capacity forKey:@(type)];
         SGCapacity * audio = [self.capacitys objectForKey:@(SGMediaTypeAudio)];
         SGCapacity * video = [self.capacitys objectForKey:@(SGMediaTypeVideo)];
-        self->_is_audio_finished = audio.isEmpty && self.output.state == SGPacketOutputStateFinished;
-        self->_is_video_finished = video.isEmpty && self.output.state == SGPacketOutputStateFinished;
+        self->_is_audio_finished = (!audio || audio.isEmpty) && self.output.state == SGPacketOutputStateFinished;
+        self->_is_video_finished = (!video || video.isEmpty) && self.output.state == SGPacketOutputStateFinished;
         if ((!self->_selected_audio_track || self->_is_audio_finished) &&
             (!self->_selected_video_track || self->_is_video_finished)) {
             b1 = [self setState:SGFrameOutputStateFinished];

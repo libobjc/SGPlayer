@@ -344,8 +344,8 @@ SGGet0Map(BOOL, isVideoAvailable, self.frameOutput)
         [self.capacitys setObject:capacity forKey:@(type)];
         SGCapacity * audio = [self.capacitys objectForKey:@(SGMediaTypeAudio)];
         SGCapacity * video = [self.capacitys objectForKey:@(SGMediaTypeVideo)];
-        self->_is_audio_finished = audio.isEmpty && self.frameOutput.isAudioFinished;
-        self->_is_video_finished = video.isEmpty && self.frameOutput.isVideoFinished;
+        self->_is_audio_finished = (!audio || audio.isEmpty) && self.frameOutput.isAudioFinished;
+        self->_is_video_finished = (!video || video.isEmpty) && self.frameOutput.isVideoFinished;
         if ((!self.frameOutput.isAudioAvailable || self->_is_audio_finished) &&
             (!self.frameOutput.isVideoAvailable || self->_is_video_finished)) {
             return [self setState:SGPlayerItemStateFinished];
