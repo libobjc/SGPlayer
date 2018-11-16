@@ -17,10 +17,10 @@
 @property (nonatomic, assign) uint64_t size;
 @property (nonatomic, assign) uint64_t count;
 
-- (void)add:(SGCapacity *)capacity;
 - (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
-
 - (BOOL)isEnough;
 - (BOOL)isEmpty;
+
+- (void)add:(SGCapacity *)capacity;
 
 @end

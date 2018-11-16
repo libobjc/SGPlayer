@@ -26,36 +26,86 @@
 
 @implementation SGCodecContext
 
-static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, const enum AVPixelFormat * fmt)
+- (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass
 {
-    SGCodecContext * self = (__bridge SGCodecContext *)s->opaque;
-    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
-        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
-            AVBufferRef * device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
-            if (!device_ctx) {
-                break;
+    if (self = [super init]) {
+        self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
+        self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
+        self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
+        self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
+        self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
+        self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
+        self.codecpar = codecpar;
+        self.frameClass = frameClass;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [self close];
+}
+
+#pragma mark - Interface
+
+- (BOOL)open
+{
+    if (!self.codecpar) {
+        return NO;
+    }
+    if (!self.frameClass) {
+        return NO;
+    }
+    self.codecContext = [self createCcodecContext];
+    if (!self.codecContext) {
+        return NO;
+    }
+    return YES;
+}
+
+- (void)close
+{
+    if (self.codecContext) {
+        avcodec_close(self.codecContext);
+        self.codecContext = nil;
+    }
+}
+
+- (void)flush
+{
+    if (self.codecContext) {
+        avcodec_flush_buffers(self.codecContext);
+    }
+}
+
+- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
+{
+    if (!self.codecContext) {
+        return nil;
+    }
+    int result = avcodec_send_packet(self.codecContext, packet ? packet.core : NULL);
+    if (result < 0) {
+        return nil;
+    }
+    NSMutableArray * array = [NSMutableArray array];
+    while (result != AVERROR(EAGAIN)) {
+        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        result = avcodec_receive_frame(self.codecContext, frame.core);
+        if (result < 0) {
+            [frame unlock];
+            break;
+        } else {
+            [frame setTimebase:self.codecpar.timebase codecpar:self.codecpar.codecpar];
+            for (SGTimeLayout * obj in self.codecpar.timeLayouts) {
+                [frame setTimeLayout:obj];
             }
-            AVBufferRef * frames_ctx = av_hwframe_ctx_alloc(device_ctx);
-            av_buffer_unref(&device_ctx);
-            if (!frames_ctx) {
-                break;
-            }
-            AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
-            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self.preferredPixelFormat);
-            frames_ctx_data->width = s->width;
-            frames_ctx_data->height = s->height;
-            int err = av_hwframe_ctx_init(frames_ctx);
-            if (err < 0) {
-                av_buffer_unref(&frames_ctx);
-                break;
-            }
-            s->hw_frames_ctx = frames_ctx;
-            return fmt[i];
+            [array addObject:frame];
         }
     }
-    return fmt[0];
+    return array;
 }
+
+#pragma mark - AVCodecContext
 
 - (AVCodecContext *)createCcodecContext
 {
@@ -110,81 +160,35 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, con
     return codecContext;
 }
 
-- (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass
+static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, const enum AVPixelFormat * fmt)
 {
-    if (self = [super init]) {
-        self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
-        self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
-        self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
-        self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
-        self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
-        self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
-        self.codecpar = codecpar;
-        self.frameClass = frameClass;
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    [self close];
-}
-
-- (BOOL)open
-{
-    if (!self.codecpar) {
-        return NO;
-    }
-    if (!self.frameClass) {
-        return NO;
-    }
-    self.codecContext = [self createCcodecContext];
-    if (!self.codecContext) {
-        return NO;
-    }
-    return YES;
-}
-
-- (void)flush
-{
-    if (self.codecContext) {
-        avcodec_flush_buffers(self.codecContext);
-    }
-}
-
-- (void)close
-{
-    if (self.codecContext) {
-        avcodec_close(self.codecContext);
-        self.codecContext = nil;
-    }
-}
-
-- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
-{
-    if (!self.codecContext) {
-        return nil;
-    }
-    int result = avcodec_send_packet(self.codecContext, packet ? packet.core : NULL);
-    if (result < 0) {
-        return nil;
-    }
-    NSMutableArray * array = [NSMutableArray array];
-    while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
-        result = avcodec_receive_frame(self.codecContext, frame.core);
-        if (result < 0) {
-            [frame unlock];
-            break;
-        } else {
-            [frame setTimebase:self.codecpar.timebase codecpar:self.codecpar.codecpar];
-            for (SGTimeLayout * obj in self.codecpar.timeLayouts) {
-                [frame setTimeLayout:obj];
+    SGCodecContext * self = (__bridge SGCodecContext *)s->opaque;
+    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
+        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
+            AVBufferRef * device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
+            if (!device_ctx) {
+                break;
             }
-            [array addObject:frame];
+            AVBufferRef * frames_ctx = av_hwframe_ctx_alloc(device_ctx);
+            av_buffer_unref(&device_ctx);
+            if (!frames_ctx) {
+                break;
+            }
+            AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
+            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
+            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self.preferredPixelFormat);
+            frames_ctx_data->width = s->width;
+            frames_ctx_data->height = s->height;
+            int err = av_hwframe_ctx_init(frames_ctx);
+            if (err < 0) {
+                av_buffer_unref(&frames_ctx);
+                break;
+            }
+            s->hw_frames_ctx = frames_ctx;
+            return fmt[i];
         }
     }
-    return array;
+    return fmt[0];
 }
 
 @end

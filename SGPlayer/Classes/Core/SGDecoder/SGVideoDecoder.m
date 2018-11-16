@@ -37,6 +37,11 @@
     self.codecContext = nil;
 }
 
+- (void)flush
+{
+    [self.codecContext flush];
+}
+
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     SGCodecpar * codecpar = packet.codecpar;
@@ -46,11 +51,6 @@
         [self setup];
     }
     return [self.codecContext decode:packet];
-}
-
-- (void)flush
-{
-    [self.codecContext flush];
 }
 
 @end

@@ -27,8 +27,7 @@
 
 - (BOOL)open;
 - (void)close;
-
-- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet;
 - (void)flush;
+- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet;
 
 @end

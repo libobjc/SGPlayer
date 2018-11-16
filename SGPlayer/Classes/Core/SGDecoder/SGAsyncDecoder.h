@@ -28,7 +28,6 @@ typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
 
 - (id <SGDecodable>)decodable;
 
-@property (nonatomic, weak) id object;
 @property (nonatomic, weak) id <SGAsyncDecoderDelegate> delegate;
 
 - (SGAsyncDecoderState)state;
@@ -36,20 +35,18 @@ typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
 
 - (BOOL)open;
 - (BOOL)close;
-
 - (BOOL)pause;
 - (BOOL)resume;
-
-- (BOOL)putPacket:(SGPacket *)packet;
-- (BOOL)finish;
 - (BOOL)flush;
+- (BOOL)finish;
+- (BOOL)putPacket:(SGPacket *)packet;
 
 @end
 
 @protocol SGAsyncDecoderDelegate <NSObject>
 
-- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(__kindof SGFrame *)frame;
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state;
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(SGCapacity *)capacity;
+- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(__kindof SGFrame *)frame;
 
 @end

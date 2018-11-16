@@ -22,7 +22,7 @@
 
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) NSCondition * wakeup;
-@property (nonatomic, strong) NSOperationQueue * queue;
+@property (nonatomic, strong) NSOperationQueue * operationQueue;
 
 @property (nonatomic) CMTime seekTime;
 @property (nonatomic) CMTime seekingTime;
@@ -49,8 +49,8 @@
         return self->_state != SGPacketOutputStateClosed;
     }, ^SGBlock {
         [self setState:SGPacketOutputStateClosed];
-        [self.queue cancelAllOperations];
-        [self.queue waitUntilAllOperationsAreFinished];
+        [self.operationQueue cancelAllOperations];
+        [self.operationQueue waitUntilAllOperationsAreFinished];
         return nil;
     });
 }
@@ -106,9 +106,9 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
     }, ^BOOL(SGBlock block) {
         block();
         NSOperation * operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(runningThread) object:nil];
-        self.queue = [[NSOperationQueue alloc] init];
-        self.queue.qualityOfService = NSQualityOfServiceUserInteractive;
-        [self.queue addOperation:operation];
+        self.operationQueue = [[NSOperationQueue alloc] init];
+        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+        [self.operationQueue addOperation:operation];
         return YES;
     });
 }
@@ -121,8 +121,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
         return [self setState:SGPacketOutputStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        [self.queue cancelAllOperations];
-        [self.queue waitUntilAllOperationsAreFinished];
+        [self.operationQueue cancelAllOperations];
+        [self.operationQueue waitUntilAllOperationsAreFinished];
         return YES;
     });
 }
