@@ -48,9 +48,6 @@
 SGGet0Map(CMTime, duration, self.demuxable)
 SGGet0Map(NSDictionary *, metadata, self.demuxable)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
 
 #pragma mark - Setter & Getter
 

@@ -500,11 +500,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
                 b3 = [self setLoadingState:SGLoadingStateStalled];
                 b1 = ^{
                     [self.clock open];
-                    if (playerItem.audioTracks.count > 0) {
+                    if (playerItem.selectedAudioTrack) {
                         self->_is_audio_available = 1;
                         [self.audioRenderer open];
                     }
-                    if (playerItem.videoTracks.count > 0) {
+                    if (playerItem.selectedVideoTrack) {
                         self->_is_video_available = 1;
                         [self.videoRenderer open];
                     }
@@ -542,7 +542,7 @@ SGGet0Map(BOOL, seekable, self.currentItem);
         should = YES;
     } else if (track.type == SGMediaTypeVideo &&
                !playerItem.videoFinished &&
-               (playerItem.audioTracks.count == 0 || playerItem.audioFinished)) {
+               (!playerItem.selectedAudioTrack || playerItem.audioFinished)) {
         should = YES;
     }
     if (should) {

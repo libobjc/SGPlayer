@@ -42,11 +42,11 @@
     SGMutableAsset * asset = [[SGMutableAsset alloc] init];
     
     int32_t trackID = [asset addTrack:SGMediaTypeVideo];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(3, 1)) scale:kCMTimeInvalid] trackID:trackID];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(3, 1)) scale:kCMTimeInvalid] trackID:trackID];
     
     int32_t trackID1 = [asset addTrack:SGMediaTypeAudio];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(5, 1), CMTimeMake(5, 1)) scale:kCMTimeInvalid] trackID:trackID1];
     [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
     
     [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;

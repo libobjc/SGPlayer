@@ -22,7 +22,7 @@
 {
     if (self = [super init]) {
         self.type = type;
-        self.index = self.index;
+        self.index = index;
     }
     return self;
 }

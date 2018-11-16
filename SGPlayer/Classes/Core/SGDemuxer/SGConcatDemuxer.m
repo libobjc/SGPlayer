@@ -16,6 +16,7 @@
 @property (nonatomic, strong) SGConcatDemuxerUnit * currentUnit;
 @property (nonatomic, strong) NSArray <SGConcatDemuxerUnit *> * units;
 @property (nonatomic, strong) SGTrack * track;
+@property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic) CMTime duration;
 
 @end
@@ -31,6 +32,7 @@
         }
         self.units = [units copy];
         self.track = track;
+        self.tracks = @[track];
     }
     return self;
 }
@@ -67,21 +69,6 @@
 - (NSArray *)tracks
 {
     return @[self.track];
-}
-
-- (NSArray *)audioTracks
-{
-    return self.track.type == SGMediaTypeAudio ? @[self.track] : nil;
-}
-
-- (NSArray *)videoTracks
-{
-    return self.track.type == SGMediaTypeVideo ? @[self.track] : nil;
-}
-
-- (NSArray *)otherTracks
-{
-    return self.track.type == SGMediaTypeUnknown ? @[self.track] : nil;
 }
 
 - (NSError *)open

@@ -41,9 +41,6 @@ SGGet0Map(NSDictionary *, options, self.demuxable)
 SGSet1Map(void, setOptions, NSDictionary *, self.demuxable)
 SGGet0Map(NSDictionary *, metadata, self.demuxable)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.demuxable)
 
 - (NSError *)open
 {

@@ -43,6 +43,7 @@
     if (codecpar && ![codecpar isEqualToCodecpar:self.codecpar]) {
         self.codecpar = codecpar;
         [self destroy];
+        [self setup];
     }
     return [self.codecContext decode:packet];
 }

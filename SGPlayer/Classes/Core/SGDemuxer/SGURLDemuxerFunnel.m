@@ -17,9 +17,6 @@
 @property (nonatomic, strong) SGURLDemuxer * demuxer;
 @property (nonatomic, strong) SGTimeLayout * timeLayout;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * otherTracks;
 @property (nonatomic) CMTimeRange actualTimeRange;
 
 @end
@@ -53,33 +50,12 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.actualTimeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
                                                       CMTimeRangeMake(kCMTimeZero, self.demuxer.duration));
     NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * audioTracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
     for (SGTrack * obj in self.demuxer.tracks) {
         if ([self.desireIndexes containsObject:@(obj.index)]) {
             [tracks addObject:obj];
         }
     }
-    for (SGTrack * obj in self.demuxer.audioTracks) {
-        if ([self.desireIndexes containsObject:@(obj.index)]) {
-            [audioTracks addObject:obj];
-        }
-    }
-    for (SGTrack * obj in self.demuxer.videoTracks) {
-        if ([self.desireIndexes containsObject:@(obj.index)]) {
-            [videoTracks addObject:obj];
-        }
-    }
-    for (SGTrack * obj in self.demuxer.otherTracks) {
-        if ([self.desireIndexes containsObject:@(obj.index)]) {
-            [otherTracks addObject:obj];
-        }
-    }
     self.tracks = [tracks copy];
-    self.audioTracks = [audioTracks copy];
-    self.videoTracks = [videoTracks copy];
-    self.otherTracks = [otherTracks copy];
     self.timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
     return nil;
 }

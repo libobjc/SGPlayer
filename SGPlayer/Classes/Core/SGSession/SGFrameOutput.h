@@ -41,11 +41,7 @@ typedef NS_ENUM(uint32_t, SGFrameOutputState)
 - (NSError *)error;
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-
 - (NSArray <SGTrack *> *)tracks;
-- (NSArray <SGTrack *> *)audioTracks;
-- (NSArray <SGTrack *> *)videoTracks;
-- (NSArray <SGTrack *> *)otherTracks;
 
 @property (nonatomic, strong) SGTrack * selectedAudioTrack;
 @property (nonatomic, strong) SGTrack * selectedVideoTrack;

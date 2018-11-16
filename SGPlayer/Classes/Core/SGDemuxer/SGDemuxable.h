@@ -20,9 +20,6 @@
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
-- (NSArray <SGTrack *> *)audioTracks;
-- (NSArray <SGTrack *> *)videoTracks;
-- (NSArray <SGTrack *> *)otherTracks;
 
 - (NSError *)open;
 - (NSError *)close;

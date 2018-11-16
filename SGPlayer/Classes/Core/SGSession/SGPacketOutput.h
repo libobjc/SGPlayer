@@ -35,9 +35,6 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState) {
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
-- (NSArray <SGTrack *> *)audioTracks;
-- (NSArray <SGTrack *> *)videoTracks;
-- (NSArray <SGTrack *> *)otherTracks;
 
 - (BOOL)open;
 - (BOOL)close;

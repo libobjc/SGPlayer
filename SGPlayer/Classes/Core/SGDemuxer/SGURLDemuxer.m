@@ -34,9 +34,6 @@ static int SGURLDemuxerInterruptHandler(void * context)
 @property (nonatomic, copy) NSURL * URL;
 @property (nonatomic, copy) NSDictionary * metadata;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * audioTracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * videoTracks;
-@property (nonatomic, copy) NSArray <SGTrack *> * otherTracks;
 
 @end
 
@@ -81,9 +78,6 @@ static int SGURLDemuxerInterruptHandler(void * context)
         self.metadata = SGDictionaryFF2NS(_context->metadata);
     }
     NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * audioTracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
-    NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
     for (int i = 0; i < _context->nb_streams; i++) {
         AVStream * stream = _context->streams[i];
         SGMediaType type = SGMediaTypeFF2SG(stream->codecpar->codec_type);
@@ -92,22 +86,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
         }
         SGTrack * obj = [[SGTrack alloc] initWithType:type index:i];
         [tracks addObject:obj];
-        switch (obj.type) {
-            case SGMediaTypeAudio:
-                [audioTracks addObject:obj];
-                break;
-            case SGMediaTypeVideo:
-                [videoTracks addObject:obj];
-                break;
-            default:
-                [otherTracks addObject:obj];
-                break;
-        }
     }
     self.tracks = [tracks copy];
-    self.audioTracks = [audioTracks copy];
-    self.videoTracks = [videoTracks copy];
-    self.otherTracks = [otherTracks copy];
     return nil;
 }
 

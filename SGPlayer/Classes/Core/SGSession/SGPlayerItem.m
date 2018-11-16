@@ -57,9 +57,6 @@
 SGGet0Map(CMTime, duration, self.frameOutput)
 SGGet0Map(NSDictionary *, metadata, self.frameOutput)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.frameOutput)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.frameOutput)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.frameOutput)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.frameOutput)
 
 #pragma mark - Setter & Getter
 

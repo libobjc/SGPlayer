@@ -21,6 +21,8 @@
 
 {
     SGFrameOutputState _state;
+    BOOL _audio_available;
+    BOOL _video_available;
     BOOL _audio_finished;
     BOOL _video_finished;
     __strong NSError * _error;
@@ -54,9 +56,6 @@
 SGGet0Map(CMTime, duration, self.packetOutput)
 SGGet0Map(NSDictionary *, metadata, self.packetOutput)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.packetOutput)
-SGGet0Map(NSArray <SGTrack *> *, audioTracks, self.packetOutput)
-SGGet0Map(NSArray <SGTrack *> *, videoTracks, self.packetOutput)
-SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 
 #pragma mark - Setter & Getter
 
@@ -158,7 +157,7 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 {
     if (self.packetOutput.state == SGPacketOutputStateFinished) {
         SGLockCondEXE10(self.lock, ^BOOL {
-            return (self.audioTracks.count == 0 || self->_audio_finished) && (self.videoTracks.count == 0 || self->_video_finished);
+            return (!self->_audio_available || self->_audio_finished) && (!self->_video_available || self->_video_finished);
         }, ^SGBlock {
             return [self setState:SGFrameOutputStateFinished];
         });
@@ -263,21 +262,23 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
                 break;
             case SGPacketOutputStateOpened: {
                 b1 = [self setState:SGFrameOutputStateOpened];
-                if (packetOutput.audioTracks.count > 0) {
-                    self->_selected_audio_track = packetOutput.audioTracks.firstObject;
-                    self.audioDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGAudioDecoder alloc] init]];
-                    self.audioDecoder.delegate = self;
-                    b2 = ^{
-                        [self.audioDecoder open];
-                    };
-                }
-                if (packetOutput.videoTracks.count > 0) {
-                    self->_selected_video_track = packetOutput.videoTracks.firstObject;
-                    self.videoDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGVideoDecoder alloc] init]];
-                    self.videoDecoder.delegate = self;
-                    b3 = ^{
-                        [self.videoDecoder open];
-                    };
+                for (SGTrack * obj in packetOutput.tracks) {
+                    if (!self->_selected_audio_track && obj.type == SGMediaTypeAudio) {
+                        self->_selected_audio_track = obj;
+                        self.audioDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGAudioDecoder alloc] init]];
+                        self.audioDecoder.delegate = self;
+                        b2 = ^{
+                            [self.audioDecoder open];
+                        };
+                    }
+                    if (!self->_selected_video_track && obj.type == SGMediaTypeVideo) {
+                        self->_selected_video_track = obj;
+                        self.videoDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGVideoDecoder alloc] init]];
+                        self.videoDecoder.delegate = self;
+                        b3 = ^{
+                            [self.videoDecoder open];
+                        };
+                    }
                 }
             }
                 break;
@@ -315,16 +316,11 @@ SGGet0Map(NSArray <SGTrack *> *, otherTracks, self.packetOutput)
 {
     __block SGAsyncDecoder * decoder = nil;
     SGLockEXE00(self.lock, ^{
-//        if (packet.track == self->_selected_audio_track) {
-//            decoder = self.audioDecoder;
-//        } else if (packet.track == self->_selected_video_track) {
-//            decoder = self.videoDecoder;
-//        }
-//        if (packet.type == SGMediaTypeAudio) {
-//            decoder = self.audioDecoder;
-//        } else if (packet.type == SGMediaTypeVideo) {
+        if (packet.index == self->_selected_audio_track.index) {
+            decoder = self.audioDecoder;
+        } else if (packet.index == self->_selected_video_track.index) {
             decoder = self.videoDecoder;
-//        }
+        }
     });
     [decoder putPacket:packet];
 }

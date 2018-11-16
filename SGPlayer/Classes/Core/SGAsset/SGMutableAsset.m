@@ -10,6 +10,7 @@
 #import "SGAsset+Internal.h"
 #import "SGTrack+Internal.h"
 #import "SGConcatDemuxer.h"
+#import "SGMutilDemuxer.h"
 
 @interface SGMutableAsset ()
 
@@ -22,6 +23,7 @@
 
 - (id <SGDemuxable>)newDemuxable
 {
+    NSMutableArray * demuxables = [NSMutableArray array];
     for (int i = 0; i < self.tracks.count; i++) {
         SGMediaType type = (uint32_t)[self.types objectAtIndex:i].unsignedIntValue;
         NSMutableArray <SGSegment *> * segments = [self.tracks objectAtIndex:i];
@@ -31,9 +33,9 @@
         }
         SGTrack * track = [[SGTrack alloc] initWithType:type index:i];
         SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithTrack:track segments:segments];
-        return demuxer;
+        [demuxables addObject:demuxer];
     }
-    return nil;
+    return [[SGMutilDemuxer alloc] initWithDemuxables:demuxables];
 }
 
 - (int32_t)addTrack:(SGMediaType)type
