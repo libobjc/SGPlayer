@@ -12,6 +12,7 @@
 #import "SGConfiguration.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
+#import "avformat.h"
 #import "SGError.h"
 
 static int SGURLDemuxerInterruptHandler(void * context)
@@ -96,18 +97,19 @@ static int SGURLDemuxerInterruptHandler(void * context)
     NSMutableArray <SGTrack *> * videoTracks = [NSMutableArray array];
     NSMutableArray <SGTrack *> * otherTracks = [NSMutableArray array];
     for (int i = 0; i < _context->nb_streams; i++) {
-        SGTrack * obj = [[SGTrack alloc] initWithCore:_context->streams[i]];
+        AVStream * stream = _context->streams[i];
+        SGMediaType type = SGMediaTypeFF2SG(stream->codecpar->codec_type);
+        if (type == SGMediaTypeVideo && stream->disposition & AV_DISPOSITION_ATTACHED_PIC) {
+            type = SGMediaTypeUnknown;
+        }
+        SGTrack * obj = [[SGTrack alloc] initWithType:type index:i];
         [tracks addObject:obj];
         switch (obj.type) {
             case SGMediaTypeAudio:
                 [audioTracks addObject:obj];
                 break;
             case SGMediaTypeVideo:
-                if ((obj.disposition & AV_DISPOSITION_ATTACHED_PIC) == 0) {
-                    [videoTracks addObject:obj];
-                } else {
-                    [otherTracks addObject:obj];
-                }
+                [videoTracks addObject:obj];
                 break;
             default:
                 [otherTracks addObject:obj];
@@ -149,12 +151,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
     if (_context) {
         int ret = av_read_frame(_context, packet.core);
         if (ret >= 0) {
-            for (SGTrack * obj in self.tracks) {
-                if (obj.index == packet.core->stream_index) {
-                    [packet setTimebase:obj.core->time_base codecpar:obj.core->codecpar];
-                    break;
-                }
-            }
+            AVStream * stream = _context->streams[packet.core->stream_index];
+            [packet setTimebase:stream->time_base codecpar:stream->codecpar];
         }
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }

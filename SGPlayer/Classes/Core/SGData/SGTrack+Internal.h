@@ -7,12 +7,9 @@
 //
 
 #import "SGTrack.h"
-#import "avformat.h"
 
 @interface SGTrack (Internal)
 
-- (instancetype)initWithCore:(AVStream *)core;
-
-@property (nonatomic, assign, readonly) AVStream * core;
+- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index;
 
 @end

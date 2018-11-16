@@ -8,15 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
-#import "SGTime.h"
 
 @interface SGTrack : NSObject
 
-@property (nonatomic, assign, readonly) void * coreptr;
-
-@property (nonatomic, assign, readonly) SGMediaType type;
-@property (nonatomic, assign, readonly) int index;
-@property (nonatomic, assign, readonly) int disposition;
-@property (nonatomic, assign, readonly) CMTime timebase;
+@property (nonatomic, readonly) SGMediaType type;
+@property (nonatomic, readonly) int32_t index;
 
 @end
