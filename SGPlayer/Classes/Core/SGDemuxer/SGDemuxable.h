@@ -18,7 +18,6 @@
 @property (nonatomic, copy) NSDictionary * options;
 
 - (CMTime)duration;
-- (NSError *)seekable;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
 - (NSArray <SGTrack *> *)audioTracks;
@@ -27,6 +26,7 @@
 
 - (NSError *)open;
 - (NSError *)close;
+- (NSError *)seekable;
 - (NSError *)seekToTime:(CMTime)time;
 - (NSError *)nextPacket:(SGPacket *)packet;
 

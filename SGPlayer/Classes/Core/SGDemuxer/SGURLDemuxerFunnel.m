@@ -39,7 +39,6 @@ SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxer)
 SGGet0Map(NSDictionary *, options, self.demuxer)
 SGSet1Map(void, setOptions, NSDictionary *, self.demuxer)
 SGGet0Map(CMTime, duration, self.actualTimeRange)
-SGGet0Map(NSError *, seekable, self.demuxer)
 SGGet0Map(NSDictionary *, metadata, self.demuxer)
 SGGet0Map(NSError *, close, self.demuxer)
 
@@ -84,6 +83,8 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
     return nil;
 }
+
+SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)seekToTime:(CMTime)time
 {

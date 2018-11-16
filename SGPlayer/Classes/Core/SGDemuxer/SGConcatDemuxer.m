@@ -59,11 +59,6 @@
     return self.units.firstObject.options;
 }
 
-- (NSError *)seekable
-{
-    return nil;
-}
-
 - (NSDictionary *)metadata
 {
     return nil;
@@ -113,6 +108,11 @@
     for (SGConcatDemuxerUnit * obj in self.units) {
         [obj close];
     }
+    return nil;
+}
+
+- (NSError *)seekable
+{
     return nil;
 }
 
