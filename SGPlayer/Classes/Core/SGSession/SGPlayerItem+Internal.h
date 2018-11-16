@@ -10,21 +10,21 @@
 #import "SGRenderable.h"
 #import "SGFrameFilter.h"
 
-typedef NS_ENUM(uint32_t, SGPlayerItemState)
-{
+typedef NS_ENUM(uint32_t, SGPlayerItemState) {
     SGPlayerItemStateNone,
     SGPlayerItemStateOpening,
     SGPlayerItemStateOpened,
     SGPlayerItemStateReading,
-    SGPlayerItemStateClosed,
+    SGPlayerItemStateSeeking,
     SGPlayerItemStateFinished,
+    SGPlayerItemStateClosed,
     SGPlayerItemStateFailed,
 };
 
 @protocol SGPlayerItemDelegate <NSObject>
 
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state;
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 
 @end
 
@@ -32,24 +32,24 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState)
 
 @property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
 
-@property (nonatomic, strong) SGFrameFilter * audioFilter;
-@property (nonatomic, strong) SGFrameFilter * videoFilter;
-
 - (SGPlayerItemState)state;
-
-- (BOOL)audioFinished;
-- (BOOL)videoFinished;
-
-- (SGCapacity *)capacity;
-- (SGCapacity *)capacityWithTrack:(SGTrack *)track;
 
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;
-
-- (BOOL)seeking;
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+
+- (SGCapacity *)capacity;
+- (SGCapacity *)capacityWithType:(SGMediaType)type;
+
+- (BOOL)isAudioFinished;
+- (BOOL)isVideoFinished;
+- (BOOL)isAudioAvailable;
+- (BOOL)isVideoAvailable;
+
+@property (nonatomic, strong) SGFrameFilter * audioFilter;
+@property (nonatomic, strong) SGFrameFilter * videoFilter;
 
 - (__kindof SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader;
 - (__kindof SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader;

@@ -7,20 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGCapacity.h"
 #import "SGAsset.h"
 #import "SGFrame.h"
 #import "SGTrack.h"
 
 @protocol SGFrameOutputDelegate;
 
-typedef NS_ENUM(uint32_t, SGFrameOutputState)
-{
+typedef NS_ENUM(uint32_t, SGFrameOutputState) {
     SGFrameOutputStateNone,
     SGFrameOutputStateOpening,
     SGFrameOutputStateOpened,
     SGFrameOutputStateReading,
-    SGFrameOutputStatePaused,
     SGFrameOutputStateSeeking,
     SGFrameOutputStateFinished,
     SGFrameOutputStateClosed,
@@ -37,36 +34,36 @@ typedef NS_ENUM(uint32_t, SGFrameOutputState)
 @property (nonatomic, weak) id <SGFrameOutputDelegate> delegate;
 
 - (SGFrameOutputState)state;
-
 - (NSError *)error;
+
 - (CMTime)duration;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
 
-@property (nonatomic, strong) SGTrack * selectedAudioTrack;
-@property (nonatomic, strong) SGTrack * selectedVideoTrack;
-
-- (BOOL)audioFinished;
-- (BOOL)videoFinished;
-
-- (SGCapacity *)capacityWithTrack:(SGTrack *)track;
-
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;
-
 - (BOOL)pause:(SGMediaType)type;
 - (BOOL)resume:(SGMediaType)type;
-
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+
+@property (nonatomic, strong) SGTrack * selectedAudioTrack;
+@property (nonatomic, strong) SGTrack * selectedVideoTrack;
+
+- (SGCapacity *)capacityWithType:(SGMediaType)type;
+
+- (BOOL)isAudioFinished;
+- (BOOL)isVideoFinished;
+- (BOOL)isAudioAvailable;
+- (BOOL)isVideoAvailable;
 
 @end
 
 @protocol SGFrameOutputDelegate <NSObject>
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame;
 
 @end

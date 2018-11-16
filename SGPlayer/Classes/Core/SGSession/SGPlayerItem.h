@@ -17,8 +17,9 @@
 
 - (instancetype)initWithAsset:(SGAsset *)asset;
 
-- (CMTime)duration;
 - (NSError *)error;
+
+- (CMTime)duration;
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
 

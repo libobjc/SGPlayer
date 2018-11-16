@@ -10,6 +10,9 @@
 
 @interface SGURLDemuxerFunnel : NSObject <SGDemuxable>
 
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithURL:(NSURL *)URL;
 
 @property (nonatomic) CMTimeRange timeRange;

@@ -25,6 +25,9 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState) {
 
 @interface SGPacketOutput : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithDemuxable:(id <SGDemuxable>)demuxable;
 
 @property (nonatomic, weak) id <SGPacketOutputDelegate> delegate;

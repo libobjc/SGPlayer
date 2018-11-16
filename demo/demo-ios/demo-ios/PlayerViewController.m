@@ -46,7 +46,7 @@
     [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
     
     int32_t trackID1 = [asset addTrack:SGMediaTypeAudio];
-    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(10, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
     [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
     
     [SGConfiguration defaultConfiguration].hardwareDecodeH264 = YES;
@@ -57,8 +57,8 @@
 //    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
 //        NSLog(@"1 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
 //    }];
-//    [self.player replaceWithURL:URL1];
-    [self.player replaceWithAsset:asset];
+    [self.player replaceWithURL:URL1];
+//    [self.player replaceWithAsset:asset];
     [self.player waitUntilReady];
     [self.player play];
     

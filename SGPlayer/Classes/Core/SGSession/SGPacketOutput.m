@@ -45,9 +45,14 @@
 
 - (void)dealloc
 {
-    [self setState:SGPacketOutputStateClosed];
-    [self.queue cancelAllOperations];
-    [self.queue waitUntilAllOperationsAreFinished];
+    SGLockCondEXE10(self.lock, ^BOOL {
+        return self->_state != SGPacketOutputStateClosed;
+    }, ^SGBlock {
+        [self setState:SGPacketOutputStateClosed];
+        [self.queue cancelAllOperations];
+        [self.queue waitUntilAllOperationsAreFinished];
+        return nil;
+    });
 }
 
 #pragma mark - Mapping

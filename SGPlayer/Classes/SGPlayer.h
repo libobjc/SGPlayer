@@ -70,12 +70,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @end
 
-#pragma mark - Prepare
-
-@interface SGPlayer (Prepare)
-
-@end
-
 #pragma mark - Playback
 
 @interface SGPlayer (Playback)

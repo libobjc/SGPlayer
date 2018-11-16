@@ -11,6 +11,9 @@
 
 @interface SGSegment : NSObject <NSCopying>
 
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
 
 @property (nonatomic) CMTimeRange timeRange;

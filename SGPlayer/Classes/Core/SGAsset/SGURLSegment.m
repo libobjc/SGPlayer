@@ -20,11 +20,6 @@
     return obj;
 }
 
-- (instancetype)init
-{
-    return [self initWithURL:nil index:-1];
-}
-
 - (instancetype)initWithURL:(NSURL *)URL index:(int32_t)index
 {
     return [self initWithURL:URL index:index timeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];

@@ -12,6 +12,9 @@
 
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray <SGSegment *> *)segments;
 
 @end

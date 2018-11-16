@@ -18,10 +18,10 @@
 {
     int32_t _is_playing;
     int32_t _is_seeking;
-    int32_t _is_audio_available;
-    int32_t _is_video_available;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
+    int32_t _is_audio_available;
+    int32_t _is_video_available;
     int32_t _is_current_time_valid;
     CMTime _rate;
     CMTime _loaded_time;
@@ -36,7 +36,7 @@
 
 @property (nonatomic, strong) NSLock * lock;
 @property (nonatomic, strong) SGClock * clock;
-@property (nonatomic, strong) NSCondition * waitCondition;
+@property (nonatomic, strong) NSCondition * wakeup;
 @property (nonatomic, strong) SGAudioRenderer * audioRenderer;
 @property (nonatomic, strong) SGVideoRenderer * videoRenderer;
 
@@ -56,7 +56,7 @@
         self.lock = [[NSLock alloc] init];
         self.clock = [[SGClock alloc] init];
         self.clock.delegate = self;
-        self.waitCondition = [[NSCondition alloc] init];
+        self.wakeup = [[NSCondition alloc] init];
         self.audioRenderer = [[SGAudioRenderer alloc] initWithClock:self.clock];
         self.audioRenderer.delegate = self;
         self.videoRenderer = [[SGVideoRenderer alloc] initWithClock:self.clock];
@@ -74,83 +74,6 @@
     [self.videoRenderer close];
 }
 
-#pragma mark - Item
-
-- (BOOL)replaceWithURL:(NSURL *)URL
-{
-    return [self replaceWithAsset:URL ? [[SGURLAsset alloc] initWithURL:URL] : nil];
-}
-
-- (BOOL)replaceWithAsset:(SGAsset *)asset
-{
-    return [self replaceWithPlayerItem:asset ? [[SGPlayerItem alloc] initWithAsset:asset] : nil];
-}
-
-- (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item
-{
-    [self stop];
-    if (!item) {
-        return NO;
-    }
-    return SGLockEXE11(self.lock, ^SGBlock {
-        self->_current_item = item;
-        self->_current_item.delegate = self;
-        self->_current_item.audioFilter = self.audioRenderer.filter;
-        return nil;
-    }, ^BOOL(SGBlock block) {
-        return [item open];
-    });
-}
-
-- (void)waitUntilReady
-{
-    [self.waitCondition lock];
-    while (YES) {
-        BOOL ret = SGLockCondEXE00(self.lock, ^BOOL {
-            return self->_status == SGPlayerStatusPreparing;
-        }, nil);
-        if (ret) {
-            [self.waitCondition wait];
-            continue;
-        }
-        break;
-    }
-    [self.waitCondition unlock];
-}
-
-- (BOOL)stop
-{
-    [SGActivity removeTarget:self];
-    return SGLockEXE10(self.lock, ^SGBlock {
-        SGPlayerItem * item = self->_current_item;
-        self->_is_playing = 0;
-        self->_is_seeking = 0;
-        self->_is_audio_available = 0;
-        self->_is_video_available = 0;
-        self->_is_audio_finished = 0;
-        self->_is_video_finished = 0;
-        self->_is_current_time_valid = 0;
-        self->_current_time = kCMTimeInvalid;
-        self->_loaded_time = kCMTimeInvalid;
-        self->_loaded_duration = kCMTimeInvalid;
-        self->_status = SGPlayerStatusNone;
-        self->_loading_state = SGLoadingStateNone;
-        self->_playback_state = 0;
-        self->_error = nil;
-        self->_current_item = nil;
-        SGBlock b1 = [self setStatus:SGPlayerStatusNone];
-        SGBlock b2 = [self setPlaybackState];
-        SGBlock b3 = [self setLoadingState:SGLoadingStateNone];
-        return ^{
-            [item close];
-            [self.clock close];
-            [self.audioRenderer close];
-            [self.videoRenderer close];
-            b1(); b2(); b3();
-        };
-    });
-}
-
 #pragma mark - Setter & Getter
 
 - (SGBlock)setStatus:(SGPlayerStatus)status
@@ -160,9 +83,9 @@
     }
     _status = status;
     return ^{
-        [self.waitCondition lock];
-        [self.waitCondition broadcast];
-        [self.waitCondition unlock];
+        [self.wakeup lock];
+        [self.wakeup broadcast];
+        [self.wakeup unlock];
         [self callback:^{
             if ([self.delegate respondsToSelector:@selector(player:didChangeStatus:)]) {
                 [self.delegate player:self didChangeStatus:status];
@@ -370,7 +293,84 @@
     return ret;
 }
 
-#pragma mark - Control
+#pragma mark - Item
+
+- (BOOL)replaceWithURL:(NSURL *)URL
+{
+    return [self replaceWithAsset:URL ? [[SGURLAsset alloc] initWithURL:URL] : nil];
+}
+
+- (BOOL)replaceWithAsset:(SGAsset *)asset
+{
+    return [self replaceWithPlayerItem:asset ? [[SGPlayerItem alloc] initWithAsset:asset] : nil];
+}
+
+- (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item
+{
+    [self stop];
+    if (!item) {
+        return NO;
+    }
+    return SGLockEXE11(self.lock, ^SGBlock {
+        self->_current_item = item;
+        self->_current_item.delegate = self;
+        self->_current_item.audioFilter = self.audioRenderer.filter;
+        return nil;
+    }, ^BOOL(SGBlock block) {
+        return [item open];
+    });
+}
+
+- (void)waitUntilReady
+{
+    [self.wakeup lock];
+    while (YES) {
+        BOOL ret = SGLockCondEXE00(self.lock, ^BOOL {
+            return self->_status == SGPlayerStatusPreparing;
+        }, nil);
+        if (ret) {
+            [self.wakeup wait];
+            continue;
+        }
+        break;
+    }
+    [self.wakeup unlock];
+}
+
+- (BOOL)stop
+{
+    [SGActivity removeTarget:self];
+    return SGLockEXE10(self.lock, ^SGBlock {
+        SGPlayerItem * item = self->_current_item;
+        self->_is_playing = 0;
+        self->_is_seeking = 0;
+        self->_is_audio_finished = 0;
+        self->_is_video_finished = 0;
+        self->_is_audio_available = 0;
+        self->_is_video_available = 0;
+        self->_is_current_time_valid = 0;
+        self->_current_time = kCMTimeInvalid;
+        self->_loaded_time = kCMTimeInvalid;
+        self->_loaded_duration = kCMTimeInvalid;
+        self->_status = SGPlayerStatusNone;
+        self->_loading_state = SGLoadingStateNone;
+        self->_playback_state = 0;
+        self->_error = nil;
+        self->_current_item = nil;
+        SGBlock b1 = [self setStatus:SGPlayerStatusNone];
+        SGBlock b2 = [self setPlaybackState];
+        SGBlock b3 = [self setLoadingState:SGLoadingStateNone];
+        return ^{
+            [item close];
+            [self.clock close];
+            [self.audioRenderer close];
+            [self.videoRenderer close];
+            b1(); b2(); b3();
+        };
+    });
+}
+
+#pragma mark - Playback
 
 - (BOOL)play
 {
@@ -394,7 +394,10 @@
     });
 }
 
-SGGet0Map(BOOL, seekable, self.currentItem);
+-  (BOOL)seekable
+{
+    return [self.currentItem seekable];
+}
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
@@ -463,10 +466,10 @@ SGGet0Map(BOOL, seekable, self.currentItem);
 {
     if (capacity.isEmpty) {
         SGLockEXE10(self.lock, ^SGBlock {
-            if (self.audioRenderer.capacity.isEmpty && self->_current_item.audioFinished) {
+            if (self.audioRenderer.capacity.isEmpty && self->_current_item.isAudioFinished) {
                 self->_is_audio_finished = 1;
             }
-            if (self.videoRenderer.capacity.isEmpty && self->_current_item.videoFinished) {
+            if (self.videoRenderer.capacity.isEmpty && self->_current_item.isVideoFinished) {
                 self->_is_video_finished = 1;
             }
             return [self setPlaybackState];
@@ -500,11 +503,11 @@ SGGet0Map(BOOL, seekable, self.currentItem);
                 b3 = [self setLoadingState:SGLoadingStateStalled];
                 b1 = ^{
                     [self.clock open];
-                    if (playerItem.selectedAudioTrack) {
+                    if (playerItem.isAudioAvailable) {
                         self->_is_audio_available = 1;
                         [self.audioRenderer open];
                     }
-                    if (playerItem.selectedVideoTrack) {
+                    if (playerItem.isVideoAvailable) {
                         self->_is_video_available = 1;
                         [self.videoRenderer open];
                     }
@@ -534,15 +537,15 @@ SGGet0Map(BOOL, seekable, self.currentItem);
     });
 }
 
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type
 {
     BOOL should = NO;
-    if (track.type == SGMediaTypeAudio &&
-        !playerItem.audioFinished) {
+    if (type == SGMediaTypeAudio &&
+        !playerItem.isAudioFinished) {
         should = YES;
-    } else if (track.type == SGMediaTypeVideo &&
-               !playerItem.videoFinished &&
-               (!playerItem.selectedAudioTrack || playerItem.audioFinished)) {
+    } else if (type == SGMediaTypeVideo &&
+               !playerItem.isVideoFinished &&
+               (!playerItem.isAudioAvailable || playerItem.isAudioFinished)) {
         should = YES;
     }
     if (should) {

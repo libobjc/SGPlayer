@@ -13,6 +13,9 @@
 
 @interface SGCodecContext : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
 - (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass;
 
 @property (nonatomic, strong) NSDictionary * options;
