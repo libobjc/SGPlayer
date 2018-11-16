@@ -8,6 +8,7 @@
 
 #import "SGMutableAsset.h"
 #import "SGAsset+Internal.h"
+#import "SGTrack+Internal.h"
 #import "SGConcatDemuxer.h"
 
 @interface SGMutableAsset ()
@@ -28,7 +29,8 @@
         for (SGSegment * segment in segments) {
             [obj addObject:[segment copy]];
         }
-        SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithType:type index:i segments:obj];
+        SGTrack * track = [[SGTrack alloc] initWithType:type index:i];
+        SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithTrack:track segments:segments];
         return demuxer;
     }
     return nil;

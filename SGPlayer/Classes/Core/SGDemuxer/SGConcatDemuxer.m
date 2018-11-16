@@ -15,15 +15,14 @@
 
 @property (nonatomic, strong) SGConcatDemuxerUnit * currentUnit;
 @property (nonatomic, strong) NSArray <SGConcatDemuxerUnit *> * units;
-@property (nonatomic) SGMediaType type;
+@property (nonatomic, strong) SGTrack * track;
 @property (nonatomic) CMTime duration;
-@property (nonatomic) uint32_t index;
 
 @end
 
 @implementation SGConcatDemuxer
 
-- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index segments:(NSArray <SGSegment *> *)segments
+- (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray<SGSegment *> *)segments
 {
     if (self = [super init]) {
         NSMutableArray * units = [NSMutableArray array];
@@ -31,8 +30,7 @@
             [units addObject:[[SGConcatDemuxerUnit alloc] initWithSegment:obj]];
         }
         self.units = [units copy];
-        self.type = type;
-        self.index = index;
+        self.track = track;
     }
     return self;
 }
@@ -73,22 +71,22 @@
 
 - (NSArray *)tracks
 {
-    return self.units.firstObject.tracks;
+    return @[self.track];
 }
 
 - (NSArray *)audioTracks
 {
-    return self.units.firstObject.audioTracks;
+    return self.track.type == SGMediaTypeAudio ? @[self.track] : nil;
 }
 
 - (NSArray *)videoTracks
 {
-    return self.units.firstObject.videoTracks;
+    return self.track.type == SGMediaTypeVideo ? @[self.track] : nil;
 }
 
 - (NSArray *)otherTracks
 {
-    return self.units.firstObject.otherTracks;
+    return self.track.type == SGMediaTypeUnknown ? @[self.track] : nil;
 }
 
 - (NSError *)open
@@ -100,7 +98,7 @@
         if (ret) {
             break;
         }
-        NSAssert(self.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
+        NSAssert(self.track.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
         obj.timeRange = CMTimeRangeMake(duration, obj.duration);
         duration = CMTimeRangeGetEnd(obj.timeRange);
     }
@@ -142,7 +140,7 @@
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
-            [packet setIndex:self.index];
+            [packet setIndex:self.track.index];
             break;
         }
         if (self.currentUnit == self.units.lastObject) {
