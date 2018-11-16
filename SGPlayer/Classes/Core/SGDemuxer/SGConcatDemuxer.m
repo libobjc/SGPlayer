@@ -15,8 +15,8 @@
 
 @property (nonatomic, strong) SGConcatDemuxerUnit * currentUnit;
 @property (nonatomic, strong) NSArray <SGConcatDemuxerUnit *> * units;
-@property (nonatomic, strong) SGTrack * track;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
+@property (nonatomic, copy) NSDictionary * metadata;
 @property (nonatomic) CMTime duration;
 
 @end
@@ -31,11 +31,17 @@
             [units addObject:[[SGConcatDemuxerUnit alloc] initWithSegment:obj]];
         }
         self.units = [units copy];
-        self.track = track;
         self.tracks = @[track];
     }
     return self;
 }
+
+- (void)dealloc
+{
+    [self close];
+}
+
+#pragma mark - Setter & Getter
 
 - (void)setDelegate:(id <SGDemuxableDelegate>)delegate
 {
@@ -61,15 +67,7 @@
     return self.units.firstObject.options;
 }
 
-- (NSDictionary *)metadata
-{
-    return nil;
-}
-
-- (NSArray *)tracks
-{
-    return @[self.track];
-}
+#pragma mark - Interface
 
 - (NSError *)open
 {
@@ -80,7 +78,7 @@
         if (ret) {
             break;
         }
-        NSAssert(self.track.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
+        NSAssert(self.tracks.firstObject.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
         obj.timeRange = CMTimeRangeMake(duration, obj.duration);
         duration = CMTimeRangeGetEnd(obj.timeRange);
     }
@@ -127,7 +125,7 @@
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
-            [packet setIndex:self.track.index];
+            [packet setIndex:self.tracks.firstObject.index];
             break;
         }
         if (self.currentUnit == self.units.lastObject) {

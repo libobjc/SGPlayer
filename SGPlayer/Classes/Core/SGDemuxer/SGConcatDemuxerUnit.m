@@ -35,12 +35,23 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self close];
+}
+
+#pragma mark - Mapping
+
 SGGet0Map(id <SGDemuxableDelegate>, delegate, self.demuxable)
 SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxable)
 SGGet0Map(NSDictionary *, options, self.demuxable)
 SGSet1Map(void, setOptions, NSDictionary *, self.demuxable)
 SGGet0Map(NSDictionary *, metadata, self.demuxable)
 SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
+SGGet0Map(NSError *, close, self.demuxable)
+SGGet0Map(NSError *, seekable, self.demuxable)
+
+#pragma mark - Interface
 
 - (NSError *)open
 {
@@ -53,16 +64,6 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
     }
     self.duration = self.demuxable.duration;
     return nil;
-}
-
-- (NSError *)close
-{
-    return [self.demuxable close];
-}
-
-- (NSError *)seekable
-{
-    return [self.demuxable seekable];
 }
 
 - (NSError *)seekToTime:(CMTime)time

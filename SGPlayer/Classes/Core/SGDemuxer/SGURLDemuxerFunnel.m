@@ -7,8 +7,8 @@
 //
 
 #import "SGURLDemuxerFunnel.h"
-#import "SGURLDemuxer.h"
 #import "SGPacket+Internal.h"
+#import "SGURLDemuxer.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
@@ -31,6 +31,13 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self close];
+}
+
+#pragma mark - Mapping
+
 SGGet0Map(id <SGDemuxableDelegate>, delegate, self.demuxer)
 SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxer)
 SGGet0Map(NSDictionary *, options, self.demuxer)
@@ -38,6 +45,9 @@ SGSet1Map(void, setOptions, NSDictionary *, self.demuxer)
 SGGet0Map(CMTime, duration, self.actualTimeRange)
 SGGet0Map(NSDictionary *, metadata, self.demuxer)
 SGGet0Map(NSError *, close, self.demuxer)
+SGGet0Map(NSError *, seekable, self.demuxer)
+
+#pragma mark - Interface
 
 - (NSError *)open
 {
@@ -45,13 +55,13 @@ SGGet0Map(NSError *, close, self.demuxer)
     if (ret) {
         return ret;
     }
-    CMTime start = CMTIME_IS_VALID(self.desireTimeRange.start) ? self.desireTimeRange.start : kCMTimeNegativeInfinity;
-    CMTime duration = CMTIME_IS_VALID(self.desireTimeRange.duration) ? self.desireTimeRange.duration : kCMTimePositiveInfinity;
+    CMTime start = CMTIME_IS_VALID(self.timeRange.start) ? self.timeRange.start : kCMTimeNegativeInfinity;
+    CMTime duration = CMTIME_IS_VALID(self.timeRange.duration) ? self.timeRange.duration : kCMTimePositiveInfinity;
     self.actualTimeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
                                                       CMTimeRangeMake(kCMTimeZero, self.demuxer.duration));
     NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
     for (SGTrack * obj in self.demuxer.tracks) {
-        if ([self.desireIndexes containsObject:@(obj.index)]) {
+        if ([self.indexes containsObject:@(obj.index)]) {
             [tracks addObject:obj];
         }
     }
@@ -59,8 +69,6 @@ SGGet0Map(NSError *, close, self.demuxer)
     self.timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
     return nil;
 }
-
-SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)seekToTime:(CMTime)time
 {
@@ -75,7 +83,7 @@ SGGet0Map(NSError *, seekable, self.demuxer)
         if (ret) {
             break;
         }
-        if (![self.desireIndexes containsObject:@(packet.index)]) {
+        if (![self.indexes containsObject:@(packet.index)]) {
             [packet clear];
             continue;
         }

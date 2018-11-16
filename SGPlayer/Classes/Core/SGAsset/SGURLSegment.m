@@ -42,8 +42,8 @@
 - (id <SGDemuxable>)newDemuxable
 {
     SGURLDemuxerFunnel * obj = [[SGURLDemuxerFunnel alloc] initWithURL:self.URL];
-    obj.desireTimeRange = self.timeRange;
-    obj.desireIndexes = @[@(self.index)];
+    obj.timeRange = self.timeRange;
+    obj.indexes = @[@(self.index)];
     return obj;
 }
 

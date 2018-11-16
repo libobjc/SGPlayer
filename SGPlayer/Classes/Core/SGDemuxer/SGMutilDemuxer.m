@@ -33,6 +33,13 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self close];
+}
+
+#pragma Setter & Getter
+
 - (void)setDelegate:(id <SGDemuxableDelegate>)delegate
 {
     for (id <SGDemuxable> obj in self.demuxables) {
@@ -56,6 +63,8 @@
 {
     return self.demuxables.firstObject.options;
 }
+
+#pragma mark - Interface
 
 - (NSError *)open
 {

@@ -15,16 +15,6 @@
 #import "avformat.h"
 #import "SGError.h"
 
-static int SGURLDemuxerInterruptHandler(void * context)
-{
-    SGURLDemuxer * self = (__bridge SGURLDemuxer *)context;
-    if ([self.delegate respondsToSelector:@selector(demuxableShouldAbortBlockingFunctions:)]) {
-        BOOL ret = [self.delegate demuxableShouldAbortBlockingFunctions:self];
-        return ret ? 1 : 0;
-    }
-    return 0;
-}
-
 @interface SGURLDemuxer ()
 
 {
@@ -56,6 +46,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
     [self close];
 }
 
+#pragma mark - Setter & Getter
+
 - (CMTime)duration
 {
     if (_context && _context->duration > 0) {
@@ -63,6 +55,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
     }
     return kCMTimeZero;
 }
+
+#pragma mark - Interface
 
 - (NSError *)open
 {
@@ -138,6 +132,8 @@ static int SGURLDemuxerInterruptHandler(void * context)
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatReadFrame);
 }
 
+#pragma mark - AVFormatContext
+
 NSError * SGCreateFormatContext(AVFormatContext ** format_context, NSURL * URL, NSDictionary * options, void * opaque, int (*callback)(void *))
 {
     AVFormatContext * fc = avformat_alloc_context();
@@ -181,6 +177,16 @@ NSError * SGCreateFormatContext(AVFormatContext ** format_context, NSURL * URL, 
     }
     * format_context = fc;
     return nil;
+}
+
+static int SGURLDemuxerInterruptHandler(void * context)
+{
+    SGURLDemuxer * self = (__bridge SGURLDemuxer *)context;
+    if ([self.delegate respondsToSelector:@selector(demuxableShouldAbortBlockingFunctions:)]) {
+        BOOL ret = [self.delegate demuxableShouldAbortBlockingFunctions:self];
+        return ret ? 1 : 0;
+    }
+    return 0;
 }
 
 @end
