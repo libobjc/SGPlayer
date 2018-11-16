@@ -197,19 +197,6 @@
     });
 }
 
-- (BOOL)finish
-{
-    return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
-    }, ^SGBlock {
-        return [self setState:SGRenderableStateFinished];
-    }, ^BOOL(SGBlock block) {
-        [self.player pause];
-        block();
-        return YES;
-    });
-}
-
 - (BOOL)flush
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
@@ -228,6 +215,20 @@
         return YES;
     });
 }
+
+- (BOOL)finish
+{
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStateFinished];
+    }, ^BOOL(SGBlock block) {
+        [self.player pause];
+        block();
+        return YES;
+    });
+}
+
 
 #pragma mark - SGAudioStreamPlayerDelegate
 

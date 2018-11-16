@@ -230,19 +230,6 @@
     });
 }
 
-- (BOOL)finish
-{
-    return SGLockCondEXE11(self.lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
-    }, ^SGBlock {
-        return [self setState:SGRenderableStateFinished];
-    }, ^BOOL(SGBlock block) {
-        self.drawTimer.paused = NO;
-        self.fetchTimer.paused = NO;
-        return YES;
-    });
-}
-
 - (BOOL)flush
 {
     return SGLockCondEXE11(self.lock, ^BOOL {
@@ -253,6 +240,19 @@
         self->_nb_frames_draw = 0;
         self->_nb_frames_fetch = 0;
         return nil;
+    }, ^BOOL(SGBlock block) {
+        self.drawTimer.paused = NO;
+        self.fetchTimer.paused = NO;
+        return YES;
+    });
+}
+
+- (BOOL)finish
+{
+    return SGLockCondEXE11(self.lock, ^BOOL {
+        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
+    }, ^SGBlock {
+        return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
         self.drawTimer.paused = NO;
         self.fetchTimer.paused = NO;

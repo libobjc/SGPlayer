@@ -15,8 +15,7 @@
 
 @protocol SGRenderableDelegate;
 
-typedef NS_ENUM(uint32_t, SGRenderableState)
-{
+typedef NS_ENUM(uint32_t, SGRenderableState) {
     SGRenderableStateNone,
     SGRenderableStateRendering,
     SGRenderableStatePaused,
@@ -33,12 +32,10 @@ typedef NS_ENUM(uint32_t, SGRenderableState)
 
 - (BOOL)open;
 - (BOOL)close;
-
 - (BOOL)pause;
 - (BOOL)resume;
-- (BOOL)finish;
-
 - (BOOL)flush;
+- (BOOL)finish;
 
 @end
 
