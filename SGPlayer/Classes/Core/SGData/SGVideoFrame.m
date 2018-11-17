@@ -47,9 +47,9 @@
     self->_pixelBuffer = nil;
 }
 
-- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
+- (void)setTimebase:(AVRational)timebase
 {
-    [super setTimebase:timebase codecpar:codecpar];
+    [super setTimebase:timebase];
     
     _format = self.core->format;
     _width = self.core->width;

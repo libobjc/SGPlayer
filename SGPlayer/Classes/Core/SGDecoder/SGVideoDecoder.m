@@ -14,7 +14,7 @@
 @interface SGVideoDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
-@property (nonatomic, strong) SGCodecpar * codecpar;
+@property (nonatomic, strong) SGCodecDescription * codecDescription;
 
 @end
 
@@ -27,7 +27,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithCodecpar:[self.codecpar copy] frameClass:[SGVideoFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithCodecDescription:[self.codecDescription copy] frameClass:[SGVideoFrame class]];
     [self.codecContext open];
 }
 
@@ -44,9 +44,9 @@
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    SGCodecpar * codecpar = packet.codecpar;
-    if (codecpar && ![codecpar isEqualToCodecpar:self.codecpar]) {
-        self.codecpar = codecpar;
+    SGCodecDescription * cd = packet.codecDescription;
+    if (cd && ![cd isEqualToCodecpar:self.codecDescription]) {
+        self.codecDescription = cd;
         [self destroy];
         [self setup];
     }

@@ -18,7 +18,7 @@
 
 @interface SGCodecContext ()
 
-@property (nonatomic, strong) SGCodecpar * codecpar;
+@property (nonatomic, strong) SGCodecDescription * codecDescription;
 @property (nonatomic, strong) Class frameClass;
 @property (nonatomic) AVCodecContext * codecContext;
 
@@ -26,7 +26,7 @@
 
 @implementation SGCodecContext
 
-- (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass
+- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription frameClass:(Class)frameClass
 {
     if (self = [super init]) {
         self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
@@ -35,7 +35,7 @@
         self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
         self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
         self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
-        self.codecpar = codecpar;
+        self.codecDescription = codecDescription;
         self.frameClass = frameClass;
     }
     return self;
@@ -50,7 +50,7 @@
 
 - (BOOL)open
 {
-    if (!self.codecpar) {
+    if (!self.codecDescription) {
         return NO;
     }
     if (!self.frameClass) {
@@ -95,8 +95,8 @@
             [frame unlock];
             break;
         } else {
-            [frame setTimebase:self.codecpar.timebase codecpar:self.codecpar.codecpar];
-            for (SGTimeLayout * obj in self.codecpar.timeLayouts) {
+            [frame setTimebase:self.codecDescription.timebase];
+            for (SGTimeLayout * obj in self.codecDescription.timeLayouts) {
                 [frame setTimeLayout:obj];
             }
             [array addObject:frame];
@@ -115,15 +115,15 @@
     }
     codecContext->opaque = (__bridge void *)self;
     
-    int result = avcodec_parameters_to_context(codecContext, self.codecpar.codecpar);
+    int result = avcodec_parameters_to_context(codecContext, self.codecDescription.codecpar);
     NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;
     }
-    codecContext->pkt_timebase = self.codecpar.timebase;
-    if ((self.hardwareDecodeH264 && self.codecpar.codecpar->codec_id == AV_CODEC_ID_H264) ||
-        (self.hardwareDecodeH265 && self.codecpar.codecpar->codec_id == AV_CODEC_ID_H265)) {
+    codecContext->pkt_timebase = self.codecDescription.timebase;
+    if ((self.hardwareDecodeH264 && self.codecDescription.codecpar->codec_id == AV_CODEC_ID_H264) ||
+        (self.hardwareDecodeH265 && self.codecDescription.codecpar->codec_id == AV_CODEC_ID_H265)) {
         codecContext->get_format = SGCodecContextGetFormat;
     }
     

@@ -7,15 +7,17 @@
 //
 
 #import "SGPacket.h"
-#import "SGCodecpar.h"
+#import "SGCodecDescription.h"
 
 @interface SGPacket (Internal)
 
 @property (nonatomic, readonly) AVPacket * core;
-@property (nonatomic, readonly, copy) SGCodecpar * codecpar;
 
 - (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
 - (void)setTimeLayout:(SGTimeLayout *)timeLayout;
+- (void)setDecodeableClass:(Class)decodeableClass;
 - (void)setIndex:(uint32_t)index;
+
+- (SGCodecDescription *)codecDescription;
 
 @end

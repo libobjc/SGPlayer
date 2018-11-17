@@ -21,7 +21,7 @@
 @property (weak, nonatomic) IBOutlet UILabel * currentTimeLabel;
 @property (weak, nonatomic) IBOutlet UILabel * totalTimeLabel;
 
-@property (nonatomic, assign) BOOL progressSilderTouching;
+@property (nonatomic) BOOL progressSilderTouching;
 
 @end
 
@@ -39,12 +39,12 @@
     NSURL * URL1 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
 //    NSURL * URL2 = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"google-help-vr" ofType:@"mp4"]];
     
-//    SGMutableAsset * asset = [[SGMutableAsset alloc] init];
-//
-//    int32_t trackID = [asset addTrack:SGMediaTypeVideo];
-//    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
-//    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
-//
+    SGMutableAsset * asset = [[SGMutableAsset alloc] init];
+
+    int32_t trackID = [asset addTrack:SGMediaTypeVideo];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(10, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
+    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:0 timeRange:CMTimeRangeMake(CMTimeMake(10, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID];
+
 //    int32_t trackID1 = [asset addTrack:SGMediaTypeAudio];
 //    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
 //    [asset insertSegment:[[SGURLSegment alloc] initWithURL:URL1 index:1 timeRange:CMTimeRangeMake(CMTimeMake(0, 1), CMTimeMake(10, 1)) scale:kCMTimeInvalid] trackID:trackID1];
@@ -57,8 +57,8 @@
 //    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
 //        NSLog(@"1 frame output : %f", CMTimeGetSeconds(frame.timeStamp));
 //    }];
-    [self.player replaceWithURL:URL1];
-//    [self.player replaceWithAsset:asset];
+//    [self.player replaceWithURL:URL1];
+    [self.player replaceWithAsset:asset];
     [self.player waitUntilReady];
     [self.player play];
     

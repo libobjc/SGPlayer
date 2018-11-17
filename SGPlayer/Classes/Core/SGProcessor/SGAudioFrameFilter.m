@@ -80,10 +80,7 @@
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;
     }
-    [result setTimebase:audioFrame.codecpar.timebase codecpar:audioFrame.codecpar.codecpar];
-    for (SGTimeLayout * obj in audioFrame.codecpar.timeLayouts) {
-        [result setTimeLayout:obj];
-    }
+    [result setFrame:audioFrame];
     [frame unlock];
     return result;
 }

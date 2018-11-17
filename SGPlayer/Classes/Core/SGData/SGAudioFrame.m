@@ -47,9 +47,9 @@
     }
 }
 
-- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
+- (void)setTimebase:(AVRational)timebase
 {
-    [super setTimebase:timebase codecpar:codecpar];
+    [super setTimebase:timebase];
     
     _format = self.core->format;
     _is_planar = av_sample_fmt_is_planar(self.core->format);

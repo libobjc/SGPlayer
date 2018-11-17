@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGCodecpar.h"
+#import "SGCodecDescription.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
 
@@ -16,7 +16,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithCodecpar:(SGCodecpar *)codecpar frameClass:(Class)frameClass;
+- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription frameClass:(Class)frameClass;
 
 @property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic) BOOL threadsAuto;

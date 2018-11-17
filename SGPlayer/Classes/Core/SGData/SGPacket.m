@@ -13,7 +13,10 @@
 
 {
     AVPacket * _packet;
-    __strong SGCodecpar * _codecpar;
+    AVRational _timebase;
+    Class _decodeableClass;
+    NSMutableArray * _timeLayouts;
+    AVCodecParameters * _codecpar;
 }
 
 @property (nonatomic, strong) NSLock * coreLock;
@@ -27,8 +30,8 @@
 {
     if (self = [super init]) {
         _packet = av_packet_alloc();
-        _codecpar = [[SGCodecpar alloc] init];
         _coreLock = [[NSLock alloc] init];
+        _timeLayouts = [NSMutableArray array];
         [self clear];
     }
     return self;
@@ -47,7 +50,6 @@
 
 - (void *)coreptr {return _packet;}
 - (AVPacket *)core {return _packet;}
-- (SGCodecpar *)codecpar {return [_codecpar copy];}
 
 - (void)lock
 {
@@ -77,7 +79,10 @@
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
     _size = 0;
-    [_codecpar clear];
+    _timebase = av_make_q(0, 1);
+    _codecpar = nil;
+    _decodeableClass = nil;
+    [_timeLayouts removeAllObjects];
 }
 
 - (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
@@ -90,7 +95,8 @@
     _decodeTimeStamp = CMTimeMake(_packet->dts * timebase.num, timebase.den);
     _duration = CMTimeMake(_packet->duration * timebase.num, timebase.den);
     _size = _packet->size;
-    [_codecpar setTimebase:timebase codecpar:codecpar];
+    _timebase = timebase;
+    _codecpar = codecpar;
 }
 
 - (void)setTimeLayout:(SGTimeLayout *)timeLayout
@@ -98,15 +104,30 @@
     if (!timeLayout) {
         return;
     }
-    [_codecpar setTimeLayout:timeLayout];
+    [_timeLayouts addObject:timeLayout];
     _timeStamp = [timeLayout applyToTimeStamp:_timeStamp];
     _decodeTimeStamp = [timeLayout applyToTimeStamp:_decodeTimeStamp];
     _duration = [timeLayout applyToDuration:_duration];
 }
 
+- (void)setDecodeableClass:(Class)decodeableClass
+{
+    _decodeableClass = decodeableClass;
+}
+
 - (void)setIndex:(uint32_t)index
 {
     _index = index;
+}
+
+- (SGCodecDescription *)codecDescription
+{
+    SGCodecDescription * ret = [[SGCodecDescription alloc] init];
+    ret.timebase = self->_timebase;
+    ret.codecpar = self->_codecpar;
+    ret.decodeableClass = self->_decodeableClass;
+    ret.timeLayouts = self->_timeLayouts;
+    return ret;
 }
 
 @end

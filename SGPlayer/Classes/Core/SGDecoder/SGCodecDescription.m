@@ -1,14 +1,14 @@
 //
-//  SGCodecpar.m
+//  SGCodecDescription.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/15.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGCodecpar.h"
+#import "SGCodecDescription.h"
 
-@interface SGCodecpar ()
+@interface SGCodecDescription ()
 
 {
     __strong NSMutableArray <SGTimeLayout *> * _timeLayouts;
@@ -16,11 +16,11 @@
 
 @end
 
-@implementation SGCodecpar
+@implementation SGCodecDescription
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGCodecpar * obj = [[SGCodecpar alloc] init];
+    SGCodecDescription * obj = [[SGCodecDescription alloc] init];
     obj->_timeLayouts = [self->_timeLayouts mutableCopy];
     obj->_timebase = self->_timebase;
     obj->_codecpar = self->_codecpar;
@@ -32,7 +32,7 @@
     return [_timeLayouts copy];
 }
 
-- (BOOL)isEqualToCodecpar:(SGCodecpar *)codecpar
+- (BOOL)isEqualToDescription:(SGCodecDescription *)codecpar
 {
     if (!codecpar) {
         return NO;
@@ -41,6 +41,9 @@
         return NO;
     }
     if (av_cmp_q(codecpar->_timebase, _timebase) != 0) {
+        return NO;
+    }
+    if (![codecpar.decodeableClass isEqual:self.decodeableClass]) {
         return NO;
     }
     if (codecpar->_timeLayouts.count != self->_timeLayouts.count) {
@@ -54,6 +57,11 @@
         }
     }
     return YES;
+}
+
+- (void)setDecodeableClass:(Class)decodeableClass
+{
+    _decodeableClass = decodeableClass;
 }
 
 - (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
@@ -72,6 +80,7 @@
 
 - (void)clear
 {
+    _decodeableClass = nil;
     _codecpar = nil;
     _timebase = av_make_q(0, 1);
     [_timeLayouts removeAllObjects];

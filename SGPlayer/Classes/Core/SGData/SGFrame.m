@@ -8,13 +8,13 @@
 
 #import "SGFrame.h"
 #import "SGFrame+Internal.h"
-#import "SGTrack+Internal.h"
 
 @interface SGFrame ()
 
 {
     AVFrame * _frame;
-    __strong SGCodecpar * _codecpar;
+    AVRational _timebase;
+    NSMutableArray * _timeLayouts;
 }
 
 @property (nonatomic, strong) NSLock * coreLock;
@@ -33,8 +33,8 @@
 {
     if (self = [super init]) {
         _frame = av_frame_alloc();
-        _codecpar = [[SGCodecpar alloc] init];
         _coreLock = [[NSLock alloc] init];
+        _timeLayouts = [NSMutableArray array];
         [self clear];
     }
     return self;
@@ -53,7 +53,6 @@
 
 - (void *)coreptr {return _frame;}
 - (AVFrame *)core {return _frame;}
-- (SGCodecpar *)codecpar {return [_codecpar copy];}
 
 - (void)lock
 {
@@ -82,16 +81,16 @@
     _decodeTimeStamp = kCMTimeZero;
     _duration = kCMTimeZero;
     _size = 0;
-    [_codecpar clear];
+    _timebase = av_make_q(0, 1);
+    [_timeLayouts removeAllObjects];
 }
 
-- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
+- (void)setTimebase:(AVRational)timebase
 {
     _timeStamp = CMTimeMake(_frame->best_effort_timestamp * timebase.num, timebase.den);
     _decodeTimeStamp = CMTimeMake(_frame->pkt_dts * timebase.num, timebase.den);
     _duration = CMTimeMake(_frame->pkt_duration * timebase.num, timebase.den);
     _size = _frame->pkt_size;
-    [_codecpar setTimebase:timebase codecpar:codecpar];
 }
 
 - (void)setTimeLayout:(SGTimeLayout *)timeLayout
@@ -99,10 +98,18 @@
     if (!timeLayout) {
         return;
     }
-    [_codecpar setTimeLayout:timeLayout];
+    [_timeLayouts addObject:timeLayout];
     _timeStamp = [timeLayout applyToTimeStamp:_timeStamp];
     _decodeTimeStamp = [timeLayout applyToTimeStamp:_decodeTimeStamp];
     _duration = [timeLayout applyToDuration:_duration];
+}
+
+- (void)setFrame:(SGFrame *)frame
+{
+    [self setTimebase:frame->_timebase];
+    for (SGTimeLayout * obj in frame->_timeLayouts) {
+        [self setTimeLayout:obj];
+    }
 }
 
 @end

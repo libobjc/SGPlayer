@@ -10,6 +10,8 @@
 #import "SGTrack+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGConfiguration.h"
+#import "SGAudioDecoder.h"
+#import "SGVideoDecoder.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
 #import "avformat.h"
@@ -128,6 +130,11 @@
             [pkt unlock];
         } else {
             AVStream * stream = _context->streams[pkt.core->stream_index];
+            if (stream->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
+                [pkt setDecodeableClass:[SGAudioDecoder class]];
+            } else if (stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                [pkt setDecodeableClass:[SGVideoDecoder class]];
+            }
             [pkt setTimebase:stream->time_base codecpar:stream->codecpar];
             * packet = pkt;
         }
