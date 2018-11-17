@@ -18,7 +18,7 @@
 
 - (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout;
 
-- (CMTime)applyToTimeStamp:(CMTime)timeStamp;
-- (CMTime)applyToDuration:(CMTime)duration;
+- (CMTime)convertTimeStamp:(CMTime)timeStamp;
+- (CMTime)convertDuration:(CMTime)duration;
 
 @end

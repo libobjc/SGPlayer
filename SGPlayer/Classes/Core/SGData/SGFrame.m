@@ -13,12 +13,11 @@
 
 {
     AVFrame * _frame;
-    AVRational _timebase;
-    NSMutableArray * _timeLayouts;
+    NSLock * _lock;
+    uint64_t _locking_count;
 }
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic) NSInteger lockingCount;
+@property (nonatomic, copy) SGCodecDescription * codecDescription;
 
 @end
 
@@ -32,9 +31,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        _frame = av_frame_alloc();
-        _coreLock = [[NSLock alloc] init];
-        _timeLayouts = [NSMutableArray array];
+        self->_lock = [[NSLock alloc] init];
+        self->_frame = av_frame_alloc();
         [self clear];
     }
     return self;
@@ -42,73 +40,60 @@
 
 - (void)dealloc
 {
-    NSAssert(_lockingCount <= 0, @"SGFrame, must be unlocked before release");
-    
+    NSAssert(self->_locking_count == 0, @"SGFrame, Invalid locking count");
     [self clear];
-    if (_frame) {
-        av_frame_free(&_frame);
-        _frame = nil;
+    if (self->_frame) {
+        av_frame_free(&self->_frame);
+        self->_frame = nil;
     }
 }
 
-- (void *)coreptr {return _frame;}
-- (AVFrame *)core {return _frame;}
+- (void *)coreptr {return self->_frame;}
+- (AVFrame *)core {return self->_frame;}
 
 - (void)lock
 {
-    [_coreLock lock];
-    _lockingCount++;
-    [_coreLock unlock];
+    [self->_lock lock];
+    self->_locking_count += 1;
+    [self->_lock unlock];
 }
 
 - (void)unlock
 {
-    [_coreLock lock];
-    _lockingCount--;
-    [_coreLock unlock];
-    if (_lockingCount <= 0) {
-        _lockingCount = 0;
+    [self->_lock lock];
+    self->_locking_count -= 1;
+    [self->_lock unlock];
+    if (self->_locking_count == 0) {
+        self->_locking_count = 0;
         [[SGObjectPool sharePool] comeback:self];
     }
 }
 
 - (void)clear
 {
-    if (_frame) {
-        av_frame_unref(_frame);
+    if (self->_frame) {
+        av_frame_unref(self->_frame);
     }
-    _timeStamp = kCMTimeZero;
-    _decodeTimeStamp = kCMTimeZero;
-    _duration = kCMTimeZero;
-    _size = 0;
-    _timebase = av_make_q(0, 1);
-    [_timeLayouts removeAllObjects];
+    self->_size = 0;
+    self->_duration = kCMTimeZero;
+    self->_timeStamp = kCMTimeZero;
+    self->_decodeTimeStamp = kCMTimeZero;
+    self->_codecDescription = nil;
 }
 
-- (void)setTimebase:(AVRational)timebase
+- (void)fill
 {
-    _timeStamp = CMTimeMake(_frame->best_effort_timestamp * timebase.num, timebase.den);
-    _decodeTimeStamp = CMTimeMake(_frame->pkt_dts * timebase.num, timebase.den);
-    _duration = CMTimeMake(_frame->pkt_duration * timebase.num, timebase.den);
-    _size = _frame->pkt_size;
-}
-
-- (void)setTimeLayout:(SGTimeLayout *)timeLayout
-{
-    if (!timeLayout) {
-        return;
-    }
-    [_timeLayouts addObject:timeLayout];
-    _timeStamp = [timeLayout applyToTimeStamp:_timeStamp];
-    _decodeTimeStamp = [timeLayout applyToTimeStamp:_decodeTimeStamp];
-    _duration = [timeLayout applyToDuration:_duration];
-}
-
-- (void)setFrame:(SGFrame *)frame
-{
-    [self setTimebase:frame->_timebase];
-    for (SGTimeLayout * obj in frame->_timeLayouts) {
-        [self setTimeLayout:obj];
+    AVFrame * frame = self->_frame;
+    AVRational timebase = self->_codecDescription.timebase;
+    SGCodecDescription * cd = self->_codecDescription;
+    self->_size = frame->pkt_size;
+    self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
+    self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
+    self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
+    for (SGTimeLayout * obj in cd.timeLayouts) {
+        self->_duration = [obj convertDuration:self->_duration];
+        self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
+        self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];
     }
 }
 

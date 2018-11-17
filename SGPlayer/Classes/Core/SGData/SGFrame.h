@@ -17,9 +17,9 @@ static int const SGFramePlaneCount = 8;
 @property (nonatomic, readonly) void * coreptr;
 
 @property (nonatomic, readonly) SGMediaType type;
+@property (nonatomic, readonly) uint64_t size;
+@property (nonatomic, readonly) CMTime duration;
 @property (nonatomic, readonly) CMTime timeStamp;
 @property (nonatomic, readonly) CMTime decodeTimeStamp;
-@property (nonatomic, readonly) CMTime duration;
-@property (nonatomic, readonly) uint64_t size;
 
 @end

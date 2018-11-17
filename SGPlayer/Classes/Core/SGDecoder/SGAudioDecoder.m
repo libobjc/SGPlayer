@@ -27,7 +27,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithCodecDescription:[self.codecDescription copy] frameClass:[SGAudioFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithCodecDescription:[self.codecDescription copy]];
     [self.codecContext open];
 }
 

@@ -123,7 +123,9 @@ SGGet0Map(NSError *, seekable, self.demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [pkt setTimeLayout:self.timeLayout];
+        [pkt.codecDescription appendTimeLayout:self.timeLayout];
+        [pkt.codecDescription appendTimeRange:self.actualTimeRange];
+        [pkt fill];
         * packet = pkt;
         break;
     }
@@ -138,7 +140,9 @@ SGGet0Map(NSError *, seekable, self.demuxer)
         if (self->_is_queue_start_output) {
             [self.objectQueue getObjectAsync:&pkt];
             if (pkt) {
-                [pkt setTimeLayout:self.timeLayout];
+                [pkt.codecDescription appendTimeLayout:self.timeLayout];
+                [pkt.codecDescription appendTimeRange:self.actualTimeRange];
+                [pkt fill];
                 *packet = pkt;
                 break;
             }

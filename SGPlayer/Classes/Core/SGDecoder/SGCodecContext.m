@@ -19,24 +19,22 @@
 @interface SGCodecContext ()
 
 @property (nonatomic, strong) SGCodecDescription * codecDescription;
-@property (nonatomic, strong) Class frameClass;
 @property (nonatomic) AVCodecContext * codecContext;
 
 @end
 
 @implementation SGCodecContext
 
-- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription frameClass:(Class)frameClass
+- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription
 {
     if (self = [super init]) {
+        self.codecDescription = codecDescription;
         self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
         self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
         self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
         self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
         self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
         self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
-        self.codecDescription = codecDescription;
-        self.frameClass = frameClass;
     }
     return self;
 }
@@ -51,9 +49,6 @@
 - (BOOL)open
 {
     if (!self.codecDescription) {
-        return NO;
-    }
-    if (!self.frameClass) {
         return NO;
     }
     self.codecContext = [self createCcodecContext];
@@ -89,15 +84,17 @@
     }
     NSMutableArray * array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.codecDescription.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
         if (result < 0) {
             [frame unlock];
             break;
         } else {
-            [frame setTimebase:self.codecDescription.timebase];
-            for (SGTimeLayout * obj in self.codecDescription.timeLayouts) {
-                [frame setTimeLayout:obj];
+            frame.codecDescription = self.codecDescription;
+            [frame fill];
+            if (![self.codecDescription isContainsLayoutTime:frame.timeStamp]) {
+                [frame unlock];
+                continue;
             }
             [array addObject:frame];
         }

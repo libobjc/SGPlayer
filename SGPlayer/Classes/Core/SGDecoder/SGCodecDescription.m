@@ -8,49 +8,59 @@
 
 #import "SGCodecDescription.h"
 
-@interface SGCodecDescription ()
-
-{
-    __strong NSMutableArray <SGTimeLayout *> * _timeLayouts;
-}
-
-@end
-
 @implementation SGCodecDescription
 
 - (id)copyWithZone:(NSZone *)zone
 {
     SGCodecDescription * obj = [[SGCodecDescription alloc] init];
-    obj->_timeLayouts = [self->_timeLayouts mutableCopy];
+    obj->_index = self->_index;
     obj->_timebase = self->_timebase;
     obj->_codecpar = self->_codecpar;
+    obj->_timeRange = self->_timeRange;
+    obj->_frameClass = [self->_frameClass copy];
+    obj->_decoderClass = [self->_decoderClass copy];
+    obj->_timeLayouts = [self->_timeLayouts copy];
     return obj;
 }
 
-- (NSArray <SGTimeLayout *> *)timeLayouts
+- (instancetype)init
 {
-    return [_timeLayouts copy];
+    if (self = [super init]) {
+        self->_index = -1;
+        self->_timebase = av_make_q(0, 1);
+        self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity, kCMTimePositiveInfinity);
+    }
+    return self;
 }
 
-- (BOOL)isEqualToDescription:(SGCodecDescription *)codecpar
+- (BOOL)isEqualToDescription:(SGCodecDescription *)description
 {
-    if (!codecpar) {
+    if (!description) {
         return NO;
     }
-    if (codecpar->_codecpar != _codecpar) {
+    if (description.index != self->_index) {
         return NO;
     }
-    if (av_cmp_q(codecpar->_timebase, _timebase) != 0) {
+    if (description->_codecpar != self->_codecpar) {
         return NO;
     }
-    if (![codecpar.decodeableClass isEqual:self.decodeableClass]) {
+    if (av_cmp_q(description->_timebase, self->_timebase) != 0) {
         return NO;
     }
-    if (codecpar->_timeLayouts.count != self->_timeLayouts.count) {
+    if (![description->_frameClass isEqual:self->_frameClass]) {
         return NO;
     }
-    for (int i = 0; i < codecpar->_timeLayouts.count; i++) {
-        SGTimeLayout * t1 = [codecpar->_timeLayouts objectAtIndex:i];
+    if (![description->_decoderClass isEqual:self->_decoderClass]) {
+        return NO;
+    }
+    if (!CMTimeRangeEqual(description->_timeRange, self->_timeRange)) {
+        return NO;
+    }
+    if (description->_timeLayouts.count != self->_timeLayouts.count) {
+        return NO;
+    }
+    for (int i = 0; i < description->_timeLayouts.count; i++) {
+        SGTimeLayout * t1 = [description->_timeLayouts objectAtIndex:i];
         SGTimeLayout * t2 = [self->_timeLayouts objectAtIndex:i];
         if (![t1 isEqualToTimeLayout:t2]) {
             return NO;
@@ -59,31 +69,26 @@
     return YES;
 }
 
-- (void)setDecodeableClass:(Class)decodeableClass
+- (BOOL)isContainsLayoutTime:(CMTime)layoutTime
 {
-    _decodeableClass = decodeableClass;
-}
-
-- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar
-{
-    _codecpar = codecpar;
-    _timebase = timebase;
-}
-
-- (void)setTimeLayout:(SGTimeLayout *)timeLayout
-{
-    if (!_timeLayouts) {
-        _timeLayouts = [NSMutableArray array];
+    CMTimeRange timeRange = self->_timeRange;
+    for (SGTimeLayout * obj in self->_timeLayouts) {
+        timeRange = CMTimeRangeMake([obj convertTimeStamp:timeRange.start],
+                                    [obj convertDuration:timeRange.duration]);
     }
-    [_timeLayouts addObject:timeLayout];
+    return CMTimeRangeContainsTime(timeRange, layoutTime);
 }
 
-- (void)clear
+- (void)appendTimeLayout:(SGTimeLayout *)timeLayout
 {
-    _decodeableClass = nil;
-    _codecpar = nil;
-    _timebase = av_make_q(0, 1);
-    [_timeLayouts removeAllObjects];
+    NSMutableArray * ret = [NSMutableArray arrayWithArray:self->_timeLayouts];
+    [ret addObject:timeLayout];
+    self->_timeLayouts = ret;
+}
+
+- (void)appendTimeRange:(CMTimeRange)timeRange
+{
+    self->_timeRange = CMTimeRangeGetIntersection(self->_timeRange, timeRange);
 }
 
 @end

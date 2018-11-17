@@ -12,6 +12,8 @@
 #import "SGConfiguration.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
+#import "SGAudioFrame.h"
+#import "SGVideoFrame.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
 #import "avformat.h"
@@ -20,6 +22,7 @@
 @interface SGURLDemuxer ()
 
 {
+    CMTime _start_time;
     AVFormatContext * _context;
 }
 
@@ -39,6 +42,7 @@
     if (self = [super init]) {
         self.URL = URL;
         self.options = [SGConfiguration defaultConfiguration].formatContextOptions;
+        _start_time = kCMTimeNegativeInfinity;
     }
     return self;
 }
@@ -116,6 +120,9 @@
     if (_context) {
         int64_t timeStamp = AV_TIME_BASE * time.value / time.timescale;
         int ret = av_seek_frame(_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+        if (ret >= 0) {
+            _start_time = time;
+        }
         return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
     }
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatSeekFrame);
@@ -130,13 +137,21 @@
             [pkt unlock];
         } else {
             AVStream * stream = _context->streams[pkt.core->stream_index];
+            SGCodecDescription * cd = [[SGCodecDescription alloc] init];
+            cd.index = pkt.core->stream_index;
+            cd.timebase = stream->time_base;
+            cd.codecpar = stream->codecpar;
             if (stream->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-                [pkt setDecodeableClass:[SGAudioDecoder class]];
+                cd.frameClass = [SGAudioFrame class];
+                cd.decoderClass = [SGAudioDecoder class];
             } else if (stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-                [pkt setDecodeableClass:[SGVideoDecoder class]];
+                cd.frameClass = [SGVideoFrame class];
+                cd.decoderClass = [SGVideoDecoder class];
             }
-            [pkt setTimebase:stream->time_base codecpar:stream->codecpar];
-            * packet = pkt;
+            cd.timeRange = CMTimeRangeMake(_start_time, kCMTimePositiveInfinity);
+            pkt.codecDescription = cd;
+            [pkt fill];
+            *packet = pkt;
         }
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }

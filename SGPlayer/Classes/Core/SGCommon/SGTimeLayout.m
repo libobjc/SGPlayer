@@ -46,7 +46,7 @@
     return YES;
 }
 
-- (CMTime)applyToTimeStamp:(CMTime)timeStamp
+- (CMTime)convertTimeStamp:(CMTime)timeStamp
 {
     if (CMTIME_IS_VALID(_start)) {
         return CMTimeAdd(timeStamp, _start);
@@ -54,7 +54,7 @@
     return timeStamp;
 }
 
-- (CMTime)applyToDuration:(CMTime)duration
+- (CMTime)convertDuration:(CMTime)duration
 {
     return duration;
 }

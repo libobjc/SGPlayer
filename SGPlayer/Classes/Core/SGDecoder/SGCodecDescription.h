@@ -12,11 +12,19 @@
 
 @interface SGCodecDescription : NSObject <NSCopying>
 
+@property (nonatomic) int32_t index;
 @property (nonatomic) AVRational timebase;
+@property (nonatomic) CMTimeRange timeRange;
 @property (nonatomic) AVCodecParameters * codecpar;
-@property (nonatomic, copy) Class decodeableClass;
+
+@property (nonatomic, copy) Class frameClass;
+@property (nonatomic, copy) Class decoderClass;
 @property (nonatomic, copy) NSArray <SGTimeLayout *> * timeLayouts;
 
 - (BOOL)isEqualToDescription:(SGCodecDescription *)codecpar;
+- (BOOL)isContainsLayoutTime:(CMTime)layoutTime;
+
+- (void)appendTimeLayout:(SGTimeLayout *)timeLayout;
+- (void)appendTimeRange:(CMTimeRange)timeRange;
 
 @end

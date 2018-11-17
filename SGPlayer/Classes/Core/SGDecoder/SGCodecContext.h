@@ -16,7 +16,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription frameClass:(Class)frameClass;
+- (instancetype)initWithCodecDescription:(SGCodecDescription *)codecDescription;
 
 @property (nonatomic, strong) NSDictionary * options;
 @property (nonatomic) BOOL threadsAuto;

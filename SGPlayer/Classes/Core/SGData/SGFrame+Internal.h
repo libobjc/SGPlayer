@@ -7,15 +7,13 @@
 //
 
 #import "SGFrame.h"
-#import "SGTimeLayout.h"
-#import "frame.h"
+#import "SGCodecDescription.h"
 
 @interface SGFrame (Internal)
 
 @property (nonatomic, readonly) AVFrame * core;
+@property (nonatomic, copy) SGCodecDescription * codecDescription;
 
-- (void)setTimebase:(AVRational)timebase;
-- (void)setTimeLayout:(SGTimeLayout *)timeLayout;
-- (void)setFrame:(SGFrame *)frame;
+- (void)fill;
 
 @end

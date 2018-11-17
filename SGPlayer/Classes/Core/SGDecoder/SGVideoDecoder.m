@@ -27,7 +27,7 @@
 
 - (void)setup
 {
-    self.codecContext = [[SGCodecContext alloc] initWithCodecDescription:[self.codecDescription copy] frameClass:[SGVideoFrame class]];
+    self.codecContext = [[SGCodecContext alloc] initWithCodecDescription:[self.codecDescription copy]];
     [self.codecContext open];
 }
 
@@ -45,7 +45,7 @@
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     SGCodecDescription * cd = packet.codecDescription;
-    if (cd && ![cd isEqualToCodecpar:self.codecDescription]) {
+    if (cd && ![cd isEqualToDescription:self.codecDescription]) {
         self.codecDescription = cd;
         [self destroy];
         [self setup];

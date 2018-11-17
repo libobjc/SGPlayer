@@ -12,12 +12,8 @@
 @interface SGPacket (Internal)
 
 @property (nonatomic, readonly) AVPacket * core;
+@property (nonatomic, copy) SGCodecDescription * codecDescription;
 
-- (void)setTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar;
-- (void)setTimeLayout:(SGTimeLayout *)timeLayout;
-- (void)setDecodeableClass:(Class)decodeableClass;
-- (void)setIndex:(uint32_t)index;
-
-- (SGCodecDescription *)codecDescription;
+- (void)fill;
 
 @end

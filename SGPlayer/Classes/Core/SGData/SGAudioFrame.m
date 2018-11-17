@@ -8,7 +8,6 @@
 
 #import "SGAudioFrame.h"
 #import "SGFrame+Internal.h"
-#import "SGMapping.h"
 
 @implementation SGAudioFrame
 
@@ -17,49 +16,34 @@
     return SGMediaTypeAudio;
 }
 
-- (instancetype)init
-{
-    if (self = [super init])
-    {
-        NSLog(@"%s", __func__);
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    NSLog(@"%s", __func__);
-}
-
 - (void)clear
 {
     [super clear];
-    
-    _format = AV_SAMPLE_FMT_NONE;
-    _is_planar = 0;
-    _nb_samples = 0;
-    _sample_rate = 0;
-    _channels = 0;
-    _channel_layout = 0;
+    self->_format = AV_SAMPLE_FMT_NONE;
+    self->_is_planar = 0;
+    self->_nb_samples = 0;
+    self->_sample_rate = 0;
+    self->_channels = 0;
+    self->_channel_layout = 0;
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = nil;
         self->_linesize[i] = 0;
     }
 }
 
-- (void)setTimebase:(AVRational)timebase
+- (void)fill
 {
-    [super setTimebase:timebase];
-    
-    _format = self.core->format;
-    _is_planar = av_sample_fmt_is_planar(self.core->format);
-    _nb_samples = self.core->nb_samples;
-    _sample_rate = self.core->sample_rate;
-    _channels = self.core->channels;
-    _channel_layout = self.core->channel_layout;
+    [super fill];
+    AVFrame * frame = self.core;
+    self->_format = frame->format;
+    self->_is_planar = av_sample_fmt_is_planar(frame->format);
+    self->_nb_samples = frame->nb_samples;
+    self->_sample_rate = frame->sample_rate;
+    self->_channels = frame->channels;
+    self->_channel_layout = frame->channel_layout;
     for (int i = 0; i < SGFramePlaneCount; i++) {
-        self->_data[i] = self.core->data[i];
-        self->_linesize[i] = self.core->linesize[i];
+        self->_data[i] = frame->data[i];
+        self->_linesize[i] = frame->linesize[i];
     }
 }
 

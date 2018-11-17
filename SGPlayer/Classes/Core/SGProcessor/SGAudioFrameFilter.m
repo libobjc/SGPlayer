@@ -80,7 +80,8 @@
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;
     }
-    [result setFrame:audioFrame];
+    result.codecDescription = audioFrame.codecDescription;
+    [result fill];
     [frame unlock];
     return result;
 }

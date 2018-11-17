@@ -78,7 +78,8 @@ SGGet0Map(NSError *, seekable, self.demuxable)
         return ret;
     }
     SGTimeLayout * layout = [[SGTimeLayout alloc] initWithStart:self.timeRange.start scale:kCMTimeInvalid];
-    [*packet setTimeLayout:layout];
+    [(*packet).codecDescription appendTimeLayout:layout];
+    [(*packet) fill];
     return nil;
 }
 
