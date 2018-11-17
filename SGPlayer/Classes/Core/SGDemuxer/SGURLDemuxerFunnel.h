@@ -18,4 +18,6 @@
 @property (nonatomic) CMTimeRange timeRange;
 @property (nonatomic, strong) NSArray <NSNumber *> * indexes;
 
+@property (nonatomic) BOOL overgop;     // Default is YES.
+
 @end

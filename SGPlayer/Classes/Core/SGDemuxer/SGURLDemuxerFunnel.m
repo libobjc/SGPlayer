@@ -14,8 +14,15 @@
 
 @interface SGURLDemuxerFunnel ()
 
+{
+    int32_t _is_queue_valid;
+    int32_t _is_queue_start_output;
+    int32_t _is_queue_end_output;
+}
+
 @property (nonatomic, strong) SGURLDemuxer * demuxer;
 @property (nonatomic, strong) SGTimeLayout * timeLayout;
+@property (nonatomic, strong) SGObjectQueue * objectQueue;
 @property (nonatomic, copy) NSArray <SGTrack *> * tracks;
 @property (nonatomic) CMTimeRange actualTimeRange;
 
@@ -27,6 +34,8 @@
 {
     if (self = [super init]) {
         self.demuxer = [[SGURLDemuxer alloc] initWithURL:URL];
+        self.objectQueue = [[SGObjectQueue alloc] init];
+        self.overgop = YES;
     }
     return self;
 }
@@ -72,10 +81,26 @@ SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    return [self.demuxer seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
+    NSError * ret = [self.demuxer seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
+    if (ret) {
+        return ret;
+    }
+    [self.objectQueue flush];
+    self->_is_queue_valid = 0;
+    self->_is_queue_start_output = 0;
+    self->_is_queue_end_output = 0;
+    return nil;
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
+{
+    if (!self.overgop) {
+        return [self nextPacketInternal:packet];
+    }
+    return [self nextPacketInternalOvergop:packet];
+}
+
+- (NSError *)nextPacketInternal:(SGPacket **)packet
 {
     NSError * ret = nil;
     while (YES) {
@@ -101,6 +126,64 @@ SGGet0Map(NSError *, seekable, self.demuxer)
         [pkt setTimeLayout:self.timeLayout];
         * packet = pkt;
         break;
+    }
+    return ret;
+}
+
+- (NSError *)nextPacketInternalOvergop:(SGPacket **)packet
+{
+    NSError * ret = nil;
+    while (YES) {
+        SGPacket * pkt = nil;
+        if (self->_is_queue_start_output) {
+            [self.objectQueue getObjectAsync:&pkt];
+            if (pkt) {
+                [pkt setTimeLayout:self.timeLayout];
+                *packet = pkt;
+                break;
+            }
+        }
+        if (self->_is_queue_end_output) {
+            ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
+                                 SGOperationCodeURLDemuxerFunnelNext);
+            break;
+        }
+        ret = [self.demuxer nextPacket:&pkt];
+        if (ret) {
+            self->_is_queue_end_output = 1;
+            continue;
+        }
+        if (![self.indexes containsObject:@(pkt.index)]) {
+            [pkt unlock];
+            continue;
+        }
+        if (CMTimeCompare(pkt.timeStamp, self.actualTimeRange.start) < 0) {
+            if (pkt.core->flags & AV_PKT_FLAG_KEY) {
+                [self.objectQueue flush];
+                self->_is_queue_valid = 1;
+            }
+            if (self->_is_queue_valid) {
+                [self.objectQueue putObjectSync:pkt];
+            }
+            [pkt unlock];
+            continue;
+        }
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self.actualTimeRange)) >= 0) {
+            if (pkt.core->flags & AV_PKT_FLAG_KEY) {
+                self->_is_queue_end_output = 1;
+            } else {
+                [self.objectQueue putObjectSync:pkt];
+            }
+            [pkt unlock];
+            continue;
+        }
+        if (!self->_is_queue_start_output && pkt.core->flags & AV_PKT_FLAG_KEY) {
+            [self.objectQueue flush];
+        }
+        self->_is_queue_start_output = 1;
+        [self.objectQueue putObjectSync:pkt];
+        [pkt unlock];
+        continue;
     }
     return ret;
 }
