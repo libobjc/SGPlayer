@@ -24,6 +24,11 @@
 
 @implementation SGFrame
 
+- (SGMediaType)type
+{
+    return SGMediaTypeUnknown;
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {

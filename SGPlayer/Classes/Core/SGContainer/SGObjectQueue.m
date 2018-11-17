@@ -256,16 +256,15 @@
 
 - (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReaderBlock)timeReader
 {
-    CMTime current = kCMTimeZero;
-    CMTime expect = kCMTimeZero;
+    CMTime desire = kCMTimeZero;
     BOOL drop = NO;
-    if (!timeReader || !timeReader(&current, &expect, &drop)) {
+    if (!timeReader || !timeReader(&desire, &drop)) {
         return [self getObject:capacity];
     }
     id <SGObjectQueueItem> object = nil;
     do {
         CMTime first = self.objects.firstObject.timeStamp;
-        if (CMTimeCompare(first, expect) <= 0 || CMTimeCompare(current, kCMTimeZero) < 0) {
+        if (CMTimeCompare(first, desire) <= 0) {
             [object unlock];
             object = [self getObject:capacity];
             if (!object) {

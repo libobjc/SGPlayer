@@ -281,13 +281,11 @@
     }
     __block double media_time_current = CACurrentMediaTime();
     SGWeakify(self)
-    SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * current, CMTime * desire, BOOL * drop) {
+    SGVideoFrame * ret = [self.delegate renderable:self fetchFrame:^BOOL(CMTime * desire, BOOL * drop) {
         SGStrongify(self)
-        __block CMTime time_current = kCMTimeZero;
         return SGLockCondEXE11(self.lock, ^BOOL {
             return self->_current_frame && self->_nb_frames_fetch != 0;
         }, ^SGBlock {
-            time_current = self->_current_frame.timeStamp;
             return nil;
         }, ^BOOL(SGBlock block) {
             CMTime time = kCMTimeZero;
@@ -296,7 +294,6 @@
             double media_time_next = [self.drawTimer nextTimestamp];
             media_time_current = CACurrentMediaTime();
             * desire = CMTimeAdd(CMTimeAdd(time, advanced), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
-            * current = time_current;
             * drop = YES;
             return YES;
         });

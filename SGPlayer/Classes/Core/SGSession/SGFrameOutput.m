@@ -333,11 +333,6 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
 
 #pragma mark - SGDecoderDelegate
 
-- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
-{
-    [self.delegate frameOutput:self didOutputFrame:frame];
-}
-
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state
 {
     
@@ -375,6 +370,11 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
         [self.delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
         return YES;
     });
+}
+
+- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
+{
+    [self.delegate frameOutput:self didOutputFrame:frame];
 }
 
 @end
