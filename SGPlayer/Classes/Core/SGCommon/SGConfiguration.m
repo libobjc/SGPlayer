@@ -11,7 +11,7 @@
 
 @implementation SGConfiguration
 
-+ (instancetype)defaultConfiguration
++ (instancetype)shared
 {
     static SGConfiguration * obj = nil;
     static dispatch_once_t onceToken;

@@ -29,12 +29,12 @@
 {
     if (self = [super init]) {
         self.codecDescription = codecDescription;
-        self.options = [SGConfiguration defaultConfiguration].codecContextOptions;
-        self.threadsAuto = [SGConfiguration defaultConfiguration].threadsAuto;
-        self.refcountedFrames = [SGConfiguration defaultConfiguration].refcountedFrames;
-        self.hardwareDecodeH264 = [SGConfiguration defaultConfiguration].hardwareDecodeH264;
-        self.hardwareDecodeH265 = [SGConfiguration defaultConfiguration].hardwareDecodeH265;
-        self.preferredPixelFormat = [SGConfiguration defaultConfiguration].preferredPixelFormat;
+        self.options = [SGConfiguration shared].codecContextOptions;
+        self.threadsAuto = [SGConfiguration shared].threadsAuto;
+        self.refcountedFrames = [SGConfiguration shared].refcountedFrames;
+        self.hardwareDecodeH264 = [SGConfiguration shared].hardwareDecodeH264;
+        self.hardwareDecodeH265 = [SGConfiguration shared].hardwareDecodeH265;
+        self.preferredPixelFormat = [SGConfiguration shared].preferredPixelFormat;
     }
     return self;
 }

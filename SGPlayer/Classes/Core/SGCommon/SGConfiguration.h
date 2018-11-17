@@ -10,7 +10,7 @@
 
 @interface SGConfiguration : NSObject
 
-+ (instancetype)defaultConfiguration;
++ (instancetype)shared;
 
 @property (nonatomic, copy) NSDictionary * formatContextOptions;
 @property (nonatomic, copy) NSDictionary * codecContextOptions;

@@ -41,7 +41,7 @@
 {
     if (self = [super init]) {
         self.URL = URL;
-        self.options = [SGConfiguration defaultConfiguration].formatContextOptions;
+        self.options = [SGConfiguration shared].formatContextOptions;
         _start_time = kCMTimeNegativeInfinity;
     }
     return self;
