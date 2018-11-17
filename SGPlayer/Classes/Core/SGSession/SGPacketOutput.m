@@ -236,8 +236,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
                 continue;
             } else if (self->_state == SGPacketOutputStateReading) {
                 [self.lock unlock];
-                SGPacket * packet = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
-                NSError * error = [self.demuxable nextPacket:packet];
+                SGPacket * packet = nil;
+                NSError * error = [self.demuxable nextPacket:&packet];
                 if (error) {
                     [self.lock lock];
                     SGBlock b1 = ^{};
@@ -248,8 +248,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
                     b1();
                 } else {
                     [self.delegate packetOutput:self didOutputPacket:packet];
+                    [packet unlock];
                 }
-                [packet unlock];
                 continue;
             }
         }

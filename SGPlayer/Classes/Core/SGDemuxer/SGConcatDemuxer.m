@@ -119,13 +119,13 @@
     return [self.currentUnit seekToTime:CMTimeSubtract(time, self.currentUnit.timeRange.start)];
 }
 
-- (NSError *)nextPacket:(SGPacket *)packet
+- (NSError *)nextPacket:(SGPacket **)packet
 {
     NSError * ret = nil;
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
-            [packet setIndex:self.tracks.firstObject.index];
+            [*packet setIndex:self.tracks.firstObject.index];
             break;
         }
         if (self.currentUnit == self.units.lastObject) {

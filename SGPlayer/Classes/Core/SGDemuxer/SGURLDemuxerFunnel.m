@@ -75,29 +75,31 @@ SGGet0Map(NSError *, seekable, self.demuxer)
     return [self.demuxer seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
 }
 
-- (NSError *)nextPacket:(SGPacket *)packet
+- (NSError *)nextPacket:(SGPacket **)packet
 {
     NSError * ret = nil;
     while (YES) {
-        ret = [self.demuxer nextPacket:packet];
+        SGPacket * pkt = nil;
+        ret = [self.demuxer nextPacket:&pkt];
         if (ret) {
             break;
         }
-        if (![self.indexes containsObject:@(packet.index)]) {
-            [packet clear];
+        if (![self.indexes containsObject:@(pkt.index)]) {
+            [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(packet.timeStamp, self.actualTimeRange.start) < 0) {
-            [packet clear];
+        if (CMTimeCompare(pkt.timeStamp, self.actualTimeRange.start) < 0) {
+            [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(packet.timeStamp, CMTimeRangeGetEnd(self.actualTimeRange)) >= 0) {
-            [packet clear];
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self.actualTimeRange)) >= 0) {
+            [pkt unlock];
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [packet setTimeLayout:self.timeLayout];
+        [pkt setTimeLayout:self.timeLayout];
+        * packet = pkt;
         break;
     }
     return ret;

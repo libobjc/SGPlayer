@@ -119,13 +119,17 @@
     return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatSeekFrame);
 }
 
-- (NSError *)nextPacket:(SGPacket *)packet
+- (NSError *)nextPacket:(SGPacket **)packet
 {
     if (_context) {
-        int ret = av_read_frame(_context, packet.core);
-        if (ret >= 0) {
-            AVStream * stream = _context->streams[packet.core->stream_index];
-            [packet setTimebase:stream->time_base codecpar:stream->codecpar];
+        SGPacket * pkt = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
+        int ret = av_read_frame(_context, pkt.core);
+        if (ret < 0) {
+            [pkt unlock];
+        } else {
+            AVStream * stream = _context->streams[pkt.core->stream_index];
+            [pkt setTimebase:stream->time_base codecpar:stream->codecpar];
+            * packet = pkt;
         }
         return SGEGetError(ret, SGOperationCodeFormatReadFrame);
     }

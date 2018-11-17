@@ -120,7 +120,7 @@
     return nil;
 }
 
-- (NSError *)nextPacket:(SGPacket *)packet
+- (NSError *)nextPacket:(SGPacket **)packet
 {
     while (YES) {
         id <SGDemuxable> demuxable = nil;
@@ -149,7 +149,7 @@
             [self.demuxablesFinished addObject:demuxable];
             continue;
         }
-        CMTime t = packet.decodeTimeStamp;
+        CMTime t = (*packet).decodeTimeStamp;
         [self.timeStamps setObject:[NSValue value:&t withObjCType:@encode(CMTime)] forKey:demuxable];
         break;
     }

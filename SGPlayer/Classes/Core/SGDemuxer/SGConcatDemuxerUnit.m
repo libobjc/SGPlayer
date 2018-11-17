@@ -71,14 +71,14 @@ SGGet0Map(NSError *, seekable, self.demuxable)
     return [self.demuxable seekToTime:time];
 }
 
-- (NSError *)nextPacket:(SGPacket *)packet
+- (NSError *)nextPacket:(SGPacket **)packet
 {
     NSError * ret = [self.demuxable nextPacket:packet];
     if (ret) {
         return ret;
     }
     SGTimeLayout * layout = [[SGTimeLayout alloc] initWithStart:self.timeRange.start scale:kCMTimeInvalid];
-    [packet setTimeLayout:layout];
+    [*packet setTimeLayout:layout];
     return nil;
 }
 
