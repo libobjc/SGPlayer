@@ -86,11 +86,11 @@
         [self.wakeup lock];
         [self.wakeup broadcast];
         [self.wakeup unlock];
-        [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangeStatus:)]) {
+        if ([self.delegate respondsToSelector:@selector(player:didChangeStatus:)]) {
+            [self callback:^{
                 [self.delegate player:self didChangeStatus:status];
-            }
-        }];
+            }];
+        }
     };
 }
 
@@ -173,11 +173,11 @@
     }
     return ^{
         b1(); b2(); b3();
-        [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangePlaybackState:)]) {
+        if ([self.delegate respondsToSelector:@selector(player:didChangePlaybackState:)]) {
+            [self callback:^{
                 [self.delegate player:self didChangePlaybackState:playbackState];
-            }
-        }];
+            }];
+        }
     };
 }
 
@@ -197,11 +197,12 @@
     }
     _loading_state = loadingState;
     return ^{
-        [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangeLoadingState:)]) {
+        if ([self.delegate respondsToSelector:@selector(player:didChangeLoadingState:)]) {
+            [self callback:^{
                 [self.delegate player:self didChangeLoadingState:loadingState];
-            }
-        }];
+                
+            }];
+        }
     };
 }
 
@@ -223,11 +224,11 @@
     _current_time = currentTime;
     CMTime duration = self->_current_item.duration;
     return ^{
-        [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangeCurrentTime:duration:)]) {
+        if ([self.delegate respondsToSelector:@selector(player:didChangeCurrentTime:duration:)]) {
+            [self callback:^{
                 [self.delegate player:self didChangeCurrentTime:currentTime duration:duration];
-            }
-        }];
+            }];
+        }
     };
 }
 
@@ -248,11 +249,11 @@
     _loaded_time = loadedTime;
     _loaded_duration = loadedDuration;
     return ^{
-        [self callback:^{
-            if ([self.delegate respondsToSelector:@selector(player:didChangeLoadedTime:loadedDuuration:)]) {
+        if ([self.delegate respondsToSelector:@selector(player:didChangeLoadedTime:loadedDuuration:)]) {
+            [self callback:^{
                 [self.delegate player:self didChangeLoadedTime:loadedTime loadedDuuration:loadedDuration];
-            }
-        }];
+            }];
+        }
     };
 }
 
