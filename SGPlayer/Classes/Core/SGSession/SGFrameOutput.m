@@ -10,7 +10,8 @@
 #import "SGAsset+Internal.h"
 #import "SGPacketOutput.h"
 #import "SGAsyncDecoder.h"
-#import "SGDecoder.h"
+#import "SGAudioDecoder.h"
+#import "SGVideoDecoder.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
@@ -226,7 +227,13 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     for (SGTrack * obj in self->_selected_tracks) {
         SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(obj.index)];
         if (!decoder) {
-            id <SGDecodable> decodable = [[SGDecoder alloc] init];
+            id <SGDecodable> decodable = nil;
+            if (obj.type == SGMediaTypeAudio) {
+                decodable = [[SGAudioDecoder alloc] init];
+            } else if (obj.type == SGMediaTypeVideo) {
+                decodable = [[SGVideoDecoder alloc] init];
+            }
+            NSAssert(decodable, @"Invalid Decodable.");
             decodable.index = obj.index;
             decoder = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
             decoder.delegate = self;
@@ -294,7 +301,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
     SGLockEXE10(self->_lock, ^SGBlock{
-        SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(packet.index)];
+        SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(packet.track.index)];
         return ^{
             [decoder putPacket:packet];
         };

@@ -13,7 +13,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGCodecDescription * obj = [[SGCodecDescription alloc] init];
-    obj->_index = self->_index;
+    obj->_track = self->_track;
     obj->_timebase = self->_timebase;
     obj->_codecpar = self->_codecpar;
     obj->_timeRange = self->_timeRange;
@@ -26,7 +26,6 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_index = -1;
         self->_timebase = av_make_q(0, 1);
         self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity, kCMTimePositiveInfinity);
     }
@@ -38,7 +37,7 @@
     if (!description) {
         return NO;
     }
-    if (description.index != self->_index) {
+    if (description.track != self->_track) {
         return NO;
     }
     if (description->_codecpar != self->_codecpar) {

@@ -109,7 +109,7 @@ SGGet0Map(NSError *, seekable, self.demuxer)
         if (ret) {
             break;
         }
-        if (![self.indexes containsObject:@(pkt.index)]) {
+        if (![self.indexes containsObject:@(pkt.track.index)]) {
             [pkt unlock];
             continue;
         }
@@ -157,7 +157,7 @@ SGGet0Map(NSError *, seekable, self.demuxer)
             self->_is_queue_end_output = 1;
             continue;
         }
-        if (![self.indexes containsObject:@(pkt.index)]) {
+        if (![self.indexes containsObject:@(pkt.track.index)]) {
             [pkt unlock];
             continue;
         }

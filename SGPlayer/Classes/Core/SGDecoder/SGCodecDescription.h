@@ -8,11 +8,12 @@
 
 #import <Foundation/Foundation.h>
 #import "SGTimeLayout.h"
+#import "SGTrack.h"
 #import "avcodec.h"
 
 @interface SGCodecDescription : NSObject <NSCopying>
 
-@property (nonatomic) int32_t index;
+@property (nonatomic) SGTrack * track;
 @property (nonatomic) AVRational timebase;
 @property (nonatomic) CMTimeRange timeRange;
 @property (nonatomic) AVCodecParameters * codecpar;

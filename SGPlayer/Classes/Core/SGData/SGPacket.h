@@ -9,12 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "SGObjectQueue.h"
 #import "SGObjectPool.h"
+#import "SGTrack.h"
 
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, readonly) void * coreptr;
+@property (nonatomic, readonly, strong) SGTrack * track;
 
-@property (nonatomic, readonly) int32_t index;
+@property (nonatomic, readonly) void * coreptr;
 @property (nonatomic, readonly) uint64_t size;
 @property (nonatomic, readonly) CMTime duration;
 @property (nonatomic, readonly) CMTime timeStamp;

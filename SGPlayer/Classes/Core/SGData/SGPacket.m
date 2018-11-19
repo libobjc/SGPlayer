@@ -12,8 +12,9 @@
 @interface SGPacket ()
 
 {
-    AVPacket * _packet;
     NSLock * _lock;
+    SGTrack * _track;
+    AVPacket * _packet;
     uint64_t _locking_count;
 }
 
@@ -43,6 +44,7 @@
     }
 }
 
+- (SGTrack *)track {return self->_track;}
 - (void *)coreptr {return self->_packet;}
 - (AVPacket *)core {return self->_packet;}
 
@@ -70,7 +72,7 @@
         av_packet_unref(self->_packet);
     }
     self->_size = 0;
-    self->_index = -1;
+    self->_track = nil;
     self->_duration = kCMTimeZero;
     self->_timeStamp = kCMTimeZero;
     self->_decodeTimeStamp = kCMTimeZero;
@@ -86,7 +88,7 @@
         pkt->pts = pkt->dts;
     }
     self->_size = pkt->size;
-    self->_index = cd.index;
+    self->_track = cd.track;
     self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);

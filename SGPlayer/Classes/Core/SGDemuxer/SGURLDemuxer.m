@@ -138,7 +138,7 @@
         } else {
             AVStream * stream = _context->streams[pkt.core->stream_index];
             SGCodecDescription * cd = [[SGCodecDescription alloc] init];
-            cd.index = pkt.core->stream_index;
+            cd.track = [self.tracks objectAtIndex:pkt.core->stream_index];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
             if (stream->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {

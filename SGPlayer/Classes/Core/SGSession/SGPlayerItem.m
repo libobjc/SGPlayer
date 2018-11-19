@@ -9,6 +9,7 @@
 #import "SGPlayerItem.h"
 #import "SGPlayerItem+Internal.h"
 #import "SGFrameOutput.h"
+#import "SGMixer.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
@@ -17,6 +18,7 @@
 {
     NSLock * _lock;
     NSError * _error;
+    SGMixer * _audioMixer;
     SGFrameOutput * _output;
     SGPlayerItemState _state;
     int32_t _is_audio_finished;
@@ -41,6 +43,7 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
+        self->_audioMixer = [[SGMixer alloc] init];
         self->_capacitys = [NSMutableDictionary dictionary];
         self->_output = [[SGFrameOutput alloc] initWithAsset:asset];
         self->_output.delegate = self;
@@ -120,7 +123,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
         if (type == SGMediaTypeAudio) {
             ret = self->_selected_audio_tracks.count > 0;
         } else if (type == SGMediaTypeVideo) {
-            ret = self->_selected_video_track;
+            ret = self->_selected_video_track != nil;
         }
     });
     return ret;
@@ -363,7 +366,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(SGFrame *)frame
 {
     [frame lock];
-    switch (frame.type) {
+    switch (frame.track.type) {
         case SGMediaTypeAudio: {
             if (self->_audioFilter) {
                 frame = [self->_audioFilter convert:frame];

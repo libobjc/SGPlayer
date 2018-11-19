@@ -125,7 +125,7 @@
     while (YES) {
         ret = [self.currentUnit nextPacket:packet];
         if (!ret) {
-            (*packet).codecDescription.index = self.tracks.firstObject.index;
+            (*packet).codecDescription.track = self.tracks.firstObject;
             [(*packet) fill];
             break;
         }

@@ -12,8 +12,9 @@
 @interface SGFrame ()
 
 {
-    AVFrame * _frame;
     NSLock * _lock;
+    SGTrack * _track;
+    AVFrame * _frame;
     uint64_t _locking_count;
 }
 
@@ -48,6 +49,7 @@
     }
 }
 
+- (SGTrack *)track {return self->_track;}
 - (void *)coreptr {return self->_frame;}
 - (AVFrame *)core {return self->_frame;}
 
@@ -75,6 +77,7 @@
         av_frame_unref(self->_frame);
     }
     self->_size = 0;
+    self->_track = nil;
     self->_duration = kCMTimeZero;
     self->_timeStamp = kCMTimeZero;
     self->_decodeTimeStamp = kCMTimeZero;
@@ -87,6 +90,7 @@
     AVRational timebase = self->_codecDescription.timebase;
     SGCodecDescription * cd = self->_codecDescription;
     self->_size = frame->pkt_size;
+    self->_track = cd.track;
     self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
