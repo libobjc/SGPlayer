@@ -141,13 +141,6 @@
             cd.track = [self.tracks objectAtIndex:pkt.core->stream_index];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
-            if (stream->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-                cd.frameClass = [SGAudioFrame class];
-                cd.decoderClass = [SGAudioDecoder class];
-            } else if (stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
-                cd.frameClass = [SGVideoFrame class];
-                cd.decoderClass = [SGVideoDecoder class];
-            }
             cd.timeRange = CMTimeRangeMake(_start_time, kCMTimePositiveInfinity);
             pkt.codecDescription = cd;
             [pkt fill];

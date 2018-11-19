@@ -17,8 +17,6 @@
     obj->_timebase = self->_timebase;
     obj->_codecpar = self->_codecpar;
     obj->_timeRange = self->_timeRange;
-    obj->_frameClass = [self->_frameClass copy];
-    obj->_decoderClass = [self->_decoderClass copy];
     obj->_timeLayouts = [self->_timeLayouts copy];
     return obj;
 }
@@ -46,12 +44,6 @@
     if (av_cmp_q(description->_timebase, self->_timebase) != 0) {
         return NO;
     }
-    if (![description->_frameClass isEqual:self->_frameClass]) {
-        return NO;
-    }
-    if (![description->_decoderClass isEqual:self->_decoderClass]) {
-        return NO;
-    }
     if (!CMTimeRangeEqual(description->_timeRange, self->_timeRange)) {
         return NO;
     }
@@ -68,16 +60,6 @@
     return YES;
 }
 
-- (BOOL)isContainsLayoutTime:(CMTime)layoutTime
-{
-    CMTimeRange timeRange = self->_timeRange;
-    for (SGTimeLayout * obj in self->_timeLayouts) {
-        timeRange = CMTimeRangeMake([obj convertTimeStamp:timeRange.start],
-                                    [obj convertDuration:timeRange.duration]);
-    }
-    return CMTimeRangeContainsTime(timeRange, layoutTime);
-}
-
 - (void)appendTimeLayout:(SGTimeLayout *)timeLayout
 {
     NSMutableArray * ret = [NSMutableArray arrayWithArray:self->_timeLayouts];
@@ -88,6 +70,16 @@
 - (void)appendTimeRange:(CMTimeRange)timeRange
 {
     self->_timeRange = CMTimeRangeGetIntersection(self->_timeRange, timeRange);
+}
+
+- (CMTimeRange)layoutTimeRange
+{
+    CMTimeRange timeRange = self->_timeRange;
+    for (SGTimeLayout * obj in self->_timeLayouts) {
+        timeRange = CMTimeRangeMake([obj convertTimeStamp:timeRange.start],
+                                    [obj convertDuration:timeRange.duration]);
+    }
+    return timeRange;
 }
 
 @end
