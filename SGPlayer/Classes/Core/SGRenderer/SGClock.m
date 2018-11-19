@@ -142,6 +142,7 @@
         self->_nb_set_audio_time += 1;
         self->_audio_time = time;
         self->_audio_media_time = CACurrentMediaTime();
+        self->_is_audio_stalled = 0;
         return [self setCurrentTime:self->_audio_time mediaTime:self->_audio_media_time];
     });
     return YES;

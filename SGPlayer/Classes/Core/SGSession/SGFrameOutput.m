@@ -126,7 +126,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 
 - (NSArray <SGCapacity *> *)capacityWithTrack:(NSArray <SGTrack *> *)tracks
 {
-    __block NSMutableArray <SGCapacity *> * ret = nil;
+    __block NSMutableArray <SGCapacity *> * ret = [NSMutableArray array];
     SGLockEXE00(self->_lock, ^{
         for (SGTrack * obj in tracks) {
             SGCapacity * c = [[self->_capacitys objectForKey:@(obj.index)] copy];
