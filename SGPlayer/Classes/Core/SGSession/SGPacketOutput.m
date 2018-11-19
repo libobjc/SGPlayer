@@ -14,15 +14,13 @@
 @interface SGPacketOutput () <SGDemuxableDelegate>
 
 {
+    NSLock * _lock;
+    NSError * _error;
+    NSCondition * _wakeup;
     SGPacketOutputState _state;
-    __strong NSError * _error;
+    id <SGDemuxable> _demuxable;
+    NSOperationQueue * _operationQueue;
 }
-
-@property (nonatomic, strong) id <SGDemuxable> demuxable;
-
-@property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, strong) NSCondition * wakeup;
-@property (nonatomic, strong) NSOperationQueue * operationQueue;
 
 @property (nonatomic) CMTime seekTime;
 @property (nonatomic) CMTime seekingTime;
@@ -35,31 +33,31 @@
 - (instancetype)initWithDemuxable:(id <SGDemuxable>)demuxable
 {
     if (self = [super init]) {
-        self.demuxable = demuxable;
-        self.demuxable.delegate = self;
-        self.lock = [[NSLock alloc] init];
-        self.wakeup = [[NSCondition alloc] init];
+        self->_demuxable = demuxable;
+        self->_demuxable.delegate = self;
+        self->_lock = [[NSLock alloc] init];
+        self->_wakeup = [[NSCondition alloc] init];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    SGLockCondEXE10(self.lock, ^BOOL {
+    SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state != SGPacketOutputStateClosed;
     }, ^SGBlock {
         [self setState:SGPacketOutputStateClosed];
-        [self.operationQueue cancelAllOperations];
-        [self.operationQueue waitUntilAllOperationsAreFinished];
+        [self->_operationQueue cancelAllOperations];
+        [self->_operationQueue waitUntilAllOperationsAreFinished];
         return nil;
     });
 }
 
 #pragma mark - Mapping
 
-SGGet0Map(CMTime, duration, self.demuxable)
-SGGet0Map(NSDictionary *, metadata, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
+SGGet0Map(CMTime, duration, self->_demuxable)
+SGGet0Map(NSDictionary *, metadata, self->_demuxable)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self->_demuxable)
 
 #pragma mark - Setter & Getter
 
@@ -69,9 +67,9 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
         return ^{};
     }
     _state = state;
-    [self.wakeup lock];
-    [self.wakeup broadcast];
-    [self.wakeup unlock];
+    [self->_wakeup lock];
+    [self->_wakeup broadcast];
+    [self->_wakeup unlock];
     return ^{
         [self.delegate packetOutput:self didChangeState:state];
     };
@@ -80,7 +78,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 - (SGPacketOutputState)state
 {
     __block SGPacketOutputState ret = SGPacketOutputStateNone;
-    SGLockEXE00(self.lock, ^{
+    SGLockEXE00(self->_lock, ^{
         ret = self->_state;
     });
     return ret;
@@ -89,7 +87,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 - (NSError *)error
 {
     __block NSError * ret = nil;
-    SGLockEXE00(self.lock, ^{
+    SGLockEXE00(self->_lock, ^{
         ret = [self->_error copy];
     });
     return ret;
@@ -99,37 +97,37 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 
 - (BOOL)open
 {
-    return SGLockCondEXE11(self.lock, ^BOOL {
+    return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state == SGPacketOutputStateNone;
     }, ^SGBlock {
         return [self setState:SGPacketOutputStateOpening];
     }, ^BOOL(SGBlock block) {
         block();
         NSOperation * operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(runningThread) object:nil];
-        self.operationQueue = [[NSOperationQueue alloc] init];
-        self.operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
-        [self.operationQueue addOperation:operation];
+        self->_operationQueue = [[NSOperationQueue alloc] init];
+        self->_operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+        [self->_operationQueue addOperation:operation];
         return YES;
     });
 }
 
 - (BOOL)close
 {
-    return SGLockCondEXE11(self.lock, ^BOOL {
+    return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state != SGPacketOutputStateClosed;
     }, ^SGBlock {
         return [self setState:SGPacketOutputStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        [self.operationQueue cancelAllOperations];
-        [self.operationQueue waitUntilAllOperationsAreFinished];
+        [self->_operationQueue cancelAllOperations];
+        [self->_operationQueue waitUntilAllOperationsAreFinished];
         return YES;
     });
 }
 
 - (BOOL)pause
 {
-    return SGLockCondEXE10(self.lock, ^BOOL {
+    return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state == SGPacketOutputStateReading || self->_state == SGPacketOutputStateSeeking;
     }, ^SGBlock {
         return [self setState:SGPacketOutputStatePaused];
@@ -138,7 +136,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 
 - (BOOL)resume
 {
-    return SGLockCondEXE10(self.lock, ^BOOL {
+    return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state == SGPacketOutputStatePaused || self->_state == SGPacketOutputStateOpened;
     }, ^SGBlock {
         return [self setState:SGPacketOutputStateReading];
@@ -149,7 +147,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 
 - (BOOL)seekable
 {
-    return [self.demuxable seekable] == nil;
+    return [self->_demuxable seekable] == nil;
 }
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
@@ -157,7 +155,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
     if (![self seekable]) {
         return NO;
     }
-    return SGLockCondEXE10(self.lock, ^BOOL {
+    return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state == SGPacketOutputStateReading || self->_state == SGPacketOutputStatePaused || self->_state == SGPacketOutputStateSeeking || self->_state == SGPacketOutputStateFinished;
     }, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{};
@@ -185,38 +183,38 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
 {
     while (YES) {
         @autoreleasepool {
-            [self.lock lock];
+            [self->_lock lock];
             if (self->_state == SGPacketOutputStateNone ||
                 self->_state == SGPacketOutputStateClosed ||
                 self->_state == SGPacketOutputStateFailed) {
-                [self.lock unlock];
+                [self->_lock unlock];
                 break;
             } else if (self->_state == SGPacketOutputStateOpening) {
-                [self.lock unlock];
-                NSError * error = [self.demuxable open];
-                [self.lock lock];
+                [self->_lock unlock];
+                NSError * error = [self->_demuxable open];
+                [self->_lock lock];
                 self->_error = error;
                 SGBlock b1 = [self setState:error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
-                [self.lock unlock];
+                [self->_lock unlock];
                 b1();
                 continue;
             } else if (self->_state == SGPacketOutputStateOpened ||
                        self->_state == SGPacketOutputStatePaused ||
                        self->_state == SGPacketOutputStateFinished) {
-                [self.wakeup lock];
-                [self.lock unlock];
-                [self.wakeup wait];
-                [self.wakeup unlock];
+                [self->_wakeup lock];
+                [self->_lock unlock];
+                [self->_wakeup wait];
+                [self->_wakeup unlock];
                 continue;
             } else if (self->_state == SGPacketOutputStateSeeking) {
                 self.seekingTime = self.seekTime;
                 CMTime seekingTime = self.seekingTime;
-                [self.lock unlock];
-                NSError * error = [self.demuxable seekToTime:seekingTime];
-                [self.lock lock];
+                [self->_lock unlock];
+                NSError * error = [self->_demuxable seekToTime:seekingTime];
+                [self->_lock lock];
                 if (self->_state == SGPacketOutputStateSeeking &&
                     CMTimeCompare(self.seekTime, seekingTime) != 0) {
-                    [self.lock unlock];
+                    [self->_lock unlock];
                     continue;
                 }
                 SGBlock b1 = ^{}, b2 = ^{};
@@ -231,20 +229,20 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
                 self.seekTime = kCMTimeZero;
                 self.seekingTime = kCMTimeZero;
                 self.seekResult = nil;
-                [self.lock unlock];
+                [self->_lock unlock];
                 b1(); b2();
                 continue;
             } else if (self->_state == SGPacketOutputStateReading) {
-                [self.lock unlock];
+                [self->_lock unlock];
                 SGPacket * packet = nil;
-                NSError * error = [self.demuxable nextPacket:&packet];
+                NSError * error = [self->_demuxable nextPacket:&packet];
                 if (error) {
-                    [self.lock lock];
+                    [self->_lock lock];
                     SGBlock b1 = ^{};
                     if (self->_state == SGPacketOutputStateReading) {
                         b1 = [self setState:SGPacketOutputStateFinished];
                     }
-                    [self.lock unlock];
+                    [self->_lock unlock];
                     b1();
                 } else {
                     [self.delegate packetOutput:self didOutputPacket:packet];
@@ -254,14 +252,14 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
             }
         }
     }
-    [self.demuxable close];
+    [self->_demuxable close];
 }
 
 #pragma mark - SGPacketReaderDelegate
 
 - (BOOL)demuxableShouldAbortBlockingFunctions:(id <SGDemuxable>)demuxable
 {
-    return SGLockCondEXE00(self.lock, ^BOOL {
+    return SGLockCondEXE00(self->_lock, ^BOOL {
         switch (self->_state) {
             case SGPacketOutputStateFinished:
             case SGPacketOutputStateClosed:
