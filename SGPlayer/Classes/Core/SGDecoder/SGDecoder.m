@@ -1,23 +1,23 @@
 //
-//  SGAudioDecoder.m
-//  SGPlayer iOS
+//  SGDecoder.m
+//  SGPlayer
 //
-//  Created by Single on 2018/8/16.
+//  Created by Single on 2018/11/19.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGAudioDecoder.h"
+#import "SGDecoder.h"
 #import "SGPacket+Internal.h"
 #import "SGCodecContext.h"
 
-@interface SGAudioDecoder ()
+@interface SGDecoder ()
 
 @property (nonatomic, strong) SGCodecContext * codecContext;
 @property (nonatomic, strong) SGCodecDescription * codecDescription;
 
 @end
 
-@implementation SGAudioDecoder
+@implementation SGDecoder
 
 @synthesize index = _index;
 

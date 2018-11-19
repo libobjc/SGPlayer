@@ -21,12 +21,7 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
     SGPlayerItemStateFailed,
 };
 
-@protocol SGPlayerItemDelegate <NSObject>
-
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state;
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
-
-@end
+@protocol SGPlayerItemDelegate;
 
 @interface SGPlayerItem (Internal)
 
@@ -40,18 +35,22 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
 
-- (SGCapacity *)capacity;
 - (SGCapacity *)capacityWithType:(SGMediaType)type;
 
-- (BOOL)isAudioFinished;
-- (BOOL)isVideoFinished;
-- (BOOL)isAudioAvailable;
-- (BOOL)isVideoAvailable;
+- (BOOL)isAvailable:(SGMediaType)type;
+- (BOOL)isFinished:(SGMediaType)type;
 
 @property (nonatomic, strong) SGFrameFilter * audioFilter;
 @property (nonatomic, strong) SGFrameFilter * videoFilter;
 
 - (__kindof SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader;
 - (__kindof SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader;
+
+@end
+
+@protocol SGPlayerItemDelegate <NSObject>
+
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 
 @end

@@ -20,5 +20,6 @@
 - (BOOL)isEmpty;
 
 - (void)add:(SGCapacity *)capacity;
+- (SGCapacity *)minimum:(SGCapacity *)capacity;
 
 @end

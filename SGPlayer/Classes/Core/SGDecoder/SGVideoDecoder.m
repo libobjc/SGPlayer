@@ -20,10 +20,7 @@
 
 @implementation SGVideoDecoder
 
-- (SGMediaType)type
-{
-    return SGMediaTypeVideo;
-}
+@synthesize index = _index;
 
 - (void)setup
 {

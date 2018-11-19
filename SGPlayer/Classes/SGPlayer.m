@@ -467,10 +467,10 @@
 {
     if (capacity.isEmpty) {
         SGLockEXE10(self.lock, ^SGBlock {
-            if (self.audioRenderer.capacity.isEmpty && self->_current_item.isAudioFinished) {
+            if (self.audioRenderer.capacity.isEmpty && [self->_current_item isFinished:SGMediaTypeAudio]) {
                 self->_is_audio_finished = 1;
             }
-            if (self.videoRenderer.capacity.isEmpty && self->_current_item.isVideoFinished) {
+            if (self.videoRenderer.capacity.isEmpty && [self->_current_item isFinished:SGMediaTypeVideo]) {
                 self->_is_video_finished = 1;
             }
             return [self setPlaybackState];
@@ -504,11 +504,11 @@
                 b3 = [self setLoadingState:SGLoadingStateStalled];
                 b1 = ^{
                     [self.clock open];
-                    if (playerItem.isAudioAvailable) {
+                    if ([playerItem isAvailable:SGMediaTypeAudio]) {
                         self->_is_audio_available = 1;
                         [self.audioRenderer open];
                     }
-                    if (playerItem.isVideoAvailable) {
+                    if ([playerItem isAvailable:SGMediaTypeVideo]) {
                         self->_is_video_available = 1;
                         [self.videoRenderer open];
                     }
@@ -549,11 +549,11 @@
 {
     BOOL should = NO;
     if (type == SGMediaTypeAudio &&
-        !playerItem.isAudioFinished) {
+        ![playerItem isFinished:SGMediaTypeAudio]) {
         should = YES;
     } else if (type == SGMediaTypeVideo &&
-               !playerItem.isVideoFinished &&
-               (!playerItem.isAudioAvailable || playerItem.isAudioFinished)) {
+               ![playerItem isFinished:SGMediaTypeVideo] &&
+               (![playerItem isAvailable:SGMediaTypeAudio] || [playerItem isFinished:SGMediaTypeAudio])) {
         should = YES;
     }
     if (should) {

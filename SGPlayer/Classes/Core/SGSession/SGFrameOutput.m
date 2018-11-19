@@ -9,28 +9,23 @@
 #import "SGFrameOutput.h"
 #import "SGAsset+Internal.h"
 #import "SGPacketOutput.h"
-#import "SGAudioDecoder.h"
-#import "SGVideoDecoder.h"
 #import "SGAsyncDecoder.h"
+#import "SGDecoder.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
 @interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecoderDelegate>
 
 {
+    NSLock * _lock;
+    NSError * _error;
+    SGPacketOutput * _output;
     SGFrameOutputState _state;
-    int32_t _is_audio_finished;
-    int32_t _is_video_finished;
-    __strong NSError * _error;
-    __strong SGTrack * _selected_audio_track;
-    __strong SGTrack * _selected_video_track;
+    NSArray <SGTrack *> * _selected_tracks;
+    NSArray <SGTrack *> * _finished_tracks;
+    NSMutableDictionary <NSNumber *, SGCapacity *> * _capacitys;
+    NSMutableDictionary <NSNumber *, SGAsyncDecoder *> * _decoders;
 }
-
-@property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, strong) SGPacketOutput * output;
-@property (nonatomic, strong) SGAsyncDecoder * audioDecoder;
-@property (nonatomic, strong) SGAsyncDecoder * videoDecoder;
-@property (nonatomic, strong) NSMutableDictionary * capacitys;
 
 @end
 
@@ -39,32 +34,34 @@
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
     if (self = [super init]) {
-        self.lock = [[NSLock alloc] init];
-        self.capacitys = [NSMutableDictionary dictionary];
-        self.output = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
-        self.output.delegate = self;
+        self->_lock = [[NSLock alloc] init];
+        self->_decoders = [NSMutableDictionary dictionary];
+        self->_capacitys = [NSMutableDictionary dictionary];
+        self->_output = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
+        self->_output.delegate = self;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    SGLockCondEXE10(self.lock, ^BOOL {
+    SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state != SGFrameOutputStateClosed;
     }, ^SGBlock {
         [self setState:SGFrameOutputStateClosed];
-        [self.output close];
-        [self.audioDecoder close];
-        [self.videoDecoder close];
+        [self->_output close];
+        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGAsyncDecoder * obj, BOOL * stop) {
+            [obj close];
+        }];
         return nil;
     });
 }
 
 #pragma mark - Mapping
 
-SGGet0Map(CMTime, duration, self.output)
-SGGet0Map(NSDictionary *, metadata, self.output)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
+SGGet0Map(CMTime, duration, self->_output)
+SGGet0Map(NSDictionary *, metadata, self->_output)
+SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 
 #pragma mark - Setter & Getter
 
@@ -75,14 +72,14 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
     }
     _state = state;
     return ^{
-        [self.delegate frameOutput:self didChangeState:state];
+        [self->_delegate frameOutput:self didChangeState:state];
     };
 }
 
 - (SGFrameOutputState)state
 {
     __block SGFrameOutputState ret = SGFrameOutputStateNone;
-    SGLockEXE00(self.lock, ^{
+    SGLockEXE00(self->_lock, ^{
         ret = self->_state;
     });
     return ret;
@@ -91,171 +88,130 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
 - (NSError *)error
 {
     __block NSError * ret = nil;
-    SGLockEXE00(self.lock, ^{
+    SGLockEXE00(self->_lock, ^{
         ret = [self->_error copy];
     });
     return ret;
 }
 
-- (void)setSelectedAudioTrack:(SGTrack *)selectedAudioTrack
+- (NSArray <SGTrack *> *)finishedTracks
 {
-    NSAssert(selectedAudioTrack, @"Invalid Audio Track");
-    SGLockCondEXE10(self.lock, ^BOOL {
-        return self->_selected_audio_track != selectedAudioTrack;
+    __block NSArray <SGTrack *> * ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_finished_tracks copy];
+    });
+    return ret;
+}
+
+- (BOOL)selectTracks:(NSArray <SGTrack *> *)tracks
+{
+    return SGLockCondEXE10(self->_lock, ^BOOL {
+        return ![self->_selected_tracks isEqualToArray:tracks];
     }, ^SGBlock {
-        self->_selected_audio_track = selectedAudioTrack;
+        self->_selected_tracks = [tracks copy];
+        [self openDecodersIfNeeded];
         return nil;
     });
 }
 
-- (SGTrack *)selectedAudioTrack
+- (NSArray <SGTrack *> *)selectedTracks
 {
-    __block SGTrack * ret = nil;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_selected_audio_track;
+    __block NSArray <SGTrack *> * ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_selected_tracks copy];
     });
     return ret;
 }
 
-- (void)setSelectedVideoTrack:(SGTrack *)selectedVideoTrack
+- (NSArray <SGCapacity *> *)capacityWithTrack:(NSArray <SGTrack *> *)tracks
 {
-    NSAssert(selectedVideoTrack, @"Invalid Video Track");
-    SGLockCondEXE10(self.lock, ^BOOL {
-        return self->_selected_video_track != selectedVideoTrack;
-    }, ^SGBlock {
-        self->_selected_video_track = selectedVideoTrack;
-        return nil;
+    __block NSMutableArray <SGCapacity *> * ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        for (SGTrack * obj in tracks) {
+            SGCapacity * c = [[self->_capacitys objectForKey:@(obj.index)] copy];
+            c = c ? c : [[SGCapacity alloc] init];
+            [ret addObject:c];
+        }
     });
-}
-
-- (SGTrack *)selectedVideoTrack
-{
-    __block SGTrack * ret = nil;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_selected_video_track;
-    });
-    return ret;
-}
-
-- (SGCapacity *)capacityWithType:(SGMediaType)type
-{
-    __block SGCapacity * ret = nil;
-    SGLockEXE00(self.lock, ^{
-        ret = [[self.capacitys objectForKey:@(type)] copy];
-    });
-    return ret ? ret : [[SGCapacity alloc] init];
-}
-
-- (BOOL)isAudioFinished
-{
-    __block BOOL ret = NO;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_is_audio_finished;
-    });
-    return ret;
-}
-
-- (BOOL)isVideoFinished
-{
-    __block BOOL ret = NO;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_is_video_finished;
-    });
-    return ret;
-}
-
-- (BOOL)isAudioAvailable
-{
-    __block BOOL ret = NO;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_selected_audio_track ? YES : NO;
-    });
-    return ret;
-}
-
-- (BOOL)isVideoAvailable
-{
-    __block BOOL ret = NO;
-    SGLockEXE00(self.lock, ^{
-        ret = self->_selected_video_track ? YES : NO;
-    });
-    return ret;
+    return [ret copy];
 }
 
 #pragma mark - Interface
 
 - (BOOL)open
 {
-    return SGLockCondEXE11(self.lock, ^BOOL {
+    return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state == SGFrameOutputStateNone;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateOpening];
     }, ^BOOL(SGBlock block) {
         block();
-        return [self.output open];
+        return [self->_output open];
     });
 }
 
 - (BOOL)start
 {
-    return SGLockCondEXE11(self.lock, ^BOOL {
+    return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state == SGFrameOutputStateOpened;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateReading];
     }, ^BOOL(SGBlock block) {
         block();
-        return [self.output resume];
+        return [self->_output resume];
     });
 }
 
 - (BOOL)close
 {
-    return SGLockCondEXE11(self.lock, ^BOOL {
+    return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state != SGFrameOutputStateClosed;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        [self.output close];
-        [self.audioDecoder close];
-        [self.videoDecoder close];
+        [self->_output close];
+        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGAsyncDecoder * obj, BOOL * stop) {
+            [obj close];
+        }];
         return YES;
     });
 }
 
-- (BOOL)pause:(SGMediaType)type
+- (BOOL)pause:(NSArray <SGTrack *> *)tracks
 {
-    if (type == SGMediaTypeAudio) {
-        [self.audioDecoder pause];
-    } else if (type == SGMediaTypeVideo) {
-        [self.videoDecoder pause];
-    }
-    return YES;
+    return SGLockEXE00(self->_lock, ^{
+        for (SGTrack * obj in tracks) {
+            SGAsyncDecoder * d = [self->_decoders objectForKey:@(obj.index)];
+            [d pause];
+        }
+    });
 }
 
-- (BOOL)resume:(SGMediaType)type
+- (BOOL)resume:(NSArray <SGTrack *> *)tracks
 {
-    if (type == SGMediaTypeAudio) {
-        [self.audioDecoder resume];
-    } else if (type == SGMediaTypeVideo) {
-        [self.videoDecoder resume];
-    }
-    return YES;
+    return SGLockEXE00(self->_lock, ^{
+        for (SGTrack * obj in tracks) {
+            SGAsyncDecoder * d = [self->_decoders objectForKey:@(obj.index)];
+            [d resume];
+        }
+    });
 }
 
 - (BOOL)seekable
 {
-    return [self.output seekable];
+    return [self->_output seekable];
 }
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
 {
     SGWeakify(self)
-    return [self.output seekToTime:time result:^(CMTime time, NSError * error) {
+    return [self->_output seekToTime:time result:^(CMTime time, NSError * error) {
         SGStrongify(self)
         if (!error) {
-            [self.audioDecoder flush];
-            [self.videoDecoder flush];
+            [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGAsyncDecoder * obj, BOOL * stop) {
+                [obj flush];
+            }];
         }
         if (result) {
             result(time, error);
@@ -263,33 +219,49 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
     }];
 }
 
+#pragma mark - Internal
+
+- (void)openDecodersIfNeeded
+{
+    for (SGTrack * obj in self->_selected_tracks) {
+        SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(obj.index)];
+        if (!decoder) {
+            id <SGDecodable> decodable = [[SGDecoder alloc] init];
+            decodable.index = obj.index;
+            decoder = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
+            decoder.delegate = self;
+            [self->_decoders setObject:decoder forKey:@(obj.index)];
+            [decoder open];
+        }
+    }
+}
+
 #pragma mark - SGPacketOutputDelegate
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
 {
-    SGLockEXE10(self.lock, ^SGBlock {
+    SGLockEXE10(self->_lock, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
         switch (state) {
             case SGPacketOutputStateOpened: {
                 b1 = [self setState:SGFrameOutputStateOpened];
+                uint32_t nb_audio_track = 0;
+                uint32_t nb_video_track = 0;
+                NSMutableArray * tracks = [NSMutableArray array];
                 for (SGTrack * obj in packetOutput.tracks) {
-                    if (!self->_selected_audio_track && obj.type == SGMediaTypeAudio) {
-                        self->_selected_audio_track = obj;
-                        self.audioDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGAudioDecoder alloc] init]];
-                        self.audioDecoder.delegate = self;
-                        b2 = ^{
-                            [self.audioDecoder open];
-                        };
+                    if (obj.type == SGMediaTypeAudio && nb_audio_track == 0) {
+                        [tracks addObject:obj];
+                        nb_audio_track += 1;
+                    } else if (obj.type == SGMediaTypeVideo && nb_video_track == 0) {
+                        [tracks addObject:obj];
+                        nb_video_track += 1;
                     }
-                    if (!self->_selected_video_track && obj.type == SGMediaTypeVideo) {
-                        self->_selected_video_track = obj;
-                        self.videoDecoder = [[SGAsyncDecoder alloc] initWithDecodable:[[SGVideoDecoder alloc] init]];
-                        self.videoDecoder.delegate = self;
-                        b3 = ^{
-                            [self.videoDecoder open];
-                        };
+                    if (nb_audio_track && nb_video_track) {
+                        break;
                     }
                 }
+                self->_selected_tracks = [tracks copy];
+                [self openDecodersIfNeeded];
             }
                 break;
             case SGPacketOutputStateReading:
@@ -300,8 +272,9 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
                 break;
             case SGPacketOutputStateFinished: {
                 b1 = ^{
-                    [self.audioDecoder finish];
-                    [self.videoDecoder finish];
+                    [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber * key, SGAsyncDecoder * obj, BOOL * stop) {
+                        [obj finish];
+                    }];
                 };
             }
                 break;
@@ -320,15 +293,12 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
-    __block SGAsyncDecoder * decoder = nil;
-    SGLockEXE00(self.lock, ^{
-        if (self->_selected_audio_track && self->_selected_audio_track.index == packet.index) {
-            decoder = self.audioDecoder;
-        } else if (self->_selected_video_track && self->_selected_video_track.index == packet.index) {
-            decoder = self.videoDecoder;
-        }
+    SGLockEXE10(self->_lock, ^SGBlock{
+        SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(packet.index)];
+        return ^{
+            [decoder putPacket:packet];
+        };
     });
-    [decoder putPacket:packet];
 }
 
 #pragma mark - SGDecoderDelegate
@@ -340,41 +310,53 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self.output)
 
 - (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
-    SGMediaType type = decoder.decodable.type;
     capacity = [capacity copy];
-    SGLockCondEXE11(self.lock, ^BOOL {
-        SGCapacity * last = [self.capacitys objectForKey:@(type)];
-        return ![last isEqualToCapacity:capacity];
+    __block SGTrack * track = nil;
+    SGLockCondEXE11(self->_lock, ^BOOL {
+        for (SGTrack * obj in self->_selected_tracks) {
+            if (obj.index == decoder.decodable.index) {
+                track = obj;
+                break;
+            }
+        }
+        return track && ![[self->_capacitys objectForKey:@(track.index)] isEqualToCapacity:capacity];
     }, ^SGBlock {
+        [self->_capacitys setObject:capacity forKey:@(track.index)];
         SGBlock b1 = ^{};
-        [self.capacitys setObject:capacity forKey:@(type)];
-        SGCapacity * audio = [self.capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity * video = [self.capacitys objectForKey:@(SGMediaTypeVideo)];
-        self->_is_audio_finished = (!audio || audio.isEmpty) && self.output.state == SGPacketOutputStateFinished;
-        self->_is_video_finished = (!video || video.isEmpty) && self.output.state == SGPacketOutputStateFinished;
-        if ((!self->_selected_audio_track || self->_is_audio_finished) &&
-            (!self->_selected_video_track || self->_is_video_finished)) {
+        uint64_t size = 0;
+        uint32_t is_enough = 1;
+        uint32_t is_finished = self->_output.state == SGPacketOutputStateFinished;
+        NSMutableArray * finished_tracks = [NSMutableArray array];
+        for (SGTrack * obj in self->_selected_tracks) {
+            SGCapacity * c = [self->_capacitys objectForKey:@(obj.index)];
+            size += c.size;
+            is_enough = is_enough && c.isEnough;
+            if (is_finished && (!c || c.isEmpty)) {
+                [finished_tracks addObject:obj];
+            }
+        }
+        self->_finished_tracks = [finished_tracks copy];
+        if ([self->_selected_tracks isEqualToArray:self->_finished_tracks]) {
             b1 = [self setState:SGFrameOutputStateFinished];
         }
-        BOOL paused = (audio.size + video.size > 15 * 1024 * 1024) || ((!self->_selected_audio_track || audio.isEnough) && (!self->_selected_video_track || video.isEnough));
         return ^{
-            if (paused) {
-                [self.output pause];
+            if (is_enough || (size > 15 * 1024 * 1024)) {
+                [self->_output pause];
             } else {
-                [self.output resume];
+                [self->_output resume];
             }
             b1();
         };
     }, ^BOOL(SGBlock block) {
         block();
-        [self.delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
+        [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] track:track];
         return YES;
     });
 }
 
 - (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
 {
-    [self.delegate frameOutput:self didOutputFrame:frame];
+    [self->_delegate frameOutput:self didOutputFrame:frame];
 }
 
 @end

@@ -23,7 +23,13 @@
 - (NSDictionary *)metadata;
 - (NSArray <SGTrack *> *)tracks;
 
-@property (nonatomic, strong) SGTrack * selectedAudioTrack;
-@property (nonatomic, strong) SGTrack * selectedVideoTrack;
+@property (nonatomic, copy, readonly) NSArray <SGTrack *> * selectedAudioTracks;
+@property (nonatomic, copy, readonly) NSArray <NSNumber *> * selectedAudioWeights;
+
+- (BOOL)selectAudioTracks:(NSArray <SGTrack *> *)tracks weights:(NSArray <NSNumber *> *)weights;
+
+@property (nonatomic, strong, readonly) SGTrack * selectedVideoTrack;
+
+- (BOOL)selectVideoTrack:(SGTrack *)track;
 
 @end

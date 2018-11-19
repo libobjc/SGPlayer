@@ -14,7 +14,7 @@
 
 @protocol SGDecodable <NSObject>
 
-- (SGMediaType)type;
+@property (nonatomic) uint32_t index;
 
 - (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet;
 - (void)flush;

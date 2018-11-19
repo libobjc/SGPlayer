@@ -75,4 +75,27 @@
     self.count += capacity.count;
 }
 
+- (SGCapacity *)minimum:(SGCapacity *)capacity
+{
+    if (!capacity) {
+        return self;
+    }
+    if (CMTimeCompare(self.duration, capacity.duration) < 0) {
+        return self;
+    } else if (CMTimeCompare(self.duration, capacity.duration) > 0) {
+        return capacity;
+    }
+    if (self.count < capacity.count) {
+        return self;
+    } else if (self.count > capacity.count) {
+        return capacity;
+    }
+    if (self.size < capacity.size) {
+        return self;
+    } else if (self.size > capacity.size) {
+        return capacity;
+    }
+    return self;
+}
+
 @end
