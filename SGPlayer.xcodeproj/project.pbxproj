@@ -547,12 +547,12 @@
 		9CE71924219C480000256485 /* SGSegment+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71923219C47FF00256485 /* SGSegment+Internal.h */; };
 		9CE71925219C480000256485 /* SGSegment+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71923219C47FF00256485 /* SGSegment+Internal.h */; };
 		9CE71926219C480000256485 /* SGSegment+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71923219C47FF00256485 /* SGSegment+Internal.h */; };
-		9CE71929219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGURLDemuxerFunnel.h */; };
-		9CE7192A219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGURLDemuxerFunnel.h */; };
-		9CE7192B219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGURLDemuxerFunnel.h */; };
-		9CE7192C219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGURLDemuxerFunnel.m */; };
-		9CE7192D219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGURLDemuxerFunnel.m */; };
-		9CE7192E219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGURLDemuxerFunnel.m */; };
+		9CE71929219C48AC00256485 /* SGDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGDemuxerFunnel.h */; };
+		9CE7192A219C48AC00256485 /* SGDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGDemuxerFunnel.h */; };
+		9CE7192B219C48AC00256485 /* SGDemuxerFunnel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CE71927219C48AC00256485 /* SGDemuxerFunnel.h */; };
+		9CE7192C219C48AC00256485 /* SGDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGDemuxerFunnel.m */; };
+		9CE7192D219C48AC00256485 /* SGDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGDemuxerFunnel.m */; };
+		9CE7192E219C48AC00256485 /* SGDemuxerFunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CE71928219C48AC00256485 /* SGDemuxerFunnel.m */; };
 		9CEBCC9D217EF8E900430024 /* SGTrack+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEBCC9B217EF8E900430024 /* SGTrack+Internal.h */; };
 		9CEBCCA2217F109000430024 /* SGPacket+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEBCCA0217F109000430024 /* SGPacket+Internal.h */; };
 		9CEBCCA8217F19BE00430024 /* SGFrame+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CEBCCA6217F19BE00430024 /* SGFrame+Internal.h */; };
@@ -808,8 +808,8 @@
 		9CE7191B219C408300256485 /* SGSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSegment.h; sourceTree = "<group>"; };
 		9CE7191C219C408300256485 /* SGSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGSegment.m; sourceTree = "<group>"; };
 		9CE71923219C47FF00256485 /* SGSegment+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SGSegment+Internal.h"; sourceTree = "<group>"; };
-		9CE71927219C48AC00256485 /* SGURLDemuxerFunnel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLDemuxerFunnel.h; sourceTree = "<group>"; };
-		9CE71928219C48AC00256485 /* SGURLDemuxerFunnel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLDemuxerFunnel.m; sourceTree = "<group>"; };
+		9CE71927219C48AC00256485 /* SGDemuxerFunnel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDemuxerFunnel.h; sourceTree = "<group>"; };
+		9CE71928219C48AC00256485 /* SGDemuxerFunnel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDemuxerFunnel.m; sourceTree = "<group>"; };
 		9CEBCC9B217EF8E900430024 /* SGTrack+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGTrack+Internal.h"; sourceTree = "<group>"; };
 		9CEBCCA0217F109000430024 /* SGPacket+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGPacket+Internal.h"; sourceTree = "<group>"; };
 		9CEBCCA6217F19BE00430024 /* SGFrame+Internal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SGFrame+Internal.h"; sourceTree = "<group>"; };
@@ -1197,8 +1197,8 @@
 				9C0DF027215A2FB9007142DB /* SGDemuxable.h */,
 				9C95D2BC2152335400079B38 /* SGURLDemuxer.h */,
 				9C95D2BB2152335400079B38 /* SGURLDemuxer.m */,
-				9CE71927219C48AC00256485 /* SGURLDemuxerFunnel.h */,
-				9CE71928219C48AC00256485 /* SGURLDemuxerFunnel.m */,
+				9CE71927219C48AC00256485 /* SGDemuxerFunnel.h */,
+				9CE71928219C48AC00256485 /* SGDemuxerFunnel.m */,
 				9CB01C91219E863D00B36CFA /* SGMutilDemuxer.h */,
 				9CB01C92219E863D00B36CFA /* SGMutilDemuxer.m */,
 				9C0A6F32219C33EA0027D5B1 /* SGConcatDemuxer.h */,
@@ -1448,7 +1448,7 @@
 				9C86385D21904A0900D730EC /* version.h in Headers */,
 				9C86385E21904A0900D730EC /* SGAudioFrameFilter.h in Headers */,
 				9C86385F21904A0900D730EC /* SGURLDemuxer.h in Headers */,
-				9CE7192A219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */,
+				9CE7192A219C48AC00256485 /* SGDemuxerFunnel.h in Headers */,
 				9C86386021904A0900D730EC /* SGPacketOutput.h in Headers */,
 				9C86386121904A0900D730EC /* SGPacket.h in Headers */,
 				9C86386221904A0900D730EC /* SGClock.h in Headers */,
@@ -1561,7 +1561,7 @@
 				9C8637D1219045CF00D730EC /* samplefmt.h in Headers */,
 				9CD79F032190068E00E39A7D /* SGPLFScreen.h in Headers */,
 				9C8637C82190454200D730EC /* channel_layout.h in Headers */,
-				9CE7192B219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */,
+				9CE7192B219C48AC00256485 /* SGDemuxerFunnel.h in Headers */,
 				9CD79F052190068E00E39A7D /* SGPLFGLContext.h in Headers */,
 				9C863791219043EA00D730EC /* swscale.h in Headers */,
 				9CD79F062190068E00E39A7D /* SGPLFOpenGL.h in Headers */,
@@ -1699,7 +1699,7 @@
 				9CE6F53F2004D97D00D1F4C8 /* SGPLFImage.h in Headers */,
 				9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */,
 				9CF15E022011ADB500585326 /* SGRenderable.h in Headers */,
-				9CE71929219C48AC00256485 /* SGURLDemuxerFunnel.h in Headers */,
+				9CE71929219C48AC00256485 /* SGDemuxerFunnel.h in Headers */,
 				9CE6F5532004D97D00D1F4C8 /* SGPLFView.h in Headers */,
 				9C1944E92019A9AA00184416 /* SGGLSphereModel.h in Headers */,
 				9C2536501FAB199500BBFA5C /* SGPlayer.h in Headers */,
@@ -1942,7 +1942,7 @@
 				9C86382F21904A0900D730EC /* SGGLViewport.m in Sources */,
 				9C86383021904A0900D730EC /* SGAsset.m in Sources */,
 				9C86383121904A0900D730EC /* SGConfiguration.m in Sources */,
-				9CE7192D219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */,
+				9CE7192D219C48AC00256485 /* SGDemuxerFunnel.m in Sources */,
 				9C86383221904A0900D730EC /* SGTime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2017,7 +2017,7 @@
 				9CD79ED62190068E00E39A7D /* SGGLViewport.m in Sources */,
 				9CD79ED72190068E00E39A7D /* SGAsset.m in Sources */,
 				9CD79ED82190068E00E39A7D /* SGConfiguration.m in Sources */,
-				9CE7192E219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */,
+				9CE7192E219C48AC00256485 /* SGDemuxerFunnel.m in Sources */,
 				9CD79ED92190068E00E39A7D /* SGTime.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2061,7 +2061,7 @@
 				9CA57935219DAA270061093B /* SGCodecDescription.m in Sources */,
 				9C329AAE2005E3F800252B10 /* SGActivity.m in Sources */,
 				9C8D4E83200E1ACA00ED8A58 /* SGError.m in Sources */,
-				9CE7192C219C48AC00256485 /* SGURLDemuxerFunnel.m in Sources */,
+				9CE7192C219C48AC00256485 /* SGDemuxerFunnel.m in Sources */,
 				9C95D2BD2152335400079B38 /* SGURLDemuxer.m in Sources */,
 				9C3082C4212518EC00B44298 /* SGVideoDecoder.m in Sources */,
 				9C5C6CAD2018952300863EB5 /* SGGLDisplayLink.m in Sources */,
