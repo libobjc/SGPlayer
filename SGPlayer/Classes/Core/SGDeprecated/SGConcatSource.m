@@ -207,7 +207,7 @@ static int SGConcatSourceInterruptHandler(void * context)
     return self.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time completionHandler:(SGSeekResultBlock)completionHandler
+- (BOOL)seekToTime:(CMTime)time completionHandler:(SGSeekResult)completionHandler
 {
     if (![self seekableToTime:time])
     {

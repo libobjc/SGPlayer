@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGDemuxable.h"
 
-@protocol SGPacketOutputDelegate;
-
 typedef NS_ENUM(uint32_t, SGPacketOutputState) {
     SGPacketOutputStateNone,
     SGPacketOutputStateOpening,
@@ -23,28 +21,30 @@ typedef NS_ENUM(uint32_t, SGPacketOutputState) {
     SGPacketOutputStateFailed,
 };
 
+@protocol SGPacketOutputDelegate;
+
 @interface SGPacketOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDemuxable:(id <SGDemuxable>)demuxable;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable;
 
-@property (nonatomic, weak) id <SGPacketOutputDelegate> delegate;
+@property (nonatomic, weak) id<SGPacketOutputDelegate> delegate;
 
-- (SGPacketOutputState)state;
 - (NSError *)error;
+- (SGPacketOutputState)state;
 
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-- (NSArray <SGTrack *> *)tracks;
+- (NSArray<SGTrack *> *)tracks;
 
 - (BOOL)open;
 - (BOOL)close;
 - (BOOL)pause;
 - (BOOL)resume;
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 @end
 

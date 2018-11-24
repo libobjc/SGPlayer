@@ -50,7 +50,7 @@ typedef NS_ENUM(uint32_t, SGSourceState)
 
 - (BOOL)seekable;
 - (BOOL)seekableToTime:(CMTime)time;
-- (BOOL)seekToTime:(CMTime)time completionHandler:(SGSeekResultBlock)completionHandler;
+- (BOOL)seekToTime:(CMTime)time completionHandler:(SGSeekResult)completionHandler;
 
 @end
 

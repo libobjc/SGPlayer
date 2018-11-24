@@ -18,7 +18,7 @@
     SGPointerMap *_timestamps;
     NSArray<SGTrack *> *_tracks;
     NSArray<id<SGDemuxable>> *_demuxables;
-    NSMutableArray<id<SGDemuxable>> *_demuxables_finished;
+    NSMutableArray<id<SGDemuxable>> *_finished_demuxables;
 }
 
 @end
@@ -29,7 +29,7 @@
 {
     if (self = [super init]) {
         self->_demuxables = demuxables;
-        self->_demuxables_finished = [NSMutableArray array];
+        self->_finished_demuxables = [NSMutableArray array];
     }
     return self;
 }
@@ -132,7 +132,7 @@
         [obj seekToTime:time];
     }
     [self->_timestamps removeAllObjects];
-    [self->_demuxables_finished removeAllObjects];
+    [self->_finished_demuxables removeAllObjects];
     return nil;
 }
 
@@ -142,7 +142,7 @@
         id<SGDemuxable> demuxable = nil;
         CMTime minimum = kCMTimePositiveInfinity;
         for (id<SGDemuxable> obj in self->_demuxables) {
-            if ([self->_demuxables_finished containsObject:obj]) {
+            if ([self->_finished_demuxables containsObject:obj]) {
                 continue;
             }
             NSValue *value = [self->_timestamps objectForKey:obj];
@@ -162,7 +162,7 @@
                                   SGOperationCodeMutilDemuxerNext);
         }
         if ([demuxable nextPacket:packet]) {
-            [self->_demuxables_finished addObject:demuxable];
+            [self->_finished_demuxables addObject:demuxable];
             continue;
         }
         CMTime t = (*packet).decodeTimeStamp;

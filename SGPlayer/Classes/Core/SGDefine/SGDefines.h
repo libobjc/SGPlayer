@@ -49,5 +49,5 @@ typedef NS_ENUM(uint32_t, SGScalingMode) {
 };
 
 typedef void (^SGBlock)(void);
-typedef void (^SGSeekResultBlock)(CMTime time, NSError * error);
-typedef BOOL (^SGTimeReaderBlock)(CMTime * desire, BOOL * drop);
+typedef void (^SGSeekResult)(CMTime time, NSError * error);
+typedef BOOL (^SGTimeReader)(CMTime * desire, BOOL * drop);

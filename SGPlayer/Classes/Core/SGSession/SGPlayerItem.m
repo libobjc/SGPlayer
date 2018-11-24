@@ -16,24 +16,24 @@
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
 
 {
-    NSLock * _lock;
-    NSError * _error;
-    SGMixer * _audioMixer;
-    SGFrameOutput * _output;
+    NSLock *_lock;
+    NSError *_error;
+    SGMixer *_audioMixer;
+    SGFrameOutput *_output;
     SGPlayerItemState _state;
     int32_t _is_audio_finished;
     int32_t _is_video_finished;
-    SGObjectQueue * _audio_queue;
-    SGObjectQueue * _video_queue;
-    SGTrack * _selected_video_track;
-    NSArray <SGTrack *> * _selected_audio_tracks;
-    NSArray <NSNumber *> * _selected_audio_weights;
-    NSMutableDictionary <NSNumber *, SGCapacity *> * _capacitys;
+    SGObjectQueue *_audio_queue;
+    SGObjectQueue *_video_queue;
+    SGTrack *_selected_video_track;
+    NSArray<SGTrack *> *_selected_audio_tracks;
+    NSArray<NSNumber *> *_selected_audio_weights;
+    NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
 }
 
-@property (nonatomic, weak) id <SGPlayerItemDelegate> delegate;
-@property (nonatomic, strong) SGFrameFilter * audioFilter;
-@property (nonatomic, strong) SGFrameFilter * videoFilter;
+@property (nonatomic, weak) id<SGPlayerItemDelegate> delegate;
+@property (nonatomic, strong) SGFrameFilter *audioFilter;
+@property (nonatomic, strong) SGFrameFilter *videoFilter;
 
 @end
 
@@ -74,9 +74,18 @@
 
 SGGet0Map(CMTime, duration, self->_output)
 SGGet0Map(NSDictionary *, metadata, self->_output)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
+SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
 
 #pragma mark - Setter & Getter
+
+- (NSError *)error
+{
+    __block NSError *ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_error copy];
+    });
+    return ret;
+}
 
 - (SGBlock)setState:(SGPlayerItemState)state
 {
@@ -98,18 +107,9 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     return ret;
 }
 
-- (NSError *)error
-{
-    __block NSError * ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_error copy];
-    });
-    return ret;
-}
-
 - (SGCapacity *)capacityWithType:(SGMediaType)type
 {
-    __block SGCapacity * ret = nil;
+    __block SGCapacity *ret = nil;
     SGLockEXE00(self->_lock, ^{
          ret = [[self->_capacitys objectForKey:@(type)] copy];
     });
@@ -142,7 +142,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     return ret;
 }
 
-- (BOOL)selectAudioTracks:(NSArray <SGTrack *> *)tracks weights:(NSArray <NSNumber *> *)weights
+- (BOOL)selectAudioTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return tracks.count > 0 || weights.count > 0;
@@ -151,7 +151,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
         if (tracks.count > 0 && ![self->_selected_audio_tracks isEqualToArray:tracks]) {
             self->_selected_audio_weights = nil;
             self->_selected_audio_tracks = [tracks copy];
-            NSMutableArray * p = [NSMutableArray arrayWithArray:self->_selected_audio_tracks];
+            NSMutableArray *p = [NSMutableArray arrayWithArray:self->_selected_audio_tracks];
             if (self->_selected_video_track) {
                 [p addObject:self->_selected_video_track];
             }
@@ -163,7 +163,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
             self->_selected_audio_weights = [weights copy];
         }
         if (self->_selected_audio_weights.count == 0) {
-            NSMutableArray * weights = [NSMutableArray array];
+            NSMutableArray *weights = [NSMutableArray array];
             for (int i = 0; i < tracks.count; i++) {
                 [weights addObject:@(100)];
             }
@@ -173,18 +173,18 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     });
 }
 
-- (NSArray <SGTrack *> *)selectedAudioTracks
+- (NSArray<SGTrack *> *)selectedAudioTracks
 {
-    __block NSArray <SGTrack *> * ret = nil;
+    __block NSArray<SGTrack *> *ret = nil;
     SGLockEXE00(self->_lock, ^{
         ret = [self->_selected_audio_tracks copy];
     });
     return ret;
 }
 
-- (NSArray <NSNumber *> *)selectedAudioWeights
+- (NSArray<NSNumber *> *)selectedAudioWeights
 {
-    __block NSArray <NSNumber *> * ret = nil;
+    __block NSArray<NSNumber *> *ret = nil;
     SGLockEXE00(self->_lock, ^{
         ret = [self->_selected_audio_weights copy];
     });
@@ -197,7 +197,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
         return self->_selected_video_track != track && track;
     }, ^SGBlock {
         self->_selected_video_track = track;
-        NSMutableArray * p = [NSMutableArray arrayWithArray:self->_selected_audio_tracks];
+        NSMutableArray *p = [NSMutableArray arrayWithArray:self->_selected_audio_tracks];
         if (self->_selected_video_track) {
             [p addObject:self->_selected_video_track];
         }
@@ -209,7 +209,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 
 - (SGTrack *)selectedVideoTrack
 {
-    __block SGTrack * ret = nil;
+    __block SGTrack *ret = nil;
     SGLockEXE00(self->_lock, ^{
         ret = self->_selected_video_track;
     });
@@ -264,10 +264,10 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     return self->_output.seekable;
 }
 
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
     SGWeakify(self)
-    return ![self->_output seekToTime:time result:^(CMTime time, NSError * error) {
+    return ![self->_output seekToTime:time result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
             [self->_audioFilter flush];
@@ -282,16 +282,16 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     }];
 }
 
-- (SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader
+- (SGFrame *)copyAudioFrame:(SGTimeReader)timeReader
 {
-    SGFrame * ret = nil;
+    SGFrame *ret = nil;
     [self->_audio_queue getObjectAsync:&ret timeReader:timeReader]();
     return ret;
 }
 
-- (SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader
+- (SGFrame *)copyVideoFrame:(SGTimeReader)timeReader
 {
-    SGFrame * ret = nil;
+    SGFrame *ret = nil;
     [self->_video_queue getObjectAsync:&ret timeReader:timeReader]();
     return ret;
 }
@@ -303,10 +303,10 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     switch (state) {
         case SGFrameOutputStateOpened: {
             SGLockEXE10(self->_lock, ^SGBlock {
-                NSMutableArray * video = [NSMutableArray array];
-                NSMutableArray * audio = [NSMutableArray array];
-                NSMutableArray * weight = [NSMutableArray array];
-                for (SGTrack * obj in frameOutput.selectedTracks) {
+                NSMutableArray *video = [NSMutableArray array];
+                NSMutableArray *audio = [NSMutableArray array];
+                NSMutableArray *weight = [NSMutableArray array];
+                for (SGTrack *obj in frameOutput.selectedTracks) {
                     if (obj.type == SGMediaTypeAudio) {
                         [audio addObject:obj];
                         [weight addObject:@(100)];
@@ -350,7 +350,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track
 {
     capacity = [capacity copy];
-    __block SGCapacity * additional = nil;
+    __block SGCapacity *additional = nil;
     SGLockEXE00(self->_lock, ^{
         if (track.type == SGMediaTypeAudio) {
             additional = self->_audio_queue.capacity;
@@ -401,8 +401,8 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
         threshold = 3;
         type = SGMediaTypeVideo;
     }
-    NSMutableArray * tracks = [NSMutableArray array];
-    for (SGTrack * obj in self->_output.selectedTracks) {
+    NSMutableArray *tracks = [NSMutableArray array];
+    for (SGTrack *obj in self->_output.selectedTracks) {
         if (obj.type == type) {
             [tracks addObject:obj];
         }
@@ -412,9 +412,9 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     } else {
         [self->_output resume:tracks];
     }
-    NSArray <SGCapacity *> * capacitys = [self->_output capacityWithTrack:tracks];
-    SGCapacity * additional = nil;
-    for (SGCapacity * obj in capacitys) {
+    NSArray<SGCapacity *> *capacitys = [self->_output capacityWithTrack:tracks];
+    SGCapacity *additional = nil;
+    for (SGCapacity *obj in capacitys) {
         additional = [obj minimum:additional];
     }
     [capacity add:additional];
@@ -426,13 +426,13 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
 - (BOOL)setCapacity:(SGCapacity *)capacity type:(SGMediaType)type
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        SGCapacity * last = [self->_capacitys objectForKey:@(type)];
+        SGCapacity *last = [self->_capacitys objectForKey:@(type)];
         return ![last isEqualToCapacity:capacity];
     }, ^SGBlock {
         [self->_capacitys setObject:capacity forKey:@(type)];
-        NSMutableArray * audio_tracks = [NSMutableArray array];
-        NSMutableArray * video_tracks = [NSMutableArray array];
-        for (SGTrack * obj in self->_output.selectedTracks) {
+        NSMutableArray *audio_tracks = [NSMutableArray array];
+        NSMutableArray *video_tracks = [NSMutableArray array];
+        for (SGTrack *obj in self->_output.selectedTracks) {
             if (obj.type == SGMediaTypeAudio) {
                 [audio_tracks addObject:obj];
             } else if (obj.type == SGMediaTypeVideo) {
@@ -441,13 +441,13 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
         }
         uint32_t is_audio_finished = 1;
         uint32_t is_video_finished = 1;
-        NSArray * finished_tracks = self->_output.finishedTracks;
-        SGCapacity * audio_capacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity * video_capacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-        for (SGTrack * obj in audio_tracks) {
+        NSArray *finished_tracks = self->_output.finishedTracks;
+        SGCapacity *audio_capacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
+        SGCapacity *video_capacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+        for (SGTrack *obj in audio_tracks) {
             is_audio_finished = is_audio_finished && [finished_tracks containsObject:obj];
         }
-        for (SGTrack * obj in video_tracks) {
+        for (SGTrack *obj in video_tracks) {
             is_video_finished = is_video_finished && [finished_tracks containsObject:obj];
         }
         self->_is_audio_finished = is_audio_finished && (!audio_capacity || audio_capacity.isEmpty);

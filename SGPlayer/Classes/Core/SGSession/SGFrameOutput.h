@@ -9,7 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGAsset.h"
 #import "SGFrame.h"
-#import "SGTrack.h"
 
 typedef NS_ENUM(uint32_t, SGFrameOutputState) {
     SGFrameOutputStateNone,
@@ -31,29 +30,29 @@ typedef NS_ENUM(uint32_t, SGFrameOutputState) {
 
 - (instancetype)initWithAsset:(SGAsset *)asset;
 
-@property (nonatomic, weak) id <SGFrameOutputDelegate> delegate;
+@property (nonatomic, weak) id<SGFrameOutputDelegate> delegate;
 
-- (SGFrameOutputState)state;
 - (NSError *)error;
+- (SGFrameOutputState)state;
 
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-- (NSArray <SGTrack *> *)tracks;
+- (NSArray<SGTrack *> *)tracks;
 
 - (BOOL)open;
 - (BOOL)start;
 - (BOOL)close;
-- (BOOL)pause:(NSArray <SGTrack *> *)tracks;
-- (BOOL)resume:(NSArray <SGTrack *> *)tracks;
+- (BOOL)pause:(NSArray<SGTrack *> *)tracks;
+- (BOOL)resume:(NSArray<SGTrack *> *)tracks;
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
-@property (nonatomic, copy, readonly) NSArray <SGTrack *> * finishedTracks;
-@property (nonatomic, copy, readonly) NSArray <SGTrack *> * selectedTracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * finishedTracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * selectedTracks;
 
-- (BOOL)selectTracks:(NSArray <SGTrack *> *)tracks;
+- (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks;
 
-- (NSArray <SGCapacity *> *)capacityWithTrack:(NSArray <SGTrack *> *)tracks;
+- (NSArray<SGCapacity *> *)capacityWithTrack:(NSArray<SGTrack *> *)tracks;
 
 @end
 

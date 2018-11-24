@@ -400,7 +400,7 @@
     return [self.currentItem seekable];
 }
 
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
     __block int32_t is_seeking = 0;
     BOOL ret = SGLockCondEXE10(self.lock, ^BOOL {
@@ -478,7 +478,7 @@
     }
 }
 
-- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader
+- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader
 {
     if (renderable == self.audioRenderer) {
         return [self.currentItem copyAudioFrame:timeReader];

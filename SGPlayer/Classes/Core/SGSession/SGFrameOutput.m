@@ -22,10 +22,10 @@
     NSError * _error;
     SGPacketOutput * _output;
     SGFrameOutputState _state;
-    NSArray <SGTrack *> * _selected_tracks;
-    NSArray <SGTrack *> * _finished_tracks;
-    NSMutableDictionary <NSNumber *, SGCapacity *> * _capacitys;
-    NSMutableDictionary <NSNumber *, SGAsyncDecoder *> * _decoders;
+    NSArray<SGTrack *> * _selected_tracks;
+    NSArray<SGTrack *> * _finished_tracks;
+    NSMutableDictionary<NSNumber *, SGCapacity *> * _capacitys;
+    NSMutableDictionary<NSNumber *, SGAsyncDecoder *> * _decoders;
 }
 
 @end
@@ -62,9 +62,18 @@
 
 SGGet0Map(CMTime, duration, self->_output)
 SGGet0Map(NSDictionary *, metadata, self->_output)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
+SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
 
 #pragma mark - Setter & Getter
+
+- (NSError *)error
+{
+    __block NSError * ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_error copy];
+    });
+    return ret;
+}
 
 - (SGBlock)setState:(SGFrameOutputState)state
 {
@@ -86,25 +95,16 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     return ret;
 }
 
-- (NSError *)error
+- (NSArray<SGTrack *> *)finishedTracks
 {
-    __block NSError * ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_error copy];
-    });
-    return ret;
-}
-
-- (NSArray <SGTrack *> *)finishedTracks
-{
-    __block NSArray <SGTrack *> * ret = nil;
+    __block NSArray<SGTrack *> * ret = nil;
     SGLockEXE00(self->_lock, ^{
         ret = [self->_finished_tracks copy];
     });
     return ret;
 }
 
-- (BOOL)selectTracks:(NSArray <SGTrack *> *)tracks
+- (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return ![self->_selected_tracks isEqualToArray:tracks];
@@ -115,18 +115,18 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     });
 }
 
-- (NSArray <SGTrack *> *)selectedTracks
+- (NSArray<SGTrack *> *)selectedTracks
 {
-    __block NSArray <SGTrack *> * ret = nil;
+    __block NSArray<SGTrack *> * ret = nil;
     SGLockEXE00(self->_lock, ^{
         ret = [self->_selected_tracks copy];
     });
     return ret;
 }
 
-- (NSArray <SGCapacity *> *)capacityWithTrack:(NSArray <SGTrack *> *)tracks
+- (NSArray<SGCapacity *> *)capacityWithTrack:(NSArray<SGTrack *> *)tracks
 {
-    __block NSMutableArray <SGCapacity *> * ret = [NSMutableArray array];
+    __block NSMutableArray<SGCapacity *> * ret = [NSMutableArray array];
     SGLockEXE00(self->_lock, ^{
         for (SGTrack * obj in tracks) {
             SGCapacity * c = [[self->_capacitys objectForKey:@(obj.index)] copy];
@@ -179,7 +179,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     });
 }
 
-- (BOOL)pause:(NSArray <SGTrack *> *)tracks
+- (BOOL)pause:(NSArray<SGTrack *> *)tracks
 {
     return SGLockEXE00(self->_lock, ^{
         for (SGTrack * obj in tracks) {
@@ -189,7 +189,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     });
 }
 
-- (BOOL)resume:(NSArray <SGTrack *> *)tracks
+- (BOOL)resume:(NSArray<SGTrack *> *)tracks
 {
     return SGLockEXE00(self->_lock, ^{
         for (SGTrack * obj in tracks) {
@@ -204,7 +204,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     return [self->_output seekable];
 }
 
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
     SGWeakify(self)
     return [self->_output seekToTime:time result:^(CMTime time, NSError * error) {
@@ -227,7 +227,7 @@ SGGet0Map(NSArray <SGTrack *> *, tracks, self->_output)
     for (SGTrack * obj in self->_selected_tracks) {
         SGAsyncDecoder * decoder = [self->_decoders objectForKey:@(obj.index)];
         if (!decoder) {
-            id <SGDecodable> decodable = nil;
+            id<SGDecodable> decodable = nil;
             if (obj.type == SGMediaTypeAudio) {
                 decodable = [[SGAudioDecoder alloc] init];
             } else if (obj.type == SGMediaTypeVideo) {

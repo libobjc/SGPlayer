@@ -83,7 +83,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)pause;
 
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 @end
 

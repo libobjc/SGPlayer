@@ -43,7 +43,7 @@ typedef NS_ENUM(uint32_t, SGRenderableState) {
 
 - (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
 - (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
-- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReaderBlock)timeReader;
+- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
 
 @end
 

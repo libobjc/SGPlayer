@@ -184,7 +184,7 @@
     return ^{};
 }
 
-- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReaderBlock)timeReader
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader
 {
     [self.condition lock];
     while (self.objects.count <= 0) {
@@ -233,7 +233,7 @@
     return ^{};
 }
 
-- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReaderBlock)timeReader
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader
 {
     [self.condition lock];
     if (self.objects.count <= 0 || self.didDestoryed) {
@@ -254,7 +254,7 @@
     return ^{};
 }
 
-- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReaderBlock)timeReader
+- (id <SGObjectQueueItem>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReader)timeReader
 {
     CMTime desire = kCMTimeZero;
     BOOL drop = NO;

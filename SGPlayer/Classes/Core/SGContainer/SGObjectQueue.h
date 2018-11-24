@@ -52,12 +52,12 @@
 
 - (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object;
 - (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after;
-- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReaderBlock)timeReader;
+- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
 
 #pragma mark - Get Async
 
 - (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object;
-- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReaderBlock)timeReader;
+- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader;
 
 #pragma mark - Common
 

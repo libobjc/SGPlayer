@@ -33,7 +33,7 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
 - (BOOL)start;
 - (BOOL)close;
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResultBlock)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 - (SGCapacity *)capacityWithType:(SGMediaType)type;
 
@@ -43,8 +43,8 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
 @property (nonatomic, strong) SGFrameFilter * audioFilter;
 @property (nonatomic, strong) SGFrameFilter * videoFilter;
 
-- (__kindof SGFrame *)copyAudioFrame:(SGTimeReaderBlock)timeReader;
-- (__kindof SGFrame *)copyVideoFrame:(SGTimeReaderBlock)timeReader;
+- (__kindof SGFrame *)copyAudioFrame:(SGTimeReader)timeReader;
+- (__kindof SGFrame *)copyVideoFrame:(SGTimeReader)timeReader;
 
 @end
 

@@ -21,12 +21,12 @@
 
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-- (NSArray <SGTrack *> *)tracks;
+- (NSArray<SGTrack *> *)tracks;
 
-@property (nonatomic, copy, readonly) NSArray <SGTrack *> * selectedAudioTracks;
-@property (nonatomic, copy, readonly) NSArray <NSNumber *> * selectedAudioWeights;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * selectedAudioTracks;
+@property (nonatomic, copy, readonly) NSArray<NSNumber *> * selectedAudioWeights;
 
-- (BOOL)selectAudioTracks:(NSArray <SGTrack *> *)tracks weights:(NSArray <NSNumber *> *)weights;
+- (BOOL)selectAudioTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights;
 
 @property (nonatomic, strong, readonly) SGTrack * selectedVideoTrack;
 
