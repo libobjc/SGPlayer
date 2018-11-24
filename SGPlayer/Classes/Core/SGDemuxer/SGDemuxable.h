@@ -8,18 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "SGPacket.h"
-#import "SGTrack.h"
 
 @protocol SGDemuxableDelegate;
 
 @protocol SGDemuxable <NSObject>
 
-@property (nonatomic, weak) id <SGDemuxableDelegate> delegate;
-@property (nonatomic, copy) NSDictionary * options;
+@property (nonatomic, weak) id<SGDemuxableDelegate> delegate;
+@property (nonatomic, copy) NSDictionary *options;
 
 - (CMTime)duration;
 - (NSDictionary *)metadata;
-- (NSArray <SGTrack *> *)tracks;
+- (NSArray<SGTrack *> *)tracks;
 
 - (NSError *)open;
 - (NSError *)close;
@@ -31,6 +30,6 @@
 
 @protocol SGDemuxableDelegate <NSObject>
 
-- (BOOL)demuxableShouldAbortBlockingFunctions:(id <SGDemuxable>)demuxable;
+- (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable>)demuxable;
 
 @end

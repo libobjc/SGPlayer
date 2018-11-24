@@ -18,13 +18,12 @@
     int32_t _is_queue_valid;
     int32_t _is_queue_start_output;
     int32_t _is_queue_end_output;
+    SGURLDemuxer *_demuxer;
+    SGTimeLayout *_time_layout;
+    NSArray<SGTrack *> *_tracks;
+    SGObjectQueue *_object_queue;
+    CMTimeRange _actual_time_range;
 }
-
-@property (nonatomic, strong) SGURLDemuxer * demuxer;
-@property (nonatomic, strong) SGTimeLayout * timeLayout;
-@property (nonatomic, strong) SGObjectQueue * objectQueue;
-@property (nonatomic, copy) NSArray <SGTrack *> * tracks;
-@property (nonatomic) CMTimeRange actualTimeRange;
 
 @end
 
@@ -33,9 +32,9 @@
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init]) {
-        self.demuxer = [[SGURLDemuxer alloc] initWithURL:URL];
-        self.objectQueue = [[SGObjectQueue alloc] init];
-        self.overgop = YES;
+        self->_demuxer = [[SGURLDemuxer alloc] initWithURL:URL];
+        self->_object_queue = [[SGObjectQueue alloc] init];
+        self->_overgop = YES;
     }
     return self;
 }
@@ -47,45 +46,52 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(id <SGDemuxableDelegate>, delegate, self.demuxer)
-SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxer)
-SGGet0Map(NSDictionary *, options, self.demuxer)
-SGSet1Map(void, setOptions, NSDictionary *, self.demuxer)
-SGGet0Map(CMTime, duration, self.actualTimeRange)
-SGGet0Map(NSDictionary *, metadata, self.demuxer)
-SGGet0Map(NSError *, close, self.demuxer)
-SGGet0Map(NSError *, seekable, self.demuxer)
+SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxer)
+SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxer)
+SGGet0Map(NSDictionary *, options, self->_demuxer)
+SGSet1Map(void, setOptions, NSDictionary *, self->_demuxer)
+SGGet0Map(CMTime, duration, self->_actual_time_range)
+SGGet0Map(NSDictionary *, metadata, self->_demuxer)
+SGGet0Map(NSError *, close, self->_demuxer)
+SGGet0Map(NSError *, seekable, self->_demuxer)
+
+#pragma mark - Setter & Getter
+
+- (NSArray<SGTrack *> *)tracks
+{
+    return [self->_tracks copy];
+}
 
 #pragma mark - Interface
 
 - (NSError *)open
 {
-    NSError * ret = [self.demuxer open];
+    NSError *ret = [self->_demuxer open];
     if (ret) {
         return ret;
     }
-    CMTime start = CMTIME_IS_VALID(self.timeRange.start) ? self.timeRange.start : kCMTimeNegativeInfinity;
-    CMTime duration = CMTIME_IS_VALID(self.timeRange.duration) ? self.timeRange.duration : kCMTimePositiveInfinity;
-    self.actualTimeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
-                                                      CMTimeRangeMake(kCMTimeZero, self.demuxer.duration));
-    NSMutableArray <SGTrack *> * tracks = [NSMutableArray array];
-    for (SGTrack * obj in self.demuxer.tracks) {
-        if ([self.indexes containsObject:@(obj.index)]) {
+    CMTime start = CMTIME_IS_VALID(self->_timeRange.start) ? self->_timeRange.start : kCMTimeNegativeInfinity;
+    CMTime duration = CMTIME_IS_VALID(self->_timeRange.duration) ? self->_timeRange.duration : kCMTimePositiveInfinity;
+    self->_actual_time_range = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
+                                                          CMTimeRangeMake(kCMTimeZero, self->_demuxer.duration));
+    NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
+    for (SGTrack *obj in self->_demuxer.tracks) {
+        if ([self->_indexes containsObject:@(obj.index)]) {
             [tracks addObject:obj];
         }
     }
-    self.tracks = [tracks copy];
-    self.timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self.actualTimeRange.start, -1) scale:kCMTimeInvalid];
+    self->_tracks = [tracks copy];
+    self->_time_layout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_actual_time_range.start, -1) scale:kCMTimeInvalid];
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError * ret = [self.demuxer seekToTime:CMTimeAdd(time, self.actualTimeRange.start)];
+    NSError *ret = [self->_demuxer seekToTime:CMTimeAdd(time, self->_actual_time_range.start)];
     if (ret) {
         return ret;
     }
-    [self.objectQueue flush];
+    [self->_object_queue flush];
     self->_is_queue_valid = 0;
     self->_is_queue_start_output = 0;
     self->_is_queue_end_output = 0;
@@ -94,7 +100,7 @@ SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    if (!self.overgop) {
+    if (!self->_overgop) {
         return [self nextPacketInternal:packet];
     }
     return [self nextPacketInternalOvergop:packet];
@@ -102,31 +108,31 @@ SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)nextPacketInternal:(SGPacket **)packet
 {
-    NSError * ret = nil;
+    NSError *ret = nil;
     while (YES) {
-        SGPacket * pkt = nil;
-        ret = [self.demuxer nextPacket:&pkt];
+        SGPacket *pkt = nil;
+        ret = [self->_demuxer nextPacket:&pkt];
         if (ret) {
             break;
         }
-        if (![self.indexes containsObject:@(pkt.track.index)]) {
+        if (![self->_indexes containsObject:@(pkt.track.index)]) {
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, self.actualTimeRange.start) < 0) {
+        if (CMTimeCompare(pkt.timeStamp, self->_actual_time_range.start) < 0) {
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self.actualTimeRange)) >= 0) {
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_actual_time_range)) >= 0) {
             [pkt unlock];
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [pkt.codecDescription appendTimeLayout:self.timeLayout];
-        [pkt.codecDescription appendTimeRange:self.actualTimeRange];
+        [pkt.codecDescription appendTimeLayout:self->_time_layout];
+        [pkt.codecDescription appendTimeRange:self->_actual_time_range];
         [pkt fill];
-        * packet = pkt;
+        *packet = pkt;
         break;
     }
     return ret;
@@ -134,14 +140,14 @@ SGGet0Map(NSError *, seekable, self.demuxer)
 
 - (NSError *)nextPacketInternalOvergop:(SGPacket **)packet
 {
-    NSError * ret = nil;
+    NSError *ret = nil;
     while (YES) {
-        SGPacket * pkt = nil;
+        SGPacket *pkt = nil;
         if (self->_is_queue_start_output) {
-            [self.objectQueue getObjectAsync:&pkt];
+            [self->_object_queue getObjectAsync:&pkt];
             if (pkt) {
-                [pkt.codecDescription appendTimeLayout:self.timeLayout];
-                [pkt.codecDescription appendTimeRange:self.actualTimeRange];
+                [pkt.codecDescription appendTimeLayout:self->_time_layout];
+                [pkt.codecDescription appendTimeRange:self->_actual_time_range];
                 [pkt fill];
                 *packet = pkt;
                 break;
@@ -152,40 +158,40 @@ SGGet0Map(NSError *, seekable, self.demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        ret = [self.demuxer nextPacket:&pkt];
+        ret = [self->_demuxer nextPacket:&pkt];
         if (ret) {
             self->_is_queue_end_output = 1;
             continue;
         }
-        if (![self.indexes containsObject:@(pkt.track.index)]) {
+        if (![self->_indexes containsObject:@(pkt.track.index)]) {
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, self.actualTimeRange.start) < 0) {
+        if (CMTimeCompare(pkt.timeStamp, self->_actual_time_range.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                [self.objectQueue flush];
+                [self->_object_queue flush];
                 self->_is_queue_valid = 1;
             }
             if (self->_is_queue_valid) {
-                [self.objectQueue putObjectSync:pkt];
+                [self->_object_queue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self.actualTimeRange)) >= 0) {
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_actual_time_range)) >= 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
                 self->_is_queue_end_output = 1;
             } else {
-                [self.objectQueue putObjectSync:pkt];
+                [self->_object_queue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
         if (!self->_is_queue_start_output && pkt.core->flags & AV_PKT_FLAG_KEY) {
-            [self.objectQueue flush];
+            [self->_object_queue flush];
         }
         self->_is_queue_start_output = 1;
-        [self.objectQueue putObjectSync:pkt];
+        [self->_object_queue putObjectSync:pkt];
         [pkt unlock];
         continue;
     }
