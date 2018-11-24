@@ -77,7 +77,7 @@
     }
 }
 
-- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
+- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     if (!self.codecContext) {
         return nil;

@@ -10,8 +10,6 @@
 #import "SGDecodable.h"
 #import "SGCapacity.h"
 
-@protocol SGAsyncDecoderDelegate;
-
 typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
     SGAsyncDecoderStateNone,
     SGAsyncDecoderStateDecoding,
@@ -19,16 +17,18 @@ typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
     SGAsyncDecoderStateClosed,
 };
 
+@protocol SGAsyncDecoderDelegate;
+
 @interface SGAsyncDecoder : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDecodable:(id <SGDecodable>)decodable;
+- (instancetype)initWithDecodable:(id<SGDecodable>)decodable;
 
-- (id <SGDecodable>)decodable;
+- (id<SGDecodable>)decodable;
 
-@property (nonatomic, weak) id <SGAsyncDecoderDelegate> delegate;
+@property (nonatomic, weak) id<SGAsyncDecoderDelegate> delegate;
 
 - (SGAsyncDecoderState)state;
 - (SGCapacity *)capacity;

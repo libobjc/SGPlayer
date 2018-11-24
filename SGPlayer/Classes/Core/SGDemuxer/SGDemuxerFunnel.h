@@ -1,5 +1,5 @@
 //
-//  SGURLDemuxerFunnel.h
+//  SGDemuxerFunnel.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
@@ -8,12 +8,12 @@
 
 #import "SGDemuxable.h"
 
-@interface SGURLDemuxerFunnel : NSObject <SGDemuxable>
+@interface SGDemuxerFunnel : NSObject <SGDemuxable>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithURL:(NSURL *)URL;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable;
 
 @property (nonatomic, copy) NSArray<NSNumber *> *indexes;
 @property (nonatomic) CMTimeRange timeRange;

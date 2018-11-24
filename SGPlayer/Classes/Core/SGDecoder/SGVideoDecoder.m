@@ -48,7 +48,7 @@
     [self.codecContext flush];
 }
 
-- (NSArray <__kindof SGFrame *> *)decode:(SGPacket *)packet
+- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     SGCodecDescription * cd = packet.codecDescription;
     if (cd && ![cd isEqualToDescription:self.codecDescription]) {
@@ -61,7 +61,7 @@
         return nil;
     }
     NSMutableArray * ret = [NSMutableArray array];
-    NSArray <SGVideoFrame *> * frames = [self.codecContext decode:packet];
+    NSArray<SGVideoFrame *> * frames = [self.codecContext decode:packet];
     for (SGVideoFrame * obj in frames) {
         obj.codecDescription = self.codecDescription;
         [obj fill];

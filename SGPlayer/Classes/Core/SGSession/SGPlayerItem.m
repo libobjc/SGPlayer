@@ -16,13 +16,14 @@
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
 
 {
+    int32_t _is_audio_finished;
+    int32_t _is_video_finished;
+    
     NSLock *_lock;
     NSError *_error;
     SGMixer *_audioMixer;
     SGFrameOutput *_output;
     SGPlayerItemState _state;
-    int32_t _is_audio_finished;
-    int32_t _is_video_finished;
     SGObjectQueue *_audio_queue;
     SGObjectQueue *_video_queue;
     SGTrack *_selected_video_track;

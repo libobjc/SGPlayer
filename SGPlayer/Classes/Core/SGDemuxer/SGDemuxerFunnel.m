@@ -1,25 +1,25 @@
 //
-//  SGURLDemuxerFunnel.m
+//  SGDemuxerFunnel.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGURLDemuxerFunnel.h"
+#import "SGDemuxerFunnel.h"
 #import "SGPacket+Internal.h"
 #import "SGURLDemuxer.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGURLDemuxerFunnel ()
+@interface SGDemuxerFunnel ()
 
 {
     int32_t _is_valid;
     int32_t _is_end_output;
     int32_t _is_start_output;
-    
-    SGURLDemuxer *_demuxer;
+
+    id<SGDemuxable> _demuxable;
     SGTimeLayout *_time_layout;
     NSArray<SGTrack *> *_tracks;
     SGObjectQueue *_object_queue;
@@ -28,12 +28,12 @@
 
 @end
 
-@implementation SGURLDemuxerFunnel
+@implementation SGDemuxerFunnel
 
-- (instancetype)initWithURL:(NSURL *)URL
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable
 {
     if (self = [super init]) {
-        self->_demuxer = [[SGURLDemuxer alloc] initWithURL:URL];
+        self->_demuxable = demuxable;
         self->_object_queue = [[SGObjectQueue alloc] init];
         self->_overgop = YES;
     }
@@ -47,13 +47,13 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxer)
-SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxer)
-SGGet0Map(NSDictionary *, options, self->_demuxer)
-SGSet1Map(void, setOptions, NSDictionary *, self->_demuxer)
-SGGet0Map(NSDictionary *, metadata, self->_demuxer)
-SGGet0Map(NSError *, close, self->_demuxer)
-SGGet0Map(NSError *, seekable, self->_demuxer)
+SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxable)
+SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxable)
+SGGet0Map(NSDictionary *, options, self->_demuxable)
+SGSet1Map(void, setOptions, NSDictionary *, self->_demuxable)
+SGGet0Map(NSDictionary *, metadata, self->_demuxable)
+SGGet0Map(NSError *, close, self->_demuxable)
+SGGet0Map(NSError *, seekable, self->_demuxable)
 
 #pragma mark - Setter & Getter
 
@@ -71,16 +71,16 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
 
 - (NSError *)open
 {
-    NSError *ret = [self->_demuxer open];
+    NSError *ret = [self->_demuxable open];
     if (ret) {
         return ret;
     }
     CMTime start = CMTIME_IS_VALID(self->_timeRange.start) ? self->_timeRange.start : kCMTimeNegativeInfinity;
     CMTime duration = CMTIME_IS_VALID(self->_timeRange.duration) ? self->_timeRange.duration : kCMTimePositiveInfinity;
     self->_actual_time_range = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
-                                                          CMTimeRangeMake(kCMTimeZero, self->_demuxer.duration));
+                                                          CMTimeRangeMake(kCMTimeZero, self->_demuxable.duration));
     NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
-    for (SGTrack *obj in self->_demuxer.tracks) {
+    for (SGTrack *obj in self->_demuxable.tracks) {
         if ([self->_indexes containsObject:@(obj.index)]) {
             [tracks addObject:obj];
         }
@@ -93,7 +93,7 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError *ret = [self->_demuxer seekToTime:CMTimeAdd(time, self->_actual_time_range.start)];
+    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, self->_actual_time_range.start)];
     if (ret) {
         return ret;
     }
@@ -117,7 +117,7 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
     NSError *ret = nil;
     while (YES) {
         SGPacket *pkt = nil;
-        ret = [self->_demuxer nextPacket:&pkt];
+        ret = [self->_demuxable nextPacket:&pkt];
         if (ret) {
             break;
         }
@@ -164,7 +164,7 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        ret = [self->_demuxer nextPacket:&pkt];
+        ret = [self->_demuxable nextPacket:&pkt];
         if (ret) {
             self->_is_end_output = 1;
             continue;

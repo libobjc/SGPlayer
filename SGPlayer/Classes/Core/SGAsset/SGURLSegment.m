@@ -8,7 +8,8 @@
 
 #import "SGURLSegment.h"
 #import "SGSegment+Internal.h"
-#import "SGURLDemuxerFunnel.h"
+#import "SGDemuxerFunnel.h"
+#import "SGURLDemuxer.h"
 
 @implementation SGURLSegment
 
@@ -36,7 +37,8 @@
 
 - (id <SGDemuxable>)newDemuxable
 {
-    SGURLDemuxerFunnel * obj = [[SGURLDemuxerFunnel alloc] initWithURL:self.URL];
+    SGURLDemuxer * demuxable = [[SGURLDemuxer alloc] initWithURL:self.URL];
+    SGDemuxerFunnel * obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];
     obj.timeRange = self.timeRange;
     obj.indexes = @[@(self.index)];
     return obj;
