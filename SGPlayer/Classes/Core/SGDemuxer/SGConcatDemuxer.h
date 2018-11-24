@@ -8,13 +8,12 @@
 
 #import "SGDemuxable.h"
 #import "SGSegment.h"
-#import "SGTrack.h"
 
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray <SGSegment *> *)segments;
+- (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray<SGSegment *> *)segments;
 
 @end

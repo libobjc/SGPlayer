@@ -17,6 +17,5 @@
 - (instancetype)initWithSegment:(SGSegment *)segment;
 
 @property (nonatomic) CMTimeRange timeRange;
-@property (nonatomic, readonly) CMTime scale;
 
 @end

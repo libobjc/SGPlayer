@@ -15,9 +15,10 @@
 @interface SGURLDemuxerFunnel ()
 
 {
-    int32_t _is_queue_valid;
-    int32_t _is_queue_start_output;
-    int32_t _is_queue_end_output;
+    int32_t _is_valid;
+    int32_t _is_end_output;
+    int32_t _is_start_output;
+    
     SGURLDemuxer *_demuxer;
     SGTimeLayout *_time_layout;
     NSArray<SGTrack *> *_tracks;
@@ -50,12 +51,16 @@ SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxer)
 SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxer)
 SGGet0Map(NSDictionary *, options, self->_demuxer)
 SGSet1Map(void, setOptions, NSDictionary *, self->_demuxer)
-SGGet0Map(CMTime, duration, self->_actual_time_range)
 SGGet0Map(NSDictionary *, metadata, self->_demuxer)
 SGGet0Map(NSError *, close, self->_demuxer)
 SGGet0Map(NSError *, seekable, self->_demuxer)
 
 #pragma mark - Setter & Getter
+
+- (CMTime)duration
+{
+    return self->_actual_time_range.duration;
+}
 
 - (NSArray<SGTrack *> *)tracks
 {
@@ -81,7 +86,8 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
         }
     }
     self->_tracks = [tracks copy];
-    self->_time_layout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_actual_time_range.start, -1) scale:kCMTimeInvalid];
+    self->_time_layout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_actual_time_range.start, -1)
+                                                       scale:kCMTimeInvalid];
     return nil;
 }
 
@@ -92,9 +98,9 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
         return ret;
     }
     [self->_object_queue flush];
-    self->_is_queue_valid = 0;
-    self->_is_queue_start_output = 0;
-    self->_is_queue_end_output = 0;
+    self->_is_valid = 0;
+    self->_is_start_output = 0;
+    self->_is_end_output = 0;
     return nil;
 }
 
@@ -143,7 +149,7 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
     NSError *ret = nil;
     while (YES) {
         SGPacket *pkt = nil;
-        if (self->_is_queue_start_output) {
+        if (self->_is_start_output) {
             [self->_object_queue getObjectAsync:&pkt];
             if (pkt) {
                 [pkt.codecDescription appendTimeLayout:self->_time_layout];
@@ -153,14 +159,14 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
                 break;
             }
         }
-        if (self->_is_queue_end_output) {
+        if (self->_is_end_output) {
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
         ret = [self->_demuxer nextPacket:&pkt];
         if (ret) {
-            self->_is_queue_end_output = 1;
+            self->_is_end_output = 1;
             continue;
         }
         if (![self->_indexes containsObject:@(pkt.track.index)]) {
@@ -170,9 +176,9 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
         if (CMTimeCompare(pkt.timeStamp, self->_actual_time_range.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
                 [self->_object_queue flush];
-                self->_is_queue_valid = 1;
+                self->_is_valid = 1;
             }
-            if (self->_is_queue_valid) {
+            if (self->_is_valid) {
                 [self->_object_queue putObjectSync:pkt];
             }
             [pkt unlock];
@@ -180,17 +186,17 @@ SGGet0Map(NSError *, seekable, self->_demuxer)
         }
         if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_actual_time_range)) >= 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                self->_is_queue_end_output = 1;
+                self->_is_end_output = 1;
             } else {
                 [self->_object_queue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (!self->_is_queue_start_output && pkt.core->flags & AV_PKT_FLAG_KEY) {
+        if (!self->_is_start_output && pkt.core->flags & AV_PKT_FLAG_KEY) {
             [self->_object_queue flush];
         }
-        self->_is_queue_start_output = 1;
+        self->_is_start_output = 1;
         [self->_object_queue putObjectSync:pkt];
         [pkt unlock];
         continue;

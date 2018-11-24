@@ -9,13 +9,15 @@
 #import "SGConcatDemuxerUnit.h"
 #import "SGSegment+Internal.h"
 #import "SGPacket+Internal.h"
-#import "SGError.h"
 #import "SGMacro.h"
 
 @interface SGConcatDemuxerUnit ()
 
-@property (nonatomic, strong) id <SGDemuxable> demuxable;
-@property (nonatomic) CMTime duration;
+{
+    CMTime _duration;
+    SGSegment *_segment;
+    id<SGDemuxable> _demuxable;
+}
 
 @end
 
@@ -24,13 +26,8 @@
 - (instancetype)initWithSegment:(SGSegment *)segment
 {
     if (self = [super init]) {
-        _scale = segment.scale;
-        self.demuxable = [segment newDemuxable];
-        if (!self.demuxable) {
-            CMTime duration = segment.timeRange.duration;
-            NSAssert(CMTIME_IS_VALID(duration), @"Invaild timeRange.");
-            self.duration = duration;
-        }
+        self->_segment = segment;
+        self->_demuxable = [segment newDemuxable];
     }
     return self;
 }
@@ -42,42 +39,54 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(id <SGDemuxableDelegate>, delegate, self.demuxable)
-SGSet1Map(void, setDelegate, id <SGDemuxableDelegate>, self.demuxable)
-SGGet0Map(NSDictionary *, options, self.demuxable)
-SGSet1Map(void, setOptions, NSDictionary *, self.demuxable)
-SGGet0Map(NSDictionary *, metadata, self.demuxable)
-SGGet0Map(NSArray <SGTrack *> *, tracks, self.demuxable)
-SGGet0Map(NSError *, close, self.demuxable)
-SGGet0Map(NSError *, seekable, self.demuxable)
+SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxable)
+SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxable)
+SGGet0Map(NSDictionary *, options, self->_demuxable)
+SGSet1Map(void, setOptions, NSDictionary *, self->_demuxable)
+SGGet0Map(NSDictionary *, metadata, self->_demuxable)
+SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
+SGGet0Map(NSError *, close, self->_demuxable)
+SGGet0Map(NSError *, seekable, self->_demuxable)
+
+#pragma mark - Setter & Getter
+
+- (CMTime)duration
+{
+    return self->_duration;
+}
 
 #pragma mark - Interface
 
 - (NSError *)open
 {
-    if (!self.demuxable) {
+    if (!self->_demuxable) {
+        self->_duration = self->_segment.timeRange.duration;
+        NSAssert(CMTIME_IS_VALID(self->_duration), @"Invaild timeRange.");
         return nil;
     }
-    NSError * ret = [self.demuxable open];
+    if (!self->_demuxable) {
+        return nil;
+    }
+    NSError *ret = [self->_demuxable open];
     if (ret) {
         return ret;
     }
-    self.duration = self.demuxable.duration;
+    self->_duration = self->_demuxable.duration;
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    return [self.demuxable seekToTime:time];
+    return [self->_demuxable seekToTime:time];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    NSError * ret = [self.demuxable nextPacket:packet];
+    NSError *ret = [self->_demuxable nextPacket:packet];
     if (ret) {
         return ret;
     }
-    SGTimeLayout * layout = [[SGTimeLayout alloc] initWithStart:self.timeRange.start scale:kCMTimeInvalid];
+    SGTimeLayout *layout = [[SGTimeLayout alloc] initWithStart:self->_timeRange.start scale:kCMTimeInvalid];
     [(*packet).codecDescription appendTimeLayout:layout];
     [(*packet) fill];
     return nil;

@@ -13,11 +13,13 @@
 
 @interface SGConcatDemuxer ()
 
-@property (nonatomic, strong) SGConcatDemuxerUnit * currentUnit;
-@property (nonatomic, strong) NSArray <SGConcatDemuxerUnit *> * units;
-@property (nonatomic, copy) NSArray <SGTrack *> * tracks;
-@property (nonatomic, copy) NSDictionary * metadata;
-@property (nonatomic) CMTime duration;
+{
+    CMTime _duration;
+    NSDictionary *_metadata;
+    NSArray<SGTrack *> *_tracks;
+    NSArray<id<SGDemuxable>> *_units;
+    SGConcatDemuxerUnit *_current_unit;
+}
 
 @end
 
@@ -26,12 +28,12 @@
 - (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray<SGSegment *> *)segments
 {
     if (self = [super init]) {
-        NSMutableArray * units = [NSMutableArray array];
-        for (SGSegment * obj in segments) {
+        NSMutableArray *units = [NSMutableArray array];
+        for (SGSegment *obj in segments) {
             [units addObject:[[SGConcatDemuxerUnit alloc] initWithSegment:obj]];
         }
-        self.units = [units copy];
-        self.tracks = @[track];
+        self->_units = [units copy];
+        self->_tracks = @[track];
     }
     return self;
 }
@@ -45,52 +47,67 @@
 
 - (void)setDelegate:(id <SGDemuxableDelegate>)delegate
 {
-    for (SGConcatDemuxerUnit * obj in self.units) {
+    for (SGConcatDemuxerUnit *obj in self->_units) {
         obj.delegate = delegate;
     }
 }
 
 - (id <SGDemuxableDelegate>)delegate
 {
-    return self.units.firstObject.delegate;
+    return self->_units.firstObject.delegate;
 }
 
 - (void)setOptions:(NSDictionary *)options
 {
-    for (SGConcatDemuxerUnit * obj in self.units) {
+    for (SGConcatDemuxerUnit *obj in self->_units) {
         obj.options = options;
     }
 }
 
 - (NSDictionary *)options
 {
-    return self.units.firstObject.options;
+    return self->_units.firstObject.options;
+}
+
+- (CMTime)duration
+{
+    return self->_duration;
+}
+
+- (NSDictionary *)metadata
+{
+    return [self->_metadata copy];
+}
+
+- (NSArray<SGTrack *> *)tracks
+{
+    return [self->_tracks copy];
 }
 
 #pragma mark - Interface
 
 - (NSError *)open
 {
-    NSError * ret = nil;
+    NSError *ret = nil;
     CMTime duration = kCMTimeZero;
-    for (SGConcatDemuxerUnit * obj in self.units) {
+    for (SGConcatDemuxerUnit *obj in self->_units) {
         ret = [obj open];
         if (ret) {
             break;
         }
-        NSAssert(self.tracks.firstObject.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
+        NSAssert(self->_tracks.firstObject.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
         obj.timeRange = CMTimeRangeMake(duration, obj.duration);
         duration = CMTimeRangeGetEnd(obj.timeRange);
     }
-    self.duration = duration;
-    self.currentUnit = self.units.firstObject;
-    [self.currentUnit seekToTime:kCMTimeZero];
+    self->_duration = duration;
+    self->_current_unit = self->_units.firstObject;
+    [self->_current_unit seekToTime:kCMTimeZero];
     return ret;
 }
 
 - (NSError *)close
 {
-    for (SGConcatDemuxerUnit * obj in self.units) {
+    for (SGConcatDemuxerUnit *obj in self->_units) {
         [obj close];
     }
     return nil;
@@ -103,8 +120,8 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    SGConcatDemuxerUnit * unit = nil;
-    for (SGConcatDemuxerUnit * obj in self.units) {
+    SGConcatDemuxerUnit *unit = nil;
+    for (SGConcatDemuxerUnit *obj in self->_units) {
         if (CMTimeRangeContainsTime(obj.timeRange, time) ||
             CMTimeCompare(CMTimeRangeGetEnd(obj.timeRange), time) == 0) {
             unit = obj;
@@ -115,25 +132,25 @@
         return SGECreateError(SGErrorCodeConcatDemuxerNotFoundUnit,
                               SGOperationCodeURLDemuxerSeek);
     }
-    self.currentUnit = unit;
-    return [self.currentUnit seekToTime:CMTimeSubtract(time, self.currentUnit.timeRange.start)];
+    self->_current_unit = unit;
+    return [self->_current_unit seekToTime:CMTimeSubtract(time, self->_current_unit.timeRange.start)];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    NSError * ret = nil;
+    NSError *ret = nil;
     while (YES) {
-        ret = [self.currentUnit nextPacket:packet];
+        ret = [self->_current_unit nextPacket:packet];
         if (!ret) {
-            (*packet).codecDescription.track = self.tracks.firstObject;
+            (*packet).codecDescription.track = self->_tracks.firstObject;
             [(*packet) fill];
             break;
         }
-        if (self.currentUnit == self.units.lastObject) {
+        if (self->_current_unit == self->_units.lastObject) {
             break;
         }
-        self.currentUnit = [self.units objectAtIndex:[self.units indexOfObject:self.currentUnit] + 1];
-        [self.currentUnit seekToTime:kCMTimeZero];
+        self->_current_unit = [self->_units objectAtIndex:[self->_units indexOfObject:self->_current_unit] + 1];
+        [self->_current_unit seekToTime:kCMTimeZero];
         continue;
     }
     return ret;
