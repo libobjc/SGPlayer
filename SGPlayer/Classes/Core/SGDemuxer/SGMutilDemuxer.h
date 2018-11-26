@@ -13,6 +13,9 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables;
+/**
+ *
+ */
+- (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> * _Nonnull)demuxables NS_DESIGNATED_INITIALIZER;
 
 @end

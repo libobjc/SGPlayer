@@ -13,6 +13,9 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithURL:(NSURL *)URL;
+/**
+ *
+ */
+- (instancetype)initWithURL:(NSURL * _Nonnull)URL NS_DESIGNATED_INITIALIZER;
 
 @end

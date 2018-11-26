@@ -13,7 +13,7 @@
 
 @interface SGCodecDescription : NSObject <NSCopying>
 
-@property (nonatomic) SGTrack * track;
+@property (nonatomic, strong) SGTrack * track;
 @property (nonatomic) AVRational timebase;
 @property (nonatomic) CMTimeRange timeRange;
 @property (nonatomic) AVCodecParameters * codecpar;

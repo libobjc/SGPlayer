@@ -55,7 +55,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     return self->_duration;
 }
 
-#pragma mark - Interface
+#pragma mark - Control
 
 - (NSError *)open
 {

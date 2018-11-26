@@ -14,6 +14,9 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray<SGSegment *> *)segments;
+/**
+ *
+ */
+- (instancetype)initWithTrack:(SGTrack * _Nonnull)track segments:(NSArray<SGSegment *> * _Nonnull)segments NS_DESIGNATED_INITIALIZER;
 
 @end

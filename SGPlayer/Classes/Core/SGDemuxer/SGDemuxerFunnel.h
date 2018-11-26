@@ -13,10 +13,24 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable;
+/**
+ *
+ */
+- (instancetype)initWithDemuxable:(id<SGDemuxable> _Nonnull)demuxable NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, copy) NSArray<NSNumber *> *indexes;
+/**
+ *
+ */
+@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull indexes;
+
+/**
+ *
+ */
 @property (nonatomic) CMTimeRange timeRange;
-@property (nonatomic) BOOL overgop;     // Default is YES.
+
+/**
+ *
+ */
+@property (nonatomic) BOOL overgop;
 
 @end

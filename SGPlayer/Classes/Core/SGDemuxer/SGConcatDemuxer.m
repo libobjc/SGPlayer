@@ -18,7 +18,7 @@
     NSDictionary *_metadata;
     NSArray<SGTrack *> *_tracks;
     NSArray<id<SGDemuxable>> *_units;
-    SGConcatDemuxerUnit *_current_unit;
+    SGConcatDemuxerUnit *_currentUnit;
 }
 
 @end
@@ -84,7 +84,7 @@
     return [self->_tracks copy];
 }
 
-#pragma mark - Interface
+#pragma mark - Control
 
 - (NSError *)open
 {
@@ -100,8 +100,8 @@
         duration = CMTimeRangeGetEnd(obj.timeRange);
     }
     self->_duration = duration;
-    self->_current_unit = self->_units.firstObject;
-    [self->_current_unit seekToTime:kCMTimeZero];
+    self->_currentUnit = self->_units.firstObject;
+    [self->_currentUnit seekToTime:kCMTimeZero];
     return ret;
 }
 
@@ -132,25 +132,25 @@
         return SGECreateError(SGErrorCodeConcatDemuxerNotFoundUnit,
                               SGOperationCodeURLDemuxerSeek);
     }
-    self->_current_unit = unit;
-    return [self->_current_unit seekToTime:CMTimeSubtract(time, self->_current_unit.timeRange.start)];
+    self->_currentUnit = unit;
+    return [self->_currentUnit seekToTime:CMTimeSubtract(time, self->_currentUnit.timeRange.start)];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     NSError *ret = nil;
     while (YES) {
-        ret = [self->_current_unit nextPacket:packet];
+        ret = [self->_currentUnit nextPacket:packet];
         if (!ret) {
             (*packet).codecDescription.track = self->_tracks.firstObject;
             [(*packet) fill];
             break;
         }
-        if (self->_current_unit == self->_units.lastObject) {
+        if (self->_currentUnit == self->_units.lastObject) {
             break;
         }
-        self->_current_unit = [self->_units objectAtIndex:[self->_units indexOfObject:self->_current_unit] + 1];
-        [self->_current_unit seekToTime:kCMTimeZero];
+        self->_currentUnit = [self->_units objectAtIndex:[self->_units indexOfObject:self->_currentUnit] + 1];
+        [self->_currentUnit seekToTime:kCMTimeZero];
         continue;
     }
     return ret;

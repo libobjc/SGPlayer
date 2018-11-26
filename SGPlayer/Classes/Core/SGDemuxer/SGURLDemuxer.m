@@ -20,7 +20,7 @@
 {
     NSURL *_URL;
     CMTime _duration;
-    CMTime _start_time;
+    CMTime _startTime;
     NSDictionary *_metadata;
     AVFormatContext *_context;
     NSArray<SGTrack *> *_tracks;
@@ -38,7 +38,7 @@
     if (self = [super init]) {
         self->_URL = URL;
         self->_options = [SGConfiguration shared].formatContextOptions;
-        self->_start_time = kCMTimeNegativeInfinity;
+        self->_startTime = kCMTimeNegativeInfinity;
     }
     return self;
 }
@@ -60,12 +60,12 @@
     return [self->_metadata copy];
 }
 
-- (NSArray <SGTrack *> *)tracks
+- (NSArray<SGTrack *> *)tracks
 {
     return [self->_tracks copy];
 }
 
-#pragma mark - Interface
+#pragma mark - Control
 
 - (NSError *)open
 {
@@ -129,7 +129,7 @@
         int64_t timeStamp = AV_TIME_BASE * time.value / time.timescale;
         int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
-            self->_start_time = time;
+            self->_startTime = time;
         }
         return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
     }
@@ -149,7 +149,7 @@
             cd.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
-            cd.timeRange = CMTimeRangeMake(self->_start_time, kCMTimePositiveInfinity);
+            cd.timeRange = CMTimeRangeMake(self->_startTime, kCMTimePositiveInfinity);
             pkt.codecDescription = cd;
             [pkt fill];
             *packet = pkt;
@@ -161,15 +161,15 @@
 
 #pragma mark - AVFormatContext
 
-NSError *SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
+NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
 {
-    AVFormatContext *fc = avformat_alloc_context();
-    if (!fc) {
+    AVFormatContext *fmt_ctx = avformat_alloc_context();
+    if (!fmt_ctx) {
         return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
     }
     
-    fc->interrupt_callback.callback = callback;
-    fc->interrupt_callback.opaque = opaque;
+    fmt_ctx->interrupt_callback.callback = callback;
+    fmt_ctx->interrupt_callback.opaque = opaque;
     
     NSString *URLString = URL.isFileURL ? URL.path : URL.absoluteString;
     
@@ -179,7 +179,7 @@ NSError *SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSD
         av_dict_set(&opts, "timeout", NULL, 0);
     }
     
-    int suc = avformat_open_input(&fc, URLString.UTF8String, NULL, &opts);
+    int suc = avformat_open_input(&fmt_ctx, URLString.UTF8String, NULL, &opts);
     
     if (opts) {
         av_dict_free(&opts);
@@ -187,22 +187,22 @@ NSError *SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSD
     
     NSError *err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
     if (err) {
-        if (fc) {
-            avformat_free_context(fc);
+        if (fmt_ctx) {
+            avformat_free_context(fmt_ctx);
         }
         return err;
     }
     
-    suc = avformat_find_stream_info(fc, NULL);
+    suc = avformat_find_stream_info(fmt_ctx, NULL);
     err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
     if (err) {
-        if (fc) {
-            avformat_close_input(&fc);
-            avformat_free_context(fc);
+        if (fmt_ctx) {
+            avformat_close_input(&fmt_ctx);
+            avformat_free_context(fmt_ctx);
         }
         return err;
     }
-    *format_context = fc;
+    *format_context = fmt_ctx;
     return nil;
 }
 

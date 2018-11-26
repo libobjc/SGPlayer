@@ -14,8 +14,14 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSegment:(SGSegment *)segment;
+/**
+ *
+ */
+- (instancetype)initWithSegment:(SGSegment * _Nonnull)segment NS_DESIGNATED_INITIALIZER;
 
+/**
+ *
+ */
 @property (nonatomic) CMTimeRange timeRange;
 
 @end

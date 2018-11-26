@@ -13,23 +13,63 @@
 
 @protocol SGDemuxable <NSObject>
 
-@property (nonatomic, weak) id<SGDemuxableDelegate> delegate;
-@property (nonatomic, copy) NSDictionary *options;
+/**
+ *
+ */
+@property (nonatomic, weak) id<SGDemuxableDelegate> _Nullable delegate;
 
+/**
+ *
+ */
+@property (nonatomic, copy) NSDictionary * _Nullable options;
+
+/**
+ *
+ */
 - (CMTime)duration;
-- (NSDictionary *)metadata;
-- (NSArray<SGTrack *> *)tracks;
 
-- (NSError *)open;
-- (NSError *)close;
-- (NSError *)seekable;
-- (NSError *)seekToTime:(CMTime)time;
-- (NSError *)nextPacket:(SGPacket **)packet;
+/**
+ *
+ */
+- (NSDictionary * _Nullable)metadata;
+
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)tracks;
+
+/**
+ *
+ */
+- (NSError * _Nullable)open;
+
+/**
+ *
+ */
+- (NSError * _Nullable)close;
+
+/**
+ *
+ */
+- (NSError * _Nullable)seekable;
+
+/**
+ *
+ */
+- (NSError * _Nullable)seekToTime:(CMTime)time;
+
+/**
+ *
+ */
+- (NSError * _Nullable)nextPacket:(SGPacket * _Nullable * _Nonnull)packet;
 
 @end
 
 @protocol SGDemuxableDelegate <NSObject>
 
-- (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable>)demuxable;
+/**
+ *
+ */
+- (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable> _Nonnull)demuxable;
 
 @end
