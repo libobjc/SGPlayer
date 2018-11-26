@@ -20,10 +20,10 @@
 {
     NSLock *_lock;
     NSError *_error;
-    SGPacketOutput *_output;
     SGFrameOutputState _state;
-    NSArray<SGTrack *> *_selected_tracks;
-    NSArray<SGTrack *> *_finished_tracks;
+    SGPacketOutput *_packetOutput;
+    NSArray<SGTrack *> *_selectedTracks;
+    NSArray<SGTrack *> *_finishedTracks;
     NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
     NSMutableDictionary<NSNumber *, SGAsyncDecoder *> *_decoders;
 }
@@ -38,8 +38,8 @@
         self->_lock = [[NSLock alloc] init];
         self->_decoders = [NSMutableDictionary dictionary];
         self->_capacitys = [NSMutableDictionary dictionary];
-        self->_output = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
-        self->_output.delegate = self;
+        self->_packetOutput = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
+        self->_packetOutput.delegate = self;
     }
     return self;
 }
@@ -50,7 +50,7 @@
         return self->_state != SGFrameOutputStateClosed;
     }, ^SGBlock {
         [self setState:SGFrameOutputStateClosed];
-        [self->_output close];
+        [self->_packetOutput close];
         [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
             [obj close];
         }];
@@ -60,9 +60,9 @@
 
 #pragma mark - Mapping
 
-SGGet0Map(CMTime, duration, self->_output)
-SGGet0Map(NSDictionary *, metadata, self->_output)
-SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
+SGGet0Map(CMTime, duration, self->_packetOutput)
+SGGet0Map(NSDictionary *, metadata, self->_packetOutput)
+SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 #pragma mark - Setter & Getter
 
@@ -95,21 +95,12 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
     return ret;
 }
 
-- (NSArray<SGTrack *> *)finishedTracks
-{
-    __block NSArray<SGTrack *> *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_finished_tracks copy];
-    });
-    return ret;
-}
-
 - (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return ![self->_selected_tracks isEqualToArray:tracks];
+        return ![self->_selectedTracks isEqualToArray:tracks];
     }, ^SGBlock {
-        self->_selected_tracks = [tracks copy];
+        self->_selectedTracks = [tracks copy];
         [self openDecodersIfNeeded];
         return nil;
     });
@@ -119,7 +110,16 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
 {
     __block NSArray<SGTrack *> *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        ret = [self->_selected_tracks copy];
+        ret = [self->_selectedTracks copy];
+    });
+    return ret;
+}
+
+- (NSArray<SGTrack *> *)finishedTracks
+{
+    __block NSArray<SGTrack *> *ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_finishedTracks copy];
     });
     return ret;
 }
@@ -137,7 +137,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
     return [ret copy];
 }
 
-#pragma mark - Interface
+#pragma mark - Control
 
 - (BOOL)open
 {
@@ -147,7 +147,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
         return [self setState:SGFrameOutputStateOpening];
     }, ^BOOL(SGBlock block) {
         block();
-        return [self->_output open];
+        return [self->_packetOutput open];
     });
 }
 
@@ -159,7 +159,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
         return [self setState:SGFrameOutputStateReading];
     }, ^BOOL(SGBlock block) {
         block();
-        return [self->_output resume];
+        return [self->_packetOutput resume];
     });
 }
 
@@ -171,7 +171,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
         return [self setState:SGFrameOutputStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_output close];
+        [self->_packetOutput close];
         [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
             [obj close];
         }];
@@ -201,13 +201,13 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
 
 - (BOOL)seekable
 {
-    return [self->_output seekable];
+    return [self->_packetOutput seekable];
 }
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
     SGWeakify(self)
-    return [self->_output seekToTime:time result:^(CMTime time, NSError *error) {
+    return [self->_packetOutput seekToTime:time result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
             [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
@@ -224,7 +224,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
 
 - (void)openDecodersIfNeeded
 {
-    for (SGTrack *obj in self->_selected_tracks) {
+    for (SGTrack *obj in self->_selectedTracks) {
         SGAsyncDecoder *decoder = [self->_decoders objectForKey:@(obj.index)];
         if (!decoder) {
             id<SGDecodable> decodable = nil;
@@ -267,7 +267,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
                         break;
                     }
                 }
-                self->_selected_tracks = [tracks copy];
+                self->_selectedTracks = [tracks copy];
                 [self openDecodersIfNeeded];
             }
                 break;
@@ -320,7 +320,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
     capacity = [capacity copy];
     __block SGTrack *track = nil;
     SGLockCondEXE11(self->_lock, ^BOOL {
-        for (SGTrack *obj in self->_selected_tracks) {
+        for (SGTrack *obj in self->_selectedTracks) {
             if (obj.index == decoder.decodable.index) {
                 track = obj;
                 break;
@@ -332,9 +332,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
         SGBlock b1 = ^{};
         uint64_t size = 0;
         uint32_t is_enough = 1;
-        uint32_t is_finished = self->_output.state == SGPacketOutputStateFinished;
+        uint32_t is_finished = self->_packetOutput.state == SGPacketOutputStateFinished;
         NSMutableArray *finished_tracks = [NSMutableArray array];
-        for (SGTrack *obj in self->_selected_tracks) {
+        for (SGTrack *obj in self->_selectedTracks) {
             SGCapacity *c = [self->_capacitys objectForKey:@(obj.index)];
             size += c.size;
             is_enough = is_enough && c.isEnough;
@@ -342,15 +342,15 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_output)
                 [finished_tracks addObject:obj];
             }
         }
-        self->_finished_tracks = [finished_tracks copy];
-        if ([self->_selected_tracks isEqualToArray:self->_finished_tracks]) {
+        self->_finishedTracks = [finished_tracks copy];
+        if ([self->_selectedTracks isEqualToArray:self->_finishedTracks]) {
             b1 = [self setState:SGFrameOutputStateFinished];
         }
         return ^{
             if (is_enough || (size > 15 * 1024 * 1024)) {
-                [self->_output pause];
+                [self->_packetOutput pause];
             } else {
-                [self->_output resume];
+                [self->_packetOutput resume];
             }
             b1();
         };

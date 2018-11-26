@@ -10,6 +10,11 @@
 #import "SGAsset.h"
 #import "SGFrame.h"
 
+@protocol SGFrameOutputDelegate;
+
+/**
+ *
+ */
 typedef NS_ENUM(uint32_t, SGFrameOutputState) {
     SGFrameOutputStateNone,
     SGFrameOutputStateOpening,
@@ -21,45 +26,118 @@ typedef NS_ENUM(uint32_t, SGFrameOutputState) {
     SGFrameOutputStateFailed,
 };
 
-@protocol SGFrameOutputDelegate;
-
 @interface SGFrameOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAsset:(SGAsset *)asset;
+/**
+ *
+ */
+- (instancetype)initWithAsset:(SGAsset * _Nonnull)asset NS_DESIGNATED_INITIALIZER;
 
-@property (nonatomic, weak) id<SGFrameOutputDelegate> delegate;
+/**
+ *
+ */
+@property (nonatomic, weak) id<SGFrameOutputDelegate> _Nullable delegate;
 
-- (NSError *)error;
+/**
+ *
+ */
+- (NSError * _Nullable)error;
+
+/**
+ *
+ */
 - (SGFrameOutputState)state;
 
+/**
+ *
+ */
 - (CMTime)duration;
-- (NSDictionary *)metadata;
-- (NSArray<SGTrack *> *)tracks;
 
+/**
+ *
+ */
+- (NSDictionary * _Nullable)metadata;
+
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)tracks;
+
+/**
+ *
+ */
 - (BOOL)open;
+
+/**
+ *
+ */
 - (BOOL)start;
+
+/**
+ *
+ */
 - (BOOL)close;
-- (BOOL)pause:(NSArray<SGTrack *> *)tracks;
-- (BOOL)resume:(NSArray<SGTrack *> *)tracks;
+
+/**
+ *
+ */
+- (BOOL)pause:(NSArray<SGTrack *> * _Nonnull)tracks;
+
+/**
+ *
+ */
+- (BOOL)resume:(NSArray<SGTrack *> * _Nonnull)tracks;
+
+/**
+ *
+ */
 - (BOOL)seekable;
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * finishedTracks;
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * selectedTracks;
+/**
+ *
+ */
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult _Nullable)result;
 
-- (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks;
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)selectedTracks;
 
-- (NSArray<SGCapacity *> *)capacityWithTrack:(NSArray<SGTrack *> *)tracks;
+/**
+ *
+ */
+- (BOOL)selectTracks:(NSArray<SGTrack *> * _Nonnull)tracks;
+
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)finishedTracks;
+
+/**
+ *
+ */
+- (NSArray<SGCapacity *> * _Nonnull)capacityWithTrack:(NSArray<SGTrack *> * _Nonnull)tracks;
 
 @end
 
 @protocol SGFrameOutputDelegate <NSObject>
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity track:(SGTrack *)track;
-- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame;
+/**
+ *
+ */
+- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeState:(SGFrameOutputState)state;
+
+/**
+ *
+ */
+- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeCapacity:(SGCapacity * _Nonnull)capacity track:(SGTrack * _Nonnull)track;
+
+/**
+ *
+ */
+- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
 
 @end

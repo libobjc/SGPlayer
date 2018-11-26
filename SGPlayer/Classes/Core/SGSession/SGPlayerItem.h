@@ -15,21 +15,54 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithAsset:(SGAsset *)asset;
+/**
+ *
+ */
+- (instancetype)initWithAsset:(SGAsset * _Nonnull)asset NS_DESIGNATED_INITIALIZER;
 
-- (NSError *)error;
+/**
+ *
+ */
+- (NSError * _Nullable)error;
 
+/**
+ *
+ */
 - (CMTime)duration;
-- (NSDictionary *)metadata;
-- (NSArray<SGTrack *> *)tracks;
 
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * selectedAudioTracks;
-@property (nonatomic, copy, readonly) NSArray<NSNumber *> * selectedAudioWeights;
+/**
+ *
+ */
+- (NSDictionary * _Nullable)metadata;
 
-- (BOOL)selectAudioTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights;
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)tracks;
 
-@property (nonatomic, strong, readonly) SGTrack * selectedVideoTrack;
+/**
+ *
+ */
+- (NSArray<SGTrack *> * _Nullable)selectedAudioTracks;
 
-- (BOOL)selectVideoTrack:(SGTrack *)track;
+/**
+ *
+ */
+- (NSArray<NSNumber *> * _Nullable)selectedAudioWeights;
+
+/**
+ *
+ */
+- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks weights:(NSArray<NSNumber *> * _Nullable)weights;
+
+/**
+ *
+ */
+- (SGTrack * _Nullable)selectedVideoTrack;
+
+/**
+ *
+ */
+- (BOOL)selectVideoTrack:(SGTrack * _Nonnull)track;
 
 @end
