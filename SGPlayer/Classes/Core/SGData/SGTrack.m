@@ -12,7 +12,7 @@
 @interface SGTrack ()
 
 {
-    SInt32 _index;
+    int _index;
     SGMediaType _type;
 }
 
@@ -26,7 +26,7 @@
     return nil;
 }
 
-- (instancetype)initWithType:(SGMediaType)type index:(SInt32)index
+- (instancetype)initWithType:(SGMediaType)type index:(int)index
 {
     if (self = [super init]) {
         self->_type = type;
@@ -40,7 +40,7 @@
     return self->_type;
 }
 
-- (SInt32)index
+- (int)index
 {
     return self->_index;
 }

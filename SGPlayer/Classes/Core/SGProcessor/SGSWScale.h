@@ -10,11 +10,11 @@
 
 @interface SGSWScale : NSObject
 
-@property (nonatomic) SInt32 i_format;       // AVPixelFormat
-@property (nonatomic) SInt32 o_format;       // AVPixelFormat
-@property (nonatomic) SInt32 width;
-@property (nonatomic) SInt32 height;
-@property (nonatomic) SInt32 flags;          // SWS_FAST_BILINEAR
+@property (nonatomic) int i_format;       // AVPixelFormat
+@property (nonatomic) int o_format;       // AVPixelFormat
+@property (nonatomic) int width;
+@property (nonatomic) int height;
+@property (nonatomic) int flags;          // SWS_FAST_BILINEAR
 
 /**
  *
@@ -24,6 +24,6 @@
 /**
  *
  */
-- (int)convert:(const UInt8 *const [])i_data i_linesize:(const SInt32 [])i_linesize o_data:(UInt8 *const [])o_data o_linesize:(const SInt32 [])o_linesize;
+- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize;
 
 @end

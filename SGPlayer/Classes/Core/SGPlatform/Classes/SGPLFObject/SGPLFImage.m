@@ -91,7 +91,7 @@ CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
     return imageRef;
 }
 
-SGPLFImage * SGPLFImageWithRGBData(UInt8 * rgb_data, int linesize, int width, int height)
+SGPLFImage * SGPLFImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height)
 {
     CGImageRef imageRef = SGPLFImageCGImageWithRGBData(rgb_data, linesize, width, height);
     if (!imageRef) return nil;
@@ -100,7 +100,7 @@ SGPLFImage * SGPLFImageWithRGBData(UInt8 * rgb_data, int linesize, int width, in
     return image;
 }
 
-CGImageRef SGPLFImageCGImageWithRGBData(UInt8 * rgb_data, int linesize, int width, int height)
+CGImageRef SGPLFImageCGImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height)
 {
     CFDataRef data = CFDataCreate(kCFAllocatorDefault, rgb_data, linesize * height);
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);

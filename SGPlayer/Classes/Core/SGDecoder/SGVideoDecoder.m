@@ -15,12 +15,11 @@
 @interface SGVideoDecoder ()
 
 {
-    uint32_t _is_end_output;
+    BOOL _isEndOutput;
+    CMTimeRange _timeRange;
+    SGCodecContext *_codecContext;
+    SGCodecDescription *_codecDescription;
 }
-
-@property (nonatomic, strong) SGCodecContext * codecContext;
-@property (nonatomic, strong) SGCodecDescription * codecDescription;
-@property (nonatomic) CMTimeRange timeRange;
 
 @end
 
@@ -30,47 +29,48 @@
 
 - (void)setup
 {
-    SGCodecDescription * cd = self.codecDescription;
-    self.codecContext = [[SGCodecContext alloc] initWithTimebase:cd.timebase codecpar:cd.codecpar frameClass:[SGVideoFrame class]];
-    [self.codecContext open];
+    SGCodecDescription * cd = self->_codecDescription;
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:cd.timebase codecpar:cd.codecpar frameClass:[SGVideoFrame class]];
+    [self->_codecContext open];
 }
 
 - (void)destroy
 {
-    self->_is_end_output = 0;
-    [self.codecContext close];
-    self.codecContext = nil;
+    self->_isEndOutput = NO;
+    [self->_codecContext close];
+    self->_codecContext = nil;
 }
 
 - (void)flush
 {
-    self->_is_end_output = 0;
-    [self.codecContext flush];
+    self->_isEndOutput = NO;
+    [self->_codecContext flush];
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     SGCodecDescription * cd = packet.codecDescription;
-    if (cd && ![cd isEqualToDescription:self.codecDescription]) {
-        self.codecDescription = cd;
-        self.timeRange = cd.layoutTimeRange;
+    if (cd && ![cd isEqualToDescription:self->_codecDescription]) {
+        cd = [cd copy];
+        self->_codecDescription = cd;
+        self->_timeRange = cd.finalTimeRange;
         [self destroy];
         [self setup];
     }
-    if (self->_is_end_output) {
+    if (self->_isEndOutput) {
         return nil;
     }
     NSMutableArray * ret = [NSMutableArray array];
-    NSArray<SGVideoFrame *> * frames = [self.codecContext decode:packet];
+    NSArray<SGVideoFrame *> * frames = [self->_codecContext decode:packet];
     for (SGVideoFrame * obj in frames) {
-        obj.codecDescription = self.codecDescription;
+        obj.codecDescription = self->_codecDescription;
         [obj fill];
-        if (CMTimeCompare(obj.timeStamp, self.timeRange.start) < 0) {
+        if (CMTimeCompare(obj.timeStamp, self->_timeRange.start) < 0) {
             [obj unlock];
             continue;
         }
-        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self.timeRange)) >= 0) {
-            self->_is_end_output = 1;
+        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
+            self->_isEndOutput = YES;
             [obj unlock];
             continue;
         }

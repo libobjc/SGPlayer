@@ -13,21 +13,21 @@
 /**
  *  AVSampleFormat
  */
-@property (nonatomic) SInt32 format;
+@property (nonatomic) int format;
 
 /**
  *
  */
-@property (nonatomic) SInt32 sampleRate;
+@property (nonatomic) int sampleRate;
 
 /**
  *
  */
-@property (nonatomic) SInt32 numberOfChannels;
+@property (nonatomic) int numberOfChannels;
 
 /**
  *
  */
-@property (nonatomic) UInt64 channelLayout;
+@property (nonatomic) uint64_t channelLayout;
 
 @end

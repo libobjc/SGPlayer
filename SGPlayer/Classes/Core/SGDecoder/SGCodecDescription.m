@@ -25,7 +25,8 @@
 {
     if (self = [super init]) {
         self->_timebase = av_make_q(0, 1);
-        self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity, kCMTimePositiveInfinity);
+        self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity,
+                                           kCMTimePositiveInfinity);
     }
     return self;
 }
@@ -72,7 +73,7 @@
     self->_timeRange = CMTimeRangeGetIntersection(self->_timeRange, timeRange);
 }
 
-- (CMTimeRange)layoutTimeRange
+- (CMTimeRange)finalTimeRange
 {
     CMTimeRange timeRange = self->_timeRange;
     for (SGTimeLayout * obj in self->_timeLayouts) {

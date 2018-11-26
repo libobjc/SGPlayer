@@ -13,16 +13,49 @@
 
 @interface SGCodecDescription : NSObject <NSCopying>
 
+/**
+ *
+ */
 @property (nonatomic, strong) SGTrack * track;
-@property (nonatomic) AVRational timebase;
-@property (nonatomic) CMTimeRange timeRange;
-@property (nonatomic) AVCodecParameters * codecpar;
-@property (nonatomic, copy) NSArray <SGTimeLayout *> * timeLayouts;
 
+/**
+ *
+ */
+@property (nonatomic) AVRational timebase;
+
+/**
+ *
+ */
+@property (nonatomic) CMTimeRange timeRange;
+
+/**
+ *
+ */
+@property (nonatomic) AVCodecParameters * codecpar;
+
+/**
+ *
+ */
+@property (nonatomic, copy) NSArray<SGTimeLayout *> * timeLayouts;
+
+/**
+ *
+ */
 - (BOOL)isEqualToDescription:(SGCodecDescription *)codecpar;
 
+/**
+ *
+ */
 - (void)appendTimeLayout:(SGTimeLayout *)timeLayout;
+
+/**
+ *
+ */
 - (void)appendTimeRange:(CMTimeRange)timeRange;
-- (CMTimeRange)layoutTimeRange;
+
+/**
+ *
+ */
+- (CMTimeRange)finalTimeRange;
 
 @end

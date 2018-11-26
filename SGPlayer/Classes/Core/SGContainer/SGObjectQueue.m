@@ -11,10 +11,10 @@
 @interface SGObjectQueue ()
 
 {
-    UInt64 _size;
+    int _size;
     CMTime _duration;
-    UInt64 _maxCount;
     BOOL _isDestoryed;
+    uint64_t _maxCount;
     NSCondition *_wakeup;
     id<SGObjectQueueItem> _puttingObject;
     id<SGObjectQueueItem> _cancelPutObject;
@@ -64,7 +64,7 @@
     SGCapacity *ret = [[SGCapacity alloc] init];
     ret.duration = self->_duration;
     ret.size = self->_size;
-    ret.count = self->_objects.count;
+    ret.count = (int)self->_objects.count;
     [self->_wakeup unlock];
     return ret;
 }
@@ -147,7 +147,7 @@
     SGCapacity *obj = [[SGCapacity alloc] init];
     obj.duration = self->_duration;
     obj.size = self->_size;
-    obj.count = self->_objects.count;
+    obj.count = (int)self->_objects.count;
     return obj;
 }
 
@@ -295,7 +295,7 @@
     SGCapacity *obj = [[SGCapacity alloc] init];
     obj.duration = self->_duration;
     obj.size = self->_size;
-    obj.count = self->_objects.count;
+    obj.count = (int)self->_objects.count;
     *capacity = obj;
     return object;
 }

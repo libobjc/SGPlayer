@@ -12,13 +12,13 @@
 @interface SGPacket ()
 
 {
-    UInt64 _size;
+    int _size;
     NSLock *_lock;
     AVPacket *_core;
     SGTrack *_track;
     CMTime _duration;
     CMTime _timeStamp;
-    UInt64 _lockingCount;
+    uint64_t _lockingCount;
     CMTime _decodeTimeStamp;
     SGCodecDescription *_codecDescription;
 }
@@ -59,7 +59,7 @@
     return self->_track;
 }
 
-- (UInt64)size
+- (int)size
 {
     return self->_size;
 }

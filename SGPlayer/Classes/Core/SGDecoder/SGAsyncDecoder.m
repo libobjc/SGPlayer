@@ -13,42 +13,41 @@
 @interface SGAsyncDecoder () <SGObjectQueueDelegate>
 
 {
-    uint32_t _is_waiting_flush;
-    
     NSLock *_lock;
+    BOOL _shouldFlush;
     NSCondition *_wakeup;
     SGCapacity *_capacity;
     id<SGDecodable> _decodable;
     SGAsyncDecoderState _state;
-    SGObjectQueue *_packet_queue;
-    NSOperationQueue *_operation_queue;
+    SGObjectQueue *_packetQueue;
+    NSOperationQueue *_operationQueue;
 }
 
 @end
 
 @implementation SGAsyncDecoder
 
-static SGPacket *finishPacket;
-static SGPacket *flushPacket;
+static SGPacket *gFlushPacket;
+static SGPacket *gFinishPacket;
 
 - (instancetype)initWithDecodable:(id<SGDecodable>)decodable
 {
     if (self = [super init]) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            finishPacket = [[SGPacket alloc] init];
-            [finishPacket lock];
-            flushPacket = [[SGPacket alloc] init];
-            [flushPacket lock];
+            gFlushPacket = [[SGPacket alloc] init];
+            [gFlushPacket lock];
+            gFinishPacket = [[SGPacket alloc] init];
+            [gFinishPacket lock];
         });
         self->_decodable = decodable;
         self->_lock = [[NSLock alloc] init];
-        self->_packet_queue = [[SGObjectQueue alloc] init];
-        self->_packet_queue.delegate = self;
+        self->_packetQueue = [[SGObjectQueue alloc] init];
+        self->_packetQueue.delegate = self;
         self->_wakeup = [[NSCondition alloc] init];
-        self->_operation_queue = [[NSOperationQueue alloc] init];
-        self->_operation_queue.maxConcurrentOperationCount = 1;
-        self->_operation_queue.qualityOfService = NSQualityOfServiceUserInteractive;
+        self->_operationQueue = [[NSOperationQueue alloc] init];
+        self->_operationQueue.maxConcurrentOperationCount = 1;
+        self->_operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
     }
     return self;
 }
@@ -59,9 +58,9 @@ static SGPacket *flushPacket;
         return self->_state != SGAsyncDecoderStateClosed;
     }, ^SGBlock {
         [self setState:SGAsyncDecoderStateClosed];
-        [self->_packet_queue destroy];
-        [self->_operation_queue cancelAllOperations];
-        [self->_operation_queue waitUntilAllOperationsAreFinished];
+        [self->_packetQueue destroy];
+        [self->_operationQueue cancelAllOperations];
+        [self->_operationQueue waitUntilAllOperationsAreFinished];
         return nil;
     });
 }
@@ -119,9 +118,9 @@ static SGPacket *flushPacket;
     }, ^BOOL(SGBlock block) {
         block();
         NSOperation *operation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(runningThread) object:nil];
-        self->_operation_queue = [[NSOperationQueue alloc] init];
-        self->_operation_queue.qualityOfService = NSQualityOfServiceUserInteractive;
-        [self->_operation_queue addOperation:operation];
+        self->_operationQueue = [[NSOperationQueue alloc] init];
+        self->_operationQueue.qualityOfService = NSQualityOfServiceUserInteractive;
+        [self->_operationQueue addOperation:operation];
         return YES;
     });
 }
@@ -134,9 +133,9 @@ static SGPacket *flushPacket;
         return [self setState:SGAsyncDecoderStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_packet_queue destroy];
-        [self->_operation_queue cancelAllOperations];
-        [self->_operation_queue waitUntilAllOperationsAreFinished];
+        [self->_packetQueue destroy];
+        [self->_operationQueue cancelAllOperations];
+        [self->_operationQueue waitUntilAllOperationsAreFinished];
         return YES;
     });
 }
@@ -164,12 +163,12 @@ static SGPacket *flushPacket;
     return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state != SGAsyncDecoderStateClosed;
     }, ^SGBlock {
-        self->_is_waiting_flush = 1;
+        self->_shouldFlush = YES;
         return nil;
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_packet_queue flush];
-        [self->_packet_queue putObjectSync:flushPacket]();
+        [self->_packetQueue flush];
+        [self->_packetQueue putObjectSync:gFlushPacket]();
         return YES;
     });
 }
@@ -182,7 +181,7 @@ static SGPacket *flushPacket;
         return nil;
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_packet_queue putObjectSync:finishPacket]();
+        [self->_packetQueue putObjectSync:gFinishPacket]();
         return YES;
     });
 }
@@ -195,7 +194,7 @@ static SGPacket *flushPacket;
         return nil;
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_packet_queue putObjectSync:packet]();
+        [self->_packetQueue putObjectSync:packet]();
         return YES;
     });
 }
@@ -220,16 +219,16 @@ static SGPacket *flushPacket;
             } else if (self->_state == SGAsyncDecoderStateDecoding) {
                 [self->_lock unlock];
                 SGPacket *packet = nil;
-                SGBlock b1 = [self->_packet_queue getObjectSync:&packet];
-                if (packet == flushPacket) {
+                SGBlock b1 = [self->_packetQueue getObjectSync:&packet];
+                if (packet == gFlushPacket) {
                     [self->_lock lock];
-                    self->_is_waiting_flush = 0;
+                    self->_shouldFlush = NO;
                     [self->_lock unlock];
                     [self->_decodable flush];
                 } else if (packet) {
-                    NSArray<SGFrame *> *frames = [self->_decodable decode:packet != finishPacket ? packet : nil];
+                    NSArray<SGFrame *> *frames = [self->_decodable decode:packet != gFinishPacket ? packet : nil];
                     [self->_lock lock];
-                    BOOL drop = self->_is_waiting_flush;
+                    BOOL drop = self->_shouldFlush;
                     [self->_lock unlock];
                     if (!drop) {
                         for (SGFrame *frame in frames) {

@@ -15,12 +15,12 @@
 @interface SGVideoFrame ()
 
 {
-     BOOL _isKey;
-    SInt32 _format;
-    SInt32 _width;
-    SInt32 _height;
-    SInt32 _linesize[SGFramePlaneCount];
-    UInt8 *_data[SGFramePlaneCount];
+    int _isKey;
+    int _format;
+    int _width;
+    int _height;
+    int _linesize[SGFramePlaneCount];
+    uint8_t *_data[SGFramePlaneCount];
     CVPixelBufferRef _pixelBuffer;
 }
 
@@ -35,32 +35,32 @@
 
 #pragma mark - Setter & Getter
 
-- (SInt32)format
+- (int)format
 {
     return self->_format;
 }
 
-- (BOOL)isKey
+- (int)isKey
 {
     return self->_isKey;
 }
 
-- (SInt32)width
+- (int)width
 {
     return self->_width;
 }
 
-- (SInt32)height
+- (int)height
 {
     return self->_height;
 }
 
-- (SInt32 *)linesize
+- (int *)linesize
 {
     return self->_linesize;
 }
 
-- (UInt8 **)data
+- (uint8_t **)data
 {
     return self->_data;
 }
@@ -75,9 +75,9 @@
 - (void)clear
 {
     [super clear];
+    self->_isKey = 0;
     self->_width = 0;
     self->_height = 0;
-    self->_isKey = NO;
     self->_format = AV_PIX_FMT_NONE;
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = nil;
@@ -160,7 +160,7 @@
         return nil;
     }
     
-    int result = av_image_alloc(dst_data, dst_linesize, self->_width, self->_height, dst_format, 1);
+    int result = av_image_alloc(dst_data, (int *)dst_linesize, self->_width, self->_height, dst_format, 1);
     if (result < 0) {
         return nil;
     }

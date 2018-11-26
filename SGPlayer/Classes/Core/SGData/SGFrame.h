@@ -11,7 +11,7 @@
 #import "SGObjectPool.h"
 #import "SGTrack.h"
 
-static UInt32 const SGFramePlaneCount = 8;
+static int const SGFramePlaneCount = 8;
 
 @interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
@@ -28,7 +28,7 @@ static UInt32 const SGFramePlaneCount = 8;
 /**
  *
  */
-- (UInt64)size;
+- (int)size;
 
 /**
  *

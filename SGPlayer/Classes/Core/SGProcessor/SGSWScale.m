@@ -53,7 +53,7 @@
     return self->_context ? YES : NO;
 }
 
-- (int)convert:(const UInt8 *const [])i_data i_linesize:(const SInt32 [])i_linesize o_data:(UInt8 *const [])o_data o_linesize:(const SInt32 [])o_linesize
+- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize
 {
     return sws_scale(self->_context,
                      i_data,

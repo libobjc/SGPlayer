@@ -14,17 +14,14 @@
 @interface SGDemuxerFunnel ()
 
 {
-    struct _Flags {
-        BOOL isGOPValid;
-        BOOL isGOPStartOutput;
-        BOOL isGOPEndOutput;
-    } _flags;
-    
+    BOOL _isGOPValid;
+    BOOL _isGOPEndOutput;
+    BOOL _isGOPStartOutput;
     SGTimeLayout *_timeLayout;
     id<SGDemuxable> _demuxable;
+    CMTimeRange _finalTimeRange;
     SGObjectQueue *_objectQueue;
     NSArray<SGTrack *> *_tracks;
-    CMTimeRange _actualTimeRange;
 }
 
 @end
@@ -60,7 +57,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (CMTime)duration
 {
-    return self->_actualTimeRange.duration;
+    return self->_finalTimeRange.duration;
 }
 
 - (NSArray<SGTrack *> *)tracks
@@ -78,7 +75,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     }
     CMTime start = CMTIME_IS_VALID(self->_timeRange.start) ? self->_timeRange.start : kCMTimeNegativeInfinity;
     CMTime duration = CMTIME_IS_VALID(self->_timeRange.duration) ? self->_timeRange.duration : kCMTimePositiveInfinity;
-    self->_actualTimeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
+    self->_finalTimeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
                                                         CMTimeRangeMake(kCMTimeZero, self->_demuxable.duration));
     NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
     for (SGTrack *obj in self->_demuxable.tracks) {
@@ -87,21 +84,21 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
     }
     self->_tracks = [tracks copy];
-    self->_timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_actualTimeRange.start, -1)
+    self->_timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_finalTimeRange.start, -1)
                                                       scale:kCMTimeInvalid];
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, self->_actualTimeRange.start)];
+    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, self->_finalTimeRange.start)];
     if (ret) {
         return ret;
     }
     [self->_objectQueue flush];
-    self->_flags.isGOPValid = NO;
-    self->_flags.isGOPStartOutput = NO;
-    self->_flags.isGOPEndOutput = NO;
+    self->_isGOPValid = NO;
+    self->_isGOPStartOutput = NO;
+    self->_isGOPEndOutput = NO;
     return nil;
 }
 
@@ -126,18 +123,18 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, self->_actualTimeRange.start) < 0) {
+        if (CMTimeCompare(pkt.timeStamp, self->_finalTimeRange.start) < 0) {
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_actualTimeRange)) >= 0) {
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_finalTimeRange)) >= 0) {
             [pkt unlock];
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
         [pkt.codecDescription appendTimeLayout:self->_timeLayout];
-        [pkt.codecDescription appendTimeRange:self->_actualTimeRange];
+        [pkt.codecDescription appendTimeRange:self->_finalTimeRange];
         [pkt fill];
         *packet = pkt;
         break;
@@ -150,54 +147,54 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     NSError *ret = nil;
     while (YES) {
         SGPacket *pkt = nil;
-        if (self->_flags.isGOPStartOutput) {
+        if (self->_isGOPStartOutput) {
             [self->_objectQueue getObjectAsync:&pkt];
             if (pkt) {
                 [pkt.codecDescription appendTimeLayout:self->_timeLayout];
-                [pkt.codecDescription appendTimeRange:self->_actualTimeRange];
+                [pkt.codecDescription appendTimeRange:self->_finalTimeRange];
                 [pkt fill];
                 *packet = pkt;
                 break;
             }
         }
-        if (self->_flags.isGOPEndOutput) {
+        if (self->_isGOPEndOutput) {
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
         ret = [self->_demuxable nextPacket:&pkt];
         if (ret) {
-            self->_flags.isGOPEndOutput = YES;
+            self->_isGOPEndOutput = YES;
             continue;
         }
         if (![self->_indexes containsObject:@(pkt.track.index)]) {
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, self->_actualTimeRange.start) < 0) {
+        if (CMTimeCompare(pkt.timeStamp, self->_finalTimeRange.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
                 [self->_objectQueue flush];
-                self->_flags.isGOPValid = YES;
+                self->_isGOPValid = YES;
             }
-            if (self->_flags.isGOPValid) {
+            if (self->_isGOPValid) {
                 [self->_objectQueue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_actualTimeRange)) >= 0) {
+        if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_finalTimeRange)) >= 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                self->_flags.isGOPEndOutput = YES;
+                self->_isGOPEndOutput = YES;
             } else {
                 [self->_objectQueue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (!self->_flags.isGOPStartOutput && pkt.core->flags & AV_PKT_FLAG_KEY) {
+        if (!self->_isGOPStartOutput && pkt.core->flags & AV_PKT_FLAG_KEY) {
             [self->_objectQueue flush];
         }
-        self->_flags.isGOPStartOutput = YES;
+        self->_isGOPStartOutput = YES;
         [self->_objectQueue putObjectSync:pkt];
         [pkt unlock];
         continue;

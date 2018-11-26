@@ -12,14 +12,14 @@
 @interface SGAudioFrame ()
 
 {
-    BOOL _isPlanar;
-    SInt32 _format;
-    SInt32 _sampleRate;
-    UInt64 _channelLayout;
-    SInt32 _numberOfSsmples;
-    SInt32 _numberOfChannels;
-    SInt32 _linesize[SGFramePlaneCount];
-    UInt8 *_data[SGFramePlaneCount];
+    int _format;
+    int _isPlanar;
+    int _sampleRate;
+    int _numberOfSsmples;
+    int _numberOfChannels;
+    uint64_t _channelLayout;
+    int _linesize[SGFramePlaneCount];
+    uint8_t *_data[SGFramePlaneCount];
 }
 
 @end
@@ -33,42 +33,42 @@
 
 #pragma mark - Setter & Getter
 
-- (SInt32)format
+- (int)format
 {
     return self->_format;
 }
 
-- (BOOL)isPlanar
+- (int)isPlanar
 {
     return self->_isPlanar;
 }
 
-- (SInt32)sampleRate
+- (int)sampleRate
 {
     return self->_sampleRate;
 }
 
-- (SInt32)numberOfChannels
+- (int)numberOfChannels
 {
     return self->_numberOfChannels;
 }
 
-- (UInt64)channelLayout
+- (uint64_t)channelLayout
 {
     return self->_channelLayout;
 }
 
-- (SInt32)numberOfSamples
+- (int)numberOfSamples
 {
     return self->_numberOfSsmples;
 }
 
-- (SInt32 *)linesize
+- (int *)linesize
 {
     return self->_linesize;
 }
 
-- (UInt8 **)data
+- (uint8_t **)data
 {
     return self->_data;
 }
@@ -78,7 +78,7 @@
 - (void)clear
 {
     [super clear];
-    self->_isPlanar = NO;
+    self->_isPlanar = 0;
     self->_sampleRate = 0;
     self->_channelLayout = 0;
     self->_numberOfSsmples = 0;

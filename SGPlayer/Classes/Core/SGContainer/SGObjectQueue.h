@@ -19,7 +19,7 @@
 /**
  *
  */
-- (instancetype)initWithMaxCount:(UInt64)maxCount;
+- (instancetype)initWithMaxCount:(uint64_t)maxCount;
 
 /**
  *
@@ -96,7 +96,7 @@
 /**
  *
  */
-- (UInt64)size;
+- (int)size;
 
 /**
  *

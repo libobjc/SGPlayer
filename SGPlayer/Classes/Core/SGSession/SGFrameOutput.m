@@ -330,7 +330,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     }, ^SGBlock {
         [self->_capacitys setObject:capacity forKey:@(track.index)];
         SGBlock b1 = ^{};
-        uint64_t size = 0;
+        int size = 0;
         uint32_t is_enough = 1;
         uint32_t is_finished = self->_packetOutput.state == SGPacketOutputStateFinished;
         NSMutableArray *finished_tracks = [NSMutableArray array];

@@ -13,41 +13,41 @@
 /**
  *  AVSampleFormat
  */
-- (SInt32)format;
+- (int)format;
 
 /**
  *
  */
-- (BOOL)isPlanar;
+- (int)isPlanar;
 
 /**
  *
  */
-- (SInt32)sampleRate;
+- (int)sampleRate;
 
 /**
  *
  */
-- (SInt32)numberOfChannels;
+- (int)numberOfChannels;
 
 /**
  *
  */
-- (UInt64)channelLayout;
+- (uint64_t)channelLayout;
 
 /**
  *
  */
-- (SInt32)numberOfSamples;
+- (int)numberOfSamples;
 
 /**
  *
  */
-- (SInt32 * _Nullable)linesize;
+- (int * _Nullable)linesize;
 
 /**
  *
  */
-- (UInt8 * _Nullable * _Nullable)data;
+- (uint8_t * _Nullable * _Nullable)data;
 
 @end

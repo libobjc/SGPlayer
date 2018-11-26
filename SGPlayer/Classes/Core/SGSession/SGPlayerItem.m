@@ -16,14 +16,11 @@
 @interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
 
 {
-    struct _Flags {
-        BOOL isAudioFinished;
-        BOOL isVudioFinished;
-    } _flags;
-    
     NSLock *_lock;
     NSError *_error;
     SGMixer *_audioMixer;
+    BOOL _isAudioFinished;
+    BOOL _isVudioFinished;
     SGPlayerItemState _state;
     SGObjectQueue *_audioQueue;
     SGObjectQueue *_videoQueue;
@@ -137,9 +134,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     __block BOOL ret = NO;
     SGLockEXE00(self->_lock, ^{
         if (type == SGMediaTypeAudio) {
-            ret = self->_flags.isAudioFinished;
+            ret = self->_isAudioFinished;
         } else if (type == SGMediaTypeVideo) {
-            ret = self->_flags.isVudioFinished;
+            ret = self->_isVudioFinished;
         }
     });
     return ret;
@@ -453,9 +450,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
         for (SGTrack *obj in video_tracks) {
             isVideoFinished = isVideoFinished && [finishedTracks containsObject:obj];
         }
-        self->_flags.isAudioFinished = isAudioFinished && (!audioCapacity || audioCapacity.isEmpty);
-        self->_flags.isVudioFinished = isVideoFinished && (!videoCapacity || videoCapacity.isEmpty);
-        if (self->_flags.isAudioFinished && self->_flags.isVudioFinished) {
+        self->_isAudioFinished = isAudioFinished && (!audioCapacity || audioCapacity.isEmpty);
+        self->_isVudioFinished = isVideoFinished && (!videoCapacity || videoCapacity.isEmpty);
+        if (self->_isAudioFinished && self->_isVudioFinished) {
             return [self setState:SGPlayerItemStateFinished];
         }
         return nil;

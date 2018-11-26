@@ -14,32 +14,32 @@
 /**
  *  AVPixelFormat
  */
-- (SInt32)format;
+- (int)format;
 
 /**
  *
  */
-- (BOOL)isKey;
+- (int)isKey;
 
 /**
  *
  */
-- (SInt32)width;
+- (int)width;
 
 /**
  *
  */
-- (SInt32)height;
+- (int)height;
 
 /**
  *
  */
-- (SInt32 *)linesize;
+- (int *)linesize;
 
 /**
  *
  */
-- (UInt8 **)data;
+- (uint8_t **)data;
 
 /**
  *

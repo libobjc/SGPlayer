@@ -28,5 +28,5 @@ CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer);
 CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer);
 
 // RGB data buffer
-SGPLFImage * SGPLFImageWithRGBData(UInt8 * rgb_data, int linesize, int width, int height);
-CGImageRef SGPLFImageCGImageWithRGBData(UInt8 * rgb_data, int linesize, int width, int height);
+SGPLFImage * SGPLFImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height);
+CGImageRef SGPLFImageCGImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height);

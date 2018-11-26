@@ -11,7 +11,7 @@
 /**
  *
  */
-typedef NS_ENUM(UInt32, SGErrorCode) {
+typedef NS_ENUM(int, SGErrorCode) {
     SGErrorCodeUnknown,
     SGErrorCodeNoValidFormat,
     SGErrorCodeNoValidTrackToPlay,
@@ -31,7 +31,7 @@ typedef NS_ENUM(UInt32, SGErrorCode) {
 /**
  *
  */
-typedef NS_ENUM(UInt32, SGOperationCode) {
+typedef NS_ENUM(int, SGOperationCode) {
     SGOperationCodeUnknown,
     SGOperationCodeFormatCreate,
     SGOperationCodeFormatOpenInput,
@@ -57,9 +57,9 @@ typedef NS_ENUM(UInt32, SGOperationCode) {
 /**
  *
  */
-NSError * SGEGetError(SInt32 result, SGOperationCode operation);
+NSError * SGEGetError(int result, SGOperationCode operation);
 
 /**
  *
  */
-NSError * SGECreateError(SInt64 code, SGOperationCode operation);
+NSError * SGECreateError(int code, SGOperationCode operation);

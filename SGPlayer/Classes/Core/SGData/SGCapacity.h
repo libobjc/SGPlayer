@@ -14,12 +14,12 @@
 /**
  *
  */
-@property (nonatomic) UInt64 size;
+@property (nonatomic) int size;
 
 /**
  *
  */
-@property (nonatomic) UInt64 count;
+@property (nonatomic) int count;
 
 /**
  *

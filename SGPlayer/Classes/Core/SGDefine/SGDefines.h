@@ -9,40 +9,40 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-typedef NS_ENUM(uint32_t, SGPlayerStatus) {
+typedef NS_ENUM(int, SGPlayerStatus) {
     SGPlayerStatusNone,
     SGPlayerStatusPreparing,
     SGPlayerStatusReady,
     SGPlayerStatusFailed,
 };
 
-typedef NS_OPTIONS(uint32_t, SGPlaybackState) {
+typedef NS_OPTIONS(int, SGPlaybackState) {
     SGPlaybackStatePlaying  = 1 << 0,
     SGPlaybackStateSeeking  = 1 << 1,
     SGPlaybackStateFinished = 1 << 2,
 };
 
-typedef NS_ENUM(uint32_t, SGLoadingState) {
+typedef NS_ENUM(int, SGLoadingState) {
     SGLoadingStateNone,
     SGLoadingStatePlaybale,
     SGLoadingStateStalled,
     SGLoadingStateFinished,
 };
 
-typedef NS_ENUM(uint32_t, SGMediaType) {
+typedef NS_ENUM(int, SGMediaType) {
     SGMediaTypeUnknown,
     SGMediaTypeAudio,
     SGMediaTypeVideo,
     SGMediaTypeSubtitle,
 };
 
-typedef NS_ENUM(uint32_t, SGDisplayMode) {
+typedef NS_ENUM(int, SGDisplayMode) {
     SGDisplayModePlane,
     SGDisplayModeVR,
     SGDisplayModeVRBox,
 };
 
-typedef NS_ENUM(uint32_t, SGScalingMode) {
+typedef NS_ENUM(int, SGScalingMode) {
     SGScalingModeResize,
     SGScalingModeResizeAspect,
     SGScalingModeResizeAspectFill,

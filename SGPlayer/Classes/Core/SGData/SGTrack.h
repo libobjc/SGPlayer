@@ -19,6 +19,6 @@
 /**
  *
  */
-- (SInt32)index;
+- (int)index;
 
 @end

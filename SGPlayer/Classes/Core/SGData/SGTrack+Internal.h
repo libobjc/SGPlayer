@@ -16,6 +16,6 @@
 /**
  *
  */
-- (instancetype)initWithType:(SGMediaType)type index:(SInt32)index NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(SGMediaType)type index:(int)index NS_DESIGNATED_INITIALIZER;
 
 @end
