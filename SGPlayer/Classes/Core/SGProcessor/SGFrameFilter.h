@@ -11,8 +11,19 @@
 
 @interface SGFrameFilter : NSObject
 
+/**
+ *
+ */
 - (__kindof SGFrame *)convert:(__kindof SGFrame *)frame;
+
+/**
+ *
+ */
 - (void)flush;
+
+/**
+ *
+ */
 - (void)destroy;
 
 @end
