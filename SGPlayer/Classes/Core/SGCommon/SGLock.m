@@ -8,7 +8,7 @@
 
 #import "SGLock.h"
 
-BOOL SGLockEXE00(id <NSLocking> locking, void (^run)(void))
+BOOL SGLockEXE00(id<NSLocking> locking, void (^run)(void))
 {
     [locking lock];
     if (run) {
@@ -18,7 +18,7 @@ BOOL SGLockEXE00(id <NSLocking> locking, void (^run)(void))
     return YES;
 }
 
-BOOL SGLockEXE10(id <NSLocking> locking, SGBlock (^run)(void))
+BOOL SGLockEXE10(id<NSLocking> locking, SGBlock (^run)(void))
 {
     [locking lock];
     SGBlock r = nil;
@@ -32,7 +32,7 @@ BOOL SGLockEXE10(id <NSLocking> locking, SGBlock (^run)(void))
     return YES;
 }
 
-BOOL SGLockEXE11(id <NSLocking> locking, SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
+BOOL SGLockEXE11(id<NSLocking> locking, SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
 {
     [locking lock];
     SGBlock r = nil;
@@ -48,7 +48,7 @@ BOOL SGLockEXE11(id <NSLocking> locking, SGBlock (^run)(void), BOOL (^finish)(SG
     return YES;
 }
 
-BOOL SGLockCondEXE00(id <NSLocking> locking, BOOL (^verify)(void), void (^run)(void))
+BOOL SGLockCondEXE00(id<NSLocking> locking, BOOL (^verify)(void), void (^run)(void))
 {
     [locking lock];
     BOOL s = YES;
@@ -66,7 +66,7 @@ BOOL SGLockCondEXE00(id <NSLocking> locking, BOOL (^verify)(void), void (^run)(v
     return YES;
 }
 
-BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void))
+BOOL SGLockCondEXE10(id<NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void))
 {
     [locking lock];
     BOOL s = YES;
@@ -88,7 +88,7 @@ BOOL SGLockCondEXE10(id <NSLocking> locking, BOOL (^verify)(void), SGBlock (^run
     return YES;
 }
 
-BOOL SGLockCondEXE11(id <NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
+BOOL SGLockCondEXE11(id<NSLocking> locking, BOOL (^verify)(void), SGBlock (^run)(void), BOOL (^finish)(SGBlock block))
 {
     [locking lock];
     BOOL s = YES;

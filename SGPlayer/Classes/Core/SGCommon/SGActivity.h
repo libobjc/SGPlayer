@@ -10,7 +10,14 @@
 
 @interface SGActivity : NSObject
 
+/**
+ *
+ */
 + (void)addTarget:(id)target;
+
+/**
+ *
+ */
 + (void)removeTarget:(id)target;
 
 @end

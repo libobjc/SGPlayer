@@ -11,14 +11,37 @@
 
 @interface SGTimeLayout : NSObject <NSCopying>
 
-- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
-@property (nonatomic, readonly) CMTime start;
-@property (nonatomic, readonly) CMTime scale;
+/**
+ *
+ */
+- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
 
+/**
+ *
+ */
+- (CMTime)start;
+
+/**
+ *
+ */
+- (CMTime)scale;
+
+/**
+ *
+ */
 - (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout;
 
+/**
+ *
+ */
 - (CMTime)convertTimeStamp:(CMTime)timeStamp;
+
+/**
+ *
+ */
 - (CMTime)convertDuration:(CMTime)duration;
 
 @end

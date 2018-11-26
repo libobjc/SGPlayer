@@ -8,6 +8,7 @@
 
 #import "SGClock.h"
 #import "SGClock+Internal.h"
+#import <QuartzCore/QuartzCore.h>
 #import "SGLock.h"
 
 @interface SGClock ()

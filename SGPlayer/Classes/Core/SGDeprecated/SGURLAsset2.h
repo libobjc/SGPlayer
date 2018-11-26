@@ -7,7 +7,7 @@
 //
 
 #import "SGAsset.h"
-#import <AVFoundation/AVFoundation.h>
+#import <CoreMedia/CoreMedia.h>
 
 @interface SGURLAsset2 : SGAsset
 

@@ -10,14 +10,44 @@
 
 @interface SGConfiguration : NSObject
 
-+ (instancetype)shared;
+/**
+ *
+ */
++ (instancetype)sharedConfiguration;
 
+/**
+ *
+ */
 @property (nonatomic, copy) NSDictionary * formatContextOptions;
+
+/**
+ *
+ */
 @property (nonatomic, copy) NSDictionary * codecContextOptions;
+
+/**
+ *
+ */
 @property (nonatomic) BOOL threadsAuto;
+
+/**
+ *
+ */
 @property (nonatomic) BOOL refcountedFrames;
+
+/**
+ *
+ */
 @property (nonatomic) BOOL hardwareDecodeH264;
+
+/**
+ *
+ */
 @property (nonatomic) BOOL hardwareDecodeH265;
+
+/**
+ *
+ */
 @property (nonatomic) OSType preferredPixelFormat;
 
 @end

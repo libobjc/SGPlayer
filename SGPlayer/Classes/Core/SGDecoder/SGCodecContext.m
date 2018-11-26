@@ -33,12 +33,12 @@
         self.timebase = timebase;
         self.codecpar = codecpar;
         self.frameClass = frameClass;
-        self.options = [SGConfiguration shared].codecContextOptions;
-        self.threadsAuto = [SGConfiguration shared].threadsAuto;
-        self.refcountedFrames = [SGConfiguration shared].refcountedFrames;
-        self.hardwareDecodeH264 = [SGConfiguration shared].hardwareDecodeH264;
-        self.hardwareDecodeH265 = [SGConfiguration shared].hardwareDecodeH265;
-        self.preferredPixelFormat = [SGConfiguration shared].preferredPixelFormat;
+        self.options = [SGConfiguration sharedConfiguration].codecContextOptions;
+        self.threadsAuto = [SGConfiguration sharedConfiguration].threadsAuto;
+        self.refcountedFrames = [SGConfiguration sharedConfiguration].refcountedFrames;
+        self.hardwareDecodeH264 = [SGConfiguration sharedConfiguration].hardwareDecodeH264;
+        self.hardwareDecodeH265 = [SGConfiguration sharedConfiguration].hardwareDecodeH265;
+        self.preferredPixelFormat = [SGConfiguration sharedConfiguration].preferredPixelFormat;
     }
     return self;
 }

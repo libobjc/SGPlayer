@@ -8,8 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(uint32_t, SGErrorCode)
-{
+/**
+ *
+ */
+typedef NS_ENUM(UInt32, SGErrorCode) {
     SGErrorCodeUnknown,
     SGErrorCodeNoValidFormat,
     SGErrorCodeNoValidTrackToPlay,
@@ -26,8 +28,10 @@ typedef NS_ENUM(uint32_t, SGErrorCode)
     SGErrorCodeMutilDemuxerEndOfFile,
 };
 
-typedef NS_ENUM(uint32_t, SGOperationCode)
-{
+/**
+ *
+ */
+typedef NS_ENUM(UInt32, SGOperationCode) {
     SGOperationCodeUnknown,
     SGOperationCodeFormatCreate,
     SGOperationCodeFormatOpenInput,
@@ -50,5 +54,12 @@ typedef NS_ENUM(uint32_t, SGOperationCode)
     SGOperationCodeMutilDemuxerNext,
 };
 
-NSError * SGEGetError(int result, SGOperationCode operation);
-NSError * SGECreateError(int64_t code, SGOperationCode operation);
+/**
+ *
+ */
+NSError * SGEGetError(SInt32 result, SGOperationCode operation);
+
+/**
+ *
+ */
+NSError * SGECreateError(SInt64 code, SGOperationCode operation);

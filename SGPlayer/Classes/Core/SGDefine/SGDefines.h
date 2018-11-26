@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AVFoundation/AVFoundation.h>
+#import <CoreMedia/CoreMedia.h>
 
 typedef NS_ENUM(uint32_t, SGPlayerStatus) {
     SGPlayerStatusNone,

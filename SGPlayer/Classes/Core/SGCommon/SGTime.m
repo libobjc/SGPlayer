@@ -22,15 +22,6 @@ CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime)
     return time;
 }
 
-CMTime SGCMTimeMakeWithTimebase(int64_t timeStamp, CMTime timebase)
-{
-    int64_t maxV = ABS(timeStamp == 0 ? INT64_MAX : INT64_MAX / timeStamp);
-    if (timebase.value > maxV || timebase.value < -maxV) {
-        return CMTimeMake(timeStamp, timebase.timescale / timebase.value);
-    }
-    return CMTimeMake(timebase.value * timeStamp, timebase.timescale);
-}
-
 CMTime SGCMTimeMakeWithSeconds(Float64 seconds)
 {
     return CMTimeMakeWithSeconds(seconds, 1000000);
