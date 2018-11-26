@@ -88,7 +88,7 @@
     }
     NSMutableArray * array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame * frame = [[SGObjectPool sharePool] objectWithClass:self.frameClass];
+        __kindof SGFrame * frame = [[SGObjectPool sharedPool] objectWithClass:self.frameClass];
         result = avcodec_receive_frame(self.codecContext, frame.core);
         if (result < 0) {
             [frame unlock];

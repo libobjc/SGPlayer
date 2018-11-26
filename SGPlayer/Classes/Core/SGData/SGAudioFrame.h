@@ -10,17 +10,44 @@
 
 @interface SGAudioFrame : SGFrame
 
-{
-@public
-    uint8_t * _data[SGFramePlaneCount];
-    int _linesize[SGFramePlaneCount];
-}
+/**
+ *  AVSampleFormat
+ */
+- (SInt32)format;
 
-@property (nonatomic, readonly) int format;         // AVSampleFormat
-@property (nonatomic, readonly) int is_planar;
-@property (nonatomic, readonly) int nb_samples;
-@property (nonatomic, readonly) int sample_rate;
-@property (nonatomic, readonly) int channels;
-@property (nonatomic, readonly) uint64_t channel_layout;
+/**
+ *
+ */
+- (BOOL)isPlanar;
+
+/**
+ *
+ */
+- (SInt32)sampleRate;
+
+/**
+ *
+ */
+- (SInt32)numberOfChannels;
+
+/**
+ *
+ */
+- (UInt64)channelLayout;
+
+/**
+ *
+ */
+- (SInt32)numberOfSamples;
+
+/**
+ *
+ */
+- (SInt32 * _Nullable)linesize;
+
+/**
+ *
+ */
+- (UInt8 * _Nullable * _Nullable)data;
 
 @end

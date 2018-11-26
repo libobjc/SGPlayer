@@ -258,23 +258,23 @@
             self->_current_frame = frame;
         }
         NSAssert(self->_current_frame.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
-        int32_t frame_nb_samples_left = self->_current_frame.nb_samples - self->_nb_samples_copied_frame;
+        int32_t frame_nb_samples_left = self->_current_frame.numberOfSamples - self->_nb_samples_copied_frame;
         int32_t nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
-        for (int i = 0; i < data->mNumberBuffers && i < self->_current_frame.channels; i++) {
+        for (int i = 0; i < data->mNumberBuffers && i < self->_current_frame.numberOfChannels; i++) {
             uint32_t data_offset = self->_nb_samples_copied_render * (uint32_t)sizeof(float);
             uint32_t frame_offset = self->_nb_samples_copied_frame * (uint32_t)sizeof(float);
             uint32_t size_to_copy = nb_samples_to_copy * (uint32_t)sizeof(float);
-            memcpy(data->mBuffers[i].mData + data_offset, self->_current_frame->_data[i] + frame_offset, size_to_copy);
+            memcpy(data->mBuffers[i].mData + data_offset, self->_current_frame.data[i] + frame_offset, size_to_copy);
         }
         if (self->_nb_samples_copied_render == 0) {
-            CMTime duration = CMTimeMultiplyByRatio(self->_current_frame.duration, self->_nb_samples_copied_frame, self->_current_frame.nb_samples);
+            CMTime duration = CMTimeMultiplyByRatio(self->_current_frame.duration, self->_nb_samples_copied_frame, self->_current_frame.numberOfSamples);
             self->_render_time = CMTimeAdd(self->_current_frame.timeStamp, duration);
         }
-        CMTime duration = CMTimeMultiplyByRatio(self->_current_frame.duration, nb_samples_to_copy, self->_current_frame.nb_samples);
+        CMTime duration = CMTimeMultiplyByRatio(self->_current_frame.duration, nb_samples_to_copy, self->_current_frame.numberOfSamples);
         self->_render_duration = CMTimeAdd(self->_render_duration, duration);
         self->_nb_samples_copied_render += nb_samples_to_copy;
         self->_nb_samples_copied_frame += nb_samples_to_copy;
-        if (self->_current_frame.nb_samples <= self->_nb_samples_copied_frame) {
+        if (self->_current_frame.numberOfSamples <= self->_nb_samples_copied_frame) {
             [self->_current_frame unlock];
             self->_current_frame = nil;
             self->_nb_samples_copied_frame = 0;
@@ -296,7 +296,7 @@
     [self.lock lock];
     CMTime render_timeStamp = self->_render_time;
     CMTime render_duration = SGCMTimeMultiply(self->_render_duration, self->_rate);
-    CMTime frame_duration = !self->_current_frame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_current_frame.duration, self->_current_frame.nb_samples - self->_nb_samples_copied_frame, self->_current_frame.nb_samples);
+    CMTime frame_duration = !self->_current_frame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_current_frame.duration, self->_current_frame.numberOfSamples - self->_nb_samples_copied_frame, self->_current_frame.numberOfSamples);
     SGBlock clockBlock = ^{};
     if (self->_state == SGRenderableStateRendering) {
         if (self->_nb_samples_copied_render) {

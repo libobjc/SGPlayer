@@ -9,11 +9,26 @@
 #import "SGPacket.h"
 #import "SGCodecDescription.h"
 
-@interface SGPacket (Internal)
+@interface SGPacket ()
 
-@property (nonatomic, readonly) AVPacket * core;
-@property (nonatomic, copy) SGCodecDescription * codecDescription;
+/**
+ *
+ */
+- (AVPacket * _Nonnull)core;
 
+/**
+ *
+ */
+- (SGCodecDescription * _Nullable)codecDescription;
+
+/**
+ *
+ */
+- (void)setCodecDescription:(SGCodecDescription * _Nonnull)codecDescription;
+
+/**
+ *
+ */
 - (void)fill;
 
 @end

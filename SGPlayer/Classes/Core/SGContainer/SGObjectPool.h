@@ -8,42 +8,44 @@
 
 #import <Foundation/Foundation.h>
 
-#define SGObjectPoolItemInterface \
-@property (nonatomic) NSInteger lockingCount;\
-
-#define SGObjectPoolItemImplementation \
-- (void)lock\
-{\
-    self.lockingCount++;\
-}\
-\
-- (void)unlock\
-{\
-    self.lockingCount--;\
-    if (self.lockingCount <= 0)\
-    {\
-        self.lockingCount = 0;\
-        [[SGObjectPool sharePool] comeback:self];\
-    }\
-}\
-
-#define SGObjectPoolItemLockingInterface      SGObjectPoolItemInterface
-#define SGObjectPoolItemLockingImplementation SGObjectPoolItemImplementation
-
-@protocol SGObjectPoolItem <NSObject>
-
-- (void)lock;
-- (void)unlock;
-- (void)clear;
-
-@end
+@protocol SGObjectPoolItem;
 
 @interface SGObjectPool : NSObject
 
-+ (instancetype)sharePool;
++ (instancetype)sharedPool;
 
-- (__kindof id <SGObjectPoolItem>)objectWithClass:(Class)class;
-- (void)comeback:(id <SGObjectPoolItem>)object;
+/**
+ *
+ */
+- (__kindof id<SGObjectPoolItem>)objectWithClass:(Class _Nonnull)class;
+
+/**
+ *
+ */
+- (void)comeback:(id<SGObjectPoolItem> _Nonnull)object;
+
+/**
+ *
+ */
 - (void)flush;
+
+@end
+
+@protocol SGObjectPoolItem <NSObject>
+
+/**
+ *
+ */
+- (void)lock;
+
+/**
+ *
+ */
+- (void)unlock;
+
+/**
+ *
+ */
+- (void)clear;
 
 @end

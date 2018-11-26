@@ -81,9 +81,9 @@ static int gl_texture[3] = {
     enum AVPixelFormat format = frame.format;
     uint8_t * data[SGFramePlaneCount] = {0};
     int linesize[SGFramePlaneCount] = {0};
-    if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame->_pixelBuffer) {
+    if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame.pixelBuffer) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
-        return [self uploadWithCVPixelBuffer:frame->_pixelBuffer];
+        return [self uploadWithCVPixelBuffer:frame.pixelBuffer];
 #else
         CVReturn err = CVPixelBufferLockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (err != kCVReturnSuccess) {
@@ -104,8 +104,8 @@ static int gl_texture[3] = {
 #endif
     } else {
         for (int i = 0; i < SGFramePlaneCount; i++) {
-            data[i] = frame->_data[i];
-            linesize[i] = frame->_linesize[i];
+            data[i] = frame.data[i];
+            linesize[i] = frame.linesize[i];
         }
     }
     return [self uploadWithFormat:format data:data linesize:linesize width:frame.width height:frame.height];

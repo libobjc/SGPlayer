@@ -8,8 +8,14 @@
 
 #import "SGTrack.h"
 
-@interface SGTrack (Internal)
+@interface SGTrack ()
 
-- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+
+/**
+ *
+ */
+- (instancetype)initWithType:(SGMediaType)type index:(SInt32)index NS_DESIGNATED_INITIALIZER;
 
 @end

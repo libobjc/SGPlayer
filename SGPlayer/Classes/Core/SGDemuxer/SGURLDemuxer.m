@@ -139,7 +139,7 @@
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (self->_context) {
-        SGPacket *pkt = [[SGObjectPool sharePool] objectWithClass:[SGPacket class]];
+        SGPacket *pkt = [[SGObjectPool sharedPool] objectWithClass:[SGPacket class]];
         int ret = av_read_frame(self->_context, pkt.core);
         if (ret < 0) {
             [pkt unlock];
@@ -150,7 +150,7 @@
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
             cd.timeRange = CMTimeRangeMake(self->_startTime, kCMTimePositiveInfinity);
-            pkt.codecDescription = cd;
+            [pkt setCodecDescription:cd];
             [pkt fill];
             *packet = pkt;
         }

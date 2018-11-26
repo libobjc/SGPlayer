@@ -11,15 +11,44 @@
 
 @interface SGCapacity : NSObject <NSCopying>
 
+/**
+ *
+ */
+@property (nonatomic) UInt64 size;
+
+/**
+ *
+ */
+@property (nonatomic) UInt64 count;
+
+/**
+ *
+ */
 @property (nonatomic) CMTime duration;
-@property (nonatomic) uint64_t size;
-@property (nonatomic) uint64_t count;
 
-- (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
-- (BOOL)isEnough;
-- (BOOL)isEmpty;
-
-- (void)add:(SGCapacity *)capacity;
+/**
+ *
+ */
 - (SGCapacity *)minimum:(SGCapacity *)capacity;
+
+/**
+ *
+ */
+- (void)add:(SGCapacity *)capacity;
+
+/**
+ *
+ */
+- (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
+
+/**
+ *
+ */
+- (BOOL)isEnough;
+
+/**
+ *
+ */
+- (BOOL)isEmpty;
 
 @end

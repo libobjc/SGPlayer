@@ -10,10 +10,24 @@
 
 @interface SGPointerMap : NSObject
 
+/**
+ *
+ */
 - (void)setObject:(id)object forKey:(id)key;
+
+/**
+ *
+ */
 - (id)objectForKey:(id)key;
 
+/**
+ *
+ */
 - (void)removeObjectForKey:(id)key;
+
+/**
+ *
+ */
 - (void)removeAllObjects;
 
 @end

@@ -10,16 +10,18 @@
 
 @interface SGObjectPool ()
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) NSMutableDictionary <NSString *, NSMutableSet <id <SGObjectPoolItem>> *> * pool;
+{
+    NSLock *_lock;
+    NSMutableDictionary<NSString *, NSMutableSet<id<SGObjectPoolItem>> *> *_pool;
+}
 
 @end
 
 @implementation SGObjectPool
 
-+ (instancetype)sharePool
++ (instancetype)sharedPool
 {
-    static SGObjectPool * obj = nil;
+    static SGObjectPool *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[SGObjectPool alloc] init];
@@ -30,49 +32,49 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.coreLock = [[NSLock alloc] init];
-        self.pool = [NSMutableDictionary dictionary];
+        self->_lock = [[NSLock alloc] init];
+        self->_pool = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
-- (__kindof id <SGObjectPoolItem>)objectWithClass:(Class)class
+- (id<SGObjectPoolItem>)objectWithClass:(Class)class
 {
-    [self.coreLock lock];
-    NSString * className = NSStringFromClass(class);
-    NSMutableSet <id <SGObjectPoolItem>> * set = [self.pool objectForKey:className];
+    [self->_lock lock];
+    NSString *className = NSStringFromClass(class);
+    NSMutableSet <id<SGObjectPoolItem>> *set = [self->_pool objectForKey:className];
     if (!set) {
         set = [NSMutableSet set];
-        [self.pool setObject:set forKey:className];
+        [self->_pool setObject:set forKey:className];
     }
-    id <SGObjectPoolItem> object = set.anyObject;
+    id<SGObjectPoolItem> object = set.anyObject;
     if (object) {
         [set removeObject:object];
     } else {
         object = [[class alloc] init];
     }
     [object lock];
-    [self.coreLock unlock];
+    [self->_lock unlock];
     return object;
 }
 
-- (void)comeback:(id <SGObjectPoolItem>)object
+- (void)comeback:(id<SGObjectPoolItem>)object
 {
-    [self.coreLock lock];
-    NSString * className = NSStringFromClass(object.class);
-    NSMutableSet <id <SGObjectPoolItem>> * set = [self.pool objectForKey:className];
+    [self->_lock lock];
+    NSString *className = NSStringFromClass(object.class);
+    NSMutableSet <id<SGObjectPoolItem>> *set = [self->_pool objectForKey:className];
     if (![set containsObject:object]) {
         [set addObject:object];
         [object clear];
     }
-    [self.coreLock unlock];
+    [self->_lock unlock];
 }
 
 - (void)flush
 {
-    [self.coreLock lock];
-    [self.pool removeAllObjects];
-    [self.coreLock unlock];
+    [self->_lock lock];
+    [self->_pool removeAllObjects];
+    [self->_lock unlock];
 }
 
 @end

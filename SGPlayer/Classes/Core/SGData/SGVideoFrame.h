@@ -11,18 +11,44 @@
 
 @interface SGVideoFrame : SGFrame
 
-{
-@public
-    uint8_t * _data[SGFramePlaneCount];
-    int _linesize[SGFramePlaneCount];
-    CVPixelBufferRef _pixelBuffer;
-}
+/**
+ *  AVPixelFormat
+ */
+- (SInt32)format;
 
-@property (nonatomic, readonly) int format;     // AVPixelFormat
-@property (nonatomic, readonly) int width;
-@property (nonatomic, readonly) int height;
-@property (nonatomic, readonly) int key_frame;
+/**
+ *
+ */
+- (BOOL)isKey;
 
-- (SGPLFImage *)image;
+/**
+ *
+ */
+- (SInt32)width;
+
+/**
+ *
+ */
+- (SInt32)height;
+
+/**
+ *
+ */
+- (SInt32 *)linesize;
+
+/**
+ *
+ */
+- (UInt8 **)data;
+
+/**
+ *
+ */
+- (CVPixelBufferRef _Nullable)pixelBuffer;
+
+/**
+ *
+ */
+- (SGPLFImage * _Nullable)image;
 
 @end

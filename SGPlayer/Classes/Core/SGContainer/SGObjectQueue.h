@@ -11,57 +11,101 @@
 #import "SGDefines.h"
 #import "SGTime.h"
 
-@protocol SGObjectQueueItem <NSObject>
+@protocol SGObjectQueueItem;
+@protocol SGObjectQueueDelegate;
 
-- (CMTime)timeStamp;
-- (CMTime)duration;
-- (uint64_t)size;
-- (void)lock;
-- (void)unlock;
+@interface SGObjectQueue : NSObject
+
+/**
+ *
+ */
+- (instancetype)initWithMaxCount:(UInt64)maxCount;
+
+/**
+ *
+ */
+@property (nonatomic, weak) id<SGObjectQueueDelegate> delegate;
+
+/**
+ *
+ */
+@property (nonatomic) BOOL shouldSortObjects;
+
+/**
+ *
+ */
+- (SGCapacity *)capacity;
+
+/**
+ *
+ */
+- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object;
+- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after;
+
+/**
+ *
+ */
+- (SGBlock)putObjectAsync:(id<SGObjectQueueItem>)object;
+
+/**
+ *
+ */
+- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object;
+- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after;
+- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
+
+/**
+ *
+ */
+- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object;
+- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader;
+
+/**
+ *
+ */
+- (SGBlock)flush;
+
+/**
+ *
+ */
+- (SGBlock)destroy;
 
 @end
 
-@class SGObjectQueue;
-
 @protocol SGObjectQueueDelegate <NSObject>
 
+/**
+ *
+ */
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity;
 
 @end
 
-@interface SGObjectQueue : NSObject
+@protocol SGObjectQueueItem <NSObject>
 
-- (instancetype)init;
-- (instancetype)initWithMaxCount:(uint64_t)maxCount;
+/**
+ *
+ */
+- (void)lock;
 
-@property (nonatomic, weak) id <SGObjectQueueDelegate> delegate;
-@property (nonatomic) BOOL shouldSortObjects;
+/**
+ *
+ */
+- (void)unlock;
 
-- (SGCapacity *)capacity;
+/**
+ *
+ */
+- (UInt64)size;
 
-#pragma mark - Put Sync
+/**
+ *
+ */
+- (CMTime)duration;
 
-- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object;
-- (SGBlock)putObjectSync:(id <SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after;
-
-#pragma mark - Put Async
-
-- (SGBlock)putObjectAsync:(id <SGObjectQueueItem>)object;
-
-#pragma mark - Get Sync
-
-- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object;
-- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after;
-- (SGBlock)getObjectSync:(id <SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
-
-#pragma mark - Get Async
-
-- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object;
-- (SGBlock)getObjectAsync:(id <SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader;
-
-#pragma mark - Common
-
-- (SGBlock)flush;
-- (SGBlock)destroy;
+/**
+ *
+ */
+- (CMTime)timeStamp;
 
 @end

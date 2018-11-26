@@ -13,9 +13,9 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.duration = kCMTimeZero;
-        self.size = 0;
-        self.count = 0;
+        self->_duration = kCMTimeZero;
+        self->_size = 0;
+        self->_count = 0;
     }
     return self;
 }
@@ -23,21 +23,24 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGCapacity * obj = [[SGCapacity alloc] init];
-    obj.duration = self.duration;
-    obj.size = self.size;
-    obj.count = self.count;
+    obj->_duration = self->_duration;
+    obj->_size = self->_size;
+    obj->_count = self->_count;
     return obj;
 }
 
 - (BOOL)isEqualToCapacity:(SGCapacity *)capacity
 {
-    if (self.count != capacity.count) {
+    if (!capacity) {
         return NO;
     }
-    if (self.size != capacity.size) {
+    if (self->_count != capacity->_count) {
         return NO;
     }
-    if (CMTimeCompare(self.duration, capacity.duration) != 0) {
+    if (self->_size != capacity->_size) {
+        return NO;
+    }
+    if (CMTimeCompare(self->_duration, capacity->_duration) != 0) {
         return NO;
     }
     return YES;
@@ -45,10 +48,10 @@
 
 - (BOOL)isEnough
 {
-    if (self.count < 30) {
+    if (self->_count < 30) {
         return NO;
     }
-    if (CMTimeCompare(self.duration, CMTimeMake(1, 1)) < 0) {
+    if (CMTimeCompare(self->_duration, CMTimeMake(1, 1)) < 0) {
         return NO;
     }
     return YES;
@@ -56,13 +59,13 @@
 
 - (BOOL)isEmpty
 {
-    if (self.count != 0) {
+    if (self->_count != 0) {
         return NO;
     }
-    if (self.size != 0) {
+    if (self->_size != 0) {
         return NO;
     }
-    if (CMTimeCompare(self.duration, kCMTimeZero) != 0) {
+    if (CMTimeCompare(self->_duration, kCMTimeZero) != 0) {
         return NO;
     }
     return YES;
@@ -70,9 +73,12 @@
 
 - (void)add:(SGCapacity *)capacity
 {
-    self.duration = CMTimeAdd(self.duration, capacity.duration);
-    self.size += capacity.size;
-    self.count += capacity.count;
+    if (!capacity) {
+        return;
+    }
+    self->_duration = CMTimeAdd(self->_duration, capacity->_duration);
+    self->_size += capacity->_size;
+    self->_count += capacity->_count;
 }
 
 - (SGCapacity *)minimum:(SGCapacity *)capacity
@@ -80,19 +86,19 @@
     if (!capacity) {
         return self;
     }
-    if (CMTimeCompare(self.duration, capacity.duration) < 0) {
+    if (CMTimeCompare(self->_duration, capacity->_duration) < 0) {
         return self;
-    } else if (CMTimeCompare(self.duration, capacity.duration) > 0) {
+    } else if (CMTimeCompare(self->_duration, capacity->_duration) > 0) {
         return capacity;
     }
-    if (self.count < capacity.count) {
+    if (self->_count < capacity->_count) {
         return self;
-    } else if (self.count > capacity.count) {
+    } else if (self->_count > capacity->_count) {
         return capacity;
     }
-    if (self.size < capacity.size) {
+    if (self->_size < capacity->_size) {
         return self;
-    } else if (self.size > capacity.size) {
+    } else if (self->_size > capacity->_size) {
         return capacity;
     }
     return self;

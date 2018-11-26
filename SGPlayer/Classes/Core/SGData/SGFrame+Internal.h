@@ -9,11 +9,26 @@
 #import "SGFrame.h"
 #import "SGCodecDescription.h"
 
-@interface SGFrame (Internal)
+@interface SGFrame ()
 
-@property (nonatomic, readonly) AVFrame * core;
-@property (nonatomic, copy) SGCodecDescription * codecDescription;
+/**
+ *
+ */
+- (AVFrame * _Nonnull)core;
 
+/**
+ *
+ */
+- (SGCodecDescription * _Nullable)codecDescription;
+
+/**
+ *
+ */
+- (void)setCodecDescription:(SGCodecDescription * _Nonnull)codecDescription;
+
+/**
+ *
+ */
 - (void)fill;
 
 @end

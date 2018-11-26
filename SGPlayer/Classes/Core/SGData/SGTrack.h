@@ -11,7 +11,14 @@
 
 @interface SGTrack : NSObject
 
-@property (nonatomic, readonly) SGMediaType type;
-@property (nonatomic, readonly) int32_t index;
+/**
+ *
+ */
+- (SGMediaType)type;
+
+/**
+ *
+ */
+- (SInt32)index;
 
 @end

@@ -11,20 +11,38 @@
 
 @interface SGTrack ()
 
-@property (nonatomic) SGMediaType type;
-@property (nonatomic) int32_t index;
+{
+    SInt32 _index;
+    SGMediaType _type;
+}
 
 @end
 
 @implementation SGTrack
 
-- (instancetype)initWithType:(SGMediaType)type index:(int32_t)index
+- (instancetype)init
+{
+    NSAssert(NO, @"Invalid Function.");
+    return nil;
+}
+
+- (instancetype)initWithType:(SGMediaType)type index:(SInt32)index
 {
     if (self = [super init]) {
-        self.type = type;
-        self.index = index;
+        self->_type = type;
+        self->_index = index;
     }
     return self;
+}
+
+- (SGMediaType)type
+{
+    return self->_type;
+}
+
+- (SInt32)index
+{
+    return self->_index;
 }
 
 @end

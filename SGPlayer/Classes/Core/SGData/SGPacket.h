@@ -13,12 +13,34 @@
 
 @interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
 
-@property (nonatomic, readonly, strong) SGTrack * track;
+/**
+ *
+ */
+- (void * _Nonnull)coreptr;
 
-@property (nonatomic, readonly) void * coreptr;
-@property (nonatomic, readonly) uint64_t size;
-@property (nonatomic, readonly) CMTime duration;
-@property (nonatomic, readonly) CMTime timeStamp;
-@property (nonatomic, readonly) CMTime decodeTimeStamp;
+/**
+ *
+ */
+- (SGTrack * _Nullable)track;
+
+/**
+ *
+ */
+- (UInt64)size;
+
+/**
+ *
+ */
+- (CMTime)duration;
+
+/**
+ *
+ */
+- (CMTime)timeStamp;
+
+/**
+ *
+ */
+- (CMTime)decodeTimeStamp;
 
 @end

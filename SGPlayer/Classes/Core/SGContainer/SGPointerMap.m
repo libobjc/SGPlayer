@@ -10,8 +10,10 @@
 
 @interface SGPointerMap ()
 
-@property (nonatomic, strong) NSMutableDictionary * keys;
-@property (nonatomic, strong) NSMutableDictionary * objects;
+{
+    NSMutableDictionary *_keys;
+    NSMutableDictionary *_objects;
+}
 
 @end
 
@@ -20,8 +22,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.keys = [[NSMutableDictionary alloc] init];
-        self.objects = [[NSMutableDictionary alloc] init];
+        self->_keys = [[NSMutableDictionary alloc] init];
+        self->_objects = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
@@ -29,9 +31,9 @@
 - (void)setObject:(id)object forKey:(id)key
 {
     NSAssert(object, @"Invalid object");
-    NSString * p = [self pointerForObject:key];
-    [self.keys setObject:key forKey:p];
-    [self.objects setObject:object forKey:p];
+    NSString *p = [self pointerForObject:key];
+    [self->_keys setObject:key forKey:p];
+    [self->_objects setObject:object forKey:p];
 }
 
 - (id)objectForKey:(id)key
@@ -39,21 +41,21 @@
     if (!key) {
         return nil;
     }
-    NSString * p = [self pointerForObject:key];
-    return [self.objects objectForKey:p];
+    NSString *p = [self pointerForObject:key];
+    return [self->_objects objectForKey:p];
 }
 
 - (void)removeObjectForKey:(id)key
 {
-    NSString * p = [self pointerForObject:key];
-    [self.keys removeObjectForKey:p];
-    [self.objects removeObjectForKey:p];
+    NSString *p = [self pointerForObject:key];
+    [self->_keys removeObjectForKey:p];
+    [self->_objects removeObjectForKey:p];
 }
 
 - (void)removeAllObjects
 {
-    [self.keys removeAllObjects];
-    [self.objects removeAllObjects];
+    [self->_keys removeAllObjects];
+    [self->_objects removeAllObjects];
 }
 
 - (NSString *)pointerForObject:(id)object

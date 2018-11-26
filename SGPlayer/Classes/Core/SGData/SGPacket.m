@@ -12,13 +12,16 @@
 @interface SGPacket ()
 
 {
-    NSLock * _lock;
-    SGTrack * _track;
-    AVPacket * _packet;
-    uint64_t _locking_count;
+    UInt64 _size;
+    NSLock *_lock;
+    AVPacket *_core;
+    SGTrack *_track;
+    CMTime _duration;
+    CMTime _timeStamp;
+    UInt64 _lockingCount;
+    CMTime _decodeTimeStamp;
+    SGCodecDescription *_codecDescription;
 }
-
-@property (nonatomic, copy) SGCodecDescription * codecDescription;
 
 @end
 
@@ -28,7 +31,7 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
-        self->_packet = av_packet_alloc();
+        self->_core = av_packet_alloc();
         [self clear];
     }
     return self;
@@ -36,40 +39,85 @@
 
 - (void)dealloc
 {
-    NSAssert(self->_locking_count == 0, @"SGPacket, Invalid locking count");
+    NSAssert(self->_lockingCount == 0, @"SGPacket, Invalid locking count");
     [self clear];
-    if (self->_packet) {
-        av_packet_free(&self->_packet);
-        self->_packet = nil;
+    if (self->_core) {
+        av_packet_free(&self->_core);
+        self->_core = nil;
     }
 }
 
-- (SGTrack *)track {return self->_track;}
-- (void *)coreptr {return self->_packet;}
-- (AVPacket *)core {return self->_packet;}
+#pragma mark - Setter & Getter
+
+- (void *)coreptr
+{
+    return self->_core;
+}
+
+- (SGTrack *)track
+{
+    return self->_track;
+}
+
+- (UInt64)size
+{
+    return self->_size;
+}
+
+- (CMTime)duration
+{
+    return self->_duration;
+}
+
+- (CMTime)timeStamp
+{
+    return self->_timeStamp;
+}
+
+- (CMTime)decodeTimeStamp
+{
+    return self->_decodeTimeStamp;
+}
+
+- (AVPacket *)core
+{
+    return self->_core;
+}
+
+- (void)setCodecDescription:(SGCodecDescription *)codecDescription
+{
+    self->_codecDescription = codecDescription;
+}
+
+- (SGCodecDescription *)codecDescription
+{
+    return self->_codecDescription;
+}
+
+#pragma mark - Item
 
 - (void)lock
 {
     [self->_lock lock];
-    self->_locking_count += 1;
+    self->_lockingCount += 1;
     [self->_lock unlock];
 }
 
 - (void)unlock
 {
     [self->_lock lock];
-    self->_locking_count -= 1;
+    self->_lockingCount -= 1;
     [self->_lock unlock];
-    if (self->_locking_count == 0) {
-        self->_locking_count = 0;
-        [[SGObjectPool sharePool] comeback:self];
+    if (self->_lockingCount == 0) {
+        self->_lockingCount = 0;
+        [[SGObjectPool sharedPool] comeback:self];
     }
 }
 
 - (void)clear
 {
-    if (self->_packet) {
-        av_packet_unref(self->_packet);
+    if (self->_core) {
+        av_packet_unref(self->_core);
     }
     self->_size = 0;
     self->_track = nil;
@@ -79,11 +127,13 @@
     self->_codecDescription = nil;
 }
 
+#pragma mark - Control
+
 - (void)fill
 {
-    AVPacket * pkt = self->_packet;
+    AVPacket *pkt = self->_core;
     AVRational timebase = self->_codecDescription.timebase;
-    SGCodecDescription * cd = self->_codecDescription;
+    SGCodecDescription *cd = self->_codecDescription;
     if (pkt->pts == AV_NOPTS_VALUE) {
         pkt->pts = pkt->dts;
     }
@@ -92,7 +142,7 @@
     self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);
-    for (SGTimeLayout * obj in cd.timeLayouts) {
+    for (SGTimeLayout *obj in cd.timeLayouts) {
         self->_duration = [obj convertDuration:self->_duration];
         self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
         self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];
