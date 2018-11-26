@@ -29,7 +29,7 @@
 
 - (void)setup
 {
-    SGCodecDescription * cd = self->_codecDescription;
+    SGCodecDescription *cd = self->_codecDescription;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:cd.timebase codecpar:cd.codecpar frameClass:[SGVideoFrame class]];
     [self->_codecContext open];
 }
@@ -49,7 +49,7 @@
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    SGCodecDescription * cd = packet.codecDescription;
+    SGCodecDescription *cd = packet.codecDescription;
     if (cd && ![cd isEqualToDescription:self->_codecDescription]) {
         cd = [cd copy];
         self->_codecDescription = cd;
@@ -60,9 +60,9 @@
     if (self->_isEndOutput) {
         return nil;
     }
-    NSMutableArray * ret = [NSMutableArray array];
-    NSArray<SGVideoFrame *> * frames = [self->_codecContext decode:packet];
-    for (SGVideoFrame * obj in frames) {
+    NSMutableArray *ret = [NSMutableArray array];
+    NSArray<SGVideoFrame *> *frames = [self->_codecContext decode:packet];
+    for (SGVideoFrame *obj in frames) {
         obj.codecDescription = self->_codecDescription;
         [obj fill];
         if (CMTimeCompare(obj.timeStamp, self->_timeRange.start) < 0) {

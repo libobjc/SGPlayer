@@ -12,7 +12,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGCodecDescription * obj = [[SGCodecDescription alloc] init];
+    SGCodecDescription *obj = [[SGCodecDescription alloc] init];
     obj->_track = self->_track;
     obj->_timebase = self->_timebase;
     obj->_codecpar = self->_codecpar;
@@ -52,8 +52,8 @@
         return NO;
     }
     for (int i = 0; i < description->_timeLayouts.count; i++) {
-        SGTimeLayout * t1 = [description->_timeLayouts objectAtIndex:i];
-        SGTimeLayout * t2 = [self->_timeLayouts objectAtIndex:i];
+        SGTimeLayout *t1 = [description->_timeLayouts objectAtIndex:i];
+        SGTimeLayout *t2 = [self->_timeLayouts objectAtIndex:i];
         if (![t1 isEqualToTimeLayout:t2]) {
             return NO;
         }
@@ -63,7 +63,7 @@
 
 - (void)appendTimeLayout:(SGTimeLayout *)timeLayout
 {
-    NSMutableArray * ret = [NSMutableArray arrayWithArray:self->_timeLayouts];
+    NSMutableArray *ret = [NSMutableArray arrayWithArray:self->_timeLayouts];
     [ret addObject:timeLayout];
     self->_timeLayouts = ret;
 }
@@ -76,7 +76,7 @@
 - (CMTimeRange)finalTimeRange
 {
     CMTimeRange timeRange = self->_timeRange;
-    for (SGTimeLayout * obj in self->_timeLayouts) {
+    for (SGTimeLayout *obj in self->_timeLayouts) {
         timeRange = CMTimeRangeMake([obj convertTimeStamp:timeRange.start],
                                     [obj convertDuration:timeRange.duration]);
     }

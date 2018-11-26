@@ -19,8 +19,8 @@
 {
     Class _frameClass;
     AVRational _timebase;
-    AVCodecParameters * _codecpar;
-    AVCodecContext * _codecContext;
+    AVCodecParameters *_codecpar;
+    AVCodecContext *_codecContext;
 }
 
 @end
@@ -86,9 +86,9 @@
     if (result < 0) {
         return nil;
     }
-    NSMutableArray * array = [NSMutableArray array];
+    NSMutableArray *array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame * frame = [[SGObjectPool sharedPool] objectWithClass:self->_frameClass];
+        __kindof SGFrame *frame = [[SGObjectPool sharedPool] objectWithClass:self->_frameClass];
         result = avcodec_receive_frame(self->_codecContext, frame.core);
         if (result < 0) {
             [frame unlock];
@@ -104,14 +104,14 @@
 
 - (AVCodecContext *)createCcodecContext
 {
-    AVCodecContext * codecContext = avcodec_alloc_context3(NULL);
+    AVCodecContext *codecContext = avcodec_alloc_context3(NULL);
     if (!codecContext) {
         return nil;
     }
     codecContext->opaque = (__bridge void *)self;
     
     int result = avcodec_parameters_to_context(codecContext, self->_codecpar);
-    NSError * error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
+    NSError *error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;
@@ -122,14 +122,14 @@
         codecContext->get_format = SGCodecContextGetFormat;
     }
     
-    AVCodec * codec = avcodec_find_decoder(codecContext->codec_id);
+    AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec) {
         avcodec_free_context(&codecContext);
         return nil;
     }
     codecContext->codec_id = codec->id;
     
-    AVDictionary * opts = SGDictionaryNS2FF(self->_options);
+    AVDictionary *opts = SGDictionaryNS2FF(self->_options);
     if (self->_threadsAuto &&
         !av_dict_get(opts, "threads", NULL, 0)) {
         av_dict_set(&opts, "threads", "auto", 0);
@@ -155,21 +155,21 @@
     return codecContext;
 }
 
-static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext * s, const enum AVPixelFormat * fmt)
+static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext *s, const enum AVPixelFormat *fmt)
 {
-    SGCodecContext * self = (__bridge SGCodecContext *)s->opaque;
+    SGCodecContext *self = (__bridge SGCodecContext *)s->opaque;
     for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
         if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
-            AVBufferRef * device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
+            AVBufferRef *device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
             if (!device_ctx) {
                 break;
             }
-            AVBufferRef * frames_ctx = av_hwframe_ctx_alloc(device_ctx);
+            AVBufferRef *frames_ctx = av_hwframe_ctx_alloc(device_ctx);
             av_buffer_unref(&device_ctx);
             if (!frames_ctx) {
                 break;
             }
-            AVHWFramesContext * frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
+            AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
             frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
             frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_preferredPixelFormat);
             frames_ctx_data->width = s->width;

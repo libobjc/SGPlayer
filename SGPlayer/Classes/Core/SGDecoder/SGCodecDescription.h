@@ -16,7 +16,7 @@
 /**
  *
  */
-@property (nonatomic, strong) SGTrack * track;
+@property (nonatomic, strong) SGTrack * _Nullable track;
 
 /**
  *
@@ -31,22 +31,22 @@
 /**
  *
  */
-@property (nonatomic) AVCodecParameters * codecpar;
+@property (nonatomic) AVCodecParameters * _Nullable codecpar;
 
 /**
  *
  */
-@property (nonatomic, copy) NSArray<SGTimeLayout *> * timeLayouts;
+@property (nonatomic, copy) NSArray<SGTimeLayout *> * _Nullable timeLayouts;
 
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGCodecDescription *)codecpar;
+- (BOOL)isEqualToDescription:(SGCodecDescription * _Nonnull)codecpar;
 
 /**
  *
  */
-- (void)appendTimeLayout:(SGTimeLayout *)timeLayout;
+- (void)appendTimeLayout:(SGTimeLayout * _Nonnull)timeLayout;
 
 /**
  *
