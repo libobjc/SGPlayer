@@ -14,7 +14,7 @@
 @interface SGAudioFrameFilter ()
 
 {
-    SGSWResample * _swrContext;
+    SGSWResample *_swrContext;
 }
 
 @end
@@ -37,7 +37,7 @@
     if (![frame isKindOfClass:[SGAudioFrame class]]) {
         return [super convert:frame];
     }
-    SGAudioFrame * audioFrame = frame;
+    SGAudioFrame *audioFrame = frame;
     if (self->_swrContext.i_format != audioFrame.format ||
         self->_swrContext.i_sample_rate != audioFrame.sampleRate ||
         self->_swrContext.i_channels != audioFrame.numberOfChannels ||
@@ -47,7 +47,7 @@
         self->_swrContext.o_channels != self->_numberOfChannels ||
         self->_swrContext.o_channel_layout != self->_channelLayout) {
         self->_swrContext = nil;
-        SGSWResample * swrContext = [[SGSWResample alloc] init];
+        SGSWResample *swrContext = [[SGSWResample alloc] init];
         swrContext.i_format = audioFrame.format;
         swrContext.i_sample_rate = audioFrame.sampleRate;
         swrContext.i_channels = audioFrame.numberOfChannels;
@@ -65,18 +65,18 @@
     }
     int nb_samples = [self->_swrContext convert:audioFrame.data nb_samples:audioFrame.numberOfSamples];
     int nb_planar = av_sample_fmt_is_planar(self->_format) ? self->_numberOfChannels : 1;
-    int linesize = av_get_bytes_per_sample(self->_format) * nb_samples;
+    int linesize = av_get_bytes_per_sample(self->_format) *nb_samples;
     linesize *= av_sample_fmt_is_planar(self->_format) ? 1 : self->_numberOfChannels;
-    SGAudioFrame * result = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
+    SGAudioFrame *result = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
     result.core->format = self->_format;
     result.core->channels = self->_numberOfChannels;
     result.core->channel_layout = self->_channelLayout;
     result.core->nb_samples = nb_samples;
     av_frame_copy_props(result.core, audioFrame.core);
     for (int i = 0; i < nb_planar; i++) {
-        uint8_t * data = av_mallocz(linesize);
+        uint8_t *data = av_mallocz(linesize);
         [self->_swrContext copy:data linesize:linesize planar:i];
-        AVBufferRef * buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
         result.core->buf[i] = buffer;
         result.core->data[i] = buffer->data;
         result.core->linesize[i] = buffer->size;

@@ -17,8 +17,8 @@ typedef NS_ENUM(uint32_t, SGPlayerStatus) {
 };
 
 typedef NS_OPTIONS(uint32_t, SGPlaybackState) {
-    SGPlaybackStatePlaying = 1 << 0,
-    SGPlaybackStateSeeking = 1 << 1,
+    SGPlaybackStatePlaying  = 1 << 0,
+    SGPlaybackStateSeeking  = 1 << 1,
     SGPlaybackStateFinished = 1 << 2,
 };
 
@@ -49,5 +49,5 @@ typedef NS_ENUM(uint32_t, SGScalingMode) {
 };
 
 typedef void (^SGBlock)(void);
-typedef void (^SGSeekResult)(CMTime time, NSError * error);
-typedef BOOL (^SGTimeReader)(CMTime * desire, BOOL * drop);
+typedef void (^SGSeekResult)(CMTime time, NSError *error);
+typedef BOOL (^SGTimeReader)(CMTime *desire, BOOL *drop);

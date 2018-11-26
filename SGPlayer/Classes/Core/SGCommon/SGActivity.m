@@ -10,8 +10,10 @@
 
 @interface SGActivity ()
 
-@property (nonatomic, strong) NSLock * coreLock;
-@property (nonatomic, strong) NSMutableSet * targets;
+{
+    NSLock *_lock;
+    NSMutableSet *_targets;
+}
 
 @end
 
@@ -27,9 +29,6 @@
     [[SGActivity activity] removeTarget:target];
 }
 
-
-#pragma mark - Class
-
 + (instancetype)activity
 {
     static SGActivity * obj = nil;
@@ -43,8 +42,8 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.coreLock = [[NSLock alloc] init];
-        self.targets = [NSMutableSet set];
+        self->_lock = [[NSLock alloc] init];
+        self->_targets = [NSMutableSet set];
     }
     return self;
 }
@@ -54,12 +53,12 @@
     if (!target) {
         return;
     }
-    [self.coreLock lock];
-    if (![self.targets containsObject:[self token:target]]) {
-        [self.targets addObject:[self token:target]];
+    [self->_lock lock];
+    if (![self->_targets containsObject:[self token:target]]) {
+        [self->_targets addObject:[self token:target]];
     }
     [self reload];
-    [self.coreLock unlock];
+    [self->_lock unlock];
 }
 
 - (void)removeTarget:(id)target
@@ -67,12 +66,12 @@
     if (!target) {
         return;
     }
-    [self.coreLock lock];
-    if ([self.targets containsObject:[self token:target]]) {
-        [self.targets removeObject:[self token:target]];
+    [self->_lock lock];
+    if ([self->_targets containsObject:[self token:target]]) {
+        [self->_targets removeObject:[self token:target]];
     }
     [self reload];
-    [self.coreLock unlock];
+    [self->_lock unlock];
 }
 
 - (void)reload

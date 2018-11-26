@@ -13,11 +13,11 @@
 /**
  *
  */
-+ (void)addTarget:(id)target;
++ (void)addTarget:(id _Nonnull)target;
 
 /**
  *
  */
-+ (void)removeTarget:(id)target;
++ (void)removeTarget:(id _Nonnull)target;
 
 @end

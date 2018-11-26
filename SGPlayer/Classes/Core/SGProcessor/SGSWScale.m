@@ -11,7 +11,9 @@
 
 @interface SGSWScale ()
 
-@property (nonatomic) struct SwsContext * context;
+{
+    struct SwsContext *_context;
+}
 
 @end
 
@@ -20,40 +22,46 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.flags = SWS_FAST_BILINEAR;
+        self->_flags = SWS_FAST_BILINEAR;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    if (self.context) {
-        sws_freeContext(self.context);
-        self.context = nil;
+    if (self->_context) {
+        sws_freeContext(self->_context);
+        self->_context = nil;
     }
 }
 
 - (BOOL)open
 {
-    if (self.width == 0 ||
-        self.height == 0) {
+    if (self->_width == 0 ||
+        self->_height == 0) {
         return NO;
     }
-    self.context = sws_getCachedContext(self.context,
-                                        self.width,
-                                        self.height,
-                                        self.i_format,
-                                        self.width,
-                                        self.height,
-                                        self.o_format,
-                                        self.flags,
-                                        NULL, NULL, NULL);
-    return self.context ? YES : NO;
+    self->_context = sws_getCachedContext(self->_context,
+                                          self->_width,
+                                          self->_height,
+                                          self->_i_format,
+                                          self->_width,
+                                          self->_height,
+                                          self->_o_format,
+                                          self->_flags,
+                                          NULL, NULL, NULL);
+    return self->_context ? YES : NO;
 }
 
-- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize
+- (int)convert:(const UInt8 *const [])i_data i_linesize:(const SInt32 [])i_linesize o_data:(UInt8 *const [])o_data o_linesize:(const SInt32 [])o_linesize
 {
-    return sws_scale(self.context, i_data, i_linesize, 0, self.height, o_data, o_linesize);;
+    return sws_scale(self->_context,
+                     i_data,
+                     i_linesize,
+                     0,
+                     self->_height,
+                     o_data,
+                     o_linesize);;
 }
 
 @end

@@ -16,9 +16,9 @@ NSError * SGEGetError(SInt32 result, SGOperationCode operation)
     if (result >= 0) {
         return nil;
     }
-    char * data = malloc(256);
+    char *data = malloc(256);
     av_strerror(result, data, 256);
-    NSString * domain = [NSString stringWithFormat:@"SGPlayer-Error-FFmpeg code : %d, msg : %s", result, data];
+    NSString *domain = [NSString stringWithFormat:@"SGPlayer-Error-FFmpeg code : %d, msg : %s", result, data];
     free(data);
     return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
