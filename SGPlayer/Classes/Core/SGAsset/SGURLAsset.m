@@ -12,7 +12,9 @@
 
 @interface SGURLAsset ()
 
-@property (nonatomic, copy) NSURL * URL;
+{
+    NSURL *_URL;
+}
 
 @end
 
@@ -21,14 +23,14 @@
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init]) {
-        self.URL = URL;
+        self->_URL = [URL copy];
     }
     return self;
 }
 
 - (id<SGDemuxable>)newDemuxable
 {
-    return [[SGURLDemuxer alloc] initWithURL:self.URL];
+    return [[SGURLDemuxer alloc] initWithURL:self->_URL];
 }
 
 @end

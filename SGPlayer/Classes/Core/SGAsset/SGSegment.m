@@ -9,19 +9,13 @@
 #import "SGSegment.h"
 #import "SGSegment+Internal.h"
 
-@interface SGSegment ()
-
-@property (nonatomic) SGMediaType type;
-
-@end
-
 @implementation SGSegment
 
 - (id)copyWithZone:(NSZone *)zone
 {
     SGSegment * obj = [[self.class alloc] init];
-    obj.timeRange = self.timeRange;
-    obj.scale = self.scale;
+    obj->_timeRange = self->_timeRange;
+    obj->_scale = self->_scale;
     return obj;
 }
 
@@ -33,8 +27,8 @@
 - (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super init]) {
-        self.timeRange = timeRange;
-        self.scale = scale;
+        self->_timeRange = timeRange;
+        self->_scale = scale;
     }
     return self;
 }

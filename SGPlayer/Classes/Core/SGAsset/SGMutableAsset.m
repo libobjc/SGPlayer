@@ -14,19 +14,46 @@
 
 @interface SGMutableAsset ()
 
-@property (nonatomic, strong) NSMutableArray<NSNumber *> * types;
-@property (nonatomic, strong) NSMutableArray<NSMutableArray<SGSegment *> *> * tracks;
+{
+    NSMutableArray<NSNumber *> *_types;
+    NSMutableArray<NSMutableArray<SGSegment *> *> *_tracks;
+}
 
 @end
 
 @implementation SGMutableAsset
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        _types = [NSMutableArray array];
+        _tracks = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (int)addTrack:(SGMediaType)type
+{
+    [self->_types addObject:@(type)];
+    [self->_tracks addObject:[NSMutableArray array]];
+    return (int32_t)self->_tracks.count - 1;
+}
+
+- (BOOL)insertSegment:(SGSegment *)segment trackID:(int)trackID
+{
+    if (trackID < 0 || trackID >= self->_tracks.count) {
+        return NO;
+    }
+    [[self->_tracks objectAtIndex:trackID] addObject:segment];
+    return YES;
+}
+
 - (id<SGDemuxable>)newDemuxable
 {
     NSMutableArray * demuxables = [NSMutableArray array];
-    for (int i = 0; i < self.tracks.count; i++) {
-        SGMediaType type = (uint32_t)[self.types objectAtIndex:i].unsignedIntValue;
-        NSMutableArray<SGSegment *> * segments = [self.tracks objectAtIndex:i];
+    for (int i = 0; i < self->_tracks.count; i++) {
+        SGMediaType type = (uint32_t)[self->_types objectAtIndex:i].unsignedIntValue;
+        NSMutableArray<SGSegment *> * segments = [self->_tracks objectAtIndex:i];
         NSMutableArray * obj = [NSMutableArray array];
         for (SGSegment * segment in segments) {
             [obj addObject:[segment copy]];
@@ -36,28 +63,6 @@
         [demuxables addObject:demuxer];
     }
     return [[SGMutilDemuxer alloc] initWithDemuxables:demuxables];
-}
-
-- (int32_t)addTrack:(SGMediaType)type
-{
-    if (!self.types) {
-        self.types = [NSMutableArray array];
-    }
-    if (!self.tracks) {
-        self.tracks = [NSMutableArray array];
-    }
-    [self.types addObject:@(type)];
-    [self.tracks addObject:[NSMutableArray array]];
-    return (int32_t)self.tracks.count - 1;
-}
-
-- (BOOL)insertSegment:(SGSegment *)segment trackID:(int32_t)trackID
-{
-    if (trackID < 0 || trackID >= self.tracks.count) {
-        return NO;
-    }
-    [[self.tracks objectAtIndex:(NSUInteger)trackID] addObject:segment];
-    return YES;
 }
 
 @end

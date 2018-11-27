@@ -10,10 +10,10 @@
 
 @interface SGURLSegment : SGSegment
 
-- (instancetype)initWithURL:(NSURL *)URL index:(int32_t)index;
-- (instancetype)initWithURL:(NSURL *)URL index:(int32_t)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
+- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index;
+- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
 
-@property (nonatomic, copy) NSURL * URL;
-@property (nonatomic) int32_t index;
+@property (nonatomic, copy) NSURL * _Nonnull URL;
+@property (nonatomic) int index;
 
 @end

@@ -12,8 +12,8 @@
 
 @interface SGMutableAsset : SGAsset
 
-- (int32_t)addTrack:(SGMediaType)type;
+- (int)addTrack:(SGMediaType)type;
 
-- (BOOL)insertSegment:(SGSegment *)segment trackID:(int32_t)trackID;
+- (BOOL)insertSegment:(SGSegment * _Nonnull)segment trackID:(int)trackID;
 
 @end

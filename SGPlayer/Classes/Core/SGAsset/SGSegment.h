@@ -14,7 +14,7 @@
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
+- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic) CMTimeRange timeRange;
 @property (nonatomic) CMTime scale;

@@ -16,31 +16,31 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGURLSegment * obj = [super copyWithZone:zone];
-    obj.URL = self.URL;
-    obj.index = self.index;
+    obj->_URL = self->_URL;
+    obj->_index = self->_index;
     return obj;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL index:(int32_t)index
+- (instancetype)initWithURL:(NSURL *)URL index:(int)index
 {
     return [self initWithURL:URL index:index timeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];
 }
 
-- (instancetype)initWithURL:(NSURL *)URL index:(int32_t)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
+- (instancetype)initWithURL:(NSURL *)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super initWithTimeRange:timeRange scale:scale]) {
-        self.URL = URL;
-        self.index = index;
+        self->_URL = URL;
+        self->_index = index;
     }
     return self;
 }
 
 - (id<SGDemuxable>)newDemuxable
 {
-    SGURLDemuxer * demuxable = [[SGURLDemuxer alloc] initWithURL:self.URL];
+    SGURLDemuxer * demuxable = [[SGURLDemuxer alloc] initWithURL:self->_URL];
     SGDemuxerFunnel * obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];
     obj.timeRange = self.timeRange;
-    obj.index = self.index;
+    obj.index = self->_index;
     return obj;
 }
 
