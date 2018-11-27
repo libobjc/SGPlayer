@@ -11,6 +11,6 @@
 
 @interface SGGLProgramPool : NSObject
 
-- (id <SGGLProgram>)programWithType:(SGGLProgramType)type;
+- (id<SGGLProgram>)programWithType:(SGGLProgramType)type;
 
 @end

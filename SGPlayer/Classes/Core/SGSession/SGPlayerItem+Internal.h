@@ -30,7 +30,7 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
 /**
  *
  */
-@property (nonatomic, weak) id <SGPlayerItemDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGPlayerItemDelegate> _Nullable delegate;
 
 /**
  *

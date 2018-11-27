@@ -39,7 +39,7 @@
     return self;
 }
 
-- (id <SGDemuxable>)newDemuxable
+- (id<SGDemuxable>)newDemuxable
 {
     return nil;
 }

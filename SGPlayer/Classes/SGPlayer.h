@@ -112,7 +112,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer (Delegate)
 
-@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
+@property (nonatomic, weak) id<SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end

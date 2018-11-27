@@ -14,19 +14,19 @@
 
 @interface SGMutableAsset ()
 
-@property (nonatomic, strong) NSMutableArray <NSNumber *> * types;
-@property (nonatomic, strong) NSMutableArray <NSMutableArray <SGSegment *> *> * tracks;
+@property (nonatomic, strong) NSMutableArray<NSNumber *> * types;
+@property (nonatomic, strong) NSMutableArray<NSMutableArray<SGSegment *> *> * tracks;
 
 @end
 
 @implementation SGMutableAsset
 
-- (id <SGDemuxable>)newDemuxable
+- (id<SGDemuxable>)newDemuxable
 {
     NSMutableArray * demuxables = [NSMutableArray array];
     for (int i = 0; i < self.tracks.count; i++) {
         SGMediaType type = (uint32_t)[self.types objectAtIndex:i].unsignedIntValue;
-        NSMutableArray <SGSegment *> * segments = [self.tracks objectAtIndex:i];
+        NSMutableArray<SGSegment *> * segments = [self.tracks objectAtIndex:i];
         NSMutableArray * obj = [NSMutableArray array];
         for (SGSegment * segment in segments) {
             [obj addObject:[segment copy]];

@@ -13,7 +13,7 @@
 
 @interface SGClock (Internal)
 
-@property (nonatomic, weak) id <SGClockDelegate> delegate;
+@property (nonatomic, weak) id<SGClockDelegate> delegate;
 
 @property (nonatomic) CMTime rate;
 

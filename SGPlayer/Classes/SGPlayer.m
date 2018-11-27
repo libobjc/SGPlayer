@@ -40,7 +40,7 @@
 @property (nonatomic, strong) SGAudioRenderer * audioRenderer;
 @property (nonatomic, strong) SGVideoRenderer * videoRenderer;
 
-@property (nonatomic, weak) id <SGPlayerDelegate> delegate;
+@property (nonatomic, weak) id<SGPlayerDelegate> delegate;
 @property (nonatomic, strong) NSOperationQueue * delegateQueue;
 
 @end
@@ -458,12 +458,12 @@
 
 #pragma mark - SGRenderableDelegate
 
-- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state
+- (void)renderable:(id<SGRenderable>)renderable didChangeState:(SGRenderableState)state
 {
     NSAssert(state != SGRenderableStateFailed, @"Invaild renderer, %@", renderable);
 }
 
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
 {
     if (capacity.isEmpty) {
         SGLockEXE10(self.lock, ^SGBlock {
@@ -478,7 +478,7 @@
     }
 }
 
-- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader
+- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader
 {
     if (renderable == self.audioRenderer) {
         return [self.currentItem copyAudioFrame:timeReader];

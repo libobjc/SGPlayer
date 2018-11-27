@@ -25,7 +25,7 @@ typedef NS_ENUM(uint32_t, SGRenderableState) {
 
 @protocol SGRenderable <NSObject>
 
-@property (nonatomic, weak) id <SGRenderableDelegate> delegate;
+@property (nonatomic, weak) id<SGRenderableDelegate> delegate;
 
 - (SGRenderableState)state;
 - (SGCapacity *)capacity;
@@ -41,9 +41,9 @@ typedef NS_ENUM(uint32_t, SGRenderableState) {
 
 @protocol SGRenderableDelegate <NSObject>
 
-- (void)renderable:(id <SGRenderable>)renderable didChangeState:(SGRenderableState)state;
-- (void)renderable:(id <SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
-- (__kindof SGFrame *)renderable:(id <SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
+- (void)renderable:(id<SGRenderable>)renderable didChangeState:(SGRenderableState)state;
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
+- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
 
 @end
 

@@ -23,7 +23,7 @@
 @interface SGAudioStreamPlayer : NSObject
 
 @property (nonatomic, copy, readonly) NSError * error;
-@property (nonatomic, weak) id <SGAudioStreamPlayerDelegate> delegate;
+@property (nonatomic, weak) id<SGAudioStreamPlayerDelegate> delegate;
 
 /**
  *  Volume.

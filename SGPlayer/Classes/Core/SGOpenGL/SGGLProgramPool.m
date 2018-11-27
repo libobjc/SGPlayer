@@ -21,7 +21,7 @@
 
 @implementation SGGLProgramPool
 
-- (id <SGGLProgram>)programWithType:(SGGLProgramType)type
+- (id<SGGLProgram>)programWithType:(SGGLProgramType)type
 {
     switch (type) {
         case SGGLProgramTypeUnknown:

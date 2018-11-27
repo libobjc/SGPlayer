@@ -11,6 +11,6 @@
 
 @interface SGGLModelPool : NSObject
 
-- (id <SGGLModel>)modelWithType:(SGGLModelType)type;
+- (id<SGGLModel>)modelWithType:(SGGLModelType)type;
 
 @end

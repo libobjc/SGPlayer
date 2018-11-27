@@ -434,8 +434,8 @@
     [self.lock unlock];
     SGGLSize textureSize = {frame.width, frame.height};
     SGDisplayMode displayMode = self.displayMode;
-    id <SGGLModel> model = [self.modelPool modelWithType:SGDisplay2Model(displayMode)];
-    id <SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format, frame.pixelBuffer)];
+    id<SGGLModel> model = [self.modelPool modelWithType:SGDisplay2Model(displayMode)];
+    id<SGGLProgram> program = [self.programPool programWithType:SGFormat2Program(frame.format, frame.pixelBuffer)];
     if (!model || !program) {
         [frame unlock];
         return NO;

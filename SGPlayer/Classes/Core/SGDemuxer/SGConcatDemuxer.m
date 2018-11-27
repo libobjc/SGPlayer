@@ -45,14 +45,14 @@
 
 #pragma mark - Setter & Getter
 
-- (void)setDelegate:(id <SGDemuxableDelegate>)delegate
+- (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {
     for (SGConcatDemuxerUnit *obj in self->_units) {
         obj.delegate = delegate;
     }
 }
 
-- (id <SGDemuxableDelegate>)delegate
+- (id<SGDemuxableDelegate>)delegate
 {
     return self->_units.firstObject.delegate;
 }

@@ -563,6 +563,9 @@
 		9CF15E0A2011AE0700585326 /* SGAudioRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E062011AE0700585326 /* SGAudioRenderer.m */; };
 		9CF15E1F2011BC5400585326 /* SGAudioFrame.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF15E1D2011BC5400585326 /* SGAudioFrame.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF15E222011BC5400585326 /* SGAudioFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF15E1E2011BC5400585326 /* SGAudioFrame.m */; };
+		9CF457B521ACE4F9003FA327 /* SGDiscardFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */; };
+		9CF457B621ACE4F9003FA327 /* SGDiscardFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */; };
+		9CF457B721ACE4F9003FA327 /* SGDiscardFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */; };
 		9CF52CF7200F45D700950B81 /* SGTrack.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF52CF5200F45D700950B81 /* SGTrack.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9CF52CFA200F45D700950B81 /* SGTrack.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CF52CF6200F45D700950B81 /* SGTrack.m */; };
 		9CF63FC2211D8E33001B2684 /* SGAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = 9CF63FC0211D8E33001B2684 /* SGAsset.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -771,16 +774,7 @@
 		9CCC5F19200C9B9400E833DA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F1B200C9B9800E833DA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/AVFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		9CCC5F1D200C9BA200E833DA /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS11.1.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
-		9CD79E8F218FE20200E39A7D /* SGConcatAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConcatAsset.h; sourceTree = "<group>"; };
 		9CD79E90218FE20200E39A7D /* SGDiscardFilter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDiscardFilter.h; sourceTree = "<group>"; };
-		9CD79E91218FE20200E39A7D /* SGURLAsset2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGURLAsset2.h; sourceTree = "<group>"; };
-		9CD79E92218FE20300E39A7D /* SGConcatSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConcatSource.h; sourceTree = "<group>"; };
-		9CD79E93218FE20300E39A7D /* SGConcatSource.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConcatSource.m; sourceTree = "<group>"; };
-		9CD79E94218FE20300E39A7D /* SGFormatContext2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFormatContext2.m; sourceTree = "<group>"; };
-		9CD79E95218FE20300E39A7D /* SGConcatAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConcatAsset.m; sourceTree = "<group>"; };
-		9CD79E96218FE20300E39A7D /* SGURLAsset2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGURLAsset2.m; sourceTree = "<group>"; };
-		9CD79E97218FE20300E39A7D /* SGFormatContext2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFormatContext2.h; sourceTree = "<group>"; };
-		9CD79E98218FE20300E39A7D /* SGSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSource.h; sourceTree = "<group>"; };
 		9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGDiscardFilter.m; sourceTree = "<group>"; };
 		9CD79E9A218FF8B200E39A7D /* SGOpenGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGOpenGL.h; sourceTree = "<group>"; };
 		9CD79FA62190068E00E39A7D /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -957,7 +951,6 @@
 		9C478F341E713A9B00AD4289 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				9CEBCC9F217F018100430024 /* SGDeprecated */,
 				9CF63FBF211D8E26001B2684 /* SGAsset */,
 				9C4FB1A92111BD640079C2D2 /* SGSession */,
 				9C8D4E5C200E0A0600ED8A58 /* SGDemuxer */,
@@ -1111,6 +1104,8 @@
 		9C6F901E219BDCDC001051CE /* SGProcessor */ = {
 			isa = PBXGroup;
 			children = (
+				9CD79E90218FE20200E39A7D /* SGDiscardFilter.h */,
+				9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */,
 				9C66E1F421884E6B00B70DAA /* SGFrameFilter.h */,
 				9C66E1F521884E6B00B70DAA /* SGFrameFilter.m */,
 				9C66E1F82188526200B70DAA /* SGAudioFrameFilter.h */,
@@ -1302,24 +1297,6 @@
 				9C43D50C2187037200235169 /* SGConfiguration.m */,
 			);
 			path = SGCommon;
-			sourceTree = "<group>";
-		};
-		9CEBCC9F217F018100430024 /* SGDeprecated */ = {
-			isa = PBXGroup;
-			children = (
-				9CD79E8F218FE20200E39A7D /* SGConcatAsset.h */,
-				9CD79E95218FE20300E39A7D /* SGConcatAsset.m */,
-				9CD79E92218FE20300E39A7D /* SGConcatSource.h */,
-				9CD79E93218FE20300E39A7D /* SGConcatSource.m */,
-				9CD79E90218FE20200E39A7D /* SGDiscardFilter.h */,
-				9CD79E99218FE20300E39A7D /* SGDiscardFilter.m */,
-				9CD79E97218FE20300E39A7D /* SGFormatContext2.h */,
-				9CD79E94218FE20300E39A7D /* SGFormatContext2.m */,
-				9CD79E98218FE20300E39A7D /* SGSource.h */,
-				9CD79E91218FE20200E39A7D /* SGURLAsset2.h */,
-				9CD79E96218FE20300E39A7D /* SGURLAsset2.m */,
-			);
-			path = SGDeprecated;
 			sourceTree = "<group>";
 		};
 		9CEFA6CC1E7122BF00835CAB = {
@@ -1939,6 +1916,7 @@
 				9C86382C21904A0900D730EC /* SGVRViewport.m in Sources */,
 				9C86382D21904A0900D730EC /* SGPLFDisplayLink.m in Sources */,
 				9C86382E21904A0900D730EC /* SGAudioFrame.m in Sources */,
+				9CF457B521ACE4F9003FA327 /* SGDiscardFilter.m in Sources */,
 				9C86382F21904A0900D730EC /* SGGLViewport.m in Sources */,
 				9C86383021904A0900D730EC /* SGAsset.m in Sources */,
 				9C86383121904A0900D730EC /* SGConfiguration.m in Sources */,
@@ -2014,6 +1992,7 @@
 				9CD79ED32190068E00E39A7D /* SGVRViewport.m in Sources */,
 				9CD79ED42190068E00E39A7D /* SGPLFDisplayLink.m in Sources */,
 				9CD79ED52190068E00E39A7D /* SGAudioFrame.m in Sources */,
+				9CF457B721ACE4F9003FA327 /* SGDiscardFilter.m in Sources */,
 				9CD79ED62190068E00E39A7D /* SGGLViewport.m in Sources */,
 				9CD79ED72190068E00E39A7D /* SGAsset.m in Sources */,
 				9CD79ED82190068E00E39A7D /* SGConfiguration.m in Sources */,
@@ -2046,6 +2025,7 @@
 				9C13638F213934030025C72B /* SGGLBGRAProgram.m in Sources */,
 				9C1D2210201AC83F005147FB /* SGGLModelPool.m in Sources */,
 				9CE71920219C408300256485 /* SGSegment.m in Sources */,
+				9CF457B621ACE4F9003FA327 /* SGDiscardFilter.m in Sources */,
 				9C66E1F721884E6B00B70DAA /* SGFrameFilter.m in Sources */,
 				9CE68433200DD12F007BD834 /* SGAudioStreamPlayer.m in Sources */,
 				9CF52CFA200F45D700950B81 /* SGTrack.m in Sources */,

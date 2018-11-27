@@ -35,7 +35,7 @@
     return self;
 }
 
-- (id <SGDemuxable>)newDemuxable
+- (id<SGDemuxable>)newDemuxable
 {
     SGURLDemuxer * demuxable = [[SGURLDemuxer alloc] initWithURL:self.URL];
     SGDemuxerFunnel * obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];

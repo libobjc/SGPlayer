@@ -32,7 +32,7 @@
 }
 
 @property (nonatomic, strong) NSLock * lock;
-@property (nonatomic, weak) id <SGClockDelegate> delegate;
+@property (nonatomic, weak) id<SGClockDelegate> delegate;
 
 @end
 

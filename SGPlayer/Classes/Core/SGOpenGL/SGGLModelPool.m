@@ -19,7 +19,7 @@
 
 @implementation SGGLModelPool
 
-- (id <SGGLModel>)modelWithType:(SGGLModelType)type
+- (id<SGGLModel>)modelWithType:(SGGLModelType)type
 {
     switch (type) {
         case SGGLModelTypeUnknown:
