@@ -31,7 +31,7 @@
 
 + (instancetype)activity
 {
-    static SGActivity * obj = nil;
+    static SGActivity *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[SGActivity alloc] init];

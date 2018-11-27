@@ -13,7 +13,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGSegment * obj = [[self.class alloc] init];
+    SGSegment *obj = [[self.class alloc] init];
     obj->_timeRange = self->_timeRange;
     obj->_scale = self->_scale;
     return obj;

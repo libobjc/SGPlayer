@@ -8,9 +8,9 @@
 
 #import "SGGLSphereModel.h"
 
-static GLushort * indexes_data = nil;
-static GLfloat * vertices_data = nil;
-static GLfloat * textureCoordinates_data = nil;
+static GLushort *indexes_data = nil;
+static GLfloat *vertices_data = nil;
+static GLfloat *textureCoordinates_data = nil;
 
 static int const slices_count = 200;
 static int const parallels_count = slices_count / 2;

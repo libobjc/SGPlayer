@@ -73,16 +73,16 @@
         return NO;
     }
     GLint status;
-    * shader = glCreateShader(type);
-    glShaderSource(* shader, 1, &shaderString, NULL);
-    glCompileShader(* shader);
-    glGetShaderiv(* shader, GL_COMPILE_STATUS, &status);
+    *shader = glCreateShader(type);
+    glShaderSource(*shader, 1, &shaderString, NULL);
+    glCompileShader(*shader);
+    glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
     if (status != GL_TRUE) {
         GLint logLength;
-        glGetShaderiv(* shader, GL_INFO_LOG_LENGTH, &logLength);
+        glGetShaderiv(*shader, GL_INFO_LOG_LENGTH, &logLength);
         if (logLength > 0) {
-            GLchar * log = (GLchar *)malloc(logLength);
-            glGetShaderInfoLog(* shader, logLength, &logLength, log);
+            GLchar *log = (GLchar *)malloc(logLength);
+            glGetShaderInfoLog(*shader, logLength, &logLength, log);
             SGPlayerLog(@"Shader compile log:\n%s", log);
             free(log);
         }

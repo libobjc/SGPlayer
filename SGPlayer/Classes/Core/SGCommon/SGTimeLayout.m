@@ -21,7 +21,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGTimeLayout * obj = [[SGTimeLayout alloc] initWithStart:self->_start scale:self->_scale];
+    SGTimeLayout *obj = [[SGTimeLayout alloc] initWithStart:self->_start scale:self->_scale];
     return obj;
 }
 

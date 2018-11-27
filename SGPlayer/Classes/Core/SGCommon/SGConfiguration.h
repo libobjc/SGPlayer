@@ -18,12 +18,12 @@
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * formatContextOptions;
+@property (nonatomic, copy) NSDictionary *formatContextOptions;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * codecContextOptions;
+@property (nonatomic, copy) NSDictionary *codecContextOptions;
 
 /**
  *

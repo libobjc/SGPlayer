@@ -11,7 +11,7 @@
 @interface SGGLTimer ()
 
 @property (nonatomic, copy) void (^handler)(void);
-@property (nonatomic, strong) NSTimer * timer;
+@property (nonatomic, strong) NSTimer *timer;
 
 @end
 

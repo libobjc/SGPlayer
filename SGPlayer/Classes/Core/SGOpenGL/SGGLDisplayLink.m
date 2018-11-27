@@ -12,7 +12,7 @@
 @interface SGGLDisplayLink ()
 
 @property (nonatomic, copy) void (^handler)(void);
-@property (nonatomic, strong) SGPLFDisplayLink * displayLink;
+@property (nonatomic, strong) SGPLFDisplayLink *displayLink;
 
 @end
 

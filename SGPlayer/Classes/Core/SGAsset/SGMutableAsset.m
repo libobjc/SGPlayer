@@ -50,16 +50,16 @@
 
 - (id<SGDemuxable>)newDemuxable
 {
-    NSMutableArray * demuxables = [NSMutableArray array];
+    NSMutableArray *demuxables = [NSMutableArray array];
     for (int i = 0; i < self->_tracks.count; i++) {
         SGMediaType type = [self->_types objectAtIndex:i].intValue;
-        NSMutableArray<SGSegment *> * segments = [self->_tracks objectAtIndex:i];
-        NSMutableArray * obj = [NSMutableArray array];
-        for (SGSegment * segment in segments) {
+        NSMutableArray<SGSegment *> *segments = [self->_tracks objectAtIndex:i];
+        NSMutableArray *obj = [NSMutableArray array];
+        for (SGSegment *segment in segments) {
             [obj addObject:[segment copy]];
         }
-        SGTrack * track = [[SGTrack alloc] initWithType:type index:i];
-        SGConcatDemuxer * demuxer = [[SGConcatDemuxer alloc] initWithTrack:track segments:segments];
+        SGTrack *track = [[SGTrack alloc] initWithType:type index:i];
+        SGConcatDemuxer *demuxer = [[SGConcatDemuxer alloc] initWithTrack:track segments:segments];
         [demuxables addObject:demuxer];
     }
     return [[SGMutilDemuxer alloc] initWithDemuxables:demuxables];

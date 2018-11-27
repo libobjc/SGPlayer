@@ -101,13 +101,13 @@
 }
 
 static CVReturn displayLinkCallback(CVDisplayLinkRef displayLinkRef,
-                                    const CVTimeStamp * now,
-                                    const CVTimeStamp * outputTime,
+                                    const CVTimeStamp *now,
+                                    const CVTimeStamp *outputTime,
                                     CVOptionFlags flagsIn,
-                                    CVOptionFlags * flagsOut,
-                                    void * displayLinkContext)
+                                    CVOptionFlags *flagsOut,
+                                    void *displayLinkContext)
 {
-    SGPLFDisplayLink * displayLink = (__bridge SGPLFDisplayLink *)displayLinkContext;
+    SGPLFDisplayLink *displayLink = (__bridge SGPLFDisplayLink *)displayLinkContext;
     if ([displayLink.target respondsToSelector:displayLink.selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"

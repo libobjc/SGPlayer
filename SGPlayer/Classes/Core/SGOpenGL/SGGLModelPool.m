@@ -12,8 +12,8 @@
 
 @interface SGGLModelPool ()
 
-@property (nonatomic, strong) SGGLPlaneModel * plane;
-@property (nonatomic, strong) SGGLSphereModel * sphere;
+@property (nonatomic, strong) SGGLPlaneModel *plane;
+@property (nonatomic, strong) SGGLSphereModel *sphere;
 
 @end
 

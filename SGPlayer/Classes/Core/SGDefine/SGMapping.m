@@ -112,10 +112,10 @@ enum AVPixelFormat SGPixelFormatAV2FF(OSType format)
     return AV_PIX_FMT_NONE;
 }
 
-AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary)
+AVDictionary * SGDictionaryNS2FF(NSDictionary *dictionary)
 {
-    __block AVDictionary * ret = NULL;
-    [dictionary enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+    __block AVDictionary *ret = NULL;
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[NSNumber class]]) {
             av_dict_set_int(&ret, [key UTF8String], [obj integerValue], 0);
         } else if ([obj isKindOfClass:[NSString class]]) {
@@ -125,13 +125,13 @@ AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary)
     return ret;
 }
 
-NSDictionary * SGDictionaryFF2NS(AVDictionary * dictionary)
+NSDictionary * SGDictionaryFF2NS(AVDictionary *dictionary)
 {
-    NSMutableDictionary * ret = [NSMutableDictionary dictionary];
-    AVDictionaryEntry * entry = NULL;
+    NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+    AVDictionaryEntry *entry = NULL;
     while ((entry = av_dict_get(dictionary, "", entry, AV_DICT_IGNORE_SUFFIX))) {
-        NSString * key = [NSString stringWithUTF8String:entry->key];
-        NSString * value = [NSString stringWithUTF8String:entry->value];
+        NSString *key = [NSString stringWithUTF8String:entry->key];
+        NSString *value = [NSString stringWithUTF8String:entry->value];
         [ret setObject:value forKey:key];
     }
     if (ret.count <= 0) {

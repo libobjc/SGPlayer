@@ -21,14 +21,14 @@ static int gl_texture[3] = {
 @interface SGGLTextureUploader ()
 
 {
-    AVBufferRef * _resample_buffers[SGFramePlaneCount];
+    AVBufferRef *_resample_buffers[SGFramePlaneCount];
     GLuint _gl_texture_ids[3];
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     CVOpenGLESTextureCacheRef _openGLESTextureCache;
 #endif
 }
 
-@property (nonatomic, strong) SGPLFGLContext * context;
+@property (nonatomic, strong) SGPLFGLContext *context;
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 @property (nonatomic) BOOL setupOpenGLESTextureCacheFailed;
 #endif
@@ -79,7 +79,7 @@ static int gl_texture[3] = {
 - (BOOL)uploadWithVideoFrame:(SGVideoFrame *)frame
 {
     enum AVPixelFormat format = frame.format;
-    uint8_t * data[SGFramePlaneCount] = {0};
+    uint8_t *data[SGFramePlaneCount] = {0};
     int linesize[SGFramePlaneCount] = {0};
     if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame.pixelBuffer) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
@@ -113,7 +113,7 @@ static int gl_texture[3] = {
 
 - (BOOL)uploadWithFormat:(enum AVPixelFormat)format data:(uint8_t **)data_src linesize:(int *)linesize_src width:(int)width height:(int)height
 {
-    uint8_t * data[SGFramePlaneCount] = {0};
+    uint8_t *data[SGFramePlaneCount] = {0};
     int linesize[SGFramePlaneCount] = {0};
     int widths[SGFramePlaneCount] = {0};
     int heights[SGFramePlaneCount] = {0};

@@ -13,9 +13,9 @@
 
 @interface SGGLProgramPool ()
 
-@property (nonatomic, strong) SGGLYUV420PProgram * yuv420p;
-@property (nonatomic, strong) SGGLNV12Program * nv12;
-@property (nonatomic, strong) SGGLBGRAProgram * bgra;
+@property (nonatomic, strong) SGGLYUV420PProgram *yuv420p;
+@property (nonatomic, strong) SGGLNV12Program *nv12;
+@property (nonatomic, strong) SGGLBGRAProgram *bgra;
 
 @end
 

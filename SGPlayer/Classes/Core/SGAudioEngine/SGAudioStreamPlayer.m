@@ -116,7 +116,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     AUGraphSetNodeInputCallback(self.graph, self.nodeForTimePitch, 0, &inputCallbackStruct);
     AudioUnitAddRenderNotify(self.audioUnitForOutput, outputRenderCallback, (__bridge void *)(self));
     
-    NSError * error;
+    NSError *error;
     if (![self setAsbd:[SGAudioStreamPlayer defaultASBD] error:&error])
     {
        _error = error;
@@ -202,7 +202,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     OSStatus status = AudioUnitSetParameter(self.audioUnitForMixer, param, kAudioUnitScope_Input, 0, volume, 0);
     if (status != noErr)
     {
-        * error = [NSError errorWithDomain:@"Volume-Mixer-Global" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"Volume-Mixer-Global" code:status userInfo:nil];
         return NO;
     }
     _volume = volume;
@@ -214,7 +214,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     OSStatus status = AudioUnitSetParameter(self.audioUnitForTimePitch, kNewTimePitchParam_Rate, kAudioUnitScope_Global, 0, rate, 0);
     if (status != noErr)
     {
-        * error = [NSError errorWithDomain:@"Rate-TimePitch-Global" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"Rate-TimePitch-Global" code:status userInfo:nil];
         return NO;
     }
     _rate = rate;
@@ -229,35 +229,35 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
     if (status != noErr)
     {
         [self asbdRollback];
-        * error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Input" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Input" code:status userInfo:nil];
         return NO;
     }
     status = AudioUnitSetProperty(self.audioUnitForTimePitch, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &asbd, size);
     if (status != noErr)
     {
         [self asbdRollback];
-        * error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Output" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"StreamForamt-TimePitch-Output" code:status userInfo:nil];
         return NO;
     }
     status = AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, size);
     if (status != noErr)
     {
         [self asbdRollback];
-        * error = [NSError errorWithDomain:@"StreamForamt-Mixer-Input" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"StreamForamt-Mixer-Input" code:status userInfo:nil];
         return NO;
     }
     status = AudioUnitSetProperty(self.audioUnitForMixer, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Output, 0, &asbd, size);
     if (status != noErr)
     {
         [self asbdRollback];
-        * error = [NSError errorWithDomain:@"StreamForamt-Mixer-Output" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"StreamForamt-Mixer-Output" code:status userInfo:nil];
         return NO;
     }
     status = AudioUnitSetProperty(self.audioUnitForOutput, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &asbd, size);
     if (status != noErr)
     {
         [self asbdRollback];
-        * error = [NSError errorWithDomain:@"StreamForamt-Ouput-Input" code:status userInfo:nil];
+        *error = [NSError errorWithDomain:@"StreamForamt-Ouput-Input" code:status userInfo:nil];
         return NO;
     }
     _asbd = asbd;
@@ -277,37 +277,37 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 
 #pragma mark - Callback
 
-OSStatus inputCallback(void * inRefCon,
-                       AudioUnitRenderActionFlags * ioActionFlags,
-                       const AudioTimeStamp * inTimeStamp,
+OSStatus inputCallback(void *inRefCon,
+                       AudioUnitRenderActionFlags *ioActionFlags,
+                       const AudioTimeStamp *inTimeStamp,
                        UInt32 inBusNumber,
                        UInt32 inNumberFrames,
-                       AudioBufferList * ioData)
+                       AudioBufferList *ioData)
 {
     @autoreleasepool {
-        SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
+        SGAudioStreamPlayer *obj = (__bridge SGAudioStreamPlayer *)inRefCon;
         [obj.delegate audioStreamPlayer:obj render:inTimeStamp data:ioData nb_samples:inNumberFrames];
     }
     return noErr;
 }
 
-OSStatus outputRenderCallback(void * inRefCon,
-                              AudioUnitRenderActionFlags * ioActionFlags,
-                              const AudioTimeStamp * inTimeStamp,
+OSStatus outputRenderCallback(void *inRefCon,
+                              AudioUnitRenderActionFlags *ioActionFlags,
+                              const AudioTimeStamp *inTimeStamp,
                               UInt32 inBusNumber,
                               UInt32 inNumberFrames,
-                              AudioBufferList * ioData)
+                              AudioBufferList *ioData)
 {
     @autoreleasepool {
-        SGAudioStreamPlayer * obj = (__bridge SGAudioStreamPlayer *)inRefCon;
-        if ((* ioActionFlags) & kAudioUnitRenderAction_PreRender)
+        SGAudioStreamPlayer *obj = (__bridge SGAudioStreamPlayer *)inRefCon;
+        if ((*ioActionFlags) & kAudioUnitRenderAction_PreRender)
         {
             if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:preRender:)])
             {
                 [obj.delegate audioStreamPlayer:obj preRender:inTimeStamp];
             }
         }
-        else if ((* ioActionFlags) & kAudioUnitRenderAction_PostRender)
+        else if ((*ioActionFlags) & kAudioUnitRenderAction_PostRender)
         {
             if ([obj.delegate respondsToSelector:@selector(audioStreamPlayer:postRender:)])
             {

@@ -12,7 +12,7 @@
 
 typedef NSOpenGLContext SGPLFGLContext;
 
-NSOpenGLPixelFormat * SGPLFGLContextGetPixelFormat(SGPLFGLContext * context);
+NSOpenGLPixelFormat * SGPLFGLContextGetPixelFormat(SGPLFGLContext *context);
 
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 
@@ -21,4 +21,4 @@ typedef EAGLContext SGPLFGLContext;
 #endif
 
 SGPLFGLContext * SGPLFGLContextAllocInit(void);
-void SGPLGLContextSetCurrentContext(SGPLFGLContext * context);
+void SGPLGLContextSetCurrentContext(SGPLFGLContext *context);

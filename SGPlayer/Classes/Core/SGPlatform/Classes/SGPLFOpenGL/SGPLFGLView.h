@@ -19,13 +19,13 @@
 
 @interface SGPLFGLView : UIView
 
-@property (nonatomic, strong) CAEAGLLayer * glLayer;
+@property (nonatomic, strong) CAEAGLLayer *glLayer;
 
 - (void)renderbufferStorage;
 
 #endif
 
-@property (nonatomic, strong) SGPLFGLContext * context;
+@property (nonatomic, strong) SGPLFGLContext *context;
 @property (nonatomic) double glScale;
 
 - (void)prepare;

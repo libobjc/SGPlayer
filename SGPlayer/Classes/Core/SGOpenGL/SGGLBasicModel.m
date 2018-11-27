@@ -15,9 +15,9 @@
     GLuint _vertices_buffer_id;
     GLuint _textureCoordinates_buffer_id;
     
-    GLushort * _indexes_buffer_data;
-    GLfloat * _vertices_buffer_data;
-    GLfloat * _textureCoordinates_buffer_data;
+    GLushort *_indexes_buffer_data;
+    GLfloat *_vertices_buffer_data;
+    GLfloat *_textureCoordinates_buffer_data;
     
     int _indexes_count;
     int _vertices_count;

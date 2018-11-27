@@ -13,7 +13,7 @@
 
 + (instancetype)sharedConfiguration
 {
-    static SGConfiguration * obj = nil;
+    static SGConfiguration *obj = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         obj = [[SGConfiguration alloc] init];

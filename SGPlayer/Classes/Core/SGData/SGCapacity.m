@@ -22,7 +22,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGCapacity * obj = [[SGCapacity alloc] init];
+    SGCapacity *obj = [[SGCapacity alloc] init];
     obj->_duration = self->_duration;
     obj->_size = self->_size;
     obj->_count = self->_count;

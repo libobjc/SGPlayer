@@ -30,5 +30,5 @@ OSType SGPixelFormatFF2AV(enum AVPixelFormat format);
 enum AVPixelFormat SGPixelFormatAV2FF(OSType format);
 
 // FF <-> NS
-AVDictionary * SGDictionaryNS2FF(NSDictionary * dictionary);
-NSDictionary * SGDictionaryFF2NS(AVDictionary * dictionary);
+AVDictionary * SGDictionaryNS2FF(NSDictionary *dictionary);
+NSDictionary * SGDictionaryFF2NS(AVDictionary *dictionary);

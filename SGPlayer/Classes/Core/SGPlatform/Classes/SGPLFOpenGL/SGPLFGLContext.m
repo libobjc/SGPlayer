@@ -10,7 +10,7 @@
 
 #if SGPLATFORM_TARGET_OS_MAC
 
-NSOpenGLPixelFormat * SGPLFGLContextGetPixelFormat(SGPLFGLContext * context)
+NSOpenGLPixelFormat * SGPLFGLContextGetPixelFormat(SGPLFGLContext *context)
 {
     return context.pixelFormat;
 }
@@ -23,11 +23,11 @@ SGPLFGLContext * SGPLFGLContextAllocInit(void)
         0
     };
     
-    NSOpenGLPixelFormat * pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
+    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
     return [[NSOpenGLContext alloc] initWithFormat:pixelFormat shareContext:nil];
 }
 
-void SGPLGLContextSetCurrentContext(SGPLFGLContext * context)
+void SGPLGLContextSetCurrentContext(SGPLFGLContext *context)
 {
     if (context) {
         [context makeCurrentContext];
@@ -43,7 +43,7 @@ SGPLFGLContext * SGPLFGLContextAllocInit(void)
     return [[SGPLFGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 }
 
-void SGPLGLContextSetCurrentContext(SGPLFGLContext * context)
+void SGPLGLContextSetCurrentContext(SGPLFGLContext *context)
 {
     [EAGLContext setCurrentContext:context];
 }

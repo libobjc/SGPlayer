@@ -17,10 +17,10 @@ SGPLFImage * SGPLFImageWithCGImage(CGImageRef image)
 
 SGPLFImage * SGPLFImageWithCVPixelBuffer(CVPixelBufferRef pixelBuffer)
 {
-    CIImage * ciImage = SGPLFImageCIImageWithCVPexelBuffer(pixelBuffer);
+    CIImage *ciImage = SGPLFImageCIImageWithCVPexelBuffer(pixelBuffer);
     if (!ciImage) return nil;
-    NSCIImageRep * imageRep = [NSCIImageRep imageRepWithCIImage:ciImage];
-    NSImage * image = [[NSImage alloc] initWithSize:imageRep.size];
+    NSCIImageRep *imageRep = [NSCIImageRep imageRepWithCIImage:ciImage];
+    NSImage *image = [[NSImage alloc] initWithSize:imageRep.size];
     [image addRepresentation:imageRep];
     return image;
 }
@@ -28,7 +28,7 @@ SGPLFImage * SGPLFImageWithCVPixelBuffer(CVPixelBufferRef pixelBuffer)
 CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 {
     if (@available(macOS 10.11, *)) {
-        CIImage * image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+        CIImage *image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
         return image;
     } else {
         return nil;
@@ -44,14 +44,14 @@ SGPLFImage * SGPLFImageWithCGImage(CGImageRef image)
 
 SGPLFImage * SGPLFImageWithCVPixelBuffer(CVPixelBufferRef pixelBuffer)
 {
-    CIImage * ciImage = SGPLFImageCIImageWithCVPexelBuffer(pixelBuffer);
+    CIImage *ciImage = SGPLFImageCIImageWithCVPexelBuffer(pixelBuffer);
     if (!ciImage) return nil;
     return [UIImage imageWithCIImage:ciImage];
 }
 
 CIImage * SGPLFImageCIImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
 {
-    CIImage * image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+    CIImage *image = [CIImage imageWithCVPixelBuffer:pixelBuffer];
     return image;
 }
 
@@ -67,7 +67,7 @@ CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
         return nil;
     }
 
-    uint8_t * baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(pixelBuffer);
+    uint8_t *baseAddress = (uint8_t *)CVPixelBufferGetBaseAddress(pixelBuffer);
     size_t bytesPerRow = CVPixelBufferGetBytesPerRow(pixelBuffer);
     size_t width = CVPixelBufferGetWidth(pixelBuffer);
     size_t height = CVPixelBufferGetHeight(pixelBuffer);
@@ -91,16 +91,16 @@ CGImageRef SGPLFImageCGImageWithCVPexelBuffer(CVPixelBufferRef pixelBuffer)
     return imageRef;
 }
 
-SGPLFImage * SGPLFImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height)
+SGPLFImage * SGPLFImageWithRGBData(uint8_t *rgb_data, int linesize, int width, int height)
 {
     CGImageRef imageRef = SGPLFImageCGImageWithRGBData(rgb_data, linesize, width, height);
     if (!imageRef) return nil;
-    SGPLFImage * image = SGPLFImageWithCGImage(imageRef);
+    SGPLFImage *image = SGPLFImageWithCGImage(imageRef);
     CGImageRelease(imageRef);
     return image;
 }
 
-CGImageRef SGPLFImageCGImageWithRGBData(uint8_t * rgb_data, int linesize, int width, int height)
+CGImageRef SGPLFImageCGImageWithRGBData(uint8_t *rgb_data, int linesize, int width, int height)
 {
     CFDataRef data = CFDataCreate(kCFAllocatorDefault, rgb_data, linesize * height);
     CGDataProviderRef provider = CGDataProviderCreateWithCFData(data);

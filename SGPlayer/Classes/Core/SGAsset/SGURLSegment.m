@@ -15,7 +15,7 @@
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGURLSegment * obj = [super copyWithZone:zone];
+    SGURLSegment *obj = [super copyWithZone:zone];
     obj->_URL = self->_URL;
     obj->_index = self->_index;
     return obj;
@@ -37,8 +37,8 @@
 
 - (id<SGDemuxable>)newDemuxable
 {
-    SGURLDemuxer * demuxable = [[SGURLDemuxer alloc] initWithURL:self->_URL];
-    SGDemuxerFunnel * obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];
+    SGURLDemuxer *demuxable = [[SGURLDemuxer alloc] initWithURL:self->_URL];
+    SGDemuxerFunnel *obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];
     obj.timeRange = self.timeRange;
     obj.index = self->_index;
     return obj;

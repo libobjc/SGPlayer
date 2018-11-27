@@ -15,8 +15,8 @@
 
 #pragma mark - Override
 
-@property (nonatomic, readonly) const char * vertexShaderString;
-@property (nonatomic, readonly) const char * fragmentShaderString;
+@property (nonatomic, readonly) const char *vertexShaderString;
+@property (nonatomic, readonly) const char *fragmentShaderString;
 
 @property (nonatomic) GLint position_location;
 @property (nonatomic) GLint textureCoordinate_location;
