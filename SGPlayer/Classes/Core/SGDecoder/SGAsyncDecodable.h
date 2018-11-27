@@ -1,5 +1,5 @@
 //
-//  SGAsyncDecoder.h
+//  SGAsyncDecodable.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
@@ -10,19 +10,19 @@
 #import "SGDecodable.h"
 #import "SGCapacity.h"
 
-@protocol SGAsyncDecoderDelegate;
+@protocol SGAsyncDecodableDelegate;
 
 /**
  *
  */
-typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
-    SGAsyncDecoderStateNone,
-    SGAsyncDecoderStateDecoding,
-    SGAsyncDecoderStatePaused,
-    SGAsyncDecoderStateClosed,
+typedef NS_ENUM(uint32_t, SGAsyncDecodableState) {
+    SGAsyncDecodableStateNone,
+    SGAsyncDecodableStateDecoding,
+    SGAsyncDecodableStatePaused,
+    SGAsyncDecodableStateClosed,
 };
 
-@interface SGAsyncDecoder : NSObject
+@interface SGAsyncDecodable : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -40,12 +40,12 @@ typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
 /**
  *
  */
-@property (nonatomic, weak) id<SGAsyncDecoderDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGAsyncDecodableDelegate> _Nullable delegate;
 
 /**
  *
  */
-- (SGAsyncDecoderState)state;
+- (SGAsyncDecodableState)state;
 
 /**
  *
@@ -89,21 +89,21 @@ typedef NS_ENUM(uint32_t, SGAsyncDecoderState) {
 
 @end
 
-@protocol SGAsyncDecoderDelegate <NSObject>
+@protocol SGAsyncDecodableDelegate <NSObject>
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecoder * _Nonnull)decoder didChangeState:(SGAsyncDecoderState)state;
+- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeState:(SGAsyncDecodableState)state;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecoder * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity;
+- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecoder * _Nonnull)decoder didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
+- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
 
 @end

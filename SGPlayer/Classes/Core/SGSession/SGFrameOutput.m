@@ -9,13 +9,13 @@
 #import "SGFrameOutput.h"
 #import "SGAsset+Internal.h"
 #import "SGPacketOutput.h"
-#import "SGAsyncDecoder.h"
+#import "SGAsyncDecodable.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecoderDelegate>
+@interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecodableDelegate>
 
 {
     NSLock *_lock;
@@ -25,7 +25,7 @@
     NSArray<SGTrack *> *_selectedTracks;
     NSArray<SGTrack *> *_finishedTracks;
     NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
-    NSMutableDictionary<NSNumber *, SGAsyncDecoder *> *_decoders;
+    NSMutableDictionary<NSNumber *, SGAsyncDecodable *> *_decoders;
 }
 
 @end
@@ -51,7 +51,7 @@
     }, ^SGBlock {
         [self setState:SGFrameOutputStateClosed];
         [self->_packetOutput close];
-        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
+        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecodable *obj, BOOL *stop) {
             [obj close];
         }];
         return nil;
@@ -172,7 +172,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     }, ^BOOL(SGBlock block) {
         block();
         [self->_packetOutput close];
-        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
+        [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecodable *obj, BOOL *stop) {
             [obj close];
         }];
         return YES;
@@ -183,7 +183,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 {
     return SGLockEXE00(self->_lock, ^{
         for (SGTrack *obj in tracks) {
-            SGAsyncDecoder *d = [self->_decoders objectForKey:@(obj.index)];
+            SGAsyncDecodable *d = [self->_decoders objectForKey:@(obj.index)];
             [d pause];
         }
     });
@@ -193,7 +193,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 {
     return SGLockEXE00(self->_lock, ^{
         for (SGTrack *obj in tracks) {
-            SGAsyncDecoder *d = [self->_decoders objectForKey:@(obj.index)];
+            SGAsyncDecodable *d = [self->_decoders objectForKey:@(obj.index)];
             [d resume];
         }
     });
@@ -210,7 +210,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     return [self->_packetOutput seekToTime:time result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
-            [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
+            [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecodable *obj, BOOL *stop) {
                 [obj flush];
             }];
         }
@@ -225,7 +225,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (void)openDecodersIfNeeded
 {
     for (SGTrack *obj in self->_selectedTracks) {
-        SGAsyncDecoder *decoder = [self->_decoders objectForKey:@(obj.index)];
+        SGAsyncDecodable *decoder = [self->_decoders objectForKey:@(obj.index)];
         if (!decoder) {
             id<SGDecodable> decodable = nil;
             if (obj.type == SGMediaTypeAudio) {
@@ -235,7 +235,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
             }
             NSAssert(decodable, @"Invalid Decodable.");
             decodable.index = obj.index;
-            decoder = [[SGAsyncDecoder alloc] initWithDecodable:decodable];
+            decoder = [[SGAsyncDecodable alloc] initWithDecodable:decodable];
             decoder.delegate = self;
             [self->_decoders setObject:decoder forKey:@(obj.index)];
             [decoder open];
@@ -279,7 +279,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
                 break;
             case SGPacketOutputStateFinished: {
                 b1 = ^{
-                    [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecoder *obj, BOOL *stop) {
+                    [self->_decoders enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAsyncDecodable *obj, BOOL *stop) {
                         [obj finish];
                     }];
                 };
@@ -301,7 +301,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
     SGLockEXE10(self->_lock, ^SGBlock{
-        SGAsyncDecoder *decoder = [self->_decoders objectForKey:@(packet.track.index)];
+        SGAsyncDecodable *decoder = [self->_decoders objectForKey:@(packet.track.index)];
         return ^{
             [decoder putPacket:packet];
         };
@@ -310,12 +310,12 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 #pragma mark - SGDecoderDelegate
 
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeState:(SGAsyncDecoderState)state
+- (void)decoder:(SGAsyncDecodable *)decoder didChangeState:(SGAsyncDecodableState)state
 {
     
 }
 
-- (void)decoder:(SGAsyncDecoder *)decoder didChangeCapacity:(SGCapacity *)capacity
+- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
     __block SGTrack *track = nil;
@@ -361,7 +361,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     });
 }
 
-- (void)decoder:(SGAsyncDecoder *)decoder didOutputFrame:(SGFrame *)frame
+- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
 }
