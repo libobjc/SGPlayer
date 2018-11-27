@@ -15,7 +15,7 @@
 @interface SGAudioDecoder ()
 
 {
-    BOOL _isEndOutput;
+    BOOL _finished;
     CMTimeRange _timeRange;
     SGCodecContext *_codecContext;
     SGCodecDescription *_codecDescription;
@@ -36,14 +36,14 @@
 
 - (void)destroy
 {
-    self->_isEndOutput = NO;
+    self->_finished = NO;
     [self->_codecContext close];
     self->_codecContext = nil;
 }
 
 - (void)flush
 {
-    self->_isEndOutput = NO;
+    self->_finished = NO;
     [self->_codecContext flush];
 }
 
@@ -57,7 +57,7 @@
         [self destroy];
         [self setup];
     }
-    if (self->_isEndOutput) {
+    if (self->_finished) {
         return nil;
     }
     NSMutableArray *ret = [NSMutableArray array];
@@ -70,7 +70,7 @@
             continue;
         }
         if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
-            self->_isEndOutput = YES;
+            self->_finished = YES;
             [obj unlock];
             continue;
         }

@@ -14,13 +14,14 @@
 
 {
     NSLock *_lock;
-    BOOL _shouldFlush;
     NSCondition *_wakeup;
-    SGCapacity *_capacity;
     id<SGDecodable> _decodable;
-    SGAsyncDecodableState _state;
     SGObjectQueue *_packetQueue;
     NSOperationQueue *_operationQueue;
+    
+    BOOL _needFlush;
+    SGCapacity *_capacity;
+    SGAsyncDecodableState _state;
 }
 
 @end
@@ -163,7 +164,7 @@ static SGPacket *gFinishPacket;
     return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_state != SGAsyncDecodableStateClosed;
     }, ^SGBlock {
-        self->_shouldFlush = YES;
+        self->_needFlush = YES;
         return nil;
     }, ^BOOL(SGBlock block) {
         block();
@@ -222,13 +223,13 @@ static SGPacket *gFinishPacket;
                 SGBlock b1 = [self->_packetQueue getObjectSync:&packet];
                 if (packet == gFlushPacket) {
                     [self->_lock lock];
-                    self->_shouldFlush = NO;
+                    self->_needFlush = NO;
                     [self->_lock unlock];
                     [self->_decodable flush];
                 } else if (packet) {
                     NSArray<SGFrame *> *frames = [self->_decodable decode:packet != gFinishPacket ? packet : nil];
                     [self->_lock lock];
-                    BOOL drop = self->_shouldFlush;
+                    BOOL drop = self->_needFlush;
                     [self->_lock unlock];
                     if (!drop) {
                         for (SGFrame *frame in frames) {

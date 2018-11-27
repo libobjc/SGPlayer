@@ -12,15 +12,17 @@
 @interface SGFrame ()
 
 {
-    int _size;
     NSLock *_lock;
+    uint64_t _lockingCount;
+    
     AVFrame *_core;
     SGTrack *_track;
+    SGCodecDescription *_codecDescription;
+    
+    int _size;
     CMTime _duration;
     CMTime _timeStamp;
-    uint64_t _lockingCount;
     CMTime _decodeTimeStamp;
-    SGCodecDescription *_codecDescription;
 }
 
 @end

@@ -19,13 +19,14 @@
 
 {
     NSLock *_lock;
-    NSError *_error;
-    SGFrameOutputState _state;
     SGPacketOutput *_packetOutput;
-    NSArray<SGTrack *> *_selectedTracks;
-    NSArray<SGTrack *> *_finishedTracks;
     NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
     NSMutableDictionary<NSNumber *, SGAsyncDecodable *> *_decoders;
+    
+    NSError *_error;
+    SGFrameOutputState _state;
+    NSArray<SGTrack *> *_selectedTracks;
+    NSArray<SGTrack *> *_finishedTracks;
 }
 
 @end

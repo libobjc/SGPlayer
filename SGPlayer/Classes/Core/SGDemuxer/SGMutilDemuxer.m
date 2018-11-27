@@ -15,8 +15,8 @@
 {
     CMTime _duration;
     NSDictionary *_metadata;
-    NSArray<SGTrack *> *_tracks;
     SGPointerMap *_timestamps;
+    NSArray<SGTrack *> *_tracks;
     NSArray<id<SGDemuxable>> *_demuxables;
     NSMutableArray<id<SGDemuxable>> *_finishedDemuxables;
 }

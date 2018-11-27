@@ -15,14 +15,15 @@
 
 {
     NSLock *_lock;
+    NSCondition *_wakeup;
+    id<SGDemuxable> _demuxable;
+    NSOperationQueue *_operationQueue;
+    
     NSError *_error;
     CMTime _seekTime;
     CMTime _seekingTime;
-    NSCondition *_wakeup;
     SGSeekResult _seekResult;
-    id<SGDemuxable> _demuxable;
     SGPacketOutputState _state;
-    NSOperationQueue *_operationQueue;
 }
 
 @end

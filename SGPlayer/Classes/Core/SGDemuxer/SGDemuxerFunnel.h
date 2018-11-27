@@ -21,7 +21,7 @@
 /**
  *
  */
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nonnull indexes;
+@property (nonatomic) int index;
 
 /**
  *

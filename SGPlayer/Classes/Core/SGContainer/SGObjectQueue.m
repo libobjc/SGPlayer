@@ -12,8 +12,8 @@
 
 {
     int _size;
+    BOOL _destoryed;
     CMTime _duration;
-    BOOL _isDestoryed;
     uint64_t _maxCount;
     NSCondition *_wakeup;
     id<SGObjectQueueItem> _puttingObject;
@@ -57,7 +57,7 @@
 
 - (SGCapacity *)capacity
 {
-    if (self.self->_isDestoryed) {
+    if (self.self->_destoryed) {
         return [[SGCapacity alloc] init];
     }
     [self->_wakeup lock];
@@ -76,7 +76,7 @@
 
 - (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after
 {
-    if (self.self->_isDestoryed) {
+    if (self.self->_destoryed) {
         return ^{};
     }
     [self->_wakeup lock];
@@ -90,7 +90,7 @@
             after();
         }
         self->_puttingObject = nil;
-        if (self.self->_isDestoryed) {
+        if (self.self->_destoryed) {
             [self->_wakeup unlock];
             return ^{};
         }
@@ -113,7 +113,7 @@
 
 - (SGBlock)putObjectAsync:(id<SGObjectQueueItem>)object
 {
-    if (self.self->_isDestoryed) {
+    if (self.self->_destoryed) {
         return ^{};
     }
     [self->_wakeup lock];
@@ -167,7 +167,7 @@
         if (after) {
             after();
         }
-        if (self.self->_isDestoryed) {
+        if (self.self->_destoryed) {
             [self->_wakeup unlock];
             return ^{};
         }
@@ -195,7 +195,7 @@
         if (after) {
             after();
         }
-        if (self.self->_isDestoryed) {
+        if (self.self->_destoryed) {
             [self->_wakeup unlock];
             return ^{};
         }
@@ -217,7 +217,7 @@
 - (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object
 {
     [self->_wakeup lock];
-    if (self->_objects.count <= 0 || self.self->_isDestoryed) {
+    if (self->_objects.count <= 0 || self.self->_destoryed) {
         [self->_wakeup unlock];
         return ^{};
     }
@@ -236,7 +236,7 @@
 - (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader
 {
     [self->_wakeup lock];
-    if (self->_objects.count <= 0 || self.self->_isDestoryed) {
+    if (self->_objects.count <= 0 || self.self->_destoryed) {
         [self->_wakeup unlock];
         return ^{};
     }
@@ -325,7 +325,7 @@
 
 - (SGBlock)destroy
 {
-    self.self->_isDestoryed = YES;
+    self.self->_destoryed = YES;
     return [self flush];
 }
 

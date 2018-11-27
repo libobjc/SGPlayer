@@ -12,12 +12,13 @@
 @interface SGAudioFrame ()
 
 {
-    int _format;
-    int _isPlanar;
+    int _planar;
     int _sampleRate;
     int _numberOfSsmples;
     int _numberOfChannels;
     uint64_t _channelLayout;
+    
+    int _format;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
 }
@@ -40,7 +41,7 @@
 
 - (int)isPlanar
 {
-    return self->_isPlanar;
+    return self->_planar;
 }
 
 - (int)sampleRate
@@ -78,7 +79,7 @@
 - (void)clear
 {
     [super clear];
-    self->_isPlanar = 0;
+    self->_planar = 0;
     self->_sampleRate = 0;
     self->_channelLayout = 0;
     self->_numberOfSsmples = 0;
@@ -101,7 +102,7 @@
     self->_numberOfChannels = frame->channels;
     self->_numberOfSsmples = frame->nb_samples;
     self->_channelLayout = frame->channel_layout;
-    self->_isPlanar = av_sample_fmt_is_planar(frame->format);
+    self->_planar = av_sample_fmt_is_planar(frame->format);
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
