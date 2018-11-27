@@ -9,7 +9,7 @@
 #import "SGSegment.h"
 #import "SGDemuxable.h"
 
-@interface SGSegment (Internal)
+@interface SGSegment ()
 
 - (id<SGDemuxable> _Nonnull)newDemuxable;
 

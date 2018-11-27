@@ -14,7 +14,7 @@
 /**
  *
  */
-typedef NS_ENUM(uint32_t, SGPlayerItemState) {
+typedef NS_ENUM(int, SGPlayerItemState) {
     SGPlayerItemStateNone,
     SGPlayerItemStateOpening,
     SGPlayerItemStateOpened,
@@ -25,7 +25,7 @@ typedef NS_ENUM(uint32_t, SGPlayerItemState) {
     SGPlayerItemStateFailed,
 };
 
-@interface SGPlayerItem (Internal)
+@interface SGPlayerItem ()
 
 /**
  *

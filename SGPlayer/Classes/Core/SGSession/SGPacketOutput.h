@@ -14,7 +14,7 @@
 /**
  *
  */
-typedef NS_ENUM(uint32_t, SGPacketOutputState) {
+typedef NS_ENUM(int, SGPacketOutputState) {
     SGPacketOutputStateNone,
     SGPacketOutputStateOpening,
     SGPacketOutputStateOpened,

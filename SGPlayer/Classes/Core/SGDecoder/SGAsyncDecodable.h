@@ -15,7 +15,7 @@
 /**
  *
  */
-typedef NS_ENUM(uint32_t, SGAsyncDecodableState) {
+typedef NS_ENUM(int, SGAsyncDecodableState) {
     SGAsyncDecodableStateNone,
     SGAsyncDecodableStateDecoding,
     SGAsyncDecodableStatePaused,

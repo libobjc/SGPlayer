@@ -55,7 +55,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Item
 
-@interface SGPlayer (Item)
+@interface SGPlayer ()
 
 - (SGPlayerItem *)currentItem;
 - (CMTime)duration;
@@ -72,7 +72,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Playback
 
-@interface SGPlayer (Playback)
+@interface SGPlayer ()
 
 - (SGPlaybackState)playbackState;
 - (CMTime)currentTime;
@@ -89,7 +89,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Loading
 
-@interface SGPlayer (Loading)
+@interface SGPlayer ()
 
 - (SGLoadingState)loadingState;
 - (BOOL)loadedTime:(CMTime *)loadedTime loadedDuration:(CMTime *)loadedDuration;
@@ -98,7 +98,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Renderer
 
-@interface SGPlayer (Renderer)
+@interface SGPlayer ()
 
 - (SGClock *)clock;
 - (SGAudioRenderer *)audioRenderer;
@@ -113,7 +113,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer (Delegate)
 
 @property (nonatomic, weak) id<SGPlayerDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue * delegateQueue;
+@property (nonatomic, strong) NSOperationQueue *delegateQueue;
 
 @end
 

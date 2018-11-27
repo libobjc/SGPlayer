@@ -33,10 +33,6 @@
     BOOL _videoFinished;
 }
 
-@property (nonatomic, weak) id<SGPlayerItemDelegate> delegate;
-@property (nonatomic, strong) SGFrameFilter *audioFilter;
-@property (nonatomic, strong) SGFrameFilter *videoFilter;
-
 @end
 
 @implementation SGPlayerItem
@@ -394,7 +390,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
-    uint32_t threshold = 0;
+    int threshold = 0;
     SGMediaType type = SGMediaTypeUnknown;
     if (objectQueue == self->_audioQueue) {
         threshold = 5;
@@ -441,19 +437,19 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
                 [video_tracks addObject:obj];
             }
         }
-        BOOL isAudioFinished = YES;
-        BOOL isVideoFinished = YES;
+        BOOL audioFinished = YES;
+        BOOL videoFinished = YES;
         NSArray *finishedTracks = self->_frameOutput.finishedTracks;
         SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
         SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
         for (SGTrack *obj in audio_tracks) {
-            isAudioFinished = isAudioFinished && [finishedTracks containsObject:obj];
+            audioFinished = audioFinished && [finishedTracks containsObject:obj];
         }
         for (SGTrack *obj in video_tracks) {
-            isVideoFinished = isVideoFinished && [finishedTracks containsObject:obj];
+            videoFinished = videoFinished && [finishedTracks containsObject:obj];
         }
-        self->_audioFinished = isAudioFinished && (!audioCapacity || audioCapacity.isEmpty);
-        self->_videoFinished = isVideoFinished && (!videoCapacity || videoCapacity.isEmpty);
+        self->_audioFinished = audioFinished && (!audioCapacity || audioCapacity.isEmpty);
+        self->_videoFinished = videoFinished && (!videoCapacity || videoCapacity.isEmpty);
         if (self->_audioFinished && self->_videoFinished) {
             return [self setState:SGPlayerItemStateFinished];
         }

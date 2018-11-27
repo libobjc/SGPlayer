@@ -52,7 +52,7 @@
 {
     NSMutableArray * demuxables = [NSMutableArray array];
     for (int i = 0; i < self->_tracks.count; i++) {
-        SGMediaType type = (uint32_t)[self->_types objectAtIndex:i].unsignedIntValue;
+        SGMediaType type = [self->_types objectAtIndex:i].intValue;
         NSMutableArray<SGSegment *> * segments = [self->_tracks objectAtIndex:i];
         NSMutableArray * obj = [NSMutableArray array];
         for (SGSegment * segment in segments) {

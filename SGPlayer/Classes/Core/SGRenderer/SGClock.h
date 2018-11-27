@@ -11,6 +11,9 @@
 
 @interface SGClock : NSObject
 
-@property (nonatomic) CMTime videoAdvancedDuration;        // [-2, 2];
+/**
+ *  [-2, 2]
+ */
+@property (nonatomic) CMTime videoAdvancedDuration;
 
 @end

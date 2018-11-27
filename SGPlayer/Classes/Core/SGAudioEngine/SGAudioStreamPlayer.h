@@ -15,7 +15,7 @@
 
 @optional
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player preRender:(const AudioTimeStamp *)timestamp;
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(uint32_t)nb_samples;
+- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(UInt32)nb_samples;
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp;
 
 @end

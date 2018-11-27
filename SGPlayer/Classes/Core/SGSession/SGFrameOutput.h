@@ -15,7 +15,7 @@
 /**
  *
  */
-typedef NS_ENUM(uint32_t, SGFrameOutputState) {
+typedef NS_ENUM(int, SGFrameOutputState) {
     SGFrameOutputStateNone,
     SGFrameOutputStateOpening,
     SGFrameOutputStateOpened,

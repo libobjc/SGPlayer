@@ -9,7 +9,7 @@
 #import "SGAsset.h"
 #import "SGDemuxable.h"
 
-@interface SGAsset (Internal)
+@interface SGAsset ()
 
 - (id<SGDemuxable> _Nonnull)newDemuxable;
 

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGGLDefines.h"
 
-typedef NS_ENUM(uint32_t, SGGLViewportMode) {
+typedef NS_ENUM(int, SGGLViewportMode) {
     SGGLViewportModeResize,
     SGGLViewportModeResizeAspect,
     SGGLViewportModeResizeAspectFill,

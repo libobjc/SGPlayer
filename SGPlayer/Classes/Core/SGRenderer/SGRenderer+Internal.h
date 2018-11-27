@@ -14,26 +14,41 @@
 
 @class SGAudioFrameFilter;
 
-@interface SGAudioRenderer (Internal) <SGRenderable>
+@interface SGAudioRenderer () <SGRenderable>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithClock:(SGClock *)clock;
+/**
+ *
+ */
+- (instancetype)initWithClock:(SGClock *)clock NS_DESIGNATED_INITIALIZER;
 
+/**
+ *
+ */
 @property (nonatomic) CMTime rate;
 
+/**
+ *
+ */
 - (SGAudioFrameFilter *)filter;
 
 @end
 
-@interface SGVideoRenderer (Internal) <SGRenderable>
+@interface SGVideoRenderer () <SGRenderable>
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithClock:(SGClock *)clock;
+/**
+ *
+ */
+- (instancetype)initWithClock:(SGClock *)clock NS_DESIGNATED_INITIALIZER;
 
+/**
+ *
+ */
 @property (nonatomic) CMTime rate;
 
 @end

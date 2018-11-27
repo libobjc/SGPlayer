@@ -11,30 +11,75 @@
 
 @protocol SGClockDelegate;
 
-@interface SGClock (Internal)
+@interface SGClock ()
 
+/**
+ *
+ */
 @property (nonatomic, weak) id<SGClockDelegate> delegate;
 
+/**
+ *
+ */
 @property (nonatomic) CMTime rate;
 
+/**
+ *
+ */
 - (CMTime)currentTime;
 
+/**
+ *
+ */
 - (BOOL)open;
+
+/**
+ *
+ */
 - (BOOL)close;
+
+/**
+ *
+ */
 - (BOOL)pause;
+
+/**
+ *
+ */
 - (BOOL)resume;
+
+/**
+ *
+ */
 - (BOOL)flush;
 
+/**
+ *
+ */
 - (BOOL)setAudioCurrentTime:(CMTime)time;
+
+/**
+ *
+ */
 - (BOOL)setVideoCurrentTime:(CMTime)time;
+
+/**
+ *
+ */
 - (BOOL)markAsAudioStalled;
 
+/**
+ *
+ */
 - (BOOL)preferredVideoTime:(CMTime *)time advanced:(CMTime *)advanced;
 
 @end
 
 @protocol SGClockDelegate <NSObject>
 
+/**
+ *
+ */
 - (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
 
 @end

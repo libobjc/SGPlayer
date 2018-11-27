@@ -253,18 +253,17 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         switch (state) {
             case SGPacketOutputStateOpened: {
                 b1 = [self setState:SGFrameOutputStateOpened];
-                uint32_t nb_audio_track = 0;
-                uint32_t nb_video_track = 0;
+                int nb_a = 0, nb_v = 0;
                 NSMutableArray *tracks = [NSMutableArray array];
                 for (SGTrack *obj in packetOutput.tracks) {
-                    if (obj.type == SGMediaTypeAudio && nb_audio_track == 0) {
+                    if (obj.type == SGMediaTypeAudio && nb_a == 0) {
                         [tracks addObject:obj];
-                        nb_audio_track += 1;
-                    } else if (obj.type == SGMediaTypeVideo && nb_video_track == 0) {
+                        nb_a += 1;
+                    } else if (obj.type == SGMediaTypeVideo && nb_v == 0) {
                         [tracks addObject:obj];
-                        nb_video_track += 1;
+                        nb_v += 1;
                     }
-                    if (nb_audio_track && nb_video_track) {
+                    if (nb_a && nb_v) {
                         break;
                     }
                 }
@@ -332,23 +331,23 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         [self->_capacitys setObject:capacity forKey:@(track.index)];
         SGBlock b1 = ^{};
         int size = 0;
-        uint32_t is_enough = 1;
-        uint32_t is_finished = self->_packetOutput.state == SGPacketOutputStateFinished;
-        NSMutableArray *finished_tracks = [NSMutableArray array];
+        BOOL enough = YES;
+        BOOL finished = self->_packetOutput.state == SGPacketOutputStateFinished;
+        NSMutableArray *finishedTracks = [NSMutableArray array];
         for (SGTrack *obj in self->_selectedTracks) {
             SGCapacity *c = [self->_capacitys objectForKey:@(obj.index)];
             size += c.size;
-            is_enough = is_enough && c.isEnough;
-            if (is_finished && (!c || c.isEmpty)) {
-                [finished_tracks addObject:obj];
+            enough = enough && c.isEnough;
+            if (finished && (!c || c.isEmpty)) {
+                [finishedTracks addObject:obj];
             }
         }
-        self->_finishedTracks = [finished_tracks copy];
+        self->_finishedTracks = [finishedTracks copy];
         if ([self->_selectedTracks isEqualToArray:self->_finishedTracks]) {
             b1 = [self setState:SGFrameOutputStateFinished];
         }
         return ^{
-            if (is_enough || (size > 15 * 1024 * 1024)) {
+            if (enough || (size > 15 * 1024 * 1024)) {
                 [self->_packetOutput pause];
             } else {
                 [self->_packetOutput resume];
@@ -362,7 +361,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     });
 }
 
-- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(SGFrame *)frame
+- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
 }

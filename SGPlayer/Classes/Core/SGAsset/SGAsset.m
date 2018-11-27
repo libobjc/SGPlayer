@@ -11,7 +11,7 @@
 
 @implementation SGAsset
 
-- (id<SGDemuxable>)newReadable
+- (id<SGDemuxable>)newDemuxable
 {
     return nil;
 }
