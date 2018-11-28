@@ -84,12 +84,6 @@
 		9C4AD3B52190AEF10049E977 /* buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4AD3B42190AEF10049E977 /* buffer.h */; };
 		9C4AD3B62190AEF10049E977 /* buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4AD3B42190AEF10049E977 /* buffer.h */; };
 		9C4AD3B72190AEF10049E977 /* buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C4AD3B42190AEF10049E977 /* buffer.h */; };
-		9C50021E21A2A5E20020339E /* SGMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C50021C21A2A5E20020339E /* SGMixer.h */; };
-		9C50021F21A2A5E20020339E /* SGMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C50021C21A2A5E20020339E /* SGMixer.h */; };
-		9C50022021A2A5E20020339E /* SGMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C50021C21A2A5E20020339E /* SGMixer.h */; };
-		9C50022121A2A5E20020339E /* SGMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C50021D21A2A5E20020339E /* SGMixer.m */; };
-		9C50022221A2A5E20020339E /* SGMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C50021D21A2A5E20020339E /* SGMixer.m */; };
-		9C50022321A2A5E20020339E /* SGMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C50021D21A2A5E20020339E /* SGMixer.m */; };
 		9C5C6C9920182A4800863EB5 /* SGGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6C9720182A4800863EB5 /* SGGLView.h */; };
 		9C5C6C9C20182A4800863EB5 /* SGGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6C9820182A4800863EB5 /* SGGLView.m */; };
 		9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */; };
@@ -108,6 +102,12 @@
 		9C6F902C219BE154001051CE /* SGMutableAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9028219BE154001051CE /* SGMutableAsset.m */; };
 		9C6F902D219BE154001051CE /* SGMutableAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9028219BE154001051CE /* SGMutableAsset.m */; };
 		9C6F902E219BE154001051CE /* SGMutableAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9028219BE154001051CE /* SGMutableAsset.m */; };
+		9C82EEB121AE356D00E9D523 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioMixer.h */; };
+		9C82EEB221AE356D00E9D523 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioMixer.h */; };
+		9C82EEB321AE356D00E9D523 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioMixer.h */; };
+		9C82EEB421AE356D00E9D523 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioMixer.m */; };
+		9C82EEB521AE356D00E9D523 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioMixer.m */; };
+		9C82EEB621AE356D00E9D523 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioMixer.m */; };
 		9C8636F6219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C8636F7219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C863675219043EA00D730EC /* version.h */; };
 		9C863788219043EA00D730EC /* version.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C8636C0219043EA00D730EC /* version.h */; };
@@ -667,8 +667,6 @@
 		9C47936E1E71404A00AD4289 /* libswresample.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswresample.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libswresample.a"; sourceTree = "<group>"; };
 		9C47936F1E71404A00AD4289 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libswscale.a"; sourceTree = "<group>"; };
 		9C4AD3B42190AEF10049E977 /* buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = buffer.h; sourceTree = "<group>"; };
-		9C50021C21A2A5E20020339E /* SGMixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGMixer.h; sourceTree = "<group>"; };
-		9C50021D21A2A5E20020339E /* SGMixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMixer.m; sourceTree = "<group>"; };
 		9C5C6C9720182A4800863EB5 /* SGGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLView.h; sourceTree = "<group>"; };
 		9C5C6C9820182A4800863EB5 /* SGGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLView.m; sourceTree = "<group>"; };
 		9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDisplayLink.h; sourceTree = "<group>"; };
@@ -684,6 +682,8 @@
 		9C6E514D2018C6C100C87C54 /* SGGLModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLModel.h; sourceTree = "<group>"; };
 		9C6F9027219BE154001051CE /* SGMutableAsset.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGMutableAsset.h; sourceTree = "<group>"; };
 		9C6F9028219BE154001051CE /* SGMutableAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMutableAsset.m; sourceTree = "<group>"; };
+		9C82EEAF21AE356D00E9D523 /* SGAudioMixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioMixer.h; sourceTree = "<group>"; };
+		9C82EEB021AE356D00E9D523 /* SGAudioMixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioMixer.m; sourceTree = "<group>"; };
 		9C8636512190408300D730EC /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libavformat.a"; sourceTree = "<group>"; };
 		9C8636522190408300D730EC /* libavdevice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavdevice.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libavdevice.a"; sourceTree = "<group>"; };
 		9C8636532190408300D730EC /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libswscale.a"; sourceTree = "<group>"; };
@@ -1114,8 +1114,8 @@
 				9C66E1FD2188550D00B70DAA /* SGSWResample.m */,
 				9C3748792135521D00572166 /* SGSWScale.h */,
 				9C37487A2135521D00572166 /* SGSWScale.m */,
-				9C50021C21A2A5E20020339E /* SGMixer.h */,
-				9C50021D21A2A5E20020339E /* SGMixer.m */,
+				9C82EEAF21AE356D00E9D523 /* SGAudioMixer.h */,
+				9C82EEB021AE356D00E9D523 /* SGAudioMixer.m */,
 			);
 			path = SGProcessor;
 			sourceTree = "<group>";
@@ -1391,6 +1391,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C82EEB221AE356D00E9D523 /* SGAudioMixer.h in Headers */,
 				9CE71916219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191E219C408300256485 /* SGSegment.h in Headers */,
 				9C6F902A219BE154001051CE /* SGMutableAsset.h in Headers */,
@@ -1484,7 +1485,6 @@
 				9C86389221904A0900D730EC /* SGGLYUV420PProgram.h in Headers */,
 				9C86389321904A0900D730EC /* avutil.h in Headers */,
 				9C86389421904A0900D730EC /* imgutils.h in Headers */,
-				9C50021F21A2A5E20020339E /* SGMixer.h in Headers */,
 				9C86389521904A0900D730EC /* SGGLBasicModel.h in Headers */,
 				9C86389621904A0900D730EC /* swscale.h in Headers */,
 				9C86389821904A0900D730EC /* SGActivity.h in Headers */,
@@ -1504,6 +1504,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C82EEB321AE356D00E9D523 /* SGAudioMixer.h in Headers */,
 				9CE71917219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191F219C408300256485 /* SGSegment.h in Headers */,
 				9C6F902B219BE154001051CE /* SGMutableAsset.h in Headers */,
@@ -1597,7 +1598,6 @@
 				9CD79F782190068E00E39A7D /* SGCodecContext.h in Headers */,
 				9CD79F802190068E00E39A7D /* SGError.h in Headers */,
 				9C86378F219043EA00D730EC /* version.h in Headers */,
-				9C50022021A2A5E20020339E /* SGMixer.h in Headers */,
 				9CD79F812190068E00E39A7D /* SGFrame+Internal.h in Headers */,
 				9CD79F822190068E00E39A7D /* SGVRMatrixMaker.h in Headers */,
 				9CD79F842190068E00E39A7D /* SGGLYUV420PProgram.h in Headers */,
@@ -1623,9 +1623,9 @@
 				9C43D50D2187037200235169 /* SGConfiguration.h in Headers */,
 				9C8637B6219043EA00D730EC /* version.h in Headers */,
 				9C86378A219043EA00D730EC /* avio.h in Headers */,
-				9C50021E21A2A5E20020339E /* SGMixer.h in Headers */,
 				9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */,
 				9C2C55932015911600131E15 /* SGObjectPool.h in Headers */,
+				9C82EEB121AE356D00E9D523 /* SGAudioMixer.h in Headers */,
 				9C8637C12190452700D730EC /* pixfmt.h in Headers */,
 				9C2C55B52015D92100131E15 /* SGObjectQueue.h in Headers */,
 				9CF15E072011AE0700585326 /* SGAudioRenderer.h in Headers */,
@@ -1897,6 +1897,7 @@
 				9C86381D21904A0900D730EC /* SGAudioFrameFilter.m in Sources */,
 				9C86381E21904A0900D730EC /* SGFFmpeg.m in Sources */,
 				9C0A6F38219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */,
+				9C82EEB521AE356D00E9D523 /* SGAudioMixer.m in Sources */,
 				9C86381F21904A0900D730EC /* SGPLFGLView.m in Sources */,
 				9C0A6F40219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
 				9C86382021904A0900D730EC /* SGPacketOutput.m in Sources */,
@@ -1912,7 +1913,6 @@
 				9C86382921904A0900D730EC /* SGPLFGLContext.m in Sources */,
 				9C86382A21904A0900D730EC /* SGAsyncDecodable.m in Sources */,
 				9C86382B21904A0900D730EC /* SGGLView.m in Sources */,
-				9C50022221A2A5E20020339E /* SGMixer.m in Sources */,
 				9C86382C21904A0900D730EC /* SGVRViewport.m in Sources */,
 				9C86382D21904A0900D730EC /* SGPLFDisplayLink.m in Sources */,
 				9C86382E21904A0900D730EC /* SGAudioFrame.m in Sources */,
@@ -1973,6 +1973,7 @@
 				9CD79EC42190068E00E39A7D /* SGAudioFrameFilter.m in Sources */,
 				9CD79EC52190068E00E39A7D /* SGFFmpeg.m in Sources */,
 				9C0A6F39219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */,
+				9C82EEB621AE356D00E9D523 /* SGAudioMixer.m in Sources */,
 				9CD79EC62190068E00E39A7D /* SGPLFGLView.m in Sources */,
 				9C0A6F41219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
 				9CD79EC72190068E00E39A7D /* SGPacketOutput.m in Sources */,
@@ -1988,7 +1989,6 @@
 				9CD79ED02190068E00E39A7D /* SGPLFGLContext.m in Sources */,
 				9CD79ED12190068E00E39A7D /* SGAsyncDecodable.m in Sources */,
 				9CD79ED22190068E00E39A7D /* SGGLView.m in Sources */,
-				9C50022321A2A5E20020339E /* SGMixer.m in Sources */,
 				9CD79ED32190068E00E39A7D /* SGVRViewport.m in Sources */,
 				9CD79ED42190068E00E39A7D /* SGPLFDisplayLink.m in Sources */,
 				9CD79ED52190068E00E39A7D /* SGAudioFrame.m in Sources */,
@@ -2050,8 +2050,8 @@
 				9CE6F54F2004D97D00D1F4C8 /* SGPLFScreen.m in Sources */,
 				9C1945042019C6A100184416 /* SGGLYUV420PProgram.m in Sources */,
 				9C66E1FB2188526200B70DAA /* SGAudioFrameFilter.m in Sources */,
-				9C50022121A2A5E20020339E /* SGMixer.m in Sources */,
 				9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
+				9C82EEB421AE356D00E9D523 /* SGAudioMixer.m in Sources */,
 				9CB1F09F20178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9CA57925219D69580061093B /* SGTimeLayout.m in Sources */,
 				9C0A6F3F219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,

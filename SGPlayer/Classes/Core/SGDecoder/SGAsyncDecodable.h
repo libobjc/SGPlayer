@@ -90,7 +90,7 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity index:(int)index;
+- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity;
 
 /**
  *

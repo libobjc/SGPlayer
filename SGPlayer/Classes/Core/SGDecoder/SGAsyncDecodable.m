@@ -10,16 +10,16 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGAsyncDecodable () <SGObjectQueueDelegate>
+@interface SGAsyncDecodable ()
 
 {
     NSLock *_lock;
     NSCondition *_wakeup;
+    SGCapacity *_capacity;
     Class _decodableClass;
     SGAsyncDecodableState _state;
     NSOperationQueue *_operationQueue;
     NSMutableDictionary<NSNumber *, NSValue *> *_timeStamps;
-    NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
     NSMutableDictionary<NSNumber *, id<SGDecodable>> *_decodables;
     NSMutableDictionary<NSNumber *, SGObjectQueue *> *_packetQueues;
 }
@@ -44,7 +44,6 @@ static SGPacket *gFinishPacket;
         self->_decodableClass = decodableClass;
         self->_lock = [[NSLock alloc] init];
         self->_timeStamps = [[NSMutableDictionary alloc] init];
-        self->_capacitys = [[NSMutableDictionary alloc] init];
         self->_decodables = [[NSMutableDictionary alloc] init];
         self->_packetQueues = [[NSMutableDictionary alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
@@ -192,7 +191,6 @@ static SGPacket *gFinishPacket;
         SGObjectQueue *queue = [self->_packetQueues objectForKey:@(packet.track.index)];
         if (!queue) {
             queue = [[SGObjectQueue alloc] init];
-            queue.delegate = self;
             [self->_decodables setObject:[[self->_decodableClass alloc] init] forKey:@(packet.track.index)];
             [self->_packetQueues setObject:queue forKey:@(packet.track.index)];
         }
@@ -248,18 +246,18 @@ static SGPacket *gFinishPacket;
                     [self->_lock unlock];
                     continue;
                 }
-                SGBlock b1 = ^{}, b2 = ^{};
+                SGBlock b1 = ^{};
                 SGObjectQueue *queue = [self->_packetQueues objectForKey:index];
                 id<SGDecodable> decodable = [self->_decodables objectForKey:index];
                 SGPacket *packet = nil;
-                b1 = [queue getObjectAsync:&packet];
+                [queue getObjectAsync:&packet];
                 NSAssert(packet, @"Invalid Packet.");
                 if (packet == gFlushPacket) {
-                    b2 = ^{
+                    b1 = ^{
                         [decodable flush];
                     };
                 } else if (packet == gFinishPacket) {
-                    b2 = ^{
+                    b1 = ^{
                         for (SGFrame *obj in [decodable finish]) {
                             [self->_delegate decoder:self didOutputFrame:obj];
                             [obj unlock];
@@ -268,7 +266,7 @@ static SGPacket *gFinishPacket;
                 } else {
                     CMTime dts = packet.decodeTimeStamp;
                     [self->_timeStamps setObject:[NSValue value:&dts withObjCType:@encode(CMTime)] forKey:index];
-                    b2 = ^{
+                    b1 = ^{
                         for (SGFrame *obj in [decodable decode:packet]) {
                             [self->_delegate decoder:self didOutputFrame:obj];
                             [obj unlock];
@@ -276,7 +274,8 @@ static SGPacket *gFinishPacket;
                     };
                 }
                 [self->_lock unlock];
-                b2(); b1();
+                b1();
+                [self callbackForCapacity];
                 [packet unlock];
                 continue;
             }
@@ -284,24 +283,20 @@ static SGPacket *gFinishPacket;
     }
 }
 
-#pragma mark - SGObjectQueueDelegate
+#pragma mark - Callabck
 
-- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
+- (void)callbackForCapacity
 {
-    [capacity copy];
-    __block NSNumber *index = nil;
+    __block SGCapacity *ret = [[SGCapacity alloc] init];
     SGLockCondEXE10(self->_lock, ^BOOL {
-        for (NSNumber *key in self->_packetQueues.allKeys) {
-            if (objectQueue == [self->_packetQueues objectForKey:key]) {
-                index = key;
-                break;
-            }
+        for (SGObjectQueue *obj in self->_packetQueues.allValues) {
+            [ret add:obj.capacity];
         }
-        return ![[self->_capacitys objectForKey:index] isEqualToCapacity:capacity];
+        return ![self->_capacity isEqualToCapacity:ret];
     }, ^SGBlock {
-        [self->_capacitys setObject:capacity forKey:index];
+        self->_capacity = [ret copy];
         return ^{
-            [self->_delegate decoder:self didChangeCapacity:[capacity copy] index:index.intValue];
+            [self->_delegate decoder:self didChangeCapacity:ret];
         };
     });
 }

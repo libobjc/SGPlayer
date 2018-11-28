@@ -127,17 +127,14 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     return ret;
 }
 
-- (NSArray<SGCapacity *> *)capacityWithTrack:(NSArray<SGTrack *> *)tracks
+- (SGCapacity *)capacityWithType:(SGMediaType)type
 {
-    __block NSMutableArray<SGCapacity *> *ret = [NSMutableArray array];
+    __block SGCapacity *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        for (SGTrack *obj in tracks) {
-            SGCapacity *c = [[self->_capacitys objectForKey:@(obj.index)] copy];
-            c = c ? c : [[SGCapacity alloc] init];
-            [ret addObject:c];
-        }
+        SGCapacity *c = [self->_capacitys objectForKey:@(type)];
+        ret = c ? [c copy] : [[SGCapacity alloc] init];
     });
-    return [ret copy];
+    return ret;
 }
 
 #pragma mark - Control
@@ -307,35 +304,31 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     
 }
 
-- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity index:(int)index
+- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
-    __block SGTrack *track = nil;
+    __block SGMediaType type = SGMediaTypeUnknown;
     SGLockCondEXE11(self->_lock, ^BOOL {
-        for (SGTrack *obj in self->_selectedTracks) {
-            if (obj.index == index) {
-                track = obj;
-                break;
-            }
+        if (decoder == self->_audioDecoder) {
+            type = SGMediaTypeAudio;
+        } else if (decoder == self->_videoDecoder) {
+            type = SGMediaTypeVideo;
         }
-        return track && ![[self->_capacitys objectForKey:@(track.index)] isEqualToCapacity:capacity];
+        return ![[self->_capacitys objectForKey:@(type)] isEqualToCapacity:capacity];
     }, ^SGBlock {
-        [self->_capacitys setObject:capacity forKey:@(track.index)];
-        SGBlock b1 = ^{};
-        int size = 0;
-        BOOL enough = YES;
-        BOOL finished = self->_packetOutput.state == SGPacketOutputStateFinished;
-        NSMutableArray *finishedTracks = [NSMutableArray array];
-        for (SGTrack *obj in self->_selectedTracks) {
-            SGCapacity *c = [self->_capacitys objectForKey:@(obj.index)];
-            size += c.size;
-            enough = enough && c.isEnough;
-            if (finished && (!c || c.isEmpty)) {
-                [finishedTracks addObject:obj];
-            }
+        [self->_capacitys setObject:capacity forKey:@(type)];
+        SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
+        SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+        int size = audioCapacity.size + videoCapacity.size;
+        BOOL enough = NO;
+        if ((audioCapacity ? audioCapacity.isEnough : YES) &&
+            (videoCapacity ? videoCapacity.isEnough : YES)) {
+            enough = YES;
         }
-        self->_finishedTracks = [finishedTracks copy];
-        if ([self->_selectedTracks isEqualToArray:self->_finishedTracks]) {
+        SGBlock b1 = ^{};
+        if ((!audioCapacity || audioCapacity.isEmpty) &&
+            (!videoCapacity || videoCapacity.isEmpty) &&
+            self->_packetOutput.state == SGPacketOutputStateFinished) {
             b1 = [self setState:SGFrameOutputStateFinished];
         }
         return ^{
@@ -348,7 +341,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         };
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] track:track];
+        [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
         return YES;
     });
 }

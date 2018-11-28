@@ -114,12 +114,7 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)finishedTracks;
-
-/**
- *
- */
-- (NSArray<SGCapacity *> * _Nonnull)capacityWithTrack:(NSArray<SGTrack *> * _Nonnull)tracks;
+- (SGCapacity *)capacityWithType:(SGMediaType)type;
 
 @end
 
@@ -133,7 +128,7 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeCapacity:(SGCapacity * _Nonnull)capacity track:(SGTrack * _Nonnull)track;
+- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeCapacity:(SGCapacity * _Nonnull)capacity type:(SGMediaType)type;
 
 /**
  *
