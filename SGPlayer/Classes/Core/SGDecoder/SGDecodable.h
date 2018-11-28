@@ -22,6 +22,11 @@
 /**
  *
  */
+- (NSArray<__kindof SGFrame *> * _Nullable)finish;
+
+/**
+ *
+ */
 - (void)flush;
 
 @end

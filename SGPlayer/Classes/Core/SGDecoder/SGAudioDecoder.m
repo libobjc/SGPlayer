@@ -79,4 +79,9 @@
     return [ret copy];
 }
 
+- (NSArray<SGFrame *> *)finish
+{
+    return nil;
+}
+
 @end

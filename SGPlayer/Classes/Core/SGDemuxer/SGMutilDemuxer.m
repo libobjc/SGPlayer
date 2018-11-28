@@ -15,7 +15,7 @@
 {
     CMTime _duration;
     NSDictionary *_metadata;
-    SGPointerMap *_timestamps;
+    SGPointerMap *_timeStamps;
     NSArray<SGTrack *> *_tracks;
     NSArray<id<SGDemuxable>> *_demuxables;
     NSMutableArray<id<SGDemuxable>> *_finishedDemuxables;
@@ -103,7 +103,7 @@
         NSAssert(![indexes containsObject:@(obj.index)], @"Invalid Track Indexes");
         [indexes addObject:@(obj.index)];
     }
-    self->_timestamps = [[SGPointerMap alloc] init];
+    self->_timeStamps = [[SGPointerMap alloc] init];
     return nil;
 }
 
@@ -131,7 +131,7 @@
     for (id<SGDemuxable> obj in self->_demuxables) {
         [obj seekToTime:time];
     }
-    [self->_timestamps removeAllObjects];
+    [self->_timeStamps removeAllObjects];
     [self->_finishedDemuxables removeAllObjects];
     return nil;
 }
@@ -145,7 +145,7 @@
             if ([self->_finishedDemuxables containsObject:obj]) {
                 continue;
             }
-            NSValue *value = [self->_timestamps objectForKey:obj];
+            NSValue *value = [self->_timeStamps objectForKey:obj];
             if (!value) {
                 demuxable = obj;
                 break;
@@ -166,7 +166,7 @@
             continue;
         }
         CMTime t = (*packet).decodeTimeStamp;
-        [self->_timestamps setObject:[NSValue value:&t withObjCType:@encode(CMTime)] forKey:demuxable];
+        [self->_timeStamps setObject:[NSValue value:&t withObjCType:@encode(CMTime)] forKey:demuxable];
         break;
     }
     return nil;

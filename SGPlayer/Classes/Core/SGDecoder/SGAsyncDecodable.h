@@ -18,6 +18,7 @@
 typedef NS_ENUM(int, SGAsyncDecodableState) {
     SGAsyncDecodableStateNone,
     SGAsyncDecodableStateDecoding,
+    SGAsyncDecodableStateStalled,
     SGAsyncDecodableStatePaused,
     SGAsyncDecodableStateClosed,
 };
@@ -30,12 +31,7 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (instancetype)initWithDecodable:(id<SGDecodable> _Nonnull)decodable NS_DESIGNATED_INITIALIZER;
-
-/**
- *
- */
-- (id<SGDecodable> _Nonnull)decodable;
+- (instancetype)initWithDecodableClass:(Class _Nonnull)decodableClass NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -46,11 +42,6 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
  *
  */
 - (SGAsyncDecodableState)state;
-
-/**
- *
- */
-- (SGCapacity * _Nonnull)capacity;
 
 /**
  *
@@ -99,7 +90,7 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity;
+- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity index:(int)index;
 
 /**
  *

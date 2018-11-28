@@ -84,12 +84,12 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (BOOL)pause:(NSArray<SGTrack *> * _Nonnull)tracks;
+- (BOOL)pause:(SGMediaType)type;
 
 /**
  *
  */
-- (BOOL)resume:(NSArray<SGTrack *> * _Nonnull)tracks;
+- (BOOL)resume:(SGMediaType)type;
 
 /**
  *
