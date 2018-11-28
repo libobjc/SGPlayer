@@ -355,7 +355,7 @@
     return SGLockEXE11(self->_lock, ^SGBlock {
         self->_currentItem = item;
         self->_currentItem.delegate = self;
-        self->_currentItem.audioFilter = self->_audioRenderer.filter;
+        self->_currentItem.audioDescription = self->_audioRenderer.audioDescription;
         return nil;
     }, ^BOOL(SGBlock block) {
         return [item open];

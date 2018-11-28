@@ -7,7 +7,8 @@
 //
 
 #import "SGPlayerItem.h"
-#import "SGFrameFilter.h"
+#import "SGAudioDescription.h"
+#import "SGFrame.h"
 
 @protocol SGPlayerItemDelegate;
 
@@ -80,8 +81,7 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-@property (nonatomic, strong) SGFrameFilter * _Nullable audioFilter;
-@property (nonatomic, strong) SGFrameFilter * _Nullable videoFilter;
+@property (nonatomic, strong) SGAudioDescription * _Nullable audioDescription;
 
 /**
  *

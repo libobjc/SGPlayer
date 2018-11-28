@@ -1,14 +1,14 @@
 //
-//  SGAudioFrameFilter.h
-//  SGPlayer iOS
+//  SGAudioDescription.h
+//  SGPlayer
 //
-//  Created by Single on 2018/10/30.
+//  Created by Single on 2018/11/28.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGFrameFilter.h"
+#import <Foundation/Foundation.h>
 
-@interface SGAudioFrameFilter : SGFrameFilter
+@interface SGAudioDescription : NSObject
 
 /**
  *  AVSampleFormat

@@ -7,12 +7,12 @@
 //
 
 #import "SGRenderable.h"
-#import "SGAudioFrameFilter.h"
+#import "SGAudioDescription.h"
 #import "SGAudioRenderer.h"
 #import "SGVideoRenderer.h"
 #import "SGClock+Internal.h"
 
-@class SGAudioFrameFilter;
+@class SGAudioFormatter;
 
 @interface SGAudioRenderer () <SGRenderable>
 
@@ -32,7 +32,7 @@
 /**
  *
  */
-- (SGAudioFrameFilter *)filter;
+- (SGAudioDescription *)audioDescription;
 
 @end
 

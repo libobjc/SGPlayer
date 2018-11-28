@@ -18,8 +18,8 @@
 {
     NSLock *_lock;
     SGClock *_clock;
-    SGAudioFrameFilter *_filter;
     SGAudioStreamPlayer *_player;
+    SGAudioDescription *_audioDescription;
     
     CMTime _rate;
     double _volume;
@@ -52,7 +52,7 @@
         self->_volume = 1.0f;
         self->_rate = CMTimeMake(1, 1);
         self->_lock = [[NSLock alloc] init];
-        self->_filter = [[SGAudioFrameFilter alloc] init];
+        self->_audioDescription = [[SGAudioDescription alloc] init];
     }
     return self;
 }
@@ -137,11 +137,11 @@
     return ret;
 }
 
-- (SGAudioFrameFilter *)filter
+- (SGAudioDescription *)audioDescription
 {
-    __block SGAudioFrameFilter *ret = nil;
+    __block SGAudioDescription *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_filter;
+        ret = self->_audioDescription;
     });
     return ret;
 }

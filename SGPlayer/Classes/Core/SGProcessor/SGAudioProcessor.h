@@ -1,5 +1,5 @@
 //
-//  SGAudioMixer.h
+//  SGAudioProcessor.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/28.
@@ -7,10 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGAudioDescription.h"
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
-@interface SGAudioMixer : NSObject
+@interface SGAudioProcessor : NSObject
+
+@property (nonatomic, strong) SGAudioDescription * _Nonnull audioDescription;
 
 /**
  *
@@ -30,7 +33,7 @@
 /**
  *
  */
-- (SGAudioFrame * _Nullable)mix:(SGAudioFrame * _Nonnull)frame;
+- (SGAudioFrame * _Nullable)putFrame:(SGAudioFrame * _Nonnull)frame;
 
 /**
  *
@@ -41,6 +44,11 @@
  *
  */
 - (SGCapacity *)capacity;
+
+/**
+ *
+ */
+- (void)close;
 
 /**
  *
