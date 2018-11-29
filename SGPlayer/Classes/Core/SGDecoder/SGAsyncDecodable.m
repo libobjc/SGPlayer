@@ -168,13 +168,13 @@ static SGPacket *gFinishPacket;
     });
 }
 
-- (BOOL)finish
+- (BOOL)finish:(NSArray<SGTrack *> *)tracks
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state != SGAsyncDecodableStateClosed;
     }, ^SGBlock {
-        for (SGObjectQueue *obj in self->_packetQueues.allValues) {
-            [obj putObjectAsync:gFinishPacket];
+        for (SGTrack *obj in tracks) {
+            [self->_packetQueues[@(obj.index)] putObjectAsync:gFinishPacket];
         }
         if (self->_state == SGAsyncDecodableStateStalled) {
             return [self setState:SGAsyncDecodableStateDecoding];
@@ -262,6 +262,7 @@ static SGPacket *gFinishPacket;
                             [self->_delegate decoder:self didOutputFrame:obj];
                             [obj unlock];
                         }
+                        [self->_delegate decoder:self didFinish:index.intValue];
                     };
                 } else {
                     CMTime dts = packet.decodeTimeStamp;

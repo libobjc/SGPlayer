@@ -220,6 +220,22 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     }];
 }
 
+#pragma mark - Internal
+
+- (void)setFinishedIfNeeded
+{
+    SGLockEXE10(self->_lock, ^SGBlock{
+        SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
+        SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+        if ((!audioCapacity || audioCapacity.isEmpty) &&
+            (!videoCapacity || videoCapacity.isEmpty) &&
+            self->_packetOutput.state == SGPacketOutputStateFinished) {
+            return [self setState:SGFrameOutputStateFinished];
+        }
+        return nil;
+    });
+}
+
 #pragma mark - SGPacketOutputDelegate
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
@@ -259,9 +275,10 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
                 b1 = [self setState:SGFrameOutputStateSeeking];
                 break;
             case SGPacketOutputStateFinished: {
+                NSArray<SGTrack *> *tracks = self->_selectedTracks;
                 b1 = ^{
-                    [self->_audioDecoder finish];
-                    [self->_videoDecoder finish];
+                    [self->_audioDecoder finish:tracks];
+                    [self->_videoDecoder finish:tracks];
                 };
             }
                 break;
@@ -325,23 +342,17 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
             (videoCapacity ? videoCapacity.isEnough : YES)) {
             enough = YES;
         }
-        SGBlock b1 = ^{};
-        if ((!audioCapacity || audioCapacity.isEmpty) &&
-            (!videoCapacity || videoCapacity.isEmpty) &&
-            self->_packetOutput.state == SGPacketOutputStateFinished) {
-            b1 = [self setState:SGFrameOutputStateFinished];
-        }
         return ^{
             if (enough || (size > 15 * 1024 * 1024)) {
                 [self->_packetOutput pause];
             } else {
                 [self->_packetOutput resume];
             }
-            b1();
         };
     }, ^BOOL(SGBlock block) {
         block();
         [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
+        [self setFinishedIfNeeded];
         return YES;
     });
 }
@@ -349,6 +360,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
+}
+
+- (void)decoder:(SGAsyncDecodable *)decoder didFinish:(int)index
+{
+    [self setFinishedIfNeeded];
 }
 
 @end
