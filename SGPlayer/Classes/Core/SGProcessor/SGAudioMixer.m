@@ -8,16 +8,13 @@
 
 #import "SGAudioMixer.h"
 #import "SGFrame+Internal.h"
+#import "SGAudioMixerUnit.h"
 
 @interface SGAudioMixer ()
 
 {
     CMTime _startTime;
-    CMTime _minimumTimeStamp;
-    CMTime _maximumTimeStamp;
-    NSArray<SGTrack *> *_tracks;
-    NSArray<NSNumber *> *_weights;
-    NSMutableDictionary<NSNumber *, NSMutableArray<SGAudioFrame *> *> *_frameLists;
+    NSDictionary<NSNumber *, SGAudioMixerUnit *> *_units;
 }
 
 @end
@@ -30,18 +27,39 @@
         self->_tracks = [tracks copy];
         self->_audioDescription = [audioDescription copy];
         self->_startTime = kCMTimeNegativeInfinity;
-        self->_frameLists = [NSMutableDictionary dictionary];
+        
+        NSMutableDictionary *units = [NSMutableDictionary dictionary];
+        for (SGTrack *obj in self->_tracks) {
+            [units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
+        }
+        self->_units = [units copy];
+        [self setWeights:nil];
     }
     return self;
 }
 
-- (void)dealloc
+#pragma mark - Setter & Getter
+
+- (void)setWeights:(NSArray<NSNumber *> *)weights
 {
-    for (NSMutableArray<SGAudioFrame *> *obj in self->_frameLists.allValues) {
-        for (SGAudioFrame *frame in obj) {
-            [frame unlock];
+    if (weights.count != self->_tracks.count) {
+        NSMutableArray *obj = [NSMutableArray array];
+        double weight = 1.0 / self->_tracks.count;
+        for (int i = 0; i < self->_tracks.count; i++) {
+            [obj addObject:@(weight)];
         }
-        [obj removeAllObjects];
+        self->_weights = [obj copy];
+    } else {
+        double sum = 0;
+        for (NSNumber *obj in weights) {
+            sum += obj.doubleValue;
+        }
+        NSMutableArray *obj = [NSMutableArray array];
+        for (int i = 0; i < self->_tracks.count; i++) {
+            double value = [weights objectAtIndex:i].doubleValue;
+            [obj addObject:@(value / sum)];
+        }
+        self->_weights = [obj copy];
     }
 }
 
@@ -49,25 +67,29 @@
 
 - (SGAudioFrame *)putFrame:(SGAudioFrame *)frame
 {
+    if (self->_tracks.count <= 1) {
+        return frame;
+    }
     if (CMTimeCompare(frame.timeStamp, self->_startTime) < 0) {
         [frame unlock];
         return nil;
     }
-    NSMutableArray<SGAudioFrame *> *queue = [self->_frameLists objectForKey:@(frame.track.index)];
-    if (!queue) {
-        queue = [NSMutableArray array];
-        [self->_frameLists setObject:queue forKey:@(frame.track.index)];
+    NSAssert(self->_audioDescription.format == frame.format, @"Invalid Format.");
+    NSAssert(self->_audioDescription.format == AV_SAMPLE_FMT_FLTP, @"Invalid Format.");
+    SGAudioMixerUnit *unit = [self->_units objectForKey:@(frame.track.index)];
+    BOOL ret = [unit putFrame:frame];
+    [frame unlock];
+    if (ret) {
+        return [self mixIfNeeded];
     }
-    if (queue.lastObject && CMTimeCompare(frame.timeStamp, queue.lastObject.timeStamp) <= 0) {
-        [frame unlock];
-        return nil;
-    }
-    [queue addObject:frame];
-    return [self mixIfNeeded];
+    return nil;
 }
 
 - (SGAudioFrame *)finish
 {
+    if (self->_tracks.count <= 1) {
+        return nil;
+    }
     return nil;
 }
 
@@ -80,78 +102,85 @@
 {
     CMTime start = kCMTimePositiveInfinity;
     CMTime end = kCMTimePositiveInfinity;
-    for (SGTrack *track in self->_tracks) {
-        NSMutableArray<SGAudioFrame *> *frames = [self->_frameLists objectForKey:@(track.index)];
-        if (frames.count < 3) {
-            return nil;
+    CMTime duration = kCMTimeZero;
+    CMTime maximumDuration = kCMTimeZero;
+    
+    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+        if (CMTIMERANGE_IS_INVALID(obj.timeRange)) {
+            continue;
         }
-        CMTime currentStart = frames.firstObject.timeStamp;
-        CMTime currentEnd = CMTimeAdd(frames.lastObject.timeStamp, frames.lastObject.duration);
-        if (CMTimeCompare(currentStart, start) < 0) {
-            start = frames.firstObject.timeStamp;
-        }
-        if (CMTimeCompare(currentEnd, end) < 0) {
-            end = currentEnd;
-        }
+        start = CMTimeMinimum(start, obj.timeRange.start);
+        end = CMTimeMinimum(end, CMTimeRangeGetEnd(obj.timeRange));
+        duration = CMTimeSubtract(end, start);
+        maximumDuration = CMTimeMaximum(maximumDuration, obj.timeRange.duration);
     }
-    CMTime duration = CMTimeSubtract(end, start);
+    if (CMTimeCompare(maximumDuration, CMTimeMake(4, 10)) < 0) {
+        return nil;
+    }
+    self->_startTime = end;
     
-    int numberOfChannels = 2;
-    int numberOfSamples = CMTimeGetSeconds(duration) * 44100;
+    int sampleRate = self->_audioDescription.sampleRate;
+    int numberOfSamples = CMTimeGetSeconds(duration) * sampleRate;
+    int numberOfChannels = self->_audioDescription.numberOfChannels;
     int linesize = av_get_bytes_per_sample(AV_SAMPLE_FMT_FLTP) * numberOfSamples;
-    
+
     SGAudioFrame *ret = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
-    
+
     ret.core->format = self->_audioDescription.format;
-    ret.core->sample_rate = self->_audioDescription.sampleRate;
-    ret.core->channels = self->_audioDescription.numberOfChannels;
+    ret.core->sample_rate = sampleRate;
+    ret.core->channels = numberOfChannels;
     ret.core->channel_layout = self->_audioDescription.channelLayout;
     ret.core->nb_samples = numberOfSamples;
-    ret.core->pts                    = start.value;
-    ret.core->pkt_dts                = start.value;
-    ret.core->pkt_size               = 0;
-    ret.core->pkt_duration           = duration.value;
-    ret.core->best_effort_timestamp  = start.value;
-    
+    ret.core->pts = av_rescale(sampleRate, start.value, start.timescale);
+    ret.core->pkt_dts = av_rescale(sampleRate, start.value, start.timescale);
+    ret.core->pkt_size = 0;
+    ret.core->pkt_duration = av_rescale(sampleRate, duration.value, duration.timescale);
+    ret.core->best_effort_timestamp = av_rescale(sampleRate, start.value, start.timescale);
+
     for (int i = 0; i < numberOfChannels; i++) {
-        int index = 0;
-        int offset = 0;
-        SGAudioFrame *currentFrame = nil;
-        SGAudioFrame *currentFrame2 = nil;
         float *data = av_mallocz(linesize);
-        for (int j = 0; j < numberOfSamples; j++) {
-            if (!currentFrame) {
-                currentFrame = [[self->_frameLists objectForKey:@(0)] objectAtIndex:index];
-                currentFrame2 = [[self->_frameLists objectForKey:@(1)] objectAtIndex:index];
-                index += 1;
-                offset = 0;
-            }
-            float *src = (float *)currentFrame.data[i];
-            float *src2 = (float *)currentFrame2.data[i];
-            data[j] = src[offset] * 0.5 + src2[offset] * 0.5;
-            offset += 1;
-            if (offset >= currentFrame.numberOfSamples) {
-                currentFrame = nil;
-                currentFrame2 = nil;
-            }
-        }
         AVBufferRef *buffer = av_buffer_create((uint8_t *)data, linesize, av_buffer_default_free, NULL, 0);
         ret.core->buf[i] = buffer;
         ret.core->data[i] = buffer->data;
         ret.core->linesize[i] = buffer->size;
     }
     
+    NSMutableDictionary *list = [NSMutableDictionary dictionary];
+    for (SGTrack *obj in self->_tracks) {
+        NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:end];
+        if (frames.count > 0) {
+            [list setObject:frames forKey:@(obj.index)];
+        }
+    }
+    
+    for (int i = 0; i < numberOfSamples; i++) {
+        for (int j = 0; j < self->_tracks.count; j++) {
+            for (SGAudioFrame *obj in list[@(self->_tracks[j].index)]) {
+                int c = CMTimeGetSeconds(CMTimeSubtract(obj.timeStamp, start)) * sampleRate;
+                if (i < c) {
+                    break;
+                }
+                if (i >= c + obj.numberOfSamples) {
+                    continue;
+                }
+                for (int k = 0; k < numberOfChannels; k++) {
+                    ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * self->_weights[j].floatValue);
+                }
+                break;
+            }
+        }
+    }
+    
+    for (NSArray *objs in list.allValues) {
+        for (SGAudioFrame *obj in objs) {
+            [obj unlock];
+        }
+    }
+
     SGCodecDescription *cd = [[SGCodecDescription alloc] init];
-    cd.timebase = av_make_q(1, start.timescale);
+    cd.timebase = av_make_q(1, self->_audioDescription.sampleRate);
     ret.codecDescription = cd;
     [ret fill];
-    
-    for (NSMutableArray<SGAudioFrame *> *obj in self->_frameLists.allValues) {
-        for (SGAudioFrame *frame in obj) {
-            [frame unlock];
-        }
-        [obj removeAllObjects];
-    }
     
     return ret;
 }

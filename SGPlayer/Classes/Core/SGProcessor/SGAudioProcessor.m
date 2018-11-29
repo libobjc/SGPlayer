@@ -29,11 +29,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [self flush];
-}
-
 #pragma mark - Setter & Getter
 
 - (NSArray<SGTrack *> *)tracks
@@ -60,12 +55,9 @@
 
 - (void)setupWithTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
 {
-    // Mixer
     self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription
                                                            tracks:tracks];
     self->_mixer.weights = weights;
-    
-    // Formatter
     self->_formatters = [NSMutableDictionary dictionary];
     for (SGTrack *i in tracks) {
         SGAudioFormatter *obj = [[SGAudioFormatter alloc] initWithAudioDescription:self->_audioDescription];
@@ -82,16 +74,11 @@
         return nil;
     }
     SGAudioFormatter *formatter = [self->_formatters objectForKey:@(frame.track.index)];
-    SGAudioFrame *obj = nil;
-    [formatter format:frame formatted:&obj];
-    [frame unlock];
-    if (!obj) {
-        return nil;
+    frame = [formatter format:frame];
+    if (frame) {
+        return [self->_mixer putFrame:frame];
     }
-    if (self->_mixer.tracks.count <= 1) {
-        return obj;
-    }
-    return [self->_mixer putFrame:obj];
+    return nil;
 }
 
 - (SGAudioFrame *)finish
@@ -111,7 +98,8 @@
 
 - (void)close
 {
-    [self flush];
+    self->_mixer = nil;
+    self->_formatters = nil;
 }
 
 @end

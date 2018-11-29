@@ -29,25 +29,26 @@
     return self;
 }
 
-- (BOOL)format:(SGAudioFrame *)original formatted:(SGAudioFrame **)formatted
+- (SGAudioFrame *)format:(SGAudioFrame *)frame
 {
-    if (![original isKindOfClass:[SGAudioFrame class]]) {
-        return NO;
+    if (![frame isKindOfClass:[SGAudioFrame class]]) {
+        [frame unlock];
+        return nil;
     }
-    if (self->_context.i_format != original.format ||
-        self->_context.i_sample_rate != original.sampleRate ||
-        self->_context.i_channels != original.numberOfChannels ||
-        self->_context.i_channel_layout != original.channelLayout ||
+    if (self->_context.i_format != frame.format ||
+        self->_context.i_sample_rate != frame.sampleRate ||
+        self->_context.i_channels != frame.numberOfChannels ||
+        self->_context.i_channel_layout != frame.channelLayout ||
         self->_context.o_format != self->_audioDescription.format ||
         self->_context.o_sample_rate != self->_audioDescription.sampleRate ||
         self->_context.o_channels != self->_audioDescription.numberOfChannels ||
         self->_context.o_channel_layout != self->_audioDescription.channelLayout) {
         self->_context = nil;
         SGSWResample *context = [[SGSWResample alloc] init];
-        context.i_format = original.format;
-        context.i_sample_rate = original.sampleRate;
-        context.i_channels = original.numberOfChannels;
-        context.i_channel_layout = original.channelLayout;
+        context.i_format = frame.format;
+        context.i_sample_rate = frame.sampleRate;
+        context.i_channels = frame.numberOfChannels;
+        context.i_channel_layout = frame.channelLayout;
         context.o_format = self->_audioDescription.format;
         context.o_sample_rate = self->_audioDescription.sampleRate;
         context.o_channels = self->_audioDescription.numberOfChannels;
@@ -57,10 +58,11 @@
         }
     }
     if (!self->_context) {
-        return NO;
+        [frame unlock];
+        return nil;
     }
     
-    int nb_samples = [self->_context convert:original.data nb_samples:original.numberOfSamples];
+    int nb_samples = [self->_context convert:frame.data nb_samples:frame.numberOfSamples];
     int nb_planar = av_sample_fmt_is_planar(self->_audioDescription.format) ? self->_audioDescription.numberOfChannels : 1;
     int linesize = av_get_bytes_per_sample(self->_audioDescription.format) * nb_samples;
     linesize *= av_sample_fmt_is_planar(self->_audioDescription.format) ? 1 : self->_audioDescription.numberOfChannels;
@@ -72,11 +74,11 @@
     ret.core->channels = self->_audioDescription.numberOfChannels;
     ret.core->channel_layout = self->_audioDescription.channelLayout;
     ret.core->nb_samples = nb_samples;
-    ret.core->pts = original.core->pts;
-    ret.core->pkt_dts = original.core->pkt_dts;
-    ret.core->pkt_size = original.core->pkt_size;
-    ret.core->pkt_duration = original.core->pkt_duration;
-    ret.core->best_effort_timestamp = original.core->best_effort_timestamp;
+    ret.core->pts = frame.core->pts;
+    ret.core->pkt_dts = frame.core->pkt_dts;
+    ret.core->pkt_size = frame.core->pkt_size;
+    ret.core->pkt_duration = frame.core->pkt_duration;
+    ret.core->best_effort_timestamp = frame.core->best_effort_timestamp;
     
     for (int i = 0; i < nb_planar; i++) {
         uint8_t *data = av_mallocz(linesize);
@@ -87,10 +89,10 @@
         ret.core->linesize[i] = buffer->size;
     }
     
-    ret.codecDescription = original.codecDescription;
+    ret.codecDescription = frame.codecDescription;
     [ret fill];
-    *formatted = ret;
-    return YES;
+    [frame unlock];
+    return ret;
 }
 
 @end
