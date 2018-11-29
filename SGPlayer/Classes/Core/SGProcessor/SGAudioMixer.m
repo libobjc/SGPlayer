@@ -100,11 +100,18 @@
     int numberOfSamples = CMTimeGetSeconds(duration) * 44100;
     int linesize = av_get_bytes_per_sample(AV_SAMPLE_FMT_FLTP) * numberOfSamples;
     
-    SGAudioFrame *result = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
-    result.core->format = AV_SAMPLE_FMT_FLTP;
-    result.core->channels = 2;
-    result.core->channel_layout = av_get_default_channel_layout(2);
-    result.core->nb_samples = numberOfSamples;
+    SGAudioFrame *ret = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
+    
+    ret.core->format = self->_audioDescription.format;
+    ret.core->sample_rate = self->_audioDescription.sampleRate;
+    ret.core->channels = self->_audioDescription.numberOfChannels;
+    ret.core->channel_layout = self->_audioDescription.channelLayout;
+    ret.core->nb_samples = numberOfSamples;
+    ret.core->pts                    = start.value;
+    ret.core->pkt_dts                = start.value;
+    ret.core->pkt_size               = 0;
+    ret.core->pkt_duration           = duration.value;
+    ret.core->best_effort_timestamp  = start.value;
     
     for (int i = 0; i < numberOfChannels; i++) {
         int index = 0;
@@ -129,23 +136,15 @@
             }
         }
         AVBufferRef *buffer = av_buffer_create((uint8_t *)data, linesize, av_buffer_default_free, NULL, 0);
-        result.core->buf[i] = buffer;
-        result.core->data[i] = buffer->data;
-        result.core->linesize[i] = buffer->size;
+        ret.core->buf[i] = buffer;
+        ret.core->data[i] = buffer->data;
+        ret.core->linesize[i] = buffer->size;
     }
-    
-    result.core->key_frame              = 1;
-    result.core->pts                    = start.value;
-    result.core->sample_rate            = 44100;
-    result.core->pkt_dts                = start.value;
-    result.core->pkt_size               = 0;
-    result.core->pkt_duration           = duration.value;
-    result.core->best_effort_timestamp  = start.value;
     
     SGCodecDescription *cd = [[SGCodecDescription alloc] init];
     cd.timebase = av_make_q(1, start.timescale);
-    result.codecDescription = cd;
-    [result fill];
+    ret.codecDescription = cd;
+    [ret fill];
     
     for (NSMutableArray<SGAudioFrame *> *obj in self->_frameLists.allValues) {
         for (SGAudioFrame *frame in obj) {
@@ -154,7 +153,7 @@
         [obj removeAllObjects];
     }
     
-    return result;
+    return ret;
 }
 
 @end

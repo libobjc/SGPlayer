@@ -15,11 +15,9 @@
 @interface SGVideoFrame ()
 
 {
-    int _key;
+    int _format;
     int _width;
     int _height;
-    
-    int _format;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
     CVPixelBufferRef _pixelBuffer;
@@ -39,11 +37,6 @@
 - (int)format
 {
     return self->_format;
-}
-
-- (int)isKey
-{
-    return self->_key;
 }
 
 - (int)width
@@ -76,7 +69,6 @@
 - (void)clear
 {
     [super clear];
-    self->_key = 0;
     self->_width = 0;
     self->_height = 0;
     self->_format = AV_PIX_FMT_NONE;
@@ -96,7 +88,6 @@
     self->_width = frame->width;
     self->_height = frame->height;
     self->_format = frame->format;
-    self->_key = frame->key_frame;
     if (self->_format == AV_PIX_FMT_VIDEOTOOLBOX) {
         self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
     }

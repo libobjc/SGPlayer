@@ -28,6 +28,6 @@
 /**
  *
  */
-- (BOOL)format:(SGAudioFrame *)original formatted:(SGAudioFrame **)formatted;
+- (BOOL)format:(SGAudioFrame * _Nonnull)original formatted:(SGAudioFrame * _Nullable * _Nonnull)formatted;
 
 @end

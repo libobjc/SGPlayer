@@ -49,6 +49,6 @@
 /**
  *
  */
-- (SGCapacity *)capacity;
+- (SGCapacity * _Nonnull)capacity;
 
 @end

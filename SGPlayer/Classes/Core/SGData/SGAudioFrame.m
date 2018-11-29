@@ -12,13 +12,12 @@
 @interface SGAudioFrame ()
 
 {
+    int _format;
     int _planar;
     int _sampleRate;
     int _numberOfSsmples;
     int _numberOfChannels;
     uint64_t _channelLayout;
-    
-    int _format;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
 }

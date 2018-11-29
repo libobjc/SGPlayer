@@ -43,43 +43,53 @@
         self->_context.o_channels != self->_audioDescription.numberOfChannels ||
         self->_context.o_channel_layout != self->_audioDescription.channelLayout) {
         self->_context = nil;
-        SGSWResample *swrContext = [[SGSWResample alloc] init];
-        swrContext.i_format = original.format;
-        swrContext.i_sample_rate = original.sampleRate;
-        swrContext.i_channels = original.numberOfChannels;
-        swrContext.i_channel_layout = original.channelLayout;
-        swrContext.o_format = self->_audioDescription.format;
-        swrContext.o_sample_rate = self->_audioDescription.sampleRate;
-        swrContext.o_channels = self->_audioDescription.numberOfChannels;
-        swrContext.o_channel_layout = self->_audioDescription.channelLayout;
-        if ([swrContext open]) {
-            self->_context = swrContext;
+        SGSWResample *context = [[SGSWResample alloc] init];
+        context.i_format = original.format;
+        context.i_sample_rate = original.sampleRate;
+        context.i_channels = original.numberOfChannels;
+        context.i_channel_layout = original.channelLayout;
+        context.o_format = self->_audioDescription.format;
+        context.o_sample_rate = self->_audioDescription.sampleRate;
+        context.o_channels = self->_audioDescription.numberOfChannels;
+        context.o_channel_layout = self->_audioDescription.channelLayout;
+        if ([context open]) {
+            self->_context = context;
         }
     }
     if (!self->_context) {
         return NO;
     }
+    
     int nb_samples = [self->_context convert:original.data nb_samples:original.numberOfSamples];
     int nb_planar = av_sample_fmt_is_planar(self->_audioDescription.format) ? self->_audioDescription.numberOfChannels : 1;
     int linesize = av_get_bytes_per_sample(self->_audioDescription.format) * nb_samples;
     linesize *= av_sample_fmt_is_planar(self->_audioDescription.format) ? 1 : self->_audioDescription.numberOfChannels;
-    SGAudioFrame *result = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
-    result.core->format = self->_audioDescription.format;
-    result.core->channels = self->_audioDescription.numberOfChannels;
-    result.core->channel_layout = self->_audioDescription.channelLayout;
-    result.core->nb_samples = nb_samples;
-    av_frame_copy_props(result.core, original.core);
+    
+    SGAudioFrame *ret = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
+    
+    ret.core->format = self->_audioDescription.format;
+    ret.core->sample_rate = self->_audioDescription.sampleRate;
+    ret.core->channels = self->_audioDescription.numberOfChannels;
+    ret.core->channel_layout = self->_audioDescription.channelLayout;
+    ret.core->nb_samples = nb_samples;
+    ret.core->pts = original.core->pts;
+    ret.core->pkt_dts = original.core->pkt_dts;
+    ret.core->pkt_size = original.core->pkt_size;
+    ret.core->pkt_duration = original.core->pkt_duration;
+    ret.core->best_effort_timestamp = original.core->best_effort_timestamp;
+    
     for (int i = 0; i < nb_planar; i++) {
         uint8_t *data = av_mallocz(linesize);
         [self->_context copy:data linesize:linesize planar:i];
         AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
-        result.core->buf[i] = buffer;
-        result.core->data[i] = buffer->data;
-        result.core->linesize[i] = buffer->size;
+        ret.core->buf[i] = buffer;
+        ret.core->data[i] = buffer->data;
+        ret.core->linesize[i] = buffer->size;
     }
-    result.codecDescription = original.codecDescription;
-    [result fill];
-    *formatted = result;
+    
+    ret.codecDescription = original.codecDescription;
+    [ret fill];
+    *formatted = ret;
     return YES;
 }
 
