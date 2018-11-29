@@ -26,13 +26,13 @@
     if (self = [super init]) {
         self->_tracks = [tracks copy];
         self->_audioDescription = [audioDescription copy];
-        self->_startTime = kCMTimeNegativeInfinity;
         
         NSMutableDictionary *units = [NSMutableDictionary dictionary];
         for (SGTrack *obj in self->_tracks) {
             [units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
         }
         self->_units = [units copy];
+        self->_startTime = kCMTimeNegativeInfinity;
         [self setWeights:nil];
     }
     return self;
@@ -96,6 +96,14 @@
 - (SGCapacity *)capacity
 {
     return [[SGCapacity alloc] init];
+}
+
+- (void)flush
+{
+    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+        [obj flush];
+    }
+    self->_startTime = kCMTimeNegativeInfinity;
 }
 
 - (SGAudioFrame *)mixIfNeeded

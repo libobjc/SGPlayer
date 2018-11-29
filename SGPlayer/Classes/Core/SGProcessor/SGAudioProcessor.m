@@ -44,25 +44,18 @@
 - (BOOL)setTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
 {
     if (tracks.count > 0) {
-        [self setupWithTracks:tracks weights:weights];
+        self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription
+                                                               tracks:tracks];
+        self->_mixer.weights = weights;
+        self->_formatters = [NSMutableDictionary dictionary];
+        for (SGTrack *i in tracks) {
+            SGAudioFormatter *obj = [[SGAudioFormatter alloc] initWithAudioDescription:self->_audioDescription];
+            [self->_formatters setObject:obj forKey:@(i.index)];
+        }
     } else {
         self->_mixer.weights = weights;
     }
     return YES;
-}
-
-#pragma mark - Setup
-
-- (void)setupWithTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
-{
-    self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription
-                                                           tracks:tracks];
-    self->_mixer.weights = weights;
-    self->_formatters = [NSMutableDictionary dictionary];
-    for (SGTrack *i in tracks) {
-        SGAudioFormatter *obj = [[SGAudioFormatter alloc] initWithAudioDescription:self->_audioDescription];
-        [self->_formatters setObject:obj forKey:@(i.index)];
-    }
 }
 
 #pragma mark - Control
@@ -93,7 +86,10 @@
 
 - (void)flush
 {
-    [self setupWithTracks:self.tracks weights:self.weights];
+    [self->_mixer flush];
+    for (SGAudioFormatter *obj in self->_formatters.allValues) {
+        [obj flush];
+    }
 }
 
 - (void)close

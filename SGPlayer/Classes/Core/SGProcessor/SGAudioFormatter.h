@@ -30,4 +30,9 @@
  */
 - (SGAudioFrame * _Nullable)format:(SGAudioFrame * _Nonnull)frame;
 
+/**
+ *
+ */
+- (void)flush;
+
 @end

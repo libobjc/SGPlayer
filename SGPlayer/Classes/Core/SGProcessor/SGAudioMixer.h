@@ -51,4 +51,9 @@
  */
 - (SGCapacity * _Nonnull)capacity;
 
+/**
+ *
+ */
+- (void)flush;
+
 @end

@@ -95,4 +95,9 @@
     return ret;
 }
 
+- (void)flush
+{
+    self->_context = nil;
+}
+
 @end

@@ -26,4 +26,9 @@
  */
 - (NSArray<SGAudioFrame *> *)framesToEndTime:(CMTime)endTime;
 
+/**
+ *
+ */
+- (void)flush;
+
 @end

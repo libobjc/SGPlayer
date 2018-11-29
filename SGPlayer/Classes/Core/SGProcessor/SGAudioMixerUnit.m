@@ -34,6 +34,8 @@
     }
 }
 
+#pragma mark - Control
+
 - (BOOL)putFrame:(SGAudioFrame *)frame
 {
     if (CMTIMERANGE_IS_VALID(self->_timeRange) && CMTimeCompare(frame.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) < 0) {
@@ -63,6 +65,17 @@
     [self updateTimeRange];
     return [ret copy];
 }
+
+- (void)flush
+{
+    for (SGAudioFrame *obj in self->_frames) {
+        [obj unlock];
+    }
+    self->_frames = [NSMutableArray array];
+    self->_timeRange = kCMTimeRangeInvalid;
+}
+
+#pragma mark - Internal
 
 - (void)updateTimeRange
 {
