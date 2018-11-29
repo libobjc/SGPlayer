@@ -7,7 +7,7 @@
 //
 
 #import "SGDemuxable.h"
-#import "SGSegment.h"
+#import "SGMutableTrack.h"
 
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
@@ -17,6 +17,6 @@
 /**
  *
  */
-- (instancetype)initWithTrack:(SGTrack * _Nonnull)track segments:(NSArray<SGSegment *> * _Nonnull)segments NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTrack:(SGMutableTrack * _Nonnull)track NS_DESIGNATED_INITIALIZER;
 
 @end

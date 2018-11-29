@@ -25,11 +25,12 @@
 
 @implementation SGConcatDemuxer
 
-- (instancetype)initWithTrack:(SGTrack *)track segments:(NSArray<SGSegment *> *)segments
+- (instancetype)initWithTrack:(SGMutableTrack *)track
 {
     if (self = [super init]) {
+        track = [track copy];
         NSMutableArray *units = [NSMutableArray array];
-        for (SGSegment *obj in segments) {
+        for (SGSegment *obj in track.segments) {
             [units addObject:[[SGConcatDemuxerUnit alloc] initWithSegment:obj]];
         }
         self->_units = [units copy];

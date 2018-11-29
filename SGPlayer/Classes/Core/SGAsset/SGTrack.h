@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 
-@interface SGTrack : NSObject
+@interface SGTrack : NSObject <NSCopying>
 
 /**
  *

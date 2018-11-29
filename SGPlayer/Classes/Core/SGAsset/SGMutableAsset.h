@@ -7,13 +7,11 @@
 //
 
 #import "SGAsset.h"
-#import "SGSegment.h"
 #import "SGDefines.h"
+#import "SGMutableTrack.h"
 
 @interface SGMutableAsset : SGAsset
 
-- (int)addTrack:(SGMediaType)type;
-
-- (BOOL)insertSegment:(SGSegment * _Nonnull)segment trackID:(int)trackID;
+- (SGMutableTrack *)addTrack:(SGMediaType)type;
 
 @end

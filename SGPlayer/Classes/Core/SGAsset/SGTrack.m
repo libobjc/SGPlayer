@@ -20,6 +20,12 @@
 
 @implementation SGTrack
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    SGTrack *obj = [[self.class alloc] initWithType:self->_type index:self->_index];
+    return obj;
+}
+
 - (instancetype)init
 {
     NSAssert(NO, @"Invalid Function.");
