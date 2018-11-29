@@ -11,6 +11,16 @@
 
 @implementation SGAudioDescription
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    SGAudioDescription *obj = [[SGAudioDescription alloc] init];
+    obj->_format = self->_format;
+    obj->_sampleRate = self->_sampleRate;
+    obj->_numberOfChannels = self->_numberOfChannels;
+    obj->_channelLayout = self->_channelLayout;
+    return obj;
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {

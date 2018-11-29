@@ -46,6 +46,12 @@
 		9C1D221C201ACA13005147FB /* SGGLProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1D221B201ACA13005147FB /* SGGLProgram.h */; };
 		9C1D222A201B1DA2005147FB /* SGMapping.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1D2228201B1DA2005147FB /* SGMapping.h */; };
 		9C1D222D201B1DA3005147FB /* SGMapping.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1D2229201B1DA2005147FB /* SGMapping.m */; };
+		9C1F2DE721AF8F1A00D42158 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1F2DE521AF8F1A00D42158 /* SGAudioMixer.h */; };
+		9C1F2DE821AF8F1A00D42158 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1F2DE521AF8F1A00D42158 /* SGAudioMixer.h */; };
+		9C1F2DE921AF8F1A00D42158 /* SGAudioMixer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1F2DE521AF8F1A00D42158 /* SGAudioMixer.h */; };
+		9C1F2DEA21AF8F1A00D42158 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */; };
+		9C1F2DEB21AF8F1A00D42158 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */; };
+		9C1F2DEC21AF8F1A00D42158 /* SGAudioMixer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */; };
 		9C2536501FAB199500BBFA5C /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C25364E1FAB199500BBFA5C /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C2536531FAB199500BBFA5C /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C25364F1FAB199500BBFA5C /* SGPlayer.m */; };
 		9C26CF57218D787D009FFCC4 /* SGClock+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */; };
@@ -605,6 +611,8 @@
 		9C1D221B201ACA13005147FB /* SGGLProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLProgram.h; sourceTree = "<group>"; };
 		9C1D2228201B1DA2005147FB /* SGMapping.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGMapping.h; sourceTree = "<group>"; };
 		9C1D2229201B1DA2005147FB /* SGMapping.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMapping.m; sourceTree = "<group>"; };
+		9C1F2DE521AF8F1A00D42158 /* SGAudioMixer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioMixer.h; sourceTree = "<group>"; };
+		9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioMixer.m; sourceTree = "<group>"; };
 		9C25364E1FAB199500BBFA5C /* SGPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9C25364F1FAB199500BBFA5C /* SGPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayer.m; sourceTree = "<group>"; };
 		9C26CF56218D787D009FFCC4 /* SGClock+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SGClock+Internal.h"; sourceTree = "<group>"; };
@@ -1104,6 +1112,8 @@
 		9C6F901E219BDCDC001051CE /* SGProcessor */ = {
 			isa = PBXGroup;
 			children = (
+				9C1F2DE521AF8F1A00D42158 /* SGAudioMixer.h */,
+				9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */,
 				9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */,
 				9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */,
 				9C66E1F82188526200B70DAA /* SGAudioFormatter.h */,
@@ -1391,6 +1401,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C1F2DE821AF8F1A00D42158 /* SGAudioMixer.h in Headers */,
 				9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9CE71916219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191E219C408300256485 /* SGSegment.h in Headers */,
@@ -1504,6 +1515,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C1F2DE921AF8F1A00D42158 /* SGAudioMixer.h in Headers */,
 				9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9CE71917219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191F219C408300256485 /* SGSegment.h in Headers */,
@@ -1626,6 +1638,7 @@
 				9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */,
 				9C2C55932015911600131E15 /* SGObjectPool.h in Headers */,
 				9C82EEB121AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
+				9C1F2DE721AF8F1A00D42158 /* SGAudioMixer.h in Headers */,
 				9C8637C12190452700D730EC /* pixfmt.h in Headers */,
 				9C2C55B52015D92100131E15 /* SGObjectQueue.h in Headers */,
 				9CF15E072011AE0700585326 /* SGAudioRenderer.h in Headers */,
@@ -1897,6 +1910,7 @@
 				9C86381D21904A0900D730EC /* SGAudioFormatter.m in Sources */,
 				9C86381E21904A0900D730EC /* SGFFmpeg.m in Sources */,
 				9C0A6F38219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */,
+				9C1F2DEB21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9C82EEB521AE356D00E9D523 /* SGAudioProcessor.m in Sources */,
 				9C86381F21904A0900D730EC /* SGPLFGLView.m in Sources */,
 				9C0A6F40219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
@@ -1973,6 +1987,7 @@
 				9CD79EC42190068E00E39A7D /* SGAudioFormatter.m in Sources */,
 				9CD79EC52190068E00E39A7D /* SGFFmpeg.m in Sources */,
 				9C0A6F39219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */,
+				9C1F2DEC21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9C82EEB621AE356D00E9D523 /* SGAudioProcessor.m in Sources */,
 				9CD79EC62190068E00E39A7D /* SGPLFGLView.m in Sources */,
 				9C0A6F41219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
@@ -2052,6 +2067,7 @@
 				9C66E1FB2188526200B70DAA /* SGAudioFormatter.m in Sources */,
 				9CB61F622112B93C00F5BE6B /* SGFFmpeg.m in Sources */,
 				9C82EEB421AE356D00E9D523 /* SGAudioProcessor.m in Sources */,
+				9C1F2DEA21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9CB1F09F20178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9CA57925219D69580061093B /* SGTimeLayout.m in Sources */,
 				9C0A6F3F219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,

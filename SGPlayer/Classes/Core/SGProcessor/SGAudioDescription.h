@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SGAudioDescription : NSObject
+@interface SGAudioDescription : NSObject <NSCopying>
 
 /**
  *  AVSampleFormat

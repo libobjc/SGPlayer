@@ -12,20 +12,18 @@
 
 @interface SGAudioFormatter : NSObject
 
-/**
- *
- */
-@property (nonatomic, strong) SGAudioDescription * _Nonnull audioDescription;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 /**
  *
  */
-- (void)close;
+- (instancetype)initWithAudioDescription:(SGAudioDescription * _Nullable)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-- (void)flush;
+@property (nonatomic, copy, readonly) SGAudioDescription * _Nonnull audioDescription;
 
 /**
  *

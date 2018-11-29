@@ -39,7 +39,6 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
-        self->_audioProcessor = [[SGAudioProcessor alloc] init];
         self->_capacitys = [NSMutableDictionary dictionary];
         self->_frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self->_frameOutput.delegate = self;
@@ -47,6 +46,7 @@
         self->_audioQueue.delegate = self;
         self->_videoQueue = [[SGObjectQueue alloc] init];
         self->_videoQueue.delegate = self;
+        self->_audioDescription = [[SGAudioDescription alloc] init];
     }
     return self;
 }
@@ -115,7 +115,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     __block BOOL ret = NO;
     SGLockEXE00(self->_lock, ^{
         if (type == SGMediaTypeAudio) {
-            ret = self->_audioProcessor.isAvailable;
+            ret = self->_audioProcessor.tracks.count > 0;
         } else if (type == SGMediaTypeVideo) {
             ret = self->_selectedVideoTrack != nil;
         }
@@ -294,9 +294,13 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
                         [video addObject:obj];
                     }
                 }
-                self->_selectedVideoTrack = video.firstObject;
-                [self->_audioProcessor setAudioDescription:self->_audioDescription];
-                [self->_audioProcessor setTracks:audio weights:weight];
+                if (audio.count > 0) {
+                    self->_audioProcessor = [[SGAudioProcessor alloc] initWithAudioDescription:self->_audioDescription];
+                    [self->_audioProcessor setTracks:audio weights:weight];
+                }
+                if (video.count > 0) {
+                    self->_selectedVideoTrack = video.firstObject;
+                }
                 return [self setState:SGPlayerItemStateOpened];
             });
         }

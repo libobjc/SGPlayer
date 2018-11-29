@@ -15,29 +15,18 @@
 
 {
     SGSWResample *_context;
-    SGAudioDescription *_audioDescription;
 }
 
 @end
 
 @implementation SGAudioFormatter
 
-- (instancetype)init
+- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription
 {
     if (self = [super init]) {
-        self->_audioDescription = [[SGAudioDescription alloc] init];
+        self->_audioDescription = [audioDescription copy];
     }
     return self;
-}
-
-- (void)close
-{
-    
-}
-
-- (void)flush
-{
-    
 }
 
 - (BOOL)format:(SGAudioFrame *)original formatted:(SGAudioFrame **)formatted

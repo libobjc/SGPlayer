@@ -81,7 +81,7 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-@property (nonatomic, strong) SGAudioDescription * _Nullable audioDescription;
+@property (nonatomic, copy) SGAudioDescription * _Nullable audioDescription;
 
 /**
  *
