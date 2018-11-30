@@ -100,7 +100,7 @@
     self->_sampleRate = frame->sample_rate;
     self->_numberOfChannels = frame->channels;
     self->_numberOfSsmples = frame->nb_samples;
-    self->_channelLayout = frame->channel_layout;
+    self->_channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
     self->_planar = av_sample_fmt_is_planar(frame->format);
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];

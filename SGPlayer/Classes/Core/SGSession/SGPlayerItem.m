@@ -143,12 +143,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
         return tracks != 0 || weights != 0;
     }, ^SGBlock {
         if (tracks.count > 0) {
-            NSArray *p = tracks;
+            NSMutableArray *m = [NSMutableArray arrayWithArray:tracks];
             if (self->_selectedVideoTrack) {
-                NSMutableArray *m = [NSMutableArray arrayWithArray:tracks];
                 [m addObject:self->_selectedVideoTrack];
             }
-            ret = [self->_frameOutput selectTracks:[p copy]];
+            ret = [self->_frameOutput selectTracks:[m copy]];
         }
         if (ret) {
             ret = [self->_audioProcessor setTracks:tracks weights:weights];
