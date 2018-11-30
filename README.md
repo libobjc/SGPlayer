@@ -1,10 +1,17 @@
+# Important Notice
+
+SGPlayer will be redesigned. Version 2.0 will be released in the spring of 2019.
+
+- [2.0 development branch](https://github.com/libobjc/SGPlayer/tree/develop/2.0.0)
+
+
 ![(Logo)](http://oxl6mxy2t.bkt.clouddn.com/SGPlayer/banner-small.png)
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
 ![Platform](https://img.shields.io/badge/Platform-%20iOS%20macOS%20tvOS%20-blue.svg)
 ![Support](https://img.shields.io/badge/support-%20VR%20360%C2%B0%20-orange.svg)
 
-[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle（原理详解）](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download（视频下载）](https://github.com/libobjc/SGDownload) | [Android Version (XLPlayer) ](https://github.com/xl-player-developers/xl_player)
+[中文介绍](https://github.com/libobjc/SGPlayer/blob/master/documents/README-chs.md) | [Principle](https://github.com/libobjc/SGPlayer/blob/master/documents/Principle-chs.md) | [Video Download](https://github.com/libobjc/SGDownload)
 
 # SGPlayer 
 
@@ -191,9 +198,6 @@ self.player.backgroundMode = SGPlayerBackgroundModeContinue;          // continu
 
 - GitHub : [Single](https://github.com/libobjc)
 - Email : libobjc@gmail.com
-- Twitter : CoderSingle
-- Weibo : 程序员Single
-- QQ Group : 616349536
 
 
 ## Developed by Single
