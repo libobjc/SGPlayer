@@ -161,10 +161,14 @@ static SGPacket *gFinishPacket;
             [obj putObjectSync:gFlushPacket];
         }
         [self->_timeStamps removeAllObjects];
+        SGBlock b1 = ^{};
         if (self->_state == SGAsyncDecodableStateStalled) {
-            return [self setState:SGAsyncDecodableStateDecoding];
+            b1 = [self setState:SGAsyncDecodableStateDecoding];
         }
-        return nil;
+        return ^{
+            b1();
+            [self callbackForCapacity];
+        };
     });
 }
 
@@ -176,10 +180,14 @@ static SGPacket *gFinishPacket;
         for (SGTrack *obj in tracks) {
             [self->_packetQueues[@(obj.index)] putObjectAsync:gFinishPacket];
         }
+        SGBlock b1 = ^{};
         if (self->_state == SGAsyncDecodableStateStalled) {
-            return [self setState:SGAsyncDecodableStateDecoding];
+            b1 = [self setState:SGAsyncDecodableStateDecoding];
         }
-        return nil;
+        return ^{
+            b1();
+            [self callbackForCapacity];
+        };
     });
 }
 
@@ -195,10 +203,14 @@ static SGPacket *gFinishPacket;
             [self->_packetQueues setObject:queue forKey:@(packet.track.index)];
         }
         [queue putObjectSync:packet];
+        SGBlock b1 = ^{};
         if (self->_state == SGAsyncDecodableStateStalled) {
-            return [self setState:SGAsyncDecodableStateDecoding];
+            b1 = [self setState:SGAsyncDecodableStateDecoding];
         }
-        return nil;
+        return ^{
+            b1();
+            [self callbackForCapacity];
+        };
     });
 }
 
