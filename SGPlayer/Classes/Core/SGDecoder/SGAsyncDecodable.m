@@ -15,6 +15,7 @@
 
 {
     NSLock *_lock;
+    BOOL _needFlush;
     NSCondition *_wakeup;
     SGCapacity *_capacity;
     Class _decodableClass;
@@ -172,6 +173,7 @@ static SGPacket *gFinishPacket;
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_state != SGAsyncDecodableStateClosed;
     }, ^SGBlock {
+        self->_needFlush = YES;
         for (SGObjectQueue *obj in self->_packetQueues.allValues) {
             [obj flush];
             [obj putObjectSync:gFlushPacket];
@@ -279,35 +281,40 @@ static SGPacket *gFinishPacket;
                 SGPacket *packet = nil;
                 [queue getObjectAsync:&packet];
                 NSAssert(packet, @"Invalid Packet.");
-                SGBlock b1 = ^{};
                 if (packet == gFlushPacket) {
-                    b1 = ^{
-                        [decodable flush];
-                    };
-                } else if (packet == gFinishPacket) {
-                    b1 = ^{
-                        for (SGFrame *obj in [decodable finish]) {
-                            [self->_delegate decoder:self didOutputFrame:obj];
-                            [obj unlock];
-                        }
-                    };
+                    [self->_lock unlock];
+                    [decodable flush];
+                    [self->_lock lock];
+                    self->_needFlush = NO;
                 } else {
-                    CMTime dts = packet.decodeTimeStamp;
-                    [self->_timeStamps setObject:[NSValue value:&dts withObjCType:@encode(CMTime)] forKey:index];
-                    b1 = ^{
-                        for (SGFrame *obj in [decodable decode:packet]) {
+                    NSArray *objs = nil;
+                    if (packet == gFinishPacket) {
+                        [self->_lock unlock];
+                        objs = [decodable finish];
+                    } else {
+                        CMTime dts = packet.decodeTimeStamp;
+                        [self->_timeStamps setObject:[NSValue value:&dts withObjCType:@encode(CMTime)] forKey:index];
+                        [self->_lock unlock];
+                        objs = [decodable decode:packet];
+                    }
+                    [self->_lock lock];
+                    if (self->_needFlush) {
+                        for (SGFrame *obj in objs) {
+                            [obj unlock];
+                        }
+                    } else {
+                        [self->_lock unlock];
+                        for (SGFrame *obj in objs) {
                             [self->_delegate decoder:self didOutputFrame:obj];
                             [obj unlock];
                         }
-                    };
+                        [self->_lock lock];
+                    }
                 }
+                SGBlock b1 = [self setCapacityIfNeeded];
                 [self->_lock unlock];
-                b1();
-                [self->_lock lock];
-                SGBlock b2 = [self setCapacityIfNeeded];
-                [self->_lock unlock];
-                b2();
                 [packet unlock];
+                b1();
                 continue;
             }
         }
