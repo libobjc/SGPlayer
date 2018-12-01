@@ -34,12 +34,12 @@ typedef NS_ENUM(int, SGPacketOutputState) {
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable> _Nonnull)demuxable NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, weak) id<SGPacketOutputDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGPacketOutputDelegate> delegate;
 
 /**
  *

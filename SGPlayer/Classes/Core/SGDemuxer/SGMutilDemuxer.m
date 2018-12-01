@@ -39,7 +39,7 @@
     [self close];
 }
 
-#pragma Setter & Getter
+#pragma mark - Setter & Getter
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {

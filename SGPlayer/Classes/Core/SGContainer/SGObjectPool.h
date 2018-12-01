@@ -12,12 +12,12 @@
 
 @interface SGObjectPool : NSObject
 
-+ (instancetype)sharedPool;
++ (instancetype _Nonnull)sharedPool;
 
 /**
  *
  */
-- (__kindof id<SGObjectPoolItem>)objectWithClass:(Class _Nonnull)class;
+- (__kindof id<SGObjectPoolItem> _Nonnull)objectWithClass:(Class _Nonnull)class;
 
 /**
  *

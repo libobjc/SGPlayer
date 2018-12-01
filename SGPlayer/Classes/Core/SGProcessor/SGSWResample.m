@@ -7,7 +7,7 @@
 //
 
 #import "SGSWResample.h"
-#import "swresample.h"
+#import "SGFFmpeg.h"
 #import "SGFrame.h"
 
 @interface SGSWResample ()

@@ -9,8 +9,7 @@
 #import "SGGLTextureUploader.h"
 #import "SGPLFOpenGL.h"
 #import "SGMapping.h"
-#import "imgutils.h"
-#import "buffer.h"
+#import "SGFFmpeg.h"
 
 static int gl_texture[3] = {
     GL_TEXTURE0,
@@ -85,22 +84,22 @@ static int gl_texture[3] = {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         return [self uploadWithCVPixelBuffer:frame.pixelBuffer];
 #else
-        CVReturn err = CVPixelBufferLockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
+        CVReturn err = CVPixelBufferLockBaseAddress(frame.pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (err != kCVReturnSuccess) {
             return NO;
         }
-        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(frame->_pixelBuffer));
-        if (CVPixelBufferIsPlanar(frame->_pixelBuffer)) {
-            int planes = (int)CVPixelBufferGetPlaneCount(frame->_pixelBuffer);
+        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+        if (CVPixelBufferIsPlanar(frame.pixelBuffer)) {
+            int planes = (int)CVPixelBufferGetPlaneCount(frame.pixelBuffer);
             for (int i = 0; i < planes; i++) {
-                data[i]     = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(frame->_pixelBuffer, i);
-                linesize[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(frame->_pixelBuffer, i);
+                data[i]     = (uint8_t *)CVPixelBufferGetBaseAddressOfPlane(frame.pixelBuffer, i);
+                linesize[i] = (int)CVPixelBufferGetBytesPerRowOfPlane(frame.pixelBuffer, i);
             }
         } else {
-            data[0] = (uint8_t *)CVPixelBufferGetBaseAddress(frame->_pixelBuffer);
-            linesize[0] = (int)CVPixelBufferGetBytesPerRow(frame->_pixelBuffer);
+            data[0] = (uint8_t *)CVPixelBufferGetBaseAddress(frame.pixelBuffer);
+            linesize[0] = (int)CVPixelBufferGetBytesPerRow(frame.pixelBuffer);
         }
-        CVPixelBufferUnlockBaseAddress(frame->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
+        CVPixelBufferUnlockBaseAddress(frame.pixelBuffer, kCVPixelBufferLock_ReadOnly);
 #endif
     } else {
         for (int i = 0; i < SGFramePlaneCount; i++) {

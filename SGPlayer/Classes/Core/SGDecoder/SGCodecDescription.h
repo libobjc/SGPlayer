@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "SGTimeLayout.h"
+#import "SGFFmpeg.h"
 #import "SGTrack.h"
-#import "avcodec.h"
 
 @interface SGCodecDescription : NSObject <NSCopying>
 

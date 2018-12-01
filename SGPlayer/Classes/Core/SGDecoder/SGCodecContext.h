@@ -13,15 +13,15 @@
 
 @interface SGCodecContext : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
++ (instancetype _Nonnull)new NS_UNAVAILABLE;
+- (instancetype _Nonnull)init NS_UNAVAILABLE;
 
 /**
  *
  */
-- (instancetype)initWithTimebase:(AVRational)timebase
-                        codecpar:(AVCodecParameters * _Nonnull)codecpar
-                      frameClass:(Class _Nonnull)frameClass NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nonnull)initWithTimebase:(AVRational)timebase
+                                 codecpar:(AVCodecParameters * _Nonnull)codecpar
+                               frameClass:(Class _Nonnull)frameClass NS_DESIGNATED_INITIALIZER;
 
 /**
  *

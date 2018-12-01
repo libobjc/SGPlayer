@@ -7,9 +7,8 @@
 //
 
 #import "SGFFmpeg.h"
-#import "avformat.h"
 
-void SGFFmpegLogCallback(void * context, int level, const char * format, va_list args)
+static void SGFFmpegLogCallback(void * context, int level, const char * format, va_list args)
 {
 //    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
 //    NSLog(@"SGFFLog : %@", message);

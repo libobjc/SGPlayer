@@ -10,7 +10,7 @@
 #import "SGRenderer+Internal.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioFrame.h"
-#import "samplefmt.h"
+#import "SGFFmpeg.h"
 #import "SGLock.h"
 
 @interface SGAudioRenderer () <SGAudioStreamPlayerDelegate>

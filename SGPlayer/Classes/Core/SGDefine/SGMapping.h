@@ -12,9 +12,7 @@
 #import "SGGLProgram.h"
 #import "SGDefines.h"
 #import "SGGLModel.h"
-#import "avutil.h"
-#import "pixfmt.h"
-#import "dict.h"
+#import "SGFFmpeg.h"
 
 // FF/SG -> GL
 SGGLModelType SGDisplay2Model(SGDisplayMode displayMode);

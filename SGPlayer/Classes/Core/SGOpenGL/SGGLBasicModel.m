@@ -70,7 +70,7 @@
     }
 }
 
-- (void)bindPosition_location:(GLint)position_location textureCoordinate_location:(GLint)textureCoordinate_location;
+- (void)bindPosition_location:(GLint)position_location textureCoordinate_location:(GLint)textureCoordinate_location
 {
     glBindBuffer(GL_ARRAY_BUFFER, _vertices_buffer_id);
     glEnableVertexAttribArray(position_location);

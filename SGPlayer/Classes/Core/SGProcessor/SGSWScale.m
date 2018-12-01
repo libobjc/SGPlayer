@@ -7,7 +7,7 @@
 //
 
 #import "SGSWScale.h"
-#import "swscale.h"
+#import "SGFFmpeg.h"
 
 @interface SGSWScale ()
 

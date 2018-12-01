@@ -12,7 +12,6 @@
 #import "SGConfiguration.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
-#import "avformat.h"
 #import "SGError.h"
 
 @interface SGURLDemuxer ()
@@ -161,7 +160,7 @@
 
 #pragma mark - AVFormatContext
 
-NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
+static NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
 {
     AVFormatContext *fmt_ctx = avformat_alloc_context();
     if (!fmt_ctx) {

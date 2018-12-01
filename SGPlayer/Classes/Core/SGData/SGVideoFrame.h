@@ -29,12 +29,12 @@
 /**
  *
  */
-- (int *)linesize;
+- (int * _Nullable)linesize;
 
 /**
  *
  */
-- (uint8_t **)data;
+- (uint8_t * _Nullable * _Nullable)data;
 
 /**
  *

@@ -7,7 +7,7 @@
 //
 
 #import "SGError.h"
-#import "error.h"
+#import "SGFFmpeg.h"
 
 static NSString * const SGErrorUserInfoKeyOperation = @"SGErrorUserInfoKeyOperation";
 

@@ -277,7 +277,7 @@ static int const SGAudioStreamPlayerMaximumChannels = 2;
 
 #pragma mark - Callback
 
-OSStatus inputCallback(void *inRefCon,
+static OSStatus inputCallback(void *inRefCon,
                        AudioUnitRenderActionFlags *ioActionFlags,
                        const AudioTimeStamp *inTimeStamp,
                        UInt32 inBusNumber,
@@ -291,7 +291,7 @@ OSStatus inputCallback(void *inRefCon,
     return noErr;
 }
 
-OSStatus outputRenderCallback(void *inRefCon,
+static OSStatus outputRenderCallback(void *inRefCon,
                               AudioUnitRenderActionFlags *ioActionFlags,
                               const AudioTimeStamp *inTimeStamp,
                               UInt32 inBusNumber,
