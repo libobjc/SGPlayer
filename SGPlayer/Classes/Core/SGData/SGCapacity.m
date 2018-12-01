@@ -104,4 +104,16 @@
     return self;
 }
 
+- (SGCapacity *)maximum:(SGCapacity *)capacity
+{
+    if (!capacity) {
+        return self;
+    }
+    SGCapacity *obj = [self minimum:capacity];
+    if (obj == self) {
+        return capacity;
+    }
+    return self;
+}
+
 @end

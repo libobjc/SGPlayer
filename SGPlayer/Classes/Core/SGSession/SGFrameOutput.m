@@ -220,22 +220,6 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     }];
 }
 
-#pragma mark - Internal
-
-- (void)setFinishedIfNeeded
-{
-    SGLockEXE10(self->_lock, ^SGBlock{
-        SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-        if ((!audioCapacity || audioCapacity.isEmpty) &&
-            (!videoCapacity || videoCapacity.isEmpty) &&
-            self->_packetOutput.state == SGPacketOutputStateFinished) {
-            return [self setState:SGFrameOutputStateFinished];
-        }
-        return nil;
-    });
-}
-
 #pragma mark - SGPacketOutputDelegate
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state
@@ -297,7 +281,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet
 {
-    SGLockEXE10(self->_lock, ^SGBlock{
+    SGLockEXE10(self->_lock, ^SGBlock {
         SGBlock b1 = ^{};
         if ([self->_selectedTracks containsObject:packet.track]) {
             SGAsyncDecodable *decoder = nil;
@@ -324,6 +308,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
+    __block SGBlock finished = ^{};
     __block SGMediaType type = SGMediaTypeUnknown;
     SGLockCondEXE11(self->_lock, ^BOOL {
         if (decoder == self->_audioDecoder) {
@@ -342,6 +327,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
             (videoCapacity ? videoCapacity.isEnough : YES)) {
             enough = YES;
         }
+        if ((!audioCapacity || audioCapacity.isEmpty) &&
+            (!videoCapacity || videoCapacity.isEmpty) &&
+            self->_packetOutput.state == SGPacketOutputStateFinished) {
+            finished = [self setState:SGFrameOutputStateFinished];
+        }
         return ^{
             if (enough || (size > 15 * 1024 * 1024)) {
                 [self->_packetOutput pause];
@@ -352,7 +342,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     }, ^BOOL(SGBlock block) {
         block();
         [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
-        [self setFinishedIfNeeded];
+        finished();
         return YES;
     });
 }
@@ -360,11 +350,6 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
-}
-
-- (void)decoder:(SGAsyncDecodable *)decoder didFinish:(int)index
-{
-    [self setFinishedIfNeeded];
 }
 
 @end

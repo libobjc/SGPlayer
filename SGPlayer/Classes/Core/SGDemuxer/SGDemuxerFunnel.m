@@ -168,6 +168,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
         ret = [self->_demuxable nextPacket:&pkt];
         if (ret) {
+            if (ret.code == SGErrorImmediateExitRequested) {
+                break;
+            }
             self->_outputFinished = YES;
             continue;
         }

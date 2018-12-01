@@ -142,17 +142,20 @@
     NSError *ret = nil;
     while (YES) {
         ret = [self->_currentUnit nextPacket:packet];
-        if (!ret) {
-            (*packet).codecDescription.track = self->_tracks.firstObject;
-            [(*packet) fill];
-            break;
+        if (ret) {
+            if (ret.code == SGErrorImmediateExitRequested) {
+                break;
+            }
+            if (self->_currentUnit == self->_units.lastObject) {
+                break;
+            }
+            self->_currentUnit = [self->_units objectAtIndex:[self->_units indexOfObject:self->_currentUnit] + 1];
+            [self->_currentUnit seekToTime:kCMTimeZero];
+            continue;
         }
-        if (self->_currentUnit == self->_units.lastObject) {
-            break;
-        }
-        self->_currentUnit = [self->_units objectAtIndex:[self->_units indexOfObject:self->_currentUnit] + 1];
-        [self->_currentUnit seekToTime:kCMTimeZero];
-        continue;
+        (*packet).codecDescription.track = self->_tracks.firstObject;
+        [(*packet) fill];
+        break;
     }
     return ret;
 }

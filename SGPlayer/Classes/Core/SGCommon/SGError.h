@@ -13,6 +13,7 @@
  */
 typedef NS_ENUM(int, SGErrorCode) {
     SGErrorCodeUnknown,
+    SGErrorImmediateExitRequested,
     SGErrorCodeNoValidFormat,
     SGErrorCodeNoValidTrackToPlay,
     SGErrorCodeFormatNotSeekable,

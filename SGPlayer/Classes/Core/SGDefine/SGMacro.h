@@ -11,12 +11,6 @@
 
 #import <Foundation/Foundation.h>
 
-#if defined(__cplusplus)
-#define SGPLAYER_EXTERN extern "C"
-#else
-#define SGPLAYER_EXTERN extern
-#endif
-
 #define SGWeakify(obj) __weak typeof(obj) weak_obj = obj;
 #define SGStrongify(obj) __strong typeof(weak_obj) obj = weak_obj;
 

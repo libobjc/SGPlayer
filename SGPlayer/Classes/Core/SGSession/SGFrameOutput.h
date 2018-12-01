@@ -115,7 +115,7 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (SGCapacity *)capacityWithType:(SGMediaType)type;
+- (SGCapacity * _Nonnull)capacityWithType:(SGMediaType)type;
 
 @end
 

@@ -24,6 +24,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGURLSegment.h>
 #import <SGPlayer/SGPlayerItem.h>
 #import <SGPlayer/SGConfiguration.h>
+#import <SGPlayer/SGData.h>
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
 #import <SGPlayer/SGVideoFrame.h>
@@ -32,8 +33,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGVideoRenderer.h>
 #import <SGPlayer/SGVRViewport.h>
 #import <SGPlayer/SGCapacity.h>
-#import <SGPlayer/SGObjectPool.h>
-#import <SGPlayer/SGObjectQueue.h>
 #import <SGPlayer/SGPLFTargets.h>
 #import <SGPlayer/SGPLFObject.h>
 #import <SGPlayer/SGPLFImage.h>

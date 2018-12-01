@@ -97,9 +97,4 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
  */
 - (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
 
-/**
- *
- */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didFinish:(int)index;
-
 @end

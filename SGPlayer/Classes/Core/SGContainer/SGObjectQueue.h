@@ -10,9 +10,6 @@
 #import "SGCapacity.h"
 #import "SGDefines.h"
 #import "SGData.h"
-#import "SGTime.h"
-
-@protocol SGObjectQueueDelegate;
 
 @interface SGObjectQueue : NSObject
 
@@ -20,11 +17,6 @@
  *
  */
 - (instancetype)initWithMaxCount:(uint64_t)maxCount;
-
-/**
- *
- */
-@property (nonatomic, weak) id<SGObjectQueueDelegate> delegate;
 
 /**
  *
@@ -39,44 +31,34 @@
 /**
  *
  */
-- (SGBlock)putObjectSync:(id<SGData>)object;
-- (SGBlock)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after;
+- (BOOL)putObjectSync:(id<SGData>)object;
+- (BOOL)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after;
 
 /**
  *
  */
-- (SGBlock)putObjectAsync:(id<SGData>)object;
+- (BOOL)putObjectAsync:(id<SGData>)object;
 
 /**
  *
  */
-- (SGBlock)getObjectSync:(id<SGData> *)object;
-- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after;
-- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
+- (BOOL)getObjectSync:(id<SGData> *)object;
+- (BOOL)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after;
 
 /**
  *
  */
-- (SGBlock)getObjectAsync:(id<SGData> *)object;
-- (SGBlock)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader;
+- (BOOL)getObjectAsync:(id<SGData> *)object;
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader;
 
 /**
  *
  */
-- (SGBlock)flush;
+- (BOOL)flush;
 
 /**
  *
  */
-- (SGBlock)destroy;
-
-@end
-
-@protocol SGObjectQueueDelegate <NSObject>
-
-/**
- *
- */
-- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity;
+- (BOOL)destroy;
 
 @end

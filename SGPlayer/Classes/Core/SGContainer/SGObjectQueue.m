@@ -17,7 +17,6 @@
     uint64_t _maxCount;
     NSCondition *_wakeup;
     id<SGData> _puttingObject;
-    id<SGData> _cancelPutObject;
     NSMutableArray<id<SGData>> *_objects;
 }
 
@@ -43,24 +42,16 @@
 
 - (void)dealloc
 {
-    [self->_wakeup lock];
-    for (id<SGData> obj in self->_objects) {
-        [obj unlock];
-    }
-    [self->_objects removeAllObjects];
-    self->_size = 0;
-    self->_duration = kCMTimeZero;
-    self->_puttingObject = nil;
-    self->_cancelPutObject = nil;
-    [self->_wakeup unlock];
+    [self destroy];
 }
 
 - (SGCapacity *)capacity
 {
-    if (self.self->_destoryed) {
+    [self->_wakeup lock];
+    if (self->_destoryed) {
+        [self->_wakeup unlock];
         return [[SGCapacity alloc] init];
     }
-    [self->_wakeup lock];
     SGCapacity *ret = [[SGCapacity alloc] init];
     ret.duration = self->_duration;
     ret.size = self->_size;
@@ -69,17 +60,18 @@
     return ret;
 }
 
-- (SGBlock)putObjectSync:(id<SGData>)object
+- (BOOL)putObjectSync:(id<SGData>)object
 {
     return [self putObjectSync:object before:nil after:nil];
 }
 
-- (SGBlock)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after
+- (BOOL)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after
 {
-    if (self.self->_destoryed) {
-        return ^{};
-    }
     [self->_wakeup lock];
+    if (self->_destoryed) {
+        [self->_wakeup unlock];
+        return NO;
+    }
     while (self->_objects.count >= self->_maxCount) {
         self->_puttingObject = object;
         if (before) {
@@ -89,54 +81,40 @@
         if (after) {
             after();
         }
-        self->_puttingObject = nil;
-        if (self.self->_destoryed) {
+        if (!self->_puttingObject) {
             [self->_wakeup unlock];
-            return ^{};
+            return NO;
+        }
+        self->_puttingObject = nil;
+        if (self->_destoryed) {
+            [self->_wakeup unlock];
+            return NO;
         }
     }
-    SGCapacity *capacity = nil;
-    if (object == self->_cancelPutObject) {
-        self->_cancelPutObject = nil;
-    } else {
-        capacity = [self putObject:object];
-        [self->_wakeup signal];
-    }
-    [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
-}
-
-- (SGBlock)putObjectAsync:(id<SGData>)object
-{
-    if (self.self->_destoryed) {
-        return ^{};
-    }
-    [self->_wakeup lock];
-    if (self->_objects.count >= self->_maxCount) {
-        [self->_wakeup unlock];
-        return ^{};
-    }
-    SGCapacity *capacity = [self putObject:object];
+    [self putObject:object];
     [self->_wakeup signal];
     [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
+    return YES;
 }
 
-- (SGCapacity *)putObject:(id<SGData>)object
+- (BOOL)putObjectAsync:(id<SGData>)object
+{
+    [self->_wakeup lock];
+    if (self->_destoryed || (self->_objects.count >= self->_maxCount)) {
+        [self->_wakeup unlock];
+        return NO;
+    }
+    [self putObject:object];
+    [self->_wakeup signal];
+    [self->_wakeup unlock];
+    return YES;
+}
+
+- (void)putObject:(id<SGData>)object
 {
     [object lock];
     [self->_objects addObject:object];
-    if (self.shouldSortObjects) {
+    if (self->_shouldSortObjects) {
         [self->_objects sortUsingComparator:^NSComparisonResult(id<SGData> obj1, id<SGData> obj2) {
             return CMTimeCompare(obj1.timeStamp, obj2.timeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
         }];
@@ -144,19 +122,14 @@
     NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
     self->_duration = CMTimeAdd(self->_duration, object.duration);
     self->_size += object.size;
-    SGCapacity *obj = [[SGCapacity alloc] init];
-    obj.duration = self->_duration;
-    obj.size = self->_size;
-    obj.count = (int)self->_objects.count;
-    return obj;
 }
 
-- (SGBlock)getObjectSync:(id<SGData> *)object
+- (BOOL)getObjectSync:(id<SGData> *)object
 {
     return [self getObjectSync:object before:nil after:nil];
 }
 
-- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after
+- (BOOL)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after
 {
     [self->_wakeup lock];
     while (self->_objects.count <= 0) {
@@ -167,106 +140,58 @@
         if (after) {
             after();
         }
-        if (self.self->_destoryed) {
+        if (self->_destoryed) {
             [self->_wakeup unlock];
-            return ^{};
+            return NO;
         }
     }
-    SGCapacity *capacity = nil;
-    *object = [self getObject:&capacity];
+    *object = [self getObject];
     [self->_wakeup signal];
     [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
+    return YES;
 }
 
-- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader
+- (BOOL)getObjectAsync:(id<SGData> *)object
 {
     [self->_wakeup lock];
-    while (self->_objects.count <= 0) {
-        if (before) {
-            before();
-        }
-        [self->_wakeup wait];
-        if (after) {
-            after();
-        }
-        if (self.self->_destoryed) {
-            [self->_wakeup unlock];
-            return ^{};
-        }
-    }
-    SGCapacity *capacity = nil;
-    *object = [self getObject:&capacity timeReader:timeReader];
-    if (object) {
-        [self->_wakeup signal];
-    }
-    [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
-}
-
-- (SGBlock)getObjectAsync:(id<SGData> *)object
-{
-    [self->_wakeup lock];
-    if (self->_objects.count <= 0 || self.self->_destoryed) {
+    if (self->_destoryed || self->_objects.count <= 0) {
         [self->_wakeup unlock];
-        return ^{};
+        return NO;
     }
-    SGCapacity *capacity = nil;
-    *object = [self getObject:&capacity];
+    *object = [self getObject];
     [self->_wakeup signal];
     [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
+    return YES;
 }
 
-- (SGBlock)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader
 {
     [self->_wakeup lock];
-    if (self->_objects.count <= 0 || self.self->_destoryed) {
+    if (self->_destoryed || self->_objects.count <= 0) {
         [self->_wakeup unlock];
-        return ^{};
+        return NO;
     }
-    SGCapacity *capacity = nil;
-    *object = [self getObject:&capacity timeReader:timeReader];
+    *object = [self getObjectWithTimeReader:timeReader];
     if (*object) {
         [self->_wakeup signal];
     }
     [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
+    return *object != nil;
 }
 
-- (id<SGData>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReader)timeReader
+- (id<SGData>)getObjectWithTimeReader:(SGTimeReader)timeReader
 {
     CMTime desire = kCMTimeZero;
     BOOL drop = NO;
     if (!timeReader || !timeReader(&desire, &drop)) {
-        return [self getObject:capacity];
+        return [self getObject];
     }
     id<SGData> object = nil;
     do {
         CMTime first = self->_objects.firstObject.timeStamp;
         if (CMTimeCompare(first, desire) <= 0) {
             [object unlock];
-            object = [self getObject:capacity];
+            object = [self getObject];
             if (!object) {
                 break;
             }
@@ -277,7 +202,7 @@
     return object;
 }
 
-- (id<SGData>)getObject:(SGCapacity **)capacity
+- (id<SGData>)getObject
 {
     if (!self->_objects.firstObject) {
         return nil;
@@ -292,41 +217,46 @@
     if (self->_size <= 0 || self->_objects.count <= 0) {
         self->_size = 0;
     }
-    SGCapacity *obj = [[SGCapacity alloc] init];
-    obj.duration = self->_duration;
-    obj.size = self->_size;
-    obj.count = (int)self->_objects.count;
-    *capacity = obj;
     return object;
 }
 
-- (SGBlock)flush
+- (BOOL)flush
 {
     [self->_wakeup lock];
+    if (self->_destoryed) {
+        [self->_wakeup unlock];
+        return NO;
+    }
     for (id<SGData> obj in self->_objects) {
         [obj unlock];
     }
     [self->_objects removeAllObjects];
     self->_size = 0;
     self->_duration = kCMTimeZero;
-    if (self->_puttingObject) {
-        self->_cancelPutObject = self->_puttingObject;
-    }
-    SGCapacity *capacity = [[SGCapacity alloc] init];
+    self->_puttingObject = nil;
     [self->_wakeup broadcast];
     [self->_wakeup unlock];
-    if (capacity) {
-        return ^{
-            [self.delegate objectQueue:self didChangeCapacity:capacity];
-        };
-    }
-    return ^{};
+    return YES;
 }
 
-- (SGBlock)destroy
+- (BOOL)destroy
 {
-    self.self->_destoryed = YES;
-    return [self flush];
+    [self->_wakeup lock];
+    if (self->_destoryed) {
+        [self->_wakeup unlock];
+        return NO;
+    }
+    self->_destoryed = YES;
+    for (id<SGData> obj in self->_objects) {
+        [obj unlock];
+    }
+    [self->_objects removeAllObjects];
+    self->_size = 0;
+    self->_duration = kCMTimeZero;
+    self->_puttingObject = nil;
+    [self->_wakeup broadcast];
+    [self->_wakeup unlock];
+    return YES;
 }
 
 @end

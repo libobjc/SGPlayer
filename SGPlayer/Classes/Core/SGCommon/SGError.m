@@ -20,6 +20,9 @@ NSError * SGEGetError(int result, SGOperationCode operation)
     av_strerror(result, data, 256);
     NSString *domain = [NSString stringWithFormat:@"SGPlayer-Error-FFmpeg code : %d, msg : %s", result, data];
     free(data);
+    if (result == AVERROR_EXIT) {
+        result = SGErrorImmediateExitRequested;
+    }
     return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
 

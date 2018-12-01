@@ -34,6 +34,11 @@
 /**
  *
  */
+- (SGCapacity *)maximum:(SGCapacity *)capacity;
+
+/**
+ *
+ */
 - (void)add:(SGCapacity *)capacity;
 
 /**

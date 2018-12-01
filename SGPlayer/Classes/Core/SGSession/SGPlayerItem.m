@@ -14,7 +14,7 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGPlayerItem () <SGFrameOutputDelegate, SGObjectQueueDelegate>
+@interface SGPlayerItem () <SGFrameOutputDelegate>
 
 {
     NSLock *_lock;
@@ -44,9 +44,7 @@
         self->_frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self->_frameOutput.delegate = self;
         self->_audioQueue = [[SGObjectQueue alloc] init];
-        self->_audioQueue.delegate = self;
         self->_videoQueue = [[SGObjectQueue alloc] init];
-        self->_videoQueue.delegate = self;
         self->_audioDescription = [[SGAudioDescription alloc] init];
     }
     return self;
@@ -59,8 +57,11 @@
     }, ^SGBlock {
         [self setState:SGPlayerItemStateClosed];
         [self->_frameOutput close];
-        [self->_audioQueue destroy];
-        [self->_videoQueue destroy];
+        SGLockEXE00(self->_lock, ^{
+            [self->_audioProcessor close];
+            [self->_audioQueue destroy];
+            [self->_videoQueue destroy];
+        });
         return nil;
     });
 }
@@ -233,9 +234,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     }, ^BOOL(SGBlock block) {
         block();
         [self->_frameOutput close];
-        [self->_audioProcessor close];
-        [self->_audioQueue destroy];
-        [self->_videoQueue destroy];
+        SGLockEXE00(self->_lock, ^{
+            [self->_audioProcessor close];
+            [self->_audioQueue destroy];
+            [self->_videoQueue destroy];
+        });
         return YES;
     });
 }
@@ -251,12 +254,16 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     return ![self->_frameOutput seekToTime:time result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
-            SGLockEXE00(self->_lock, ^{
+            SGLockEXE10(self->_lock, ^SGBlock {
                 [self->_audioProcessor flush];
+                [self->_audioQueue flush];
+                [self->_videoQueue flush];
+                SGBlock b1 = [self setFrameQueueCapacity:SGMediaTypeAudio];
+                SGBlock b2 = [self setFrameQueueCapacity:SGMediaTypeVideo];
+                return ^{
+                    b1(); b2();
+                };
             });
-            SGBlock b1 = [self->_audioQueue flush];
-            SGBlock b2 = [self->_videoQueue flush];
-            b1(); b2();
         }
         if (result) {
             result(time, error);
@@ -266,33 +273,26 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 
 - (SGFrame *)copyAudioFrame:(SGTimeReader)timeReader
 {
-    SGFrame *ret = nil;
-    [self->_audioQueue getObjectAsync:&ret timeReader:timeReader]();
+    __block SGFrame *ret = nil;
+    SGLockEXE10(self->_lock, ^SGBlock {
+        if ([self->_audioQueue getObjectAsync:&ret timeReader:timeReader]) {
+            return [self setFrameQueueCapacity:SGMediaTypeAudio];
+        };
+        return nil;
+    });
     return ret;
 }
 
 - (SGFrame *)copyVideoFrame:(SGTimeReader)timeReader
 {
-    SGFrame *ret = nil;
-    [self->_videoQueue getObjectAsync:&ret timeReader:timeReader]();
-    return ret;
-}
-
-#pragma mark - Internal
-
-- (void)setFinishedIfNeeded
-{
-    SGLockEXE10(self->_lock, ^SGBlock{
-        BOOL nomore = self->_frameOutput.state == SGFrameOutputStateFinished;
-        SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-        self->_audioFinished = nomore && (!audioCapacity || audioCapacity.isEmpty);
-        self->_videoFinished = nomore && (!videoCapacity || videoCapacity.isEmpty);
-        if (self->_audioFinished && self->_videoFinished) {
-            return [self setState:SGPlayerItemStateFinished];
-        }
+    __block SGFrame *ret = nil;
+    SGLockEXE10(self->_lock, ^SGBlock {
+        if ([self->_videoQueue getObjectAsync:&ret timeReader:timeReader]) {
+            return [self setFrameQueueCapacity:SGMediaTypeVideo];
+        };
         return nil;
     });
+    return ret;
 }
 
 #pragma mark - SGFrameOutputDelegate
@@ -334,8 +334,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             });
         }
             break;
-        case SGFrameOutputStateFinished:
-            [self setFinishedIfNeeded];
+        case SGFrameOutputStateFinished: {
+            SGLockEXE10(self->_lock, ^SGBlock {
+                return [self setFinishedIfNeeded];
+            });
+        }
             break;
         case SGFrameOutputStateFailed: {
             SGLockEXE10(self->_lock, ^SGBlock {
@@ -352,81 +355,100 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type
 {
     capacity = [capacity copy];
-    __block SGCapacity *additional = nil;
-    SGLockEXE00(self->_lock, ^{
-        if (type == SGMediaTypeAudio) {
-            additional = self->_audioQueue.capacity;
-            [additional add:self->_audioProcessor.capacity];
-        } else if (type == SGMediaTypeVideo) {
-            additional = self->_videoQueue.capacity;
-        }
+    SGLockEXE10(self->_lock, ^SGBlock {
+        SGCapacity *additional = [self frameQueueCapacity:type];
+        [capacity add:additional];
+        return [self setCapacity:capacity type:type];
     });
-    NSAssert(additional, @"Invalid Additional.");
-    [capacity add:additional];
-    [self setCapacity:capacity type:type];
 }
 
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame
 {
     __block __kindof SGFrame *obj = frame;
     [obj lock];
-    SGLockEXE10(self->_lock, ^SGBlock{
-        if (obj.track.type == SGMediaTypeAudio) {
+    SGLockEXE10(self->_lock, ^SGBlock {
+        SGMediaType type = obj.track.type;
+        if (type == SGMediaTypeAudio) {
             obj = [self->_audioProcessor putFrame:obj];
             if (!obj) {
                 return nil;
             }
-            return [self->_audioQueue putObjectSync:obj];
-        } else if (obj.track.type == SGMediaTypeVideo) {
-            return [self->_videoQueue putObjectSync:obj];
+            [self->_audioQueue putObjectSync:obj];
+            return [self setFrameQueueCapacity:SGMediaTypeAudio];
+        } else if (type == SGMediaTypeVideo) {
+            [self->_videoQueue putObjectSync:obj];
+            return [self setFrameQueueCapacity:SGMediaTypeVideo];
         }
         return nil;
     });
     [obj unlock];
 }
 
-#pragma mark - SGObjectQueueDelegate
-
-- (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity
-{
-    capacity = [capacity copy];
-    int threshold = 0;
-    SGCapacity *additional = nil;
-    SGMediaType type = SGMediaTypeUnknown;
-    if (objectQueue == self->_audioQueue) {
-        threshold = 5;
-        type = SGMediaTypeAudio;
-        additional = [self->_frameOutput capacityWithType:SGMediaTypeAudio];
-        [additional add:self->_audioProcessor.capacity];
-    } else if (objectQueue == self->_videoQueue) {
-        threshold = 3;
-        type = SGMediaTypeVideo;
-        additional = [self->_frameOutput capacityWithType:SGMediaTypeVideo];
-    }
-    if (capacity.count > threshold) {
-        [self->_frameOutput pause:type];
-    } else {
-        [self->_frameOutput resume:type];
-    }
-    [capacity add:additional];
-    [self setCapacity:capacity type:type];
-}
-
 #pragma mark - Capacity
 
-- (BOOL)setCapacity:(SGCapacity *)capacity type:(SGMediaType)type
+- (SGBlock)setFrameQueueCapacity:(SGMediaType)type
 {
-    return SGLockCondEXE11(self->_lock, ^BOOL {
-        SGCapacity *last = [self->_capacitys objectForKey:@(type)];
-        return ![last isEqualToCapacity:capacity];
-    }, ^SGBlock {
-        [self->_capacitys setObject:capacity forKey:@(type)];
-        return nil;
-    }, ^BOOL(SGBlock block) {
+    int threshold = 0;
+    if (type == SGMediaTypeAudio) {
+        threshold = 5;
+    } else if (type == SGMediaTypeVideo) {
+        threshold = 3;
+    }
+    SGCapacity *capacity = [self frameQueueCapacity:type];
+    SGBlock b1 = ^{
+        if (capacity.count > threshold) {
+            [self->_frameOutput pause:type];
+        } else {
+            [self->_frameOutput resume:type];
+        }
+    };
+    SGCapacity *additional = [self->_frameOutput capacityWithType:type];
+    [additional add:additional];
+    SGBlock b2 = [self setCapacity:capacity type:type];
+    return ^{
+        b1(); b2();
+    };
+}
+
+- (SGCapacity *)frameQueueCapacity:(SGMediaType)type
+{
+    SGCapacity *capacity = nil;
+    if (type == SGMediaTypeAudio) {
+        capacity = self->_audioQueue.capacity;
+        [capacity add:self->_audioProcessor.capacity];
+    } else if (type == SGMediaTypeVideo) {
+        capacity = self->_videoQueue.capacity;
+    }
+    return capacity;
+}
+
+- (SGBlock)setCapacity:(SGCapacity *)capacity type:(SGMediaType)type
+{
+    SGCapacity *obj = [self->_capacitys objectForKey:@(type)];
+    if ([obj isEqualToCapacity:capacity]) {
+        return ^{};
+    }
+    [self->_capacitys setObject:capacity forKey:@(type)];
+    SGBlock b1 = ^{
         [self->_delegate playerItem:self didChangeCapacity:[capacity copy] type:type];
-        [self setFinishedIfNeeded];
-        return YES;
-    });
+    };
+    SGBlock b2 = [self setFinishedIfNeeded];
+    return ^{
+        b1(); b2();
+    };
+}
+
+- (SGBlock)setFinishedIfNeeded
+{
+    BOOL nomore = self->_frameOutput.state == SGFrameOutputStateFinished;
+    SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
+    SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+    self->_audioFinished = nomore && (!audioCapacity || audioCapacity.isEmpty);
+    self->_videoFinished = nomore && (!videoCapacity || videoCapacity.isEmpty);
+    if (self->_audioFinished && self->_videoFinished) {
+        return [self setState:SGPlayerItemStateFinished];
+    }
+    return ^{};
 }
 
 @end

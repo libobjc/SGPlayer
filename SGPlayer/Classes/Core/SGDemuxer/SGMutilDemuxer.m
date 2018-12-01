@@ -110,7 +110,10 @@
 - (NSError *)close
 {
     for (id<SGDemuxable> obj in self->_demuxables) {
-        [obj close];
+        NSError *error = [obj close];
+        if (error) {
+            return error;
+        }
     }
     return nil;
 }
@@ -129,7 +132,10 @@
 - (NSError *)seekToTime:(CMTime)time
 {
     for (id<SGDemuxable> obj in self->_demuxables) {
-        [obj seekToTime:time];
+        NSError *error = [obj seekToTime:time];
+        if (error) {
+            return error;
+        }
     }
     [self->_timeStamps removeAllObjects];
     [self->_finishedDemuxables removeAllObjects];
@@ -138,6 +144,7 @@
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
+    NSError * ret = nil;
     while (YES) {
         id<SGDemuxable> demuxable = nil;
         CMTime minimum = kCMTimePositiveInfinity;
@@ -161,7 +168,11 @@
             return SGECreateError(SGErrorCodeMutilDemuxerEndOfFile,
                                   SGOperationCodeMutilDemuxerNext);
         }
-        if ([demuxable nextPacket:packet]) {
+        ret = [demuxable nextPacket:packet];
+        if (ret) {
+            if (ret.code == SGErrorImmediateExitRequested) {
+                break;
+            }
             [self->_finishedDemuxables addObject:demuxable];
             continue;
         }
@@ -169,7 +180,7 @@
         [self->_timeStamps setObject:[NSValue value:&t withObjCType:@encode(CMTime)] forKey:demuxable];
         break;
     }
-    return nil;
+    return ret;
 }
 
 @end
