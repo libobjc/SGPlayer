@@ -280,7 +280,6 @@ static SGPacket *gFinishPacket;
                 [queue getObjectAsync:&packet];
                 NSAssert(packet, @"Invalid Packet.");
                 SGBlock b1 = ^{};
-                SGBlock b2 = [self setCapacityIfNeeded];
                 if (packet == gFlushPacket) {
                     b1 = ^{
                         [decodable flush];
@@ -303,7 +302,11 @@ static SGPacket *gFinishPacket;
                     };
                 }
                 [self->_lock unlock];
-                b1(); b2();
+                b1();
+                [self->_lock lock];
+                SGBlock b2 = [self setCapacityIfNeeded];
+                [self->_lock unlock];
+                b2();
                 [packet unlock];
                 continue;
             }
