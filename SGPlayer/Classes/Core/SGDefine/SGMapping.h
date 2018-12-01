@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "SGGLTextureUploader.h"
+#import "SGVideoRenderer.h"
 #import "SGGLViewport.h"
 #import "SGGLProgram.h"
-#import "SGDefines.h"
 #import "SGGLModel.h"
 #import "SGFFmpeg.h"
 

@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGCapacity.h"
 #import "SGAsset.h"
 #import "SGFrame.h"
 

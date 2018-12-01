@@ -8,6 +8,7 @@
 
 #import "SGFrame.h"
 #import "SGFrame+Internal.h"
+#import "SGObjectPool.h"
 
 @interface SGFrame ()
 

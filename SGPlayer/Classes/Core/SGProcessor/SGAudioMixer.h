@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "SGAudioDescription.h"
 #import "SGAudioFrame.h"
+#import "SGCapacity.h"
 
 @interface SGAudioMixer : NSObject
 

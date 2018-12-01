@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGObjectQueue.h"
-#import "SGObjectPool.h"
 #import "SGTrack.h"
+#import "SGData.h"
 
-@interface SGPacket : NSObject <SGObjectPoolItem, SGObjectQueueItem>
+@interface SGPacket : NSObject <SGData>
 
 /**
  *

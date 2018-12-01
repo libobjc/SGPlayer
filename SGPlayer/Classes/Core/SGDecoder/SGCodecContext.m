@@ -10,6 +10,7 @@
 #import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
 #import "SGConfiguration.h"
+#import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGError.h"
 #import "SGMacro.h"

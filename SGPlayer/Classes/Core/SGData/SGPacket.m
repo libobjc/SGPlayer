@@ -8,6 +8,7 @@
 
 #import "SGPacket.h"
 #import "SGPacket+Internal.h"
+#import "SGObjectPool.h"
 
 @interface SGPacket ()
 

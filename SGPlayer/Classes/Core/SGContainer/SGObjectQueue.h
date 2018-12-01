@@ -9,9 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "SGCapacity.h"
 #import "SGDefines.h"
+#import "SGData.h"
 #import "SGTime.h"
 
-@protocol SGObjectQueueItem;
 @protocol SGObjectQueueDelegate;
 
 @interface SGObjectQueue : NSObject
@@ -39,26 +39,26 @@
 /**
  *
  */
-- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object;
-- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after;
+- (SGBlock)putObjectSync:(id<SGData>)object;
+- (SGBlock)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after;
 
 /**
  *
  */
-- (SGBlock)putObjectAsync:(id<SGObjectQueueItem>)object;
+- (SGBlock)putObjectAsync:(id<SGData>)object;
 
 /**
  *
  */
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object;
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after;
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
+- (SGBlock)getObjectSync:(id<SGData> *)object;
+- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after;
+- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader;
 
 /**
  *
  */
-- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object;
-- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader;
+- (SGBlock)getObjectAsync:(id<SGData> *)object;
+- (SGBlock)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader;
 
 /**
  *
@@ -78,34 +78,5 @@
  *
  */
 - (void)objectQueue:(SGObjectQueue *)objectQueue didChangeCapacity:(SGCapacity *)capacity;
-
-@end
-
-@protocol SGObjectQueueItem <NSObject>
-
-/**
- *
- */
-- (void)lock;
-
-/**
- *
- */
-- (void)unlock;
-
-/**
- *
- */
-- (int)size;
-
-/**
- *
- */
-- (CMTime)duration;
-
-/**
- *
- */
-- (CMTime)timeStamp;
 
 @end

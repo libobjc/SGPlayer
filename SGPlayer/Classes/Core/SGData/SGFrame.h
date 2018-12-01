@@ -7,13 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGObjectQueue.h"
-#import "SGObjectPool.h"
 #import "SGTrack.h"
+#import "SGData.h"
 
 static int const SGFramePlaneCount = 8;
 
-@interface SGFrame : NSObject <SGObjectPoolItem, SGObjectQueueItem>
+@interface SGFrame : NSObject <SGData>
 
 /**
  *

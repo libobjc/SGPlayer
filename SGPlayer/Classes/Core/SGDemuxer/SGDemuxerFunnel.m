@@ -8,6 +8,7 @@
 
 #import "SGDemuxerFunnel.h"
 #import "SGPacket+Internal.h"
+#import "SGObjectQueue.h"
 #import "SGError.h"
 #import "SGMacro.h"
 

@@ -7,6 +7,7 @@
 //
 
 #import "SGAsyncDecodable.h"
+#import "SGObjectQueue.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 

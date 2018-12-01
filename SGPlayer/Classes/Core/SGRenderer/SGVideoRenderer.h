@@ -12,6 +12,18 @@
 #import "SGPLFImage.h"
 #import "SGPLFView.h"
 
+typedef NS_ENUM(int, SGDisplayMode) {
+    SGDisplayModePlane,
+    SGDisplayModeVR,
+    SGDisplayModeVRBox,
+};
+
+typedef NS_ENUM(int, SGScalingMode) {
+    SGScalingModeResize,
+    SGScalingModeResizeAspect,
+    SGScalingModeResizeAspectFill,
+};
+
 @interface SGVideoRenderer : NSObject
 
 /**

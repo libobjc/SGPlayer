@@ -8,6 +8,7 @@
 
 #import "SGAudioFormatter.h"
 #import "SGFrame+Internal.h"
+#import "SGObjectPool.h"
 #import "SGAudioFrame.h"
 #import "SGSWResample.h"
 

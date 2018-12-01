@@ -8,6 +8,7 @@
 
 #import "SGPlayerItem.h"
 #import "SGAudioDescription.h"
+#import "SGCapacity.h"
 #import "SGFrame.h"
 
 @protocol SGPlayerItemDelegate;

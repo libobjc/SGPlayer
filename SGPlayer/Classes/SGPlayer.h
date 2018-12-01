@@ -44,6 +44,26 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - SGPlayer
 
+typedef NS_ENUM(int, SGPlayerStatus) {
+    SGPlayerStatusNone,
+    SGPlayerStatusPreparing,
+    SGPlayerStatusReady,
+    SGPlayerStatusFailed,
+};
+
+typedef NS_OPTIONS(int, SGPlaybackState) {
+    SGPlaybackStatePlaying  = 1 << 0,
+    SGPlaybackStateSeeking  = 1 << 1,
+    SGPlaybackStateFinished = 1 << 2,
+};
+
+typedef NS_ENUM(int, SGLoadingState) {
+    SGLoadingStateNone,
+    SGLoadingStatePlaybale,
+    SGLoadingStateStalled,
+    SGLoadingStateFinished,
+};
+
 @interface SGPlayer : NSObject
 
 @property (nonatomic) NSInteger tag;

@@ -9,6 +9,7 @@
 #import "SGAudioMixer.h"
 #import "SGFrame+Internal.h"
 #import "SGAudioMixerUnit.h"
+#import "SGObjectPool.h"
 
 @interface SGAudioMixer ()
 

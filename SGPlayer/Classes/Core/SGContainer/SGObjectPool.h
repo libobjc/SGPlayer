@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-@protocol SGObjectPoolItem;
+#import "SGData.h"
 
 @interface SGObjectPool : NSObject
 
@@ -17,35 +16,16 @@
 /**
  *
  */
-- (__kindof id<SGObjectPoolItem> _Nonnull)objectWithClass:(Class _Nonnull)class;
+- (__kindof id<SGData> _Nonnull)objectWithClass:(Class _Nonnull)class;
 
 /**
  *
  */
-- (void)comeback:(id<SGObjectPoolItem> _Nonnull)object;
+- (void)comeback:(id<SGData> _Nonnull)object;
 
 /**
  *
  */
 - (void)flush;
-
-@end
-
-@protocol SGObjectPoolItem <NSObject>
-
-/**
- *
- */
-- (void)lock;
-
-/**
- *
- */
-- (void)unlock;
-
-/**
- *
- */
-- (void)clear;
 
 @end

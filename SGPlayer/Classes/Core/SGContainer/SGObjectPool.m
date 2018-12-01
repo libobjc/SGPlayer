@@ -12,7 +12,7 @@
 
 {
     NSLock *_lock;
-    NSMutableDictionary<NSString *, NSMutableSet<id<SGObjectPoolItem>> *> *_pool;
+    NSMutableDictionary<NSString *, NSMutableSet<id<SGData>> *> *_pool;
 }
 
 @end
@@ -38,16 +38,16 @@
     return self;
 }
 
-- (id<SGObjectPoolItem>)objectWithClass:(Class)class
+- (id<SGData>)objectWithClass:(Class)class
 {
     [self->_lock lock];
     NSString *className = NSStringFromClass(class);
-    NSMutableSet <id<SGObjectPoolItem>> *set = [self->_pool objectForKey:className];
+    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:className];
     if (!set) {
         set = [NSMutableSet set];
         [self->_pool setObject:set forKey:className];
     }
-    id<SGObjectPoolItem> object = set.anyObject;
+    id<SGData> object = set.anyObject;
     if (object) {
         [set removeObject:object];
     } else {
@@ -58,11 +58,11 @@
     return object;
 }
 
-- (void)comeback:(id<SGObjectPoolItem>)object
+- (void)comeback:(id<SGData>)object
 {
     [self->_lock lock];
     NSString *className = NSStringFromClass(object.class);
-    NSMutableSet <id<SGObjectPoolItem>> *set = [self->_pool objectForKey:className];
+    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:className];
     if (![set containsObject:object]) {
         [set addObject:object];
         [object clear];

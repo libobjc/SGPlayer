@@ -16,9 +16,9 @@
     CMTime _duration;
     uint64_t _maxCount;
     NSCondition *_wakeup;
-    id<SGObjectQueueItem> _puttingObject;
-    id<SGObjectQueueItem> _cancelPutObject;
-    NSMutableArray<id<SGObjectQueueItem>> *_objects;
+    id<SGData> _puttingObject;
+    id<SGData> _cancelPutObject;
+    NSMutableArray<id<SGData>> *_objects;
 }
 
 @end
@@ -44,7 +44,7 @@
 - (void)dealloc
 {
     [self->_wakeup lock];
-    for (id<SGObjectQueueItem> obj in self->_objects) {
+    for (id<SGData> obj in self->_objects) {
         [obj unlock];
     }
     [self->_objects removeAllObjects];
@@ -69,12 +69,12 @@
     return ret;
 }
 
-- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object
+- (SGBlock)putObjectSync:(id<SGData>)object
 {
     return [self putObjectSync:object before:nil after:nil];
 }
 
-- (SGBlock)putObjectSync:(id<SGObjectQueueItem>)object before:(SGBlock)before after:(SGBlock)after
+- (SGBlock)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after
 {
     if (self.self->_destoryed) {
         return ^{};
@@ -111,7 +111,7 @@
     return ^{};
 }
 
-- (SGBlock)putObjectAsync:(id<SGObjectQueueItem>)object
+- (SGBlock)putObjectAsync:(id<SGData>)object
 {
     if (self.self->_destoryed) {
         return ^{};
@@ -132,12 +132,12 @@
     return ^{};
 }
 
-- (SGCapacity *)putObject:(id<SGObjectQueueItem>)object
+- (SGCapacity *)putObject:(id<SGData>)object
 {
     [object lock];
     [self->_objects addObject:object];
     if (self.shouldSortObjects) {
-        [self->_objects sortUsingComparator:^NSComparisonResult(id<SGObjectQueueItem> obj1, id<SGObjectQueueItem> obj2) {
+        [self->_objects sortUsingComparator:^NSComparisonResult(id<SGData> obj1, id<SGData> obj2) {
             return CMTimeCompare(obj1.timeStamp, obj2.timeStamp) < 0 ? NSOrderedAscending : NSOrderedDescending;
         }];
     }
@@ -151,12 +151,12 @@
     return obj;
 }
 
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object
+- (SGBlock)getObjectSync:(id<SGData> *)object
 {
     return [self getObjectSync:object before:nil after:nil];
 }
 
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after
+- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after
 {
     [self->_wakeup lock];
     while (self->_objects.count <= 0) {
@@ -184,7 +184,7 @@
     return ^{};
 }
 
-- (SGBlock)getObjectSync:(id<SGObjectQueueItem> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader
+- (SGBlock)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after timeReader:(SGTimeReader)timeReader
 {
     [self->_wakeup lock];
     while (self->_objects.count <= 0) {
@@ -214,7 +214,7 @@
     return ^{};
 }
 
-- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object
+- (SGBlock)getObjectAsync:(id<SGData> *)object
 {
     [self->_wakeup lock];
     if (self->_objects.count <= 0 || self.self->_destoryed) {
@@ -233,7 +233,7 @@
     return ^{};
 }
 
-- (SGBlock)getObjectAsync:(id<SGObjectQueueItem> *)object timeReader:(SGTimeReader)timeReader
+- (SGBlock)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader
 {
     [self->_wakeup lock];
     if (self->_objects.count <= 0 || self.self->_destoryed) {
@@ -254,14 +254,14 @@
     return ^{};
 }
 
-- (id<SGObjectQueueItem>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReader)timeReader
+- (id<SGData>)getObject:(SGCapacity **)capacity timeReader:(SGTimeReader)timeReader
 {
     CMTime desire = kCMTimeZero;
     BOOL drop = NO;
     if (!timeReader || !timeReader(&desire, &drop)) {
         return [self getObject:capacity];
     }
-    id<SGObjectQueueItem> object = nil;
+    id<SGData> object = nil;
     do {
         CMTime first = self->_objects.firstObject.timeStamp;
         if (CMTimeCompare(first, desire) <= 0) {
@@ -277,12 +277,12 @@
     return object;
 }
 
-- (id<SGObjectQueueItem>)getObject:(SGCapacity **)capacity
+- (id<SGData>)getObject:(SGCapacity **)capacity
 {
     if (!self->_objects.firstObject) {
         return nil;
     }
-    id<SGObjectQueueItem> object = self->_objects.firstObject;
+    id<SGData> object = self->_objects.firstObject;
     [self->_objects removeObjectAtIndex:0];
     self->_duration = CMTimeSubtract(self->_duration, object.duration);
     if (CMTimeCompare(self->_duration, kCMTimeZero) < 0 || self->_objects.count <= 0) {
@@ -303,7 +303,7 @@
 - (SGBlock)flush
 {
     [self->_wakeup lock];
-    for (id<SGObjectQueueItem> obj in self->_objects) {
+    for (id<SGData> obj in self->_objects) {
         [obj unlock];
     }
     [self->_objects removeAllObjects];

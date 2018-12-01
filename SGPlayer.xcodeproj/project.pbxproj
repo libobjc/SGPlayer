@@ -105,6 +105,9 @@
 		9C525D5421AEC421005C5708 /* SGAudioDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C525D5021AEC421005C5708 /* SGAudioDescription.m */; };
 		9C525D5521AEC421005C5708 /* SGAudioDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C525D5021AEC421005C5708 /* SGAudioDescription.m */; };
 		9C525D5621AEC421005C5708 /* SGAudioDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C525D5021AEC421005C5708 /* SGAudioDescription.m */; };
+		9C55337121B25EC000119235 /* SGData.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C55337021B25EC000119235 /* SGData.h */; };
+		9C55337221B25EC000119235 /* SGData.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C55337021B25EC000119235 /* SGData.h */; };
+		9C55337321B25EC000119235 /* SGData.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C55337021B25EC000119235 /* SGData.h */; };
 		9C5C6C9920182A4800863EB5 /* SGGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6C9720182A4800863EB5 /* SGGLView.h */; };
 		9C5C6C9C20182A4800863EB5 /* SGGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C5C6C9820182A4800863EB5 /* SGGLView.m */; };
 		9C5C6CAA2018952300863EB5 /* SGGLDisplayLink.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */; };
@@ -644,6 +647,7 @@
 		9C47936F1E71404A00AD4289 /* libswscale.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libswscale.a; path = "SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS/libswscale.a"; sourceTree = "<group>"; };
 		9C525D4F21AEC421005C5708 /* SGAudioDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioDescription.h; sourceTree = "<group>"; };
 		9C525D5021AEC421005C5708 /* SGAudioDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioDescription.m; sourceTree = "<group>"; };
+		9C55337021B25EC000119235 /* SGData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGData.h; sourceTree = "<group>"; };
 		9C5C6C9720182A4800863EB5 /* SGGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLView.h; sourceTree = "<group>"; };
 		9C5C6C9820182A4800863EB5 /* SGGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLView.m; sourceTree = "<group>"; };
 		9C5C6CA82018952300863EB5 /* SGGLDisplayLink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLDisplayLink.h; sourceTree = "<group>"; };
@@ -1268,6 +1272,7 @@
 		9CF15DF320119D0300585326 /* SGData */ = {
 			isa = PBXGroup;
 			children = (
+				9C55337021B25EC000119235 /* SGData.h */,
 				9C2C55AB2015D1D200131E15 /* SGPacket.h */,
 				9C2C55AC2015D1D200131E15 /* SGPacket.m */,
 				9CEBCCA0217F109000430024 /* SGPacket+Internal.h */,
@@ -1404,6 +1409,7 @@
 				9C86388521904A0900D730EC /* SGGLDisplayLink.h in Headers */,
 				9C86388721904A0900D730EC /* SGDemuxable.h in Headers */,
 				9C86388821904A0900D730EC /* SGGLProgram.h in Headers */,
+				9C55337221B25EC000119235 /* SGData.h in Headers */,
 				9C86388921904A0900D730EC /* SGVideoDecoder.h in Headers */,
 				9C86388C21904A0900D730EC /* SGGLPlaneModel.h in Headers */,
 				9C86388D21904A0900D730EC /* SGPLFGLView.h in Headers */,
@@ -1505,6 +1511,7 @@
 				9CD79F632190068E00E39A7D /* SGPacket+Internal.h in Headers */,
 				9CD79F672190068E00E39A7D /* SGGLModelPool.h in Headers */,
 				9CD79F682190068E00E39A7D /* SGPlayerItem+Internal.h in Headers */,
+				9C55337321B25EC000119235 /* SGData.h in Headers */,
 				9CD79F692190068E00E39A7D /* SGGLDisplayLink.h in Headers */,
 				9CD79F6B2190068E00E39A7D /* SGDemuxable.h in Headers */,
 				9CD79F6E2190068E00E39A7D /* SGGLProgram.h in Headers */,
@@ -1583,6 +1590,7 @@
 				9C86378C219043EA00D730EC /* avformat.h in Headers */,
 				9CE6F52F2004D97D00D1F4C8 /* SGPLFColor.h in Headers */,
 				9CEBCC9D217EF8E900430024 /* SGTrack+Internal.h in Headers */,
+				9C55337121B25EC000119235 /* SGData.h in Headers */,
 				9CD79E9B218FF8B200E39A7D /* SGOpenGL.h in Headers */,
 				9CE6F53F2004D97D00D1F4C8 /* SGPLFImage.h in Headers */,
 				9C66E1FE2188550D00B70DAA /* SGSWResample.h in Headers */,
