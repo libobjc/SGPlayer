@@ -119,6 +119,7 @@
             continue;
         }
         start = CMTimeMinimum(start, obj.timeRange.start);
+        start = CMTimeMaximum(start, self->_startTime);
         end = CMTimeMinimum(end, CMTimeRangeGetEnd(obj.timeRange));
         duration = CMTimeSubtract(end, start);
         maximumDuration = CMTimeMaximum(maximumDuration, obj.timeRange.duration);
@@ -148,6 +149,7 @@
 
     for (int i = 0; i < numberOfChannels; i++) {
         float *data = av_mallocz(linesize);
+        memset(data, 0, linesize);
         AVBufferRef *buffer = av_buffer_create((uint8_t *)data, linesize, av_buffer_default_free, NULL, 0);
         ret.core->buf[i] = buffer;
         ret.core->data[i] = buffer->data;
@@ -165,7 +167,7 @@
     for (int i = 0; i < numberOfSamples; i++) {
         for (int j = 0; j < self->_tracks.count; j++) {
             for (SGAudioFrame *obj in list[@(self->_tracks[j].index)]) {
-                int c = CMTimeGetSeconds(CMTimeSubtract(obj.timeStamp, start)) * sampleRate;
+                int c = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), sampleRate));
                 if (i < c) {
                     break;
                 }
