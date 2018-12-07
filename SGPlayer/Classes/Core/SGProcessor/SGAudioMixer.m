@@ -130,7 +130,7 @@
     self->_startTime = end;
     
     int sampleRate = self->_audioDescription.sampleRate;
-    int numberOfSamples = CMTimeGetSeconds(duration) * sampleRate;
+    int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, sampleRate));
     int numberOfChannels = self->_audioDescription.numberOfChannels;
     int linesize = av_get_bytes_per_sample(AV_SAMPLE_FMT_FLTP) * numberOfSamples;
 
