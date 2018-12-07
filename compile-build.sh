@@ -13,7 +13,7 @@ do_lib_ffmpeg () {
   if [ -d $ROOT_PATH/SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/$LIB_FFMPEG_FILE_NAME ]; then
     echo "lib ffmpeg exist."
   else
-    LIB_FFMPEG_DOWNLOAD_URL="http://omw595ki7.bkt.clouddn.com/ffmpeg2/$LIB_FFMPEG_FILE_NAME.zip"
+    LIB_FFMPEG_DOWNLOAD_URL="http://libobjc-libs.oss-cn-beijing.aliyuncs.com/FFmpeg/$LIB_FFMPEG_FILE_NAME.zip"
     echo "download lib ffmpeg..."
     curl -o $ROOT_PATH/$LIB_FFMPEG_FILE_NAME.zip $LIB_FFMPEG_DOWNLOAD_URL
     echo "unzip lib ffmpeg..."
