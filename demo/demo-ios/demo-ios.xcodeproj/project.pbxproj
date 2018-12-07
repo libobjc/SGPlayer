@@ -14,7 +14,6 @@
 		9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */; };
 		9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */; };
 		9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */; };
-		9C572BF41FAB266300606429 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9824A41FAB073B00142215 /* SGPlayer.framework */; };
 		9C886B981E78EC9F00F2CFD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B971E78EC9F00F2CFD1 /* main.m */; };
 		9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */; };
 		9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */; };
@@ -24,6 +23,8 @@
 		9C886BBA1E78F13E00F2CFD1 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BB91E78F13E00F2CFD1 /* libiconv.tbd */; };
 		9C886BBC1E78F14300F2CFD1 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBB1E78F14300F2CFD1 /* libz.tbd */; };
 		9C886BBE1E78F14700F2CFD1 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C886BBD1E78F14700F2CFD1 /* libbz2.tbd */; };
+		9CD96CCF21BA1EFA007971D7 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C9824A41FAB073B00142215 /* SGPlayer.framework */; };
+		9CD96CD121BA1F06007971D7 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD96CD021BA1F06007971D7 /* SGPlatform.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +57,7 @@
 		9C9824AE1FAB10B100142215 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9CA86E851E87575000E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug-iphonesimulator/SGPlatform.framework"; sourceTree = "<group>"; };
 		9CA86E891E8757B500E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../Vendors/SGPlatform/build/Debug-iphoneos/SGPlatform.framework"; sourceTree = "<group>"; };
+		9CD96CD021BA1F06007971D7 /* SGPlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,7 +65,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C572BF41FAB266300606429 /* SGPlayer.framework in Frameworks */,
+				9CD96CD121BA1F06007971D7 /* SGPlatform.framework in Frameworks */,
+				9CD96CCF21BA1EFA007971D7 /* SGPlayer.framework in Frameworks */,
 				9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */,
 				9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */,
@@ -125,6 +128,7 @@
 		9C886BAE1E78ECE500F2CFD1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CD96CD021BA1F06007971D7 /* SGPlatform.framework */,
 				9C4032C41FAB1188005AEB36 /* SGPlayer.framework */,
 				9C9824AE1FAB10B100142215 /* SGPlayer.framework */,
 				9C9824A41FAB073B00142215 /* SGPlayer.framework */,
@@ -174,7 +178,7 @@
 				TargetAttributes = {
 					9C886B921E78EC9F00F2CFD1 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = 79WDBYQ4TC;
+						DevelopmentTeam = 2EN49MUBLA;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -356,7 +360,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 79WDBYQ4TC;
+				DEVELOPMENT_TEAM = 2EN49MUBLA;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -369,7 +373,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				DEVELOPMENT_TEAM = 79WDBYQ4TC;
+				DEVELOPMENT_TEAM = 2EN49MUBLA;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

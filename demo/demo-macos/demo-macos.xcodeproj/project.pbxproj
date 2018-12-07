@@ -12,7 +12,6 @@
 		9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */; };
 		9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1671E8FBD100003B17A /* CoreMedia.framework */; };
 		9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */; };
-		9CA86E881E8757A700E4A8B1 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
 		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
 		9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* ViewController.m */; };
@@ -22,9 +21,10 @@
 		9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925361E79476E00DE6721 /* libiconv.tbd */; };
 		9CB925391E79477200DE6721 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925381E79477200DE6721 /* libz.tbd */; };
 		9CB9253B1E79477600DE6721 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253A1E79477600DE6721 /* libbz2.tbd */; };
-		9CB9253D1E79478200DE6721 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253C1E79478200DE6721 /* SGPlayer.framework */; };
 		9CB925411E79479500DE6721 /* VideoDecodeAcceleration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */; };
 		9CB925451E7947B000DE6721 /* liblzma.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925441E7947B000DE6721 /* liblzma.tbd */; };
+		9CE7BA0721BA21550087B5F8 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE7BA0621BA21550087B5F8 /* SGPlatform.framework */; };
+		9CE7BA0921BA21590087B5F8 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CE7BA0821BA21590087B5F8 /* SGPlayer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +56,8 @@
 		9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
 		9CB925421E7947A900DE6721 /* liblzma.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.5.tbd; path = usr/lib/liblzma.5.tbd; sourceTree = SDKROOT; };
 		9CB925441E7947B000DE6721 /* liblzma.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.tbd; path = usr/lib/liblzma.tbd; sourceTree = SDKROOT; };
+		9CE7BA0621BA21550087B5F8 /* SGPlatform.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlatform.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9CE7BA0821BA21590087B5F8 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CE7BA0921BA21590087B5F8 /* SGPlayer.framework in Frameworks */,
+				9CE7BA0721BA21550087B5F8 /* SGPlatform.framework in Frameworks */,
 				9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */,
 				9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */,
@@ -71,8 +75,6 @@
 				9CB925391E79477200DE6721 /* libz.tbd in Frameworks */,
 				9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */,
 				9CB925451E7947B000DE6721 /* liblzma.tbd in Frameworks */,
-				9CB9253D1E79478200DE6721 /* SGPlayer.framework in Frameworks */,
-				9CA86E881E8757A700E4A8B1 /* SGPlatform.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +128,8 @@
 		9CB925331E79475B00DE6721 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CE7BA0821BA21590087B5F8 /* SGPlayer.framework */,
+				9CE7BA0621BA21550087B5F8 /* SGPlatform.framework */,
 				9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */,
 				9C3DD1671E8FBD100003B17A /* CoreMedia.framework */,
 				9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */,
@@ -346,7 +350,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
@@ -360,7 +364,7 @@
 				DEVELOPMENT_TEAM = SWXNKT9754;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
