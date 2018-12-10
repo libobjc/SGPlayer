@@ -123,17 +123,12 @@
 {
     SGConcatDemuxerUnit *unit = nil;
     for (SGConcatDemuxerUnit *obj in self->_units) {
-        if (CMTimeRangeContainsTime(obj.timeRange, time) ||
-            CMTimeCompare(CMTimeRangeGetEnd(obj.timeRange), time) == 0) {
+        if (CMTimeCompare(time, CMTimeRangeGetEnd(obj.timeRange)) <= 0) {
             unit = obj;
             break;
         }
     }
-    if (!unit) {
-        return SGECreateError(SGErrorCodeConcatDemuxerNotFoundUnit,
-                              SGOperationCodeURLDemuxerSeek);
-    }
-    self->_currentUnit = unit;
+    self->_currentUnit = unit ? unit : self->_units.lastObject;
     return [self->_currentUnit seekToTime:CMTimeSubtract(time, self->_currentUnit.timeRange.start)];
 }
 
