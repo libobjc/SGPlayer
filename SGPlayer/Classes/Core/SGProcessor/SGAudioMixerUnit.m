@@ -11,6 +11,7 @@
 @interface SGAudioMixerUnit ()
 
 {
+    SGCapacity *_capacity;
     NSMutableArray<SGAudioFrame *> *_frames;
 }
 
@@ -21,8 +22,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_frames = [NSMutableArray array];
-        self->_timeRange = kCMTimeRangeInvalid;
+        [self flush];
     }
     return self;
 }
@@ -66,11 +66,17 @@
     return [ret copy];
 }
 
+- (SGCapacity *)capacity
+{
+    return [self->_capacity copy];
+}
+
 - (void)flush
 {
     for (SGAudioFrame *obj in self->_frames) {
         [obj unlock];
     }
+    self->_capacity = [[SGCapacity alloc] init];
     self->_frames = [NSMutableArray array];
     self->_timeRange = kCMTimeRangeInvalid;
 }
@@ -79,6 +85,7 @@
 
 - (void)updateTimeRange
 {
+    self->_capacity.count = (int)self->_frames.count;
     if (self->_frames.count == 0) {
         self->_timeRange = kCMTimeRangeInvalid;
     } else {

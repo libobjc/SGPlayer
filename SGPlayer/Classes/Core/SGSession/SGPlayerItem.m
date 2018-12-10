@@ -336,7 +336,16 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             break;
         case SGFrameOutputStateFinished: {
             SGLockEXE10(self->_lock, ^SGBlock {
-                return [self setFinishedIfNeeded];
+                SGAudioFrame *obj = [self->_audioProcessor finish];
+                if (obj) {
+                    [self->_audioQueue putObjectSync:obj];
+                    [obj unlock];
+                }
+                SGBlock b1 = [self setFrameQueueCapacity:SGMediaTypeAudio];
+                SGBlock b2 = [self setFinishedIfNeeded];
+                return ^{
+                    b1(); b2();
+                };
             });
         }
             break;
@@ -388,22 +397,22 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 
 - (SGBlock)setFrameQueueCapacity:(SGMediaType)type
 {
-    int threshold = 0;
-    if (type == SGMediaTypeAudio) {
-        threshold = 5;
-    } else if (type == SGMediaTypeVideo) {
-        threshold = 3;
-    }
+    BOOL paused = NO;
     SGCapacity *capacity = [self frameQueueCapacity:type];
+    if (type == SGMediaTypeAudio) {
+        paused = capacity.count > 5;
+    } else if (type == SGMediaTypeVideo) {
+        paused = capacity.count > 3;
+    }
     SGBlock b1 = ^{
-        if (capacity.count > threshold) {
+        if (paused) {
             [self->_frameOutput pause:type];
         } else {
             [self->_frameOutput resume:type];
         }
     };
     SGCapacity *additional = [self->_frameOutput capacityWithType:type];
-    [additional add:additional];
+    [capacity add:additional];
     SGBlock b2 = [self setCapacity:capacity type:type];
     return ^{
         b1(); b2();

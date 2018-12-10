@@ -309,7 +309,7 @@
         });
     }];
     SGLockCondEXE10(self->_lock, ^BOOL {
-        return framesOutput == self->_framesOutput;
+        return !ret || framesOutput == self->_framesOutput;
     }, ^SGBlock {
         SGCapacity *capacity = [[SGCapacity alloc] init];
         if (ret) {

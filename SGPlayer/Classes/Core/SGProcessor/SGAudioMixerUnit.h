@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGAudioFrame.h"
+#import "SGCapacity.h"
 
 @interface SGAudioMixerUnit : NSObject
 
@@ -19,12 +20,17 @@
 /**
  *
  */
-- (BOOL)putFrame:(SGAudioFrame *)frame;
+- (BOOL)putFrame:(SGAudioFrame * _Nonnull)frame;
 
 /**
  *
  */
-- (NSArray<SGAudioFrame *> *)framesToEndTime:(CMTime)endTime;
+- (NSArray<SGAudioFrame *> * _Nullable)framesToEndTime:(CMTime)endTime;
+
+/**
+ *
+ */
+- (SGCapacity * _Nonnull)capacity;
 
 /**
  *
