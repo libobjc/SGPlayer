@@ -71,6 +71,6 @@
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket * _Nonnull)packet;
+- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket * _Nullable)packet;
 
 @end

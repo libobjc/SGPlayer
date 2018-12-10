@@ -15,7 +15,6 @@
 @interface SGVideoDecoder ()
 
 {
-    BOOL _finished;
     CMTimeRange _timeRange;
     SGCodecContext *_codecContext;
     SGCodecDescription *_codecDescription;
@@ -36,33 +35,59 @@
 
 - (void)destroy
 {
-    self->_finished = NO;
     [self->_codecContext close];
     self->_codecContext = nil;
 }
 
+#pragma mark - Control
+
 - (void)flush
 {
-    self->_finished = NO;
     [self->_codecContext flush];
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
+    NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescription *cd = packet.codecDescription;
     if (cd && ![cd isEqualToDescription:self->_codecDescription]) {
+        NSArray<SGFrame *> *objs = [self processPacket:nil];
+        for (SGFrame *obj in objs) {
+            [ret addObject:obj];
+        }
         cd = [cd copy];
         self->_codecDescription = cd;
         self->_timeRange = cd.finalTimeRange;
         [self destroy];
         [self setup];
     }
-    if (self->_finished) {
+    NSArray<SGFrame *> *objs = [self processPacket:packet];
+    for (SGFrame *obj in objs) {
+        [ret addObject:obj];
+    }
+    return ret;
+}
+
+- (NSArray<__kindof SGFrame *> *)finish
+{
+    return [self processPacket:nil];
+}
+
+#pragma mark - Process
+
+- (NSArray<__kindof SGFrame *> *)processPacket:(SGPacket *)packet
+{
+    if (!self->_codecContext || !self->_codecDescription) {
         return nil;
     }
+    NSArray *objs = [self->_codecContext decode:packet];
+    return [self processFrames:objs];
+}
+
+- (NSArray<__kindof SGFrame *> *)processFrames:(NSArray<SGFrame *> *)frames
+{
     NSMutableArray *ret = [NSMutableArray array];
-    NSArray<SGVideoFrame *> *frames = [self->_codecContext decode:packet];
-    for (SGVideoFrame *obj in frames) {
+    for (SGFrame *obj in frames) {
         obj.codecDescription = self->_codecDescription;
         [obj fill];
         if (CMTimeCompare(obj.timeStamp, self->_timeRange.start) < 0) {
@@ -70,18 +95,12 @@
             continue;
         }
         if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
-            self->_finished = YES;
             [obj unlock];
             continue;
         }
         [ret addObject:obj];
     }
     return ret;
-}
-
-- (NSArray<SGFrame *> *)finish
-{
-    return nil;
 }
 
 @end
