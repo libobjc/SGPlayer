@@ -273,10 +273,11 @@
             [self->_lock lock];
             self->_currentFrame = frame;
         }
-        NSAssert(self->_currentFrame.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
+        SGAudioDescription *description = self->_currentFrame.audioDescription;
+        NSAssert(description.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
         UInt32 frame_nb_samples_left = self->_currentFrame.numberOfSamples - self->_frameCopiedSamples;
         UInt32 nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
-        for (int i = 0; i < data->mNumberBuffers && i < self->_currentFrame.numberOfChannels; i++) {
+        for (int i = 0; i < data->mNumberBuffers && i < description.numberOfChannels; i++) {
             UInt32 data_offset = self->_renderCopiedSamples * (UInt32)sizeof(float);
             UInt32 frame_offset = self->_frameCopiedSamples * (UInt32)sizeof(float);
             UInt32 size_to_copy = nb_samples_to_copy * (UInt32)sizeof(float);

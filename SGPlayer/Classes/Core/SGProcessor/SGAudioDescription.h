@@ -30,4 +30,29 @@
  */
 @property (nonatomic) uint64_t channelLayout;
 
+/**
+ *
+ */
+- (BOOL)isPlanar;
+
+/**
+ *
+ */
+- (int)bytesPerSample;
+
+/**
+ *
+ */
+- (int)numberOfPlanes;
+
+/**
+ *
+ */
+- (int)linesize:(int)numberOfSamples;
+
+/**
+ *
+ */
+- (BOOL)isEqualToDescription:(SGAudioDescription *)description;
+
 @end

@@ -7,18 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGAudioDescription.h"
 
 @interface SGSWResample : NSObject
 
-@property (nonatomic) int i_format;         // AVSampleFormat
-@property (nonatomic) int i_sample_rate;
-@property (nonatomic) int i_channels;
-@property (nonatomic) uint64_t i_channel_layout;
-
-@property (nonatomic) int o_format;         // AVSampleFormat
-@property (nonatomic) int o_sample_rate;
-@property (nonatomic) int o_channels;
-@property (nonatomic) uint64_t o_channel_layout;
+@property (nonatomic, copy) SGAudioDescription *inputDescription;
+@property (nonatomic, copy) SGAudioDescription *outputDescription;
 
 /**
  *
@@ -33,6 +27,6 @@
 /**
  *
  */
-- (int)copy:(uint8_t *)data linesize:(int)linesize planar:(int)planar;
+- (int)copy:(uint8_t *)data linesize:(int)linesize plane:(int)plane;
 
 @end

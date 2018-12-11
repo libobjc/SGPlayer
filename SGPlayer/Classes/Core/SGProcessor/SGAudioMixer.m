@@ -7,9 +7,8 @@
 //
 
 #import "SGAudioMixer.h"
-#import "SGFrame+Internal.h"
+#import "SGAudioFrame+Internal.h"
 #import "SGAudioMixerUnit.h"
-#import "SGObjectPool.h"
 
 @interface SGAudioMixer ()
 
@@ -75,7 +74,7 @@
         [frame unlock];
         return nil;
     }
-    NSAssert(self->_audioDescription.format == frame.format, @"Invalid Format.");
+    NSAssert([self->_audioDescription isEqualToDescription:frame.audioDescription], @"Invalid Format.");
     NSAssert(self->_audioDescription.format == AV_SAMPLE_FMT_FLTP, @"Invalid Format.");
     SGAudioMixerUnit *unit = [self->_units objectForKey:@(frame.track.index)];
     BOOL ret = [unit putFrame:frame];
@@ -157,34 +156,15 @@
         return nil;
     }
     self->_startTime = CMTimeRangeGetEnd(range);
-    
     int sampleRate = self->_audioDescription.sampleRate;
+    int numberOfPlanes = self->_audioDescription.numberOfPlanes;
     int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(range.duration, sampleRate));
-    int numberOfChannels = self->_audioDescription.numberOfChannels;
-    int linesize = av_get_bytes_per_sample(AV_SAMPLE_FMT_FLTP) * numberOfSamples;
-    
-    SGAudioFrame *ret = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
-    
-    ret.core->format = self->_audioDescription.format;
-    ret.core->sample_rate = sampleRate;
-    ret.core->channels = numberOfChannels;
-    ret.core->channel_layout = self->_audioDescription.channelLayout;
-    ret.core->nb_samples = numberOfSamples;
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:numberOfSamples];
     ret.core->pts = av_rescale(sampleRate, range.start.value, range.start.timescale);
     ret.core->pkt_dts = av_rescale(sampleRate, range.start.value, range.start.timescale);
-    ret.core->pkt_size = 0;
+    ret.core->pkt_size = 1;
     ret.core->pkt_duration = av_rescale(sampleRate, range.duration.value, range.duration.timescale);
     ret.core->best_effort_timestamp = av_rescale(sampleRate, range.start.value, range.start.timescale);
-    
-    for (int i = 0; i < numberOfChannels; i++) {
-        float *data = av_mallocz(linesize);
-        memset(data, 0, linesize);
-        AVBufferRef *buffer = av_buffer_create((uint8_t *)data, linesize, av_buffer_default_free, NULL, 0);
-        ret.core->buf[i] = buffer;
-        ret.core->data[i] = buffer->data;
-        ret.core->linesize[i] = buffer->size;
-    }
-    
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
         NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:CMTimeRangeGetEnd(range)];
@@ -192,7 +172,6 @@
             [list setObject:frames forKey:@(obj.index)];
         }
     }
-    
     for (int i = 0; i < numberOfSamples; i++) {
         for (int j = 0; j < self->_tracks.count; j++) {
             for (SGAudioFrame *obj in list[@(self->_tracks[j].index)]) {
@@ -203,25 +182,22 @@
                 if (i >= c + obj.numberOfSamples) {
                     continue;
                 }
-                for (int k = 0; k < numberOfChannels; k++) {
+                for (int k = 0; k < numberOfPlanes; k++) {
                     ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * self->_weights[j].floatValue);
                 }
                 break;
             }
         }
     }
-    
     for (NSArray *objs in list.allValues) {
         for (SGAudioFrame *obj in objs) {
             [obj unlock];
         }
     }
-    
     SGCodecDescription *cd = [[SGCodecDescription alloc] init];
     cd.timebase = av_make_q(1, self->_audioDescription.sampleRate);
-    ret.codecDescription = cd;
+    [ret setCodecDescription:cd];
     [ret fill];
-    
     return ret;
 }
 

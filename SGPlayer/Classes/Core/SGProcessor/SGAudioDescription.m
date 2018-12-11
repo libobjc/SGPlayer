@@ -32,4 +32,38 @@
     return self;
 }
 
+- (BOOL)isPlanar
+{
+    return av_sample_fmt_is_planar(self->_format);
+}
+
+- (int)bytesPerSample
+{
+    return av_get_bytes_per_sample(self->_format);
+}
+
+- (int)numberOfPlanes
+{
+    return av_sample_fmt_is_planar(self->_format) ? self->_numberOfChannels : 1;
+}
+
+- (int)linesize:(int)numberOfSamples
+{
+    int linesize = av_get_bytes_per_sample(self->_format) * numberOfSamples;
+    linesize *= av_sample_fmt_is_planar(self->_format) ? 1 : self->_numberOfChannels;
+    return linesize;
+}
+
+- (BOOL)isEqualToDescription:(SGAudioDescription *)description
+{
+    if (!description) {
+        return NO;
+    }
+    return
+    self->_format == description->_format &&
+    self->_sampleRate == description->_sampleRate &&
+    self->_numberOfChannels == description->_numberOfChannels &&
+    self->_channelLayout == description->_channelLayout;
+}
+
 @end

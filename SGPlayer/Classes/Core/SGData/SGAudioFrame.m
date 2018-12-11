@@ -7,19 +7,16 @@
 //
 
 #import "SGAudioFrame.h"
-#import "SGFrame+Internal.h"
+#import "SGObjectPool.h"
+#import "SGAudioFrame+Internal.h"
 
 @interface SGAudioFrame ()
 
 {
-    int _format;
-    int _planar;
-    int _sampleRate;
     int _numberOfSsmples;
-    int _numberOfChannels;
-    uint64_t _channelLayout;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
+    SGAudioDescription *_audioDescription;
 }
 
 @end
@@ -31,31 +28,32 @@
     return SGMediaTypeAudio;
 }
 
++ (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples
+{
+    SGAudioFrame *frame = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
+    frame.core->format = description.format;
+    frame.core->sample_rate = description.sampleRate;
+    frame.core->channels = description.numberOfChannels;
+    frame.core->channel_layout = description.channelLayout;
+    frame.core->nb_samples = numberOfSamples;
+    int linesize = [description linesize:numberOfSamples];
+    int numberOfPlanes = description.numberOfPlanes;
+    for (int i = 0; i < numberOfPlanes; i++) {
+        uint8_t *data = av_mallocz(linesize);
+        memset(data, 0, linesize);
+        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        frame.core->buf[i] = buffer;
+        frame.core->data[i] = buffer->data;
+        frame.core->linesize[i] = buffer->size;
+    }
+    return frame;
+}
+
 #pragma mark - Setter & Getter
 
-- (int)format
+- (SGAudioDescription *)audioDescription
 {
-    return self->_format;
-}
-
-- (int)isPlanar
-{
-    return self->_planar;
-}
-
-- (int)sampleRate
-{
-    return self->_sampleRate;
-}
-
-- (int)numberOfChannels
-{
-    return self->_numberOfChannels;
-}
-
-- (uint64_t)channelLayout
-{
-    return self->_channelLayout;
+    return [_audioDescription copy];
 }
 
 - (int)numberOfSamples
@@ -78,16 +76,12 @@
 - (void)clear
 {
     [super clear];
-    self->_planar = 0;
-    self->_sampleRate = 0;
-    self->_channelLayout = 0;
     self->_numberOfSsmples = 0;
-    self->_numberOfChannels = 0;
-    self->_format = AV_SAMPLE_FMT_NONE;
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = nil;
         self->_linesize[i] = 0;
     }
+    self->_audioDescription = nil;
 }
 
 #pragma mark - Control
@@ -96,16 +90,16 @@
 {
     [super fill];
     AVFrame *frame = self.core;
-    self->_format = frame->format;
-    self->_sampleRate = frame->sample_rate;
-    self->_numberOfChannels = frame->channels;
     self->_numberOfSsmples = frame->nb_samples;
-    self->_channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
-    self->_planar = av_sample_fmt_is_planar(frame->format);
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
     }
+    self->_audioDescription = [[SGAudioDescription alloc] init];
+    self->_audioDescription.format = frame->format;
+    self->_audioDescription.sampleRate = frame->sample_rate;
+    self->_audioDescription.numberOfChannels = frame->channels;
+    self->_audioDescription.channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
 }
 
 @end

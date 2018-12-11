@@ -35,23 +35,17 @@
 
 - (BOOL)open
 {
-    if (self->_i_format == 0 ||
-        self->_i_sample_rate == 0 ||
-        self->_i_channels == 0 ||
-        self->_i_channel_layout == 0 ||
-        self->_o_format == 0 ||
-        self->_o_sample_rate == 0 ||
-        self->_o_channels == 0 ||
-        self->_o_channel_layout == 0) {
+    if (!self->_inputDescription ||
+        !self->_outputDescription) {
         return NO;
     }
     self->_context = swr_alloc_set_opts(NULL,
-                                        self->_o_channel_layout,
-                                        self->_o_format,
-                                        self->_o_sample_rate,
-                                        self->_i_channel_layout,
-                                        self.i_format,
-                                        self->_i_sample_rate,
+                                        self->_outputDescription.channelLayout,
+                                        self->_outputDescription.format,
+                                        self->_outputDescription.sampleRate,
+                                        self->_inputDescription.channelLayout,
+                                        self->_inputDescription.format,
+                                        self->_inputDescription.sampleRate,
                                         0, NULL);
     if (swr_init(self->_context) < 0) {
         return NO;
@@ -61,27 +55,26 @@
 
 - (int)convert:(uint8_t **)data nb_samples:(int)nb_samples
 {
-    int o_nb_samples = swr_get_out_samples(self->_context, nb_samples);
-    int o_nb_planar = av_sample_fmt_is_planar(self->_o_format) ? self->_o_channels : 1;
-    int o_linesize = av_get_bytes_per_sample(self->_o_format) * o_nb_samples;
-    o_linesize *= av_sample_fmt_is_planar(self->_o_format) ? 1 : self->_o_channels;
+    int numberOfPlanes = self->_outputDescription.numberOfPlanes;
+    int numberOfSamples = swr_get_out_samples(self->_context, nb_samples);
+    int linesize = [self->_outputDescription linesize:numberOfSamples];
     uint8_t *o_data[SGFramePlaneCount] = {NULL};
-    for (int i = 0; i < o_nb_planar; i++) {
-        if (!self->_buffer[i] || self->_buffer[i]->size < o_linesize) {
-            av_buffer_realloc(&self->_buffer[i], o_linesize);
+    for (int i = 0; i < numberOfPlanes; i++) {
+        if (!self->_buffer[i] || self->_buffer[i]->size < linesize) {
+            av_buffer_realloc(&self->_buffer[i], linesize);
         }
         o_data[i] = self->_buffer[i]->data;
     }
     return swr_convert(self->_context,
                        (uint8_t **)o_data,
-                       o_nb_samples,
+                       numberOfSamples,
                        (const uint8_t **)data,
                        nb_samples);
 }
 
-- (int)copy:(uint8_t *)data linesize:(int)linesize planar:(int)planar
+- (int)copy:(uint8_t *)data linesize:(int)linesize plane:(int)plane
 {
-    memcpy(data, self->_buffer[planar]->data, linesize);
+    memcpy(data, self->_buffer[plane]->data, linesize);
     return linesize;
 }
 

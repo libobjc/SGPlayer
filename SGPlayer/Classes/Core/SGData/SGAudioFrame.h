@@ -7,33 +7,14 @@
 //
 
 #import "SGFrame.h"
+#import "SGAudioDescription.h"
 
 @interface SGAudioFrame : SGFrame
 
 /**
- *  AVSampleFormat
- */
-- (int)format;
-
-/**
  *
  */
-- (int)isPlanar;
-
-/**
- *
- */
-- (int)sampleRate;
-
-/**
- *
- */
-- (int)numberOfChannels;
-
-/**
- *
- */
-- (uint64_t)channelLayout;
+- (SGAudioDescription * _Nullable)audioDescription;
 
 /**
  *

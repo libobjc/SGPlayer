@@ -7,9 +7,7 @@
 //
 
 #import "SGAudioFormatter.h"
-#import "SGFrame+Internal.h"
-#import "SGObjectPool.h"
-#import "SGAudioFrame.h"
+#import "SGAudioFrame+Internal.h"
 #import "SGSWResample.h"
 
 @interface SGAudioFormatter ()
@@ -36,24 +34,12 @@
         [frame unlock];
         return nil;
     }
-    if (self->_context.i_format != frame.format ||
-        self->_context.i_sample_rate != frame.sampleRate ||
-        self->_context.i_channels != frame.numberOfChannels ||
-        self->_context.i_channel_layout != frame.channelLayout ||
-        self->_context.o_format != self->_audioDescription.format ||
-        self->_context.o_sample_rate != self->_audioDescription.sampleRate ||
-        self->_context.o_channels != self->_audioDescription.numberOfChannels ||
-        self->_context.o_channel_layout != self->_audioDescription.channelLayout) {
+    if (![self->_context.inputDescription isEqualToDescription:frame.audioDescription] ||
+        ![self->_context.outputDescription isEqualToDescription:self->_audioDescription]) {
         self->_context = nil;
         SGSWResample *context = [[SGSWResample alloc] init];
-        context.i_format = frame.format;
-        context.i_sample_rate = frame.sampleRate;
-        context.i_channels = frame.numberOfChannels;
-        context.i_channel_layout = frame.channelLayout;
-        context.o_format = self->_audioDescription.format;
-        context.o_sample_rate = self->_audioDescription.sampleRate;
-        context.o_channels = self->_audioDescription.numberOfChannels;
-        context.o_channel_layout = self->_audioDescription.channelLayout;
+        context.inputDescription = frame.audioDescription;
+        context.outputDescription = self->_audioDescription;
         if ([context open]) {
             self->_context = context;
         }
@@ -62,35 +48,18 @@
         [frame unlock];
         return nil;
     }
-    
-    int nb_samples = [self->_context convert:frame.data nb_samples:frame.numberOfSamples];
-    int nb_planar = av_sample_fmt_is_planar(self->_audioDescription.format) ? self->_audioDescription.numberOfChannels : 1;
-    int linesize = av_get_bytes_per_sample(self->_audioDescription.format) * nb_samples;
-    linesize *= av_sample_fmt_is_planar(self->_audioDescription.format) ? 1 : self->_audioDescription.numberOfChannels;
-    
-    SGAudioFrame *ret = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
-    
-    ret.core->format = self->_audioDescription.format;
-    ret.core->sample_rate = self->_audioDescription.sampleRate;
-    ret.core->channels = self->_audioDescription.numberOfChannels;
-    ret.core->channel_layout = self->_audioDescription.channelLayout;
-    ret.core->nb_samples = nb_samples;
+    int numberOfPlanes = self->_audioDescription.numberOfPlanes;
+    int numberOfSamples = [self->_context convert:frame.data nb_samples:frame.numberOfSamples];
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:numberOfSamples];
     ret.core->pts = frame.core->pts;
     ret.core->pkt_dts = frame.core->pkt_dts;
     ret.core->pkt_size = frame.core->pkt_size;
     ret.core->pkt_duration = frame.core->pkt_duration;
     ret.core->best_effort_timestamp = frame.core->best_effort_timestamp;
-    
-    for (int i = 0; i < nb_planar; i++) {
-        uint8_t *data = av_mallocz(linesize);
-        [self->_context copy:data linesize:linesize planar:i];
-        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
-        ret.core->buf[i] = buffer;
-        ret.core->data[i] = buffer->data;
-        ret.core->linesize[i] = buffer->size;
+    for (int i = 0; i < numberOfPlanes; i++) {
+        [self->_context copy:ret.core->data[i] linesize:ret.core->linesize[i] plane:i];
     }
-    
-    ret.codecDescription = frame.codecDescription;
+    [ret setCodecDescription:frame.codecDescription];
     [ret fill];
     [frame unlock];
     return ret;
