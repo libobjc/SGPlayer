@@ -59,7 +59,7 @@
     for (int i = 0; i < numberOfPlanes; i++) {
         [self->_context copy:ret.core->data[i] linesize:ret.core->linesize[i] plane:i];
     }
-    [ret setCodecDescription:frame.codecDescription];
+    [ret setCodecDescription:[frame.codecDescription copy]];
     [ret fill];
     [frame unlock];
     return ret;

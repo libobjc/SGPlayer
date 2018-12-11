@@ -14,7 +14,7 @@
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription * _Nullable audioDescription;
+@property (nonatomic, strong, readonly) SGAudioDescription * _Nullable audioDescription;
 
 /**
  *

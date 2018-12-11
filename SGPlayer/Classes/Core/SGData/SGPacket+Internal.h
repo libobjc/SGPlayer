@@ -19,7 +19,7 @@
 /**
  *
  */
-@property (nonatomic, copy) SGCodecDescription * _Nullable codecDescription;
+@property (nonatomic, strong) SGCodecDescription * _Nullable codecDescription;
 
 /**
  *

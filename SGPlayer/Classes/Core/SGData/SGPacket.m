@@ -81,16 +81,16 @@
 {
     AVPacket *pkt = self->_core;
     AVRational timebase = self->_codecDescription.timebase;
-    SGCodecDescription *cd = self->_codecDescription;
+    SGCodecDescription *codecDescription = self->_codecDescription;
     if (pkt->pts == AV_NOPTS_VALUE) {
         pkt->pts = pkt->dts;
     }
     self->_size = pkt->size;
-    self->_track = cd.track;
+    self->_track = codecDescription.track;
     self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
+    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
         self->_duration = [obj convertDuration:self->_duration];
         self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
         self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];

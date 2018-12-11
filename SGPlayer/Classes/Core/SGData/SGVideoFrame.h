@@ -15,7 +15,7 @@
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGVideoDescription * _Nullable videoDescription;
+@property (nonatomic, strong, readonly) SGVideoDescription * _Nullable videoDescription;
 
 /**
  *

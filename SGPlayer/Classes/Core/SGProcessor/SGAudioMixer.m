@@ -197,9 +197,9 @@
             [obj unlock];
         }
     }
-    SGCodecDescription *cd = [[SGCodecDescription alloc] init];
-    cd.timebase = av_make_q(1, timescale);
-    [ret setCodecDescription:cd];
+    SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
+    codecDescription.timebase = av_make_q(1, timescale);
+    [ret setCodecDescription:codecDescription];
     [ret fill];
     return ret;
 }

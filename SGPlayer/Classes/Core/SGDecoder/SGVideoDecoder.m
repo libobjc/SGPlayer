@@ -29,8 +29,9 @@
 
 - (void)setup
 {
-    SGCodecDescription *cd = self->_codecDescription;
-    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:cd.timebase codecpar:cd.codecpar frameClass:[SGVideoFrame class]];
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
+                                                          codecpar:self->_codecDescription.codecpar
+                                                        frameClass:[SGVideoFrame class]];
     [self->_codecContext open];
     self->_alignment = NO;
 }
@@ -52,15 +53,15 @@
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     NSMutableArray *ret = [NSMutableArray array];
-    SGCodecDescription *cd = packet.codecDescription;
-    if (cd && ![cd isEqualToDescription:self->_codecDescription]) {
+    SGCodecDescription *codecDescription = packet.codecDescription;
+    if (codecDescription && ![codecDescription isEqualToDescription:self->_codecDescription]) {
         NSArray<SGFrame *> *objs = [self processPacket:nil];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
-        cd = [cd copy];
-        self->_codecDescription = cd;
-        self->_timeRange = cd.finalTimeRange;
+        codecDescription = [codecDescription copy];
+        self->_codecDescription = codecDescription;
+        self->_timeRange = codecDescription.finalTimeRange;
         [self destroy];
         [self setup];
     }
@@ -91,7 +92,8 @@
 {
     NSMutableArray *ret = [NSMutableArray array];
     for (SGFrame *obj in frames) {
-        obj.codecDescription = self->_codecDescription;
+        SGCodecDescription *codecDescription = [self->_codecDescription copy];
+        [obj setCodecDescription:codecDescription];
         [obj fill];
         if (CMTimeCompare(obj.timeStamp, self->_timeRange.start) < 0) {
             [obj unlock];
@@ -111,10 +113,10 @@
                 obj.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
                 obj.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
                 obj.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
-                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
-                cd.track = obj.track;
-                cd.timebase = av_make_q(1, timescale);
-                [obj setCodecDescription:cd];
+                SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
+                codecDescription.track = obj.track;
+                codecDescription.timebase = av_make_q(1, timescale);
+                [obj setCodecDescription:codecDescription];
                 [obj fill];
             }
         }
@@ -127,10 +129,10 @@
                 obj.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
                 obj.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
                 obj.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
-                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
-                cd.track = obj.track;
-                cd.timebase = av_make_q(1, timescale);
-                [obj setCodecDescription:cd];
+                SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
+                codecDescription.track = obj.track;
+                codecDescription.timebase = av_make_q(1, timescale);
+                [obj setCodecDescription:codecDescription];
                 [obj fill];
             }
         }
