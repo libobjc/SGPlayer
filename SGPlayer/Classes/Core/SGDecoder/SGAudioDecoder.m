@@ -123,6 +123,32 @@
                 [ret addObject:temp];
             }
         }
+        if (YES) {
+            CMTime start = obj.timeStamp;
+            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(self->_timeRange), obj.timeStamp);
+            CMTimeScale timescale = duration.timescale;
+            SGAudioDescription *description = obj.audioDescription;
+            int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
+            if (numberOfSamples < obj.numberOfSamples) {
+                SGAudioFrame *temp = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
+                temp.core->pts = av_rescale(timescale, start.value, start.timescale);
+                temp.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
+                temp.core->pkt_size = 1;
+                temp.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
+                temp.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
+                for (int i = 0; i < description.numberOfPlanes; i++) {
+                    memcpy(temp.core->data[i], obj.core->data[i], temp.core->linesize[i]);
+                }
+                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                cd.track = obj.track;
+                cd.timebase = av_make_q(1, timescale);
+                [temp setCodecDescription:cd];
+                [temp fill];
+                [ret addObject:temp];
+                [obj unlock];
+                continue;
+            }
+        }
         [ret addObject:obj];
     }
     return ret;

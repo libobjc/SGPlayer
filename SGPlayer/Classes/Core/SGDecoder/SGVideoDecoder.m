@@ -15,6 +15,7 @@
 @interface SGVideoDecoder ()
 
 {
+    BOOL _alignment;
     CMTimeRange _timeRange;
     SGCodecContext *_codecContext;
     SGCodecDescription *_codecDescription;
@@ -31,12 +32,14 @@
     SGCodecDescription *cd = self->_codecDescription;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:cd.timebase codecpar:cd.codecpar frameClass:[SGVideoFrame class]];
     [self->_codecContext open];
+    self->_alignment = NO;
 }
 
 - (void)destroy
 {
     [self->_codecContext close];
     self->_codecContext = nil;
+    self->_alignment = NO;
 }
 
 #pragma mark - Control
@@ -97,6 +100,39 @@
         if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
             [obj unlock];
             continue;
+        }
+        if (!self->_alignment) {
+            self->_alignment = YES;
+            CMTime start = self->_timeRange.start;
+            CMTime duration = CMTimeSubtract(CMTimeAdd(obj.timeStamp, obj.duration), start);
+            CMTimeScale timescale = duration.timescale;
+            if (CMTimeCompare(obj.timeStamp, start) > 0) {
+                obj.core->pts = av_rescale(timescale, start.value, start.timescale);
+                obj.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
+                obj.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
+                obj.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
+                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                cd.track = obj.track;
+                cd.timebase = av_make_q(1, timescale);
+                [obj setCodecDescription:cd];
+                [obj fill];
+            }
+        }
+        if (YES) {
+            CMTime start = obj.timeStamp;
+            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(self->_timeRange), obj.timeStamp);
+            CMTimeScale timescale = duration.timescale;
+            if (CMTimeCompare(obj.duration, duration) > 0) {
+                obj.core->pts = av_rescale(timescale, start.value, start.timescale);
+                obj.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
+                obj.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
+                obj.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
+                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                cd.track = obj.track;
+                cd.timebase = av_make_q(1, timescale);
+                [obj setCodecDescription:cd];
+                [obj fill];
+            }
         }
         [ret addObject:obj];
     }
