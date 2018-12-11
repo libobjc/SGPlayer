@@ -103,20 +103,21 @@
         }
         if (!self->_alignment) {
             self->_alignment = YES;
-            CMTime duration = CMTimeSubtract(obj.timeStamp, self->_timeRange.start);
-            if (CMTimeCompare(duration, kCMTimeZero) > 0) {
-                SGAudioDescription *description = obj.audioDescription;
-                int sampleRate = description.sampleRate;
-                int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, sampleRate));
+            CMTime start = self->_timeRange.start;
+            CMTime duration = CMTimeSubtract(obj.timeStamp, start);
+            CMTimeScale timescale = duration.timescale;
+            SGAudioDescription *description = obj.audioDescription;
+            int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
+            if (numberOfSamples > 0) {
                 SGAudioFrame *temp = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
-                temp.core->pts = av_rescale(sampleRate, self->_timeRange.start.value, self->_timeRange.start.timescale);
-                temp.core->pkt_dts = av_rescale(sampleRate, self->_timeRange.start.value, self->_timeRange.start.timescale);
+                temp.core->pts = av_rescale(timescale, start.value, start.timescale);
+                temp.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
                 temp.core->pkt_size = 1;
-                temp.core->pkt_duration = av_rescale(sampleRate, duration.value, duration.timescale);
-                temp.core->best_effort_timestamp = av_rescale(sampleRate, self->_timeRange.start.value, self->_timeRange.start.timescale);
+                temp.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
+                temp.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
                 SGCodecDescription *cd = [[SGCodecDescription alloc] init];
                 cd.track = obj.track;
-                cd.timebase = av_make_q(1, sampleRate);
+                cd.timebase = av_make_q(1, timescale);
                 [temp setCodecDescription:cd];
                 [temp fill];
                 [ret addObject:temp];

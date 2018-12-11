@@ -156,15 +156,18 @@
         return nil;
     }
     self->_startTime = CMTimeRangeGetEnd(range);
-    int sampleRate = self->_audioDescription.sampleRate;
-    int numberOfPlanes = self->_audioDescription.numberOfPlanes;
-    int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(range.duration, sampleRate));
-    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:numberOfSamples];
-    ret.core->pts = av_rescale(sampleRate, range.start.value, range.start.timescale);
-    ret.core->pkt_dts = av_rescale(sampleRate, range.start.value, range.start.timescale);
+    
+    CMTime start = range.start;
+    CMTime duration = range.duration;
+    CMTimeScale timescale = duration.timescale;
+    SGAudioDescription *description = self->_audioDescription;
+    int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
+    ret.core->pts = av_rescale(timescale, start.value, start.timescale);
+    ret.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
     ret.core->pkt_size = 1;
-    ret.core->pkt_duration = av_rescale(sampleRate, range.duration.value, range.duration.timescale);
-    ret.core->best_effort_timestamp = av_rescale(sampleRate, range.start.value, range.start.timescale);
+    ret.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
+    ret.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
         NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:CMTimeRangeGetEnd(range)];
@@ -175,14 +178,14 @@
     for (int i = 0; i < numberOfSamples; i++) {
         for (int j = 0; j < self->_tracks.count; j++) {
             for (SGAudioFrame *obj in list[@(self->_tracks[j].index)]) {
-                int c = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, range.start), sampleRate));
+                int c = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), description.sampleRate));
                 if (i < c) {
                     break;
                 }
                 if (i >= c + obj.numberOfSamples) {
                     continue;
                 }
-                for (int k = 0; k < numberOfPlanes; k++) {
+                for (int k = 0; k < description.numberOfPlanes; k++) {
                     ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * self->_weights[j].floatValue);
                 }
                 break;
@@ -195,7 +198,7 @@
         }
     }
     SGCodecDescription *cd = [[SGCodecDescription alloc] init];
-    cd.timebase = av_make_q(1, self->_audioDescription.sampleRate);
+    cd.timebase = av_make_q(1, timescale);
     [ret setCodecDescription:cd];
     [ret fill];
     return ret;
