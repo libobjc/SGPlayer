@@ -14,7 +14,7 @@
 /**
  *
  */
-@property (nonatomic, assign, readonly) AVPacket * _Nonnull core;
+@property (nonatomic, readonly) AVPacket * _Nonnull core;
 
 /**
  *

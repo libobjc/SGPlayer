@@ -8,7 +8,7 @@
 
 #import "SGAudioDecoder.h"
 #import "SGPacket+Internal.h"
-#import "SGAudioFrame+Internal.h"
+#import "SGFrame+Internal.h"
 #import "SGCodecContext.h"
 #import "SGAudioFrame.h"
 

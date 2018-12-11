@@ -15,17 +15,12 @@
 /**
  *
  */
-@property (nonatomic, assign, readonly) void * _Nonnull coreptr;
+@property (nonatomic, readonly) void * _Nonnull coreptr;
 
 /**
  *
  */
 @property (nonatomic, strong, readonly) SGTrack * _Nullable track;
-
-/**
- *
- */
-@property (nonatomic, readonly) int size;
 
 /**
  *
@@ -41,5 +36,10 @@
  *
  */
 @property (nonatomic, readonly) CMTime decodeTimeStamp;
+
+/**
+ *
+ */
+@property (nonatomic, readonly) int size;
 
 @end

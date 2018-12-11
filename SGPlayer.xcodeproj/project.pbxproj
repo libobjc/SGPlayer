@@ -130,9 +130,6 @@
 		9C82EEB421AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
 		9C82EEB521AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
 		9C82EEB621AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
-		9C853F0521BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F0421BF5D5C005552C6 /* SGAudioFrame+Internal.h */; };
-		9C853F0621BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F0421BF5D5C005552C6 /* SGAudioFrame+Internal.h */; };
-		9C853F0721BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F0421BF5D5C005552C6 /* SGAudioFrame+Internal.h */; };
 		9C853F1221BFD85D005552C6 /* SGVideoDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F1021BFD85D005552C6 /* SGVideoDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C853F1321BFD85D005552C6 /* SGVideoDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F1021BFD85D005552C6 /* SGVideoDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C853F1421BFD85D005552C6 /* SGVideoDescription.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C853F1021BFD85D005552C6 /* SGVideoDescription.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -672,7 +669,6 @@
 		9C6F9028219BE154001051CE /* SGMutableAsset.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMutableAsset.m; sourceTree = "<group>"; };
 		9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGAudioProcessor.h; sourceTree = "<group>"; };
 		9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioProcessor.m; sourceTree = "<group>"; };
-		9C853F0421BF5D5C005552C6 /* SGAudioFrame+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SGAudioFrame+Internal.h"; sourceTree = "<group>"; };
 		9C853F1021BFD85D005552C6 /* SGVideoDescription.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVideoDescription.h; sourceTree = "<group>"; };
 		9C853F1121BFD85D005552C6 /* SGVideoDescription.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVideoDescription.m; sourceTree = "<group>"; };
 		9C8636512190408300D730EC /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = "SGPlayer/Classes/Core/SGFFmpeg/lib-iOS/libavformat.a"; sourceTree = "<group>"; };
@@ -1295,7 +1291,6 @@
 				9CEBCCA6217F19BE00430024 /* SGFrame+Internal.h */,
 				9CF15E1D2011BC5400585326 /* SGAudioFrame.h */,
 				9CF15E1E2011BC5400585326 /* SGAudioFrame.m */,
-				9C853F0421BF5D5C005552C6 /* SGAudioFrame+Internal.h */,
 				9C2C55992015B87400131E15 /* SGVideoFrame.h */,
 				9C2C559A2015B87400131E15 /* SGVideoFrame.m */,
 				9CC649FD2181A8C000453B3E /* SGCapacity.h */,
@@ -1397,7 +1392,6 @@
 				9C86386521904A0900D730EC /* SGMacro.h in Headers */,
 				9C86386621904A0900D730EC /* SGGLNV12Program.h in Headers */,
 				9C86386721904A0900D730EC /* SGFFmpeg.h in Headers */,
-				9C853F0621BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */,
 				9C86386821904A0900D730EC /* SGPLFTargets.h in Headers */,
 				9C86386921904A0900D730EC /* SGRenderer+Internal.h in Headers */,
 				9CA57933219DAA270061093B /* SGCodecDescription.h in Headers */,
@@ -1501,7 +1495,6 @@
 				9CD79F0E2190068E00E39A7D /* SGPacket.h in Headers */,
 				9CD79F0F2190068E00E39A7D /* SGClock.h in Headers */,
 				9CA57934219DAA270061093B /* SGCodecDescription.h in Headers */,
-				9C853F0721BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */,
 				9CD79F102190068E00E39A7D /* SGPlatform.h in Headers */,
 				9CD79F122190068E00E39A7D /* SGAsset+Internal.h in Headers */,
 				9CD79F132190068E00E39A7D /* SGMacro.h in Headers */,
@@ -1570,7 +1563,6 @@
 				9CC649FF2181A8C000453B3E /* SGCapacity.h in Headers */,
 				9C82EEB121AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9C1F2DE721AF8F1A00D42158 /* SGAudioMixer.h in Headers */,
-				9C853F0521BF5D5C005552C6 /* SGAudioFrame+Internal.h in Headers */,
 				9CF15E072011AE0700585326 /* SGAudioRenderer.h in Headers */,
 				9C2C55A32015C1E100131E15 /* SGVideoRenderer.h in Headers */,
 				9C43D51121872D3F00235169 /* SGLock.h in Headers */,

@@ -7,7 +7,7 @@
 //
 
 #import "SGAudioMixer.h"
-#import "SGAudioFrame+Internal.h"
+#import "SGFrame+Internal.h"
 #import "SGAudioMixerUnit.h"
 
 @interface SGAudioMixer ()

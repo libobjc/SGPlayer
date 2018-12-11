@@ -7,7 +7,7 @@
 //
 
 #import "SGAudioFormatter.h"
-#import "SGAudioFrame+Internal.h"
+#import "SGFrame+Internal.h"
 #import "SGSWResample.h"
 
 @interface SGAudioFormatter ()

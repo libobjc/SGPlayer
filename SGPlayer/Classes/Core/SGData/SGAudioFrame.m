@@ -7,8 +7,8 @@
 //
 
 #import "SGAudioFrame.h"
+#import "SGFrame+Internal.h"
 #import "SGObjectPool.h"
-#import "SGAudioFrame+Internal.h"
 
 @interface SGAudioFrame ()
 

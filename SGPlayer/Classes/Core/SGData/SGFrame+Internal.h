@@ -7,6 +7,7 @@
 //
 
 #import "SGFrame.h"
+#import "SGAudioFrame.h"
 #import "SGCodecDescription.h"
 
 @interface SGFrame ()
@@ -14,7 +15,7 @@
 /**
  *
  */
-@property (nonatomic, assign, readonly) AVFrame * _Nonnull core;
+@property (nonatomic, readonly) AVFrame * _Nonnull core;
 
 /**
  *
@@ -25,5 +26,14 @@
  *
  */
 - (void)fill;
+
+@end
+
+@interface SGAudioFrame ()
+
+/**
+ *
+ */
++ (instancetype _Nonnull)audioFrameWithDescription:(SGAudioDescription * _Nonnull)description numberOfSamples:(int)numberOfSamples;
 
 @end

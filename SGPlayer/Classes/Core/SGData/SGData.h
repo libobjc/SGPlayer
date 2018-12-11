@@ -29,16 +29,16 @@
 /**
  *
  */
-- (int)size;
-
-/**
- *
- */
 - (CMTime)duration;
 
 /**
  *
  */
 - (CMTime)timeStamp;
+
+/**
+ *
+ */
+- (int)size;
 
 @end
