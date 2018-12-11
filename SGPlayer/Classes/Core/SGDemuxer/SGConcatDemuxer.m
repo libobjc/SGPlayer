@@ -121,6 +121,8 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    time = CMTimeMaximum(time, kCMTimeZero);
+    time = CMTimeMinimum(time, self->_duration);
     SGConcatDemuxerUnit *unit = nil;
     for (SGConcatDemuxerUnit *obj in self->_units) {
         if (CMTimeCompare(time, CMTimeRangeGetEnd(obj.timeRange)) <= 0) {
