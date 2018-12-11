@@ -37,31 +37,31 @@
 
 - (BOOL)open
 {
-    if (self->_width == 0 ||
-        self->_height == 0) {
+    if (!self->_inputDescription ||
+        !self->_outputDescription) {
         return NO;
     }
     self->_context = sws_getCachedContext(self->_context,
-                                          self->_width,
-                                          self->_height,
-                                          self->_i_format,
-                                          self->_width,
-                                          self->_height,
-                                          self->_o_format,
+                                          self->_inputDescription.width,
+                                          self->_inputDescription.height,
+                                          self->_inputDescription.format,
+                                          self->_outputDescription.width,
+                                          self->_outputDescription.height,
+                                          self->_outputDescription.format,
                                           self->_flags,
                                           NULL, NULL, NULL);
     return self->_context ? YES : NO;
 }
 
-- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize
+- (int)convert:(const uint8_t *const [])inputData inputLinesize:(const int [])inputLinesize outputData:(uint8_t *const [])outputData outputLinesize:(const int [])outputLinesize
 {
     return sws_scale(self->_context,
-                     i_data,
-                     i_linesize,
+                     inputData,
+                     inputLinesize,
                      0,
-                     self->_height,
-                     o_data,
-                     o_linesize);;
+                     self->_inputDescription.height,
+                     outputData,
+                     outputLinesize);;
 }
 
 @end

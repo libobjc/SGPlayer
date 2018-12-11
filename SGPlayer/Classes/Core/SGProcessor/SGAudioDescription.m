@@ -7,7 +7,7 @@
 //
 
 #import "SGAudioDescription.h"
-#import "SGFrame+Internal.h"
+#import "SGFFmpeg.h"
 
 @implementation SGAudioDescription
 

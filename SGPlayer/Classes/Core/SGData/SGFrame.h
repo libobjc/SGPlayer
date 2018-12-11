@@ -17,31 +17,31 @@ static int const SGFramePlaneCount = 8;
 /**
  *
  */
-- (void * _Nonnull)coreptr;
+@property (nonatomic, assign, readonly) void * _Nonnull coreptr;
 
 /**
  *
  */
-- (SGTrack * _Nullable)track;
+@property (nonatomic, strong, readonly) SGTrack * _Nullable track;
 
 /**
  *
  */
-- (int)size;
+@property (nonatomic, readonly) int size;
 
 /**
  *
  */
-- (CMTime)duration;
+@property (nonatomic, readonly) CMTime duration;
 
 /**
  *
  */
-- (CMTime)timeStamp;
+@property (nonatomic, readonly) CMTime timeStamp;
 
 /**
  *
  */
-- (CMTime)decodeTimeStamp;
+@property (nonatomic, readonly) CMTime decodeTimeStamp;
 
 @end

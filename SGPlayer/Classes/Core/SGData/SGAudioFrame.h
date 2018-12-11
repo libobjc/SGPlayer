@@ -14,12 +14,12 @@
 /**
  *
  */
-- (SGAudioDescription * _Nullable)audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescription * _Nullable audioDescription;
 
 /**
  *
  */
-- (int)numberOfSamples;
+@property (nonatomic, readonly) int numberOfSamples;
 
 /**
  *

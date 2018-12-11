@@ -10,43 +10,24 @@
 #import "SGFrame+Internal.h"
 #import "SGMapping.h"
 #import "SGSWScale.h"
-#import "imgutils.h"
 
 @interface SGVideoFrame ()
 
 {
-    int _format;
-    int _width;
-    int _height;
+    CVPixelBufferRef _pixelBuffer;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
-    CVPixelBufferRef _pixelBuffer;
 }
 
 @end
 
 @implementation SGVideoFrame
 
+#pragma mark - Setter & Getter
+
 - (SGMediaType)type
 {
     return SGMediaTypeVideo;
-}
-
-#pragma mark - Setter & Getter
-
-- (int)format
-{
-    return self->_format;
-}
-
-- (int)width
-{
-    return self->_width;
-}
-
-- (int)height
-{
-    return self->_height;
 }
 
 - (int *)linesize
@@ -64,57 +45,26 @@
     return self->_pixelBuffer;
 }
 
-#pragma mark - Item
-
-- (void)clear
-{
-    [super clear];
-    self->_width = 0;
-    self->_height = 0;
-    self->_format = AV_PIX_FMT_NONE;
-    for (int i = 0; i < SGFramePlaneCount; i++) {
-        self->_data[i] = nil;
-        self->_linesize[i] = 0;
-    }
-    self->_pixelBuffer = nil;
-}
-
-#pragma mark - Control
-
-- (void)fill
-{
-    [super fill];
-    AVFrame *frame = self.core;
-    self->_width = frame->width;
-    self->_height = frame->height;
-    self->_format = frame->format;
-    if (self->_format == AV_PIX_FMT_VIDEOTOOLBOX) {
-        self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
-    }
-    for (int i = 0; i < SGFramePlaneCount; i++) {
-        self->_data[i] = frame->data[i];
-        self->_linesize[i] = frame->linesize[i];
-    }
-}
-
 - (SGPLFImage *)image
 {
-    if (self->_width == 0 || self->_height == 0) {
+    if (self->_videoDescription.width == 0 || self->_videoDescription.height == 0) {
         return nil;
     }
-    enum AVPixelFormat src_format = self->_format;
-    enum AVPixelFormat dst_format = AV_PIX_FMT_RGB24;
+    SGVideoDescription *inputDescription = [self->_videoDescription copy];
+    SGVideoDescription *outputDescription = [self->_videoDescription copy];
+    outputDescription.format = AV_PIX_FMT_RGB24;
+    
     const uint8_t *src_data[SGFramePlaneCount] = {nil};
     uint8_t *dst_data[SGFramePlaneCount] = {nil};
     int src_linesize[SGFramePlaneCount] = {0};
     int dst_linesize[SGFramePlaneCount] = {0};
     
-    if (src_format == AV_PIX_FMT_VIDEOTOOLBOX) {
+    if (inputDescription.format == AV_PIX_FMT_VIDEOTOOLBOX) {
         if (!self->_pixelBuffer) {
             return nil;
         }
         OSType type = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
-        src_format = SGPixelFormatAV2FF(type);
+        inputDescription.format = SGPixelFormatAV2FF(type);
         
         CVReturn error = CVPixelBufferLockBaseAddress(self->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (error != kCVReturnSuccess) {
@@ -139,31 +89,74 @@
         }
     }
     
-    if (src_format == AV_PIX_FMT_NONE || !src_data[0] || !src_linesize[0]) {
+    if (inputDescription.format == AV_PIX_FMT_NONE ||
+        !src_data[0] ||
+        !src_linesize[0]) {
         return nil;
     }
     
     SGSWScale *context = [[SGSWScale alloc] init];
-    context.i_format = src_format;
-    context.o_format = dst_format;
-    context.width = self->_width;
-    context.height = self->_height;
+    context.inputDescription = inputDescription;
+    context.outputDescription = outputDescription;
     if (![context open]) {
         return nil;
     }
     
-    int result = av_image_alloc(dst_data, (int *)dst_linesize, self->_width, self->_height, dst_format, 1);
+    int result = av_image_alloc(dst_data,
+                                (int *)dst_linesize,
+                                outputDescription.width,
+                                outputDescription.height,
+                                outputDescription.format,
+                                1);
     if (result < 0) {
         return nil;
     }
-    result = [context convert:src_data i_linesize:src_linesize o_data:dst_data o_linesize:dst_linesize];
+    result = [context convert:src_data
+                inputLinesize:src_linesize
+                   outputData:dst_data
+               outputLinesize:dst_linesize];
     if (result < 0) {
         av_freep(dst_data);
         return nil;
     }
-    SGPLFImage *image = SGPLFImageWithRGBData(dst_data[0], dst_linesize[0], self->_width, self->_height);
+    SGPLFImage *image = SGPLFImageWithRGBData(dst_data[0],
+                                              dst_linesize[0],
+                                              outputDescription.width,
+                                              outputDescription.height);
     av_freep(dst_data);
     return image;
+}
+
+#pragma mark - Data
+
+- (void)clear
+{
+    [super clear];
+    for (int i = 0; i < SGFramePlaneCount; i++) {
+        self->_data[i] = nil;
+        self->_linesize[i] = 0;
+    }
+    self->_pixelBuffer = nil;
+    self->_videoDescription = nil;
+}
+
+#pragma mark - Control
+
+- (void)fill
+{
+    [super fill];
+    AVFrame *frame = self.core;
+    if (frame->format == AV_PIX_FMT_VIDEOTOOLBOX) {
+        self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
+    }
+    for (int i = 0; i < SGFramePlaneCount; i++) {
+        self->_data[i] = frame->data[i];
+        self->_linesize[i] = frame->linesize[i];
+    }
+    self->_videoDescription = [[SGVideoDescription alloc] init];
+    self->_videoDescription.format = frame->format;
+    self->_videoDescription.width = frame->width;
+    self->_videoDescription.height = frame->height;
 }
 
 @end

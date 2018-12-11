@@ -8,23 +8,14 @@
 
 #import "SGFrame.h"
 #import "SGPLFImage.h"
+#import "SGVideoDescription.h"
 
 @interface SGVideoFrame : SGFrame
 
 /**
- *  AVPixelFormat
- */
-- (int)format;
-
-/**
  *
  */
-- (int)width;
-
-/**
- *
- */
-- (int)height;
+@property (nonatomic, copy, readonly) SGVideoDescription * _Nullable videoDescription;
 
 /**
  *

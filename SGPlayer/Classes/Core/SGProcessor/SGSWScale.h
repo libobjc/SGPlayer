@@ -7,13 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGVideoDescription.h"
 
 @interface SGSWScale : NSObject
 
-@property (nonatomic) int i_format;       // AVPixelFormat
-@property (nonatomic) int o_format;       // AVPixelFormat
-@property (nonatomic) int width;
-@property (nonatomic) int height;
+@property (nonatomic, copy) SGVideoDescription *inputDescription;
+@property (nonatomic, copy) SGVideoDescription *outputDescription;
+
 @property (nonatomic) int flags;          // SWS_FAST_BILINEAR
 
 /**
@@ -24,6 +24,6 @@
 /**
  *
  */
-- (int)convert:(const uint8_t *const [])i_data i_linesize:(const int [])i_linesize o_data:(uint8_t *const [])o_data o_linesize:(const int [])o_linesize;
+- (int)convert:(const uint8_t *const [])inputData inputLinesize:(const int [])inputLinesize outputData:(uint8_t *const [])outputData outputLinesize:(const int [])outputLinesize;
 
 @end

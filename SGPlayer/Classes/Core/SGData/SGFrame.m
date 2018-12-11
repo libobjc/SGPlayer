@@ -14,32 +14,19 @@
 
 {
     NSLock *_lock;
-    uint64_t _lockingCount;
-    
-    AVFrame *_core;
-    SGTrack *_track;
-    SGCodecDescription *_codecDescription;
-    
-    int _size;
-    CMTime _duration;
-    CMTime _timeStamp;
-    CMTime _decodeTimeStamp;
+    NSUInteger _lockingCount;
 }
 
 @end
 
 @implementation SGFrame
 
-- (SGMediaType)type
-{
-    return SGMediaTypeUnknown;
-}
-
 - (instancetype)init
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
         self->_core = av_frame_alloc();
+        self->_coreptr = self->_core;
         [self clear];
     }
     return self;
@@ -57,52 +44,12 @@
 
 #pragma mark - Setter & Getter
 
-- (void *)coreptr
+- (SGMediaType)type
 {
-    return self->_core;
+    return SGMediaTypeUnknown;
 }
 
-- (SGTrack *)track
-{
-    return self->_track;
-}
-
-- (int)size
-{
-    return self->_size;
-}
-
-- (CMTime)duration
-{
-    return self->_duration;
-}
-
-- (CMTime)timeStamp
-{
-    return self->_timeStamp;
-}
-
-- (CMTime)decodeTimeStamp
-{
-    return self->_decodeTimeStamp;
-}
-
-- (AVFrame *)core
-{
-    return self->_core;
-}
-
-- (void)setCodecDescription:(SGCodecDescription *)codecDescription
-{
-    self->_codecDescription = codecDescription;
-}
-
-- (SGCodecDescription *)codecDescription
-{
-    return self->_codecDescription;
-}
-
-#pragma mark - Item
+#pragma mark - Data
 
 - (void)lock
 {
@@ -115,9 +62,9 @@
 {
     [self->_lock lock];
     self->_lockingCount -= 1;
+    BOOL comeback = self->_lockingCount == 0;
     [self->_lock unlock];
-    if (self->_lockingCount == 0) {
-        self->_lockingCount = 0;
+    if (comeback) {
         [[SGObjectPool sharedPool] comeback:self];
     }
 }
@@ -135,17 +82,19 @@
     self->_codecDescription = nil;
 }
 
+#pragma mark - Control
+
 - (void)fill
 {
     AVFrame *frame = self->_core;
     AVRational timebase = self->_codecDescription.timebase;
-    SGCodecDescription *cd = self->_codecDescription;
+    SGCodecDescription *codecDescription = self->_codecDescription;
     self->_size = frame->pkt_size;
-    self->_track = cd.track;
+    self->_track = codecDescription.track;
     self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
+    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
         self->_duration = [obj convertDuration:self->_duration];
         self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
         self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];

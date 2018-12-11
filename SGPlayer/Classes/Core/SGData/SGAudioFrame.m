@@ -13,20 +13,13 @@
 @interface SGAudioFrame ()
 
 {
-    int _numberOfSsmples;
     int _linesize[SGFramePlaneCount];
     uint8_t *_data[SGFramePlaneCount];
-    SGAudioDescription *_audioDescription;
 }
 
 @end
 
 @implementation SGAudioFrame
-
-- (SGMediaType)type
-{
-    return SGMediaTypeAudio;
-}
 
 + (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples
 {
@@ -51,14 +44,9 @@
 
 #pragma mark - Setter & Getter
 
-- (SGAudioDescription *)audioDescription
+- (SGMediaType)type
 {
-    return [_audioDescription copy];
-}
-
-- (int)numberOfSamples
-{
-    return self->_numberOfSsmples;
+    return SGMediaTypeAudio;
 }
 
 - (int *)linesize
@@ -71,12 +59,12 @@
     return self->_data;
 }
 
-#pragma mark - Item
+#pragma mark - Data
 
 - (void)clear
 {
     [super clear];
-    self->_numberOfSsmples = 0;
+    self->_numberOfSamples = 0;
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = nil;
         self->_linesize[i] = 0;
@@ -90,7 +78,7 @@
 {
     [super fill];
     AVFrame *frame = self.core;
-    self->_numberOfSsmples = frame->nb_samples;
+    self->_numberOfSamples = frame->nb_samples;
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];

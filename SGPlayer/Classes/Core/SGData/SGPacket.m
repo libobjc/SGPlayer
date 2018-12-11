@@ -15,15 +15,6 @@
 {
     NSLock *_lock;
     uint64_t _lockingCount;
-    
-    AVPacket *_core;
-    SGTrack *_track;
-    SGCodecDescription *_codecDescription;
-    
-    int _size;
-    CMTime _duration;
-    CMTime _timeStamp;
-    CMTime _decodeTimeStamp;
 }
 
 @end
@@ -35,6 +26,7 @@
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
         self->_core = av_packet_alloc();
+        self->_coreptr = self->_core;
         [self clear];
     }
     return self;
@@ -50,54 +42,7 @@
     }
 }
 
-#pragma mark - Setter & Getter
-
-- (void *)coreptr
-{
-    return self->_core;
-}
-
-- (SGTrack *)track
-{
-    return self->_track;
-}
-
-- (int)size
-{
-    return self->_size;
-}
-
-- (CMTime)duration
-{
-    return self->_duration;
-}
-
-- (CMTime)timeStamp
-{
-    return self->_timeStamp;
-}
-
-- (CMTime)decodeTimeStamp
-{
-    return self->_decodeTimeStamp;
-}
-
-- (AVPacket *)core
-{
-    return self->_core;
-}
-
-- (void)setCodecDescription:(SGCodecDescription *)codecDescription
-{
-    self->_codecDescription = codecDescription;
-}
-
-- (SGCodecDescription *)codecDescription
-{
-    return self->_codecDescription;
-}
-
-#pragma mark - Item
+#pragma mark - Data
 
 - (void)lock
 {
@@ -110,9 +55,9 @@
 {
     [self->_lock lock];
     self->_lockingCount -= 1;
+    BOOL comeback = self->_lockingCount == 0;
     [self->_lock unlock];
-    if (self->_lockingCount == 0) {
-        self->_lockingCount = 0;
+    if (comeback) {
         [[SGObjectPool sharedPool] comeback:self];
     }
 }

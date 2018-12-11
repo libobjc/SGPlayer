@@ -440,16 +440,17 @@
 {
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
-    if (!frame || frame.width == 0 || frame.height == 0) {
+    SGVideoDescription *description = frame.videoDescription;
+    if (!frame || description.width == 0 || description.height == 0) {
         [self->_lock unlock];
         return NO;
     }
     [frame lock];
     [self->_lock unlock];
-    SGGLSize textureSize = {frame.width, frame.height};
+    SGGLSize textureSize = {description.width, description.height};
     SGDisplayMode displayMode = self->_displayMode;
     id<SGGLModel> model = [self->_modelPool modelWithType:SGDisplay2Model(displayMode)];
-    id<SGGLProgram> program = [self->_programPool programWithType:SGFormat2Program(frame.format, frame.pixelBuffer)];
+    id<SGGLProgram> program = [self->_programPool programWithType:SGFormat2Program(description.format, frame.pixelBuffer)];
     if (!model || !program) {
         [frame unlock];
         return NO;

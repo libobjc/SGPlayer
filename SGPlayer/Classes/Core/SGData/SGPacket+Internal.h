@@ -14,17 +14,12 @@
 /**
  *
  */
-- (AVPacket * _Nonnull)core;
+@property (nonatomic, assign, readonly) AVPacket * _Nonnull core;
 
 /**
  *
  */
-- (SGCodecDescription * _Nullable)codecDescription;
-
-/**
- *
- */
-- (void)setCodecDescription:(SGCodecDescription * _Nonnull)codecDescription;
+@property (nonatomic, copy) SGCodecDescription * _Nullable codecDescription;
 
 /**
  *

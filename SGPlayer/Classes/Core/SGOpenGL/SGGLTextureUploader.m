@@ -77,10 +77,10 @@ static int gl_texture[3] = {
 
 - (BOOL)uploadWithVideoFrame:(SGVideoFrame *)frame
 {
-    enum AVPixelFormat format = frame.format;
+    SGVideoDescription *description = frame.videoDescription;
     uint8_t *data[SGFramePlaneCount] = {0};
     int linesize[SGFramePlaneCount] = {0};
-    if (frame.format == AV_PIX_FMT_VIDEOTOOLBOX && frame.pixelBuffer) {
+    if (description.format == AV_PIX_FMT_VIDEOTOOLBOX && frame.pixelBuffer) {
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         return [self uploadWithCVPixelBuffer:frame.pixelBuffer];
 #else
@@ -88,7 +88,7 @@ static int gl_texture[3] = {
         if (err != kCVReturnSuccess) {
             return NO;
         }
-        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
+        description.format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(frame.pixelBuffer));
         if (CVPixelBufferIsPlanar(frame.pixelBuffer)) {
             int planes = (int)CVPixelBufferGetPlaneCount(frame.pixelBuffer);
             for (int i = 0; i < planes; i++) {
@@ -107,7 +107,11 @@ static int gl_texture[3] = {
             linesize[i] = frame.linesize[i];
         }
     }
-    return [self uploadWithFormat:format data:data linesize:linesize width:frame.width height:frame.height];
+    return [self uploadWithFormat:description.format
+                             data:data
+                         linesize:linesize
+                            width:description.width
+                           height:description.height];
 }
 
 - (BOOL)uploadWithFormat:(enum AVPixelFormat)format data:(uint8_t **)data_src linesize:(int *)linesize_src width:(int)width height:(int)height
