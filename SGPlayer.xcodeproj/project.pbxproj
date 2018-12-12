@@ -933,6 +933,7 @@
 				9C6F901E219BDCDC001051CE /* SGProcessor */,
 				9C3082D821255CA400B44298 /* SGDefine */,
 				9CE6F5912004E37600D1F4C8 /* SGCommon */,
+				9CE6904021C105760089B33A /* SGDescription */,
 				9C5C6C9620182A0900863EB5 /* SGOpenGL */,
 				9CE6F5172004D97C00D1F4C8 /* SGPlatform */,
 				9C2534521FAB151500BBFA5C /* SGFFmpeg */,
@@ -1075,10 +1076,6 @@
 		9C6F901E219BDCDC001051CE /* SGProcessor */ = {
 			isa = PBXGroup;
 			children = (
-				9C525D4F21AEC421005C5708 /* SGAudioDescription.h */,
-				9C525D5021AEC421005C5708 /* SGAudioDescription.m */,
-				9C853F1021BFD85D005552C6 /* SGVideoDescription.h */,
-				9C853F1121BFD85D005552C6 /* SGVideoDescription.m */,
 				9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */,
 				9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */,
 				9C66E1F82188526200B70DAA /* SGAudioFormatter.h */,
@@ -1168,8 +1165,6 @@
 				9C3082C2212518EC00B44298 /* SGVideoDecoder.m */,
 				9C3082C521251AC200B44298 /* SGCodecContext.h */,
 				9C3082C621251AC200B44298 /* SGCodecContext.m */,
-				9CA57930219DAA270061093B /* SGCodecDescription.h */,
-				9CA57931219DAA270061093B /* SGCodecDescription.m */,
 			);
 			path = SGDecoder;
 			sourceTree = "<group>";
@@ -1181,6 +1176,19 @@
 				9CE6842F200DD12F007BD834 /* SGAudioStreamPlayer.m */,
 			);
 			path = SGAudioEngine;
+			sourceTree = "<group>";
+		};
+		9CE6904021C105760089B33A /* SGDescription */ = {
+			isa = PBXGroup;
+			children = (
+				9C525D4F21AEC421005C5708 /* SGAudioDescription.h */,
+				9C525D5021AEC421005C5708 /* SGAudioDescription.m */,
+				9C853F1021BFD85D005552C6 /* SGVideoDescription.h */,
+				9C853F1121BFD85D005552C6 /* SGVideoDescription.m */,
+				9CA57930219DAA270061093B /* SGCodecDescription.h */,
+				9CA57931219DAA270061093B /* SGCodecDescription.m */,
+			);
+			path = SGDescription;
 			sourceTree = "<group>";
 		};
 		9CE6F5172004D97C00D1F4C8 /* SGPlatform */ = {

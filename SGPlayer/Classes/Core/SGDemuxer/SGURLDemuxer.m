@@ -149,7 +149,7 @@
             codecDescription.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
             codecDescription.timebase = stream->time_base;
             codecDescription.codecpar = stream->codecpar;
-            codecDescription.timeRange = CMTimeRangeMake(self->_startTime, kCMTimePositiveInfinity);
+            [codecDescription appendTimeRange:CMTimeRangeMake(self->_startTime, kCMTimePositiveInfinity)];
             [pkt setCodecDescription:codecDescription];
             [pkt fill];
             *packet = pkt;

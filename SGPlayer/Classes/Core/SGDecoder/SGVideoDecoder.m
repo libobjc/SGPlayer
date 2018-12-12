@@ -16,7 +16,6 @@
 
 {
     BOOL _alignment;
-    CMTimeRange _timeRange;
     SGCodecContext *_codecContext;
     SGCodecDescription *_codecDescription;
 }
@@ -29,24 +28,25 @@
 
 - (void)setup
 {
+    self->_alignment = NO;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGVideoFrame class]];
     [self->_codecContext open];
-    self->_alignment = NO;
 }
 
 - (void)destroy
 {
+    self->_alignment = NO;
     [self->_codecContext close];
     self->_codecContext = nil;
-    self->_alignment = NO;
 }
 
 #pragma mark - Control
 
 - (void)flush
 {
+    self->_alignment = NO;
     [self->_codecContext flush];
 }
 
@@ -54,17 +54,17 @@
 {
     NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescription *codecDescription = packet.codecDescription;
-    if (codecDescription && ![codecDescription isEqualToDescription:self->_codecDescription]) {
+    NSAssert(codecDescription, @"Invalid Codec Description.");
+    if (![codecDescription isEqualCodecparToDescription:self->_codecDescription]) {
         NSArray<SGFrame *> *objs = [self processPacket:nil];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
-        codecDescription = [codecDescription copy];
-        self->_codecDescription = codecDescription;
-        self->_timeRange = codecDescription.finalTimeRange;
+        self->_codecDescription = [codecDescription copy];
         [self destroy];
         [self setup];
     }
+    [codecDescription fillToDescription:self->_codecDescription];
     NSArray<SGFrame *> *objs = [self processPacket:packet];
     for (SGFrame *obj in objs) {
         [ret addObject:obj];
@@ -95,17 +95,17 @@
         SGCodecDescription *codecDescription = [self->_codecDescription copy];
         [obj setCodecDescription:codecDescription];
         [obj fill];
-        if (CMTimeCompare(obj.timeStamp, self->_timeRange.start) < 0) {
+        if (CMTimeCompare(obj.timeStamp, codecDescription.timeRange.start) < 0) {
             [obj unlock];
             continue;
         }
-        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
+        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(codecDescription.timeRange)) >= 0) {
             [obj unlock];
             continue;
         }
         if (!self->_alignment) {
             self->_alignment = YES;
-            CMTime start = self->_timeRange.start;
+            CMTime start = codecDescription.timeRange.start;
             CMTime duration = CMTimeSubtract(CMTimeAdd(obj.timeStamp, obj.duration), start);
             CMTimeScale timescale = duration.timescale;
             if (CMTimeCompare(obj.timeStamp, start) > 0) {
@@ -122,7 +122,7 @@
         }
         if (YES) {
             CMTime start = obj.timeStamp;
-            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(self->_timeRange), obj.timeStamp);
+            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(codecDescription.timeRange), obj.timeStamp);
             CMTimeScale timescale = duration.timescale;
             if (CMTimeCompare(obj.duration, duration) > 0) {
                 obj.core->pts = av_rescale(timescale, start.value, start.timescale);

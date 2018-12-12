@@ -26,27 +26,17 @@
 /**
  *
  */
-@property (nonatomic) CMTimeRange timeRange;
-
-/**
- *
- */
 @property (nonatomic) AVCodecParameters * _Nullable codecpar;
 
 /**
  *
  */
-@property (nonatomic, copy) NSArray<SGTimeLayout *> * _Nullable timeLayouts;
+@property (nonatomic, readonly) CMTimeRange timeRange;
 
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGCodecDescription * _Nonnull)codecpar;
-
-/**
- *
- */
-- (void)appendTimeLayout:(SGTimeLayout * _Nonnull)timeLayout;
+@property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> * _Nullable timeLayouts;
 
 /**
  *
@@ -56,6 +46,21 @@
 /**
  *
  */
-- (CMTimeRange)finalTimeRange;
+- (void)appendTimeLayout:(SGTimeLayout * _Nonnull)timeLayout;
+
+/**
+ *
+ */
+- (void)fillToDescription:(SGCodecDescription * _Nonnull)description;
+
+/**
+ *
+ */
+- (BOOL)isEqualToDescription:(SGCodecDescription * _Nonnull)description;
+
+/**
+ *
+ */
+- (BOOL)isEqualCodecparToDescription:(SGCodecDescription * _Nonnull)description;
 
 @end
