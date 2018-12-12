@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SGAsset : NSObject
+@interface SGAsset : NSObject <NSCopying>
 
 @end

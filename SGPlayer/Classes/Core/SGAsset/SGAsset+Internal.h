@@ -11,6 +11,9 @@
 
 @interface SGAsset ()
 
+/**
+ *
+ */
 - (id<SGDemuxable> _Nonnull)newDemuxable;
 
 @end

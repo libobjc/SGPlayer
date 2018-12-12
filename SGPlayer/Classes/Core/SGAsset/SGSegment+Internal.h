@@ -11,6 +11,9 @@
 
 @interface SGSegment ()
 
+/**
+ *
+ */
 - (id<SGDemuxable> _Nonnull)newDemuxable;
 
 @end

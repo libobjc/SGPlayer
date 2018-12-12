@@ -12,8 +12,14 @@
 
 @interface SGMutableTrack : SGTrack
 
-- (BOOL)insertSegment:(SGSegment * _Nonnull)segment;
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) NSArray<SGSegment *> * _Nonnull segments;
 
-- (NSArray<SGSegment *> * _Nonnull)segments;
+/**
+ *
+ */
+- (BOOL)appendSegment:(SGSegment * _Nonnull)segment;
 
 @end

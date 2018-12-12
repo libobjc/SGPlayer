@@ -22,7 +22,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGMutableTrack *obj = [super copyWithZone:zone];
-    obj->_segments = [self->_segments copy];
+    obj->_segments = [self->_segments mutableCopy];
     return obj;
 }
 
@@ -34,15 +34,15 @@
     return self;
 }
 
-- (BOOL)insertSegment:(SGSegment *)segment
-{
-    [self->_segments addObject:segment];
-    return YES;
-}
-
 - (NSArray<SGSegment *> *)segments
 {
     return [self->_segments copy];
+}
+
+- (BOOL)appendSegment:(SGSegment *)segment
+{
+    [self->_segments addObject:segment];
+    return YES;
 }
 
 @end

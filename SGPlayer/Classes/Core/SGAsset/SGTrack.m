@@ -9,27 +9,14 @@
 #import "SGTrack.h"
 #import "SGTrack+Internal.h"
 
-@interface SGTrack ()
-
-{
-    int _index;
-    SGMediaType _type;
-}
-
-@end
-
 @implementation SGTrack
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGTrack *obj = [[self.class alloc] initWithType:self->_type index:self->_index];
+    SGTrack *obj = [[self.class alloc] init];
+    obj->_type = self->_type;
+    obj->_index = self->_index;
     return obj;
-}
-
-- (instancetype)init
-{
-    NSAssert(NO, @"Invalid Function.");
-    return nil;
 }
 
 - (instancetype)initWithType:(SGMediaType)type index:(int)index
@@ -39,16 +26,6 @@
         self->_index = index;
     }
     return self;
-}
-
-- (SGMediaType)type
-{
-    return self->_type;
-}
-
-- (int)index
-{
-    return self->_index;
 }
 
 @end

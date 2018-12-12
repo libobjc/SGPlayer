@@ -24,8 +24,6 @@
 
 @implementation SGVideoDecoder
 
-@synthesize index = _index;
-
 - (void)setup
 {
     self->_alignment = NO;

@@ -22,12 +22,24 @@
 
 @implementation SGMutableAsset
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    SGMutableAsset *obj = [super copyWithZone:zone];
+    obj->_tracks = [self->_tracks mutableCopy];
+    return obj;
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {
-        _tracks = [NSMutableArray array];
+        self->_tracks = [NSMutableArray array];
     }
     return self;
+}
+
+- (NSArray<SGMutableTrack *> *)tracks
+{
+    return [self->_tracks copy];
 }
 
 - (SGMutableTrack *)addTrack:(SGMediaType)type

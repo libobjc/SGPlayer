@@ -24,8 +24,6 @@
 
 @implementation SGAudioDecoder
 
-@synthesize index = _index;
-
 - (void)setup
 {
     self->_alignment = NO;

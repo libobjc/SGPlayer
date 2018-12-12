@@ -12,8 +12,6 @@
 
 @protocol SGDecodable <NSObject>
 
-@property (nonatomic) int index;
-
 /**
  *
  */

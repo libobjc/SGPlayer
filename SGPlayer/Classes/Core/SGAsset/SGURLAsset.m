@@ -10,15 +10,14 @@
 #import "SGAsset+Internal.h"
 #import "SGURLDemuxer.h"
 
-@interface SGURLAsset ()
-
-{
-    NSURL *_URL;
-}
-
-@end
-
 @implementation SGURLAsset
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    SGURLAsset *obj = [super copyWithZone:zone];
+    obj->_URL = [self->_URL copy];
+    return obj;
+}
 
 - (instancetype)initWithURL:(NSURL *)URL
 {

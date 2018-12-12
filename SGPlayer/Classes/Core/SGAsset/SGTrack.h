@@ -14,11 +14,17 @@
 /**
  *
  */
-- (SGMediaType)type;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 /**
  *
  */
-- (int)index;
+@property (nonatomic, readonly) SGMediaType type;
+
+/**
+ *
+ */
+@property (nonatomic, readonly) int index;
 
 @end

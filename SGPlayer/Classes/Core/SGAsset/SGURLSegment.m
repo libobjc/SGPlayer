@@ -16,7 +16,7 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGURLSegment *obj = [super copyWithZone:zone];
-    obj->_URL = self->_URL;
+    obj->_URL = [self->_URL copy];
     obj->_index = self->_index;
     return obj;
 }
@@ -29,7 +29,7 @@
 - (instancetype)initWithURL:(NSURL *)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super initWithTimeRange:timeRange scale:scale]) {
-        self->_URL = URL;
+        self->_URL = [URL copy];
         self->_index = index;
     }
     return self;
@@ -40,7 +40,7 @@
     SGURLDemuxer *demuxable = [[SGURLDemuxer alloc] initWithURL:self->_URL];
     SGDemuxerFunnel *obj = [[SGDemuxerFunnel alloc] initWithDemuxable:demuxable];
     obj.timeRange = self.timeRange;
-    obj.index = self->_index;
+    obj.index = self.index;
     return obj;
 }
 

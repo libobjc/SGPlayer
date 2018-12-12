@@ -12,6 +12,14 @@
 
 @interface SGMutableAsset : SGAsset
 
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) NSArray<SGMutableTrack *> * _Nonnull tracks;
+
+/**
+ *
+ */
 - (SGMutableTrack *)addTrack:(SGMediaType)type;
 
 @end

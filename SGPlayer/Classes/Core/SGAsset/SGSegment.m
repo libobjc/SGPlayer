@@ -19,11 +19,6 @@
     return obj;
 }
 
-- (instancetype)init
-{
-    return [self initWithTimeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];
-}
-
 - (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super init]) {

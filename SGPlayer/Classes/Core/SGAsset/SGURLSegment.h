@@ -10,10 +10,24 @@
 
 @interface SGURLSegment : SGSegment
 
-- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index;
-- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
+/**
+ *
+ */
+- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_UNAVAILABLE;
 
-@property (nonatomic, copy) NSURL * _Nonnull URL;
-@property (nonatomic) int index;
+/**
+ *
+ */
+- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
+
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) NSURL * _Nonnull URL;
+
+/**
+ *
+ */
+@property (nonatomic, readonly) int index;
 
 @end

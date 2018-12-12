@@ -11,6 +11,12 @@
 
 @implementation SGAsset
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    SGAsset *obj = [[self.class alloc] init];
+    return obj;
+}
+
 - (id<SGDemuxable>)newDemuxable
 {
     return nil;
