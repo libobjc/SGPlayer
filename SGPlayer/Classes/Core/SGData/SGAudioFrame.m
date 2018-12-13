@@ -83,9 +83,13 @@
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
     }
+    CMTime scale = CMTimeMake(1, 1);
+    for (SGTimeLayout *obj in self.codecDescription.timeLayouts) {
+        scale = SGCMTimeMultiply(scale, obj.scale);
+    }
     self->_audioDescription = [[SGAudioDescription alloc] init];
     self->_audioDescription.format = frame->format;
-    self->_audioDescription.sampleRate = frame->sample_rate;
+    self->_audioDescription.sampleRate = frame->sample_rate / CMTimeGetSeconds(scale);
     self->_audioDescription.numberOfChannels = frame->channels;
     self->_audioDescription.channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
 }

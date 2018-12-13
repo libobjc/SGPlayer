@@ -32,12 +32,12 @@
 
 - (CMTime)convertTimeStamp:(CMTime)timeStamp
 {
-    return CMTimeAdd(timeStamp, self->_start);
+    return CMTimeAdd(SGCMTimeMultiply(timeStamp, self->_scale), self->_start);
 }
 
 - (CMTime)convertDuration:(CMTime)duration
 {
-    return duration;
+    return SGCMTimeMultiply(duration, self->_scale);
 }
 
 - (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout
