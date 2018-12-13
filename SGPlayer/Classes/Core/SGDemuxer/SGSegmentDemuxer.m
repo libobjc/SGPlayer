@@ -9,6 +9,7 @@
 #import "SGSegmentDemuxer.h"
 #import "SGSegment+Internal.h"
 #import "SGPacket+Internal.h"
+#import "SGError.h"
 #import "SGMacro.h"
 
 @interface SGSegmentDemuxer ()
@@ -59,9 +60,6 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         self->_duration = SGCMTimeMultiply(duration, self->_segment.scale);
         return nil;
     }
-    if (!self->_demuxable) {
-        return nil;
-    }
     NSError *ret = [self->_demuxable open];
     if (ret) {
         return ret;
@@ -74,12 +72,19 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    if (!self->_demuxable) {
+        return nil;
+    }
     time = SGCMTimeDivide(time, self->_segment.scale);
     return [self->_demuxable seekToTime:time];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
+    if (!self->_demuxable) {
+        return SGECreateError(SGErrorCodeDemuxerEndOfFile,
+                              SGOperationCodeSegmentDemuxerNext);
+    }
     NSError *ret = [self->_demuxable nextPacket:packet];
     if (ret) {
         return ret;

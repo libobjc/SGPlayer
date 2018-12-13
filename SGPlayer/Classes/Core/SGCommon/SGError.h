@@ -27,6 +27,7 @@ typedef NS_ENUM(int, SGErrorCode) {
     SGErrorCodeConcatDemuxerNotFoundUnit,
     SGErrorCodeConcatDemuxerUnitInvaildDuration,
     SGErrorCodeMutilDemuxerEndOfFile,
+    SGErrorCodeDemuxerEndOfFile,
 };
 
 /**
@@ -51,8 +52,8 @@ typedef NS_ENUM(int, SGOperationCode) {
     SGOperationCodePacketOutputSeek,
     SGOperationCodeURLDemuxerFunnelNext,
     SGOperationCodeURLDemuxerSeek,
-    SGOperationCodeConcatDemuxerUnitOpen,
     SGOperationCodeMutilDemuxerNext,
+    SGOperationCodeSegmentDemuxerNext,
 };
 
 /**

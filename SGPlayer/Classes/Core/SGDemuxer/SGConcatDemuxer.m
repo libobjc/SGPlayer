@@ -29,7 +29,7 @@
 {
     if (self = [super init]) {
         self->_track = [track copy];
-        self->_tracks = @[track];
+        self->_tracks = @[self->_track];
         self->_units = [NSMutableArray array];
     }
     return self;
@@ -79,7 +79,7 @@
             return error;
         }
         NSAssert(CMTIME_IS_VALID(unit.duration), @"Invaild Duration.");
-        NSAssert(self->_track.type == unit.tracks.firstObject.type, @"Invaild mediaType.");
+        NSAssert(!unit.tracks.firstObject || unit.tracks.firstObject.type == self->_track.type, @"Invaild mediaType.");
         basetime = CMTimeAdd(basetime, unit.duration);
     }
     self->_duration = basetime;
@@ -132,7 +132,7 @@
             [self->_currentUnit seekToTime:kCMTimeZero];
             continue;
         }
-        (*packet).codecDescription.track = self->_tracks.firstObject;
+        (*packet).codecDescription.track = self->_track;
         [(*packet) fill];
         break;
     }
