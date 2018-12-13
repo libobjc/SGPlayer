@@ -8,6 +8,7 @@
 
 #import "SGSegment.h"
 #import "SGSegment+Internal.h"
+#import "SGTime.h"
 
 @implementation SGSegment
 

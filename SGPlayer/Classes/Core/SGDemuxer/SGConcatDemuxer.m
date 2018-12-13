@@ -81,7 +81,7 @@
         NSAssert(CMTIME_IS_VALID(unit.duration), @"Invaild Duration.");
         NSAssert(self->_track.type == unit.tracks.firstObject.type, @"Invaild mediaType.");
         unit.timeRange = CMTimeRangeMake(duration, unit.duration);
-        duration = CMTimeRangeGetEnd(obj.timeRange);
+        duration = CMTimeRangeGetEnd(unit.timeRange);
     }
     self->_duration = duration;
     self->_currentUnit = self->_units.firstObject;

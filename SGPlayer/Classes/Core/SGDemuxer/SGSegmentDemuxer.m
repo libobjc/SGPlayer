@@ -77,7 +77,8 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     if (ret) {
         return ret;
     }
-    SGTimeLayout *layout = [[SGTimeLayout alloc] initWithStart:self->_timeRange.start scale:kCMTimeInvalid];
+    SGTimeLayout *layout = [[SGTimeLayout alloc] initWithStart:self->_timeRange.start
+                                                         scale:self->_segment.scale];
     [(*packet).codecDescription appendTimeLayout:layout];
     [(*packet) fill];
     return nil;

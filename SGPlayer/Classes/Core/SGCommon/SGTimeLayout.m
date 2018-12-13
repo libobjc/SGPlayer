@@ -8,15 +8,6 @@
 
 #import "SGTimeLayout.h"
 
-@interface SGTimeLayout ()
-
-{
-    CMTime _start;
-    CMTime _scale;
-}
-
-@end
-
 @implementation SGTimeLayout
 
 - (id)copyWithZone:(NSZone *)zone
@@ -34,19 +25,24 @@
 {
     if (self = [super init]) {
         self->_start = start;
-        self->_scale = scale;
+        self->_scale = SGCMTimeValidate(scale, CMTimeMake(1, 1), NO);
+        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(1, 10)) >= 0, @"Invalid Scale.");
+        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(10, 1)) <= 0, @"Invalid Scale.");
     }
     return self;
 }
 
-- (CMTime)start
+- (CMTime)convertTimeStamp:(CMTime)timeStamp
 {
-    return self->_start;
+    if (CMTIME_IS_VALID(_start)) {
+        return CMTimeAdd(timeStamp, self->_start);
+    }
+    return timeStamp;
 }
 
-- (CMTime)scale
+- (CMTime)convertDuration:(CMTime)duration
 {
-    return self->_scale;
+    return duration;
 }
 
 - (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout
@@ -61,19 +57,6 @@
         return NO;
     }
     return YES;
-}
-
-- (CMTime)convertTimeStamp:(CMTime)timeStamp
-{
-    if (CMTIME_IS_VALID(_start)) {
-        return CMTimeAdd(timeStamp, self->_start);
-    }
-    return timeStamp;
-}
-
-- (CMTime)convertDuration:(CMTime)duration
-{
-    return duration;
 }
 
 @end
