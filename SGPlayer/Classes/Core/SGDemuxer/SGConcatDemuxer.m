@@ -7,14 +7,15 @@
 //
 
 #import "SGConcatDemuxer.h"
-#import "SGConcatDemuxerUnit.h"
+#import "SGSegmentDemuxer.h"
 #import "SGPacket+Internal.h"
 #import "SGError.h"
 
 @interface SGConcatDemuxer ()
 
-@property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *units;
-@property (nonatomic, strong, readonly) SGConcatDemuxerUnit *currentUnit;
+@property (nonatomic, strong, readonly) SGMutableTrack *track;
+@property (nonatomic, strong, readonly) SGSegmentDemuxer *currentUnit;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *units;
 
 @end
 
@@ -27,13 +28,9 @@
 - (instancetype)initWithTrack:(SGMutableTrack *)track
 {
     if (self = [super init]) {
-        track = [track copy];
-        NSMutableArray *units = [NSMutableArray array];
-        for (SGSegment *obj in track.segments) {
-            [units addObject:[[SGConcatDemuxerUnit alloc] initWithSegment:obj]];
-        }
-        self->_units = [units copy];
+        self->_track = [track copy];
         self->_tracks = @[track];
+        self->_units = [NSMutableArray array];
     }
     return self;
 }
@@ -47,7 +44,7 @@
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {
-    for (SGConcatDemuxerUnit *obj in self->_units) {
+    for (SGSegmentDemuxer *obj in self->_units) {
         obj.delegate = delegate;
     }
 }
@@ -59,7 +56,7 @@
 
 - (void)setOptions:(NSDictionary *)options
 {
-    for (SGConcatDemuxerUnit *obj in self->_units) {
+    for (SGSegmentDemuxer *obj in self->_units) {
         obj.options = options;
     }
 }
@@ -73,27 +70,28 @@
 
 - (NSError *)open
 {
-    NSError *ret = nil;
     CMTime duration = kCMTimeZero;
-    for (SGConcatDemuxerUnit *obj in self->_units) {
-        ret = [obj open];
-        if (ret) {
-            break;
+    for (SGSegment *obj in self->_track.segments) {
+        SGSegmentDemuxer *unit = [[SGSegmentDemuxer alloc] initWithSegment:obj];
+        [self->_units addObject:unit];
+        NSError *error = [unit open];
+        if (error) {
+            return error;
         }
-        NSAssert(CMTIME_IS_VALID(obj.duration), @"Invaild Duration.");
-        NSAssert(self->_tracks.firstObject.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
-        obj.timeRange = CMTimeRangeMake(duration, obj.duration);
+        NSAssert(CMTIME_IS_VALID(unit.duration), @"Invaild Duration.");
+        NSAssert(self->_track.type == unit.tracks.firstObject.type, @"Invaild mediaType.");
+        unit.timeRange = CMTimeRangeMake(duration, unit.duration);
         duration = CMTimeRangeGetEnd(obj.timeRange);
     }
     self->_duration = duration;
     self->_currentUnit = self->_units.firstObject;
     [self->_currentUnit seekToTime:kCMTimeZero];
-    return ret;
+    return nil;
 }
 
 - (NSError *)close
 {
-    for (SGConcatDemuxerUnit *obj in self->_units) {
+    for (SGSegmentDemuxer *obj in self->_units) {
         [obj close];
     }
     return nil;
@@ -108,8 +106,8 @@
 {
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
-    SGConcatDemuxerUnit *unit = nil;
-    for (SGConcatDemuxerUnit *obj in self->_units) {
+    SGSegmentDemuxer *unit = nil;
+    for (SGSegmentDemuxer *obj in self->_units) {
         if (CMTimeCompare(time, CMTimeRangeGetEnd(obj.timeRange)) <= 0) {
             unit = obj;
             break;

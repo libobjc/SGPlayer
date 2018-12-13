@@ -17,12 +17,12 @@
 		9C0A6F37219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F33219C33EA0027D5B1 /* SGConcatDemuxer.m */; };
 		9C0A6F38219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F33219C33EA0027D5B1 /* SGConcatDemuxer.m */; };
 		9C0A6F39219C33EA0027D5B1 /* SGConcatDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F33219C33EA0027D5B1 /* SGConcatDemuxer.m */; };
-		9C0A6F3C219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGConcatDemuxerUnit.h */; };
-		9C0A6F3D219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGConcatDemuxerUnit.h */; };
-		9C0A6F3E219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGConcatDemuxerUnit.h */; };
-		9C0A6F3F219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGConcatDemuxerUnit.m */; };
-		9C0A6F40219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGConcatDemuxerUnit.m */; };
-		9C0A6F41219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGConcatDemuxerUnit.m */; };
+		9C0A6F3C219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGSegmentDemuxer.h */; };
+		9C0A6F3D219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGSegmentDemuxer.h */; };
+		9C0A6F3E219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0A6F3A219C36300027D5B1 /* SGSegmentDemuxer.h */; };
+		9C0A6F3F219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGSegmentDemuxer.m */; };
+		9C0A6F40219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGSegmentDemuxer.m */; };
+		9C0A6F41219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C0A6F3B219C36300027D5B1 /* SGSegmentDemuxer.m */; };
 		9C0B6CB3217D823500900F1E /* SGAsset+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0B6CB1217D823500900F1E /* SGAsset+Internal.h */; };
 		9C0DF028215A2FB9007142DB /* SGDemuxable.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C0DF027215A2FB9007142DB /* SGDemuxable.h */; };
 		9C13638E213934030025C72B /* SGGLBGRAProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C13638C213934030025C72B /* SGGLBGRAProgram.h */; };
@@ -558,8 +558,8 @@
 		9C03E5EF212E645B001F0E1B /* SGVRMatrixMaker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGVRMatrixMaker.m; sourceTree = "<group>"; };
 		9C0A6F32219C33EA0027D5B1 /* SGConcatDemuxer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConcatDemuxer.h; sourceTree = "<group>"; };
 		9C0A6F33219C33EA0027D5B1 /* SGConcatDemuxer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConcatDemuxer.m; sourceTree = "<group>"; };
-		9C0A6F3A219C36300027D5B1 /* SGConcatDemuxerUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGConcatDemuxerUnit.h; sourceTree = "<group>"; };
-		9C0A6F3B219C36300027D5B1 /* SGConcatDemuxerUnit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGConcatDemuxerUnit.m; sourceTree = "<group>"; };
+		9C0A6F3A219C36300027D5B1 /* SGSegmentDemuxer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGSegmentDemuxer.h; sourceTree = "<group>"; };
+		9C0A6F3B219C36300027D5B1 /* SGSegmentDemuxer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGSegmentDemuxer.m; sourceTree = "<group>"; };
 		9C0B6CB1217D823500900F1E /* SGAsset+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SGAsset+Internal.h"; sourceTree = "<group>"; };
 		9C0B6CB5217DBA1800900F1E /* SGDecodable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDecodable.h; sourceTree = "<group>"; };
 		9C0DF027215A2FB9007142DB /* SGDemuxable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDemuxable.h; sourceTree = "<group>"; };
@@ -1147,8 +1147,8 @@
 				9CB01C92219E863D00B36CFA /* SGMutilDemuxer.m */,
 				9C0A6F32219C33EA0027D5B1 /* SGConcatDemuxer.h */,
 				9C0A6F33219C33EA0027D5B1 /* SGConcatDemuxer.m */,
-				9C0A6F3A219C36300027D5B1 /* SGConcatDemuxerUnit.h */,
-				9C0A6F3B219C36300027D5B1 /* SGConcatDemuxerUnit.m */,
+				9C0A6F3A219C36300027D5B1 /* SGSegmentDemuxer.h */,
+				9C0A6F3B219C36300027D5B1 /* SGSegmentDemuxer.m */,
 			);
 			path = SGDemuxer;
 			sourceTree = "<group>";
@@ -1436,7 +1436,7 @@
 				9C86388E21904A0900D730EC /* SGCodecContext.h in Headers */,
 				9C86388F21904A0900D730EC /* SGError.h in Headers */,
 				9CA57923219D69580061093B /* SGTimeLayout.h in Headers */,
-				9C0A6F3D219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */,
+				9C0A6F3D219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */,
 				9C86389021904A0900D730EC /* SGFrame+Internal.h in Headers */,
 				9C86389121904A0900D730EC /* SGVRMatrixMaker.h in Headers */,
 				9C86389221904A0900D730EC /* SGGLYUV420PProgram.h in Headers */,
@@ -1538,7 +1538,7 @@
 				9CD79F6E2190068E00E39A7D /* SGGLProgram.h in Headers */,
 				9CD79F712190068E00E39A7D /* SGVideoDecoder.h in Headers */,
 				9CA57924219D69580061093B /* SGTimeLayout.h in Headers */,
-				9C0A6F3E219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */,
+				9C0A6F3E219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */,
 				9CD79F722190068E00E39A7D /* SGGLPlaneModel.h in Headers */,
 				9CD79F762190068E00E39A7D /* SGPLFGLView.h in Headers */,
 				9CD79F782190068E00E39A7D /* SGCodecContext.h in Headers */,
@@ -1583,7 +1583,7 @@
 				9CAAC99F2133A6800065E364 /* SGVRViewport.h in Headers */,
 				9C4663CA20D0F83600CADDA7 /* SGTime.h in Headers */,
 				9C26CF57218D787D009FFCC4 /* SGClock+Internal.h in Headers */,
-				9C0A6F3C219C36300027D5B1 /* SGConcatDemuxerUnit.h in Headers */,
+				9C0A6F3C219C36300027D5B1 /* SGSegmentDemuxer.h in Headers */,
 				9CF63FC2211D8E33001B2684 /* SGAsset.h in Headers */,
 				9CA0F56420E0E24000501478 /* SGDefines.h in Headers */,
 				9CE6F54B2004D97D00D1F4C8 /* SGPLFScreen.h in Headers */,
@@ -1835,7 +1835,7 @@
 				9C1F2DEB21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9C82EEB521AE356D00E9D523 /* SGAudioProcessor.m in Sources */,
 				9C86381F21904A0900D730EC /* SGPLFGLView.m in Sources */,
-				9C0A6F40219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
+				9C0A6F40219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */,
 				9C86382021904A0900D730EC /* SGPacketOutput.m in Sources */,
 				9C86382121904A0900D730EC /* SGPLFColor.m in Sources */,
 				9CE71919219C3F7900256485 /* SGURLSegment.m in Sources */,
@@ -1914,7 +1914,7 @@
 				9C1F2DEC21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9C82EEB621AE356D00E9D523 /* SGAudioProcessor.m in Sources */,
 				9CD79EC62190068E00E39A7D /* SGPLFGLView.m in Sources */,
-				9C0A6F41219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
+				9C0A6F41219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */,
 				9CD79EC72190068E00E39A7D /* SGPacketOutput.m in Sources */,
 				9CD79EC82190068E00E39A7D /* SGPLFColor.m in Sources */,
 				9CE7191A219C3F7900256485 /* SGURLSegment.m in Sources */,
@@ -1995,7 +1995,7 @@
 				9C1F2DEA21AF8F1A00D42158 /* SGAudioMixer.m in Sources */,
 				9CB1F09F20178B0E00102A69 /* SGPLFGLView.m in Sources */,
 				9CA57925219D69580061093B /* SGTimeLayout.m in Sources */,
-				9C0A6F3F219C36300027D5B1 /* SGConcatDemuxerUnit.m in Sources */,
+				9C0A6F3F219C36300027D5B1 /* SGSegmentDemuxer.m in Sources */,
 				9C8D4E66200E0ACC00ED8A58 /* SGPacketOutput.m in Sources */,
 				9C41910021B00FC600134099 /* SGMutableTrack.m in Sources */,
 				9CE6F5332004D97D00D1F4C8 /* SGPLFColor.m in Sources */,

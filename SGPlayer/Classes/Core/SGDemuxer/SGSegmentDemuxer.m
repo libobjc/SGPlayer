@@ -1,24 +1,23 @@
 //
-//  SGConcatDemuxerUnit.m
+//  SGSegmentDemuxer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGConcatDemuxerUnit.h"
+#import "SGSegmentDemuxer.h"
 #import "SGSegment+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGMacro.h"
 
-@interface SGConcatDemuxerUnit ()
+@interface SGSegmentDemuxer ()
 
-@property (nonatomic, strong, readonly) SGSegment *segment;
 @property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
 
 @end
 
-@implementation SGConcatDemuxerUnit
+@implementation SGSegmentDemuxer
 
 @synthesize duration = _duration;
 

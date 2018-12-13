@@ -1,5 +1,5 @@
 //
-//  SGConcatDemuxerUnit.h
+//  SGSegmentDemuxer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
@@ -9,7 +9,7 @@
 #import "SGDemuxable.h"
 #import "SGSegment.h"
 
-@interface SGConcatDemuxerUnit : NSObject <SGDemuxable>
+@interface SGSegmentDemuxer : NSObject <SGDemuxable>
 
 /**
  *
@@ -21,6 +21,11 @@
  *
  */
 - (instancetype)initWithSegment:(SGSegment * _Nonnull)segment NS_DESIGNATED_INITIALIZER;
+
+/**
+ *
+ */
+@property (nonatomic, strong, readonly) SGSegment * _Nonnull segment;
 
 /**
  *
