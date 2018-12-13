@@ -17,28 +17,26 @@
 
 @interface SGURLDemuxer ()
 
-{
-    NSURL *_URL;
-    CMTime _duration;
-    CMTime _startTime;
-    NSDictionary *_metadata;
-    AVFormatContext *_context;
-    NSArray<SGTrack *> *_tracks;
-}
+@property (nonatomic, readonly) CMTime startTime;
+@property (nonatomic, readonly) AVFormatContext *context;
 
 @end
 
 @implementation SGURLDemuxer
 
-@synthesize delegate = _delegate;
+@synthesize tracks = _tracks;
 @synthesize options = _options;
+@synthesize delegate = _delegate;
+@synthesize metadata = _metadata;
+@synthesize duration = _duration;
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
     if (self = [super init]) {
-        self->_URL = URL;
+        self->_URL = [URL copy];
         self->_options = [SGConfiguration sharedConfiguration].formatContextOptions;
         self->_startTime = kCMTimeNegativeInfinity;
+        self->_duration = kCMTimeInvalid;
     }
     return self;
 }
@@ -46,23 +44,6 @@
 - (void)dealloc
 {
     [self close];
-}
-
-#pragma mark - Setter & Getter
-
-- (CMTime)duration
-{
-    return self->_duration;
-}
-
-- (NSDictionary *)metadata
-{
-    return [self->_metadata copy];
-}
-
-- (NSArray<SGTrack *> *)tracks
-{
-    return [self->_tracks copy];
 }
 
 #pragma mark - Control
@@ -79,8 +60,6 @@
     }
     if (self->_context && self->_context->duration > 0) {
         self->_duration = CMTimeMake(self->_context->duration, AV_TIME_BASE);
-    } else {
-        self->_duration = kCMTimeZero;
     }
     if (self->_context && self->_context->metadata) {
         self->_metadata = SGDictionaryFF2NS(self->_context->metadata);

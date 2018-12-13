@@ -8,18 +8,21 @@
 
 #import "SGTime.h"
 
-CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime)
+BOOL SGCMTimeIsValid(CMTime time, BOOL infinity)
 {
-    if (CMTIME_IS_INVALID(defaultTime)) {
+    return
+    CMTIME_IS_VALID(time) &&
+    (infinity || (!CMTIME_IS_NEGATIVE_INFINITY(time) &&
+                  !CMTIME_IS_POSITIVE_INFINITY(time)));
+}
+
+CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime, BOOL infinity)
+{
+    if (SGCMTimeIsValid(time, infinity)) {
         return time;
     }
-    if (CMTIME_IS_INVALID(time)) {
-        return defaultTime;
-    }
-    if (CMTimeCompare(time, kCMTimeZero) <= 0) {
-        return defaultTime;
-    }
-    return time;
+    NSCAssert(SGCMTimeIsValid(defaultTime, infinity), @"Invalid Default Time.");
+    return defaultTime;
 }
 
 CMTime SGCMTimeMakeWithSeconds(Float64 seconds)
@@ -45,4 +48,10 @@ CMTime SGCMTimeDivide(CMTime time, CMTime divisor)
         return CMTimeMultiplyByFloat64(time, 1.0 / CMTimeGetSeconds(divisor));
     }
     return CMTimeMake(time.value * divisor.timescale, time.timescale * (int32_t)divisor.value);
+}
+
+CMTimeRange SGCMTimeRangeFit(CMTimeRange timeRange)
+{
+    return CMTimeRangeMake(SGCMTimeValidate(timeRange.start, kCMTimeNegativeInfinity, YES),
+                           SGCMTimeValidate(timeRange.duration, kCMTimePositiveInfinity, YES));
 }

@@ -20,6 +20,6 @@
 /**
  *
  */
-- (SGMutableTrack *)addTrack:(SGMediaType)type;
+- (SGMutableTrack * _Nonnull)addTrack:(SGMediaType)type;
 
 @end

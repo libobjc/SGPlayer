@@ -13,17 +13,16 @@
 
 @interface SGConcatDemuxer ()
 
-{
-    CMTime _duration;
-    NSDictionary *_metadata;
-    NSArray<SGTrack *> *_tracks;
-    NSArray<id<SGDemuxable>> *_units;
-    SGConcatDemuxerUnit *_currentUnit;
-}
+@property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *units;
+@property (nonatomic, strong, readonly) SGConcatDemuxerUnit *currentUnit;
 
 @end
 
 @implementation SGConcatDemuxer
+
+@synthesize tracks = _tracks;
+@synthesize duration = _duration;
+@synthesize metadata = _metadata;
 
 - (instancetype)initWithTrack:(SGMutableTrack *)track
 {
@@ -70,21 +69,6 @@
     return self->_units.firstObject.options;
 }
 
-- (CMTime)duration
-{
-    return self->_duration;
-}
-
-- (NSDictionary *)metadata
-{
-    return [self->_metadata copy];
-}
-
-- (NSArray<SGTrack *> *)tracks
-{
-    return [self->_tracks copy];
-}
-
 #pragma mark - Control
 
 - (NSError *)open
@@ -96,6 +80,7 @@
         if (ret) {
             break;
         }
+        NSAssert(CMTIME_IS_VALID(obj.duration), @"Invaild Duration.");
         NSAssert(self->_tracks.firstObject.type == obj.tracks.firstObject.type, @"Invaild mediaType.");
         obj.timeRange = CMTimeRangeMake(duration, obj.duration);
         duration = CMTimeRangeGetEnd(obj.timeRange);

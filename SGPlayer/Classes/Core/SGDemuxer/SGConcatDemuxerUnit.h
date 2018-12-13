@@ -11,6 +11,9 @@
 
 @interface SGConcatDemuxerUnit : NSObject <SGDemuxable>
 
+/**
+ *
+ */
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 

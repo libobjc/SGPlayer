@@ -12,7 +12,12 @@
 /**
  *
  */
-CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime);
+BOOL SGCMTimeIsValid(CMTime time, BOOL infinity);
+
+/**
+ *
+ */
+CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime, BOOL infinity);
 
 /**
  *
@@ -28,3 +33,13 @@ CMTime SGCMTimeMultiply(CMTime time, CMTime multiplier);
  *
  */
 CMTime SGCMTimeDivide(CMTime time, CMTime divisor);
+
+/**
+ *
+ */
+CMTime SGCMTimeDivide(CMTime time, CMTime divisor);
+
+/**
+ *
+ */
+CMTimeRange SGCMTimeRangeFit(CMTimeRange timeRange);

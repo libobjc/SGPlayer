@@ -13,15 +13,14 @@
 
 @interface SGConcatDemuxerUnit ()
 
-{
-    CMTime _duration;
-    SGSegment *_segment;
-    id<SGDemuxable> _demuxable;
-}
+@property (nonatomic, strong, readonly) SGSegment *segment;
+@property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
 
 @end
 
 @implementation SGConcatDemuxerUnit
+
+@synthesize duration = _duration;
 
 - (instancetype)initWithSegment:(SGSegment *)segment
 {
@@ -47,13 +46,6 @@ SGGet0Map(NSDictionary *, metadata, self->_demuxable)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
 SGGet0Map(NSError *, close, self->_demuxable)
 SGGet0Map(NSError *, seekable, self->_demuxable)
-
-#pragma mark - Setter & Getter
-
-- (CMTime)duration
-{
-    return self->_duration;
-}
 
 #pragma mark - Control
 

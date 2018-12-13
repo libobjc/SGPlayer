@@ -12,18 +12,17 @@
 
 @interface SGMutilDemuxer ()
 
-{
-    CMTime _duration;
-    NSDictionary *_metadata;
-    SGPointerMap *_timeStamps;
-    NSArray<SGTrack *> *_tracks;
-    NSArray<id<SGDemuxable>> *_demuxables;
-    NSMutableArray<id<SGDemuxable>> *_finishedDemuxables;
-}
+@property (nonatomic, strong, readonly) SGPointerMap *timeStamps;
+@property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *demuxables;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *finishedDemuxables;
 
 @end
 
 @implementation SGMutilDemuxer
+
+@synthesize tracks = _tracks;
+@synthesize duration = _duration;
+@synthesize metadata = _metadata;
 
 - (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables
 {
@@ -65,21 +64,6 @@
     return self->_demuxables.firstObject.options;
 }
 
-- (CMTime)duration
-{
-    return self->_duration;
-}
-
-- (NSDictionary *)metadata
-{
-    return [self->_metadata copy];
-}
-
-- (NSArray<SGTrack *> *)tracks
-{
-    return [self->_tracks copy];
-}
-
 #pragma mark - Control
 
 - (NSError *)open
@@ -93,6 +77,7 @@
     CMTime duration = kCMTimeZero;
     NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
     for (id<SGDemuxable> obj in self->_demuxables) {
+        NSAssert(CMTIME_IS_VALID(obj.duration), @"Invalid Duration.");
         duration = CMTimeMaximum(duration, obj.duration);
         [tracks addObjectsFromArray:obj.tracks];
     }
@@ -176,8 +161,8 @@
             [self->_finishedDemuxables addObject:demuxable];
             continue;
         }
-        CMTime t = (*packet).decodeTimeStamp;
-        [self->_timeStamps setObject:[NSValue value:&t withObjCType:@encode(CMTime)] forKey:demuxable];
+        CMTime decodeTimeStamp = (*packet).decodeTimeStamp;
+        [self->_timeStamps setObject:[NSValue value:&decodeTimeStamp withObjCType:@encode(CMTime)] forKey:demuxable];
         break;
     }
     return ret;

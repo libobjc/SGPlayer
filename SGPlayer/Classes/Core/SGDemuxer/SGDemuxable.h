@@ -26,17 +26,17 @@
 /**
  *
  */
-- (CMTime)duration;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
 
 /**
  *
  */
-- (NSDictionary * _Nullable)metadata;
+@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
 
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)tracks;
+@property (nonatomic, readonly) CMTime duration;
 
 /**
  *

@@ -14,9 +14,7 @@
 
 @interface SGMutableAsset ()
 
-{
-    NSMutableArray<SGMutableTrack *> *_tracks;
-}
+@property (nonatomic, strong, readonly) NSMutableArray<SGMutableTrack *> *mutableTracks;
 
 @end
 
@@ -25,34 +23,34 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGMutableAsset *obj = [super copyWithZone:zone];
-    obj->_tracks = [self->_tracks mutableCopy];
+    obj->_mutableTracks = [self->_mutableTracks mutableCopy];
     return obj;
 }
 
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_tracks = [NSMutableArray array];
+        self->_mutableTracks = [NSMutableArray array];
     }
     return self;
 }
 
 - (NSArray<SGMutableTrack *> *)tracks
 {
-    return [self->_tracks copy];
+    return [self->_mutableTracks copy];
 }
 
 - (SGMutableTrack *)addTrack:(SGMediaType)type
 {
-    SGMutableTrack *obj = [[SGMutableTrack alloc] initWithType:type index:(int)self->_tracks.count];
-    [self->_tracks addObject:obj];
+    SGMutableTrack *obj = [[SGMutableTrack alloc] initWithType:type index:(int)self->_mutableTracks.count];
+    [self->_mutableTracks addObject:obj];
     return obj;
 }
 
 - (id<SGDemuxable>)newDemuxable
 {
     NSMutableArray *demuxables = [NSMutableArray array];
-    for (SGMutableTrack *obj in self->_tracks) {
+    for (SGMutableTrack *obj in self->_mutableTracks) {
         SGConcatDemuxer *demuxer = [[SGConcatDemuxer alloc] initWithTrack:obj];
         [demuxables addObject:demuxer];
     }

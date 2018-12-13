@@ -10,23 +10,26 @@
 
 @interface SGDemuxerFunnel : NSObject <SGDemuxable>
 
+/**
+ *
+ */
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable> _Nonnull)demuxable NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDemuxable:(id<SGDemuxable> _Nonnull)demuxable index:(int)index timeRange:(CMTimeRange)timeRange NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic) int index;
+@property (nonatomic, readonly) int index;
 
 /**
  *
  */
-@property (nonatomic) CMTimeRange timeRange;
+@property (nonatomic, readonly) CMTimeRange timeRange;
 
 /**
  *

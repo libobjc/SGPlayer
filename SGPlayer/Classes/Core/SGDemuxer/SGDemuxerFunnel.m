@@ -15,26 +15,32 @@
 @interface SGDemuxerFunnel ()
 
 {
-    SGTrack *_track;
-    SGTimeLayout *_layout;
-    SGObjectQueue *_queue;
-    id<SGDemuxable> _demuxable;
-    
-    BOOL _outputValid;
-    BOOL _outputStarted;
-    BOOL _outputFinished;
+    BOOL _putting;
+    BOOL _finished;
+    BOOL _outputting;
 }
+
+@property (nonatomic, strong, readonly) SGTrack *track;
+@property (nonatomic, strong, readonly) SGTimeLayout *timeLayout;
+@property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
+@property (nonatomic, strong, readonly) SGObjectQueue *packetQueue;
 
 @end
 
 @implementation SGDemuxerFunnel
 
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable
+@synthesize tracks = _tracks;
+@synthesize duration = _duration;
+
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(int)index timeRange:(CMTimeRange)timeRange
 {
     if (self = [super init]) {
         self->_demuxable = demuxable;
-        self->_queue = [[SGObjectQueue alloc] init];
+        self->_index = index;
+        self->_timeRange = SGCMTimeRangeFit(timeRange);
+        self->_timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(SGCMTimeValidate(timeRange.start, kCMTimeZero, NO), -1) scale:kCMTimeInvalid];
         self->_overgop = YES;
+        self->_packetQueue = [[SGObjectQueue alloc] init];
     }
     return self;
 }
@@ -54,21 +60,6 @@ SGGet0Map(NSDictionary *, metadata, self->_demuxable)
 SGGet0Map(NSError *, close, self->_demuxable)
 SGGet0Map(NSError *, seekable, self->_demuxable)
 
-#pragma mark - Setter & Getter
-
-- (CMTime)duration
-{
-    return self->_timeRange.duration;
-}
-
-- (NSArray<SGTrack *> *)tracks
-{
-    if (!self->_track) {
-        return nil;
-    }
-    return @[self->_track];
-}
-
 #pragma mark - Control
 
 - (NSError *)open
@@ -80,29 +71,28 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     for (SGTrack *obj in self->_demuxable.tracks) {
         if (self->_index == obj.index) {
             self->_track = obj;
+            self->_tracks = @[obj];
             break;
         }
     }
-    CMTimeRange preferredTimeRange = self->_timeRange;
-    CMTime start = CMTIME_IS_VALID(preferredTimeRange.start) ? preferredTimeRange.start : kCMTimeNegativeInfinity;
-    CMTime duration = CMTIME_IS_VALID(preferredTimeRange.duration) ? preferredTimeRange.duration : kCMTimePositiveInfinity;
-    self->_timeRange = CMTimeRangeGetIntersection(CMTimeRangeMake(start, duration),
-                                                  CMTimeRangeMake(kCMTimeZero, self->_demuxable.duration));
-    self->_layout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(self->_timeRange.start, -1)
-                                                  scale:kCMTimeInvalid];
+    if (SGCMTimeIsValid(self->_timeRange.duration, NO)) {
+        self->_duration = self->_timeRange.duration;
+    } else {
+        self->_duration = self->_demuxable.duration;
+    }
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, self->_timeRange.start)];
+    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, CMTimeMultiply(self->_timeLayout.start, -1))];
     if (ret) {
         return ret;
     }
-    [self->_queue flush];
-    self->_outputValid = NO;
-    self->_outputStarted = NO;
-    self->_outputFinished = NO;
+    [self->_packetQueue flush];
+    self->_putting = NO;
+    self->_outputting = NO;
+    self->_finished = NO;
     return nil;
 }
 
@@ -137,7 +127,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [pkt.codecDescription appendTimeLayout:self->_layout];
+        [pkt.codecDescription appendTimeLayout:self->_timeLayout];
         [pkt.codecDescription appendTimeRange:self->_timeRange];
         [pkt fill];
         *packet = pkt;
@@ -151,17 +141,17 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     NSError *ret = nil;
     while (YES) {
         SGPacket *pkt = nil;
-        if (self->_outputStarted) {
-            [self->_queue getObjectAsync:&pkt];
+        if (self->_outputting) {
+            [self->_packetQueue getObjectAsync:&pkt];
             if (pkt) {
-                [pkt.codecDescription appendTimeLayout:self->_layout];
+                [pkt.codecDescription appendTimeLayout:self->_timeLayout];
                 [pkt.codecDescription appendTimeRange:self->_timeRange];
                 [pkt fill];
                 *packet = pkt;
                 break;
             }
         }
-        if (self->_outputFinished) {
+        if (self->_finished) {
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
@@ -171,7 +161,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             if (ret.code == SGErrorImmediateExitRequested) {
                 break;
             }
-            self->_outputFinished = YES;
+            self->_finished = YES;
             continue;
         }
         if (self->_index != pkt.track.index) {
@@ -180,29 +170,29 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
         if (CMTimeCompare(pkt.timeStamp, self->_timeRange.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                [self->_queue flush];
-                self->_outputValid = YES;
+                [self->_packetQueue flush];
+                self->_putting = YES;
             }
-            if (self->_outputValid) {
-                [self->_queue putObjectSync:pkt];
+            if (self->_putting) {
+                [self->_packetQueue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
         if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                self->_outputFinished = YES;
+                self->_finished = YES;
             } else {
-                [self->_queue putObjectSync:pkt];
+                [self->_packetQueue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (!self->_outputStarted && pkt.core->flags & AV_PKT_FLAG_KEY) {
-            [self->_queue flush];
+        if (!self->_outputting && pkt.core->flags & AV_PKT_FLAG_KEY) {
+            [self->_packetQueue flush];
         }
-        self->_outputStarted = YES;
-        [self->_queue putObjectSync:pkt];
+        self->_outputting = YES;
+        [self->_packetQueue putObjectSync:pkt];
         [pkt unlock];
         continue;
     }
