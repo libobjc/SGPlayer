@@ -24,7 +24,9 @@
 {
     if (self = [super init]) {
         self->_timeRange = timeRange;
-        self->_scale = scale;
+        self->_scale = SGCMTimeValidate(scale, CMTimeMake(1, 1), NO);
+        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(1, 10)) >= 0, @"Invalid Scale.");
+        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(10, 1)) <= 0, @"Invalid Scale.");
     }
     return self;
 }

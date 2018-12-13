@@ -17,7 +17,7 @@
 
 @interface SGURLDemuxer ()
 
-@property (nonatomic, readonly) CMTime startTime;
+@property (nonatomic, readonly) CMTime basetime;
 @property (nonatomic, readonly) AVFormatContext *context;
 
 @end
@@ -35,7 +35,7 @@
     if (self = [super init]) {
         self->_URL = [URL copy];
         self->_options = [SGConfiguration sharedConfiguration].formatContextOptions;
-        self->_startTime = kCMTimeNegativeInfinity;
+        self->_basetime = kCMTimeNegativeInfinity;
         self->_duration = kCMTimeInvalid;
     }
     return self;
@@ -108,7 +108,7 @@
         int64_t timeStamp = CMTimeGetSeconds(CMTimeMultiply(time, AV_TIME_BASE));
         int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
-            self->_startTime = time;
+            self->_basetime = time;
         }
         return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
     }
@@ -128,7 +128,7 @@
             codecDescription.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
             codecDescription.timebase = stream->time_base;
             codecDescription.codecpar = stream->codecpar;
-            [codecDescription appendTimeRange:CMTimeRangeMake(self->_startTime, kCMTimePositiveInfinity)];
+            [codecDescription appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
             [pkt setCodecDescription:codecDescription];
             [pkt fill];
             *packet = pkt;

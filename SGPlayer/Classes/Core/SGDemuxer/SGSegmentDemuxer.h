@@ -20,7 +20,7 @@
 /**
  *
  */
-- (instancetype)initWithSegment:(SGSegment * _Nonnull)segment NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSegment:(SGSegment * _Nonnull)segment basetime:(CMTime)basetime NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -30,6 +30,6 @@
 /**
  *
  */
-@property (nonatomic) CMTimeRange timeRange;
+@property (nonatomic, readonly) CMTime basetime;
 
 @end

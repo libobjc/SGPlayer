@@ -13,6 +13,7 @@
 
 @interface SGSegmentDemuxer ()
 
+@property (nonatomic, strong, readonly) SGTimeLayout *timeLayout;
 @property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
 
 @end
@@ -21,11 +22,13 @@
 
 @synthesize duration = _duration;
 
-- (instancetype)initWithSegment:(SGSegment *)segment
+- (instancetype)initWithSegment:(SGSegment *)segment basetime:(CMTime)basetime
 {
     if (self = [super init]) {
         self->_segment = segment;
+        self->_basetime = basetime;
         self->_demuxable = [segment newDemuxable];
+        self->_timeLayout = [[SGTimeLayout alloc] initWithStart:basetime scale:segment.scale];
     }
     return self;
 }
@@ -51,8 +54,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 - (NSError *)open
 {
     if (!self->_demuxable) {
-        self->_duration = self->_segment.timeRange.duration;
-        NSAssert(CMTIME_IS_VALID(self->_duration), @"Invaild timeRange.");
+        CMTime duration = self->_segment.timeRange.duration;
+        NSAssert(SGCMTimeIsValid(duration, NO), @"Invaild Duration.");
+        self->_duration = SGCMTimeMultiply(duration, self->_segment.scale);
         return nil;
     }
     if (!self->_demuxable) {
@@ -62,12 +66,15 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     if (ret) {
         return ret;
     }
-    self->_duration = self->_demuxable.duration;
+    CMTime duration = self->_demuxable.duration;
+    NSAssert(SGCMTimeIsValid(duration, NO), @"Invaild Duration.");
+    self->_duration = SGCMTimeMultiply(duration, self->_segment.scale);
     return nil;
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    time = SGCMTimeDivide(time, self->_segment.scale);
     return [self->_demuxable seekToTime:time];
 }
 
@@ -77,9 +84,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     if (ret) {
         return ret;
     }
-    SGTimeLayout *layout = [[SGTimeLayout alloc] initWithStart:self->_timeRange.start
-                                                         scale:self->_segment.scale];
-    [(*packet).codecDescription appendTimeLayout:layout];
+    [(*packet).codecDescription appendTimeLayout:self->_timeLayout];
     [(*packet) fill];
     return nil;
 }

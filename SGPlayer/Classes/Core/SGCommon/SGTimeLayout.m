@@ -24,20 +24,15 @@
 - (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale
 {
     if (self = [super init]) {
-        self->_start = start;
+        self->_start = SGCMTimeValidate(start, kCMTimeZero, NO);
         self->_scale = SGCMTimeValidate(scale, CMTimeMake(1, 1), NO);
-        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(1, 10)) >= 0, @"Invalid Scale.");
-        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(10, 1)) <= 0, @"Invalid Scale.");
     }
     return self;
 }
 
 - (CMTime)convertTimeStamp:(CMTime)timeStamp
 {
-    if (CMTIME_IS_VALID(_start)) {
-        return CMTimeAdd(timeStamp, self->_start);
-    }
-    return timeStamp;
+    return CMTimeAdd(timeStamp, self->_start);
 }
 
 - (CMTime)convertDuration:(CMTime)duration

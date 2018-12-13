@@ -70,9 +70,9 @@
 
 - (NSError *)open
 {
-    CMTime duration = kCMTimeZero;
+    CMTime basetime = kCMTimeZero;
     for (SGSegment *obj in self->_track.segments) {
-        SGSegmentDemuxer *unit = [[SGSegmentDemuxer alloc] initWithSegment:obj];
+        SGSegmentDemuxer *unit = [[SGSegmentDemuxer alloc] initWithSegment:obj basetime:basetime];
         [self->_units addObject:unit];
         NSError *error = [unit open];
         if (error) {
@@ -80,10 +80,9 @@
         }
         NSAssert(CMTIME_IS_VALID(unit.duration), @"Invaild Duration.");
         NSAssert(self->_track.type == unit.tracks.firstObject.type, @"Invaild mediaType.");
-        unit.timeRange = CMTimeRangeMake(duration, unit.duration);
-        duration = CMTimeRangeGetEnd(unit.timeRange);
+        basetime = CMTimeAdd(basetime, unit.duration);
     }
-    self->_duration = duration;
+    self->_duration = basetime;
     self->_currentUnit = self->_units.firstObject;
     [self->_currentUnit seekToTime:kCMTimeZero];
     return nil;
@@ -108,13 +107,13 @@
     time = CMTimeMinimum(time, self->_duration);
     SGSegmentDemuxer *unit = nil;
     for (SGSegmentDemuxer *obj in self->_units) {
-        if (CMTimeCompare(time, CMTimeRangeGetEnd(obj.timeRange)) <= 0) {
+        if (CMTimeCompare(time, CMTimeAdd(obj.basetime, obj.duration)) <= 0) {
             unit = obj;
             break;
         }
     }
     self->_currentUnit = unit ? unit : self->_units.lastObject;
-    return [self->_currentUnit seekToTime:CMTimeSubtract(time, self->_currentUnit.timeRange.start)];
+    return [self->_currentUnit seekToTime:CMTimeSubtract(time, self->_currentUnit.basetime)];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
