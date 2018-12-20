@@ -11,6 +11,9 @@
 
 @interface SGSWResample : NSObject
 
+/**
+ *
+ */
 @property (nonatomic, copy) SGAudioDescription *inputDescription;
 @property (nonatomic, copy) SGAudioDescription *outputDescription;
 
@@ -22,11 +25,11 @@
 /**
  *
  */
-- (int)convert:(uint8_t **)data nb_samples:(int)nb_samples;
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples;
 
 /**
  *
  */
-- (int)copy:(uint8_t *)data linesize:(int)linesize plane:(int)plane;
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
 
 @end

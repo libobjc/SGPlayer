@@ -53,7 +53,7 @@
     return YES;
 }
 
-- (int)convert:(uint8_t **)data nb_samples:(int)nb_samples
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples
 {
     int numberOfPlanes = self->_outputDescription.numberOfPlanes;
     int numberOfSamples = swr_get_out_samples(self->_context, nb_samples);
@@ -72,10 +72,14 @@
                        nb_samples);
 }
 
-- (int)copy:(uint8_t *)data linesize:(int)linesize plane:(int)plane
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples
 {
-    memcpy(data, self->_buffer[plane]->data, linesize);
-    return linesize;
+    int numberOfPlanes = self->_outputDescription.numberOfPlanes;
+    int linesize = [self->_outputDescription linesize:nb_samples];
+    for (int i = 0; i < numberOfPlanes; i++) {
+        memcpy(data[i], self->_buffer[i]->data, linesize);
+    }
+    return nb_samples;
 }
 
 @end

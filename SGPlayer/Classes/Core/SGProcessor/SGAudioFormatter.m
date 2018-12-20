@@ -49,16 +49,18 @@
         return nil;
     }
     int numberOfPlanes = self->_audioDescription.numberOfPlanes;
-    int numberOfSamples = [self->_context convert:frame.data nb_samples:frame.numberOfSamples];
+    int numberOfSamples = [self->_context write:frame.data nb_samples:frame.numberOfSamples];
     SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:numberOfSamples];
     ret.core->pts = frame.core->pts;
     ret.core->pkt_dts = frame.core->pkt_dts;
     ret.core->pkt_size = frame.core->pkt_size;
     ret.core->pkt_duration = frame.core->pkt_duration;
     ret.core->best_effort_timestamp = frame.core->best_effort_timestamp;
+    uint8_t *data[SGFramePlaneCount] = {NULL};
     for (int i = 0; i < numberOfPlanes; i++) {
-        [self->_context copy:ret.core->data[i] linesize:ret.core->linesize[i] plane:i];
+        data[i] = ret.core->data[i];
     }
+    [self->_context read:data nb_samples:numberOfSamples];
     [ret setCodecDescription:[frame.codecDescription copy]];
     [ret fill];
     [frame unlock];
