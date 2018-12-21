@@ -101,4 +101,15 @@
     }
 }
 
+- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
+{
+    AVFrame *frame = self->_core;
+    SGCodecDescription *codecDescription = self->_codecDescription;
+    self->_size = frame->pkt_size;
+    self->_track = codecDescription.track;
+    self->_duration = duration;
+    self->_timeStamp = timeStamp;
+    self->_decodeTimeStamp = decodeTimeStamp;
+}
+
 @end

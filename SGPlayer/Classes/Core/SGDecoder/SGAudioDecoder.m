@@ -7,18 +7,23 @@
 //
 
 #import "SGAudioDecoder.h"
+#import "SGDescription+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
 #import "SGCodecContext.h"
 #import "SGAudioFrame.h"
+#import "SGSonic.h"
 
 @interface SGAudioDecoder ()
 
-{
-    BOOL _alignment;
-    SGCodecContext *_codecContext;
-    SGCodecDescription *_codecDescription;
-}
+@property (nonatomic, strong, readonly) SGSonic *sonic;
+@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
+@property (nonatomic, strong, readonly) SGCodecDescription *codecDescription;
+@property (nonatomic, strong, readonly) SGAudioDescription *audioDescription;
+
+@property (nonatomic, readonly) BOOL needsAlignment;
+@property (nonatomic, readonly) BOOL needsResetSonic;
+@property (nonatomic, readonly) int64_t nextTimeStamp;
 
 @end
 
@@ -26,7 +31,9 @@
 
 - (void)setup
 {
-    self->_alignment = NO;
+    self->_nextTimeStamp = 0;
+    self->_needsAlignment = YES;
+    self->_needsResetSonic = YES;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGAudioFrame class]];
@@ -35,7 +42,9 @@
 
 - (void)destroy
 {
-    self->_alignment = NO;
+    self->_nextTimeStamp = 0;
+    self->_needsAlignment = YES;
+    self->_needsResetSonic = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
 }
@@ -44,25 +53,27 @@
 
 - (void)flush
 {
-    self->_alignment = NO;
+    self->_nextTimeStamp = 0;
+    self->_needsAlignment = YES;
+    self->_needsResetSonic = YES;
     [self->_codecContext flush];
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     NSMutableArray *ret = [NSMutableArray array];
-    SGCodecDescription *codecDescription = packet.codecDescription;
-    NSAssert(codecDescription, @"Invalid Codec Description.");
-    if (![codecDescription isEqualCodecparToDescription:self->_codecDescription]) {
+    SGCodecDescription *cd = packet.codecDescription;
+    NSAssert(cd, @"Invalid codec description.");
+    if (![cd isEqualCodecparToDescription:self->_codecDescription]) {
         NSArray<SGFrame *> *objs = [self finish];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
-        self->_codecDescription = [codecDescription copy];
+        self->_codecDescription = [cd copy];
         [self destroy];
         [self setup];
     }
-    [codecDescription fillToDescription:self->_codecDescription];
+    [cd fillToDescription:self->_codecDescription];
     NSArray<SGFrame *> *objs = [self processPacket:packet];
     for (SGFrame *obj in objs) {
         [ret addObject:obj];
@@ -82,76 +93,122 @@
     if (!self->_codecContext || !self->_codecDescription) {
         return nil;
     }
+    SGCodecDescription *cd = self->_codecDescription;
     NSArray *objs = [self->_codecContext decode:packet];
-    return [self processFrames:objs];
+    objs = [self processFrames:objs done:!packet];
+    objs = [self clipFrames:objs timeRange:cd.timeRange];
+    return objs;
 }
 
-- (NSArray<__kindof SGFrame *> *)processFrames:(NSArray<SGFrame *> *)frames
+- (NSArray<__kindof SGFrame *> *)processFrames:(NSArray<__kindof SGFrame *> *)frames done:(BOOL)done
 {
     NSMutableArray *ret = [NSMutableArray array];
     for (SGAudioFrame *obj in frames) {
-        SGCodecDescription *codecDescription = [self->_codecDescription copy];
-        [obj setCodecDescription:codecDescription];
-        [obj fill];
-        if (CMTimeCompare(obj.timeStamp, codecDescription.timeRange.start) < 0) {
+        AVFrame *frame = obj.core;
+        if (self->_audioDescription == nil) {
+            self->_audioDescription = [[SGAudioDescription alloc] initWithFrame:frame];
+        }
+        self->_nextTimeStamp = frame->best_effort_timestamp + frame->pkt_duration;
+        SGAudioDescription *ad = self->_audioDescription;
+        SGCodecDescription *cd = self->_codecDescription;
+        if (CMTimeCompare(cd.scale, CMTimeMake(1, 1)) != 0) {
+            if (self->_needsResetSonic) {
+                self->_needsResetSonic = NO;
+                self->_sonic = [[SGSonic alloc] initWithAudioDescription:ad];
+                self->_sonic.speed = 1.0 / CMTimeGetSeconds(cd.scale);
+                [self->_sonic open];
+            }
+            int64_t input = av_rescale_q(self->_sonic.samplesInput, av_make_q(1, ad.sampleRate), cd.timebase);
+            int64_t pts = frame->best_effort_timestamp - input;
+            if ([self->_sonic write:frame->data nb_samples:frame->nb_samples]) {
+                [ret addObject:[self readSonicFrame:pts]];
+            }
+            [obj unlock];
+        } else {
+            [obj setCodecDescription:[cd copy]];
+            [obj fill];
+            [ret addObject:obj];
+        }
+    }
+    if (done) {
+        SGAudioDescription *ad = self->_audioDescription;
+        SGCodecDescription *cd = self->_codecDescription;
+        int64_t input = av_rescale_q(self->_sonic.samplesInput, av_make_q(1, ad.sampleRate), cd.timebase);
+        int64_t pts = self->_nextTimeStamp - input;
+        if ([self->_sonic flush]) {
+            [ret addObject:[self readSonicFrame:pts]];
+        }
+    }
+    return ret;
+}
+
+- (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
+{
+    NSMutableArray *ret = [NSMutableArray array];
+    for (SGAudioFrame *obj in frames) {
+        if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {
             [obj unlock];
             continue;
         }
-        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(codecDescription.timeRange)) >= 0) {
+        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(timeRange)) >= 0) {
             [obj unlock];
             continue;
         }
-        if (!self->_alignment) {
-            self->_alignment = YES;
-            CMTime start = codecDescription.timeRange.start;
+        SGAudioDescription *ad = obj.audioDescription;
+        if (self->_needsAlignment) {
+            self->_needsAlignment = NO;
+            CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(obj.timeStamp, start);
-            CMTimeScale timescale = duration.timescale;
-            SGAudioDescription *description = obj.audioDescription;
-            int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
-            if (numberOfSamples > 0) {
-                SGAudioFrame *temp = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
-                temp.core->pts = av_rescale(timescale, start.value, start.timescale);
-                temp.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
-                temp.core->pkt_size = 1;
-                temp.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
-                temp.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
-                SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
-                codecDescription.track = obj.track;
-                codecDescription.timebase = av_make_q(1, timescale);
-                [temp setCodecDescription:codecDescription];
-                [temp fill];
-                [ret addObject:temp];
+            int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+            if (nb_samples > 0) {
+                duration = CMTimeMake(nb_samples, ad.sampleRate);
+                SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
+                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                cd.track = obj.track;
+                [obj1 setCodecDescription:cd];
+                [obj1 fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+                [ret addObject:obj1];
             }
         }
-        if (YES) {
-            CMTime start = obj.timeStamp;
-            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(codecDescription.timeRange), obj.timeStamp);
-            CMTimeScale timescale = duration.timescale;
-            SGAudioDescription *description = obj.audioDescription;
-            int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
-            if (numberOfSamples < obj.numberOfSamples) {
-                SGAudioFrame *temp = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
-                temp.core->pts = av_rescale(timescale, start.value, start.timescale);
-                temp.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
-                temp.core->pkt_size = 1;
-                temp.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
-                temp.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
-                for (int i = 0; i < description.numberOfPlanes; i++) {
-                    memcpy(temp.core->data[i], obj.core->data[i], temp.core->linesize[i]);
-                }
-                SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
-                codecDescription.track = obj.track;
-                codecDescription.timebase = av_make_q(1, timescale);
-                [temp setCodecDescription:codecDescription];
-                [temp fill];
-                [ret addObject:temp];
-                [obj unlock];
-                continue;
+        CMTime start = obj.timeStamp;
+        CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
+        int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+        if (nb_samples < obj.numberOfSamples) {
+            duration = CMTimeMake(nb_samples, ad.sampleRate);
+            SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
+            for (int i = 0; i < ad.numberOfPlanes; i++) {
+                memcpy(obj1.core->data[i], obj.core->data[i], obj1.core->linesize[i]);
             }
+            SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+            cd.track = obj.track;
+            [obj1 setCodecDescription:cd];
+            [obj1 fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+            [ret addObject:obj1];
+            [obj unlock];
+            continue;
         }
         [ret addObject:obj];
     }
     return ret;
+}
+
+- (SGAudioFrame *)readSonicFrame:(int64_t)pts
+{
+    int nb_samples = [self->_sonic samplesAvailable];
+    SGAudioDescription *ad = self->_audioDescription;
+    SGCodecDescription *cd = self->_codecDescription;
+    CMTime start = CMTimeMultiply(CMTimeMake(pts, cd.timebase.den), cd.timebase.num);
+    CMTime duration = CMTimeMake(nb_samples, ad.sampleRate);
+    for (SGTimeLayout *obj in cd.timeLayouts) {
+        start = [obj convertTimeStamp:start];
+    }
+    SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
+    [self->_sonic read:obj.core->data nb_samples:nb_samples];
+    SGCodecDescription *cd1 = [[SGCodecDescription alloc] init];
+    cd1.track = cd.track;
+    [obj setCodecDescription:cd1];
+    [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+    return obj;
 }
 
 @end

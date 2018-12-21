@@ -20,6 +20,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
+        self->_scale = CMTimeMake(1, 1);
         self->_timebase = av_make_q(0, 1);
         self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity,
                                            kCMTimePositiveInfinity);
@@ -31,6 +32,11 @@
 {
     NSMutableArray *timeLayouts = [NSMutableArray arrayWithArray:self->_timeLayouts];
     [timeLayouts addObject:timeLayout];
+    CMTime scale = CMTimeMake(1, 1);
+    for (SGTimeLayout *obj in timeLayouts) {
+        scale = SGCMTimeMultiply(scale, obj.scale);
+    }
+    self->_scale = scale;
     self->_timeLayouts = timeLayouts;
     self->_timeRange = CMTimeRangeMake([timeLayout convertTimeStamp:self->_timeRange.start],
                                        [timeLayout convertDuration:self->_timeRange.duration]);
@@ -48,6 +54,7 @@
 - (void)fillToDescription:(SGCodecDescription *)description
 {
     description->_track = self->_track;
+    description->_scale = self->_scale;
     description->_timebase = self->_timebase;
     description->_codecpar = self->_codecpar;
     description->_timeRange = self->_timeRange;

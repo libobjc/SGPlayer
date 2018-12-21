@@ -36,6 +36,11 @@
 /**
  *
  */
+@property (nonatomic, readonly) CMTime scale;
+
+/**
+ *
+ */
 @property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> * _Nullable timeLayouts;
 
 /**

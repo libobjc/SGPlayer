@@ -7,6 +7,7 @@
 //
 
 #import "SGAudioDescription.h"
+#import "SGDescription+Internal.h"
 #import "SGFFmpeg.h"
 
 @implementation SGAudioDescription
@@ -28,6 +29,17 @@
         self->_sampleRate = 44100;
         self->_numberOfChannels = 2;
         self->_channelLayout = av_get_default_channel_layout(2);
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(AVFrame *)frame
+{
+    if (self = [super init]) {
+        self->_format = frame->format;
+        self->_sampleRate = frame->sample_rate;
+        self->_numberOfChannels = frame->channels;
+        self->_channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
     }
     return self;
 }

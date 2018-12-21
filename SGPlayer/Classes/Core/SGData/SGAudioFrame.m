@@ -8,6 +8,7 @@
 
 #import "SGAudioFrame.h"
 #import "SGFrame+Internal.h"
+#import "SGDescription+Internal.h"
 #import "SGObjectPool.h"
 
 @interface SGAudioFrame ()
@@ -76,22 +77,30 @@
 
 - (void)fill
 {
-    [super fill];
+    AVFrame *frame = self.core;
+    AVRational timebase = self.codecDescription.timebase;
+    SGCodecDescription *codecDescription = self.codecDescription;
+    CMTime duration = CMTimeMake(frame->nb_samples, frame->sample_rate);
+    CMTime timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
+    CMTime decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
+    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
+        duration = [obj convertDuration:duration];
+        timeStamp = [obj convertTimeStamp:timeStamp];
+        decodeTimeStamp = [obj convertTimeStamp:decodeTimeStamp];
+    }
+    [self fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
+}
+
+- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
+{
+    [super fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
     AVFrame *frame = self.core;
     self->_numberOfSamples = frame->nb_samples;
+    self->_audioDescription = [[SGAudioDescription alloc] initWithFrame:frame];
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
     }
-    CMTime scale = CMTimeMake(1, 1);
-    for (SGTimeLayout *obj in self.codecDescription.timeLayouts) {
-        scale = SGCMTimeMultiply(scale, obj.scale);
-    }
-    self->_audioDescription = [[SGAudioDescription alloc] init];
-    self->_audioDescription.format = frame->format;
-    self->_audioDescription.sampleRate = frame->sample_rate / CMTimeGetSeconds(scale);
-    self->_audioDescription.numberOfChannels = frame->channels;
-    self->_audioDescription.channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
 }
 
 @end

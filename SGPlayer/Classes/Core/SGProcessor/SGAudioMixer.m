@@ -159,15 +159,9 @@
     
     CMTime start = range.start;
     CMTime duration = range.duration;
-    CMTimeScale timescale = duration.timescale;
     SGAudioDescription *description = self->_audioDescription;
     int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
     SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
-    ret.core->pts = av_rescale(timescale, start.value, start.timescale);
-    ret.core->pkt_dts = av_rescale(timescale, start.value, start.timescale);
-    ret.core->pkt_size = 1;
-    ret.core->pkt_duration = av_rescale(timescale, duration.value, duration.timescale);
-    ret.core->best_effort_timestamp = av_rescale(timescale, start.value, start.timescale);
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
         NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:CMTimeRangeGetEnd(range)];
@@ -197,10 +191,8 @@
             [obj unlock];
         }
     }
-    SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
-    codecDescription.timebase = av_make_q(1, timescale);
-    [ret setCodecDescription:codecDescription];
-    [ret fill];
+    [ret setCodecDescription:[[SGCodecDescription alloc] init]];
+    [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
     return ret;
 }
 

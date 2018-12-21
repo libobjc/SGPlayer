@@ -27,6 +27,11 @@
  */
 - (void)fill;
 
+/**
+ *
+ */
+- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp;
+
 @end
 
 @interface SGAudioFrame ()

@@ -8,6 +8,7 @@
 
 #import "SGVideoFrame.h"
 #import "SGFrame+Internal.h"
+#import "SGDescription+Internal.h"
 #import "SGMapping.h"
 #import "SGSWScale.h"
 
@@ -142,10 +143,10 @@
 
 #pragma mark - Control
 
-- (void)fill
+static void SGVideoFrameFilling(SGVideoFrame *self)
 {
-    [super fill];
     AVFrame *frame = self.core;
+    self->_videoDescription = [[SGVideoDescription alloc] initWithFrame:frame];
     if (frame->format == AV_PIX_FMT_VIDEOTOOLBOX) {
         self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
     }
@@ -153,10 +154,18 @@
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
     }
-    self->_videoDescription = [[SGVideoDescription alloc] init];
-    self->_videoDescription.format = frame->format;
-    self->_videoDescription.width = frame->width;
-    self->_videoDescription.height = frame->height;
+}
+
+- (void)fill
+{
+    [super fill];
+    SGVideoFrameFilling(self);
+}
+
+- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
+{
+    [super fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
+    SGVideoFrameFilling(self);
 }
 
 @end

@@ -48,21 +48,20 @@
         [frame unlock];
         return nil;
     }
-    int numberOfPlanes = self->_audioDescription.numberOfPlanes;
-    int numberOfSamples = [self->_context write:frame.data nb_samples:frame.numberOfSamples];
-    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:numberOfSamples];
-    ret.core->pts = frame.core->pts;
-    ret.core->pkt_dts = frame.core->pkt_dts;
-    ret.core->pkt_size = frame.core->pkt_size;
-    ret.core->pkt_duration = frame.core->pkt_duration;
-    ret.core->best_effort_timestamp = frame.core->best_effort_timestamp;
+    int nb_planes = self->_audioDescription.numberOfPlanes;
+    int nb_samples = [self->_context write:frame.data nb_samples:frame.numberOfSamples];
+    CMTime start = frame.timeStamp;
+    CMTime duration = CMTimeMake(nb_samples, self->_audioDescription.sampleRate);
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:nb_samples];
     uint8_t *data[SGFramePlaneCount] = {NULL};
-    for (int i = 0; i < numberOfPlanes; i++) {
+    for (int i = 0; i < nb_planes; i++) {
         data[i] = ret.core->data[i];
     }
-    [self->_context read:data nb_samples:numberOfSamples];
-    [ret setCodecDescription:[frame.codecDescription copy]];
-    [ret fill];
+    [self->_context read:data nb_samples:nb_samples];
+    SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+    cd.track = frame.track;
+    [ret setCodecDescription:cd];
+    [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
     [frame unlock];
     return ret;
 }

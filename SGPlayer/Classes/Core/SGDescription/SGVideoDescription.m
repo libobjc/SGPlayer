@@ -30,6 +30,16 @@
     return self;
 }
 
+- (instancetype)initWithFrame:(AVFrame *)frame
+{
+    if (self = [super init]) {
+        self->_format = frame->format;
+        self->_width = frame->width;
+        self->_height = frame->height;
+    }
+    return self;
+}
+
 - (BOOL)isEqualToDescription:(SGVideoDescription *)description
 {
     if (!description) {
