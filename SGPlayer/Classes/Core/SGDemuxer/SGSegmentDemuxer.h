@@ -9,6 +9,8 @@
 #import "SGDemuxable.h"
 #import "SGSegment.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGSegmentDemuxer : NSObject <SGDemuxable>
 
 /**
@@ -20,12 +22,12 @@
 /**
  *
  */
-- (instancetype)initWithSegment:(SGSegment * _Nonnull)segment basetime:(CMTime)basetime NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSegment:(SGSegment *)segment basetime:(CMTime)basetime NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGSegment * _Nonnull segment;
+@property (nonatomic, strong, readonly) SGSegment *segment;
 
 /**
  *
@@ -33,3 +35,5 @@
 @property (nonatomic, readonly) CMTime basetime;
 
 @end
+
+NS_ASSUME_NONNULL_END

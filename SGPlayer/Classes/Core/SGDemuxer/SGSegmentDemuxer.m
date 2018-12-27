@@ -7,8 +7,8 @@
 //
 
 #import "SGSegmentDemuxer.h"
-#import "SGSegment+Internal.h"
 #import "SGPacket+Internal.h"
+#import "SGSegment+Internal.h"
 #import "SGError.h"
 #import "SGMacro.h"
 

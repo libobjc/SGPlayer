@@ -7,14 +7,13 @@
 //
 
 #import "SGMutilDemuxer.h"
-#import "SGPointerMap.h"
 #import "SGError.h"
 
 @interface SGMutilDemuxer ()
 
-@property (nonatomic, strong, readonly) SGPointerMap *timeStamps;
 @property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *demuxables;
 @property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *finishedDemuxables;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, NSValue *> *timeStamps;
 
 @end
 
@@ -88,7 +87,7 @@
         NSAssert(![indexes containsObject:@(obj.index)], @"Invalid Track Indexes");
         [indexes addObject:@(obj.index)];
     }
-    self->_timeStamps = [[SGPointerMap alloc] init];
+    self->_timeStamps = [NSMutableDictionary dictionary];
     return nil;
 }
 
@@ -137,7 +136,7 @@
             if ([self->_finishedDemuxables containsObject:obj]) {
                 continue;
             }
-            NSValue *value = [self->_timeStamps objectForKey:obj];
+            NSValue *value = [self->_timeStamps objectForKey:[NSString stringWithFormat:@"%p", obj]];
             if (!value) {
                 demuxable = obj;
                 break;
@@ -162,7 +161,8 @@
             continue;
         }
         CMTime decodeTimeStamp = (*packet).decodeTimeStamp;
-        [self->_timeStamps setObject:[NSValue value:&decodeTimeStamp withObjCType:@encode(CMTime)] forKey:demuxable];
+        [self->_timeStamps setObject:[NSValue value:&decodeTimeStamp withObjCType:@encode(CMTime)]
+                              forKey:[NSString stringWithFormat:@"%p", demuxable]];
         break;
     }
     return ret;

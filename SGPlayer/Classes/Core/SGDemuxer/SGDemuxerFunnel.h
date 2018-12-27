@@ -8,6 +8,8 @@
 
 #import "SGDemuxable.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGDemuxerFunnel : NSObject <SGDemuxable>
 
 /**
@@ -19,12 +21,12 @@
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable> _Nonnull)demuxable index:(int)index timeRange:(CMTimeRange)timeRange NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, readonly) int index;
+@property (nonatomic, readonly) NSInteger index;
 
 /**
  *
@@ -37,3 +39,5 @@
 @property (nonatomic) BOOL overgop;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -140,15 +140,15 @@
 
 #pragma mark - AVFormatContext
 
-static NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
+static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
 {
-    AVFormatContext *fmt_ctx = avformat_alloc_context();
-    if (!fmt_ctx) {
+    AVFormatContext *context = avformat_alloc_context();
+    if (!context) {
         return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
     }
     
-    fmt_ctx->interrupt_callback.callback = callback;
-    fmt_ctx->interrupt_callback.opaque = opaque;
+    context->interrupt_callback.callback = callback;
+    context->interrupt_callback.opaque = opaque;
     
     NSString *URLString = URL.isFileURL ? URL.path : URL.absoluteString;
     
@@ -158,7 +158,7 @@ static NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *
         av_dict_set(&opts, "timeout", NULL, 0);
     }
     
-    int suc = avformat_open_input(&fmt_ctx, URLString.UTF8String, NULL, &opts);
+    int suc = avformat_open_input(&context, URLString.UTF8String, NULL, &opts);
     
     if (opts) {
         av_dict_free(&opts);
@@ -166,22 +166,22 @@ static NSError * SGCreateFormatContext(AVFormatContext **format_context, NSURL *
     
     NSError *err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
     if (err) {
-        if (fmt_ctx) {
-            avformat_free_context(fmt_ctx);
+        if (context) {
+            avformat_free_context(context);
         }
         return err;
     }
     
-    suc = avformat_find_stream_info(fmt_ctx, NULL);
+    suc = avformat_find_stream_info(context, NULL);
     err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
     if (err) {
-        if (fmt_ctx) {
-            avformat_close_input(&fmt_ctx);
-            avformat_free_context(fmt_ctx);
+        if (context) {
+            avformat_close_input(&context);
+            avformat_free_context(context);
         }
         return err;
     }
-    *format_context = fmt_ctx;
+    *formatContext = context;
     return nil;
 }
 

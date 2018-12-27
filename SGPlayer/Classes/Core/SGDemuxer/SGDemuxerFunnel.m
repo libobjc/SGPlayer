@@ -15,9 +15,11 @@
 @interface SGDemuxerFunnel ()
 
 {
-    BOOL _putting;
-    BOOL _finished;
-    BOOL _outputting;
+    struct {
+        BOOL putting;
+        BOOL finished;
+        BOOL outputting;
+    } _flags;
 }
 
 @property (nonatomic, strong, readonly) SGTrack *track;
@@ -32,7 +34,7 @@
 @synthesize tracks = _tracks;
 @synthesize duration = _duration;
 
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(int)index timeRange:(CMTimeRange)timeRange
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange
 {
     if (self = [super init]) {
         self->_demuxable = demuxable;
@@ -90,9 +92,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         return ret;
     }
     [self->_packetQueue flush];
-    self->_putting = NO;
-    self->_outputting = NO;
-    self->_finished = NO;
+    self->_flags.putting = NO;
+    self->_flags.finished = NO;
+    self->_flags.outputting = NO;
     return nil;
 }
 
@@ -141,7 +143,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     NSError *ret = nil;
     while (YES) {
         SGPacket *pkt = nil;
-        if (self->_outputting) {
+        if (self->_flags.outputting) {
             [self->_packetQueue getObjectAsync:&pkt];
             if (pkt) {
                 [pkt.codecDescription appendTimeLayout:self->_timeLayout];
@@ -151,7 +153,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
                 break;
             }
         }
-        if (self->_finished) {
+        if (self->_flags.finished) {
             ret = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished,
                                  SGOperationCodeURLDemuxerFunnelNext);
             break;
@@ -161,7 +163,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             if (ret.code == SGErrorImmediateExitRequested) {
                 break;
             }
-            self->_finished = YES;
+            self->_flags.finished = YES;
             continue;
         }
         if (self->_index != pkt.track.index) {
@@ -171,9 +173,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         if (CMTimeCompare(pkt.timeStamp, self->_timeRange.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
                 [self->_packetQueue flush];
-                self->_putting = YES;
+                self->_flags.putting = YES;
             }
-            if (self->_putting) {
+            if (self->_flags.putting) {
                 [self->_packetQueue putObjectSync:pkt];
             }
             [pkt unlock];
@@ -181,17 +183,17 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
         if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
-                self->_finished = YES;
+                self->_flags.finished = YES;
             } else {
                 [self->_packetQueue putObjectSync:pkt];
             }
             [pkt unlock];
             continue;
         }
-        if (!self->_outputting && pkt.core->flags & AV_PKT_FLAG_KEY) {
+        if (!self->_flags.outputting && pkt.core->flags & AV_PKT_FLAG_KEY) {
             [self->_packetQueue flush];
         }
-        self->_outputting = YES;
+        self->_flags.outputting = YES;
         [self->_packetQueue putObjectSync:pkt];
         [pkt unlock];
         continue;

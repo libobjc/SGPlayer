@@ -11,6 +11,8 @@
 
 @protocol SGDemuxableDelegate;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol SGDemuxable <NSObject>
 
 /**
@@ -61,7 +63,7 @@
 /**
  *
  */
-- (NSError * _Nullable)nextPacket:(SGPacket * _Nullable * _Nonnull)packet;
+- (NSError * _Nullable)nextPacket:(SGPacket * _Nullable *)packet;
 
 @end
 
@@ -70,6 +72,8 @@
 /**
  *
  */
-- (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable> _Nonnull)demuxable;
+- (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable>)demuxable;
 
 @end
+
+NS_ASSUME_NONNULL_END

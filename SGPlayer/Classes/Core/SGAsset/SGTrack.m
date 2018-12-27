@@ -19,7 +19,7 @@
     return obj;
 }
 
-- (instancetype)initWithType:(SGMediaType)type index:(int)index
+- (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index
 {
     if (self = [super init]) {
         self->_type = type;

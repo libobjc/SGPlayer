@@ -9,6 +9,8 @@
 #import "SGDemuxable.h"
 #import "SGMutableTrack.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGConcatDemuxer : NSObject <SGDemuxable>
 
 /**
@@ -20,6 +22,8 @@
 /**
  *
  */
-- (instancetype)initWithTrack:(SGMutableTrack * _Nonnull)track NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTrack:(SGMutableTrack *)track NS_DESIGNATED_INITIALIZER;
 
 @end
+
+NS_ASSUME_NONNULL_END
