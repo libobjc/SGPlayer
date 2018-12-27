@@ -23,6 +23,8 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
     SGAsyncDecodableStateClosed,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAsyncDecodable : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -31,7 +33,7 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (instancetype)initWithDecodableClass:(Class _Nonnull)decodableClass NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDecodableClass:(Class)decodableClass NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -76,7 +78,7 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (BOOL)putPacket:(SGPacket * _Nonnull)packet;
+- (BOOL)putPacket:(SGPacket *)packet;
 
 @end
 
@@ -85,16 +87,18 @@ typedef NS_ENUM(int, SGAsyncDecodableState) {
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeState:(SGAsyncDecodableState)state;
+- (void)decoder:(SGAsyncDecodable *)decoder didChangeState:(SGAsyncDecodableState)state;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didChangeCapacity:(SGCapacity * _Nonnull)capacity;
+- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable * _Nonnull)decoder didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
+- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
+
+NS_ASSUME_NONNULL_END

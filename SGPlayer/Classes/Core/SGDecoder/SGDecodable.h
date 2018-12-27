@@ -10,12 +10,14 @@
 #import "SGPacket.h"
 #import "SGFrame.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol SGDecodable <NSObject>
 
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket * _Nonnull)packet;
+- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket *)packet;
 
 /**
  *
@@ -28,3 +30,5 @@
 - (void)flush;
 
 @end
+
+NS_ASSUME_NONNULL_END

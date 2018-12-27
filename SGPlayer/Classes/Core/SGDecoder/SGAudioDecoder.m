@@ -7,18 +7,23 @@
 //
 
 #import "SGAudioDecoder.h"
-#import "SGDescription+Internal.h"
-#import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
+#import "SGPacket+Internal.h"
+#import "SGDescription+Internal.h"
 #import "SGCodecContext.h"
 #import "SGAudioFrame.h"
 #import "SGSonic.h"
 
 @interface SGAudioDecoder ()
 
-@property (nonatomic, readonly) BOOL needsAlignment;
-@property (nonatomic, readonly) BOOL needsResetSonic;
-@property (nonatomic, readonly) int64_t nextTimeStamp;
+{
+    struct {
+        BOOL needsAlignment;
+        BOOL needsResetSonic;
+        int64_t nextTimeStamp;
+    } _flags;
+}
+
 @property (nonatomic, strong, readonly) SGSonic *sonic;
 @property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescription *codecDescription;
@@ -30,9 +35,9 @@
 
 - (void)setup
 {
-    self->_nextTimeStamp = 0;
-    self->_needsAlignment = YES;
-    self->_needsResetSonic = YES;
+    self->_flags.nextTimeStamp = 0;
+    self->_flags.needsAlignment = YES;
+    self->_flags.needsResetSonic = YES;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGAudioFrame class]];
@@ -41,9 +46,9 @@
 
 - (void)destroy
 {
-    self->_nextTimeStamp = 0;
-    self->_needsAlignment = YES;
-    self->_needsResetSonic = YES;
+    self->_flags.nextTimeStamp = 0;
+    self->_flags.needsAlignment = YES;
+    self->_flags.needsResetSonic = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
 }
@@ -52,9 +57,9 @@
 
 - (void)flush
 {
-    self->_nextTimeStamp = 0;
-    self->_needsAlignment = YES;
-    self->_needsResetSonic = YES;
+    self->_flags.nextTimeStamp = 0;
+    self->_flags.needsAlignment = YES;
+    self->_flags.needsResetSonic = YES;
     [self->_codecContext flush];
 }
 
@@ -107,12 +112,12 @@
         if (self->_audioDescription == nil) {
             self->_audioDescription = [[SGAudioDescription alloc] initWithFrame:frame];
         }
-        self->_nextTimeStamp = frame->best_effort_timestamp + frame->pkt_duration;
+        self->_flags.nextTimeStamp = frame->best_effort_timestamp + frame->pkt_duration;
         SGAudioDescription *ad = self->_audioDescription;
         SGCodecDescription *cd = self->_codecDescription;
         if (CMTimeCompare(cd.scale, CMTimeMake(1, 1)) != 0) {
-            if (self->_needsResetSonic) {
-                self->_needsResetSonic = NO;
+            if (self->_flags.needsResetSonic) {
+                self->_flags.needsResetSonic = NO;
                 self->_sonic = [[SGSonic alloc] initWithAudioDescription:ad];
                 self->_sonic.speed = 1.0 / CMTimeGetSeconds(cd.scale);
                 [self->_sonic open];
@@ -133,7 +138,7 @@
         SGAudioDescription *ad = self->_audioDescription;
         SGCodecDescription *cd = self->_codecDescription;
         int64_t input = av_rescale_q(self->_sonic.samplesInput, av_make_q(1, ad.sampleRate), cd.timebase);
-        int64_t pts = self->_nextTimeStamp - input;
+        int64_t pts = self->_flags.nextTimeStamp - input;
         if ([self->_sonic flush]) {
             [ret addObject:[self readSonicFrame:pts]];
         }
@@ -158,8 +163,8 @@
             continue;
         }
         SGAudioDescription *ad = obj.audioDescription;
-        if (self->_needsAlignment) {
-            self->_needsAlignment = NO;
+        if (self->_flags.needsAlignment) {
+            self->_flags.needsAlignment = NO;
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(obj.timeStamp, start);
             int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));

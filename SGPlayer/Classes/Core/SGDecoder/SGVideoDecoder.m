@@ -7,14 +7,19 @@
 //
 
 #import "SGVideoDecoder.h"
-#import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
+#import "SGPacket+Internal.h"
 #import "SGCodecContext.h"
 #import "SGVideoFrame.h"
 
 @interface SGVideoDecoder ()
 
-@property (nonatomic, readonly) BOOL needsAlignment;
+{
+    struct {
+        BOOL needsAlignment;
+    } _flags;
+}
+
 @property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescription *codecDescription;
 
@@ -24,7 +29,7 @@
 
 - (void)setup
 {
-    self->_needsAlignment = NO;
+    self->_flags.needsAlignment = YES;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGVideoFrame class]];
@@ -33,7 +38,7 @@
 
 - (void)destroy
 {
-    self->_needsAlignment = NO;
+    self->_flags.needsAlignment = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
 }
@@ -42,7 +47,7 @@
 
 - (void)flush
 {
-    self->_needsAlignment = NO;
+    self->_flags.needsAlignment = YES;
     [self->_codecContext flush];
 }
 
@@ -114,8 +119,8 @@
             [obj unlock];
             continue;
         }
-        if (!self->_needsAlignment) {
-            self->_needsAlignment = YES;
+        if (self->_flags.needsAlignment) {
+            self->_flags.needsAlignment = NO;
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(CMTimeAdd(obj.timeStamp, obj.duration), start);
             if (CMTimeCompare(obj.timeStamp, start) > 0) {

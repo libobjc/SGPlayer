@@ -7,8 +7,8 @@
 //
 
 #import "SGCodecContext.h"
-#import "SGPacket+Internal.h"
 #import "SGFrame+Internal.h"
+#import "SGPacket+Internal.h"
 #import "SGConfiguration.h"
 #import "SGObjectPool.h"
 #import "SGMapping.h"
@@ -17,12 +17,10 @@
 
 @interface SGCodecContext ()
 
-{
-    Class _frameClass;
-    AVRational _timebase;
-    AVCodecParameters *_codecpar;
-    AVCodecContext *_codecContext;
-}
+@property (nonatomic, copy, readonly) Class frameClass;
+@property (nonatomic, assign, readonly) AVRational timebase;
+@property (nonatomic, assign, readonly) AVCodecParameters *codecpar;
+@property (nonatomic, assign, readonly) AVCodecContext *codecContext;
 
 @end
 
@@ -33,7 +31,7 @@
     if (self = [super init]) {
         self->_timebase = timebase;
         self->_codecpar = codecpar;
-        self->_frameClass = frameClass;
+        self->_frameClass = [frameClass copy];
         self->_options = [SGConfiguration sharedConfiguration].codecContextOptions;
         self->_threadsAuto = [SGConfiguration sharedConfiguration].threadsAuto;
         self->_refcountedFrames = [SGConfiguration sharedConfiguration].refcountedFrames;

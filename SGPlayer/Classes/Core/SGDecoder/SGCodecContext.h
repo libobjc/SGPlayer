@@ -11,17 +11,19 @@
 #import "SGPacket.h"
 #import "SGFrame.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGCodecContext : NSObject
 
-+ (instancetype _Nonnull)new NS_UNAVAILABLE;
-- (instancetype _Nonnull)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 /**
  *
  */
 - (instancetype _Nonnull)initWithTimebase:(AVRational)timebase
-                                 codecpar:(AVCodecParameters * _Nonnull)codecpar
-                               frameClass:(Class _Nonnull)frameClass NS_DESIGNATED_INITIALIZER;
+                                 codecpar:(AVCodecParameters *)codecpar
+                               frameClass:(Class)frameClass NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -74,3 +76,5 @@
 - (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket * _Nullable)packet;
 
 @end
+
+NS_ASSUME_NONNULL_END
