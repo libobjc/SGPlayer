@@ -42,7 +42,8 @@
 
 - (SGMutableTrack *)addTrack:(SGMediaType)type
 {
-    SGMutableTrack *obj = [[SGMutableTrack alloc] initWithType:type index:(int)self->_mutableTracks.count];
+    NSInteger index = self->_mutableTracks.count;
+    SGMutableTrack *obj = [[SGMutableTrack alloc] initWithType:type index:index];
     [self->_mutableTracks addObject:obj];
     return obj;
 }

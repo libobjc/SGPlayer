@@ -10,16 +10,20 @@
 #import "SGSegment.h"
 #import "SGTrack.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGMutableTrack : SGTrack
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGSegment *> * _Nonnull segments;
+@property (nonatomic, copy, readonly) NSArray<SGSegment *> *segments;
 
 /**
  *
  */
-- (BOOL)appendSegment:(SGSegment * _Nonnull)segment;
+- (BOOL)appendSegment:(SGSegment *)segment;
 
 @end
+
+NS_ASSUME_NONNULL_END

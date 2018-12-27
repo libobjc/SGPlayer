@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGTrack : NSObject <NSCopying>
 
 /**
@@ -25,6 +27,8 @@
 /**
  *
  */
-@property (nonatomic, readonly) int index;
+@property (nonatomic, readonly) NSInteger index;
 
 @end
+
+NS_ASSUME_NONNULL_END

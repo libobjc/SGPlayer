@@ -21,12 +21,7 @@
     return obj;
 }
 
-- (instancetype)initWithURL:(NSURL *)URL index:(int)index
-{
-    return [self initWithURL:URL index:index timeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];
-}
-
-- (instancetype)initWithURL:(NSURL *)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
+- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super initWithTimeRange:timeRange scale:scale]) {
         self->_URL = [URL copy];

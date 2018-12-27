@@ -10,16 +10,20 @@
 #import "SGDefines.h"
 #import "SGMutableTrack.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGMutableAsset : SGAsset
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGMutableTrack *> * _Nonnull tracks;
+@property (nonatomic, copy, readonly) NSArray<SGMutableTrack *> *tracks;
 
 /**
  *
  */
-- (SGMutableTrack * _Nonnull)addTrack:(SGMediaType)type;
+- (SGMutableTrack *)addTrack:(SGMediaType)type;
 
 @end
+
+NS_ASSUME_NONNULL_END

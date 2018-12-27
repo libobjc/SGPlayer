@@ -8,6 +8,8 @@
 
 #import "SGSegment.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGURLSegment : SGSegment
 
 /**
@@ -18,16 +20,18 @@
 /**
  *
  */
-- (instancetype)initWithURL:(NSURL * _Nonnull)URL index:(int)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSURL * _Nonnull URL;
+@property (nonatomic, copy, readonly) NSURL *URL;
 
 /**
  *
  */
-@property (nonatomic, readonly) int index;
+@property (nonatomic, readonly) NSInteger index;
 
 @end
+
+NS_ASSUME_NONNULL_END

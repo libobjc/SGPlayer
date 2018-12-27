@@ -9,11 +9,15 @@
 #import "SGSegment.h"
 #import "SGDemuxable.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGSegment ()
 
 /**
  *
  */
-- (id<SGDemuxable> _Nonnull)newDemuxable;
+- (id<SGDemuxable> _Nullable)newDemuxable;
 
 @end
+
+NS_ASSUME_NONNULL_END

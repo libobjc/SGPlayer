@@ -24,7 +24,7 @@
     return obj;
 }
 
-- (instancetype)initWithType:(SGMediaType)type index:(int)index
+- (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index
 {
     if (self = [super initWithType:type index:index]) {
         self->_mutableSegments = [NSMutableArray array];
