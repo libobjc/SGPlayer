@@ -100,6 +100,10 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
+    if (!SGCMTimeIsValid(timeRange.start, NO) ||
+        !SGCMTimeIsValid(timeRange.duration, NO)) {
+        return frames;
+    }
     NSMutableArray *ret = [NSMutableArray array];
     for (SGFrame *obj in frames) {
         if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {

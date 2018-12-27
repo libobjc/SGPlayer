@@ -16,14 +16,13 @@
 
 @interface SGAudioDecoder ()
 
+@property (nonatomic, readonly) BOOL needsAlignment;
+@property (nonatomic, readonly) BOOL needsResetSonic;
+@property (nonatomic, readonly) int64_t nextTimeStamp;
 @property (nonatomic, strong, readonly) SGSonic *sonic;
 @property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescription *codecDescription;
 @property (nonatomic, strong, readonly) SGAudioDescription *audioDescription;
-
-@property (nonatomic, readonly) BOOL needsAlignment;
-@property (nonatomic, readonly) BOOL needsResetSonic;
-@property (nonatomic, readonly) int64_t nextTimeStamp;
 
 @end
 
@@ -144,6 +143,10 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
+    if (!SGCMTimeIsValid(timeRange.start, NO) ||
+        !SGCMTimeIsValid(timeRange.duration, NO)) {
+        return frames;
+    }
     NSMutableArray *ret = [NSMutableArray array];
     for (SGAudioFrame *obj in frames) {
         if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {
