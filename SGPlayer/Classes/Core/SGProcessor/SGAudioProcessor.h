@@ -11,6 +11,8 @@
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAudioProcessor : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -19,22 +21,22 @@
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription * _Nullable)audioDescription NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription * _Nonnull audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
 
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)tracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
 
 /**
  *
  */
-- (NSArray<NSNumber *> * _Nullable)weights;
+@property (nonatomic, copy, readonly) NSArray<NSNumber *> * _Nullable weights;
 
 /**
  *
@@ -44,7 +46,7 @@
 /**
  *
  */
-- (SGAudioFrame * _Nullable)putFrame:(SGAudioFrame * _Nonnull)frame;
+- (SGAudioFrame * _Nullable)putFrame:(SGAudioFrame *)frame;
 
 /**
  *
@@ -54,7 +56,7 @@
 /**
  *
  */
-- (SGCapacity * _Nonnull)capacity;
+- (SGCapacity *)capacity;
 
 /**
  *
@@ -67,3 +69,5 @@
 - (void)close;
 
 @end
+
+NS_ASSUME_NONNULL_END

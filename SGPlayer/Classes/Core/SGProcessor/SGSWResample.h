@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SGAudioDescription.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGSWResample : NSObject
 
 /**
@@ -25,11 +27,13 @@
 /**
  *
  */
-- (int)write:(uint8_t **)data nb_samples:(int)nb_samples;
+- (int)write:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
 
 /**
  *
  */
-- (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
+- (int)read:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
 
 @end
+
+NS_ASSUME_NONNULL_END

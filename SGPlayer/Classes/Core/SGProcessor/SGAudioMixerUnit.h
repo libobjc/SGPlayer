@@ -10,6 +10,8 @@
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAudioMixerUnit : NSObject
 
 /**
@@ -20,7 +22,7 @@
 /**
  *
  */
-- (BOOL)putFrame:(SGAudioFrame * _Nonnull)frame;
+- (BOOL)putFrame:(SGAudioFrame *)frame;
 
 /**
  *
@@ -30,7 +32,7 @@
 /**
  *
  */
-- (SGCapacity * _Nonnull)capacity;
+- (SGCapacity *)capacity;
 
 /**
  *
@@ -38,3 +40,5 @@
 - (void)flush;
 
 @end
+
+NS_ASSUME_NONNULL_END

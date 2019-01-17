@@ -13,9 +13,10 @@
 @interface SGSWResample ()
 
 {
-    SwrContext *_context;
     AVBufferRef *_buffer[SGFramePlaneCount];
 }
+
+@property (nonatomic, readonly) SwrContext *context;
 
 @end
 

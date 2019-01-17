@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "SGAudioDescription.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGSonic : NSObject
 
 /**
@@ -20,12 +22,12 @@
 /**
  *
  */
-- (instancetype _Nonnull)initWithAudioDescription:(SGAudioDescription * _Nullable)audioDescription NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nonnull)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription * _Nonnull audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
 
 /**
  *
@@ -70,11 +72,13 @@
 /**
  *
  */
-- (int)write:(uint8_t * _Nullable * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)write:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
 
 /**
  *
  */
-- (int)read:(uint8_t * _Nullable * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)read:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
 
 @end
+
+NS_ASSUME_NONNULL_END

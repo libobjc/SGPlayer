@@ -10,6 +10,8 @@
 #import "SGAudioDescription.h"
 #import "SGAudioFrame.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAudioFormatter : NSObject
 
 /**
@@ -21,17 +23,17 @@
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription * _Nullable)audioDescription NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription * _Nonnull audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
 
 /**
  *
  */
-- (SGAudioFrame * _Nullable)format:(SGAudioFrame * _Nonnull)frame;
+- (SGAudioFrame * _Nullable)format:(SGAudioFrame *)frame;
 
 /**
  *
@@ -39,3 +41,5 @@
 - (void)flush;
 
 @end
+
+NS_ASSUME_NONNULL_END

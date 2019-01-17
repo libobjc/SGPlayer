@@ -12,10 +12,8 @@
 
 @interface SGAudioMixer ()
 
-{
-    CMTime _startTime;
-    NSDictionary<NSNumber *, SGAudioMixerUnit *> *_units;
-}
+@property (nonatomic, readonly) CMTime startTime;
+@property (nonatomic, strong, readonly) NSDictionary<NSNumber *, SGAudioMixerUnit *> *units;
 
 @end
 
@@ -26,13 +24,12 @@
     if (self = [super init]) {
         self->_tracks = [tracks copy];
         self->_audioDescription = [audioDescription copy];
-        
+        self->_startTime = kCMTimeNegativeInfinity;
         NSMutableDictionary *units = [NSMutableDictionary dictionary];
         for (SGTrack *obj in self->_tracks) {
             [units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
         }
         self->_units = [units copy];
-        self->_startTime = kCMTimeNegativeInfinity;
         [self setWeights:nil];
     }
     return self;

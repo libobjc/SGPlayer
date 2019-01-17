@@ -12,9 +12,7 @@
 
 @interface SGAudioFormatter ()
 
-{
-    SGSWResample *_context;
-}
+@property (nonatomic, strong, readonly) SGSWResample *context;
 
 @end
 

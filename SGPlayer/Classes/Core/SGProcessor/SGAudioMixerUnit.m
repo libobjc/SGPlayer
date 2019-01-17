@@ -10,14 +10,14 @@
 
 @interface SGAudioMixerUnit ()
 
-{
-    SGCapacity *_capacity;
-    NSMutableArray<SGAudioFrame *> *_frames;
-}
+@property (nonatomic, strong, readonly) SGCapacity *capacity;
+@property (nonatomic, strong, readonly) NSMutableArray<SGAudioFrame *> *frames;
 
 @end
 
 @implementation SGAudioMixerUnit
+
+@synthesize capacity = _capacity;
 
 - (instancetype)init
 {

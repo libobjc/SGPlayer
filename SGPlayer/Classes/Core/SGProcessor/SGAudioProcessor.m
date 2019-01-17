@@ -12,10 +12,8 @@
 
 @interface SGAudioProcessor ()
 
-{
-    SGAudioMixer *_mixer;
-    NSMutableDictionary<NSNumber *, SGAudioFormatter *> *_formatters;
-}
+@property (nonatomic, strong, readonly) SGAudioMixer *mixer;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGAudioFormatter *> *formatters;
 
 @end
 
@@ -44,8 +42,7 @@
 - (BOOL)setTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
 {
     if (tracks.count > 0) {
-        self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription
-                                                               tracks:tracks];
+        self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription tracks:tracks];
         self->_mixer.weights = weights;
         self->_formatters = [NSMutableDictionary dictionary];
         for (SGTrack *i in tracks) {

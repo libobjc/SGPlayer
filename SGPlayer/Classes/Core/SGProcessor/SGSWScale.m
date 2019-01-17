@@ -11,9 +11,7 @@
 
 @interface SGSWScale ()
 
-{
-    struct SwsContext *_context;
-}
+@property (nonatomic, readonly) struct SwsContext *context;
 
 @end
 
