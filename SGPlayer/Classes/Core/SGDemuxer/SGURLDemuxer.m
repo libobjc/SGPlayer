@@ -58,10 +58,10 @@
     if (error) {
         return error;
     }
-    if (self->_context && self->_context->duration > 0) {
+    if (self->_context->duration > 0) {
         self->_duration = CMTimeMake(self->_context->duration, AV_TIME_BASE);
     }
-    if (self->_context && self->_context->metadata) {
+    if (self->_context->metadata) {
         self->_metadata = SGDictionaryFF2NS(self->_context->metadata);
     }
     NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
@@ -158,28 +158,28 @@ static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *U
         av_dict_set(&opts, "timeout", NULL, 0);
     }
     
-    int suc = avformat_open_input(&context, URLString.UTF8String, NULL, &opts);
+    int success = avformat_open_input(&context, URLString.UTF8String, NULL, &opts);
     
     if (opts) {
         av_dict_free(&opts);
     }
     
-    NSError *err = SGEGetError(suc, SGOperationCodeFormatOpenInput);
-    if (err) {
+    NSError *error = SGEGetError(success, SGOperationCodeFormatOpenInput);
+    if (error) {
         if (context) {
             avformat_free_context(context);
         }
-        return err;
+        return error;
     }
     
-    suc = avformat_find_stream_info(context, NULL);
-    err = SGEGetError(suc, SGOperationCodeFormatFindStreamInfo);
-    if (err) {
+    success = avformat_find_stream_info(context, NULL);
+    error = SGEGetError(success, SGOperationCodeFormatFindStreamInfo);
+    if (error) {
         if (context) {
             avformat_close_input(&context);
             avformat_free_context(context);
         }
-        return err;
+        return error;
     }
     *formatContext = context;
     return nil;
