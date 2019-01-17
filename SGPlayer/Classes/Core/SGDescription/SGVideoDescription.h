@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGVideoDescription : NSObject <NSCopying>
 
 /**
@@ -31,3 +33,5 @@
 - (BOOL)isEqualToDescription:(SGVideoDescription *)description;
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -11,14 +11,18 @@
 #import "SGAudioDescription.h"
 #import "SGVideoDescription.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAudioDescription ()
 
-- (instancetype _Nonnull)initWithFrame:(AVFrame * _Nullable)frame;
+- (instancetype)initWithFrame:(AVFrame *)frame;
 
 @end
 
 @interface SGVideoDescription ()
 
-- (instancetype _Nonnull)initWithFrame:(AVFrame * _Nullable)frame;
+- (instancetype)initWithFrame:(AVFrame *)frame;
 
 @end
+
+NS_ASSUME_NONNULL_END
