@@ -128,44 +128,45 @@
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    NSError * ret = nil;
+    NSError *error = nil;
     while (YES) {
         id<SGDemuxable> demuxable = nil;
-        CMTime minimum = kCMTimePositiveInfinity;
+        CMTime minimumTime = kCMTimePositiveInfinity;
         for (id<SGDemuxable> obj in self->_demuxables) {
             if ([self->_finishedDemuxables containsObject:obj]) {
                 continue;
             }
-            NSValue *value = [self->_timeStamps objectForKey:[NSString stringWithFormat:@"%p", obj]];
+            NSString *key = [NSString stringWithFormat:@"%p", obj];
+            NSValue *value = [self->_timeStamps objectForKey:key];
             if (!value) {
                 demuxable = obj;
                 break;
             }
-            CMTime t = kCMTimePositiveInfinity;
-            [value getValue:&t];
-            if (CMTimeCompare(t, minimum) < 0) {
-                minimum = t;
+            CMTime time = kCMTimePositiveInfinity;
+            [value getValue:&time];
+            if (CMTimeCompare(time, minimumTime) < 0) {
+                minimumTime = time;
                 demuxable = obj;
             }
         }
         if (!demuxable) {
-            return SGECreateError(SGErrorCodeMutilDemuxerEndOfFile,
-                                  SGOperationCodeMutilDemuxerNext);
+            return SGECreateError(SGErrorCodeMutilDemuxerEndOfFile, SGOperationCodeMutilDemuxerNext);
         }
-        ret = [demuxable nextPacket:packet];
-        if (ret) {
-            if (ret.code == SGErrorImmediateExitRequested) {
+        error = [demuxable nextPacket:packet];
+        if (error) {
+            if (error.code == SGErrorImmediateExitRequested) {
                 break;
             }
             [self->_finishedDemuxables addObject:demuxable];
             continue;
         }
         CMTime decodeTimeStamp = (*packet).decodeTimeStamp;
-        [self->_timeStamps setObject:[NSValue value:&decodeTimeStamp withObjCType:@encode(CMTime)]
-                              forKey:[NSString stringWithFormat:@"%p", demuxable]];
+        NSString *key = [NSString stringWithFormat:@"%p", demuxable];
+        NSValue *value = [NSValue value:&decodeTimeStamp withObjCType:@encode(CMTime)];
+        [self->_timeStamps setObject:value forKey:key];
         break;
     }
-    return ret;
+    return error;
 }
 
 @end

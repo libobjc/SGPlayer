@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSError * _Nullable)nextPacket:(SGPacket * _Nullable *)packet;
+- (NSError * _Nullable)nextPacket:(SGPacket **)packet;
 
 @end
 

@@ -118,11 +118,11 @@
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    NSError *ret = nil;
+    NSError *error = nil;
     while (YES) {
-        ret = [self->_currentUnit nextPacket:packet];
-        if (ret) {
-            if (ret.code == SGErrorImmediateExitRequested) {
+        error = [self->_currentUnit nextPacket:packet];
+        if (error) {
+            if (error.code == SGErrorImmediateExitRequested) {
                 break;
             }
             if (self->_currentUnit == self->_units.lastObject) {
@@ -136,7 +136,7 @@
         [(*packet) fill];
         break;
     }
-    return ret;
+    return error;
 }
 
 @end

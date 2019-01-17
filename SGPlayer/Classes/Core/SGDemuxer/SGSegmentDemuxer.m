@@ -60,9 +60,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         self->_duration = SGCMTimeMultiply(duration, self->_segment.scale);
         return nil;
     }
-    NSError *ret = [self->_demuxable open];
-    if (ret) {
-        return ret;
+    NSError *error = [self->_demuxable open];
+    if (error) {
+        return error;
     }
     CMTime duration = self->_demuxable.duration;
     NSAssert(SGCMTimeIsValid(duration, NO), @"Invaild Duration.");
@@ -85,9 +85,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         return SGECreateError(SGErrorCodeDemuxerEndOfFile,
                               SGOperationCodeSegmentDemuxerNext);
     }
-    NSError *ret = [self->_demuxable nextPacket:packet];
-    if (ret) {
-        return ret;
+    NSError *error = [self->_demuxable nextPacket:packet];
+    if (error) {
+        return error;
     }
     [(*packet).codecDescription appendTimeLayout:self->_timeLayout];
     [(*packet) fill];
