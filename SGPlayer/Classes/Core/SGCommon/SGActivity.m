@@ -10,10 +10,8 @@
 
 @interface SGActivity ()
 
-{
-    NSLock *_lock;
-    NSMutableSet *_targets;
-}
+@property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) NSMutableSet *targets;
 
 @end
 

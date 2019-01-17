@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGConfiguration : NSObject
 
 /**
@@ -18,12 +20,12 @@
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary *formatContextOptions;
+@property (nonatomic, copy) NSDictionary * _Nullable formatContextOptions;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary *codecContextOptions;
+@property (nonatomic, copy) NSDictionary * _Nullable codecContextOptions;
 
 /**
  *
@@ -51,3 +53,5 @@
 @property (nonatomic) OSType preferredPixelFormat;
 
 @end
+
+NS_ASSUME_NONNULL_END
