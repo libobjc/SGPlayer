@@ -16,28 +16,30 @@
 @interface SGAudioRenderer () <SGAudioStreamPlayerDelegate>
 
 {
-    NSLock *_lock;
-    SGClock *_clock;
-    SGAudioStreamPlayer *_player;
-    SGAudioDescription *_audioDescription;
-    
-    CMTime _rate;
-    double _volume;
-    SGCapacity *_capacity;
-    SGRenderableState _state;
-    
-    CMTime _renderTime;
-    CMTime _renderDuration;
-    int _frameCopiedSamples;
-    int _renderCopiedSamples;
-    SGAudioFrame *_currentFrame;
+    struct {
+        SGRenderableState state;
+        CMTime renderTime;
+        CMTime renderDuration;
+        int frameCopiedSamples;
+        int renderCopiedSamples;
+    } _flags;
 }
+
+@property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) SGClock *clock;
+@property (nonatomic, strong, readonly) SGCapacity *capacity;
+@property (nonatomic, strong, readonly) SGAudioFrame *currentFrame;
+@property (nonatomic, strong, readonly) SGAudioStreamPlayer *player;
 
 @end
 
 @implementation SGAudioRenderer
 
+@synthesize rate = _rate;
+@synthesize volume = _volume;
 @synthesize delegate = _delegate;
+@synthesize capacity = _capacity;
+@synthesize audioDescription = _audioDescription;
 
 - (instancetype)init
 {
@@ -66,10 +68,10 @@
 
 - (SGBlock)setState:(SGRenderableState)state
 {
-    if (self->_state == state) {
+    if (self->_flags.state == state) {
         return ^{};
     }
-    self->_state = state;
+    self->_flags.state = state;
     return ^{
         [self.delegate renderable:self didChangeState:state];
     };
@@ -79,7 +81,7 @@
 {
     __block SGRenderableState ret = SGRenderableStateNone;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_state;
+        ret = self->_flags.state;
     });
     return ret;
 }
@@ -153,7 +155,7 @@
     __block float volume = 1.0f;
     __block CMTime rate = CMTimeMake(1, 1);
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateNone;
+        return self->_flags.state == SGRenderableStateNone;
     }, ^SGBlock {
         volume = self->_volume;
         rate = self->_rate;
@@ -171,10 +173,10 @@
 - (BOOL)close
 {
     return SGLockEXE11(self->_lock, ^SGBlock {
-        self->_frameCopiedSamples = 0;
-        self->_renderCopiedSamples = 0;
-        self->_renderTime = kCMTimeZero;
-        self->_renderDuration = kCMTimeZero;
+        self->_flags.frameCopiedSamples = 0;
+        self->_flags.renderCopiedSamples = 0;
+        self->_flags.renderTime = kCMTimeZero;
+        self->_flags.renderDuration = kCMTimeZero;
         self->_capacity = nil;
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
@@ -190,7 +192,7 @@
 - (BOOL)pause
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
@@ -203,7 +205,7 @@
 - (BOOL)resume
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
@@ -216,14 +218,14 @@
 - (BOOL)flush
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
-        self->_frameCopiedSamples = 0;
-        self->_renderCopiedSamples = 0;
-        self->_renderTime = kCMTimeZero;
-        self->_renderDuration = kCMTimeZero;
+        self->_flags.frameCopiedSamples = 0;
+        self->_flags.renderCopiedSamples = 0;
+        self->_flags.renderTime = kCMTimeZero;
+        self->_flags.renderDuration = kCMTimeZero;
         return ^{};
     }, ^BOOL(SGBlock block) {
         [self->_player flush];
@@ -235,7 +237,7 @@
 - (BOOL)finish
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
+        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStatePaused;
     }, ^SGBlock {
         return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
@@ -251,10 +253,10 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(UInt32)nb_samples
 {
     [self->_lock lock];
-    self->_renderCopiedSamples = 0;
-    self->_renderTime = kCMTimeZero;
-    self->_renderDuration = kCMTimeZero;
-    if (self->_state != SGRenderableStateRendering) {
+    self->_flags.renderCopiedSamples = 0;
+    self->_flags.renderTime = kCMTimeZero;
+    self->_flags.renderDuration = kCMTimeZero;
+    if (self->_flags.state != SGRenderableStateRendering) {
         [self->_lock unlock];
         return;
     }
@@ -275,26 +277,26 @@
         }
         SGAudioDescription *description = self->_currentFrame.audioDescription;
         NSAssert(description.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
-        UInt32 frame_nb_samples_left = self->_currentFrame.numberOfSamples - self->_frameCopiedSamples;
+        UInt32 frame_nb_samples_left = self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples;
         UInt32 nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
         for (int i = 0; i < data->mNumberBuffers && i < description.numberOfChannels; i++) {
-            UInt32 data_offset = self->_renderCopiedSamples * (UInt32)sizeof(float);
-            UInt32 frame_offset = self->_frameCopiedSamples * (UInt32)sizeof(float);
+            UInt32 data_offset = self->_flags.renderCopiedSamples * (UInt32)sizeof(float);
+            UInt32 frame_offset = self->_flags.frameCopiedSamples * (UInt32)sizeof(float);
             UInt32 size_to_copy = nb_samples_to_copy * (UInt32)sizeof(float);
             memcpy(data->mBuffers[i].mData + data_offset, self->_currentFrame.data[i] + frame_offset, size_to_copy);
         }
-        if (self->_renderCopiedSamples == 0) {
-            CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_frameCopiedSamples, self->_currentFrame.numberOfSamples);
-            self->_renderTime = CMTimeAdd(self->_currentFrame.timeStamp, duration);
+        if (self->_flags.renderCopiedSamples == 0) {
+            CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_flags.frameCopiedSamples, self->_currentFrame.numberOfSamples);
+            self->_flags.renderTime = CMTimeAdd(self->_currentFrame.timeStamp, duration);
         }
         CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, nb_samples_to_copy, self->_currentFrame.numberOfSamples);
-        self->_renderDuration = CMTimeAdd(self->_renderDuration, duration);
-        self->_renderCopiedSamples += nb_samples_to_copy;
-        self->_frameCopiedSamples += nb_samples_to_copy;
-        if (self->_currentFrame.numberOfSamples <= self->_frameCopiedSamples) {
+        self->_flags.renderDuration = CMTimeAdd(self->_flags.renderDuration, duration);
+        self->_flags.renderCopiedSamples += nb_samples_to_copy;
+        self->_flags.frameCopiedSamples += nb_samples_to_copy;
+        if (self->_currentFrame.numberOfSamples <= self->_flags.frameCopiedSamples) {
             [self->_currentFrame unlock];
             self->_currentFrame = nil;
-            self->_frameCopiedSamples = 0;
+            self->_flags.frameCopiedSamples = 0;
         }
         nb_samples_left -= nb_samples_to_copy;
     }
@@ -311,12 +313,12 @@
 - (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp
 {
     [self->_lock lock];
-    CMTime renderTime = self->_renderTime;
-    CMTime renderDuration = SGCMTimeMultiply(self->_renderDuration, self->_rate);
-    CMTime frameDuration = !self->_currentFrame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_currentFrame.numberOfSamples - self->_frameCopiedSamples, self->_currentFrame.numberOfSamples);
+    CMTime renderTime = self->_flags.renderTime;
+    CMTime renderDuration = SGCMTimeMultiply(self->_flags.renderDuration, self->_rate);
+    CMTime frameDuration = !self->_currentFrame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples, self->_currentFrame.numberOfSamples);
     SGBlock clockBlock = ^{};
-    if (self->_state == SGRenderableStateRendering) {
-        if (self->_renderCopiedSamples) {
+    if (self->_flags.state == SGRenderableStateRendering) {
+        if (self->_flags.renderCopiedSamples) {
             clockBlock = ^{
                 [self->_clock setAudioCurrentTime:renderTime];
             };

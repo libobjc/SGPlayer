@@ -24,22 +24,24 @@ typedef NS_ENUM(int, SGScalingMode) {
     SGScalingModeResizeAspectFill,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGVideoRenderer : NSObject
 
 /**
  *  Main thread only.
  */
-@property (nonatomic, strong) SGPLFView * view;
+@property (nonatomic, strong) SGPLFView * _Nullable view;
 
 /**
  *  Main thread only.
  */
-@property (nonatomic, strong) SGVRViewport * viewport;
+@property (nonatomic, strong, readonly) SGVRViewport *viewport;
 
 /**
  *  Main thread only.
  */
-@property (nonatomic, copy) void (^frameOutput)(SGVideoFrame * frame);
+@property (nonatomic, copy) void (^ _Nullable frameOutput)(SGVideoFrame *frame);
 
 /**
  *  Main thread only.
@@ -59,11 +61,13 @@ typedef NS_ENUM(int, SGScalingMode) {
 /**
  *  Main thread only.
  */
-- (SGPLFImage *)originalImage;
+- (SGPLFImage * _Nullable)originalImage;
 
 /**
  *  Main thread only.
  */
-- (SGPLFImage *)snapshot;
+- (SGPLFImage * _Nullable)snapshot;
 
 @end
+
+NS_ASSUME_NONNULL_END

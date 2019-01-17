@@ -23,17 +23,19 @@ typedef NS_ENUM(int, SGRenderableState) {
     SGRenderableStateFailed,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol SGRenderable <NSObject>
 
 /**
  *
  */
-@property (nonatomic, weak) id<SGRenderableDelegate> delegate;
+@property (nonatomic, weak) id<SGRenderableDelegate> _Nullable delegate;
 
 /**
  *
  */
-- (SGRenderableState)state;
+@property (nonatomic, readonly) SGRenderableState state;
 
 /**
  *
@@ -87,6 +89,8 @@ typedef NS_ENUM(int, SGRenderableState) {
 /**
  *
  */
-- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
+- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader _Nullable)timeReader;
 
 @end
+
+NS_ASSUME_NONNULL_END

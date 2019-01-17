@@ -17,34 +17,35 @@
 @interface SGVideoRenderer () <SGGLViewDelegate>
 
 {
-    NSLock *_lock;
-    SGClock *_clock;
-    SGGLTimer *_fetchTimer;
-    SGGLDisplayLink *_drawTimer;
-    
-    SGGLView *_glView;
-    SGGLModelPool *_modelPool;
-    SGGLProgramPool *_programPool;
-    SGVRMatrixMaker *_matrixMaker;
-    SGGLTextureUploader *_glUploader;
-    
-    CMTime _rate;
-    SGCapacity *_capacity;
-    SGRenderableState _state;
-    
-    int _framesOutput;
-    int _framesDisplayed;
-    BOOL _hasNewFrameToOutput;
-    BOOL _hasNewFrameToDisplay;
-    SGVideoFrame *_currentFrame;
-    double _frameInvalidMediaTime;
+    struct {
+        SGRenderableState state;
+        int framesOutput;
+        int framesDisplayed;
+        BOOL hasNewFrameToOutput;
+        BOOL hasNewFrameToDisplay;
+        double frameInvalidMediaTime;
+    } _flags;
 }
+
+@property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) SGClock *clock;
+@property (nonatomic, strong, readonly) SGCapacity *capacity;
+@property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
+@property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
+@property (nonatomic, strong, readonly) SGGLDisplayLink *drawTimer;
+@property (nonatomic, strong, readonly) SGGLView *glView;
+@property (nonatomic, strong, readonly) SGGLModelPool *modelPool;
+@property (nonatomic, strong, readonly) SGGLProgramPool *programPool;
+@property (nonatomic, strong, readonly) SGVRMatrixMaker *matrixMaker;
+@property (nonatomic, strong, readonly) SGGLTextureUploader *glUploader;
 
 @end
 
 @implementation SGVideoRenderer
 
+@synthesize rate = _rate;
 @synthesize delegate = _delegate;
+@synthesize capacity = _capacity;
 
 - (instancetype)init
 {
@@ -83,10 +84,10 @@
 
 - (SGBlock)setState:(SGRenderableState)state
 {
-    if (self->_state == state) {
+    if (self->_flags.state == state) {
         return ^{};
     }
-    self->_state = state;
+    self->_flags.state = state;
     return ^{
         [self->_delegate renderable:self didChangeState:state];
     };
@@ -96,7 +97,7 @@
 {
     __block SGRenderableState ret = SGRenderableStateNone;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_state;
+        ret = self->_flags.state;
     });
     return ret;
 }
@@ -124,11 +125,6 @@
         ret = self->_rate;
     });
     return ret;
-}
-
-- (void)setViewport:(SGVRViewport *)viewport
-{
-    self->_matrixMaker.viewport = viewport;
 }
 
 - (SGVRViewport *)viewport
@@ -165,7 +161,7 @@
 - (BOOL)open
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateNone;
+        return self->_flags.state == SGRenderableStateNone;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
@@ -189,16 +185,16 @@
 - (BOOL)close
 {
     return SGLockEXE11(self->_lock, ^SGBlock {
-        SGBlock b1 = self->_framesDisplayed ? ^{
+        SGBlock b1 = self->_flags.framesDisplayed ? ^{
             [self performSelectorOnMainThread:@selector(clear) withObject:nil waitUntilDone:YES];
         } : ^{};
         SGBlock b2 = [self setState:SGRenderableStateNone];
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
-        self->_hasNewFrameToDisplay = NO;
-        self->_hasNewFrameToOutput = NO;
-        self->_framesDisplayed = 0;
-        self->_framesOutput = 0;
+        self->_flags.hasNewFrameToDisplay = NO;
+        self->_flags.hasNewFrameToOutput = NO;
+        self->_flags.framesDisplayed = 0;
+        self->_flags.framesOutput = 0;
         return ^{
             b1(); b2();
         };
@@ -215,7 +211,7 @@
 - (BOOL)pause
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
@@ -228,7 +224,7 @@
 - (BOOL)resume
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
@@ -241,12 +237,12 @@
 - (BOOL)flush
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateRendering || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
-        self->_hasNewFrameToDisplay = NO;
-        self->_hasNewFrameToOutput = NO;
-        self->_framesDisplayed = 0;
-        self->_framesOutput = 0;
+        self->_flags.hasNewFrameToDisplay = NO;
+        self->_flags.hasNewFrameToOutput = NO;
+        self->_flags.framesDisplayed = 0;
+        self->_flags.framesOutput = 0;
         return nil;
     }, ^BOOL(SGBlock block) {
         self->_drawTimer.paused = NO;
@@ -258,7 +254,7 @@
 - (BOOL)finish
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused;
+        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStatePaused;
     }, ^SGBlock {
         return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
@@ -275,9 +271,9 @@
     BOOL should_fetch = NO;
     BOOL should_pause = NO;
     [self->_lock lock];
-    if (self->_state == SGRenderableStateRendering || (self->_state == SGRenderableStatePaused && self->_framesOutput == 0)) {
+    if (self->_flags.state == SGRenderableStateRendering || (self->_flags.state == SGRenderableStatePaused && self->_flags.framesOutput == 0)) {
         should_fetch = YES;
-    } else if (self->_state != SGRenderableStateRendering) {
+    } else if (self->_flags.state != SGRenderableStateRendering) {
         should_pause = YES;
     }
     [self->_lock unlock];
@@ -293,8 +289,8 @@
     SGVideoFrame *ret = [self->_delegate renderable:self fetchFrame:^BOOL(CMTime *desire, BOOL *drop) {
         SGStrongify(self)
         return SGLockCondEXE11(self->_lock, ^BOOL {
-            framesOutput = self->_framesOutput;
-            return self->_currentFrame && self->_framesOutput != 0;
+            framesOutput = self->_flags.framesOutput;
+            return self->_currentFrame && self->_flags.framesOutput != 0;
         }, ^SGBlock {
             return nil;
         }, ^BOOL(SGBlock block) {
@@ -309,21 +305,21 @@
         });
     }];
     SGLockCondEXE10(self->_lock, ^BOOL {
-        return !ret || framesOutput == self->_framesOutput;
+        return !ret || framesOutput == self->_flags.framesOutput;
     }, ^SGBlock {
         SGCapacity *capacity = [[SGCapacity alloc] init];
         if (ret) {
             [ret lock];
             [self->_currentFrame unlock];
             self->_currentFrame = ret;
-            self->_hasNewFrameToDisplay = YES;
-            self->_hasNewFrameToOutput = YES;
-            self->_framesOutput += 1;
-            self->_frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
+            self->_flags.hasNewFrameToDisplay = YES;
+            self->_flags.hasNewFrameToOutput = YES;
+            self->_flags.framesOutput += 1;
+            self->_flags.frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
             [self->_clock setVideoCurrentTime:self->_currentFrame.timeStamp];
             capacity.duration = ret.duration;
-        } else if (media_time_current < self->_frameInvalidMediaTime) {
-            capacity.duration = SGCMTimeMakeWithSeconds(self->_frameInvalidMediaTime - media_time_current);
+        } else if (media_time_current < self->_flags.frameInvalidMediaTime) {
+            capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.frameInvalidMediaTime - media_time_current);
         }
         SGBlock b1 = ^{};
         if (![capacity isEqualToCapacity:self->_capacity]) {
@@ -342,7 +338,7 @@
     __block BOOL draw_ret = NO;
     SGLockEXE11(self->_lock, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{};
-        if (self->_hasNewFrameToOutput && self->_currentFrame) {
+        if (self->_flags.hasNewFrameToOutput && self->_currentFrame) {
             SGVideoFrame *frame = self->_currentFrame;
             [frame lock];
             b1 = ^{
@@ -352,7 +348,7 @@
                 [frame unlock];
             };
         }
-        if ((self->_hasNewFrameToDisplay || !self->_glView.framesDisplayed || (self->_displayMode == SGDisplayModeVR || self->_displayMode == SGDisplayModeVRBox)) && self->_currentFrame) {
+        if ((self->_flags.hasNewFrameToDisplay || !self->_glView.framesDisplayed || (self->_displayMode == SGDisplayModeVR || self->_displayMode == SGDisplayModeVRBox)) && self->_currentFrame) {
             b2 = ^{
                 [self addGLViewIfNeeded];
                 if (self->_glView.superview && self->_glView.displaySize.width > 0) {
@@ -366,13 +362,13 @@
     }, ^BOOL(SGBlock block) {
         block();
         SGLockEXE10(self->_lock, ^SGBlock {
-            self->_hasNewFrameToOutput = NO;
-            if (draw_ret && self->_hasNewFrameToDisplay) {
-                self->_hasNewFrameToDisplay = NO;
-                self->_framesDisplayed += 1;
+            self->_flags.hasNewFrameToOutput = NO;
+            if (draw_ret && self->_flags.hasNewFrameToDisplay) {
+                self->_flags.hasNewFrameToDisplay = NO;
+                self->_flags.framesDisplayed += 1;
             }
             SGBlock b1 = ^{};
-            if (self->_state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_framesDisplayed && self->_glView.framesDisplayed) {
+            if (self->_flags.state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_flags.framesDisplayed && self->_glView.framesDisplayed) {
                 b1 = ^{
                     self->_drawTimer.paused = YES;
                 };
@@ -518,7 +514,7 @@
 - (void)glViewDidFlush:(SGGLView *)glView
 {
     SGLockCondEXE00(self->_lock, ^BOOL {
-        return self->_state == SGRenderableStateRendering || self->_state == SGRenderableStatePaused || self->_state == SGRenderableStateFinished;
+        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateFinished;
     }, ^ {
         self->_drawTimer.paused = NO;
         self->_fetchTimer.paused = NO;

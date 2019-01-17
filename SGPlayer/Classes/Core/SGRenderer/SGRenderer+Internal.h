@@ -14,6 +14,8 @@
 
 @class SGAudioFormatter;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGAudioRenderer () <SGRenderable>
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -32,7 +34,7 @@
 /**
  *
  */
-- (SGAudioDescription *)audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
 
 @end
 
@@ -52,3 +54,5 @@
 @property (nonatomic) CMTime rate;
 
 @end
+
+NS_ASSUME_NONNULL_END
