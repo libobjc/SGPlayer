@@ -9,6 +9,8 @@
 #import "SGPacket.h"
 #import "SGCodecDescription.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGPacket ()
 
 /**
@@ -27,3 +29,5 @@
 - (void)fill;
 
 @end
+
+NS_ASSUME_NONNULL_END

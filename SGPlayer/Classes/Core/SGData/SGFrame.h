@@ -12,6 +12,8 @@
 
 static int const SGFramePlaneCount = 8;
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGFrame : NSObject <SGData>
 
 /**
@@ -45,3 +47,5 @@ static int const SGFramePlaneCount = 8;
 @property (nonatomic, readonly) int size;
 
 @end
+
+NS_ASSUME_NONNULL_END
