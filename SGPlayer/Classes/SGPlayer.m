@@ -151,7 +151,8 @@
     if (self->_seekingCount > 0) {
         playbackState |= SGPlaybackStateSeeking;
     }
-    if ((!self->_audioAvailable || self->_audioFinished) &&
+    if (self->_playbackState == SGPlayerStatusReady &&
+        (!self->_audioAvailable || self->_audioFinished) &&
         (!self->_videoAvailable || self->_videoFinished)) {
         playbackState |= SGPlaybackStateFinished;
     }
@@ -537,7 +538,7 @@
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state
 {
     SGLockEXE10(self->_lock, ^SGBlock {
-        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
+        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{}, b4 = ^{};
         switch (state) {
             case SGPlayerItemStateOpening: {
                 b1 = [self setStatus:SGPlayerStatusPreparing];
@@ -546,6 +547,7 @@
             case SGPlayerItemStateOpened: {
                 b2 = [self setStatus:SGPlayerStatusReady];
                 b3 = [self setLoadingState:SGLoadingStateStalled];
+                b4 = [self setCurrentTime:kCMTimeZero];
                 b1 = ^{
                     [self->_clock open];
                     if ([playerItem isAvailable:SGMediaTypeAudio]) {
@@ -584,7 +586,7 @@
                 break;
         }
         return ^{
-            b1(); b2(); b3();
+            b1(); b2(); b3();; b4();
         };
     });
 }
