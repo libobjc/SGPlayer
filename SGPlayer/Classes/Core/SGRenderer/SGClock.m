@@ -14,31 +14,29 @@
 @interface SGClock ()
 
 {
-    NSLock *_lock;
-    
     BOOL _paused;
     BOOL _audioStalled;
     BOOL _audioFinished;
     BOOL _videoFinished;
-    
-    CMTime _rate;
-    CMTime _currentTime;
-    CMTime _videoAdvancedDuration;
-    
     CMTime _audioTime;
     CMTime _videoTime;
     long _audioSetTimes;
     long _videoSetTimes;
-    
     double _audioMediaTime;
     double _videoMediaTime;
     double _pauseMediaTime;
     double _invalidMediaInterval;
 }
 
+@property (nonatomic, strong, readonly) NSLock *lock;
+
 @end
 
 @implementation SGClock
+
+@synthesize rate = _rate;
+@synthesize currentTime = _currentTime;
+@synthesize videoAdvancedDuration = _videoAdvancedDuration;
 
 - (instancetype)init
 {

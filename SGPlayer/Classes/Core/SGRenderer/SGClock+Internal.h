@@ -21,12 +21,12 @@
 /**
  *
  */
-@property (nonatomic) CMTime rate;
+@property (nonatomic, readonly) CMTime currentTime;
 
 /**
  *
  */
-- (CMTime)currentTime;
+@property (nonatomic) CMTime rate;
 
 /**
  *
