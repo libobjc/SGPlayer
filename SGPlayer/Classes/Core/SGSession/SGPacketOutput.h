@@ -26,6 +26,8 @@ typedef NS_ENUM(int, SGPacketOutputState) {
     SGPacketOutputStateFailed,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGPacketOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -39,7 +41,7 @@ typedef NS_ENUM(int, SGPacketOutputState) {
 /**
  *
  */
-@property (nonatomic, weak) id<SGPacketOutputDelegate> delegate;
+@property (nonatomic, weak) id<SGPacketOutputDelegate> _Nullable delegate;
 
 /**
  *
@@ -103,11 +105,13 @@ typedef NS_ENUM(int, SGPacketOutputState) {
 /**
  *
  */
-- (void)packetOutput:(SGPacketOutput * _Nonnull)packetOutput didChangeState:(SGPacketOutputState)state;
+- (void)packetOutput:(SGPacketOutput *)packetOutput didChangeState:(SGPacketOutputState)state;
 
 /**
  *
  */
-- (void)packetOutput:(SGPacketOutput * _Nonnull)packetOutput didOutputPacket:(SGPacket * _Nonnull)packet;
+- (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet;
 
 @end
+
+NS_ASSUME_NONNULL_END

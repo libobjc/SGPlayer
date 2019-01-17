@@ -10,6 +10,8 @@
 #import "SGAsset.h"
 #import "SGTrack.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGPlayerItem : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -18,7 +20,7 @@
 /**
  *
  */
-- (instancetype)initWithAsset:(SGAsset * _Nonnull)asset NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAsset:(SGAsset *)asset NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -53,7 +55,8 @@
 /**
  *
  */
-- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks weights:(NSArray<NSNumber *> * _Nullable)weights;
+- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks
+                  weights:(NSArray<NSNumber *> * _Nullable)weights;
 
 /**
  *
@@ -63,6 +66,8 @@
 /**
  *
  */
-- (BOOL)selectVideoTrack:(SGTrack * _Nonnull)track;
+- (BOOL)selectVideoTrack:(SGTrack *)track;
 
 @end
+
+NS_ASSUME_NONNULL_END

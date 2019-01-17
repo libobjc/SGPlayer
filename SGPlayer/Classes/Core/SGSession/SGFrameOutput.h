@@ -27,6 +27,8 @@ typedef NS_ENUM(int, SGFrameOutputState) {
     SGFrameOutputStateFailed,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGFrameOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -35,7 +37,7 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (instancetype)initWithAsset:(SGAsset * _Nonnull)asset NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAsset:(SGAsset *)asset NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -110,12 +112,12 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (BOOL)selectTracks:(NSArray<SGTrack *> * _Nonnull)tracks;
+- (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks;
 
 /**
  *
  */
-- (SGCapacity * _Nonnull)capacityWithType:(SGMediaType)type;
+- (SGCapacity *)capacityWithType:(SGMediaType)type;
 
 @end
 
@@ -124,16 +126,18 @@ typedef NS_ENUM(int, SGFrameOutputState) {
 /**
  *
  */
-- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeState:(SGFrameOutputState)state;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeState:(SGFrameOutputState)state;
 
 /**
  *
  */
-- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didChangeCapacity:(SGCapacity * _Nonnull)capacity type:(SGMediaType)type;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 
 /**
  *
  */
-- (void)frameOutput:(SGFrameOutput * _Nonnull)frameOutput didOutputFrame:(__kindof SGFrame * _Nonnull)frame;
+- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
+
+NS_ASSUME_NONNULL_END

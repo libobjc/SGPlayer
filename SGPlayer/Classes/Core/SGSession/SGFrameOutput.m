@@ -8,31 +8,36 @@
 
 #import "SGFrameOutput.h"
 #import "SGAsset+Internal.h"
-#import "SGPacketOutput.h"
 #import "SGAsyncDecodable.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
+#import "SGPacketOutput.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
 @interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecodableDelegate>
 
 {
-    NSLock *_lock;
-    SGPacketOutput *_packetOutput;
-    SGAsyncDecodable *_audioDecoder;
-    SGAsyncDecodable *_videoDecoder;
-    NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
-    
-    NSError *_error;
-    SGFrameOutputState _state;
-    NSArray<SGTrack *> *_selectedTracks;
-    NSArray<SGTrack *> *_finishedTracks;
+    struct {
+        NSError *error;
+        SGFrameOutputState state;
+    } _flags;
 }
+
+@property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
+@property (nonatomic, strong, readonly) SGAsyncDecodable *audioDecoder;
+@property (nonatomic, strong, readonly) SGAsyncDecodable *videoDecoder;
+@property (nonatomic, strong, readonly) NSArray<SGTrack *> *selectedTracks;
+@property (nonatomic, strong, readonly) NSArray<SGTrack *> *finishedTracks;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
 
 @end
 
 @implementation SGFrameOutput
+
+@synthesize selectedTracks = _selectedTracks;
+@synthesize finishedTracks = _finishedTracks;
 
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
@@ -52,7 +57,7 @@
 - (void)dealloc
 {
     SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_state != SGFrameOutputStateClosed;
+        return self->_flags.state != SGFrameOutputStateClosed;
     }, ^SGBlock {
         [self setState:SGFrameOutputStateClosed];
         [self->_packetOutput close];
@@ -74,17 +79,17 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 {
     __block NSError *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        ret = [self->_error copy];
+        ret = [self->_flags.error copy];
     });
     return ret;
 }
 
 - (SGBlock)setState:(SGFrameOutputState)state
 {
-    if (_state == state) {
+    if (self->_flags.state == state) {
         return ^{};
     }
-    _state = state;
+    self->_flags.state = state;
     return ^{
         [self->_delegate frameOutput:self didChangeState:state];
     };
@@ -94,7 +99,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 {
     __block SGFrameOutputState ret = SGFrameOutputStateNone;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_state;
+        ret = self->_flags.state;
     });
     return ret;
 }
@@ -142,7 +147,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (BOOL)open
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGFrameOutputStateNone;
+        return self->_flags.state == SGFrameOutputStateNone;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateOpening];
     }, ^BOOL(SGBlock block) {
@@ -154,7 +159,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (BOOL)start
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGFrameOutputStateOpened;
+        return self->_flags.state == SGFrameOutputStateOpened;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateReading];
     }, ^BOOL(SGBlock block) {
@@ -166,7 +171,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 - (BOOL)close
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state != SGFrameOutputStateClosed;
+        return self->_flags.state != SGFrameOutputStateClosed;
     }, ^SGBlock {
         return [self setState:SGFrameOutputStateClosed];
     }, ^BOOL(SGBlock block) {
@@ -267,7 +272,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
             }
                 break;
             case SGPacketOutputStateFailed:
-                self->_error = [packetOutput.error copy];
+                self->_flags.error = [packetOutput.error copy];
                 b1 = [self setState:SGFrameOutputStateFailed];
                 break;
             default:

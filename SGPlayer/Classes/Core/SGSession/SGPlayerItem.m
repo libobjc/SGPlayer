@@ -17,24 +17,27 @@
 @interface SGPlayerItem () <SGFrameOutputDelegate>
 
 {
-    NSLock *_lock;
-    SGObjectQueue *_audioQueue;
-    SGObjectQueue *_videoQueue;
-    SGFrameOutput *_frameOutput;
-    SGAudioProcessor *_audioProcessor;
-    NSMutableDictionary<NSNumber *, SGCapacity *> *_capacitys;
-    
-    NSError *_error;
-    SGPlayerItemState _state;
-    SGTrack *_selectedVideoTrack;
-    
-    BOOL _audioFinished;
-    BOOL _videoFinished;
+    struct {
+        NSError *error;
+        SGPlayerItemState state;
+        BOOL audioFinished;
+        BOOL videoFinished;
+    } _flags;
 }
+
+@property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) SGObjectQueue *audioQueue;
+@property (nonatomic, strong, readonly) SGObjectQueue *videoQueue;
+@property (nonatomic, strong, readonly) SGFrameOutput *frameOutput;
+@property (nonatomic, strong, readonly) SGTrack *selectedVideoTrack;
+@property (nonatomic, strong, readonly) SGAudioProcessor *audioProcessor;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
 
 @end
 
 @implementation SGPlayerItem
+
+@synthesize selectedVideoTrack = _selectedVideoTrack;
 
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
@@ -53,7 +56,7 @@
 - (void)dealloc
 {
     SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_state != SGPlayerItemStateClosed;
+        return self->_flags.state != SGPlayerItemStateClosed;
     }, ^SGBlock {
         [self setState:SGPlayerItemStateClosed];
         [self->_frameOutput close];
@@ -78,17 +81,17 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 {
     __block NSError *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        ret = [self->_error copy];
+        ret = [self->_flags.error copy];
     });
     return ret;
 }
 
 - (SGBlock)setState:(SGPlayerItemState)state
 {
-    if (_state == state) {
+    if (self->_flags.state == state) {
         return ^{};
     }
-    _state = state;
+    self->_flags.state = state;
     return ^{
         [self->_delegate playerItem:self didChangeState:state];
     };
@@ -98,7 +101,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 {
     __block SGPlayerItemState ret = SGPlayerItemStateNone;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_state;
+        ret = self->_flags.state;
     });
     return ret;
 }
@@ -130,9 +133,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     __block BOOL ret = NO;
     SGLockEXE00(self->_lock, ^{
         if (type == SGMediaTypeAudio) {
-            ret = self->_audioFinished;
+            ret = self->_flags.audioFinished;
         } else if (type == SGMediaTypeVideo) {
-            ret = self->_videoFinished;
+            ret = self->_flags.videoFinished;
         }
     });
     return ret;
@@ -204,7 +207,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (BOOL)open
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGPlayerItemStateNone;
+        return self->_flags.state == SGPlayerItemStateNone;
     }, ^SGBlock {
         return [self setState:SGPlayerItemStateOpening];
     }, ^BOOL(SGBlock block) {
@@ -216,7 +219,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (BOOL)start
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state == SGPlayerItemStateOpened;
+        return self->_flags.state == SGPlayerItemStateOpened;
     }, ^SGBlock {
         return [self setState:SGPlayerItemStateReading];;
     }, ^BOOL(SGBlock block) {
@@ -228,7 +231,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (BOOL)close
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_state != SGPlayerItemStateClosed;
+        return self->_flags.state != SGPlayerItemStateClosed;
     }, ^SGBlock {
         return [self setState:SGPlayerItemStateClosed];
     }, ^BOOL(SGBlock block) {
@@ -351,7 +354,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             break;
         case SGFrameOutputStateFailed: {
             SGLockEXE10(self->_lock, ^SGBlock {
-                self->_error = [frameOutput.error copy];
+                self->_flags.error = [frameOutput.error copy];
                 return [self setState:SGPlayerItemStateFailed];
             });
         }
@@ -452,9 +455,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     BOOL nomore = self->_frameOutput.state == SGFrameOutputStateFinished;
     SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
     SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-    self->_audioFinished = nomore && (!audioCapacity || audioCapacity.isEmpty);
-    self->_videoFinished = nomore && (!videoCapacity || videoCapacity.isEmpty);
-    if (self->_audioFinished && self->_videoFinished) {
+    self->_flags.audioFinished = nomore && (!audioCapacity || audioCapacity.isEmpty);
+    self->_flags.videoFinished = nomore && (!videoCapacity || videoCapacity.isEmpty);
+    if (self->_flags.audioFinished && self->_flags.videoFinished) {
         return [self setState:SGPlayerItemStateFinished];
     }
     return ^{};

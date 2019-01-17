@@ -27,6 +27,8 @@ typedef NS_ENUM(int, SGPlayerItemState) {
     SGPlayerItemStateFailed,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 @interface SGPlayerItem ()
 
 /**
@@ -67,7 +69,7 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-- (SGCapacity * _Nonnull)capacityWithType:(SGMediaType)type;
+- (SGCapacity *)capacityWithType:(SGMediaType)type;
 
 /**
  *
@@ -97,11 +99,13 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-- (void)playerItem:(SGPlayerItem * _Nonnull)playerItem didChangeState:(SGPlayerItemState)state;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state;
 
 /**
  *
  */
-- (void)playerItem:(SGPlayerItem * _Nonnull)playerItem didChangeCapacity:(SGCapacity * _Nonnull)capacity type:(SGMediaType)type;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 
 @end
+
+NS_ASSUME_NONNULL_END
