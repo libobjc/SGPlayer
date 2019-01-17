@@ -11,14 +11,17 @@
 @interface SGObjectQueue ()
 
 {
-    int _size;
-    BOOL _destoryed;
-    CMTime _duration;
-    uint64_t _maxCount;
-    NSCondition *_wakeup;
-    id<SGData> _puttingObject;
-    NSMutableArray<id<SGData>> *_objects;
+    struct {
+        int size;
+        BOOL destoryed;
+        CMTime duration;
+        uint64_t maxCount;
+    } _flags;
 }
+
+@property (nonatomic, strong, readonly) NSCondition *wakeup;
+@property (nonatomic, strong, readonly) id<SGData> puttingObject;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGData>> *objects;
 
 @end
 
@@ -32,8 +35,8 @@
 - (instancetype)initWithMaxCount:(uint64_t)maxCount
 {
     if (self = [super init]) {
-        self->_maxCount = maxCount;
-        self->_duration = kCMTimeZero;
+        self->_flags.maxCount = maxCount;
+        self->_flags.duration = kCMTimeZero;
         self->_objects = [NSMutableArray array];
         self->_wakeup = [[NSCondition alloc] init];
     }
@@ -48,13 +51,13 @@
 - (SGCapacity *)capacity
 {
     [self->_wakeup lock];
-    if (self->_destoryed) {
+    if (self->_flags.destoryed) {
         [self->_wakeup unlock];
         return [[SGCapacity alloc] init];
     }
     SGCapacity *ret = [[SGCapacity alloc] init];
-    ret.duration = self->_duration;
-    ret.size = self->_size;
+    ret.duration = self->_flags.duration;
+    ret.size = self->_flags.size;
     ret.count = (int)self->_objects.count;
     [self->_wakeup unlock];
     return ret;
@@ -68,11 +71,11 @@
 - (BOOL)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after
 {
     [self->_wakeup lock];
-    if (self->_destoryed) {
+    if (self->_flags.destoryed) {
         [self->_wakeup unlock];
         return NO;
     }
-    while (self->_objects.count >= self->_maxCount) {
+    while (self->_objects.count >= self->_flags.maxCount) {
         self->_puttingObject = object;
         if (before) {
             before();
@@ -86,7 +89,7 @@
             return NO;
         }
         self->_puttingObject = nil;
-        if (self->_destoryed) {
+        if (self->_flags.destoryed) {
             [self->_wakeup unlock];
             return NO;
         }
@@ -100,7 +103,7 @@
 - (BOOL)putObjectAsync:(id<SGData>)object
 {
     [self->_wakeup lock];
-    if (self->_destoryed || (self->_objects.count >= self->_maxCount)) {
+    if (self->_flags.destoryed || (self->_objects.count >= self->_flags.maxCount)) {
         [self->_wakeup unlock];
         return NO;
     }
@@ -120,8 +123,8 @@
         }];
     }
     NSAssert(CMTIME_IS_VALID(object.duration), @"Objcet duration is invalid.");
-    self->_duration = CMTimeAdd(self->_duration, object.duration);
-    self->_size += object.size;
+    self->_flags.duration = CMTimeAdd(self->_flags.duration, object.duration);
+    self->_flags.size += object.size;
 }
 
 - (BOOL)getObjectSync:(id<SGData> *)object
@@ -140,7 +143,7 @@
         if (after) {
             after();
         }
-        if (self->_destoryed) {
+        if (self->_flags.destoryed) {
             [self->_wakeup unlock];
             return NO;
         }
@@ -154,7 +157,7 @@
 - (BOOL)getObjectAsync:(id<SGData> *)object
 {
     [self->_wakeup lock];
-    if (self->_destoryed || self->_objects.count <= 0) {
+    if (self->_flags.destoryed || self->_objects.count <= 0) {
         [self->_wakeup unlock];
         return NO;
     }
@@ -167,7 +170,7 @@
 - (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader
 {
     [self->_wakeup lock];
-    if (self->_destoryed || self->_objects.count <= 0) {
+    if (self->_flags.destoryed || self->_objects.count <= 0) {
         [self->_wakeup unlock];
         return NO;
     }
@@ -209,13 +212,13 @@
     }
     id<SGData> object = self->_objects.firstObject;
     [self->_objects removeObjectAtIndex:0];
-    self->_duration = CMTimeSubtract(self->_duration, object.duration);
-    if (CMTimeCompare(self->_duration, kCMTimeZero) < 0 || self->_objects.count <= 0) {
-        self->_duration = kCMTimeZero;
+    self->_flags.duration = CMTimeSubtract(self->_flags.duration, object.duration);
+    if (CMTimeCompare(self->_flags.duration, kCMTimeZero) < 0 || self->_objects.count <= 0) {
+        self->_flags.duration = kCMTimeZero;
     }
-    self->_size -= object.size;
-    if (self->_size <= 0 || self->_objects.count <= 0) {
-        self->_size = 0;
+    self->_flags.size -= object.size;
+    if (self->_flags.size <= 0 || self->_objects.count <= 0) {
+        self->_flags.size = 0;
     }
     return object;
 }
@@ -223,7 +226,7 @@
 - (BOOL)flush
 {
     [self->_wakeup lock];
-    if (self->_destoryed) {
+    if (self->_flags.destoryed) {
         [self->_wakeup unlock];
         return NO;
     }
@@ -231,8 +234,8 @@
         [obj unlock];
     }
     [self->_objects removeAllObjects];
-    self->_size = 0;
-    self->_duration = kCMTimeZero;
+    self->_flags.size = 0;
+    self->_flags.duration = kCMTimeZero;
     self->_puttingObject = nil;
     [self->_wakeup broadcast];
     [self->_wakeup unlock];
@@ -242,17 +245,17 @@
 - (BOOL)destroy
 {
     [self->_wakeup lock];
-    if (self->_destoryed) {
+    if (self->_flags.destoryed) {
         [self->_wakeup unlock];
         return NO;
     }
-    self->_destoryed = YES;
+    self->_flags.destoryed = YES;
     for (id<SGData> obj in self->_objects) {
         [obj unlock];
     }
     [self->_objects removeAllObjects];
-    self->_size = 0;
-    self->_duration = kCMTimeZero;
+    self->_flags.size = 0;
+    self->_flags.duration = kCMTimeZero;
     self->_puttingObject = nil;
     [self->_wakeup broadcast];
     [self->_wakeup unlock];
