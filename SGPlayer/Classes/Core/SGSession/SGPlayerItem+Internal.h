@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (SGPlayerItemState)state;
+@property (nonatomic, readonly) SGPlayerItemState state;
 
 /**
  *

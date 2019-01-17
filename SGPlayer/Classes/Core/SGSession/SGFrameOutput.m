@@ -75,15 +75,6 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 #pragma mark - Setter & Getter
 
-- (NSError *)error
-{
-    __block NSError *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_flags.error copy];
-    });
-    return ret;
-}
-
 - (SGBlock)setState:(SGFrameOutputState)state
 {
     if (self->_flags.state == state) {
@@ -100,6 +91,15 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     __block SGFrameOutputState ret = SGFrameOutputStateNone;
     SGLockEXE00(self->_lock, ^{
         ret = self->_flags.state;
+    });
+    return ret;
+}
+
+- (NSError *)error
+{
+    __block NSError *ret = nil;
+    SGLockEXE00(self->_lock, ^{
+        ret = [self->_flags.error copy];
     });
     return ret;
 }

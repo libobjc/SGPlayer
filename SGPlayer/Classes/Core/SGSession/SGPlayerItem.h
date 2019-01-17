@@ -25,43 +25,50 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSError * _Nullable)error;
+@property (nonatomic, copy, readonly) NSError * _Nullable error;
 
 /**
  *
  */
-- (CMTime)duration;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
 
 /**
  *
  */
-- (NSDictionary * _Nullable)metadata;
+@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
 
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)tracks;
+@property (nonatomic, readonly) CMTime duration;
+
+@end
+
+@interface SGPlayerItem (AudioSelection)
 
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)selectedAudioTracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable selectedAudioTracks;
 
 /**
  *
  */
-- (NSArray<NSNumber *> * _Nullable)selectedAudioWeights;
+@property (nonatomic, copy, readonly) NSArray<NSNumber *> * _Nullable selectedAudioWeights;
 
 /**
  *
  */
-- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks
-                  weights:(NSArray<NSNumber *> * _Nullable)weights;
+- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks weights:(NSArray<NSNumber *> * _Nullable)weights;
+
+@end
+
+@interface SGPlayerItem (VideoSelection)
 
 /**
  *
  */
-- (SGTrack * _Nullable)selectedVideoTrack;
+@property (nonatomic, strong, readonly) SGTrack * _Nullable selectedVideoTrack;
 
 /**
  *

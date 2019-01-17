@@ -47,27 +47,27 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSError * _Nullable)error;
+@property (nonatomic, readonly) SGFrameOutputState state;
 
 /**
  *
  */
-- (SGFrameOutputState)state;
+@property (nonatomic, copy, readonly) NSError * _Nullable error;
 
 /**
  *
  */
-- (CMTime)duration;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
 
 /**
  *
  */
-- (NSDictionary * _Nullable)metadata;
+@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
 
 /**
  *
  */
-- (NSArray<SGTrack *> * _Nullable)tracks;
+@property (nonatomic, readonly) CMTime duration;
 
 /**
  *
