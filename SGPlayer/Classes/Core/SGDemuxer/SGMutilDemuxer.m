@@ -32,11 +32,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [self close];
-}
-
 #pragma mark - Setter & Getter
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate

@@ -1,5 +1,5 @@
 //
-//  SGConcatDemuxer.h
+//  SGTrackDemuxer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SGConcatDemuxer : NSObject <SGDemuxable>
+@interface SGTrackDemuxer : NSObject <SGDemuxable>
 
 /**
  *

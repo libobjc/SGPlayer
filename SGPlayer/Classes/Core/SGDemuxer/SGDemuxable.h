@@ -18,22 +18,22 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGDemuxableDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGDemuxableDelegate> delegate;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * _Nullable options;
+@property (nonatomic, copy) NSDictionary *options;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *tracks;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
+@property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**
  *
@@ -43,27 +43,27 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSError * _Nullable)open;
+- (NSError *)open;
 
 /**
  *
  */
-- (NSError * _Nullable)close;
+- (NSError *)close;
 
 /**
  *
  */
-- (NSError * _Nullable)seekable;
+- (NSError *)seekable;
 
 /**
  *
  */
-- (NSError * _Nullable)seekToTime:(CMTime)time;
+- (NSError *)seekToTime:(CMTime)time;
 
 /**
  *
  */
-- (NSError * _Nullable)nextPacket:(SGPacket **)packet;
+- (NSError *)nextPacket:(SGPacket **)packet;
 
 @end
 

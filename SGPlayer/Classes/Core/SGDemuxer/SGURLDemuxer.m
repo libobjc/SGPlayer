@@ -43,7 +43,7 @@
 
 - (void)dealloc
 {
-    [self close];
+    NSAssert(!self->_context, @"AVFormatContext is not released.");
 }
 
 #pragma mark - Control
@@ -124,12 +124,12 @@
             [pkt unlock];
         } else {
             AVStream *stream = self->_context->streams[pkt.core->stream_index];
-            SGCodecDescription *codecDescription = [[SGCodecDescription alloc] init];
-            codecDescription.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
-            codecDescription.timebase = stream->time_base;
-            codecDescription.codecpar = stream->codecpar;
-            [codecDescription appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
-            [pkt setCodecDescription:codecDescription];
+            SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+            cd.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
+            cd.timebase = stream->time_base;
+            cd.codecpar = stream->codecpar;
+            [cd appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
+            [pkt setCodecDescription:cd];
             [pkt fill];
             *packet = pkt;
         }
@@ -142,52 +142,45 @@
 
 static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *URL, NSDictionary *options, void *opaque, int (*callback)(void *))
 {
-    AVFormatContext *context = avformat_alloc_context();
-    if (!context) {
+    AVFormatContext *ctx = avformat_alloc_context();
+    if (!ctx) {
         return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
     }
-    
-    context->interrupt_callback.callback = callback;
-    context->interrupt_callback.opaque = opaque;
-    
+    ctx->interrupt_callback.callback = callback;
+    ctx->interrupt_callback.opaque = opaque;
     NSString *URLString = URL.isFileURL ? URL.path : URL.absoluteString;
-    
     AVDictionary *opts = SGDictionaryNS2FF(options);
     if ([URLString.lowercaseString hasPrefix:@"rtmp"] ||
         [URLString.lowercaseString hasPrefix:@"rtsp"]) {
         av_dict_set(&opts, "timeout", NULL, 0);
     }
-    
-    int success = avformat_open_input(&context, URLString.UTF8String, NULL, &opts);
-    
+    int success = avformat_open_input(&ctx, URLString.UTF8String, NULL, &opts);
     if (opts) {
         av_dict_free(&opts);
     }
-    
     NSError *error = SGEGetError(success, SGOperationCodeFormatOpenInput);
     if (error) {
-        if (context) {
-            avformat_free_context(context);
+        if (ctx) {
+            avformat_free_context(ctx);
         }
         return error;
     }
-    
-    success = avformat_find_stream_info(context, NULL);
+    success = avformat_find_stream_info(ctx, NULL);
     error = SGEGetError(success, SGOperationCodeFormatFindStreamInfo);
     if (error) {
-        if (context) {
-            avformat_close_input(&context);
-            avformat_free_context(context);
+        if (ctx) {
+            avformat_close_input(&ctx);
+            avformat_free_context(ctx);
         }
         return error;
     }
-    *formatContext = context;
+    *formatContext = ctx;
     return nil;
 }
 
-static int SGURLDemuxerInterruptHandler(void *context)
+static int SGURLDemuxerInterruptHandler(void *demuxer)
 {
-    SGURLDemuxer *self = (__bridge SGURLDemuxer *)context;
+    SGURLDemuxer *self = (__bridge SGURLDemuxer *)demuxer;
     if ([self->_delegate respondsToSelector:@selector(demuxableShouldAbortBlockingFunctions:)]) {
         BOOL ret = [self->_delegate demuxableShouldAbortBlockingFunctions:self];
         return ret ? 1 : 0;

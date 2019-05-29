@@ -16,8 +16,8 @@
 
 {
     struct {
-        BOOL putting;
         BOOL finished;
+        BOOL inputting;
         BOOL outputting;
     } _flags;
 }
@@ -37,18 +37,13 @@
 - (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange
 {
     if (self = [super init]) {
-        self->_demuxable = demuxable;
+        self->_overgop = YES;
         self->_index = index;
+        self->_demuxable = demuxable;
         self->_timeRange = SGCMTimeRangeFit(timeRange);
         self->_packetQueue = [[SGObjectQueue alloc] init];
-        self->_overgop = YES;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [self close];
 }
 
 #pragma mark - Mapping
@@ -86,13 +81,13 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError *ret = [self->_demuxable seekToTime:CMTimeAdd(time, CMTimeMultiply(self->_timeLayout.start, -1))];
-    if (ret) {
-        return ret;
+    NSError *error = [self->_demuxable seekToTime:CMTimeAdd(time, CMTimeMultiply(self->_timeLayout.start, -1))];
+    if (error) {
+        return error;
     }
     [self->_packetQueue flush];
-    self->_flags.putting = NO;
     self->_flags.finished = NO;
+    self->_flags.inputting = NO;
     self->_flags.outputting = NO;
     return nil;
 }
@@ -170,9 +165,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         if (CMTimeCompare(pkt.timeStamp, self->_timeRange.start) < 0) {
             if (pkt.core->flags & AV_PKT_FLAG_KEY) {
                 [self->_packetQueue flush];
-                self->_flags.putting = YES;
+                self->_flags.inputting = YES;
             }
-            if (self->_flags.putting) {
+            if (self->_flags.inputting) {
                 [self->_packetQueue putObjectSync:pkt];
             }
             [pkt unlock];

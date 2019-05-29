@@ -82,8 +82,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (!self->_demuxable) {
-        return SGECreateError(SGErrorCodeDemuxerEndOfFile,
-                              SGOperationCodeSegmentDemuxerNext);
+        return SGECreateError(SGErrorCodeDemuxerEndOfFile, SGOperationCodeSegmentDemuxerNext);
     }
     NSError *error = [self->_demuxable nextPacket:packet];
     if (error) {

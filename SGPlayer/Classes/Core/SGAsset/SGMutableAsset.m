@@ -9,7 +9,7 @@
 #import "SGMutableAsset.h"
 #import "SGAsset+Internal.h"
 #import "SGTrack+Internal.h"
-#import "SGConcatDemuxer.h"
+#import "SGTrackDemuxer.h"
 #import "SGMutilDemuxer.h"
 
 @interface SGMutableAsset ()
@@ -54,7 +54,7 @@
 {
     NSMutableArray *demuxables = [NSMutableArray array];
     for (SGMutableTrack *obj in self->_tracks) {
-        SGConcatDemuxer *demuxer = [[SGConcatDemuxer alloc] initWithTrack:obj];
+        SGTrackDemuxer *demuxer = [[SGTrackDemuxer alloc] initWithTrack:obj];
         [demuxables addObject:demuxer];
     }
     return [[SGMutilDemuxer alloc] initWithDemuxables:demuxables];

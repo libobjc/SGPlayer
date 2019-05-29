@@ -70,6 +70,7 @@ static int const vertices_count = (slices_count + 1) * (parallels_count + 1);
     [SGGLSphereModel prepareData];
     return vertices_data;
 }
+
 - (GLfloat *)textureCoordinates_data
 {
     [SGGLSphereModel prepareData];
