@@ -11,7 +11,9 @@
 
 @interface SGMutableTrack ()
 
-@property (nonatomic, strong, readonly) NSMutableArray<SGSegment *> *mutableSegments;
+{
+    NSMutableArray<SGSegment *> *_segments;
+}
 
 @end
 
@@ -20,26 +22,26 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     SGMutableTrack *obj = [super copyWithZone:zone];
-    obj->_mutableSegments = [self->_mutableSegments mutableCopy];
+    obj->_segments = [self->_segments mutableCopy];
     return obj;
 }
 
 - (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index
 {
     if (self = [super initWithType:type index:index]) {
-        self->_mutableSegments = [NSMutableArray array];
+        self->_segments = [NSMutableArray array];
     }
     return self;
 }
 
 - (NSArray<SGSegment *> *)segments
 {
-    return [self->_mutableSegments copy];
+    return [self->_segments copy];
 }
 
 - (BOOL)appendSegment:(SGSegment *)segment
 {
-    [self->_mutableSegments addObject:segment];
+    [self->_segments addObject:segment];
     return YES;
 }
 
