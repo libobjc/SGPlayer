@@ -1,5 +1,5 @@
 //
-//  SGAsyncDecodable.h
+//  SGDecodeLoop.h
 //  SGPlayer
 //
 //  Created by Single on 2018/1/19.
@@ -10,22 +10,22 @@
 #import "SGDecodable.h"
 #import "SGCapacity.h"
 
-@protocol SGAsyncDecodableDelegate;
+@protocol SGDecodeLoopDelegate;
 
 /**
  *
  */
-typedef NS_ENUM(int, SGAsyncDecodableState) {
-    SGAsyncDecodableStateNone,
-    SGAsyncDecodableStateDecoding,
-    SGAsyncDecodableStateStalled,
-    SGAsyncDecodableStatePaused,
-    SGAsyncDecodableStateClosed,
+typedef NS_ENUM(int, SGDecodeLoopState) {
+    SGDecodeLoopStateNone,
+    SGDecodeLoopStateDecoding,
+    SGDecodeLoopStateStalled,
+    SGDecodeLoopStatePaused,
+    SGDecodeLoopStateClosed,
 };
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SGAsyncDecodable : NSObject
+@interface SGDecodeLoop : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -38,12 +38,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGAsyncDecodableDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGDecodeLoopDelegate> delegate;
 
 /**
  *
  */
-- (SGAsyncDecodableState)state;
+- (SGDecodeLoopState)state;
 
 /**
  *
@@ -82,22 +82,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol SGAsyncDecodableDelegate <NSObject>
+@protocol SGDecodeLoopDelegate <NSObject>
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable *)decoder didChangeState:(SGAsyncDecodableState)state;
+- (void)decoder:(SGDecodeLoop *)decoder didChangeState:(SGDecodeLoopState)state;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity;
+- (void)decoder:(SGDecodeLoop *)decoder didChangeCapacity:(SGCapacity *)capacity;
 
 /**
  *
  */
-- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame;
+- (void)decoder:(SGDecodeLoop *)decoder didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
 

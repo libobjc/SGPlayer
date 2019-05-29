@@ -63,7 +63,7 @@
 
 - (BOOL)isEqualToDescription:(SGCodecDescription *)description
 {
-    if (![self isEqualCodecparToDescription:description]) {
+    if (![self isEqualCodecContextToDescription:description]) {
         return NO;
     }
     if (!CMTimeRangeEqual(description->_timeRange, self->_timeRange)) {
@@ -82,7 +82,7 @@
     return YES;
 }
 
-- (BOOL)isEqualCodecparToDescription:(SGCodecDescription *)description
+- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription *)description
 {
     if (!description) {
         return NO;

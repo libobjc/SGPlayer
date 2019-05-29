@@ -8,14 +8,14 @@
 
 #import "SGFrameOutput.h"
 #import "SGAsset+Internal.h"
-#import "SGAsyncDecodable.h"
+#import "SGDecodeLoop.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
 #import "SGPacketOutput.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGFrameOutput () <SGPacketOutputDelegate, SGAsyncDecodableDelegate>
+@interface SGFrameOutput () <SGPacketOutputDelegate, SGDecodeLoopDelegate>
 
 {
     struct {
@@ -26,8 +26,8 @@
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
-@property (nonatomic, strong, readonly) SGAsyncDecodable *audioDecoder;
-@property (nonatomic, strong, readonly) SGAsyncDecodable *videoDecoder;
+@property (nonatomic, strong, readonly) SGDecodeLoop *audioDecoder;
+@property (nonatomic, strong, readonly) SGDecodeLoop *videoDecoder;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *selectedTracks;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *finishedTracks;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
@@ -44,9 +44,9 @@
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
         self->_capacitys = [NSMutableDictionary dictionary];
-        self->_audioDecoder = [[SGAsyncDecodable alloc] initWithDecodableClass:[SGAudioDecoder class]];
+        self->_audioDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGAudioDecoder class]];
         self->_audioDecoder.delegate = self;
-        self->_videoDecoder = [[SGAsyncDecodable alloc] initWithDecodableClass:[SGVideoDecoder class]];
+        self->_videoDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGVideoDecoder class]];
         self->_videoDecoder.delegate = self;
         self->_packetOutput = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
         self->_packetOutput.delegate = self;
@@ -289,7 +289,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     SGLockEXE10(self->_lock, ^SGBlock {
         SGBlock b1 = ^{};
         if ([self->_selectedTracks containsObject:packet.track]) {
-            SGAsyncDecodable *decoder = nil;
+            SGDecodeLoop *decoder = nil;
             if (packet.track.type == SGMediaTypeAudio) {
                 decoder = self->_audioDecoder;
             } else if (packet.track.type == SGMediaTypeVideo) {
@@ -305,12 +305,12 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 #pragma mark - SGDecoderDelegate
 
-- (void)decoder:(SGAsyncDecodable *)decoder didChangeState:(SGAsyncDecodableState)state
+- (void)decoder:(SGDecodeLoop *)decoder didChangeState:(SGDecodeLoopState)state
 {
     
 }
 
-- (void)decoder:(SGAsyncDecodable *)decoder didChangeCapacity:(SGCapacity *)capacity
+- (void)decoder:(SGDecodeLoop *)decoder didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
     __block SGBlock finished = ^{};
@@ -352,7 +352,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     });
 }
 
-- (void)decoder:(SGAsyncDecodable *)decoder didOutputFrame:(__kindof SGFrame *)frame
+- (void)decoder:(SGDecodeLoop *)decoder didOutputFrame:(__kindof SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
 }

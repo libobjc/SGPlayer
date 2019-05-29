@@ -21,14 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype _Nonnull)initWithTimebase:(AVRational)timebase
-                                 codecpar:(AVCodecParameters *)codecpar
-                               frameClass:(Class)frameClass NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nonnull)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass NS_DESIGNATED_INITIALIZER;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * _Nullable options;
+@property (nonatomic, copy) NSDictionary *options;
 
 /**
  *
@@ -73,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket * _Nullable)packet;
+- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet;
 
 @end
 

@@ -38,9 +38,7 @@
     self->_flags.nextTimeStamp = 0;
     self->_flags.needsAlignment = YES;
     self->_flags.needsResetSonic = YES;
-    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
-                                                          codecpar:self->_codecDescription.codecpar
-                                                        frameClass:[SGAudioFrame class]];
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase codecpar:self->_codecDescription.codecpar frameClass:[SGAudioFrame class]];
     [self->_codecContext open];
 }
 
@@ -68,7 +66,7 @@
     NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescription *cd = packet.codecDescription;
     NSAssert(cd, @"Invalid codec description.");
-    if (![cd isEqualCodecparToDescription:self->_codecDescription]) {
+    if (![cd isEqualCodecContextToDescription:self->_codecDescription]) {
         NSArray<SGFrame *> *objs = [self finish];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];

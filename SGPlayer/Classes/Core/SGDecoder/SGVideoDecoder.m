@@ -56,7 +56,7 @@
     NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescription *cd = packet.codecDescription;
     NSAssert(cd, @"Invalid Codec Description.");
-    if (![cd isEqualCodecparToDescription:self->_codecDescription]) {
+    if (![cd isEqualCodecContextToDescription:self->_codecDescription]) {
         NSArray<SGFrame *> *objs = [self processPacket:nil];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];

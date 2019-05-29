@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (BOOL)isEqualCodecparToDescription:(SGCodecDescription * _Nonnull)description;
+- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription * _Nonnull)description;
 
 @end
 

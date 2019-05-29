@@ -17,12 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> * _Nullable)decode:(SGPacket *)packet;
+- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet;
 
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> * _Nullable)finish;
+- (NSArray<__kindof SGFrame *> *)finish;
 
 /**
  *
