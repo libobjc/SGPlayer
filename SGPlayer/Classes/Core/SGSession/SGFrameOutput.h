@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGFrameOutputDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGFrameOutputDelegate> delegate;
 
 /**
  *
@@ -52,17 +52,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSError * _Nullable error;
+@property (nonatomic, copy, readonly) NSError *error;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *tracks;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
+@property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**
  *
@@ -102,17 +102,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult _Nullable)result;
-
-/**
- *
- */
-- (NSArray<SGTrack *> * _Nullable)selectedTracks;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 /**
  *
  */
 - (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks;
+
+/**
+ *
+ */
+- (NSArray<SGTrack *> *)selectedTracks;
 
 /**
  *

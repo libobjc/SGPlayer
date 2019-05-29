@@ -8,10 +8,10 @@
 
 #import "SGFrameOutput.h"
 #import "SGAsset+Internal.h"
-#import "SGDecodeLoop.h"
 #import "SGAudioDecoder.h"
 #import "SGVideoDecoder.h"
 #import "SGPacketOutput.h"
+#import "SGDecodeLoop.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
@@ -25,9 +25,9 @@
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
-@property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
 @property (nonatomic, strong, readonly) SGDecodeLoop *audioDecoder;
 @property (nonatomic, strong, readonly) SGDecodeLoop *videoDecoder;
+@property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *selectedTracks;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *finishedTracks;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
@@ -324,16 +324,16 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         return ![[self->_capacitys objectForKey:@(type)] isEqualToCapacity:capacity];
     }, ^SGBlock {
         [self->_capacitys setObject:capacity forKey:@(type)];
-        SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-        int size = audioCapacity.size + videoCapacity.size;
+        SGCapacity *ac = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
+        SGCapacity *vc = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+        int size = ac.size + vc.size;
         BOOL enough = NO;
-        if ((audioCapacity ? audioCapacity.isEnough : YES) &&
-            (videoCapacity ? videoCapacity.isEnough : YES)) {
+        if ((ac ? ac.isEnough : YES) &&
+            (vc ? vc.isEnough : YES)) {
             enough = YES;
         }
-        if ((!audioCapacity || audioCapacity.isEmpty) &&
-            (!videoCapacity || videoCapacity.isEmpty) &&
+        if ((!ac || ac.isEmpty) &&
+            (!vc || vc.isEmpty) &&
             self->_packetOutput.state == SGPacketOutputStateFinished) {
             finished = [self setState:SGFrameOutputStateFinished];
         }

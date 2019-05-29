@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGPacketOutputDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGPacketOutputDelegate> delegate;
 
 /**
  *
@@ -51,17 +51,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSError * _Nullable error;
+@property (nonatomic, copy, readonly) NSError *error;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *tracks;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
+@property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**
  *
@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult _Nullable)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 @end
 
