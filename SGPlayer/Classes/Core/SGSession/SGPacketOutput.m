@@ -205,6 +205,10 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
                 [self->_lock unlock];
                 NSError *error = [self->_demuxable open];
                 [self->_lock lock];
+                if (self->_flags.state != SGPacketOutputStateOpening) {
+                    [self->_lock unlock];
+                    continue;
+                }
                 self->_flags.error = error;
                 SGBlock b1 = [self setState:error ? SGPacketOutputStateFailed : SGPacketOutputStateOpened];
                 [self->_lock unlock];
@@ -237,7 +241,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
                         seek_result(seekTime, error);
                     };
                 }
-                b2 = [self setState:SGPacketOutputStateReading];
+                if (self->_flags.state == SGPacketOutputStateSeeking) {
+                    b2 = [self setState:SGPacketOutputStateReading];
+                }
                 self->_seekFlags.seekTime = kCMTimeZero;
                 self->_seekFlags.seekingTime = kCMTimeZero;
                 self->_seekFlags.seekResult = nil;
@@ -249,13 +255,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
                 SGPacket *packet = nil;
                 NSError *error = [self->_demuxable nextPacket:&packet];
                 if (error) {
-                    [self->_lock lock];
-                    SGBlock b1 = ^{};
-                    if (self->_flags.state == SGPacketOutputStateReading) {
-                        b1 = [self setState:SGPacketOutputStateFinished];
-                    }
-                    [self->_lock unlock];
-                    b1();
+                    SGLockCondEXE10(self->_lock, ^BOOL{
+                        return self->_flags.state == SGPacketOutputStateReading;
+                    }, ^SGBlock{
+                        return [self setState:SGPacketOutputStateFinished];
+                    });
                 } else {
                     [self->_delegate packetOutput:self didOutputPacket:packet];
                     [packet unlock];

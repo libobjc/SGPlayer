@@ -148,7 +148,7 @@
     if (self->_flags.seekingCount > 0) {
         playbackState |= SGPlaybackStateSeeking;
     }
-    if (self->_flags.playbackState == SGPlayerStatusReady &&
+    if (self->_flags.status == SGPlayerStatusReady &&
         (!self->_flags.audioAvailable || self->_flags.audioFinished) &&
         (!self->_flags.videoAvailable || self->_flags.videoFinished)) {
         playbackState |= SGPlaybackStateFinished;
