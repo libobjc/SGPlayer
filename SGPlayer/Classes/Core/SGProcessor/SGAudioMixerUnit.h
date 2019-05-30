@@ -27,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (NSArray<SGAudioFrame *> * _Nullable)framesToEndTime:(CMTime)endTime;
+- (NSArray<SGAudioFrame *> *)framesToEndTime:(CMTime)endTime;
 
 /**
  *

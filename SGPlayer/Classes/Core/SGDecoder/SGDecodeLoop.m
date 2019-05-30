@@ -90,7 +90,7 @@ static SGPacket *gFinishPacket = nil;
         [self->_wakeup unlock];
     }
     return ^{
-        [self->_delegate decoder:self didChangeState:state];
+        [self->_delegate decodeLoop:self didChangeState:state];
     };
 }
 
@@ -114,7 +114,7 @@ static SGPacket *gFinishPacket = nil;
     }
     self->_capacity = [capacity copy];
     return ^{
-        [self->_delegate decoder:self didChangeCapacity:capacity];
+        [self->_delegate decodeLoop:self didChangeCapacity:capacity];
     };
 }
 
@@ -308,7 +308,7 @@ static SGPacket *gFinishPacket = nil;
                     } else {
                         [self->_lock unlock];
                         for (SGFrame *obj in objs) {
-                            [self->_delegate decoder:self didOutputFrame:obj];
+                            [self->_delegate decodeLoop:self didOutputFrame:obj];
                             [obj unlock];
                         }
                         [self->_lock lock];

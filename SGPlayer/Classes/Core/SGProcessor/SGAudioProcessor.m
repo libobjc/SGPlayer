@@ -19,40 +19,26 @@
 
 @implementation SGAudioProcessor
 
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription
-{
-    if (self = [super init]) {
-        self->_audioDescription = [audioDescription copy];
-    }
-    return self;
-}
-
 #pragma mark - Setter & Getter
 
-- (NSArray<SGTrack *> *)tracks
+- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags
 {
-    return self->_mixer.tracks;
-}
-
-- (NSArray<NSNumber *> *)weights
-{
-    return self->_mixer.weights;
-}
-
-- (BOOL)setTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
-{
-    if (tracks.count > 0) {
-        self->_mixer = [[SGAudioMixer alloc] initWithAudioDescription:self->_audioDescription tracks:tracks];
-        self->_mixer.weights = weights;
+    self->_selection = [selection copy];
+    if (actionFlags & SGAudioSelectionAction_Tracks ||
+        actionFlags & SGAudioSelectionAction_AudioDescription) {
+        self->_mixer = [[SGAudioMixer alloc] initWithTracks:self->_selection.tracks
+                                                    weights:self->_selection.weights
+                                           audioDescription:self->_selection.audioDescription];
+        self->_mixer.weights = self->_selection.weights;
         self->_formatters = [NSMutableDictionary dictionary];
-        for (SGTrack *i in tracks) {
-            SGAudioFormatter *obj = [[SGAudioFormatter alloc] initWithAudioDescription:self->_audioDescription];
-            [self->_formatters setObject:obj forKey:@(i.index)];
+        for (SGTrack *track in self->_selection.tracks) {
+            SGAudioFormatter *formatter = [[SGAudioFormatter alloc] init];
+            formatter.audioDescription = self->_selection.audioDescription;
+            [self->_formatters setObject:formatter forKey:@(track.index)];
         }
-    } else {
-        self->_mixer.weights = weights;
+    } else if (actionFlags & SGAudioSelectionAction_Weights) {
+        self->_mixer.weights = self->_selection.weights;
     }
-    return YES;
 }
 
 #pragma mark - Control

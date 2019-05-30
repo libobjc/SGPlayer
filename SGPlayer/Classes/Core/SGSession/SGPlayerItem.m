@@ -29,15 +29,12 @@
 @property (nonatomic, strong, readonly) SGObjectQueue *audioQueue;
 @property (nonatomic, strong, readonly) SGObjectQueue *videoQueue;
 @property (nonatomic, strong, readonly) SGFrameOutput *frameOutput;
-@property (nonatomic, strong, readonly) SGTrack *selectedVideoTrack;
 @property (nonatomic, strong, readonly) SGAudioProcessor *audioProcessor;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
 
 @end
 
 @implementation SGPlayerItem
-
-@synthesize selectedVideoTrack = _selectedVideoTrack;
 
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
@@ -120,9 +117,9 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     __block BOOL ret = NO;
     SGLockEXE00(self->_lock, ^{
         if (type == SGMediaTypeAudio) {
-            ret = self->_audioProcessor.tracks.count > 0;
+            ret = self->_audioSelection.tracks.count > 0;
         } else if (type == SGMediaTypeVideo) {
-            ret = self->_selectedVideoTrack != nil;
+            ret = self->_videoSelection.tracks.count > 0;
         }
     });
     return ret;
@@ -141,65 +138,33 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     return ret;
 }
 
-- (BOOL)selectAudioTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
+- (void)setAudioSelection:(SGAudioSelection *)audioSelection actionFlags:(SGAudioSelectionActionFlags)actionFlags
 {
-    __block BOOL ret = YES;
-    SGLockCondEXE10(self->_lock, ^BOOL {
-        return tracks != 0 || weights != 0;
-    }, ^SGBlock {
-        if (tracks.count > 0) {
-            NSMutableArray *m = [NSMutableArray arrayWithArray:tracks];
-            if (self->_selectedVideoTrack) {
-                [m addObject:self->_selectedVideoTrack];
-            }
-            ret = [self->_frameOutput selectTracks:[m copy]];
+    SGLockEXE10(self->_lock, ^SGBlock {
+        self->_audioSelection = [audioSelection copy];
+        if (actionFlags & SGAudioSelectionAction_Tracks) {
+            NSMutableArray *m = [NSMutableArray array];
+            [m addObjectsFromArray:self->_audioSelection.tracks];
+            [m addObjectsFromArray:self->_videoSelection.tracks];
+            [self->_frameOutput selectTracks:[m copy]];
         }
-        if (ret) {
-            ret = [self->_audioProcessor setTracks:tracks weights:weights];
-        }
-        return nil;
-    });
-    return ret;
-}
-
-- (NSArray<SGTrack *> *)selectedAudioTracks
-{
-    __block NSArray *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_audioProcessor.tracks copy];
-    });
-    return ret;
-}
-
-- (NSArray<NSNumber *> *)selectedAudioWeights
-{
-    __block NSArray *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_audioProcessor.weights copy];
-    });
-    return ret;
-}
-
-- (BOOL)selectVideoTrack:(SGTrack *)track
-{
-    return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_selectedVideoTrack != track && track;
-    }, ^SGBlock {
-        self->_selectedVideoTrack = track;
-        NSMutableArray *p = [NSMutableArray arrayWithArray:self->_audioProcessor.tracks];
-        [p addObject:self->_selectedVideoTrack];
-        [self->_frameOutput selectTracks:[p copy]];
+        [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags];
         return nil;
     });
 }
 
-- (SGTrack *)selectedVideoTrack
+- (void)setVideoSelection:(SGVideoSelection *)videoSelection actionFlags:(SGVideoSelectionActionFlags)actionFlags
 {
-    __block SGTrack *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_selectedVideoTrack;
+    SGLockEXE10(self->_lock, ^SGBlock {
+        self->_videoSelection = [videoSelection copy];
+        if (actionFlags & SGVideoSelectionAction_Tracks) {
+            NSMutableArray *m = [NSMutableArray array];
+            [m addObjectsFromArray:self->_audioSelection.tracks];
+            [m addObjectsFromArray:self->_videoSelection.tracks];
+            [self->_frameOutput selectTracks:[m copy]];
+        }
+        return nil;
     });
-    return ret;
 }
 
 #pragma mark - Control
@@ -315,11 +280,20 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
                     }
                 }
                 if (audio.count > 0) {
-                    self->_audioProcessor = [[SGAudioProcessor alloc] initWithAudioDescription:self->_audioDescription];
-                    [self->_audioProcessor setTracks:audio weights:nil];
+                    SGAudioSelectionActionFlags actionFlags = 0;
+                    actionFlags |= SGVideoSelectionAction_Tracks;
+                    actionFlags |= SGAudioSelectionAction_Weights;
+                    actionFlags |= SGAudioSelectionAction_AudioDescription;
+                    self->_audioSelection = [[SGAudioSelection alloc] init];
+                    self->_audioSelection.tracks = @[audio.firstObject];
+                    self->_audioSelection.weights = @[@(1.0)];
+                    self->_audioSelection.audioDescription = self->_audioDescription;
+                    self->_audioProcessor = [[SGAudioProcessor alloc] init];
+                    [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags];
                 }
                 if (video.count > 0) {
-                    self->_selectedVideoTrack = video.firstObject;
+                    self->_videoSelection = [[SGVideoSelection alloc] init];
+                    self->_videoSelection.tracks = @[video.firstObject];
                 }
                 return [self setState:SGPlayerItemStateOpened];
             });

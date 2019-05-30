@@ -87,17 +87,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (void)decoder:(SGDecodeLoop *)decoder didChangeState:(SGDecodeLoopState)state;
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeState:(SGDecodeLoopState)state;
 
 /**
  *
  */
-- (void)decoder:(SGDecodeLoop *)decoder didChangeCapacity:(SGCapacity *)capacity;
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity *)capacity;
 
 /**
  *
  */
-- (void)decoder:(SGDecodeLoop *)decoder didOutputFrame:(__kindof SGFrame *)frame;
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
 

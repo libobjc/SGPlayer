@@ -21,8 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription
-                                  tracks:(NSArray<SGTrack *> *)tracks NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
+                       weights:(NSArray<NSNumber *> *)weights
+              audioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -37,17 +38,17 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy) NSArray<NSNumber *> * _Nullable weights;
+@property (nonatomic, copy) NSArray<NSNumber *> *weights;
 
 /**
  *
  */
-- (SGAudioFrame * _Nullable)putFrame:(SGAudioFrame *)frame;
+- (SGAudioFrame *)putFrame:(SGAudioFrame *)frame;
 
 /**
  *
  */
-- (SGAudioFrame * _Nullable)finish;
+- (SGAudioFrame *)finish;
 
 /**
  *

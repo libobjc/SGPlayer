@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGAudioSelection.h"
+#import "SGVideoSelection.h"
 #import "SGAsset.h"
 #import "SGTrack.h"
 
@@ -25,55 +27,42 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSError * _Nullable error;
+@property (nonatomic, copy, readonly) NSError *error;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *tracks;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSDictionary * _Nullable metadata;
+@property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**
  *
  */
 @property (nonatomic, readonly) CMTime duration;
 
-@end
-
-@interface SGPlayerItem (AudioSelection)
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) SGAudioSelection *audioSelection;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable selectedAudioTracks;
+- (void)setAudioSelection:(SGAudioSelection *)audioSelection actionFlags:(SGAudioSelectionActionFlags)actionFlags;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<NSNumber *> * _Nullable selectedAudioWeights;
+@property (nonatomic, copy, readonly) SGVideoSelection *videoSelection;
 
 /**
  *
  */
-- (BOOL)selectAudioTracks:(NSArray<SGTrack *> * _Nullable)tracks weights:(NSArray<NSNumber *> * _Nullable)weights;
-
-@end
-
-@interface SGPlayerItem (VideoSelection)
-
-/**
- *
- */
-@property (nonatomic, strong, readonly) SGTrack * _Nullable selectedVideoTrack;
-
-/**
- *
- */
-- (BOOL)selectVideoTrack:(SGTrack *)track;
+- (void)setVideoSelection:(SGVideoSelection *)videoSelection actionFlags:(SGVideoSelectionActionFlags)actionFlags;
 
 @end
 

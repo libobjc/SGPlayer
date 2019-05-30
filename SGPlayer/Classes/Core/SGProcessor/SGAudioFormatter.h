@@ -17,23 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+@property (nonatomic, copy) SGAudioDescription *audioDescription;
 
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
-
-/**
- *
- */
-@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
-
-/**
- *
- */
-- (SGAudioFrame * _Nullable)format:(SGAudioFrame *)frame;
+- (SGAudioFrame *)format:(SGAudioFrame *)frame;
 
 /**
  *

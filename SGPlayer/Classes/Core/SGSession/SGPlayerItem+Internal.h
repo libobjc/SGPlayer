@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGPlayerItemDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGPlayerItemDelegate> delegate;
 
 /**
  *
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult _Nullable)result;
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
 
 /**
  *
@@ -84,13 +84,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy) SGAudioDescription * _Nullable audioDescription;
+@property (nonatomic, copy) SGAudioDescription *audioDescription;
 
 /**
  *
  */
-- (__kindof SGFrame * _Nullable)copyAudioFrame:(SGTimeReader _Nullable)timeReader;
-- (__kindof SGFrame * _Nullable)copyVideoFrame:(SGTimeReader _Nullable)timeReader;
+- (__kindof SGFrame *)copyAudioFrame:(SGTimeReader)timeReader;
+- (__kindof SGFrame *)copyVideoFrame:(SGTimeReader)timeReader;
 
 @end
 

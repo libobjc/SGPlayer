@@ -305,20 +305,20 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
 
 #pragma mark - SGDecoderDelegate
 
-- (void)decoder:(SGDecodeLoop *)decoder didChangeState:(SGDecodeLoopState)state
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeState:(SGDecodeLoopState)state
 {
     
 }
 
-- (void)decoder:(SGDecodeLoop *)decoder didChangeCapacity:(SGCapacity *)capacity
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity *)capacity
 {
     capacity = [capacity copy];
     __block SGBlock finished = ^{};
     __block SGMediaType type = SGMediaTypeUnknown;
     SGLockCondEXE11(self->_lock, ^BOOL {
-        if (decoder == self->_audioDecoder) {
+        if (decodeLoop == self->_audioDecoder) {
             type = SGMediaTypeAudio;
-        } else if (decoder == self->_videoDecoder) {
+        } else if (decodeLoop == self->_videoDecoder) {
             type = SGMediaTypeVideo;
         }
         return ![[self->_capacitys objectForKey:@(type)] isEqualToCapacity:capacity];
@@ -352,7 +352,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     });
 }
 
-- (void)decoder:(SGDecodeLoop *)decoder didOutputFrame:(__kindof SGFrame *)frame
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didOutputFrame:(__kindof SGFrame *)frame
 {
     [self->_delegate frameOutput:self didOutputFrame:frame];
 }

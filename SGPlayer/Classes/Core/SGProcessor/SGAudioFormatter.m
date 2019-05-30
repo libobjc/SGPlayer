@@ -18,14 +18,6 @@
 
 @implementation SGAudioFormatter
 
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription
-{
-    if (self = [super init]) {
-        self->_audioDescription = [audioDescription copy];
-    }
-    return self;
-}
-
 - (SGAudioFrame *)format:(SGAudioFrame *)frame
 {
     if (![frame isKindOfClass:[SGAudioFrame class]]) {

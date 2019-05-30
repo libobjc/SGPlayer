@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioSelection.h"
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
@@ -15,43 +15,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SGAudioProcessor : NSObject
 
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) SGAudioSelection *selection;
 
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
+- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
+- (SGAudioFrame *)putFrame:(SGAudioFrame *)frame;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTrack *> * _Nullable tracks;
-
-/**
- *
- */
-@property (nonatomic, copy, readonly) NSArray<NSNumber *> * _Nullable weights;
-
-/**
- *
- */
-- (BOOL)setTracks:(NSArray<SGTrack *> * _Nullable)tracks weights:(NSArray<NSNumber *> * _Nullable)weights;
-
-/**
- *
- */
-- (SGAudioFrame * _Nullable)putFrame:(SGAudioFrame *)frame;
-
-/**
- *
- */
-- (SGAudioFrame * _Nullable)finish;
+- (SGAudioFrame *)finish;
 
 /**
  *

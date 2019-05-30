@@ -19,10 +19,14 @@
 
 @implementation SGAudioMixer
 
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription tracks:(NSArray<SGTrack *> *)tracks
+- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
+                       weights:(NSArray<NSNumber *> *)weights
+              audioDescription:(SGAudioDescription *)audioDescription
+
 {
     if (self = [super init]) {
         self->_tracks = [tracks copy];
+        self->_weights = [weights copy];
         self->_audioDescription = [audioDescription copy];
         self->_startTime = kCMTimeNegativeInfinity;
         NSMutableDictionary *units = [NSMutableDictionary dictionary];
@@ -30,34 +34,8 @@
             [units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
         }
         self->_units = [units copy];
-        [self setWeights:nil];
     }
     return self;
-}
-
-#pragma mark - Setter & Getter
-
-- (void)setWeights:(NSArray<NSNumber *> *)weights
-{
-    if (weights.count != self->_tracks.count) {
-        NSMutableArray *obj = [NSMutableArray array];
-        double weight = 1.0 / self->_tracks.count;
-        for (int i = 0; i < self->_tracks.count; i++) {
-            [obj addObject:@(weight)];
-        }
-        self->_weights = [obj copy];
-    } else {
-        double sum = 0;
-        for (NSNumber *obj in weights) {
-            sum += obj.doubleValue;
-        }
-        NSMutableArray *obj = [NSMutableArray array];
-        for (int i = 0; i < self->_tracks.count; i++) {
-            double value = [weights objectAtIndex:i].doubleValue;
-            [obj addObject:@(value / sum)];
-        }
-        self->_weights = [obj copy];
-    }
 }
 
 #pragma mark - Control
@@ -154,6 +132,25 @@
     }
     self->_startTime = CMTimeRangeGetEnd(range);
     
+    NSArray<NSNumber *> *weights = nil;
+    if (self->_weights.count != self->_tracks.count) {
+        NSMutableArray *obj = [NSMutableArray array];
+        for (int i = 0; i < self->_tracks.count; i++) {
+            [obj addObject:@(1.0 / self->_tracks.count)];
+        }
+        weights = [obj copy];
+    } else {
+        double sum = 0;
+        for (NSNumber *obj in weights) {
+            sum += obj.doubleValue;
+        }
+        NSMutableArray *obj = [NSMutableArray array];
+        for (int i = 0; i < self->_tracks.count; i++) {
+            [obj addObject:@(weights[i].doubleValue / sum)];
+        }
+        weights = [obj copy];
+    }
+    
     CMTime start = range.start;
     CMTime duration = range.duration;
     SGAudioDescription *description = self->_audioDescription;
@@ -177,7 +174,7 @@
                     continue;
                 }
                 for (int k = 0; k < description.numberOfPlanes; k++) {
-                    ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * self->_weights[j].floatValue);
+                    ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * weights[j].floatValue);
                 }
                 break;
             }
