@@ -49,6 +49,7 @@ static SGPacket *gFinishPacket = nil;
         self->_decodableClass = decodableClass;
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
+        self->_capacity = [[SGCapacity alloc] init];
         self->_timeStamps = [[NSMutableDictionary alloc] init];
         self->_decodables = [[NSMutableDictionary alloc] init];
         self->_packetQueues = [[NSMutableDictionary alloc] init];
