@@ -132,8 +132,8 @@
     }
     self->_startTime = CMTimeRangeGetEnd(range);
     
-    NSArray<NSNumber *> *weights = nil;
-    if (self->_weights.count != self->_tracks.count) {
+    NSArray<NSNumber *> *weights = self->_weights;
+    if (weights.count != self->_tracks.count) {
         NSMutableArray *obj = [NSMutableArray array];
         for (int i = 0; i < self->_tracks.count; i++) {
             [obj addObject:@(1.0 / self->_tracks.count)];
@@ -163,20 +163,14 @@
             [list setObject:frames forKey:@(obj.index)];
         }
     }
-    for (int i = 0; i < numberOfSamples; i++) {
-        for (int j = 0; j < self->_tracks.count; j++) {
-            for (SGAudioFrame *obj in list[@(self->_tracks[j].index)]) {
-                int c = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), description.sampleRate));
-                if (i < c) {
-                    break;
+    for (int t = 0; t < self->_tracks.count; t++) {
+        for (SGAudioFrame *obj in list[@(self->_tracks[t].index)]) {
+            int s = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), description.sampleRate));
+            int e = s + obj.numberOfSamples;
+            for (int i = MAX(0, s); i < MIN(numberOfSamples, e); i++) {
+                for (int c = 0; c < description.numberOfPlanes; c++) {
+                    ((float *)ret.core->data[c])[i] += (((float *)obj.data[c])[i - s] * weights[t].floatValue);
                 }
-                if (i >= c + obj.numberOfSamples) {
-                    continue;
-                }
-                for (int k = 0; k < description.numberOfPlanes; k++) {
-                    ((float *)ret.core->data[k])[i] += (((float *)obj.data[k])[i - c] * weights[j].floatValue);
-                }
-                break;
             }
         }
     }
