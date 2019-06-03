@@ -373,11 +373,10 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (SGBlock)setFrameQueueCapacity:(SGMediaType)type
 {
     BOOL paused = NO;
-    SGCapacity *capacity = [self frameQueueCapacity:type];
     if (type == SGMediaTypeAudio) {
-        paused = capacity.count > 5;
+        paused = _audioQueue.capacity.count > 5;
     } else if (type == SGMediaTypeVideo) {
-        paused = capacity.count > 3;
+        paused = _videoQueue.capacity.count > 3;
     }
     SGBlock b1 = ^{
         if (paused) {
@@ -386,6 +385,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             [self->_frameOutput resume:type];
         }
     };
+    SGCapacity *capacity = [self frameQueueCapacity:type];
     SGCapacity *additional = [self->_frameOutput capacityWithType:type];
     [capacity add:additional];
     SGBlock b2 = [self setCapacity:capacity type:type];
