@@ -163,14 +163,38 @@
             [list setObject:frames forKey:@(obj.index)];
         }
     }
+    NSMutableArray *discontinuous = [NSMutableArray array];
     for (int t = 0; t < self->_tracks.count; t++) {
+        int lastEE = 0;
         for (SGAudioFrame *obj in list[@(self->_tracks[t].index)]) {
             int s = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), description.sampleRate));
             int e = s + obj.numberOfSamples;
-            for (int i = MAX(0, s); i < MIN(numberOfSamples, e); i++) {
+            int ss = MAX(0, s);
+            int ee = MIN(numberOfSamples, e);
+            if (ss - lastEE != 0) {
+                NSRange range = NSMakeRange(MIN(ss, lastEE), ABS(ss - lastEE));
+                [discontinuous addObject:[NSValue valueWithRange:range]];
+            }
+            lastEE = ee;
+            for (int i = ss; i < ee; i++) {
                 for (int c = 0; c < description.numberOfPlanes; c++) {
                     ((float *)ret.core->data[c])[i] += (((float *)obj.data[c])[i - s] * weights[t].floatValue);
                 }
+            }
+        }
+    }
+    for (NSValue *obj in discontinuous) {
+        NSRange range = obj.rangeValue;
+        for (int c = 0; c < description.numberOfPlanes; c++) {
+            float value = 0;
+            if (range.location > 0) {
+                value += ((float *)ret.core->data[c])[range.location - 1] * 0.5;
+            }
+            if (NSMaxRange(range) < numberOfSamples - 1) {
+                value += ((float *)ret.core->data[c])[NSMaxRange(range)] * 0.5;
+            }
+            for (int i = (int)range.location; i < NSMaxRange(range); i++) {
+                ((float *)ret.core->data[c])[i] = value;
             }
         }
     }
