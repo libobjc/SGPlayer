@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (int)convert:(const uint8_t * _Nonnull const [_Nonnull])inputData inputLinesize:(const int [_Nonnull])inputLinesize outputData:(uint8_t * _Nonnull const [_Nonnull])outputData outputLinesize:(const int [_Nonnull])outputLinesize;
+- (int)convert:(const uint8_t * const [])inputData inputLinesize:(const int[])inputLinesize outputData:(uint8_t * const [])outputData outputLinesize:(const int[])outputLinesize;
 
 @end
 

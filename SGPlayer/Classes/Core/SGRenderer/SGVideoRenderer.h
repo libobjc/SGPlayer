@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Main thread only.
  */
-@property (nonatomic, strong) SGPLFView * _Nullable view;
+@property (nonatomic, strong) SGPLFView *view;
 
 /**
  *  Main thread only.
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Main thread only.
  */
-@property (nonatomic, copy) void (^ _Nullable frameOutput)(SGVideoFrame *frame);
+@property (nonatomic, copy) void (^frameOutput)(SGVideoFrame *frame);
 
 /**
  *  Main thread only.
@@ -61,12 +61,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *  Main thread only.
  */
-- (SGPLFImage * _Nullable)originalImage;
+- (SGPLFImage *)originalImage;
 
 /**
  *  Main thread only.
  */
-- (SGPLFImage * _Nullable)snapshot;
+- (SGPLFImage *)snapshot;
 
 @end
 

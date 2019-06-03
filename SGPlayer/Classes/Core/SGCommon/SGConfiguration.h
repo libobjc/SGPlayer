@@ -20,12 +20,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * _Nullable formatContextOptions;
+@property (nonatomic, copy) NSDictionary *formatContextOptions;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary * _Nullable codecContextOptions;
+@property (nonatomic, copy) NSDictionary *codecContextOptions;
 
 /**
  *

@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGAudioDescription * _Nullable audioDescription;
+@property (nonatomic, strong, readonly) SGAudioDescription *audioDescription;
 
 /**
  *
@@ -26,12 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (int * _Nullable)linesize;
+- (int *)linesize;
 
 /**
  *
  */
-- (uint8_t * _Nullable * _Nullable)data;
+- (uint8_t **)data;
 
 @end
 

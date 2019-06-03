@@ -19,12 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, readonly) void * _Nonnull coreptr;
+@property (nonatomic, readonly) void * coreptr;
 
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGTrack * _Nullable track;
+@property (nonatomic, strong, readonly) SGTrack *track;
 
 /**
  *

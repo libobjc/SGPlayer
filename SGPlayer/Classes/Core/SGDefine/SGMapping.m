@@ -115,7 +115,7 @@ enum AVPixelFormat SGPixelFormatAV2FF(OSType format)
 AVDictionary * SGDictionaryNS2FF(NSDictionary *dictionary)
 {
     __block AVDictionary *ret = NULL;
-    [dictionary enumerateKeysAndObjectsUsingBlock:^(id _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+    [dictionary enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([obj isKindOfClass:[NSNumber class]]) {
             av_dict_set_int(&ret, [key UTF8String], [obj integerValue], 0);
         } else if ([obj isKindOfClass:[NSString class]]) {

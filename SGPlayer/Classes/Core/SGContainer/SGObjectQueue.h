@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  */
 - (BOOL)putObjectSync:(id<SGData>)object;
-- (BOOL)putObjectSync:(id<SGData>)object before:(SGBlock _Nullable)before after:(SGBlock _Nullable)after;
+- (BOOL)putObjectSync:(id<SGData>)object before:(SGBlock)before after:(SGBlock)after;
 
 /**
  *
@@ -44,14 +44,14 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (BOOL)getObjectSync:(id<SGData> _Nullable * _Nonnull)object;
-- (BOOL)getObjectSync:(id<SGData> _Nullable * _Nonnull)object before:(SGBlock _Nullable)before after:(SGBlock _Nullable)after;
+- (BOOL)getObjectSync:(id<SGData> *)object;
+- (BOOL)getObjectSync:(id<SGData> *)object before:(SGBlock)before after:(SGBlock)after;
 
 /**
  *
  */
-- (BOOL)getObjectAsync:(id<SGData> _Nullable * _Nonnull)object;
-- (BOOL)getObjectAsync:(id<SGData> _Nullable * _Nonnull)object timeReader:(SGTimeReader _Nullable)timeReader;
+- (BOOL)getObjectAsync:(id<SGData> *)object;
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader;
 
 /**
  *

@@ -17,27 +17,27 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGVideoDescription * _Nullable videoDescription;
+@property (nonatomic, strong, readonly) SGVideoDescription *videoDescription;
 
 /**
  *
  */
-- (int * _Nullable)linesize;
+- (int *)linesize;
 
 /**
  *
  */
-- (uint8_t * _Nullable * _Nullable)data;
+- (uint8_t **)data;
 
 /**
  *
  */
-- (CVPixelBufferRef _Nullable)pixelBuffer;
+- (CVPixelBufferRef)pixelBuffer;
 
 /**
  *
  */
-- (SGPLFImage * _Nullable)image;
+- (SGPLFImage *)image;
 
 @end
 

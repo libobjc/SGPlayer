@@ -30,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, weak) id<SGRenderableDelegate> _Nullable delegate;
+@property (nonatomic, weak) id<SGRenderableDelegate> delegate;
 
 /**
  *
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader _Nullable)timeReader;
+- (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
 
 @end
 

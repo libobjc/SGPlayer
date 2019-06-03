@@ -13,17 +13,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SGObjectPool : NSObject
 
-+ (instancetype _Nonnull)sharedPool;
++ (instancetype)sharedPool;
 
 /**
  *
  */
-- (__kindof id<SGData> _Nonnull)objectWithClass:(Class _Nonnull)class;
+- (__kindof id<SGData>)objectWithClass:(Class)class;
 
 /**
  *
  */
-- (void)comeback:(id<SGData> _Nonnull)object;
+- (void)comeback:(id<SGData>)object;
 
 /**
  *

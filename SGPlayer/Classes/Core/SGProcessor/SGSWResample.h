@@ -27,12 +27,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (int)write:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples;
 
 /**
  *
  */
-- (int)read:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
 
 @end
 

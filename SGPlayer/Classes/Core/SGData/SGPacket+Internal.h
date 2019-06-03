@@ -16,12 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, readonly) AVPacket * _Nonnull core;
+@property (nonatomic, readonly) AVPacket *core;
 
 /**
  *
  */
-@property (nonatomic, strong) SGCodecDescription * _Nullable codecDescription;
+@property (nonatomic, strong) SGCodecDescription *codecDescription;
 
 /**
  *

@@ -16,13 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-+ (instancetype _Nonnull)new NS_UNAVAILABLE;
-- (instancetype _Nonnull)init NS_UNAVAILABLE;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 /**
  *
  */
-- (instancetype _Nonnull)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
 
 /**
  *
@@ -72,12 +72,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (int)write:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)write:(uint8_t **)data nb_samples:(int)nb_samples;
 
 /**
  *
  */
-- (int)read:(uint8_t * _Nonnull * _Nonnull)data nb_samples:(int)nb_samples;
+- (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
 
 @end
 

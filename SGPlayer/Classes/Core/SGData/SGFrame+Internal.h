@@ -17,12 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, readonly) AVFrame * _Nonnull core;
+@property (nonatomic, readonly) AVFrame *core;
 
 /**
  *
  */
-@property (nonatomic, strong) SGCodecDescription * _Nullable codecDescription;
+@property (nonatomic, strong) SGCodecDescription *codecDescription;
 
 /**
  *
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-+ (instancetype _Nonnull)audioFrameWithDescription:(SGAudioDescription * _Nonnull)description numberOfSamples:(int)numberOfSamples;
++ (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples;
 
 @end
 
