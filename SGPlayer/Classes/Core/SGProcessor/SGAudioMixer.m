@@ -45,7 +45,7 @@
     if (self->_tracks.count <= 1) {
         return frame;
     }
-    if (CMTimeCompare(frame.timeStamp, self->_startTime) < 0) {
+    if (CMTimeCompare(CMTimeAdd(frame.timeStamp, frame.duration), self->_startTime) <= 0) {
         [frame unlock];
         return nil;
     }

@@ -39,7 +39,7 @@
 - (BOOL)putFrame:(SGAudioFrame *)frame
 {
     if (CMTIMERANGE_IS_VALID(self->_timeRange) &&
-        CMTimeCompare(frame.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) < 0) {
+        CMTimeCompare(CMTimeAdd(frame.timeStamp, frame.duration), CMTimeRangeGetEnd(self->_timeRange)) <= 0) {
         return NO;
     }
     [frame lock];
