@@ -13,7 +13,7 @@
 @interface SGAudioMixer ()
 
 @property (nonatomic, readonly) CMTime startTime;
-@property (nonatomic, strong, readonly) NSDictionary<NSNumber *, SGAudioMixerUnit *> *units;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGAudioMixerUnit *> *units;
 
 @end
 
@@ -29,11 +29,10 @@
         self->_weights = [weights copy];
         self->_audioDescription = [audioDescription copy];
         self->_startTime = kCMTimeNegativeInfinity;
-        NSMutableDictionary *units = [NSMutableDictionary dictionary];
+        self->_units = [NSMutableDictionary dictionary];
         for (SGTrack *obj in self->_tracks) {
-            [units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
+            [self->_units setObject:[[SGAudioMixerUnit alloc] init] forKey:@(obj.index)];
         }
-        self->_units = [units copy];
     }
     return self;
 }
@@ -122,7 +121,11 @@
     if (CMTimeCompare(CMTimeSubtract(end, start), kCMTimeZero) <= 0) {
         return nil;
     }
-    return [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
+    SGAudioFrame *frame = [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
+    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+        [obj flush];
+    }
+    return frame;
 }
 
 - (SGAudioFrame *)mixWithRange:(CMTimeRange)range
