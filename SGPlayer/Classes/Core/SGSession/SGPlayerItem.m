@@ -148,7 +148,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             [m addObjectsFromArray:self->_videoSelection.tracks];
             [self->_frameOutput selectTracks:[m copy]];
         }
-        [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags];
+        [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags description:self->_audioDescription];
         return nil;
     });
 }
@@ -283,13 +283,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
                     SGAudioSelectionActionFlags actionFlags = 0;
                     actionFlags |= SGVideoSelectionAction_Tracks;
                     actionFlags |= SGAudioSelectionAction_Weights;
-                    actionFlags |= SGAudioSelectionAction_AudioDescription;
                     self->_audioSelection = [[SGAudioSelection alloc] init];
                     self->_audioSelection.tracks = @[audio.firstObject];
                     self->_audioSelection.weights = @[@(1.0)];
-                    self->_audioSelection.audioDescription = self->_audioDescription;
                     self->_audioProcessor = [[SGAudioProcessor alloc] init];
-                    [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags];
+                    [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags description:self->_audioDescription];
                 }
                 if (video.count > 0) {
                     self->_videoSelection = [[SGVideoSelection alloc] init];

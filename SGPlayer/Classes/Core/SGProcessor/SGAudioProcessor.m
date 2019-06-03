@@ -21,19 +21,18 @@
 
 #pragma mark - Setter & Getter
 
-- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags
+- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags description:(SGAudioDescription *)description
 {
     self->_selection = [selection copy];
-    if (actionFlags & SGAudioSelectionAction_Tracks ||
-        actionFlags & SGAudioSelectionAction_AudioDescription) {
+    if (actionFlags & SGAudioSelectionAction_Tracks) {
         self->_mixer = [[SGAudioMixer alloc] initWithTracks:self->_selection.tracks
                                                     weights:self->_selection.weights
-                                           audioDescription:self->_selection.audioDescription];
+                                           audioDescription:description];
         self->_mixer.weights = self->_selection.weights;
         self->_formatters = [NSMutableDictionary dictionary];
         for (SGTrack *track in self->_selection.tracks) {
             SGAudioFormatter *formatter = [[SGAudioFormatter alloc] init];
-            formatter.audioDescription = self->_selection.audioDescription;
+            formatter.audioDescription = description;
             [self->_formatters setObject:formatter forKey:@(track.index)];
         }
     } else if (actionFlags & SGAudioSelectionAction_Weights) {

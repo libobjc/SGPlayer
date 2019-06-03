@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags;
+- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags description:(SGAudioDescription *)description;
 
 /**
  *

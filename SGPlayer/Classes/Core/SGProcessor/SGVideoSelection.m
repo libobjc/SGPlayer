@@ -17,4 +17,15 @@
     return obj;
 }
 
+- (void)setTracks:(NSArray *)tracks
+{
+    NSMutableArray *objs = [NSMutableArray array];
+    for (SGTrack *track in tracks) {
+        if (track.type == SGMediaTypeVideo) {
+            [objs addObject:track];
+        }
+    }
+    _tracks = objs.count > 0 ? [objs copy] : nil;
+}
+
 @end

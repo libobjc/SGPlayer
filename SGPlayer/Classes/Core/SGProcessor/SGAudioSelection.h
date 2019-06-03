@@ -18,7 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 typedef NS_OPTIONS(NSUInteger, SGAudioSelectionActionFlags) {
     SGAudioSelectionAction_Tracks = 1 << 0,
     SGAudioSelectionAction_Weights = 1 << 1,
-    SGAudioSelectionAction_AudioDescription = 1 << 2,
 };
 
 @interface SGAudioSelection : NSObject <NSCopying>
@@ -32,11 +31,6 @@ typedef NS_OPTIONS(NSUInteger, SGAudioSelectionActionFlags) {
  *
  */
 @property (nonatomic, copy) NSArray<NSNumber *> *weights;
-
-/**
- *
- */
-@property (nonatomic, copy) SGAudioDescription *audioDescription;
 
 @end
 
