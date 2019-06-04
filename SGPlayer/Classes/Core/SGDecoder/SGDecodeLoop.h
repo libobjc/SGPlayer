@@ -23,8 +23,6 @@ typedef NS_ENUM(int, SGDecodeLoopState) {
     SGDecodeLoopStateClosed,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGDecodeLoop : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -100,5 +98,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)decodeLoop:(SGDecodeLoop *)decodeLoop didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
-
-NS_ASSUME_NONNULL_END

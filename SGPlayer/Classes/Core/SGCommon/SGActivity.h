@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGActivity : NSObject
 
 /**
@@ -23,5 +21,3 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)removeTarget:(id)target;
 
 @end
-
-NS_ASSUME_NONNULL_END

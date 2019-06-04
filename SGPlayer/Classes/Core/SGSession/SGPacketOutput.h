@@ -26,8 +26,6 @@ typedef NS_ENUM(int, SGPacketOutputState) {
     SGPacketOutputStateFailed,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGPacketOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -113,5 +111,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)packetOutput:(SGPacketOutput *)packetOutput didOutputPacket:(SGPacket *)packet;
 
 @end
-
-NS_ASSUME_NONNULL_END

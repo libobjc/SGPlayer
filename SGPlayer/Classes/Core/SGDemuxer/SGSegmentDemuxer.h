@@ -9,8 +9,6 @@
 #import "SGDemuxable.h"
 #import "SGSegment.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGSegmentDemuxer : NSObject <SGDemuxable>
 
 /**
@@ -35,5 +33,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CMTime basetime;
 
 @end
-
-NS_ASSUME_NONNULL_END

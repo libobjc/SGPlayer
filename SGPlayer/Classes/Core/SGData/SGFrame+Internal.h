@@ -10,8 +10,6 @@
 #import "SGAudioFrame.h"
 #import "SGCodecDescription.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGFrame ()
 
 /**
@@ -44,5 +42,3 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples;
 
 @end
-
-NS_ASSUME_NONNULL_END

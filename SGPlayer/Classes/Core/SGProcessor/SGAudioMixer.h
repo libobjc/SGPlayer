@@ -11,8 +11,6 @@
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGAudioMixer : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -61,5 +59,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flush;
 
 @end
-
-NS_ASSUME_NONNULL_END

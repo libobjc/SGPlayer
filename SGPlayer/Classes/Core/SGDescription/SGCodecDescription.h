@@ -11,8 +11,6 @@
 #import "SGFFmpeg.h"
 #import "SGTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 typedef NS_ENUM(NSUInteger, SGCodecType) {
     SGCodecType_Decode,
     SGCodecType_Padding,
@@ -81,5 +79,3 @@ typedef NS_ENUM(NSUInteger, SGCodecType) {
 - (BOOL)isEqualCodecContextToDescription:(SGCodecDescription *)description;
 
 @end
-
-NS_ASSUME_NONNULL_END

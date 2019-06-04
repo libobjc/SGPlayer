@@ -23,8 +23,6 @@ typedef NS_ENUM(int, SGRenderableState) {
     SGRenderableStateFailed,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol SGRenderable <NSObject>
 
 /**
@@ -92,5 +90,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (__kindof SGFrame *)renderable:(id<SGRenderable>)renderable fetchFrame:(SGTimeReader)timeReader;
 
 @end
-
-NS_ASSUME_NONNULL_END

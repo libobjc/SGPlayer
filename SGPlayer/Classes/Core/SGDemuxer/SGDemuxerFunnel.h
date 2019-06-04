@@ -8,8 +8,6 @@
 
 #import "SGDemuxable.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGDemuxerFunnel : NSObject <SGDemuxable>
 
 /**
@@ -39,5 +37,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL overgop;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGSegment : NSObject <NSCopying>
 
 /**
@@ -30,5 +28,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CMTime scale;
 
 @end
-
-NS_ASSUME_NONNULL_END

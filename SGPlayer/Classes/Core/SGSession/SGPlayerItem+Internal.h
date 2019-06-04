@@ -27,8 +27,6 @@ typedef NS_ENUM(int, SGPlayerItemState) {
     SGPlayerItemStateFailed,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGPlayerItem ()
 
 /**
@@ -107,5 +105,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
 
 @end
-
-NS_ASSUME_NONNULL_END

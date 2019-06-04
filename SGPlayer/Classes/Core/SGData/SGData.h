@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreMedia/CoreMedia.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol SGData <NSObject>
 
 /**
@@ -44,5 +42,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)size;
 
 @end
-
-NS_ASSUME_NONNULL_END

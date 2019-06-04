@@ -10,8 +10,6 @@
 #import "SGPLFImage.h"
 #import "SGVideoDescription.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGVideoFrame : SGFrame
 
 /**
@@ -40,5 +38,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (SGPLFImage *)image;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -10,8 +10,6 @@
 #import "SGAudioDescription.h"
 #import "SGTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 /**
  *
  */
@@ -33,5 +31,3 @@ typedef NS_OPTIONS(NSUInteger, SGAudioSelectionActionFlags) {
 @property (nonatomic, copy) NSArray<NSNumber *> *weights;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -27,8 +27,6 @@ typedef NS_ENUM(int, SGFrameOutputState) {
     SGFrameOutputStateFailed,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGFrameOutput : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -139,5 +137,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame;
 
 @end
-
-NS_ASSUME_NONNULL_END

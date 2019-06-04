@@ -10,8 +10,6 @@
 #import "SGDefines.h"
 #import "SGMutableTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGMutableAsset : SGAsset
 
 /**
@@ -25,5 +23,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (SGMutableTrack *)addTrack:(SGMediaType)type;
 
 @end
-
-NS_ASSUME_NONNULL_END

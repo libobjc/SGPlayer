@@ -11,8 +11,6 @@
 
 @class SGAudioStreamPlayer;
 
-NS_ASSUME_NONNULL_BEGIN
-
 @protocol SGAudioStreamPlayerDelegate <NSObject>
 
 @optional
@@ -55,5 +53,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flush;
 
 @end
-
-NS_ASSUME_NONNULL_END

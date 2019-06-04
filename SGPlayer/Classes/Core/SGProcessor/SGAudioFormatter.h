@@ -10,8 +10,6 @@
 #import "SGAudioDescription.h"
 #import "SGAudioFrame.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGAudioFormatter : NSObject
 
 /**
@@ -30,5 +28,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flush;
 
 @end
-
-NS_ASSUME_NONNULL_END

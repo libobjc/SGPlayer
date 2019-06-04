@@ -8,8 +8,6 @@
 
 #import "SGSegment.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGPaddingSegment : SGSegment
 
 /**
@@ -18,5 +16,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDuration:(CMTime)duration;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 /**
  *
  */
@@ -26,5 +24,3 @@ typedef NS_OPTIONS(NSUInteger, SGVideoSelectionActionFlags) {
 @property (nonatomic, copy) NSArray<SGTrack *> *tracks;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -10,8 +10,6 @@
 #import "SGTrack.h"
 #import "SGData.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGPacket : NSObject <SGData>
 
 /**
@@ -45,5 +43,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) int size;
 
 @end
-
-NS_ASSUME_NONNULL_END

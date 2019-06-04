@@ -8,8 +8,6 @@
 
 #import "SGDemuxable.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGMutilDemuxer : NSObject <SGDemuxable>
 
 /**
@@ -24,5 +22,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables;
 
 @end
-
-NS_ASSUME_NONNULL_END

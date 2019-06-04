@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGTimeLayout : NSObject <NSCopying>
 
 /**
@@ -50,5 +48,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqualToTimeLayout:(SGTimeLayout *)timeLayout;
 
 @end
-
-NS_ASSUME_NONNULL_END

@@ -8,8 +8,6 @@
 
 #import "SGTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGTrack ()
 
 /**
@@ -18,5 +16,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index;
 
 @end
-
-NS_ASSUME_NONNULL_END

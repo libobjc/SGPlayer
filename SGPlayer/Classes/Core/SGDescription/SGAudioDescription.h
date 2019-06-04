@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGAudioDescription : NSObject <NSCopying>
 
 /**
@@ -58,5 +56,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isEqualToDescription:(SGAudioDescription *)description;
 
 @end
-
-NS_ASSUME_NONNULL_END

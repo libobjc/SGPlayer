@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGVideoDescription.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGSWScale : NSObject
 
 @property (nonatomic, copy) SGVideoDescription *inputDescription;
@@ -29,5 +27,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)convert:(const uint8_t * const [])inputData inputLinesize:(const int[])inputLinesize outputData:(uint8_t * const [])outputData outputLinesize:(const int[])outputLinesize;
 
 @end
-
-NS_ASSUME_NONNULL_END

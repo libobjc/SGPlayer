@@ -9,8 +9,6 @@
 #import "SGFrame.h"
 #import "SGAudioDescription.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGAudioFrame : SGFrame
 
 /**
@@ -34,5 +32,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (uint8_t **)data;
 
 @end
-
-NS_ASSUME_NONNULL_END

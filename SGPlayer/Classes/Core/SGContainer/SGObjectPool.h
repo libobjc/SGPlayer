@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGData.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGObjectPool : NSObject
 
 + (instancetype)sharedPool;
@@ -31,5 +29,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)flush;
 
 @end
-
-NS_ASSUME_NONNULL_END

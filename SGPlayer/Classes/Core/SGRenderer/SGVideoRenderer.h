@@ -24,8 +24,6 @@ typedef NS_ENUM(int, SGScalingMode) {
     SGScalingModeResizeAspectFill,
 };
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGVideoRenderer : NSObject
 
 /**
@@ -69,5 +67,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (SGPLFImage *)snapshot;
 
 @end
-
-NS_ASSUME_NONNULL_END

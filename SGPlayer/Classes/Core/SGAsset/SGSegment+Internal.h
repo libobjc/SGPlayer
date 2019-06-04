@@ -9,8 +9,6 @@
 #import "SGSegment.h"
 #import "SGDemuxable.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGSegment ()
 
 /**
@@ -24,5 +22,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (id<SGDemuxable>)newDemuxable;
 
 @end
-
-NS_ASSUME_NONNULL_END

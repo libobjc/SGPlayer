@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGClock : NSObject
 
 /**
@@ -19,5 +17,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CMTime videoAdvancedDuration;
 
 @end
-
-NS_ASSUME_NONNULL_END

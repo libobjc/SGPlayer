@@ -8,8 +8,6 @@
 
 #import "SGSegment.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGURLSegment : SGSegment
 
 /**
@@ -28,5 +26,3 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSInteger index;
 
 @end
-
-NS_ASSUME_NONNULL_END

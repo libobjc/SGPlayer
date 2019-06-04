@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGAudioDescription.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGSonic : NSObject
 
 /**
@@ -80,5 +78,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (int)read:(uint8_t **)data nb_samples:(int)nb_samples;
 
 @end
-
-NS_ASSUME_NONNULL_END

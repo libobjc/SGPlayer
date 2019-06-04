@@ -12,8 +12,6 @@
 #import "SGAsset.h"
 #import "SGTrack.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGPlayerItem : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -65,5 +63,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setVideoSelection:(SGVideoSelection *)videoSelection actionFlags:(SGVideoSelectionActionFlags)actionFlags;
 
 @end
-
-NS_ASSUME_NONNULL_END

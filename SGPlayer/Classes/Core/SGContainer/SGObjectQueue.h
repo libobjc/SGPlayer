@@ -11,8 +11,6 @@
 #import "SGDefines.h"
 #import "SGData.h"
 
-NS_ASSUME_NONNULL_BEGIN
-
 @interface SGObjectQueue : NSObject
 
 /**
@@ -64,5 +62,3 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)destroy;
 
 @end
-
-NS_ASSUME_NONNULL_END
