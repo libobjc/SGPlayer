@@ -66,9 +66,18 @@
         [self setup];
     }
     [cd fillToDescription:self->_codecDescription];
-    NSArray<SGFrame *> *objs = [self processPacket:packet];
-    for (SGFrame *obj in objs) {
-        [ret addObject:obj];
+    switch (packet.codecDescription.type) {
+        case SGCodecType_Decode: {
+            NSArray<SGFrame *> *objs = [self processPacket:packet];
+            for (SGFrame *obj in objs) {
+                [ret addObject:obj];
+            }
+        }
+            break;
+        case SGCodecType_Padding: {
+            
+        }
+            break;
     }
     return ret;
 }

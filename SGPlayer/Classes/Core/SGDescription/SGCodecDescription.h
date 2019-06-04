@@ -13,12 +13,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, SGCodecType) {
+    SGCodecType_Decode,
+    SGCodecType_Padding,
+};
+
 @interface SGCodecDescription : NSObject <NSCopying>
 
 /**
  *
  */
-@property (nonatomic, strong) SGTrack * _Nullable track;
+@property (nonatomic) SGCodecType type;
 
 /**
  *
@@ -28,7 +33,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic) AVCodecParameters * _Nullable codecpar;
+@property (nonatomic) AVCodecParameters *codecpar;
+
+/**
+ *
+ */
+@property (nonatomic, strong) SGTrack *track;
 
 /**
  *
@@ -43,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> * _Nullable timeLayouts;
+@property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> *timeLayouts;
 
 /**
  *
@@ -53,22 +63,22 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (void)appendTimeLayout:(SGTimeLayout * _Nonnull)timeLayout;
+- (void)appendTimeLayout:(SGTimeLayout *)timeLayout;
 
 /**
  *
  */
-- (void)fillToDescription:(SGCodecDescription * _Nonnull)description;
+- (void)fillToDescription:(SGCodecDescription *)description;
 
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGCodecDescription * _Nonnull)description;
+- (BOOL)isEqualToDescription:(SGCodecDescription *)description;
 
 /**
  *
  */
-- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription * _Nonnull)description;
+- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription *)description;
 
 @end
 

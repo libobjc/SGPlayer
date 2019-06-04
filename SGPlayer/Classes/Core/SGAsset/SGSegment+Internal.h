@@ -16,7 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (id<SGDemuxable> _Nullable)newDemuxable;
+- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
+
+/**
+ *
+ */
+- (id<SGDemuxable>)newDemuxable;
 
 @end
 

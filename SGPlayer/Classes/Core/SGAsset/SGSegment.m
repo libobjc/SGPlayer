@@ -33,6 +33,7 @@
 
 - (id<SGDemuxable>)newDemuxable
 {
+    NSAssert(NO, @"Subclass only.");
     return nil;
 }
 

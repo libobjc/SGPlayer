@@ -49,6 +49,7 @@
     self->_flags.needsResetSonic = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
+    self->_audioDescription = nil;
 }
 
 #pragma mark - Control
@@ -76,9 +77,33 @@
         [self setup];
     }
     [cd fillToDescription:self->_codecDescription];
-    NSArray<SGFrame *> *objs = [self processPacket:packet];
-    for (SGFrame *obj in objs) {
-        [ret addObject:obj];
+    switch (packet.codecDescription.type) {
+        case SGCodecType_Decode: {
+            NSArray<SGFrame *> *objs = [self processPacket:packet];
+            for (SGFrame *obj in objs) {
+                [ret addObject:obj];
+            }
+        }
+            break;
+        case SGCodecType_Padding: {
+            SGAudioDescription *ad = self->_audioDescription;
+            if (ad == nil) {
+                ad = [[SGAudioDescription alloc] init];
+            }
+            CMTime start = packet.timeStamp;
+            CMTime duration = packet.duration;
+            int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+            if (nb_samples > 0) {
+                duration = CMTimeMake(nb_samples, ad.sampleRate);
+                SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
+                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                cd.track = packet.track;
+                [obj setCodecDescription:cd];
+                [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+                [ret addObject:obj];
+            }
+        }
+            break;
     }
     return ret;
 }

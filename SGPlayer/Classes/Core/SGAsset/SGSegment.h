@@ -22,11 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
-
-/**
- *
- */
 @property (nonatomic, readonly) CMTimeRange timeRange;
 
 /**

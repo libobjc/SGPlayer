@@ -15,12 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_UNAVAILABLE;
-
-/**
- *
- */
-- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
 
 /**
  *
