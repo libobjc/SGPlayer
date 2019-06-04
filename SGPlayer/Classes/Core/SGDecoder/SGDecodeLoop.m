@@ -177,8 +177,8 @@ static SGPacket *gFinishPacket = nil;
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
-        self->_flags.needsFlush = YES;
         for (SGObjectQueue *obj in self->_packetQueues.allValues) {
+            self->_flags.needsFlush = YES;
             [obj flush];
             [obj putObjectSync:gFlushPacket];
         }
