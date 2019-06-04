@@ -307,6 +307,7 @@
     SGLockCondEXE10(self->_lock, ^BOOL {
         return !ret || framesOutput == self->_flags.framesOutput;
     }, ^SGBlock {
+        SGBlock b1 = ^{}, b2 = ^{};
         SGCapacity *capacity = [[SGCapacity alloc] init];
         if (ret) {
             [ret lock];
@@ -316,19 +317,24 @@
             self->_flags.hasNewFrameToOutput = YES;
             self->_flags.framesOutput += 1;
             self->_flags.frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
-            [self->_clock setVideoCurrentTime:self->_currentFrame.timeStamp];
             capacity.duration = ret.duration;
+            CMTime videoCurrentTime = self->_currentFrame.timeStamp;
+            b1 = ^{
+                [self->_clock setVideoCurrentTime:videoCurrentTime];
+            };
         } else if (media_time_current < self->_flags.frameInvalidMediaTime) {
             capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.frameInvalidMediaTime - media_time_current);
         }
-        SGBlock b1 = ^{};
+        
         if (![capacity isEqualToCapacity:self->_capacity]) {
             self->_capacity = capacity;
-            b1 = ^{
+            b2 = ^{
                 [self->_delegate renderable:self didChangeCapacity:[capacity copy]];
             };
         }
-        return b1;
+        return ^{
+            b1(); b2();
+        };
     });
     [ret unlock];
 }
