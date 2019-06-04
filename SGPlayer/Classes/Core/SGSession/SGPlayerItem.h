@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithAsset:(SGAsset *)asset NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAsset:(SGAsset *)asset;
 
 /**
  *

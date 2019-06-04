@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables;
 
 @end
 

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithClock:(SGClock *)clock NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithClock:(SGClock *)clock;
 
 /**
  *
@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithClock:(SGClock *)clock NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithClock:(SGClock *)clock;
 
 /**
  *

@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithSegment:(SGSegment *)segment basetime:(CMTime)basetime NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSegment:(SGSegment *)segment basetime:(CMTime)basetime;
 
 /**
  *

@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype _Nonnull)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass NS_DESIGNATED_INITIALIZER;
+- (instancetype _Nonnull)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass;
 
 /**
  *

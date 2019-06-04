@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale;
 
 /**
  *

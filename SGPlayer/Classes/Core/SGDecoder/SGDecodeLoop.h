@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithDecodableClass:(Class)decodableClass NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDecodableClass:(Class)decodableClass;
 
 /**
  *

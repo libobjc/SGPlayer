@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index;
 
 @end
 

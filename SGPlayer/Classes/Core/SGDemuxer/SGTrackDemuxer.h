@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithTrack:(SGMutableTrack *)track NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTrack:(SGMutableTrack *)track;
 
 @end
 

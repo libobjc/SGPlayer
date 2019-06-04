@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithURL:(NSURL *)URL NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithURL:(NSURL *)URL;
 
 /**
  *

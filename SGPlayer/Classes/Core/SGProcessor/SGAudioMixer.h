@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
                        weights:(NSArray<NSNumber *> *)weights
-              audioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
+              audioDescription:(SGAudioDescription *)audioDescription;
 
 /**
  *

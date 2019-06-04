@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription;
 
 /**
  *

@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable;
 
 /**
  *
