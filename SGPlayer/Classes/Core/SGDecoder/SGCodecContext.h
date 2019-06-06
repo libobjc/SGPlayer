@@ -19,7 +19,10 @@
 /**
  *
  */
-- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass;
+- (instancetype)initWithTimebase:(AVRational)timebase
+                        codecpar:(AVCodecParameters *)codecpar
+                      frameClass:(Class)frameClass
+                  frameReuseName:(NSString *)frameReuseName;
 
 /**
  *

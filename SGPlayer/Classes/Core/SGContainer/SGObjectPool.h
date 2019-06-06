@@ -16,7 +16,7 @@
 /**
  *
  */
-- (__kindof id<SGData>)objectWithClass:(Class)class;
+- (__kindof id<SGData>)objectWithClass:(Class)class reuseName:(NSString *)reuseName;
 
 /**
  *

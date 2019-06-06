@@ -18,6 +18,7 @@
 @interface SGCodecContext ()
 
 @property (nonatomic, copy, readonly) Class frameClass;
+@property (nonatomic, copy, readonly) NSString *frameReuseName;
 @property (nonatomic, assign, readonly) AVRational timebase;
 @property (nonatomic, assign, readonly) AVCodecParameters *codecpar;
 @property (nonatomic, assign, readonly) AVCodecContext *codecContext;
@@ -26,12 +27,16 @@
 
 @implementation SGCodecContext
 
-- (instancetype)initWithTimebase:(AVRational)timebase codecpar:(AVCodecParameters *)codecpar frameClass:(Class)frameClass
+- (instancetype)initWithTimebase:(AVRational)timebase
+                        codecpar:(AVCodecParameters *)codecpar
+                      frameClass:(Class)frameClass
+                  frameReuseName:(NSString *)frameReuseName
 {
     if (self = [super init]) {
         self->_timebase = timebase;
         self->_codecpar = codecpar;
-        self->_frameClass = [frameClass copy];
+        self->_frameClass = frameClass;
+        self->_frameReuseName = frameReuseName;
         self->_options = [SGConfiguration sharedConfiguration].codecContextOptions;
         self->_threadsAuto = [SGConfiguration sharedConfiguration].threadsAuto;
         self->_refcountedFrames = [SGConfiguration sharedConfiguration].refcountedFrames;
@@ -87,7 +92,7 @@
     }
     NSMutableArray *array = [NSMutableArray array];
     while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame *frame = [[SGObjectPool sharedPool] objectWithClass:self->_frameClass];
+        __kindof SGFrame *frame = [[SGObjectPool sharedPool] objectWithClass:self->_frameClass reuseName:self->_frameReuseName];
         result = avcodec_receive_frame(self->_codecContext, frame.core);
         if (result < 0) {
             [frame unlock];

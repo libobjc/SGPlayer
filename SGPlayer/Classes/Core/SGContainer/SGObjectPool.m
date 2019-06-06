@@ -36,14 +36,13 @@
     return self;
 }
 
-- (id<SGData>)objectWithClass:(Class)class
+- (id<SGData>)objectWithClass:(Class)class reuseName:(NSString *)reuseName
 {
     [self->_lock lock];
-    NSString *className = NSStringFromClass(class);
-    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:className];
+    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:reuseName];
     if (!set) {
         set = [NSMutableSet set];
-        [self->_pool setObject:set forKey:className];
+        [self->_pool setObject:set forKey:reuseName];
     }
     id<SGData> object = set.anyObject;
     if (object) {
@@ -52,6 +51,7 @@
         object = [[class alloc] init];
     }
     [object lock];
+    object.reuseName = reuseName;
     [self->_lock unlock];
     return object;
 }
@@ -59,8 +59,7 @@
 - (void)comeback:(id<SGData>)object
 {
     [self->_lock lock];
-    NSString *className = NSStringFromClass(object.class);
-    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:className];
+    NSMutableSet <id<SGData>> *set = [self->_pool objectForKey:object.reuseName];
     if (![set containsObject:object]) {
         [set addObject:object];
         [object clear];

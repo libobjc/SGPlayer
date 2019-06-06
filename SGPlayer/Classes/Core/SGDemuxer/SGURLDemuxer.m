@@ -118,7 +118,7 @@
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (self->_context) {
-        SGPacket *pkt = [[SGObjectPool sharedPool] objectWithClass:[SGPacket class]];
+        SGPacket *pkt = [[SGObjectPool sharedPool] objectWithClass:[SGPacket class] reuseName:[SGPacket commonReuseName]];
         int ret = av_read_frame(self->_context, pkt.core);
         if (ret < 0) {
             [pkt unlock];

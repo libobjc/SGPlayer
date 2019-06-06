@@ -14,6 +14,11 @@
 /**
  *
  */
++ (NSString *)commonReuseName;
+
+/**
+ *
+ */
 @property (nonatomic, strong, readonly) SGAudioDescription *audioDescription;
 
 /**

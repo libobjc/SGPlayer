@@ -14,6 +14,11 @@
 /**
  *
  */
+@property (nonatomic, copy) NSString *reuseName;
+
+/**
+ *
+ */
 - (void)lock;
 
 /**

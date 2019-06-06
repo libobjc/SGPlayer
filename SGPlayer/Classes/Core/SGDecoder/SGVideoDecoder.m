@@ -32,7 +32,8 @@
     self->_flags.needsAlignment = YES;
     self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
                                                           codecpar:self->_codecDescription.codecpar
-                                                        frameClass:[SGVideoFrame class]];
+                                                        frameClass:[SGVideoFrame class]
+                                                    frameReuseName:[SGVideoFrame commonReuseName]];
     [self->_codecContext open];
 }
 

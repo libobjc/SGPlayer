@@ -38,7 +38,10 @@
     self->_flags.nextTimeStamp = 0;
     self->_flags.needsAlignment = YES;
     self->_flags.needsResetSonic = YES;
-    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase codecpar:self->_codecDescription.codecpar frameClass:[SGAudioFrame class]];
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
+                                                          codecpar:self->_codecDescription.codecpar
+                                                        frameClass:[SGAudioFrame class]
+                                                    frameReuseName:[SGAudioFrame commonReuseName]];
     [self->_codecContext open];
 }
 

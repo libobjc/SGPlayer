@@ -26,6 +26,16 @@
 
 #pragma mark - Setter & Getter
 
++ (NSString *)commonReuseName
+{
+    static NSString *ret = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        ret = NSStringFromClass(self.class);
+    });
+    return ret;
+}
+
 - (SGMediaType)type
 {
     return SGMediaTypeVideo;

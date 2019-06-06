@@ -21,6 +21,8 @@
 
 @implementation SGPacket
 
+@synthesize reuseName = _reuseName;
+
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -50,6 +52,18 @@
             CMTimeGetSeconds(self->_timeStamp),
             CMTimeGetSeconds(CMTimeAdd(self->_timeStamp, self->_duration)),
             CMTimeGetSeconds(self->_duration)];
+}
+
+#pragma mark - Setter & Getter
+
++ (NSString *)commonReuseName
+{
+    static NSString *ret = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        ret = NSStringFromClass(self.class);
+    });
+    return ret;
 }
 
 #pragma mark - Data

@@ -21,6 +21,8 @@
 
 @implementation SGFrame
 
+@synthesize reuseName = _reuseName;
+
 - (instancetype)init
 {
     if (self = [super init]) {

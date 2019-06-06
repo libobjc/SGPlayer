@@ -24,7 +24,7 @@
 
 + (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples
 {
-    SGAudioFrame *frame = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class]];
+    SGAudioFrame *frame = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class] reuseName:[SGAudioFrame commonReuseName]];
     frame.core->format = description.format;
     frame.core->sample_rate = description.sampleRate;
     frame.core->channels = description.numberOfChannels;
@@ -44,6 +44,16 @@
 }
 
 #pragma mark - Setter & Getter
+
++ (NSString *)commonReuseName
+{
+    static NSString *ret = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        ret = NSStringFromClass(self.class);
+    });
+    return ret;
+}
 
 - (SGMediaType)type
 {
