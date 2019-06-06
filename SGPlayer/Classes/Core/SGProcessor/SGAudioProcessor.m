@@ -69,10 +69,9 @@
 - (void)flush
 {
     [self->_mixer flush];
-    for (id key in self->_formatters) {
-        SGAudioFormatter *obj = self->_formatters[key];
+    [self->_formatters enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioFormatter *obj, BOOL *stop) {
         [obj flush];
-    }
+    }];
 }
 
 - (void)close

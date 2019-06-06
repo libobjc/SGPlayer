@@ -69,20 +69,18 @@
 
 - (SGCapacity)capacity
 {
-    SGCapacity capacity = SGCapacityCreate();
-    for (id key in self->_units) {
-        SGAudioMixerUnit *obj = self->_units[key];
+    __block SGCapacity capacity = SGCapacityCreate();
+    [self->_units enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, SGAudioMixerUnit *obj, BOOL *stop) {
         capacity = SGCapacityMaximum(capacity, obj.capacity);
-    }
+    }];
     return capacity;
 }
 
 - (void)flush
 {
-    for (id key in self->_units) {
-        SGAudioMixerUnit *obj = self->_units[key];
+    [self->_units enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioMixerUnit *obj, BOOL *stop) {
         [obj flush];
-    }
+    }];
     self->_startTime = kCMTimeNegativeInfinity;
 }
 
@@ -90,19 +88,18 @@
 
 - (SGAudioFrame *)mixForPutFrame
 {
-    CMTime start = kCMTimePositiveInfinity;
-    CMTime end = kCMTimePositiveInfinity;
-    CMTime maximumDuration = kCMTimeZero;
-    for (id key in self->_units) {
-        SGAudioMixerUnit *obj = self->_units[key];
+    __block CMTime start = kCMTimePositiveInfinity;
+    __block CMTime end = kCMTimePositiveInfinity;
+    __block CMTime maximumDuration = kCMTimeZero;
+    [self->_units enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioMixerUnit *obj, BOOL *stop) {
         if (CMTIMERANGE_IS_INVALID(obj.timeRange)) {
-            continue;
+            return;
         }
         start = CMTimeMinimum(start, obj.timeRange.start);
         start = CMTimeMaximum(start, self->_startTime);
         end = CMTimeMinimum(end, CMTimeRangeGetEnd(obj.timeRange));
         maximumDuration = CMTimeMaximum(maximumDuration, obj.timeRange.duration);
-    }
+    }];
     if (CMTimeCompare(maximumDuration, CMTimeMake(8, 100)) < 0) {
         return nil;
     }
@@ -111,25 +108,23 @@
 
 - (SGAudioFrame *)mixForFinish
 {
-    CMTime start = kCMTimePositiveInfinity;
-    CMTime end = kCMTimeNegativeInfinity;
-    for (id key in self->_units) {
-        SGAudioMixerUnit *obj = self->_units[key];
+    __block CMTime start = kCMTimePositiveInfinity;
+    __block CMTime end = kCMTimeNegativeInfinity;
+    [self->_units enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioMixerUnit *obj, BOOL *stop) {
         if (CMTIMERANGE_IS_INVALID(obj.timeRange)) {
-            continue;
+            return;
         }
         start = CMTimeMinimum(start, obj.timeRange.start);
         start = CMTimeMaximum(start, self->_startTime);
         end = CMTimeMaximum(end, CMTimeRangeGetEnd(obj.timeRange));
-    }
+    }];
     if (CMTimeCompare(CMTimeSubtract(end, start), kCMTimeZero) <= 0) {
         return nil;
     }
     SGAudioFrame *frame = [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
-    for (id key in self->_units) {
-        SGAudioMixerUnit *obj = self->_units[key];
+    [self->_units enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioMixerUnit *obj, BOOL *stop) {
         [obj flush];
-    }
+    }];
     return frame;
 }
 
@@ -206,12 +201,11 @@
             }
         }
     }
-    for (id key in list) {
-        NSArray *objs = list[key];
+    [list enumerateKeysAndObjectsUsingBlock:^(id key, NSArray *objs, BOOL *stop) {
         for (SGAudioFrame *obj in objs) {
             [obj unlock];
         }
-    }
+    }];
     [ret setCodecDescription:[[SGCodecDescription alloc] init]];
     [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
     return ret;

@@ -67,10 +67,9 @@ static SGPacket *gFinishPacket = nil;
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
         [self setState:SGDecodeLoopStateClosed];
-        for (id key in self->_packetQueues) {
-            SGObjectQueue *obj = self->_packetQueues[key];
+        [self->_packetQueues enumerateKeysAndObjectsUsingBlock:^(id key, SGObjectQueue *obj, BOOL *stop) {
             [obj destroy];
-        }
+        }];
         [self->_operationQueue cancelAllOperations];
         [self->_operationQueue waitUntilAllOperationsAreFinished];
         return nil;
@@ -108,11 +107,10 @@ static SGPacket *gFinishPacket = nil;
 
 - (SGBlock)setCapacityIfNeeded
 {
-    SGCapacity capacity = SGCapacityCreate();
-    for (id key in self->_packetQueues) {
-        SGObjectQueue *obj = self->_packetQueues[key];
+    __block SGCapacity capacity = SGCapacityCreate();
+    [self->_packetQueues enumerateKeysAndObjectsUsingBlock:^(id key, SGObjectQueue *obj, BOOL *stop) {
         capacity = SGCapacityMaximum(capacity, obj.capacity);
-    }
+    }];
     if (SGCapacityIsEqual(capacity, self->_capacity)) {
         return ^{};
     }
@@ -148,10 +146,9 @@ static SGPacket *gFinishPacket = nil;
         return [self setState:SGDecodeLoopStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        for (id key in self->_packetQueues) {
-            SGObjectQueue *obj = self->_packetQueues[key];
+        [self->_packetQueues enumerateKeysAndObjectsUsingBlock:^(id key, SGObjectQueue *obj, BOOL *stop) {
             [obj destroy];
-        }
+        }];
         [self->_operationQueue cancelAllOperations];
         [self->_operationQueue waitUntilAllOperationsAreFinished];
         return YES;
@@ -181,12 +178,11 @@ static SGPacket *gFinishPacket = nil;
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
-        for (NSNumber *key in self->_packetQueues.allKeys) {
-            SGObjectQueue *obj = self->_packetQueues[key];
+        [self->_packetQueues enumerateKeysAndObjectsUsingBlock:^(id key, SGObjectQueue *obj, BOOL *stop) {
             [obj flush];
             [obj putObjectSync:gFlushPacket];
             self->_flushFlags[key] = @(YES);
-        }
+        }];
         [self->_timeStamps removeAllObjects];
         SGBlock b1 = ^{};
         SGBlock b2 = [self setCapacityIfNeeded];
@@ -262,7 +258,7 @@ static SGPacket *gFinishPacket = nil;
             } else if (self->_flags.state == SGDecodeLoopStateDecoding) {
                 NSNumber *index = nil;
                 CMTime minimum = kCMTimePositiveInfinity;
-                for (NSNumber *key in self->_packetQueues.allKeys) {
+                for (NSNumber *key in self->_packetQueues) {
                     SGObjectQueue *obj = self->_packetQueues[key];
                     if (obj.capacity.count == 0) {
                         continue;
