@@ -15,7 +15,6 @@
 
 {
     struct {
-        BOOL needsFlush;
         SGDecodeLoopState state;
     } _flags;
 }
@@ -26,6 +25,7 @@
 @property (nonatomic, strong, readonly) SGCapacity *capacity;
 @property (nonatomic, strong, readonly) NSOperationQueue *operationQueue;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, NSValue *> *timeStamps;
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, NSNumber *> *flushFlags;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, id<SGDecodable>> *decodables;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGObjectQueue *> *packetQueues;
 
@@ -51,6 +51,7 @@ static SGPacket *gFinishPacket = nil;
         self->_wakeup = [[NSCondition alloc] init];
         self->_capacity = [[SGCapacity alloc] init];
         self->_timeStamps = [[NSMutableDictionary alloc] init];
+        self->_flushFlags = [[NSMutableDictionary alloc] init];
         self->_decodables = [[NSMutableDictionary alloc] init];
         self->_packetQueues = [[NSMutableDictionary alloc] init];
         self->_operationQueue = [[NSOperationQueue alloc] init];
@@ -177,10 +178,11 @@ static SGPacket *gFinishPacket = nil;
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
-        for (SGObjectQueue *obj in self->_packetQueues.allValues) {
-            self->_flags.needsFlush = YES;
+        for (NSNumber *key in self->_packetQueues.allKeys) {
+            SGObjectQueue *obj = self->_packetQueues[key];
             [obj flush];
             [obj putObjectSync:gFlushPacket];
+            self->_flushFlags[key] = @(YES);
         }
         [self->_timeStamps removeAllObjects];
         SGBlock b1 = ^{};
@@ -218,7 +220,7 @@ static SGPacket *gFinishPacket = nil;
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
-        SGObjectQueue *queue = [self->_packetQueues objectForKey:@(packet.track.index)];
+        SGObjectQueue *queue = self->_packetQueues[@(packet.track.index)];
         if (!queue) {
             queue = [[SGObjectQueue alloc] init];
             [self->_decodables setObject:[[self->_decodableClass alloc] init] forKey:@(packet.track.index)];
@@ -258,11 +260,11 @@ static SGPacket *gFinishPacket = nil;
                 NSNumber *index = nil;
                 CMTime minimum = kCMTimePositiveInfinity;
                 for (NSNumber *key in self->_packetQueues.allKeys) {
-                    SGObjectQueue *obj = [self->_packetQueues objectForKey:key];
+                    SGObjectQueue *obj = self->_packetQueues[key];
                     if (obj.capacity.count == 0) {
                         continue;
                     }
-                    NSValue *value = [self->_timeStamps objectForKey:key];
+                    NSValue *value = self->_timeStamps[key];
                     if (!value) {
                         index = key;
                         break;
@@ -280,16 +282,16 @@ static SGPacket *gFinishPacket = nil;
                     [self->_lock unlock];
                     continue;
                 }
-                SGObjectQueue *queue = [self->_packetQueues objectForKey:index];
-                id<SGDecodable> decodable = [self->_decodables objectForKey:index];
+                SGObjectQueue *queue = self->_packetQueues[index];
+                id<SGDecodable> decodable = self->_decodables[index];
                 SGPacket *packet = nil;
                 [queue getObjectAsync:&packet];
                 NSAssert(packet, @"Invalid Packet.");
                 if (packet == gFlushPacket) {
+                    self->_flushFlags[index] = @(NO);
                     [self->_lock unlock];
                     [decodable flush];
                     [self->_lock lock];
-                    self->_flags.needsFlush = NO;
                 } else {
                     NSArray *objs = nil;
                     if (packet == gFinishPacket) {
@@ -302,7 +304,7 @@ static SGPacket *gFinishPacket = nil;
                         objs = [decodable decode:packet];
                     }
                     [self->_lock lock];
-                    if (self->_flags.needsFlush) {
+                    if (self->_flushFlags[index].boolValue) {
                         for (SGFrame *obj in objs) {
                             [obj unlock];
                         }
