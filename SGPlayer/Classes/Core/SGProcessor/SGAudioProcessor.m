@@ -69,7 +69,8 @@
 - (void)flush
 {
     [self->_mixer flush];
-    for (SGAudioFormatter *obj in self->_formatters.allValues) {
+    for (id key in self->_formatters) {
+        SGAudioFormatter *obj = self->_formatters[key];
         [obj flush];
     }
 }

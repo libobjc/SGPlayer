@@ -70,7 +70,8 @@
 - (SGCapacity *)capacity
 {
     SGCapacity *capacity = [[SGCapacity alloc] init];
-    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+    for (id key in self->_units) {
+        SGAudioMixerUnit *obj = self->_units[key];
         capacity = [capacity maximum:obj.capacity];
     }
     return capacity;
@@ -78,7 +79,8 @@
 
 - (void)flush
 {
-    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+    for (id key in self->_units) {
+        SGAudioMixerUnit *obj = self->_units[key];
         [obj flush];
     }
     self->_startTime = kCMTimeNegativeInfinity;
@@ -91,7 +93,8 @@
     CMTime start = kCMTimePositiveInfinity;
     CMTime end = kCMTimePositiveInfinity;
     CMTime maximumDuration = kCMTimeZero;
-    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+    for (id key in self->_units) {
+        SGAudioMixerUnit *obj = self->_units[key];
         if (CMTIMERANGE_IS_INVALID(obj.timeRange)) {
             continue;
         }
@@ -110,7 +113,8 @@
 {
     CMTime start = kCMTimePositiveInfinity;
     CMTime end = kCMTimeNegativeInfinity;
-    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+    for (id key in self->_units) {
+        SGAudioMixerUnit *obj = self->_units[key];
         if (CMTIMERANGE_IS_INVALID(obj.timeRange)) {
             continue;
         }
@@ -122,7 +126,8 @@
         return nil;
     }
     SGAudioFrame *frame = [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
-    for (SGAudioMixerUnit *obj in self->_units.allValues) {
+    for (id key in self->_units) {
+        SGAudioMixerUnit *obj = self->_units[key];
         [obj flush];
     }
     return frame;
@@ -201,7 +206,8 @@
             }
         }
     }
-    for (NSArray *objs in list.allValues) {
+    for (id key in list) {
+        NSArray *objs = list[key];
         for (SGAudioFrame *obj in objs) {
             [obj unlock];
         }

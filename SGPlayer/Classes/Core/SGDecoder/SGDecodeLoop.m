@@ -67,7 +67,8 @@ static SGPacket *gFinishPacket = nil;
         return self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
         [self setState:SGDecodeLoopStateClosed];
-        for (SGObjectQueue *obj in self->_packetQueues.allValues) {
+        for (id key in self->_packetQueues) {
+            SGObjectQueue *obj = self->_packetQueues[key];
             [obj destroy];
         }
         [self->_operationQueue cancelAllOperations];
@@ -108,7 +109,8 @@ static SGPacket *gFinishPacket = nil;
 - (SGBlock)setCapacityIfNeeded
 {
     SGCapacity *capacity = [[SGCapacity alloc] init];
-    for (SGObjectQueue *obj in self->_packetQueues.allValues) {
+    for (id key in self->_packetQueues) {
+        SGObjectQueue *obj = self->_packetQueues[key];
         capacity = [capacity maximum:obj.capacity];
     }
     if ([self->_capacity isEqualToCapacity:capacity]) {
@@ -146,7 +148,8 @@ static SGPacket *gFinishPacket = nil;
         return [self setState:SGDecodeLoopStateClosed];
     }, ^BOOL(SGBlock block) {
         block();
-        for (SGObjectQueue *obj in self->_packetQueues.allValues) {
+        for (id key in self->_packetQueues) {
+            SGObjectQueue *obj = self->_packetQueues[key];
             [obj destroy];
         }
         [self->_operationQueue cancelAllOperations];
