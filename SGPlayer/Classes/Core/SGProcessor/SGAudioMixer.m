@@ -67,12 +67,12 @@
     return [self mixForFinish];
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
-    SGCapacity *capacity = [[SGCapacity alloc] init];
+    SGCapacity capacity = SGCapacityCreate();
     for (id key in self->_units) {
         SGAudioMixerUnit *obj = self->_units[key];
-        capacity = [capacity maximum:obj.capacity];
+        capacity = SGCapacityMaximum(capacity, obj.capacity);
     }
     return capacity;
 }

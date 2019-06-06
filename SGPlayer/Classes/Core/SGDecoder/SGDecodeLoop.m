@@ -17,12 +17,12 @@
     struct {
         SGDecodeLoopState state;
     } _flags;
+    SGCapacity _capacity;
 }
 
 @property (nonatomic, copy, readonly) Class decodableClass;
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) NSCondition *wakeup;
-@property (nonatomic, strong, readonly) SGCapacity *capacity;
 @property (nonatomic, strong, readonly) NSOperationQueue *operationQueue;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, NSValue *> *timeStamps;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, NSNumber *> *flushFlags;
@@ -49,7 +49,7 @@ static SGPacket *gFinishPacket = nil;
         self->_decodableClass = decodableClass;
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
-        self->_capacity = [[SGCapacity alloc] init];
+        self->_capacity = SGCapacityCreate();
         self->_timeStamps = [[NSMutableDictionary alloc] init];
         self->_flushFlags = [[NSMutableDictionary alloc] init];
         self->_decodables = [[NSMutableDictionary alloc] init];
@@ -108,15 +108,15 @@ static SGPacket *gFinishPacket = nil;
 
 - (SGBlock)setCapacityIfNeeded
 {
-    SGCapacity *capacity = [[SGCapacity alloc] init];
+    SGCapacity capacity = SGCapacityCreate();
     for (id key in self->_packetQueues) {
         SGObjectQueue *obj = self->_packetQueues[key];
-        capacity = [capacity maximum:obj.capacity];
+        capacity = SGCapacityMaximum(capacity, obj.capacity);
     }
-    if ([self->_capacity isEqualToCapacity:capacity]) {
+    if (SGCapacityIsEqual(capacity, self->_capacity)) {
         return ^{};
     }
-    self->_capacity = [capacity copy];
+    self->_capacity = capacity;
     return ^{
         [self->_delegate decodeLoop:self didChangeCapacity:capacity];
     };

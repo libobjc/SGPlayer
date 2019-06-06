@@ -504,14 +504,14 @@
     NSAssert(state != SGRenderableStateFailed, @"Invaild renderer, %@", renderable);
 }
 
-- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity)capacity
 {
-    if (capacity.isEmpty) {
+    if (SGCapacityIsEmpty(capacity)) {
         SGLockEXE10(self->_lock, ^SGBlock {
-            if (self->_audioRenderer.capacity.isEmpty && [self->_currentItem isFinished:SGMediaTypeAudio]) {
+            if (SGCapacityIsEmpty(self->_audioRenderer.capacity) && [self->_currentItem isFinished:SGMediaTypeAudio]) {
                 self->_flags.audioFinished = YES;
             }
-            if (self->_videoRenderer.capacity.isEmpty && [self->_currentItem isFinished:SGMediaTypeVideo]) {
+            if (SGCapacityIsEmpty(self->_videoRenderer.capacity) && [self->_currentItem isFinished:SGMediaTypeVideo]) {
                 self->_flags.videoFinished = YES;
             }
             return [self setPlaybackState];
@@ -565,10 +565,10 @@
                 break;
             case SGPlayerItemStateFinished: {
                 b1 = [self setLoadingState:SGLoadingStateFinished];
-                if (self->_audioRenderer.capacity.isEmpty) {
+                if (SGCapacityIsEmpty(self->_audioRenderer.capacity)) {
                     self->_flags.audioFinished = YES;
                 }
-                if (self->_videoRenderer.capacity.isEmpty) {
+                if (SGCapacityIsEmpty(self->_videoRenderer.capacity)) {
                     self->_flags.videoFinished = YES;
                 }
                 b2 = [self setPlaybackState];
@@ -588,7 +588,7 @@
     });
 }
 
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity)capacity type:(SGMediaType)type
 {
     BOOL should = NO;
     if (type == SGMediaTypeAudio &&
@@ -606,7 +606,7 @@
             CMTime duration = capacity.duration;
             CMTime time = CMTimeAdd(self->_flags.currentTime, duration);
             SGBlock b1 = [self setLoadedTime:time loadedDuration:duration];
-            SGBlock b2 = [self setLoadingState:(capacity.isEmpty || self->_flags.loadingState == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale];
+            SGBlock b2 = [self setLoadingState:(SGCapacityIsEmpty(capacity) || self->_flags.loadingState == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale];
             return ^{
                 b1(); b2();
             };

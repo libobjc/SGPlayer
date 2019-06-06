@@ -9,51 +9,43 @@
 #import <Foundation/Foundation.h>
 #import "SGTime.h"
 
-@interface SGCapacity : NSObject <NSCopying>
+typedef struct SGCapacity {
+    int size;
+    int count;
+    CMTime duration;
+} SGCapacity;
 
 /**
  *
  */
-@property (nonatomic) int size;
+SGCapacity SGCapacityCreate(void);
 
 /**
  *
  */
-@property (nonatomic) int count;
+SGCapacity SGCapacityAdd(SGCapacity c1, SGCapacity c2);
 
 /**
  *
  */
-@property (nonatomic) CMTime duration;
+SGCapacity SGCapacityMinimum(SGCapacity c1, SGCapacity c2);
 
 /**
  *
  */
-- (SGCapacity *)minimum:(SGCapacity *)capacity;
+SGCapacity SGCapacityMaximum(SGCapacity c1, SGCapacity c2);
 
 /**
  *
  */
-- (SGCapacity *)maximum:(SGCapacity *)capacity;
+BOOL SGCapacityIsEqual(SGCapacity c1, SGCapacity c2);
 
 /**
  *
  */
-- (void)add:(SGCapacity *)capacity;
+BOOL SGCapacityIsEnough(SGCapacity c1);
 
 /**
  *
  */
-- (BOOL)isEqualToCapacity:(SGCapacity *)capacity;
-
-/**
- *
- */
-- (BOOL)isEnough;
-
-/**
- *
- */
-- (BOOL)isEmpty;
-
-@end
+BOOL SGCapacityIsEmpty(SGCapacity c1);

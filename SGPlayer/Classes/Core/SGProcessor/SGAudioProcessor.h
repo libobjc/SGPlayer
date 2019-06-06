@@ -36,7 +36,7 @@
 /**
  *
  */
-- (SGCapacity *)capacity;
+- (SGCapacity)capacity;
 
 /**
  *

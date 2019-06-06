@@ -67,7 +67,7 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-- (SGCapacity *)capacityWithType:(SGMediaType)type;
+- (SGCapacity)capacityWithType:(SGMediaType)type;
 
 /**
  *
@@ -102,6 +102,6 @@ typedef NS_ENUM(int, SGPlayerItemState) {
 /**
  *
  */
-- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type;
+- (void)playerItem:(SGPlayerItem *)playerItem didChangeCapacity:(SGCapacity)capacity type:(SGMediaType)type;
 
 @end

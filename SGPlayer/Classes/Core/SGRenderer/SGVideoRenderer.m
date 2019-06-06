@@ -25,11 +25,11 @@
         BOOL hasNewFrameToDisplay;
         double frameInvalidMediaTime;
     } _flags;
+    SGCapacity _capacity;
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
-@property (nonatomic, strong, readonly) SGCapacity *capacity;
 @property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
 @property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
 @property (nonatomic, strong, readonly) SGGLDisplayLink *drawTimer;
@@ -45,7 +45,6 @@
 
 @synthesize rate = _rate;
 @synthesize delegate = _delegate;
-@synthesize capacity = _capacity;
 
 - (instancetype)init
 {
@@ -59,6 +58,7 @@
         self->_clock = clock;
         self->_rate = CMTimeMake(1, 1);
         self->_lock = [[NSLock alloc] init];
+        self->_capacity = SGCapacityCreate();
         self->_scalingMode = SGScalingModeResizeAspect;
         self->_displayMode = SGDisplayModePlane;
         self->_displayInterval = CMTimeMake(1, 30);
@@ -102,13 +102,13 @@
     return ret;
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
-    __block SGCapacity *ret = nil;
+    __block SGCapacity ret;
     SGLockEXE00(self->_lock, ^{
-        ret = [self->_capacity copy];
+        ret = self->_capacity;
     });
-    return ret ? ret : [[SGCapacity alloc] init];
+    return ret;
 }
 
 - (void)setRate:(CMTime)rate
@@ -195,6 +195,7 @@
         self->_flags.hasNewFrameToOutput = NO;
         self->_flags.framesDisplayed = 0;
         self->_flags.framesOutput = 0;
+        self->_capacity = SGCapacityCreate();
         return ^{
             b1(); b2();
         };
@@ -308,7 +309,7 @@
         return !ret || framesOutput == self->_flags.framesOutput;
     }, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{};
-        SGCapacity *capacity = [[SGCapacity alloc] init];
+        SGCapacity capacity = SGCapacityCreate();
         if (ret) {
             [ret lock];
             [self->_currentFrame unlock];
@@ -326,10 +327,10 @@
             capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.frameInvalidMediaTime - media_time_current);
         }
         
-        if (![capacity isEqualToCapacity:self->_capacity]) {
+        if (!SGCapacityIsEqual(self->_capacity, capacity)) {
             self->_capacity = capacity;
             b2 = ^{
-                [self->_delegate renderable:self didChangeCapacity:[capacity copy]];
+                [self->_delegate renderable:self didChangeCapacity:capacity];
             };
         }
         return ^{

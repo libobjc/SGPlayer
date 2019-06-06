@@ -90,7 +90,7 @@ typedef NS_ENUM(int, SGDecodeLoopState) {
 /**
  *
  */
-- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity *)capacity;
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity)capacity;
 
 /**
  *

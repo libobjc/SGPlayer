@@ -23,11 +23,11 @@
         int frameCopiedSamples;
         int renderCopiedSamples;
     } _flags;
+    SGCapacity _capacity;
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
-@property (nonatomic, strong, readonly) SGCapacity *capacity;
 @property (nonatomic, strong, readonly) SGAudioFrame *currentFrame;
 @property (nonatomic, strong, readonly) SGAudioStreamPlayer *player;
 
@@ -38,7 +38,6 @@
 @synthesize rate = _rate;
 @synthesize volume = _volume;
 @synthesize delegate = _delegate;
-@synthesize capacity = _capacity;
 @synthesize audioDescription = _audioDescription;
 
 - (instancetype)init
@@ -54,6 +53,7 @@
         self->_volume = 1.0f;
         self->_rate = CMTimeMake(1, 1);
         self->_lock = [[NSLock alloc] init];
+        self->_capacity = SGCapacityCreate();
         self->_audioDescription = [[SGAudioDescription alloc] init];
     }
     return self;
@@ -86,13 +86,13 @@
     return ret;
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
-    __block SGCapacity *ret = nil;
+    __block SGCapacity ret;
     SGLockEXE00(self->_lock, ^{
-        ret = [self->_capacity copy];
+        ret = self->_capacity;
     });
-    return ret ? ret : [[SGCapacity alloc] init];
+    return ret;
 }
 
 - (void)setRate:(CMTime)rate
@@ -177,7 +177,7 @@
         self->_flags.renderCopiedSamples = 0;
         self->_flags.renderTime = kCMTimeZero;
         self->_flags.renderDuration = kCMTimeZero;
-        self->_capacity = nil;
+        self->_capacity = SGCapacityCreate();
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
         return [self setState:SGRenderableStateNone];
@@ -328,13 +328,13 @@
             };
         }
     }
-    SGCapacity *capacity = [[SGCapacity alloc] init];
+    SGCapacity capacity = SGCapacityCreate();
     capacity.duration = CMTimeAdd(renderDuration, frameDuration);
     SGBlock capacityBlock = ^{};
-    if (![capacity isEqualToCapacity:self->_capacity]) {
+    if (!SGCapacityIsEqual(self->_capacity, capacity)) {
         self->_capacity = capacity;
         capacityBlock = ^{
-            [self.delegate renderable:self didChangeCapacity:[capacity copy]];
+            [self.delegate renderable:self didChangeCapacity:capacity];
         };
     }
     [self->_lock unlock];

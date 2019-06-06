@@ -38,7 +38,7 @@ typedef NS_ENUM(int, SGRenderableState) {
 /**
  *
  */
-- (SGCapacity *)capacity;
+- (SGCapacity)capacity;
 
 /**
  *
@@ -82,7 +82,7 @@ typedef NS_ENUM(int, SGRenderableState) {
 /**
  *
  */
-- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity *)capacity;
+- (void)renderable:(id<SGRenderable>)renderable didChangeCapacity:(SGCapacity)capacity;
 
 /**
  *

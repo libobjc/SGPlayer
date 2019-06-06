@@ -22,6 +22,8 @@
         NSError *error;
         SGFrameOutputState state;
     } _flags;
+    BOOL _capacityFlags[8];
+    SGCapacity _capacities[8];
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
@@ -30,7 +32,6 @@
 @property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *selectedTracks;
 @property (nonatomic, strong, readonly) NSArray<SGTrack *> *finishedTracks;
-@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
 
 @end
 
@@ -43,13 +44,16 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
-        self->_capacitys = [NSMutableDictionary dictionary];
         self->_audioDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGAudioDecoder class]];
         self->_audioDecoder.delegate = self;
         self->_videoDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGVideoDecoder class]];
         self->_videoDecoder.delegate = self;
         self->_packetOutput = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
         self->_packetOutput.delegate = self;
+        for (int i = 0; i < 8; i++) {
+            self->_capacityFlags[i] = NO;
+            self->_capacities[i] = SGCapacityCreate();
+        }
     }
     return self;
 }
@@ -132,12 +136,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     return ret;
 }
 
-- (SGCapacity *)capacityWithType:(SGMediaType)type
+- (SGCapacity)capacityWithType:(SGMediaType)type
 {
-    __block SGCapacity *ret = nil;
+    __block SGCapacity ret;
     SGLockEXE00(self->_lock, ^{
-        SGCapacity *c = [self->_capacitys objectForKey:@(type)];
-        ret = c ? [c copy] : [[SGCapacity alloc] init];
+        ret = self->_capacities[type];
     });
     return ret;
 }
@@ -310,9 +313,8 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
     
 }
 
-- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity *)capacity
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didChangeCapacity:(SGCapacity)capacity
 {
-    capacity = [capacity copy];
     __block SGBlock finished = ^{};
     __block SGMediaType type = SGMediaTypeUnknown;
     SGLockCondEXE11(self->_lock, ^BOOL {
@@ -321,19 +323,20 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         } else if (decodeLoop == self->_videoDecoder) {
             type = SGMediaTypeVideo;
         }
-        return ![[self->_capacitys objectForKey:@(type)] isEqualToCapacity:capacity];
+        return !SGCapacityIsEqual(self->_capacities[type], capacity);
     }, ^SGBlock {
-        [self->_capacitys setObject:capacity forKey:@(type)];
-        SGCapacity *ac = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-        SGCapacity *vc = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
+        self->_capacityFlags[type] = YES;
+        self->_capacities[type] = capacity;
+        SGCapacity ac = self->_capacities[SGMediaTypeAudio];
+        SGCapacity vc = self->_capacities[SGMediaTypeVideo];
         int size = ac.size + vc.size;
         BOOL enough = NO;
-        if ((ac ? ac.isEnough : YES) &&
-            (vc ? vc.isEnough : YES)) {
+        if ((!self->_capacityFlags[SGMediaTypeAudio] || SGCapacityIsEnough(ac)) &&
+            (!self->_capacityFlags[SGMediaTypeVideo] || SGCapacityIsEnough(vc))) {
             enough = YES;
         }
-        if ((!ac || ac.isEmpty) &&
-            (!vc || vc.isEmpty) &&
+        if ((!self->_capacityFlags[SGMediaTypeAudio] || SGCapacityIsEmpty(ac)) &&
+            (!self->_capacityFlags[SGMediaTypeVideo] || SGCapacityIsEmpty(vc)) &&
             self->_packetOutput.state == SGPacketOutputStateFinished) {
             finished = [self setState:SGFrameOutputStateFinished];
         }
@@ -346,7 +349,7 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
         };
     }, ^BOOL(SGBlock block) {
         block();
-        [self->_delegate frameOutput:self didChangeCapacity:[capacity copy] type:type];
+        [self->_delegate frameOutput:self didChangeCapacity:capacity type:type];
         finished();
         return YES;
     });

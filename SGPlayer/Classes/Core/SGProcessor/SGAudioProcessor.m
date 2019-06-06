@@ -61,7 +61,7 @@
     return [self->_mixer finish];
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
     return self->_mixer.capacity;
 }

@@ -23,6 +23,8 @@
         BOOL audioFinished;
         BOOL videoFinished;
     } _flags;
+    BOOL _capacityFlags[8];
+    SGCapacity _capacities[8];
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
@@ -30,7 +32,6 @@
 @property (nonatomic, strong, readonly) SGObjectQueue *videoQueue;
 @property (nonatomic, strong, readonly) SGFrameOutput *frameOutput;
 @property (nonatomic, strong, readonly) SGAudioProcessor *audioProcessor;
-@property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGCapacity *> *capacitys;
 
 @end
 
@@ -40,12 +41,15 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
-        self->_capacitys = [NSMutableDictionary dictionary];
         self->_frameOutput = [[SGFrameOutput alloc] initWithAsset:asset];
         self->_frameOutput.delegate = self;
         self->_audioQueue = [[SGObjectQueue alloc] init];
         self->_videoQueue = [[SGObjectQueue alloc] init];
         self->_audioDescription = [[SGAudioDescription alloc] init];
+        for (int i = 0; i < 8; i++) {
+            self->_capacityFlags[i] = NO;
+            self->_capacities[i] = SGCapacityCreate();
+        }
     }
     return self;
 }
@@ -103,13 +107,13 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     return ret;
 }
 
-- (SGCapacity *)capacityWithType:(SGMediaType)type
+- (SGCapacity)capacityWithType:(SGMediaType)type
 {
-    __block SGCapacity *ret = nil;
+    __block SGCapacity ret;
     SGLockEXE00(self->_lock, ^{
-         ret = [[self->_capacitys objectForKey:@(type)] copy];
+         ret = self->_capacities[type];
     });
-    return ret ? ret : [[SGCapacity alloc] init];
+    return ret;
 }
 
 - (BOOL)isAvailable:(SGMediaType)type
@@ -336,13 +340,11 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
     }
 }
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity *)capacity type:(SGMediaType)type
+- (void)frameOutput:(SGFrameOutput *)frameOutput didChangeCapacity:(SGCapacity)capacity type:(SGMediaType)type
 {
-    capacity = [capacity copy];
     SGLockEXE10(self->_lock, ^SGBlock {
-        SGCapacity *additional = [self frameQueueCapacity:type];
-        [capacity add:additional];
-        return [self setCapacity:capacity type:type];
+        SGCapacity additional = [self frameQueueCapacity:type];
+        return [self setCapacity:SGCapacityAdd(capacity, additional) type:type];
     });
 }
 
@@ -385,36 +387,36 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
             [self->_frameOutput resume:type];
         }
     };
-    SGCapacity *capacity = [self frameQueueCapacity:type];
-    SGCapacity *additional = [self->_frameOutput capacityWithType:type];
-    [capacity add:additional];
-    SGBlock b2 = [self setCapacity:capacity type:type];
+    SGCapacity capacity = [self frameQueueCapacity:type];
+    SGCapacity additional = [self->_frameOutput capacityWithType:type];
+    SGBlock b2 = [self setCapacity:SGCapacityAdd(capacity, additional) type:type];
     return ^{
         b1(); b2();
     };
 }
 
-- (SGCapacity *)frameQueueCapacity:(SGMediaType)type
+- (SGCapacity)frameQueueCapacity:(SGMediaType)type
 {
-    SGCapacity *capacity = nil;
+    SGCapacity capacity = SGCapacityCreate();
     if (type == SGMediaTypeAudio) {
         capacity = self->_audioQueue.capacity;
-        [capacity add:self->_audioProcessor.capacity];
+        capacity = SGCapacityAdd(capacity, self->_audioProcessor.capacity);
     } else if (type == SGMediaTypeVideo) {
         capacity = self->_videoQueue.capacity;
     }
     return capacity;
 }
 
-- (SGBlock)setCapacity:(SGCapacity *)capacity type:(SGMediaType)type
+- (SGBlock)setCapacity:(SGCapacity)capacity type:(SGMediaType)type
 {
-    SGCapacity *obj = [self->_capacitys objectForKey:@(type)];
-    if ([obj isEqualToCapacity:capacity]) {
+    SGCapacity obj = self->_capacities[type];
+    if (SGCapacityIsEqual(obj, capacity)) {
         return ^{};
     }
-    [self->_capacitys setObject:capacity forKey:@(type)];
+    self->_capacityFlags[type] = YES;
+    self->_capacities[type] = capacity;
     SGBlock b1 = ^{
-        [self->_delegate playerItem:self didChangeCapacity:[capacity copy] type:type];
+        [self->_delegate playerItem:self didChangeCapacity:capacity type:type];
     };
     SGBlock b2 = [self setFinishedIfNeeded];
     return ^{
@@ -425,10 +427,10 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
 - (SGBlock)setFinishedIfNeeded
 {
     BOOL nomore = self->_frameOutput.state == SGFrameOutputStateFinished;
-    SGCapacity *audioCapacity = [self->_capacitys objectForKey:@(SGMediaTypeAudio)];
-    SGCapacity *videoCapacity = [self->_capacitys objectForKey:@(SGMediaTypeVideo)];
-    self->_flags.audioFinished = nomore && (!audioCapacity || audioCapacity.isEmpty);
-    self->_flags.videoFinished = nomore && (!videoCapacity || videoCapacity.isEmpty);
+    SGCapacity ac = self->_capacities[SGMediaTypeAudio];
+    SGCapacity vc = self->_capacities[SGMediaTypeVideo];
+    self->_flags.audioFinished = nomore && (!self->_capacityFlags[SGMediaTypeAudio] || SGCapacityIsEmpty(ac));
+    self->_flags.videoFinished = nomore && (!self->_capacityFlags[SGMediaTypeVideo] || SGCapacityIsEmpty(vc));
     if (self->_flags.audioFinished && self->_flags.videoFinished) {
         return [self setState:SGPlayerItemStateFinished];
     }

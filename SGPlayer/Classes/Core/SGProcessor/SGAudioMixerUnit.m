@@ -10,14 +10,15 @@
 
 @interface SGAudioMixerUnit ()
 
-@property (nonatomic, strong, readonly) SGCapacity *capacity;
+{
+    SGCapacity _capacity;
+}
+
 @property (nonatomic, strong, readonly) NSMutableArray<SGAudioFrame *> *frames;
 
 @end
 
 @implementation SGAudioMixerUnit
-
-@synthesize capacity = _capacity;
 
 - (instancetype)init
 {
@@ -67,9 +68,9 @@
     return [ret copy];
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
-    return [self->_capacity copy];
+    return self->_capacity;
 }
 
 - (void)flush
@@ -77,7 +78,7 @@
     for (SGAudioFrame *obj in self->_frames) {
         [obj unlock];
     }
-    self->_capacity = [[SGCapacity alloc] init];
+    self->_capacity = SGCapacityCreate();
     self->_frames = [NSMutableArray array];
     self->_timeRange = kCMTimeRangeInvalid;
 }

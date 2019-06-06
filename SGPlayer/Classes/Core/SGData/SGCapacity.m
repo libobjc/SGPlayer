@@ -8,112 +8,83 @@
 
 #import "SGCapacity.h"
 
-@implementation SGCapacity
-
-- (instancetype)init
+SGCapacity SGCapacityCreate(void)
 {
-    if (self = [super init]) {
-        self->_duration = kCMTimeZero;
-        self->_size = 0;
-        self->_count = 0;
-    }
-    return self;
+    SGCapacity ret;
+    ret.size = 0;
+    ret.count = 0;
+    ret.duration = kCMTimeZero;
+    return ret;
 }
 
-- (id)copyWithZone:(NSZone *)zone
+SGCapacity SGCapacityAdd(SGCapacity c1, SGCapacity c2)
 {
-    SGCapacity *obj = [[SGCapacity alloc] init];
-    obj->_duration = self->_duration;
-    obj->_size = self->_size;
-    obj->_count = self->_count;
-    return obj;
+    SGCapacity ret = SGCapacityCreate();
+    ret.size = c1.size + c2.size;
+    ret.count = c1.count + c2.count;
+    ret.duration = CMTimeAdd(c1.duration, c2.duration);
+    return ret;
 }
 
-- (BOOL)isEqualToCapacity:(SGCapacity *)capacity
+SGCapacity SGCapacityMinimum(SGCapacity c1, SGCapacity c2)
 {
-    if (!capacity) {
-        return NO;
+    if (CMTimeCompare(c1.duration, c2.duration) < 0) {
+        return c1;
+    } else if (CMTimeCompare(c1.duration, c2.duration) > 0) {
+        return c1;
     }
-    if (self->_count != capacity->_count) {
-        return NO;
+    if (c1.count < c2.count) {
+        return c1;
+    } else if (c1.count > c2.count) {
+        return c2;
     }
-    if (self->_size != capacity->_size) {
-        return NO;
+    if (c1.size < c2.size) {
+        return c1;
+    } else if (c1.size > c2.size) {
+        return c2;
     }
-    if (CMTimeCompare(self->_duration, capacity->_duration) != 0) {
-        return NO;
-    }
-    return YES;
+    return c1;
 }
 
-- (BOOL)isEnough
+SGCapacity SGCapacityMaximum(SGCapacity c1, SGCapacity c2)
 {
-    if (self->_count < 30) {
-        return NO;
+    if (CMTimeCompare(c1.duration, c2.duration) < 0) {
+        return c2;
+    } else if (CMTimeCompare(c1.duration, c2.duration) > 0) {
+        return c1;
     }
-    if (CMTimeCompare(self->_duration, CMTimeMake(1, 1)) < 0) {
-        return NO;
+    if (c1.count < c2.count) {
+        return c2;
+    } else if (c1.count > c2.count) {
+        return c1;
     }
-    return YES;
+    if (c1.size < c2.size) {
+        return c2;
+    } else if (c1.size > c2.size) {
+        return c1;
+    }
+    return c1;
 }
 
-- (BOOL)isEmpty
+BOOL SGCapacityIsEqual(SGCapacity c1, SGCapacity c2)
 {
-    if (self->_count != 0) {
-        return NO;
-    }
-    if (self->_size != 0) {
-        return NO;
-    }
-    if (CMTimeCompare(self->_duration, kCMTimeZero) != 0) {
-        return NO;
-    }
-    return YES;
+    return
+    c1.size == c2.size &&
+    c1.count == c2.count &&
+    CMTimeCompare(c1.duration, c2.duration) == 0;
 }
 
-- (void)add:(SGCapacity *)capacity
+BOOL SGCapacityIsEnough(SGCapacity c1)
 {
-    if (!capacity) {
-        return;
-    }
-    self->_duration = CMTimeAdd(self->_duration, capacity->_duration);
-    self->_size += capacity->_size;
-    self->_count += capacity->_count;
+    return
+    c1.size >= 30 &&
+    CMTimeCompare(c1.duration, CMTimeMake(1, 1)) > 0;
 }
 
-- (SGCapacity *)minimum:(SGCapacity *)capacity
+BOOL SGCapacityIsEmpty(SGCapacity c1)
 {
-    if (!capacity) {
-        return self;
-    }
-    if (CMTimeCompare(self->_duration, capacity->_duration) < 0) {
-        return self;
-    } else if (CMTimeCompare(self->_duration, capacity->_duration) > 0) {
-        return capacity;
-    }
-    if (self->_count < capacity->_count) {
-        return self;
-    } else if (self->_count > capacity->_count) {
-        return capacity;
-    }
-    if (self->_size < capacity->_size) {
-        return self;
-    } else if (self->_size > capacity->_size) {
-        return capacity;
-    }
-    return self;
+    return
+    c1.size == 0 &&
+    c1.count == 0 &&
+    CMTimeCompare(c1.duration, kCMTimeZero) == 0;
 }
-
-- (SGCapacity *)maximum:(SGCapacity *)capacity
-{
-    if (!capacity) {
-        return self;
-    }
-    SGCapacity *obj = [self minimum:capacity];
-    if (obj == self) {
-        return capacity;
-    }
-    return self;
-}
-
-@end

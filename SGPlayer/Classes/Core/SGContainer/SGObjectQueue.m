@@ -48,17 +48,17 @@
     [self destroy];
 }
 
-- (SGCapacity *)capacity
+- (SGCapacity)capacity
 {
     [self->_wakeup lock];
     if (self->_flags.destoryed) {
         [self->_wakeup unlock];
-        return [[SGCapacity alloc] init];
+        return SGCapacityCreate();
     }
-    SGCapacity *ret = [[SGCapacity alloc] init];
-    ret.duration = self->_flags.duration;
+    SGCapacity ret = SGCapacityCreate();
     ret.size = self->_flags.size;
     ret.count = (int)self->_objects.count;
+    ret.duration = self->_flags.duration;
     [self->_wakeup unlock];
     return ret;
 }
