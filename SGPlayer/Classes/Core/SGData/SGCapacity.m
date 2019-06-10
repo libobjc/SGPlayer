@@ -76,9 +76,13 @@ BOOL SGCapacityIsEqual(SGCapacity c1, SGCapacity c2)
 
 BOOL SGCapacityIsEnough(SGCapacity c1)
 {
+    /*
     return
-    c1.size >= 30 &&
+    c1.count >= 30 &&
     CMTimeCompare(c1.duration, CMTimeMake(1, 1)) > 0;
+     */
+    return
+    c1.count >= 50000;
 }
 
 BOOL SGCapacityIsEmpty(SGCapacity c1)
