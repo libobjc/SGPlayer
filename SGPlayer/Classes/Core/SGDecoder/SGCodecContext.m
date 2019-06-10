@@ -69,7 +69,7 @@
 - (void)close
 {
     if (self->_codecContext) {
-        avcodec_close(self->_codecContext);
+        avcodec_free_context(&self->_codecContext);
         self->_codecContext = nil;
     }
 }
