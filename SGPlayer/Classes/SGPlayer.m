@@ -622,10 +622,7 @@
         return;
     }
     if (self->_delegateQueue) {
-        NSOperation *operation = [NSBlockOperation blockOperationWithBlock:^{
-            block();
-        }];
-        [self->_delegateQueue addOperation:operation];
+        [self->_delegateQueue addOperation:[NSBlockOperation blockOperationWithBlock:block]];
     } else {
         block();
     }

@@ -46,9 +46,9 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p>, track: %ld, pts: %f, end: %f, duration: %f",
+    return [NSString stringWithFormat:@"<%@: %p>, track: %d, pts: %f, end: %f, duration: %f",
             NSStringFromClass(self.class), self,
-            self->_codecDescription.track.index,
+            (int)self->_codecDescription.track.index,
             CMTimeGetSeconds(self->_timeStamp),
             CMTimeGetSeconds(CMTimeAdd(self->_timeStamp, self->_duration)),
             CMTimeGetSeconds(self->_duration)];
