@@ -48,33 +48,16 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - SGPlayer
 
-typedef NS_ENUM(int, SGPlayerState) {
-    SGPlayerStateNone,
-    SGPlayerStatePreparing,
-    SGPlayerStateReady,
-    SGPlayerStateFailed,
-};
-
-typedef NS_OPTIONS(int, SGPlaybackState) {
-    SGPlaybackStatePlaying  = 1 << 0,
-    SGPlaybackStateSeeking  = 1 << 1,
-    SGPlaybackStateFinished = 1 << 2,
-};
-
-typedef NS_ENUM(int, SGLoadingState) {
-    SGLoadingStateNone,
-    SGLoadingStatePlaybale,
-    SGLoadingStateStalled,
-    SGLoadingStateFinished,
-};
-
 @interface SGPlayer : NSObject
 
 @property (nonatomic) NSInteger tag;
 @property (nonatomic, weak) id object;
 
-- (SGPlayerState)state;
 - (NSError *)error;
+- (SGStateInfo)stateInfo;
+- (SGTimingInfo)timingInfo;
+
+- (BOOL)error:(NSError **)error stateInfo:(SGStateInfo *)stateInfo timingInfo:(SGTimingInfo *)timingInfo;
 
 @end
 
@@ -83,7 +66,6 @@ typedef NS_ENUM(int, SGLoadingState) {
 @interface SGPlayer ()
 
 - (SGPlayerItem *)currentItem;
-- (CMTime)duration;
 
 - (BOOL)replaceWithURL:(NSURL *)URL;
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
@@ -99,9 +81,6 @@ typedef NS_ENUM(int, SGLoadingState) {
 
 @interface SGPlayer ()
 
-- (SGPlaybackState)playbackState;
-- (CMTime)currentTime;
-
 @property (nonatomic) CMTime rate;
 
 - (BOOL)play;
@@ -109,15 +88,6 @@ typedef NS_ENUM(int, SGLoadingState) {
 
 - (BOOL)seekable;
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
-
-@end
-
-#pragma mark - Loading
-
-@interface SGPlayer ()
-
-- (SGLoadingState)loadingState;
-- (BOOL)loadedTime:(CMTime *)loadedTime loadedDuration:(CMTime *)loadedDuration;
 
 @end
 
@@ -131,24 +101,17 @@ typedef NS_ENUM(int, SGLoadingState) {
 
 @end
 
-#pragma mark - Delegate
+#pragma mark - Notification
 
-@protocol SGPlayerDelegate;
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_StateInfo;
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_TimingInfo;
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoKey_Info;
 
-@interface SGPlayer (Delegate)
+@interface SGPlayer ()
 
-@property (nonatomic, weak) id<SGPlayerDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue *delegateQueue;
++ (SGStateInfo)userInfoToStateInfo:(NSDictionary *)userInfo;
++ (SGTimingInfo)userInfoToTimingInfo:(NSDictionary *)userInfo;
 
-@end
-
-@protocol SGPlayerDelegate <NSObject>
-
-@optional
-- (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status;
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)playbackState;
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)loadingState;
-- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime duration:(CMTime)duration;
-- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration;
+@property (nonatomic, strong) NSOperationQueue *notificationQueue;
 
 @end

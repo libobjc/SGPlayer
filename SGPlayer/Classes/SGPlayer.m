@@ -13,6 +13,10 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
+NSString * const SGPlayerNotificationName_StateInfo   = @"SGPlayerNotificationName_StateInfo";
+NSString * const SGPlayerNotificationName_TimingInfo  = @"SGPlayerNotificationName_TimingInfo";
+NSString * const SGPlayerNotificationUserInfoKey_Info = @"SGPlayerNotificationUserInfoKey_Info";
+
 @interface SGPlayer () <SGClockDelegate, SGRenderableDelegate, SGPlayerItemDelegate>
 
 {
@@ -24,18 +28,12 @@
         BOOL videoAvailable;
         BOOL currentTimeValid;
         NSError *error;
-        CMTime currentTime;
-        CMTime loadedTime;
-        CMTime loadedDuration;
-        uint32_t seekingCount;
-        SGPlayerState state;
-        SGLoadingState loadingState;
-        SGPlaybackState playbackState;
+        UInt32 seekingCount;
+        SGStateInfo stateInfo;
+        SGTimingInfo timingInfo;
     } _flags;
 }
 
-@property (nonatomic, weak) id<SGPlayerDelegate> delegate;
-@property (nonatomic, strong) NSOperationQueue *delegateQueue;
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
 @property (nonatomic, strong, readonly) NSCondition *wakeup;
@@ -58,7 +56,7 @@
     if (self = [super init]) {
         [self stop];
         self->_rate = CMTimeMake(1, 1);
-        self->_delegateQueue = [NSOperationQueue mainQueue];
+        self->_notificationQueue = [NSOperationQueue mainQueue];
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
         self->_clock = [[SGClock alloc] init];
@@ -80,34 +78,108 @@
     [self->_videoRenderer close];
 }
 
-#pragma mark - Setter & Getter
+#pragma mark - Info
 
-- (SGBlock)setState:(SGPlayerState)state
+- (SGBlock)setPlayerState:(SGPlayerState)state success:(BOOL *)success
 {
-    if (self->_flags.state == state) {
+    if (self->_flags.stateInfo.player == state) {
         return ^{};
     }
-    self->_flags.state = state;
+    *success |= YES;
+    self->_flags.stateInfo.player = state;
     return ^{
         [self->_wakeup lock];
         [self->_wakeup broadcast];
         [self->_wakeup unlock];
-        if ([self->_delegate respondsToSelector:@selector(player:didChangeState:)]) {
-            [self callback:^{
-                [self->_delegate player:self didChangeState:state];
-            }];
-        }
     };
 }
 
-- (SGPlayerState)state
+- (SGBlock)setPlaybackState:(BOOL *)success
 {
-    __block SGPlayerState ret = SGPlayerStateNone;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.state;
-    });
-    return ret;
+    SGPlaybackState state = 0;
+    if (self->_flags.playing) {
+        state |= SGPlaybackStatePlaying;
+    }
+    if (self->_flags.seekingCount > 0) {
+        state |= SGPlaybackStateSeeking;
+    }
+    if (self->_flags.stateInfo.player == SGPlayerStateReady &&
+        (!self->_flags.audioAvailable || self->_flags.audioFinished) &&
+        (!self->_flags.videoAvailable || self->_flags.videoFinished)) {
+        state |= SGPlaybackStateFinished;
+    }
+    if (self->_flags.stateInfo.playback == state) {
+        return ^{};
+    }
+    *success |= YES;
+    self->_flags.stateInfo.playback = state;
+    SGBlock b1 = ^{}, b2 = ^{};
+    if (state & SGPlaybackStateFinished) {
+        BOOL success = NO;
+        [self setCachedDuration:kCMTimeZero success:&success];
+        [self setPlaybackTime:self->_flags.timingInfo.duration success:&success];
+        b1 = [self getTimingCallback:success];
+    }
+    if (state & SGPlaybackStateFinished) {
+        b2 = ^{
+            [self->_audioRenderer finish];
+            [self->_videoRenderer finish];
+        };
+    } else if (state & SGPlaybackStatePlaying) {
+        b2 = ^{
+            [self->_clock resume];
+            [self->_audioRenderer resume];
+            [self->_videoRenderer resume];
+        };
+    } else {
+        b2 = ^{
+            [self->_clock pause];
+            [self->_audioRenderer pause];
+            [self->_videoRenderer pause];
+        };
+    }
+    return ^{b1(); b2();};
 }
+
+- (SGBlock)setLoadingState:(SGLoadingState)state success:(BOOL *)success
+{
+    if (self->_flags.stateInfo.loading == state) {
+        return ^{};
+    }
+    *success |= YES;
+    self->_flags.stateInfo.loading = state;
+    return ^{};
+}
+
+- (void)setPlaybackTime:(CMTime)time success:(BOOL *)success
+{
+    if (CMTimeCompare(self->_flags.timingInfo.playback, time) == 0) {
+        return;
+    }
+    *success |= YES;
+    self->_flags.currentTimeValid = YES;
+    self->_flags.timingInfo.playback = time;
+}
+
+- (void)setDuration:(CMTime)duration success:(BOOL *)success
+{
+    if (CMTimeCompare(self->_flags.timingInfo.duration, duration) == 0) {
+        return;
+    }
+    *success |= YES;
+    self->_flags.timingInfo.duration = duration;
+}
+
+- (void)setCachedDuration:(CMTime)duration success:(BOOL *)success
+{
+    if (CMTimeCompare(self->_flags.timingInfo.cached, duration) == 0) {
+        return;
+    }
+    *success |= YES;
+    self->_flags.timingInfo.cached = duration;
+}
+
+#pragma mark - Setter & Getter
 
 - (NSError *)error
 {
@@ -118,6 +190,36 @@
     return ret;
 }
 
+- (SGStateInfo)stateInfo
+{
+    __block SGStateInfo ret;
+    SGLockEXE00(self->_lock, ^{
+        ret = self->_flags.stateInfo;
+    });
+    return ret;
+}
+
+- (SGTimingInfo)timingInfo
+{
+    __block SGTimingInfo ret;
+    SGLockEXE00(self->_lock, ^{
+        ret = self->_flags.timingInfo;
+    });
+    return ret;
+}
+
+- (BOOL)error:(NSError **)error stateInfo:(SGStateInfo *)stateInfo timingInfo:(SGTimingInfo *)timingInfo
+{
+    __block NSError *err = nil;
+    SGLockEXE00(self->_lock, ^{
+        err = self->_flags.error;
+        *stateInfo = self->_flags.stateInfo;
+        *timingInfo = self->_flags.timingInfo;
+    });
+    *error = err;
+    return YES;
+}
+
 - (SGPlayerItem *)currentItem
 {
     __block SGPlayerItem *ret = nil;
@@ -125,160 +227,6 @@
         ret = self->_currentItem;
     });
     return ret;
-}
-
-- (CMTime)duration
-{
-    __block CMTime ret = kCMTimeZero;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_currentItem.duration;
-    });
-    if (CMTIME_IS_INVALID(ret)) {
-        ret = kCMTimeZero;
-    }
-    return ret;
-}
-
-- (SGBlock)setPlaybackState
-{
-    SGPlaybackState playbackState = 0;
-    if (self->_flags.playing) {
-        playbackState |= SGPlaybackStatePlaying;
-    }
-    if (self->_flags.seekingCount > 0) {
-        playbackState |= SGPlaybackStateSeeking;
-    }
-    if (self->_flags.state == SGPlayerStateReady &&
-        (!self->_flags.audioAvailable || self->_flags.audioFinished) &&
-        (!self->_flags.videoAvailable || self->_flags.videoFinished)) {
-        playbackState |= SGPlaybackStateFinished;
-    }
-    if (self->_flags.playbackState == playbackState) {
-        return ^{};
-    }
-    self->_flags.playbackState = playbackState;
-    SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
-    if (playbackState & SGPlaybackStateFinished) {
-        CMTime duration = self->_currentItem.duration;
-        b1 = [self setLoadedTime:duration loadedDuration:kCMTimeZero];
-        b2 = [self setCurrentTime:duration];
-    }
-    if (playbackState & SGPlaybackStateFinished) {
-        b3 = ^{
-            [self->_audioRenderer finish];
-            [self->_videoRenderer finish];
-        };
-    } else if (playbackState & SGPlaybackStatePlaying) {
-        b3 = ^{
-            [self->_clock resume];
-            [self->_audioRenderer resume];
-            [self->_videoRenderer resume];
-        };
-    } else {
-        b3 = ^{
-            [self->_clock pause];
-            [self->_audioRenderer pause];
-            [self->_videoRenderer pause];
-        };
-    }
-    return ^{
-        b1(); b2(); b3();
-        if ([self->_delegate respondsToSelector:@selector(player:didChangePlaybackState:)]) {
-            [self callback:^{
-                [self->_delegate player:self didChangePlaybackState:playbackState];
-            }];
-        }
-    };
-}
-
-- (SGPlaybackState)playbackState
-{
-    __block SGPlaybackState ret = 0;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.playbackState;
-    });
-    return ret;
-}
-
-- (SGBlock)setLoadingState:(SGLoadingState)loadingState
-{
-    if (self->_flags.loadingState == loadingState) {
-        return ^{};
-    }
-    self->_flags.loadingState = loadingState;
-    return ^{
-        if ([self->_delegate respondsToSelector:@selector(player:didChangeLoadingState:)]) {
-            [self callback:^{
-                [self->_delegate player:self didChangeLoadingState:loadingState];
-                
-            }];
-        }
-    };
-}
-
-- (SGLoadingState)loadingState
-{
-    __block SGLoadingState ret = SGLoadingStateNone;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.loadingState;
-    });
-    return ret;
-}
-
-- (SGBlock)setCurrentTime:(CMTime)currentTime
-{
-    if (CMTimeCompare(self->_flags.currentTime, currentTime) == 0) {
-        return ^{};
-    }
-    self->_flags.currentTimeValid = YES;
-    self->_flags.currentTime = currentTime;
-    CMTime duration = self->_currentItem.duration;
-    return ^{
-        if ([self->_delegate respondsToSelector:@selector(player:didChangeCurrentTime:duration:)]) {
-            [self callback:^{
-                [self->_delegate player:self didChangeCurrentTime:currentTime duration:duration];
-            }];
-        }
-    };
-}
-
-- (CMTime)currentTime
-{
-    __block CMTime ret = kCMTimeZero;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.currentTime;
-    });
-    return ret;
-}
-
-- (SGBlock)setLoadedTime:(CMTime)loadedTime loadedDuration:(CMTime)loadedDuration
-{
-    if (CMTimeCompare(self->_flags.loadedTime, loadedTime) == 0 &&
-        CMTimeCompare(self->_flags.loadedDuration, loadedDuration) == 0) {
-        return ^{};
-    }
-    self->_flags.loadedTime = loadedTime;
-    self->_flags.loadedDuration = loadedDuration;
-    return ^{
-        if ([self->_delegate respondsToSelector:@selector(player:didChangeLoadedTime:loadedDuuration:)]) {
-            [self callback:^{
-                [self->_delegate player:self didChangeLoadedTime:loadedTime loadedDuuration:loadedDuration];
-            }];
-        }
-    };
-}
-
-- (BOOL)loadedTime:(CMTime *)loadedTime loadedDuration:(CMTime *)loadedDuration
-{
-    SGLockEXE00(self->_lock, ^{
-        if (loadedTime) {
-            *loadedTime = self->_flags.loadedTime;
-        }
-        if (loadedDuration) {
-            *loadedDuration = self->_flags.loadedDuration;
-        }
-    });
-    return YES;
 }
 
 - (void)setRate:(CMTime)rate
@@ -365,7 +313,7 @@
     [self->_wakeup lock];
     while (YES) {
         BOOL ret = SGLockCondEXE00(self->_lock, ^BOOL {
-            return self->_flags.state == SGPlayerStatePreparing;
+            return self->_flags.stateInfo.player == SGPlayerStatePreparing;
         }, nil);
         if (ret) {
             [self->_wakeup wait];
@@ -388,23 +336,25 @@
         self->_flags.audioAvailable = NO;
         self->_flags.videoAvailable = NO;
         self->_flags.currentTimeValid = NO;
-        self->_flags.currentTime = kCMTimeInvalid;
-        self->_flags.loadedTime = kCMTimeInvalid;
-        self->_flags.loadedDuration = kCMTimeInvalid;
-        self->_flags.state = SGPlayerStateNone;
-        self->_flags.loadingState = SGLoadingStateNone;
-        self->_flags.playbackState = 0;
+        self->_flags.timingInfo.cached = kCMTimeInvalid;
+        self->_flags.timingInfo.playback = kCMTimeInvalid;
+        self->_flags.timingInfo.duration = kCMTimeInvalid;
+        self->_flags.stateInfo.player = SGPlayerStateNone;
+        self->_flags.stateInfo.loading = SGLoadingStateNone;
+        self->_flags.stateInfo.playback = SGPlaybackStateNone;
         self->_flags.error = nil;
         self->_currentItem = nil;
-        SGBlock b1 = [self setState:SGPlayerStateNone];
-        SGBlock b2 = [self setPlaybackState];
-        SGBlock b3 = [self setLoadingState:SGLoadingStateNone];
+        BOOL success = NO;
+        SGBlock b1 = [self setPlayerState:SGPlayerStateNone success:&success];
+        SGBlock b2 = [self setPlaybackState:&success];
+        SGBlock b3 = [self setLoadingState:SGLoadingStateNone success:&success];
+        SGBlock b4 = [self getStateCallback:success];
         return ^{
             [currentItem close];
             [self->_clock close];
             [self->_audioRenderer close];
             [self->_videoRenderer close];
-            b1(); b2(); b3();
+            b1(); b2(); b3(); b4();
         };
     });
 }
@@ -415,10 +365,13 @@
 {
     [SGActivity addTarget:self];
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state == SGPlayerStateReady;
+        return self->_flags.stateInfo.player == SGPlayerStateReady;
     }, ^SGBlock {
         self->_flags.playing = YES;
-        return [self setPlaybackState];
+        BOOL success = NO;
+        SGBlock b1 = [self setPlaybackState:&success];
+        SGBlock b2 = [self getStateCallback:success];
+        return ^{b1(); b2();};
     });
 }
 
@@ -426,10 +379,13 @@
 {
     [SGActivity removeTarget:self];
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state == SGPlayerStateReady;
+        return self->_flags.stateInfo.player == SGPlayerStateReady;
     }, ^SGBlock {
         self->_flags.playing = NO;
-        return [self setPlaybackState];
+        BOOL success = NO;
+        SGBlock b1 = [self setPlaybackState:&success];
+        SGBlock b2 = [self getStateCallback:success];
+        return ^{b1(); b2();};
     });
 }
 
@@ -444,12 +400,15 @@
     __block uint32_t seekingCount = 0;
     __block SGPlayerItem *currentItem = nil;
     BOOL ret = SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state == SGPlayerStateReady;
+        return self->_flags.stateInfo.player == SGPlayerStateReady;
     }, ^SGBlock {
         self->_flags.seekingCount += 1;
         currentItem = self->_currentItem;
         seekingCount = self->_flags.seekingCount;
-        return [self setPlaybackState];
+        BOOL success = NO;
+        SGBlock b1 = [self setPlaybackState:&success];
+        SGBlock b2 = [self getStateCallback:success];
+        return ^{b1(); b2();};
     });
     if (!ret) {
         return NO;
@@ -460,7 +419,7 @@
         SGLockCondEXE11(self->_lock, ^BOOL {
             return seekingCount == self->_flags.seekingCount;
         }, ^SGBlock {
-            SGBlock b1 = ^{}, b2 = ^{};
+            SGBlock b1 = ^{};
             self->_flags.seekingCount = 0;
             if (!error) {
                 self->_flags.audioFinished = NO;
@@ -472,10 +431,10 @@
                     [self->_videoRenderer flush];
                 };
             }
-            b2 = [self setPlaybackState];
-            return ^{
-                b1(); b2();
-            };
+            BOOL success = NO;
+            SGBlock b2 = [self setPlaybackState:&success];
+            SGBlock b3 = [self getStateCallback:success];
+            return ^{b1(); b2(); b3();};
         }, ^BOOL(SGBlock block) {
             block();
             if (result) {
@@ -493,7 +452,9 @@
 - (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime
 {
     SGLockEXE10(self->_lock, ^SGBlock {
-        return [self setCurrentTime:currentTime];
+        BOOL success = NO;
+        [self setPlaybackTime:currentTime success:&success];
+        return [self getTimingCallback:success];
     });
 }
 
@@ -514,7 +475,10 @@
             if (SGCapacityIsEmpty(self->_videoRenderer.capacity) && [self->_currentItem isFinished:SGMediaTypeVideo]) {
                 self->_flags.videoFinished = YES;
             }
-            return [self setPlaybackState];
+            BOOL success = NO;
+            SGBlock b1 = [self setPlaybackState:&success];
+            SGBlock b2 = [self getStateCallback:success];
+            return ^{b1(); b2();};
         });
     }
 }
@@ -535,16 +499,21 @@
 - (void)playerItem:(SGPlayerItem *)playerItem didChangeState:(SGPlayerItemState)state
 {
     SGLockEXE10(self->_lock, ^SGBlock {
-        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{}, b4 = ^{};
+        BOOL success_state = NO;
+        BOOL success_timing = NO;
+        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
         switch (state) {
             case SGPlayerItemStateOpening: {
-                b1 = [self setState:SGPlayerStatePreparing];
+                b1 = [self setPlayerState:SGPlayerStatePreparing success:&success_state];
             }
                 break;
             case SGPlayerItemStateOpened: {
-                b2 = [self setState:SGPlayerStateReady];
-                b3 = [self setLoadingState:SGLoadingStateStalled];
-                b4 = [self setCurrentTime:kCMTimeZero];
+                b2 = [self setPlayerState:SGPlayerStateReady success:&success_state];
+                b3 = [self setLoadingState:SGLoadingStateStalled success:&success_state];
+                CMTime duration = self->_currentItem.duration;
+                [self setDuration:duration success:&success_timing];
+                [self setPlaybackTime:kCMTimeZero success:&success_timing];
+                [self setCachedDuration:kCMTimeZero success:&success_timing];
                 b1 = ^{
                     [self->_clock open];
                     if ([playerItem isAvailable:SGMediaTypeAudio]) {
@@ -560,31 +529,31 @@
             }
                 break;
             case SGPlayerItemStateReading: {
-                b1 = [self setPlaybackState];
+                b1 = [self setPlaybackState:&success_state];
             }
                 break;
             case SGPlayerItemStateFinished: {
-                b1 = [self setLoadingState:SGLoadingStateFinished];
+                b1 = [self setLoadingState:SGLoadingStateFinished success:&success_state];
                 if (SGCapacityIsEmpty(self->_audioRenderer.capacity)) {
                     self->_flags.audioFinished = YES;
                 }
                 if (SGCapacityIsEmpty(self->_videoRenderer.capacity)) {
                     self->_flags.videoFinished = YES;
                 }
-                b2 = [self setPlaybackState];
+                b2 = [self setPlaybackState:&success_state];
             }
                 break;
             case SGPlayerItemStateFailed: {
                 self->_flags.error = [playerItem.error copy];
-                b1 = [self setState:SGPlayerStateFailed];
+                b1 = [self setPlayerState:SGPlayerStateFailed success:&success_state];
             }
                 break;
             default:
                 break;
         }
-        return ^{
-            b1(); b2(); b3();; b4();
-        };
+        SGBlock b4 = [self getTimingCallback:success_timing];
+        SGBlock b5 = [self getStateCallback:success_state];
+        return ^{b1(); b2(); b3(); b4(); b5();};
     });
 }
 
@@ -603,29 +572,77 @@
         SGLockCondEXE10(self->_lock, ^BOOL {
             return self->_flags.currentTimeValid;
         }, ^SGBlock {
+            BOOL success_state = NO;
+            BOOL success_timing = NO;
             CMTime duration = capacity.duration;
-            CMTime time = CMTimeAdd(self->_flags.currentTime, duration);
-            SGBlock b1 = [self setLoadedTime:time loadedDuration:duration];
-            SGBlock b2 = [self setLoadingState:(SGCapacityIsEmpty(capacity) || self->_flags.loadingState == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale];
-            return ^{
-                b1(); b2();
-            };
+            SGLoadingState loadingState = (SGCapacityIsEmpty(capacity) || self->_flags.stateInfo.loading == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale;
+            [self setCachedDuration:duration success:&success_timing];
+            SGBlock b1 = [self getTimingCallback:success_timing];
+            SGBlock b2 = [self setLoadingState:loadingState success:&success_state];
+            SGBlock b3 = [self getStateCallback:success_state];
+            return ^{b1(); b2(); b3();};
         });
     }
 }
 
-#pragma mark - Delegate
+#pragma mark - Notification
+
+- (SGBlock)getStateCallback:(BOOL)success
+{
+    if (!success) {
+        return ^{};
+    }
+    NSValue *value = [NSValue value:&self->_flags.stateInfo withObjCType:@encode(SGStateInfo)];
+    id name = SGPlayerNotificationName_StateInfo;
+    id userInfo = @{SGPlayerNotificationUserInfoKey_Info : value};
+    return ^{
+        [self callback:^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:name object:self userInfo:userInfo];
+        }];
+    };
+}
+
+- (SGBlock)getTimingCallback:(BOOL)success
+{
+    if (!success) {
+        return ^{};
+    }
+    NSValue *value = [NSValue value:&self->_flags.timingInfo withObjCType:@encode(SGTimingInfo)];
+    id name = SGPlayerNotificationName_TimingInfo;
+    id userInfo = @{SGPlayerNotificationUserInfoKey_Info : value};
+    return ^{
+        [self callback:^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:name object:self userInfo:userInfo];
+        }];
+    };
+}
 
 - (void)callback:(void (^)(void))block
 {
     if (!block) {
         return;
     }
-    if (self->_delegateQueue) {
-        [self->_delegateQueue addOperation:[NSBlockOperation blockOperationWithBlock:block]];
+    if (self->_notificationQueue) {
+        [self->_notificationQueue addOperation:[NSBlockOperation blockOperationWithBlock:block]];
     } else {
         block();
     }
+}
+
++ (SGStateInfo)userInfoToStateInfo:(NSDictionary *)userInfo
+{
+    SGStateInfo info;
+    NSValue *value = userInfo[SGPlayerNotificationUserInfoKey_Info];
+    [value getValue:&info];
+    return info;
+}
+
++ (SGTimingInfo)userInfoToTimingInfo:(NSDictionary *)userInfo
+{
+    SGTimingInfo info;
+    NSValue *value = userInfo[SGPlayerNotificationUserInfoKey_Info];
+    [value getValue:&info];
+    return info;
 }
 
 @end
