@@ -48,11 +48,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - SGPlayer
 
-typedef NS_ENUM(int, SGPlayerStatus) {
-    SGPlayerStatusNone,
-    SGPlayerStatusPreparing,
-    SGPlayerStatusReady,
-    SGPlayerStatusFailed,
+typedef NS_ENUM(int, SGPlayerState) {
+    SGPlayerStateNone,
+    SGPlayerStatePreparing,
+    SGPlayerStateReady,
+    SGPlayerStateFailed,
 };
 
 typedef NS_OPTIONS(int, SGPlaybackState) {
@@ -73,7 +73,7 @@ typedef NS_ENUM(int, SGLoadingState) {
 @property (nonatomic) NSInteger tag;
 @property (nonatomic, weak) id object;
 
-- (SGPlayerStatus)status;
+- (SGPlayerState)state;
 - (NSError *)error;
 
 @end
