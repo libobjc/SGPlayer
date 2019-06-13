@@ -67,8 +67,9 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_audioRenderer.delegate = self;
         self->_videoRenderer = [[SGVideoRenderer alloc] initWithClock:self->_clock];
         self->_videoRenderer.delegate = self;
+        self->_actionMask = SGInfoActionNone;
+        self->_minimumTimeInfoInterval = 1.0;
         self->_notificationQueue = [NSOperationQueue mainQueue];
-        self->_minimumTimeNotificationInterval = 1.0;
     }
     return self;
 }
@@ -435,6 +436,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
                 self->_flags.audioFinished = NO;
                 self->_flags.videoFinished = NO;
                 self->_flags.currentTimeValid = NO;
+                self->_flags.lastNotificationTime = 0.0;
                 b1 = ^{
                     [self->_clock flush];
                     [self->_audioRenderer flush];
@@ -595,13 +597,14 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (SGBlock)infoCallback:(SGInfoAction)action
 {
+    action &= ~self->_actionMask;
     BOOL needed = NO;
     if (action & SGInfoActionState) {
         needed = YES;
     } else if (action & SGInfoActionTime) {
         NSTimeInterval currentTime = CACurrentMediaTime();
         NSTimeInterval interval = currentTime - self->_flags.lastNotificationTime;
-        if (interval >= self->_minimumTimeNotificationInterval) {
+        if (interval >= self->_minimumTimeInfoInterval) {
             needed = YES;
             self->_flags.lastNotificationTime = currentTime;
         } else {
