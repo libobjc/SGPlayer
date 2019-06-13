@@ -29,7 +29,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         BOOL videoAvailable;
         BOOL currentTimeValid;
         NSError *error;
-        UInt32 seekingCount;
+        UInt32 seekingIndex;
         SGTimeInfo timeInfo;
         SGStateInfo stateInfo;
         SGInfoAction additionalAction;
@@ -104,7 +104,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self->_flags.playing) {
         state |= SGPlaybackStatePlaying;
     }
-    if (self->_flags.seekingCount > 0) {
+    if (self->_flags.seekingIndex > 0) {
         state |= SGPlaybackStateSeeking;
     }
     if (self->_flags.stateInfo.player == SGPlayerStateReady &&
@@ -340,7 +340,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_currentItem = nil;
         self->_flags.error = nil;
         self->_flags.playing = NO;
-        self->_flags.seekingCount = 0;
+        self->_flags.seekingIndex = 0;
         self->_flags.audioFinished = NO;
         self->_flags.videoFinished = NO;
         self->_flags.audioAvailable = NO;
@@ -412,9 +412,9 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     BOOL ret = SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.stateInfo.player == SGPlayerStateReady;
     }, ^SGBlock {
-        self->_flags.seekingCount += 1;
+        self->_flags.seekingIndex += 1;
         currentItem = self->_currentItem;
-        seekingCount = self->_flags.seekingCount;
+        seekingCount = self->_flags.seekingIndex;
         SGInfoAction action = SGInfoActionNone;
         SGBlock b1 = [self setPlaybackState:&action];
         SGBlock b2 = [self infoCallback:action];
@@ -427,10 +427,10 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     return [currentItem seekToTime:time result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         SGLockCondEXE11(self->_lock, ^BOOL {
-            return seekingCount == self->_flags.seekingCount;
+            return seekingCount == self->_flags.seekingIndex;
         }, ^SGBlock {
             SGBlock b1 = ^{};
-            self->_flags.seekingCount = 0;
+            self->_flags.seekingIndex = 0;
             if (!error) {
                 self->_flags.audioFinished = NO;
                 self->_flags.videoFinished = NO;
