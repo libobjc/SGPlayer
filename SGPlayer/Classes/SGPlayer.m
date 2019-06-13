@@ -32,6 +32,8 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         UInt32 seekingCount;
         SGTimeInfo timeInfo;
         SGStateInfo stateInfo;
+        SGInfoAction additionalAction;
+        NSTimeInterval lastNotificationTime;
     } _flags;
 }
 
@@ -57,7 +59,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self = [super init]) {
         [self stop];
         self->_rate = CMTimeMake(1, 1);
-        self->_notificationQueue = [NSOperationQueue mainQueue];
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
         self->_clock = [[SGClock alloc] init];
@@ -66,6 +67,8 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_audioRenderer.delegate = self;
         self->_videoRenderer = [[SGVideoRenderer alloc] initWithClock:self->_clock];
         self->_videoRenderer.delegate = self;
+        self->_notificationQueue = [NSOperationQueue mainQueue];
+        self->_minimumTimeNotificationInterval = 1.0;
     }
     return self;
 }
@@ -334,6 +337,8 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     [SGActivity removeTarget:self];
     return SGLockEXE10(self->_lock, ^SGBlock {
         SGPlayerItem *currentItem = self->_currentItem;
+        self->_currentItem = nil;
+        self->_flags.error = nil;
         self->_flags.playing = NO;
         self->_flags.seekingCount = 0;
         self->_flags.audioFinished = NO;
@@ -341,14 +346,14 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_flags.audioAvailable = NO;
         self->_flags.videoAvailable = NO;
         self->_flags.currentTimeValid = NO;
+        self->_flags.additionalAction = SGInfoActionNone;
+        self->_flags.lastNotificationTime = 0.0;
         self->_flags.timeInfo.cached = kCMTimeInvalid;
         self->_flags.timeInfo.playback = kCMTimeInvalid;
         self->_flags.timeInfo.duration = kCMTimeInvalid;
         self->_flags.stateInfo.player = SGPlayerStateNone;
         self->_flags.stateInfo.loading = SGLoadingStateNone;
         self->_flags.stateInfo.playback = SGPlaybackStateNone;
-        self->_flags.error = nil;
-        self->_currentItem = nil;
         SGInfoAction action = SGInfoActionNone;
         SGBlock b1 = [self setPlayerState:SGPlayerStateNone action:&action];
         SGBlock b2 = [self setPlaybackState:&action];
@@ -594,11 +599,20 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (action & SGInfoActionState) {
         needed = YES;
     } else if (action & SGInfoActionTime) {
-        needed = YES;
+        NSTimeInterval currentTime = CACurrentMediaTime();
+        NSTimeInterval interval = currentTime - self->_flags.lastNotificationTime;
+        if (interval >= self->_minimumTimeNotificationInterval) {
+            needed = YES;
+            self->_flags.lastNotificationTime = currentTime;
+        } else {
+            self->_flags.additionalAction |= (action & SGInfoActionTime);
+        }
     }
     if (!needed) {
         return ^{};
     }
+    action |= self->_flags.additionalAction;
+    self->_flags.additionalAction = SGInfoActionNone;
     NSValue *timeInfo = [NSValue value:&self->_flags.timeInfo withObjCType:@encode(SGTimeInfo)];
     NSValue *stateInfo = [NSValue value:&self->_flags.stateInfo withObjCType:@encode(SGStateInfo)];
     id userInfo = @{SGPlayerTimeInfoUserInfoKey : timeInfo,

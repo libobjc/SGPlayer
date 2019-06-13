@@ -116,5 +116,6 @@ SGPLAYER_EXTERN NSNotificationName const SGPlayerDidChangeInfosNotification;
 + (SGInfoAction)infoActionFromUserInfo:(NSDictionary *)userInfo;
 
 @property (nonatomic, strong) NSOperationQueue *notificationQueue;
+@property (nonatomic) NSTimeInterval minimumTimeNotificationInterval;
 
 @end
