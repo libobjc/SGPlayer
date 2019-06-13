@@ -43,10 +43,22 @@ typedef NS_ENUM(int, SGLoadingState) {
     SGLoadingStateFinished = 3,
 };
 
+typedef NS_OPTIONS(int, SGInfoAction) {
+    SGInfoActionNone          = 0,
+    SGInfoActionTime          = 1 << 1,
+    SGInfoActionTimeCached    = 1 << 2,
+    SGInfoActionTimePlayback  = 1 << 3,
+    SGInfoActionTimeDuration  = 1 << 4,
+    SGInfoActionState         = 1 << 5,
+    SGInfoActionStatePlayer   = 1 << 6,
+    SGInfoActionStateLoading  = 1 << 7,
+    SGInfoActionStatePlayback = 1 << 8,
+};
+
 typedef struct {
+    CMTime cached;
     CMTime playback;
     CMTime duration;
-    CMTime cached;
 } SGTimeInfo;
 
 typedef struct {
@@ -56,5 +68,5 @@ typedef struct {
 } SGStateInfo;
 
 typedef void (^SGBlock)(void);
-typedef void (^SGSeekResult)(CMTime time, NSError *error);
 typedef BOOL (^SGTimeReader)(CMTime *desire, BOOL *drop);
+typedef void (^SGSeekResult)(CMTime time, NSError *error);

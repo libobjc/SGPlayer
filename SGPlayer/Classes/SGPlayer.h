@@ -103,14 +103,17 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Notification
 
-SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_TimeInfo;
-SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_StateInfo;
-SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoKey_Info;
+SGPLAYER_EXTERN NSString * const SGPlayerTimeInfoUserInfoKey;
+SGPLAYER_EXTERN NSString * const SGPlayerStateInfoUserInfoKey;
+SGPLAYER_EXTERN NSString * const SGPlayerInfoActionUserInfoKey;
+
+SGPLAYER_EXTERN NSNotificationName const SGPlayerDidChangeInfosNotification;
 
 @interface SGPlayer ()
 
 + (SGTimeInfo)timeInfoFromUserInfo:(NSDictionary *)userInfo;
 + (SGStateInfo)stateInfoFromUserInfo:(NSDictionary *)userInfo;
++ (SGInfoAction)infoActionFromUserInfo:(NSDictionary *)userInfo;
 
 @property (nonatomic, strong) NSOperationQueue *notificationQueue;
 
