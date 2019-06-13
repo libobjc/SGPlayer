@@ -54,10 +54,10 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic, weak) id object;
 
 - (NSError *)error;
+- (SGTimeInfo)timeInfo;
 - (SGStateInfo)stateInfo;
-- (SGTimingInfo)timingInfo;
 
-- (BOOL)error:(NSError **)error stateInfo:(SGStateInfo *)stateInfo timingInfo:(SGTimingInfo *)timingInfo;
+- (BOOL)error:(NSError **)error timeInfo:(SGTimeInfo *)timeInfo stateInfo:(SGStateInfo *)stateInfo;
 
 @end
 
@@ -103,14 +103,14 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Notification
 
+SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_TimeInfo;
 SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_StateInfo;
-SGPLAYER_EXTERN NSString * const SGPlayerNotificationName_TimingInfo;
 SGPLAYER_EXTERN NSString * const SGPlayerNotificationUserInfoKey_Info;
 
 @interface SGPlayer ()
 
-+ (SGStateInfo)userInfoToStateInfo:(NSDictionary *)userInfo;
-+ (SGTimingInfo)userInfoToTimingInfo:(NSDictionary *)userInfo;
++ (SGTimeInfo)timeInfoFromUserInfo:(NSDictionary *)userInfo;
++ (SGStateInfo)stateInfoFromUserInfo:(NSDictionary *)userInfo;
 
 @property (nonatomic, strong) NSOperationQueue *notificationQueue;
 

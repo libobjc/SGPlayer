@@ -44,16 +44,16 @@ typedef NS_ENUM(int, SGLoadingState) {
 };
 
 typedef struct {
+    CMTime playback;
+    CMTime duration;
+    CMTime cached;
+} SGTimeInfo;
+
+typedef struct {
     SGPlayerState player;
     SGLoadingState loading;
     SGPlaybackState playback;
 } SGStateInfo;
-
-typedef struct {
-    CMTime playback;
-    CMTime duration;
-    CMTime cached;
-} SGTimingInfo;
 
 typedef void (^SGBlock)(void);
 typedef void (^SGSeekResult)(CMTime time, NSError *error);
