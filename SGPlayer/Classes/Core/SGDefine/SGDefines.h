@@ -45,14 +45,14 @@ typedef NS_ENUM(int, SGLoadingState) {
 
 typedef NS_OPTIONS(int, SGInfoAction) {
     SGInfoActionNone          = 0,
-    SGInfoActionTime          = 1 << 1,
-    SGInfoActionTimeCached    = 1 << 2,
-    SGInfoActionTimePlayback  = 1 << 3,
-    SGInfoActionTimeDuration  = 1 << 4,
-    SGInfoActionState         = 1 << 5,
-    SGInfoActionStatePlayer   = 1 << 6,
-    SGInfoActionStateLoading  = 1 << 7,
-    SGInfoActionStatePlayback = 1 << 8,
+    SGInfoActionTimeCached    = 1 << 1,
+    SGInfoActionTimePlayback  = 1 << 2,
+    SGInfoActionTimeDuration  = 1 << 3,
+    SGInfoActionTime          = SGInfoActionTimeCached | SGInfoActionTimePlayback | SGInfoActionTimeDuration,
+    SGInfoActionStatePlayer   = 1 << 4,
+    SGInfoActionStateLoading  = 1 << 5,
+    SGInfoActionStatePlayback = 1 << 6,
+    SGInfoActionState         = SGInfoActionStatePlayer | SGInfoActionStateLoading | SGInfoActionStatePlayback,
 };
 
 typedef struct {

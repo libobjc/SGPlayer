@@ -86,7 +86,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self->_flags.stateInfo.player == state) {
         return ^{};
     }
-    *action |= SGInfoActionState;
     *action |= SGInfoActionStatePlayer;
     self->_flags.stateInfo.player = state;
     return ^{
@@ -113,7 +112,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self->_flags.stateInfo.playback == state) {
         return ^{};
     }
-    *action |= SGInfoActionState;
     *action |= SGInfoActionStatePlayback;
     self->_flags.stateInfo.playback = state;
     SGBlock b1 = ^{};
@@ -147,7 +145,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self->_flags.stateInfo.loading == state) {
         return ^{};
     }
-    *action |= SGInfoActionState;
     *action |= SGInfoActionStateLoading;
     self->_flags.stateInfo.loading = state;
     return ^{};
@@ -158,7 +155,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (CMTimeCompare(self->_flags.timeInfo.playback, time) == 0) {
         return;
     }
-    *action |= SGInfoActionTime;
     *action |= SGInfoActionTimePlayback;
     self->_flags.currentTimeValid = YES;
     self->_flags.timeInfo.playback = time;
@@ -169,7 +165,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (CMTimeCompare(self->_flags.timeInfo.duration, duration) == 0) {
         return;
     }
-    *action |= SGInfoActionTime;
     *action |= SGInfoActionTimeDuration;
     self->_flags.timeInfo.duration = duration;
 }
@@ -179,7 +174,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (CMTimeCompare(self->_flags.timeInfo.cached, duration) == 0) {
         return;
     }
-    *action |= SGInfoActionTime;
     *action |= SGInfoActionTimeCached;
     self->_flags.timeInfo.cached = duration;
 }
@@ -596,7 +590,13 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (SGBlock)infoCallback:(SGInfoAction)action
 {
-    if (action == SGInfoActionNone) {
+    BOOL needed = NO;
+    if (action & SGInfoActionState) {
+        needed = YES;
+    } else if (action & SGInfoActionTime) {
+        needed = YES;
+    }
+    if (!needed) {
         return ^{};
     }
     NSValue *timeInfo = [NSValue value:&self->_flags.timeInfo withObjCType:@encode(SGTimeInfo)];
