@@ -27,7 +27,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         BOOL videoFinished;
         BOOL audioAvailable;
         BOOL videoAvailable;
-        BOOL currentTimeValid;
         NSError *error;
         UInt32 seekingIndex;
         SGTimeInfo timeInfo;
@@ -160,7 +159,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         return;
     }
     *action |= SGInfoActionTimePlayback;
-    self->_flags.currentTimeValid = YES;
     self->_flags.timeInfo.playback = time;
 }
 
@@ -346,7 +344,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_flags.videoFinished = NO;
         self->_flags.audioAvailable = NO;
         self->_flags.videoAvailable = NO;
-        self->_flags.currentTimeValid = NO;
         self->_flags.additionalAction = SGInfoActionNone;
         self->_flags.lastNotificationTime = 0.0;
         self->_flags.timeInfo.cached = kCMTimeInvalid;
@@ -435,7 +432,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
             if (!error) {
                 self->_flags.audioFinished = NO;
                 self->_flags.videoFinished = NO;
-                self->_flags.currentTimeValid = NO;
                 self->_flags.lastNotificationTime = 0.0;
                 b1 = ^{
                     [self->_clock flush];
@@ -579,9 +575,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         should = YES;
     }
     if (should) {
-        SGLockCondEXE10(self->_lock, ^BOOL {
-            return self->_flags.currentTimeValid;
-        }, ^SGBlock {
+        SGLockEXE10(self->_lock, ^SGBlock {
             SGInfoAction action = SGInfoActionNone;
             CMTime duration = capacity.duration;
             SGLoadingState loadingState = (SGCapacityIsEmpty(capacity) || self->_flags.stateInfo.loading == SGLoadingStateFinished) ? SGLoadingStateStalled : SGLoadingStatePlaybale;
