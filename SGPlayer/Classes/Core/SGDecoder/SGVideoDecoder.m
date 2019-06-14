@@ -27,6 +27,8 @@
 
 @implementation SGVideoDecoder
 
+@synthesize options = _options;
+
 - (void)setup
 {
     self->_flags.needsAlignment = YES;
@@ -34,6 +36,7 @@
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGVideoFrame class]
                                                     frameReuseName:[SGVideoFrame commonReuseName]];
+    self->_codecContext.options = self->_options;
     [self->_codecContext open];
 }
 

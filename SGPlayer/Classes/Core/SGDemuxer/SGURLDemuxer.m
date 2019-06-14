@@ -9,7 +9,7 @@
 #import "SGURLDemuxer.h"
 #import "SGPacket+Internal.h"
 #import "SGTrack+Internal.h"
-#import "SGConfiguration.h"
+#import "SGOptions.h"
 #import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
@@ -34,7 +34,7 @@
 {
     if (self = [super init]) {
         self->_URL = [URL copy];
-        self->_options = [SGConfiguration sharedConfiguration].formatContextOptions;
+        self->_options = [SGOptions sharedOptions].demuxer.copy;
         self->_basetime = kCMTimeNegativeInfinity;
         self->_duration = kCMTimeInvalid;
     }
@@ -54,7 +54,7 @@
         return nil;
     }
     SGFFmpegSetupIfNeeded();
-    NSError *error = SGCreateFormatContext(&self->_context, self->_URL, self->_options, (__bridge void *)self, SGURLDemuxerInterruptHandler);
+    NSError *error = SGCreateFormatContext(&self->_context, self->_URL, self->_options.options, (__bridge void *)self, SGURLDemuxerInterruptHandler);
     if (error) {
         return error;
     }

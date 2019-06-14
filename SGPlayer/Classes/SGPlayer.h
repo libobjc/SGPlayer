@@ -26,7 +26,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGPlayerItem.h>
 #import <SGPlayer/SGFrameOutput.h>
 #import <SGPlayer/SGPacketOutput.h>
-#import <SGPlayer/SGConfiguration.h>
+#import <SGPlayer/SGOptions.h>
 #import <SGPlayer/SGData.h>
 #import <SGPlayer/SGFrame.h>
 #import <SGPlayer/SGAudioFrame.h>
@@ -49,6 +49,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #pragma mark - SGPlayer
 
 @interface SGPlayer : NSObject
+
+@property (nonatomic, strong) SGOptions *options;
 
 @property (nonatomic) NSInteger tag;
 @property (nonatomic, weak) id object;

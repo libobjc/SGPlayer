@@ -46,14 +46,14 @@
     return self->_demuxables.firstObject.delegate;
 }
 
-- (void)setOptions:(NSDictionary *)options
+- (void)setOptions:(SGDemuxerOptions *)options
 {
     for (id<SGDemuxable> obj in self->_demuxables) {
         obj.options = options;
     }
 }
 
-- (NSDictionary *)options
+- (SGDemuxerOptions *)options
 {
     return self->_demuxables.firstObject.options;
 }

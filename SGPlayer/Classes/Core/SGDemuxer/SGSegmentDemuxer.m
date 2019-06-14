@@ -43,8 +43,8 @@
 
 SGGet0Map(id<SGDemuxableDelegate>, delegate, self->_demuxable)
 SGSet1Map(void, setDelegate, id<SGDemuxableDelegate>, self->_demuxable)
-SGGet0Map(NSDictionary *, options, self->_demuxable)
-SGSet1Map(void, setOptions, NSDictionary *, self->_demuxable)
+SGGet0Map(SGDemuxerOptions *, options, self->_demuxable)
+SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
 SGGet0Map(NSDictionary *, metadata, self->_demuxable)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
 SGGet0Map(NSError *, close, self->_demuxable)

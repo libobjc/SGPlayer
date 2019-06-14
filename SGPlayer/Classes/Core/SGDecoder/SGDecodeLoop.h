@@ -41,6 +41,11 @@ typedef NS_ENUM(int, SGDecodeLoopState) {
 /**
  *
  */
+@property (nonatomic, copy) SGDecoderOptions *options;
+
+/**
+ *
+ */
 - (SGDecodeLoopState)state;
 
 /**

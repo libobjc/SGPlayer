@@ -49,14 +49,14 @@
     return self->_segments.firstObject.delegate;
 }
 
-- (void)setOptions:(NSDictionary *)options
+- (void)setOptions:(SGDemuxerOptions *)options
 {
     for (SGSegmentDemuxer *obj in self->_segments) {
         obj.options = options;
     }
 }
 
-- (NSDictionary *)options
+- (SGDemuxerOptions *)options
 {
     return self->_segments.firstObject.options;
 }

@@ -27,6 +27,7 @@
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
+@property (nonatomic, strong, readonly) id<SGDemuxable> demuxer;
 @property (nonatomic, strong, readonly) SGDecodeLoop *audioDecoder;
 @property (nonatomic, strong, readonly) SGDecodeLoop *videoDecoder;
 @property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
@@ -48,7 +49,8 @@
         self->_audioDecoder.delegate = self;
         self->_videoDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGVideoDecoder class]];
         self->_videoDecoder.delegate = self;
-        self->_packetOutput = [[SGPacketOutput alloc] initWithDemuxable:[asset newDemuxable]];
+        self->_demuxer = [asset newDemuxable];
+        self->_packetOutput = [[SGPacketOutput alloc] initWithDemuxable:self->_demuxer];
         self->_packetOutput.delegate = self;
         for (int i = 0; i < 8; i++) {
             self->_capacityFlags[i] = NO;
@@ -76,8 +78,17 @@
 SGGet0Map(CMTime, duration, self->_packetOutput)
 SGGet0Map(NSDictionary *, metadata, self->_packetOutput)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
+SGGet00Map(SGDemuxerOptions *, demuxerOptions, options, self->_demuxer)
+SGGet00Map(SGDecoderOptions *, decoderOptions, options, self->_audioDecoder)
+SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_demuxer);
 
 #pragma mark - Setter & Getter
+
+- (void)setDecoderOptions:(SGDecoderOptions *)decoderOptions
+{
+    self->_audioDecoder.options = decoderOptions;
+    self->_videoDecoder.options = decoderOptions;
+}
 
 - (SGBlock)setState:(SGFrameOutputState)state
 {

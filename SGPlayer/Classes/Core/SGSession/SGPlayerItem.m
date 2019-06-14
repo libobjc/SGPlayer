@@ -75,6 +75,10 @@
 SGGet0Map(CMTime, duration, self->_frameOutput)
 SGGet0Map(NSDictionary *, metadata, self->_frameOutput)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_frameOutput)
+SGGet0Map(SGDemuxerOptions *, demuxerOptions, self->_frameOutput)
+SGGet0Map(SGDecoderOptions *, decoderOptions, self->_frameOutput)
+SGSet1Map(void, setDemuxerOptions, SGDemuxerOptions *, self->_frameOutput)
+SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
 
 #pragma mark - Setter & Getter
 

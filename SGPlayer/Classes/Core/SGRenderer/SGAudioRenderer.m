@@ -10,6 +10,7 @@
 #import "SGRenderer+Internal.h"
 #import "SGAudioStreamPlayer.h"
 #import "SGAudioFrame.h"
+#import "SGOptions.h"
 #import "SGFFmpeg.h"
 #import "SGLock.h"
 
@@ -37,6 +38,7 @@
 
 @synthesize rate = _rate;
 @synthesize volume = _volume;
+@synthesize options = _options;
 @synthesize delegate = _delegate;
 @synthesize audioDescription = _audioDescription;
 
@@ -54,6 +56,7 @@
         self->_rate = CMTimeMake(1, 1);
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
+        self->_options = [SGOptions sharedOptions].renderer.copy;
         self->_audioDescription = [[SGAudioDescription alloc] init];
     }
     return self;

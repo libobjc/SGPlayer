@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGDemuxerOptions.h"
 #import "SGPacket.h"
 
 @protocol SGDemuxableDelegate;
@@ -16,12 +17,12 @@
 /**
  *
  */
-@property (nonatomic, weak) id<SGDemuxableDelegate> delegate;
+@property (nonatomic, strong) SGDemuxerOptions *options;
 
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary *options;
+@property (nonatomic, weak) id<SGDemuxableDelegate> delegate;
 
 /**
  *

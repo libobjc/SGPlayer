@@ -1,29 +1,19 @@
 //
-//  SGConfiguration.h
-//  SGPlayer iOS
+//  SGDecoderOptions.h
+//  SGPlayer
 //
-//  Created by Single on 2018/10/29.
-//  Copyright © 2018 single. All rights reserved.
+//  Created by Single on 2019/6/14.
+//  Copyright © 2019 single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
 
-@interface SGConfiguration : NSObject
+@interface SGDecoderOptions : NSObject <NSCopying>
 
 /**
  *
  */
-+ (instancetype)sharedConfiguration;
-
-/**
- *
- */
-@property (nonatomic, copy) NSDictionary *formatContextOptions;
-
-/**
- *
- */
-@property (nonatomic, copy) NSDictionary *codecContextOptions;
+@property (nonatomic, copy) NSDictionary *options;
 
 /**
  *

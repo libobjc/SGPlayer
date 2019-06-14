@@ -33,6 +33,8 @@
 
 @implementation SGAudioDecoder
 
+@synthesize options = _options;
+
 - (void)setup
 {
     self->_flags.nextTimeStamp = 0;
@@ -42,6 +44,7 @@
                                                           codecpar:self->_codecDescription.codecpar
                                                         frameClass:[SGAudioFrame class]
                                                     frameReuseName:[SGAudioFrame commonReuseName]];
+    self->_codecContext.options = self->_options;
     [self->_codecContext open];
 }
 

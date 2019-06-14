@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGCodecDescription.h"
+#import "SGDecoderOptions.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
 
@@ -27,32 +28,7 @@
 /**
  *
  */
-@property (nonatomic, copy) NSDictionary *options;
-
-/**
- *
- */
-@property (nonatomic) BOOL threadsAuto;
-
-/**
- *
- */
-@property (nonatomic) BOOL refcountedFrames;
-
-/**
- *
- */
-@property (nonatomic) BOOL hardwareDecodeH264;
-
-/**
- *
- */
-@property (nonatomic) BOOL hardwareDecodeH265;
-
-/**
- *
- */
-@property (nonatomic) OSType preferredPixelFormat;
+@property (nonatomic, strong) SGDecoderOptions *options;
 
 /**
  *

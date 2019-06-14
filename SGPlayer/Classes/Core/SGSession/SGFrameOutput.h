@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGDemuxerOptions.h"
+#import "SGDecoderOptions.h"
 #import "SGCapacity.h"
 #import "SGAsset.h"
 #import "SGFrame.h"
@@ -36,6 +38,16 @@ typedef NS_ENUM(int, SGFrameOutputState) {
  *
  */
 - (instancetype)initWithAsset:(SGAsset *)asset;
+
+/**
+ *
+ */
+@property (nonatomic, copy) SGDemuxerOptions *demuxerOptions;
+
+/**
+ *
+ */
+@property (nonatomic, copy) SGDecoderOptions *decoderOptions;
 
 /**
  *

@@ -222,7 +222,9 @@ static SGPacket *gFinishPacket = nil;
         SGObjectQueue *queue = self->_packetQueues[@(packet.track.index)];
         if (!queue) {
             queue = [[SGObjectQueue alloc] init];
-            [self->_decodables setObject:[[self->_decodableClass alloc] init] forKey:@(packet.track.index)];
+            id<SGDecodable> obj = [[self->_decodableClass alloc] init];
+            obj.options = self->_options;
+            [self->_decodables setObject:obj forKey:@(packet.track.index)];
             [self->_packetQueues setObject:queue forKey:@(packet.track.index)];
         }
         [queue putObjectSync:packet];

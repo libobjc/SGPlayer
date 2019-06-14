@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGRendererOptions.h"
 #import "SGCapacity.h"
 #import "SGFrame.h"
 
@@ -24,6 +25,11 @@ typedef NS_ENUM(int, SGRenderableState) {
 };
 
 @protocol SGRenderable <NSObject>
+
+/**
+ *
+ */
+@property (nonatomic, strong) SGRendererOptions *options;
 
 /**
  *

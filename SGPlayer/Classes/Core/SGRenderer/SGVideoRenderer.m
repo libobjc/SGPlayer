@@ -9,6 +9,7 @@
 #import "SGVideoRenderer.h"
 #import "SGRenderer+Internal.h"
 #import "SGVRMatrixMaker.h"
+#import "SGOptions.h"
 #import "SGMapping.h"
 #import "SGOpenGL.h"
 #import "SGMacro.h"
@@ -44,6 +45,7 @@
 @implementation SGVideoRenderer
 
 @synthesize rate = _rate;
+@synthesize options = _options;
 @synthesize delegate = _delegate;
 
 - (instancetype)init
@@ -65,6 +67,7 @@
         self->_modelPool = [[SGGLModelPool alloc] init];
         self->_programPool = [[SGGLProgramPool alloc] init];
         self->_matrixMaker = [[SGVRMatrixMaker alloc] init];
+        self->_options = [SGOptions sharedOptions].renderer.copy;
     }
     return self;
 }

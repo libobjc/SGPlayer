@@ -57,6 +57,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 {
     if (self = [super init]) {
         [self stop];
+        self->_options = [SGOptions sharedOptions].copy;
         self->_rate = CMTimeMake(1, 1);
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
@@ -308,7 +309,11 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     return SGLockEXE11(self->_lock, ^SGBlock {
         self->_currentItem = item;
         self->_currentItem.delegate = self;
+        self->_currentItem.demuxerOptions = self->_options.demuxer;
+        self->_currentItem.decoderOptions = self->_options.decoder;
         self->_currentItem.audioDescription = self->_audioRenderer.audioDescription;
+        self->_audioRenderer.options = self->_options.renderer;
+        self->_videoRenderer.options = self->_options.renderer;
         return nil;
     }, ^BOOL(SGBlock block) {
         return [item open];

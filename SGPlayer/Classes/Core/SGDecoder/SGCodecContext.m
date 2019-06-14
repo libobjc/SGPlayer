@@ -9,7 +9,7 @@
 #import "SGCodecContext.h"
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
-#import "SGConfiguration.h"
+#import "SGOptions.h"
 #import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGError.h"
@@ -37,12 +37,7 @@
         self->_codecpar = codecpar;
         self->_frameClass = frameClass;
         self->_frameReuseName = frameReuseName;
-        self->_options = [SGConfiguration sharedConfiguration].codecContextOptions;
-        self->_threadsAuto = [SGConfiguration sharedConfiguration].threadsAuto;
-        self->_refcountedFrames = [SGConfiguration sharedConfiguration].refcountedFrames;
-        self->_hardwareDecodeH264 = [SGConfiguration sharedConfiguration].hardwareDecodeH264;
-        self->_hardwareDecodeH265 = [SGConfiguration sharedConfiguration].hardwareDecodeH265;
-        self->_preferredPixelFormat = [SGConfiguration sharedConfiguration].preferredPixelFormat;
+        self->_options = [SGOptions sharedOptions].decoder.copy;
     }
     return self;
 }
@@ -121,8 +116,8 @@
         return nil;
     }
     codecContext->pkt_timebase = self->_timebase;
-    if ((self->_hardwareDecodeH264 && self->_codecpar->codec_id == AV_CODEC_ID_H264) ||
-        (self->_hardwareDecodeH265 && self->_codecpar->codec_id == AV_CODEC_ID_H265)) {
+    if ((self->_options.hardwareDecodeH264 && self->_codecpar->codec_id == AV_CODEC_ID_H264) ||
+        (self->_options.hardwareDecodeH265 && self->_codecpar->codec_id == AV_CODEC_ID_H265)) {
         codecContext->get_format = SGCodecContextGetFormat;
     }
     
@@ -133,12 +128,12 @@
     }
     codecContext->codec_id = codec->id;
     
-    AVDictionary *opts = SGDictionaryNS2FF(self->_options);
-    if (self->_threadsAuto &&
+    AVDictionary *opts = SGDictionaryNS2FF(self->_options.options);
+    if (self->_options.threadsAuto &&
         !av_dict_get(opts, "threads", NULL, 0)) {
         av_dict_set(&opts, "threads", "auto", 0);
     }
-    if (self->_refcountedFrames &&
+    if (self->_options.refcountedFrames &&
         !av_dict_get(opts, "refcounted_frames", NULL, 0) &&
         (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO)) {
         av_dict_set(&opts, "refcounted_frames", "1", 0);
@@ -175,7 +170,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext *s, cons
             }
             AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
             frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_preferredPixelFormat);
+            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredPixelFormat);
             frames_ctx_data->width = s->width;
             frames_ctx_data->height = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);

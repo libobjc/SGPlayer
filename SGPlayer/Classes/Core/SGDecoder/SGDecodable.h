@@ -7,10 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGDecoderOptions.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
 
 @protocol SGDecodable <NSObject>
+
+/**
+ *
+ */
+@property (nonatomic, strong) SGDecoderOptions *options;
 
 /**
  *
