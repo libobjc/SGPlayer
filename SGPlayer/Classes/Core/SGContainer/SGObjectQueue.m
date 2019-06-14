@@ -167,14 +167,14 @@
     return YES;
 }
 
-- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader discarded:(BOOL *)discarded
 {
     [self->_wakeup lock];
     if (self->_flags.destoryed || self->_objects.count <= 0) {
         [self->_wakeup unlock];
         return NO;
     }
-    *object = [self getObjectWithTimeReader:timeReader];
+    *object = [self getObjectWithTimeReader:timeReader discarded:discarded];
     if (*object) {
         [self->_wakeup signal];
     }
@@ -182,7 +182,7 @@
     return *object != nil;
 }
 
-- (id<SGData>)getObjectWithTimeReader:(SGTimeReader)timeReader
+- (id<SGData>)getObjectWithTimeReader:(SGTimeReader)timeReader discarded:(BOOL *)discarded
 {
     CMTime desire = kCMTimeZero;
     BOOL drop = NO;
@@ -193,7 +193,10 @@
     do {
         CMTime first = self->_objects.firstObject.timeStamp;
         if (CMTimeCompare(first, desire) <= 0) {
-            [object unlock];
+            if (object) {
+                *discarded = YES;
+                [object unlock];
+            }
             object = [self getObject];
             if (!object) {
                 break;
