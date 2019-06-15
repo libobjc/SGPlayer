@@ -251,7 +251,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
 {
     __block SGFrame *ret = nil;
     SGLockEXE10(self->_lock, ^SGBlock {
-        BOOL discarded = NO;
+        uint64_t discarded = 0;
         BOOL success = [self->_audioQueue getObjectAsync:&ret timeReader:timeReader discarded:&discarded];
         if (success || discarded) {
             return [self setFrameQueueCapacity:SGMediaTypeAudio];
@@ -265,7 +265,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
 {
     __block SGFrame *ret = nil;
     SGLockEXE10(self->_lock, ^SGBlock {
-        BOOL discarded = NO;
+        uint64_t discarded = 0;
         BOOL success = [self->_videoQueue getObjectAsync:&ret timeReader:timeReader discarded:&discarded];
         if (success || discarded) {
             return [self setFrameQueueCapacity:SGMediaTypeVideo];

@@ -182,19 +182,20 @@
     return *object != nil;
 }
 
-- (id<SGData>)getObjectWithTimeReader:(SGTimeReader)timeReader discarded:(BOOL *)discarded
+- (id<SGData>)getObjectWithTimeReader:(SGTimeReader)timeReader discarded:(uint64_t *)discarded
 {
     CMTime desire = kCMTimeZero;
     BOOL drop = NO;
     if (!timeReader || !timeReader(&desire, &drop)) {
         return [self getObject];
     }
+    *discarded = 0;
     id<SGData> object = nil;
     do {
         CMTime first = self->_objects.firstObject.timeStamp;
         if (CMTimeCompare(first, desire) <= 0) {
             if (object) {
-                *discarded = YES;
+                *discarded += 1;
                 [object unlock];
             }
             object = [self getObject];

@@ -49,7 +49,7 @@
  *
  */
 - (BOOL)getObjectAsync:(id<SGData> *)object;
-- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader discarded:(BOOL *)discarded;
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader discarded:(uint64_t *)discarded;
 
 /**
  *
