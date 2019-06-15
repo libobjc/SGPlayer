@@ -167,7 +167,7 @@
     return YES;
 }
 
-- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader discarded:(BOOL *)discarded
+- (BOOL)getObjectAsync:(id<SGData> *)object timeReader:(SGTimeReader)timeReader discarded:(uint64_t *)discarded
 {
     [self->_wakeup lock];
     if (self->_flags.destoryed || self->_objects.count <= 0) {
