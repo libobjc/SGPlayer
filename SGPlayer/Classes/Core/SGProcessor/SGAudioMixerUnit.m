@@ -93,8 +93,7 @@
     } else {
         CMTime start = self->_frames.firstObject.timeStamp;
         CMTime end = CMTimeAdd(self->_frames.lastObject.timeStamp, self->_frames.lastObject.duration);
-        CMTime duration = CMTimeSubtract(end, start);
-        self->_timeRange = CMTimeRangeMake(start, duration);
+        self->_timeRange = CMTimeRangeFromTimeToTime(start, end);
     }
 }
 

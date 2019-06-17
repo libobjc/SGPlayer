@@ -81,7 +81,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)seekToTime:(CMTime)time
 {
-    NSError *error = [self->_demuxable seekToTime:CMTimeAdd(time, CMTimeMultiply(self->_timeLayout.start, -1))];
+    NSError *error = [self->_demuxable seekToTime:CMTimeSubtract(time, self->_timeLayout.start)];
     if (error) {
         return error;
     }

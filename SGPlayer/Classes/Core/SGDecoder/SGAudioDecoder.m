@@ -98,7 +98,7 @@
             }
             CMTime start = packet.timeStamp;
             CMTime duration = packet.duration;
-            int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
             if (nb_samples > 0) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
                 SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
@@ -196,7 +196,7 @@
             self->_flags.needsAlignment = NO;
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(obj.timeStamp, start);
-            int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
             if (nb_samples > 0) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
                 SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
@@ -209,7 +209,7 @@
         }
         CMTime start = obj.timeStamp;
         CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
-        int nb_samples = CMTimeGetSeconds(CMTimeMultiply(duration, ad.sampleRate));
+        int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
         if (nb_samples < obj.numberOfSamples) {
             duration = CMTimeMake(nb_samples, ad.sampleRate);
             SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
@@ -234,7 +234,7 @@
     int nb_samples = [self->_sonic samplesAvailable];
     SGAudioDescription *ad = self->_audioDescription;
     SGCodecDescription *cd = self->_codecDescription;
-    CMTime start = CMTimeMultiply(CMTimeMake(pts, cd.timebase.den), cd.timebase.num);
+    CMTime start = CMTimeMake(pts * cd.timebase.num, cd.timebase.den);
     CMTime duration = CMTimeMake(nb_samples, ad.sampleRate);
     for (SGTimeLayout *obj in cd.timeLayouts) {
         start = [obj convertTimeStamp:start];

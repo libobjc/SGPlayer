@@ -105,7 +105,7 @@
         return error;
     }
     if (self->_context) {
-        int64_t timeStamp = CMTimeGetSeconds(CMTimeMultiply(time, AV_TIME_BASE));
+        int64_t timeStamp = CMTimeConvertScale(time, AV_TIME_BASE, kCMTimeRoundingMethod_Default).value;
         int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
             self->_basetime = time;

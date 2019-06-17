@@ -103,7 +103,7 @@
     if (CMTimeCompare(maximumDuration, CMTimeMake(8, 100)) < 0) {
         return nil;
     }
-    return [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
+    return [self mixWithRange:CMTimeRangeFromTimeToTime(start, end)];
 }
 
 - (SGAudioFrame *)mixForFinish
@@ -121,7 +121,7 @@
     if (CMTimeCompare(CMTimeSubtract(end, start), kCMTimeZero) <= 0) {
         return nil;
     }
-    SGAudioFrame *frame = [self mixWithRange:CMTimeRangeMake(start, CMTimeSubtract(end, start))];
+    SGAudioFrame *frame = [self mixWithRange:CMTimeRangeFromTimeToTime(start, end)];
     [self->_units enumerateKeysAndObjectsUsingBlock:^(id key, SGAudioMixerUnit *obj, BOOL *stop) {
         [obj flush];
     }];
@@ -157,7 +157,7 @@
     CMTime start = range.start;
     CMTime duration = range.duration;
     SGAudioDescription *description = self->_audioDescription;
-    int numberOfSamples = CMTimeGetSeconds(CMTimeMultiply(duration, description.sampleRate));
+    int numberOfSamples = (int)CMTimeConvertScale(duration, description.sampleRate, kCMTimeRoundingMethod_Default).value;
     SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
@@ -170,7 +170,7 @@
     for (int t = 0; t < self->_tracks.count; t++) {
         int lastEE = 0;
         for (SGAudioFrame *obj in list[@(self->_tracks[t].index)]) {
-            int s = CMTimeGetSeconds(CMTimeMultiply(CMTimeSubtract(obj.timeStamp, start), description.sampleRate));
+            int s = (int)CMTimeConvertScale(CMTimeSubtract(obj.timeStamp, start), description.sampleRate, kCMTimeRoundingMethod_Default).value;
             int e = s + obj.numberOfSamples;
             int ss = MAX(0, s);
             int ee = MIN(numberOfSamples, e);
