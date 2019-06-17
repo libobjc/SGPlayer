@@ -21,12 +21,22 @@
 /**
  *
  */
+@property (nonatomic) Float64 rate;
+
+/**
+ *
+ */
 @property (nonatomic, readonly) CMTime currentTime;
 
 /**
  *
  */
-@property (nonatomic) CMTime rate;
+- (void)setAudioTime:(CMTime)time running:(BOOL)running;
+
+/**
+ *
+ */
+- (void)setVideoTime:(CMTime)time;
 
 /**
  *
@@ -52,26 +62,6 @@
  *
  */
 - (BOOL)flush;
-
-/**
- *
- */
-- (BOOL)setAudioCurrentTime:(CMTime)time;
-
-/**
- *
- */
-- (BOOL)setVideoCurrentTime:(CMTime)time;
-
-/**
- *
- */
-- (BOOL)markAsAudioStalled;
-
-/**
- *
- */
-- (BOOL)preferredVideoTime:(CMTime *)time advanced:(CMTime *)advanced;
 
 @end
 

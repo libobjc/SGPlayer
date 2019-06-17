@@ -52,8 +52,8 @@
 {
     if (self = [super init]) {
         self->_clock = clock;
-        self->_volume = 1.0f;
-        self->_rate = CMTimeMake(1, 1);
+        self->_rate = 1.0;
+        self->_volume = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
         self->_options = [SGOptions sharedOptions].renderer.copy;
@@ -98,22 +98,22 @@
     return ret;
 }
 
-- (void)setRate:(CMTime)rate
+- (void)setRate:(Float64)rate
 {
     SGLockCondEXE11(self->_lock, ^BOOL {
-        return CMTimeCompare(self->_rate, rate) != 0;
+        return self->_rate != rate;
     }, ^SGBlock {
         self->_rate = rate;
         return nil;
     }, ^BOOL(SGBlock block) {
-        [self->_player setRate:CMTimeGetSeconds(rate) error:nil];
+        [self->_player setRate:rate error:nil];
         return YES;
     });
 }
 
-- (CMTime)rate
+- (Float64)rate
 {
-    __block CMTime ret = CMTimeMake(1, 1);
+    __block Float64 ret = 1.0;
     SGLockEXE00(self->_lock, ^{
         ret = self->_rate;
     });
@@ -155,20 +155,20 @@
 
 - (BOOL)open
 {
-    __block float volume = 1.0f;
-    __block CMTime rate = CMTimeMake(1, 1);
+    __block float volume = 1.0;
+    __block Float64 rate = 1.0;
     return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_flags.state == SGRenderableStateNone;
     }, ^SGBlock {
-        volume = self->_volume;
         rate = self->_rate;
+        volume = self->_volume;
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
         block();
         self->_player = [[SGAudioStreamPlayer alloc] init];
         self->_player.delegate = self;
         [self->_player setVolume:volume error:nil];
-        [self->_player setRate:CMTimeGetSeconds(rate) error:nil];
+        [self->_player setRate:rate error:nil];
         return YES;
     });
 }
@@ -317,17 +317,17 @@
 {
     [self->_lock lock];
     CMTime renderTime = self->_flags.renderTime;
-    CMTime renderDuration = SGCMTimeMultiply(self->_flags.renderDuration, self->_rate);
+    CMTime renderDuration = CMTimeMultiplyByFloat64(self->_flags.renderDuration, self->_rate);
     CMTime frameDuration = !self->_currentFrame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples, self->_currentFrame.numberOfSamples);
     SGBlock clockBlock = ^{};
     if (self->_flags.state == SGRenderableStateRendering) {
         if (self->_flags.renderCopiedSamples) {
             clockBlock = ^{
-                [self->_clock setAudioCurrentTime:renderTime];
+                [self->_clock setAudioTime:renderTime running:YES];
             };
         } else {
             clockBlock = ^{
-                [self->_clock markAsAudioStalled];
+                [self->_clock setAudioTime:kCMTimeInvalid running:NO];
             };
         }
     }

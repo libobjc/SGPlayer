@@ -27,7 +27,7 @@
 /**
  *
  */
-@property (nonatomic) CMTime rate;
+@property (nonatomic) Float64 rate;
 
 /**
  *
@@ -49,6 +49,6 @@
 /**
  *
  */
-@property (nonatomic) CMTime rate;
+@property (nonatomic) Float64 rate;
 
 @end

@@ -8,24 +8,18 @@
 
 #import "SGClock.h"
 #import "SGClock+Internal.h"
-#import <QuartzCore/QuartzCore.h>
 #import "SGLock.h"
+#import "SGTime.h"
 
 @interface SGClock ()
 
 {
-    BOOL _paused;
-    BOOL _audioStalled;
-    BOOL _audioFinished;
-    BOOL _videoFinished;
-    CMTime _audioTime;
-    CMTime _videoTime;
-    long _audioSetTimes;
-    long _videoSetTimes;
-    double _audioMediaTime;
-    double _videoMediaTime;
-    double _pauseMediaTime;
-    double _invalidMediaInterval;
+    BOOL _audioRunning;
+    BOOL _videoRunning;
+    CMClockRef _masterClock;
+    CMTimebaseRef _audioTimebase;
+    CMTimebaseRef _videoTimebase;
+    CMTimebaseRef _playbackTimebase;
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
@@ -35,49 +29,29 @@
 @implementation SGClock
 
 @synthesize rate = _rate;
-@synthesize currentTime = _currentTime;
-@synthesize videoAdvancedDuration = _videoAdvancedDuration;
 
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_rate = CMTimeMake(1, 1);
-        self->_videoAdvancedDuration = kCMTimeZero;
+        self->_rate = 1.0;
         self->_lock = [[NSLock alloc] init];
+        self->_masterClock = CMClockGetHostTimeClock();
     }
     return self;
 }
 
-- (void)setRate:(CMTime)rate
+- (void)setRate:(Float64)rate
 {
     SGLockEXE00(self->_lock, ^{
         self->_rate = rate;
     });
 }
 
-- (CMTime)rate
+- (Float64)rate
 {
-    __block CMTime ret = CMTimeMake(1, 1);
+    __block Float64 ret = 1.0;
     SGLockEXE00(self->_lock, ^{
         ret = self->_rate;
-    });
-    return ret;
-}
-
-- (void)setVideoAdvancedDuration:(CMTime)videoAdvancedDuration
-{
-    videoAdvancedDuration = CMTimeMinimum(videoAdvancedDuration, CMTimeMake(2, 1));
-    videoAdvancedDuration = CMTimeMaximum(videoAdvancedDuration, CMTimeMake(-2, 1));
-    SGLockEXE00(self->_lock, ^{
-        self->_videoAdvancedDuration = videoAdvancedDuration;
-    });
-}
-
-- (CMTime)videoAdvancedDuration
-{
-    __block CMTime ret = kCMTimeZero;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_videoAdvancedDuration;
     });
     return ret;
 }
@@ -86,124 +60,111 @@
 {
     __block CMTime ret = kCMTimeZero;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_currentTime;
+        if (self->_audioRunning) {
+            ret = CMTimebaseGetTime(self->_audioTimebase);
+        } else {
+            ret = CMTimebaseGetTime(self->_videoTimebase);
+        }
     });
     return ret;
 }
 
+- (void)setAudioTime:(CMTime)time running:(BOOL)running
+{
+    SGLockEXE00(self->_lock, ^{
+        if (CMTIME_IS_NUMERIC(time)) {
+            if (self->_audioRunning != running || self->_videoRunning == NO) {
+                self->_audioRunning = running;
+                self->_videoRunning = YES;
+                CMTime playbackTime = CMTimebaseGetTime(self->_playbackTimebase);
+                CMTimebaseSetRateAndAnchorTime(self->_videoTimebase, 1.0, time, playbackTime);
+                CMTimebaseSetRateAndAnchorTime(self->_audioTimebase, running ? 1.0 : 0.0, time, playbackTime);
+            } else {
+                CMTimebaseSetTime(self->_audioTimebase, time);
+                CMTimebaseSetTime(self->_videoTimebase, time);
+            }
+            [self.delegate clock:self didChcnageCurrentTime:time];
+        } else if (self->_audioRunning != running) {
+            self->_audioRunning = running;
+            CMTimebaseSetRate(self->_audioTimebase, running ? 1.0 : 0.0);
+        }
+    });
+}
+
+- (void)setVideoTime:(CMTime)time
+{
+    SGLockCondEXE00(self->_lock, ^BOOL{
+        return self->_audioRunning == NO && CMTIME_IS_NUMERIC(time);
+    }, ^{
+        if (self->_videoRunning == NO) {
+            self->_videoRunning = YES;
+            CMTimebaseSetTime(self->_videoTimebase, time);
+            CMTimebaseSetRate(self->_videoTimebase, 1.0);
+        }
+        [self.delegate clock:self didChcnageCurrentTime:time];
+    });
+}
+
 - (BOOL)open
 {
-    return [self flush];
+    return SGLockCondEXE00(self->_lock, ^BOOL{
+        return self->_audioTimebase == NULL;
+    }, ^{
+        CMTimebaseCreateWithMasterClock(NULL, self->_masterClock, &self->_playbackTimebase);
+        CMTimebaseSetRateAndAnchorTime(self->_playbackTimebase, 0.0, kCMTimeZero, CMClockGetTime(self->_masterClock));
+        CMTimebaseCreateWithMasterTimebase(NULL, self->_playbackTimebase, &self->_audioTimebase);
+        CMTimebaseCreateWithMasterTimebase(NULL, self->_playbackTimebase, &self->_videoTimebase);
+        self->_audioRunning = NO;
+        self->_videoRunning = NO;
+        CMTime playbackTime = CMTimebaseGetTime(self->_playbackTimebase);
+        CMTimebaseSetRateAndAnchorTime(self->_audioTimebase, 0.0, kCMTimeZero, playbackTime);
+        CMTimebaseSetRateAndAnchorTime(self->_videoTimebase, 0.0, kCMTimeZero, playbackTime);
+    });
 }
 
 - (BOOL)close
 {
-    return [self flush];
+    return SGLockEXE00(self->_lock, ^{
+        self->_audioRunning = NO;
+        self->_videoRunning = NO;
+        if (self->_audioTimebase) {
+            CFRelease(self->_audioTimebase);
+            self->_audioTimebase = NULL;
+        }
+        if (self->_videoTimebase) {
+            CFRelease(self->_videoTimebase);
+            self->_videoTimebase = NULL;
+        }
+        if (self->_playbackTimebase) {
+            CFRelease(self->_playbackTimebase);
+            self->_audioTimebase = NULL;
+        }
+    });
 }
 
 - (BOOL)pause
 {
-    return SGLockCondEXE00(self->_lock, ^BOOL {
-        return !self->_paused;
-    }, ^{
-        self->_paused = YES;
-        self->_pauseMediaTime = CACurrentMediaTime();
+    return SGLockEXE00(self->_lock, ^{
+        CMTimebaseSetRate(self->_playbackTimebase, 0.0);
     });
 }
 
 - (BOOL)resume
 {
-    return SGLockCondEXE00(self->_lock, ^BOOL {
-        return self->_paused;
-    }, ^{
-        self->_paused = NO;
-        self->_invalidMediaInterval += CACurrentMediaTime() - self->_pauseMediaTime;
+    return SGLockEXE00(self->_lock, ^{
+        CMTimebaseSetRate(self->_playbackTimebase, self->_rate);
     });
 }
 
 - (BOOL)flush
 {
     return SGLockEXE00(self->_lock, ^{
-        self->_audioStalled = 0;
-        self->_audioFinished = 0;
-        self->_videoFinished = 0;
-        self->_audioSetTimes = 0;
-        self->_videoSetTimes = 0;
-        self->_audioTime = kCMTimeZero;
-        self->_videoTime = kCMTimeZero;
-        self->_currentTime = kCMTimeZero;
-        self->_audioMediaTime = 0;
-        self->_videoMediaTime = 0;
+        self->_audioRunning = NO;
+        self->_videoRunning = NO;
+        CMTime playbackTime = CMTimebaseGetTime(self->_playbackTimebase);
+        CMTimebaseSetRateAndAnchorTime(self->_audioTimebase, 0.0, kCMTimeZero, playbackTime);
+        CMTimebaseSetRateAndAnchorTime(self->_videoTimebase, 0.0, kCMTimeZero, playbackTime);
     });
-}
-
-- (BOOL)setAudioCurrentTime:(CMTime)time
-{
-    return SGLockEXE10(self->_lock, ^SGBlock {
-        self->_audioSetTimes += 1;
-        self->_audioTime = time;
-        self->_audioMediaTime = CACurrentMediaTime();
-        self->_audioStalled = 0;
-        return [self setCurrentTime:self->_audioTime mediaTime:self->_audioMediaTime];
-    });
-    return YES;
-}
-
-- (BOOL)setVideoCurrentTime:(CMTime)time
-{
-    return SGLockEXE10(self->_lock, ^SGBlock {
-        self->_videoSetTimes += 1;
-        self->_videoTime = time;
-        self->_videoMediaTime = CACurrentMediaTime();
-        if (!self->_audioSetTimes || self->_audioStalled) {
-            return [self setCurrentTime:self->_videoTime mediaTime:self->_videoMediaTime];
-        }
-        return ^{};
-    });
-}
-
-- (SGBlock)setCurrentTime:(CMTime)time mediaTime:(double)mediaTime
-{
-    CMTime current_time = self->_currentTime;
-    self->_currentTime = time;
-    if (self->_paused) {
-        self->_pauseMediaTime = mediaTime;
-    }
-    self->_invalidMediaInterval = 0;
-    return CMTimeCompare(time, current_time) != 0 ? ^{
-        [self.delegate clock:self didChcnageCurrentTime:time];
-    } : ^{};
-}
-
-- (BOOL)markAsAudioStalled
-{
-    return SGLockEXE00(self->_lock, ^{
-        self->_audioStalled = 1;
-    });
-}
-
-- (BOOL)preferredVideoTime:(CMTime *)time advanced:(CMTime *)advanced
-{
-    return SGLockCondEXE00(self->_lock, ^BOOL {
-        double current_media_time = self->_paused ? self->_pauseMediaTime : CACurrentMediaTime();
-        if (self->_audioSetTimes && !self->_audioStalled) {
-            CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_audioMediaTime - self->_invalidMediaInterval);
-            duration = SGCMTimeMultiply(duration, self->_rate);
-            duration = CMTimeMaximum(duration, kCMTimeZero);
-            *time = CMTimeAdd(self->_audioTime, duration);
-            *advanced = self->_videoAdvancedDuration;
-        } else if (self->_videoSetTimes || self->_audioStalled) {
-            CMTime duration = SGCMTimeMakeWithSeconds(current_media_time - self->_videoMediaTime - self->_invalidMediaInterval);
-            duration = SGCMTimeMultiply(duration, self->_rate);
-            duration = CMTimeMaximum(duration, kCMTimeZero);
-            *time = CMTimeAdd(self->_videoTime, duration);
-            *advanced = kCMTimeZero;
-        } else {
-            *time = kCMTimeZero;
-            *advanced = kCMTimeZero;
-        }
-        return YES;
-    }, nil);
 }
 
 @end

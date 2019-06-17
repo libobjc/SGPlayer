@@ -7,13 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGTime.h"
 
 @interface SGClock : NSObject
-
-/**
- *  [-2, 2]
- */
-@property (nonatomic) CMTime videoAdvancedDuration;
 
 @end

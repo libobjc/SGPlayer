@@ -58,7 +58,7 @@
 {
     if (self = [super init]) {
         self->_clock = clock;
-        self->_rate = CMTimeMake(1, 1);
+        self->_rate = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
         self->_scalingMode = SGScalingModeResizeAspect;
@@ -114,16 +114,16 @@
     return ret;
 }
 
-- (void)setRate:(CMTime)rate
+- (void)setRate:(Float64)rate
 {
     SGLockEXE00(self->_lock, ^{
         self->_rate = rate;
     });
 }
 
-- (CMTime)rate
+- (Float64)rate
 {
-    __block CMTime ret = CMTimeMake(1, 1);
+    __block Float64 ret = 1.0;
     SGLockEXE00(self->_lock, ^{
         ret = self->_rate;
     });
@@ -298,12 +298,11 @@
         }, ^SGBlock {
             return nil;
         }, ^BOOL(SGBlock block) {
-            CMTime time = kCMTimeZero;
-            CMTime advanced = kCMTimeZero;
-            [self->_clock preferredVideoTime:&time advanced:&advanced];
             double media_time_next = [self->_drawTimer nextTimestamp];
             media_time_current = CACurrentMediaTime();
-            *desire = CMTimeAdd(CMTimeAdd(time, advanced), CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero));
+            CMTime time = self->_clock.currentTime;
+            CMTime next = CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero);
+            *desire = CMTimeAdd(time, next);
             *drop = YES;
             return YES;
         });
@@ -320,11 +319,11 @@
             self->_flags.hasNewFrameToDisplay = YES;
             self->_flags.hasNewFrameToOutput = YES;
             self->_flags.framesOutput += 1;
-            self->_flags.frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(SGCMTimeMultiply(ret.duration, self->_rate));
+            self->_flags.frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(CMTimeMultiplyByFloat64(ret.duration, self->_rate));
             capacity.duration = ret.duration;
             CMTime videoCurrentTime = self->_currentFrame.timeStamp;
             b1 = ^{
-                [self->_clock setVideoCurrentTime:videoCurrentTime];
+                [self->_clock setVideoTime:videoCurrentTime];
             };
         } else if (media_time_current < self->_flags.frameInvalidMediaTime) {
             capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.frameInvalidMediaTime - media_time_current);

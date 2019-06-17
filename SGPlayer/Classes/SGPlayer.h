@@ -83,7 +83,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @interface SGPlayer ()
 
-@property (nonatomic) CMTime rate;
+@property (nonatomic) Float64 rate;
 
 - (BOOL)play;
 - (BOOL)pause;

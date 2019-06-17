@@ -58,7 +58,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     if (self = [super init]) {
         [self stop];
         self->_options = [SGOptions sharedOptions].copy;
-        self->_rate = CMTimeMake(1, 1);
+        self->_rate = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
         self->_clock = [[SGClock alloc] init];
@@ -125,6 +125,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     }
     if (state & SGPlaybackStateFinished) {
         b1 = ^{
+            [self->_clock pause];
             [self->_audioRenderer finish];
             [self->_videoRenderer finish];
         };
@@ -237,10 +238,10 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     return ret;
 }
 
-- (void)setRate:(CMTime)rate
+- (void)setRate:(Float64)rate
 {
     SGLockCondEXE11(self->_lock, ^BOOL {
-        return CMTimeCompare(self->_rate, rate) != 0;
+        return self->_rate != rate;
     }, ^SGBlock {
         self->_rate = rate;
         return nil;
@@ -252,9 +253,9 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     });
 }
 
-- (CMTime)rate
+- (Float64)rate
 {
-    __block CMTime ret = kCMTimeZero;
+    __block Float64 ret = 1.0;
     SGLockEXE00(self->_lock, ^{
         ret = self->_rate;
     });
