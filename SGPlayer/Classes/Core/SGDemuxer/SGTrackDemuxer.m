@@ -98,6 +98,9 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    if (!CMTIME_IS_NUMERIC(time)) {
+        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+    }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
     SGSegmentDemuxer *unit = nil;

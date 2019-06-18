@@ -43,3 +43,8 @@ CMTime SGCMTimeDivide(CMTime time, CMTime divisor);
  *
  */
 CMTimeRange SGCMTimeRangeFit(CMTimeRange timeRange);
+
+/**
+ *
+ */
+CMTimeRange SGCMTimeRangeGetIntersection(CMTimeRange timeRange1, CMTimeRange timeRange2);

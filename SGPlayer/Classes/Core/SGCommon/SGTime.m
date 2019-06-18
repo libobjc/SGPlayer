@@ -7,6 +7,7 @@
 //
 
 #import "SGTime.h"
+#import "SGFFmpeg.h"
 
 BOOL SGCMTimeIsValid(CMTime time, BOOL infinity)
 {
@@ -27,7 +28,7 @@ CMTime SGCMTimeValidate(CMTime time, CMTime defaultTime, BOOL infinity)
 
 CMTime SGCMTimeMakeWithSeconds(Float64 seconds)
 {
-    return CMTimeMakeWithSeconds(seconds, 1000000);
+    return CMTimeMakeWithSeconds(seconds, AV_TIME_BASE);
 }
 
 CMTime SGCMTimeMultiply(CMTime time, CMTime multiplier)
@@ -54,4 +55,13 @@ CMTimeRange SGCMTimeRangeFit(CMTimeRange timeRange)
 {
     return CMTimeRangeMake(SGCMTimeValidate(timeRange.start, kCMTimeNegativeInfinity, YES),
                            SGCMTimeValidate(timeRange.duration, kCMTimePositiveInfinity, YES));
+}
+
+CMTimeRange SGCMTimeRangeGetIntersection(CMTimeRange timeRange1, CMTimeRange timeRange2)
+{
+    CMTime start1 = SGCMTimeValidate(timeRange1.start, kCMTimeNegativeInfinity, YES);
+    CMTime start2 = SGCMTimeValidate(timeRange2.start, kCMTimeNegativeInfinity, YES);
+    CMTime end1 = SGCMTimeValidate(CMTimeRangeGetEnd(timeRange1), kCMTimePositiveInfinity, YES);
+    CMTime end2 = SGCMTimeValidate(CMTimeRangeGetEnd(timeRange2), kCMTimePositiveInfinity, YES);
+    return CMTimeRangeFromTimeToTime(CMTimeMaximum(start1, start2), CMTimeMinimum(end1, end2));
 }

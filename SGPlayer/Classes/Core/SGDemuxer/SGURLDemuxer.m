@@ -100,6 +100,9 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    if (!CMTIME_IS_NUMERIC(time)) {
+        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+    }
     NSError *error = [self seekable];
     if (error) {
         return error;

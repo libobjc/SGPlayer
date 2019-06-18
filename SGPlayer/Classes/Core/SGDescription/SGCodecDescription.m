@@ -49,7 +49,7 @@
         timeRange = CMTimeRangeMake([obj convertTimeStamp:timeRange.start],
                                     [obj convertDuration:timeRange.duration]);
     }
-    self->_timeRange = CMTimeRangeGetIntersection(self->_timeRange, timeRange);
+    self->_timeRange = SGCMTimeRangeGetIntersection(self->_timeRange, timeRange);
 }
 
 - (void)fillToDescription:(SGCodecDescription *)description

@@ -110,6 +110,9 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    if (!CMTIME_IS_NUMERIC(time)) {
+        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+    }
     for (id<SGDemuxable> obj in self->_demuxables) {
         NSError *error = [obj seekToTime:time];
         if (error) {

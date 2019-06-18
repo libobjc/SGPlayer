@@ -72,6 +72,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    if (!CMTIME_IS_NUMERIC(time)) {
+        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+    }
     if (!self->_demuxable) {
         return nil;
     }

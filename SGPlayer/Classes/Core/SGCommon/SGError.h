@@ -28,6 +28,7 @@ typedef NS_ENUM(int, SGErrorCode) {
     SGErrorCodeConcatDemuxerUnitInvaildDuration,
     SGErrorCodeMutilDemuxerEndOfFile,
     SGErrorCodeDemuxerEndOfFile,
+    SGErrorCodeInvlidTime,
 };
 
 /**

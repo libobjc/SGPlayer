@@ -22,6 +22,8 @@ NSError * SGEGetError(int result, SGOperationCode operation)
     free(data);
     if (result == AVERROR_EXIT) {
         result = SGErrorImmediateExitRequested;
+    } else if (result == AVERROR_EOF) {
+        result = SGErrorCodeDemuxerEndOfFile;
     }
     return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
