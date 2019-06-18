@@ -321,20 +321,24 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     });
 }
 
-- (void)waitUntilReady
+- (BOOL)waitUntilReady
 {
+    BOOL ret = NO;
     [self->_wakeup lock];
     while (YES) {
-        BOOL ret = SGLockCondEXE00(self->_lock, ^BOOL {
-            return self->_flags.stateInfo.player == SGPlayerStatePreparing;
-        }, nil);
-        if (ret) {
+        __block SGPlayerState state = SGPlayerStateNone;
+        SGLockEXE00(self->_lock, ^{
+            state = self->_flags.stateInfo.player;
+        });
+        if (state == SGPlayerStatePreparing) {
             [self->_wakeup wait];
             continue;
         }
+        ret = state == SGPlayerStateReady;
         break;
     }
     [self->_wakeup unlock];
+    return ret;
 }
 
 - (BOOL)stop

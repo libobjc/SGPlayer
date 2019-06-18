@@ -73,7 +73,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
 - (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item;
 
-- (void)waitUntilReady;
+- (BOOL)waitUntilReady;
 
 - (BOOL)stop;
 
