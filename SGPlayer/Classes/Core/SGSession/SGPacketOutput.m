@@ -281,8 +281,6 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
             case SGPacketOutputStateClosed:
             case SGPacketOutputStateFailed:
                 return YES;
-            case SGPacketOutputStateSeeking:
-                return CMTimeCompare(self->_seekFlags.seekTime, self->_seekFlags.seekingTime) != 0;
             default:
                 return NO;
         }
