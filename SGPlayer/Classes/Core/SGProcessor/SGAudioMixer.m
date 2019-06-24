@@ -157,7 +157,7 @@
     CMTime start = range.start;
     CMTime duration = range.duration;
     SGAudioDescription *description = self->_audioDescription;
-    int numberOfSamples = (int)CMTimeConvertScale(duration, description.sampleRate, kCMTimeRoundingMethod_Default).value;
+    int numberOfSamples = (int)CMTimeConvertScale(duration, description.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
     SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
@@ -170,7 +170,7 @@
     for (int t = 0; t < self->_tracks.count; t++) {
         int lastEE = 0;
         for (SGAudioFrame *obj in list[@(self->_tracks[t].index)]) {
-            int s = (int)CMTimeConvertScale(CMTimeSubtract(obj.timeStamp, start), description.sampleRate, kCMTimeRoundingMethod_Default).value;
+            int s = (int)CMTimeConvertScale(CMTimeSubtract(obj.timeStamp, start), description.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             int e = s + obj.numberOfSamples;
             int ss = MAX(0, s);
             int ee = MIN(numberOfSamples, e);

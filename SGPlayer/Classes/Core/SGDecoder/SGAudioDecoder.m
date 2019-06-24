@@ -98,7 +98,7 @@
             }
             CMTime start = packet.timeStamp;
             CMTime duration = packet.duration;
-            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
+            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             if (nb_samples > 0) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
                 SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
@@ -196,7 +196,7 @@
             self->_flags.needsAlignment = NO;
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(obj.timeStamp, start);
-            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
+            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             if (nb_samples > 0) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
                 SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
@@ -209,7 +209,7 @@
         }
         CMTime start = obj.timeStamp;
         CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
-        int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_Default).value;
+        int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
         if (nb_samples < obj.numberOfSamples) {
             duration = CMTimeMake(nb_samples, ad.sampleRate);
             SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescription:ad numberOfSamples:nb_samples];
