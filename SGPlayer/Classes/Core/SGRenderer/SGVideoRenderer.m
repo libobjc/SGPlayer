@@ -33,15 +33,17 @@
 @property (nonatomic, strong, readonly) SGClock *clock;
 @property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
 @property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
+@property (nonatomic, strong, readonly) SGVRMatrixMaker *matrixMaker;
 
 @property (nonatomic, strong, readonly) MTKView *metalView;
 @property (nonatomic, strong, readonly) SGMetalModel *planeModel;
 @property (nonatomic, strong, readonly) SGMetalModel *sphereModel;
 @property (nonatomic, strong, readonly) SGMetalRenderer *renderer;
-@property (nonatomic, strong, readonly) SGMetalProjection *projection;
 @property (nonatomic, strong, readonly) SGMetalRenderPipeline *pipeline;
 @property (nonatomic, strong, readonly) SGMetalTextureLoader *textureLoader;
 @property (nonatomic, strong, readonly) SGMetalRenderPipelinePool *pipelinePool;
+@property (nonatomic, strong, readonly) id<MTLBuffer> uniformBuffer1;
+@property (nonatomic, strong, readonly) id<MTLBuffer> uniformBuffer2;
 
 @end
 
@@ -67,6 +69,7 @@
         self->_preferredFramesPerSecond = 30;
         self->_displayMode = SGDisplayModePlane;
         self->_scalingMode = SGScalingModeResizeAspect;
+        self->_matrixMaker = [[SGVRMatrixMaker alloc] init];
         self->_options = [SGOptions sharedOptions].renderer.copy;
     }
     return self;
@@ -132,8 +135,7 @@
 
 - (SGVRViewport *)viewport
 {
-    return nil;
-//    return self->_matrixMaker.viewport;
+    return self->_matrixMaker.viewport;
 }
 
 - (SGPLFImage *)originalImage
@@ -355,8 +357,9 @@
 {
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
-    SGVideoDescription *description = frame.videoDescription;
-    if (!frame || description.width == 0 || description.height == 0) {
+    NSUInteger width = frame.videoDescription.width;
+    NSUInteger height = frame.videoDescription.height;
+    if (!frame || width == 0 || height == 0) {
         [self->_lock unlock];
         return;
     }
@@ -390,32 +393,69 @@
         textures = [self->_textureLoader texturesWithCVPixelBuffer:frame.pixelBuffer];
     } else {
         textures = [self->_textureLoader texturesWithCVPixelFormat:frame.videoDescription.cv_format
-                                                             width:frame.videoDescription.width
-                                                            height:frame.videoDescription.height
+                                                             width:width
+                                                            height:height
                                                              bytes:(void **)frame.data
                                                        bytesPerRow:frame.linesize];
     }
+    [frame unlock];
     if (!textures.count) {
-        [frame unlock];
         return;
     }
+    MTLViewport viewports[2] = {};
+    NSArray<id<MTLBuffer>> *uniforms = nil;
     id<CAMetalDrawable> drawable = [(CAMetalLayer *)self->_metalView.layer nextDrawable];
-    self.projection.inputSize = MTLSizeMake(description.width, description.height, 0);
-    self.projection.outputSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
-    id<MTLCommandBuffer> commandBuffer = [self.renderer drawModel:model
-                                                         pipeline:pipeline
-                                                       projection:self.projection
-                                                    inputTextures:textures
-                                                    outputTexture:drawable.texture];
-    [commandBuffer presentDrawable:drawable];
-    [commandBuffer commit];
-    [frame unlock];
-    [self->_lock lock];
-    if (self->_flags.framesFetched == framesFetched) {
-        self->_flags.framesDisplayed += 1;
-        self->_flags.hasNewFrame = NO;
+    MTLSize textureSize = MTLSizeMake(width, height, 0);
+    MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
+    switch (displayMode) {
+        case SGDisplayModePlane: {
+            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = matrix_identity_float4x4;
+            viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize textureSize:textureSize mode:SGMetalViewportModeResizeAspect];
+            uniforms = @[self->_uniformBuffer1];
+        }
+            break;
+        case SGDisplayModeVR: {
+            GLKMatrix4 matrix = GLKMatrix4Identity;
+            double aspect = (float)drawable.texture.width / (float)drawable.texture.height;
+            if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix]) {
+                break;
+            }
+            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix);
+            viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize];
+            uniforms = @[self->_uniformBuffer1];
+        }
+            break;
+        case SGDisplayModeVRBox: {
+            GLKMatrix4 matrix1 = GLKMatrix4Identity;
+            GLKMatrix4 matrix2 = GLKMatrix4Identity;
+            double aspect = (float)drawable.texture.width / (float)drawable.texture.height / 2.0;
+            if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix1 matrix2:&matrix2]) {
+                break;
+            }
+            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix1);
+            ((SGMetalUniforms *)self->_uniformBuffer2.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix2);
+            viewports[0] = [SGMetalViewport viewportWithLayerSizeForLeft:layerSize];
+            viewports[1] = [SGMetalViewport viewportWithLayerSizeForRight:layerSize];
+            uniforms = @[self->_uniformBuffer1, self->_uniformBuffer2];
+        }
+            break;
     }
-    [self->_lock unlock];
+    if (uniforms.count) {
+        id<MTLCommandBuffer> commandBuffer = [self.renderer drawModel:model
+                                                            viewports:viewports
+                                                             uniforms:uniforms
+                                                             pipeline:pipeline
+                                                        inputTextures:textures
+                                                        outputTexture:drawable.texture];
+        [commandBuffer presentDrawable:drawable];
+        [commandBuffer commit];
+        [self->_lock lock];
+        if (self->_flags.framesFetched == framesFetched) {
+            self->_flags.framesDisplayed += 1;
+            self->_flags.hasNewFrame = NO;
+        }
+        [self->_lock unlock];
+    }
 }
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size
@@ -439,12 +479,15 @@
 - (void)setupMetal
 {
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
-    self->_projection = [[SGMetalProjection alloc] init];
     self->_renderer = [[SGMetalRenderer alloc] initWithDevice:device];
     self->_planeModel = [[SGMetalPlaneModel alloc] initWithDevice:device];
     self->_sphereModel = [[SGMetalSphereModel alloc] initWithDevice:device];
     self->_textureLoader = [[SGMetalTextureLoader alloc] initWithDevice:device];
     self->_pipelinePool = [[SGMetalRenderPipelinePool alloc] initWithDevice:device];
+    self->_uniformBuffer1 = [device newBufferWithLength:sizeof(SGMetalUniforms)
+                                                options:MTLResourceStorageModeShared];
+    self->_uniformBuffer2 = [device newBufferWithLength:sizeof(SGMetalUniforms)
+                                                options:MTLResourceStorageModeShared];
     self->_metalView = [[MTKView alloc] initWithFrame:CGRectZero device:device];
     self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
     self->_metalView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -457,12 +500,13 @@
 {
     [self->_metalView removeFromSuperview];
     self->_metalView = nil;
-    self->_projection = nil;
     self->_renderer = nil;
     self->_planeModel = nil;
     self->_sphereModel = nil;
     self->_textureLoader = nil;
     self->_pipelinePool = nil;
+    self->_uniformBuffer1 = nil;
+    self->_uniformBuffer2 = nil;
 }
 
 - (void)setView:(SGPLFView *)view
@@ -478,6 +522,25 @@
     if (self->_preferredFramesPerSecond != preferredFramesPerSecond) {
         self->_preferredFramesPerSecond = preferredFramesPerSecond;
         self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+    }
+}
+
+- (void)setDisplayMode:(SGDisplayMode)displayMode
+{
+    if (self->_displayMode != displayMode) {
+        self->_displayMode = displayMode;
+        SGLockCondEXE10(self->_lock, ^BOOL{
+            return
+            self->_displayMode != SGDisplayModePlane &&
+            (self->_flags.state == SGRenderableStateRendering ||
+             self->_flags.state == SGRenderableStatePaused ||
+             self->_flags.state == SGRenderableStateFinished);
+        }, ^SGBlock{
+            return ^{
+                self->_metalView.paused = NO;
+                self->_fetchTimer.paused = NO;
+            };
+        });
     }
 }
 

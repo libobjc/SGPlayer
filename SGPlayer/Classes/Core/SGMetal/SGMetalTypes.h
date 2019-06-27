@@ -17,7 +17,7 @@ typedef struct {
 } SGMetalVertex;
 
 typedef struct {
-    matrix_float4x4 modelViewProjection;
+    matrix_float4x4 mvp;
 } SGMetalUniforms;
 
 #endif /* SGMetalTypes_h */

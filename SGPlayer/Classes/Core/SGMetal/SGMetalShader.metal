@@ -25,7 +25,7 @@ vertex ColorInOut vertexShader(             uint              vertexID [[ vertex
                                constant     SGMetalUniforms & uniforms [[ buffer(1) ]])
 {
     ColorInOut out;
-    out.position = uniforms.modelViewProjection * in[vertexID].position;
+    out.position = uniforms.mvp * in[vertexID].position;
     out.texCoord = in[vertexID].texCoord;
     return out;
 }
