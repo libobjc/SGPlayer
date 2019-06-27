@@ -59,11 +59,6 @@ typedef NS_ENUM(int, SGScalingMode) {
 /**
  *  Main thread only.
  */
-- (SGPLFImage *)originalImage;
-
-/**
- *  Main thread only.
- */
-- (SGPLFImage *)snapshot;
+- (SGPLFImage *)currentImage;
 
 @end

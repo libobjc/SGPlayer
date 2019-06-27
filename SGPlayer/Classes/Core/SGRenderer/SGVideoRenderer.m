@@ -138,7 +138,7 @@
     return self->_matrixMaker.viewport;
 }
 
-- (SGPLFImage *)originalImage
+- (SGPLFImage *)currentImage
 {
     __block SGPLFImage *ret = nil;
     SGLockCondEXE11(self->_lock, ^BOOL {
@@ -155,12 +155,6 @@
         return YES;
     });
     return ret;
-}
-
-- (SGPLFImage *)snapshot
-{
-    return nil;
-//    return SGPLFViewGetCurrentSnapshot(self->_glView);
 }
 
 #pragma mark - Interface
