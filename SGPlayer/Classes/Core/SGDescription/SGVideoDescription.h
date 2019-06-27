@@ -16,6 +16,11 @@
 @property (nonatomic) int format;
 
 /**
+ *  kCVPixelFormatType_XXX
+ */
+@property (nonatomic) OSType cv_format;
+
+/**
  *
  */
 @property (nonatomic) int width;

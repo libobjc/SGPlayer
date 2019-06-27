@@ -159,6 +159,7 @@ static void SGVideoFrameFilling(SGVideoFrame *self)
     self->_videoDescription = [[SGVideoDescription alloc] initWithFrame:frame];
     if (frame->format == AV_PIX_FMT_VIDEOTOOLBOX) {
         self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
+        self->_videoDescription.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
     }
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
