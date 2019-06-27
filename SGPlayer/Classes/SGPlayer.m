@@ -323,18 +323,18 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (BOOL)waitUntilReady
 {
+    NSAssert(![NSThread isMainThread], @"Don't call this method on main thread.");
     BOOL ret = NO;
     [self->_wakeup lock];
     while (YES) {
-        __block SGPlayerState state = SGPlayerStateNone;
-        SGLockEXE00(self->_lock, ^{
-            state = self->_flags.stateInfo.player;
-        });
-        if (state == SGPlayerStatePreparing) {
+        [self->_lock lock];
+        if (self->_flags.stateInfo.player == SGPlayerStatePreparing) {
+            [self->_lock unlock];
             [self->_wakeup wait];
             continue;
         }
-        ret = state == SGPlayerStateReady;
+        ret = self->_flags.stateInfo.player == SGPlayerStateReady;
+        [self->_lock unlock];
         break;
     }
     [self->_wakeup unlock];
