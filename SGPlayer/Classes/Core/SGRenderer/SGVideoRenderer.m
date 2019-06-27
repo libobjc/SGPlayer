@@ -34,6 +34,7 @@
 @property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
 @property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
 @property (nonatomic, strong, readonly) SGGLDisplayLink *drawTimer;
+
 @property (nonatomic, strong, readonly) SGGLView *glView;
 @property (nonatomic, strong, readonly) SGGLModelPool *modelPool;
 @property (nonatomic, strong, readonly) SGGLProgramPool *programPool;
@@ -215,7 +216,9 @@
 - (BOOL)pause
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
+        return
+        self->_flags.state == SGRenderableStateRendering ||
+        self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
@@ -228,7 +231,9 @@
 - (BOOL)resume
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateFinished;
+        return
+        self->_flags.state == SGRenderableStatePaused ||
+        self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
@@ -241,7 +246,10 @@
 - (BOOL)flush
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStateFinished;
+        return
+        self->_flags.state == SGRenderableStatePaused ||
+        self->_flags.state == SGRenderableStateRendering ||
+        self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
         self->_flags.hasNewFrameToDisplay = NO;
         self->_flags.hasNewFrameToOutput = NO;
@@ -258,7 +266,9 @@
 - (BOOL)finish
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStatePaused;
+        return
+        self->_flags.state == SGRenderableStateRendering ||
+        self->_flags.state == SGRenderableStatePaused;
     }, ^SGBlock {
         return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
@@ -275,7 +285,9 @@
     BOOL should_fetch = NO;
     BOOL should_pause = NO;
     [self->_lock lock];
-    if (self->_flags.state == SGRenderableStateRendering || (self->_flags.state == SGRenderableStatePaused && self->_flags.framesOutput == 0)) {
+    if (self->_flags.state == SGRenderableStateRendering ||
+        (self->_flags.state == SGRenderableStatePaused &&
+         self->_flags.framesOutput == 0)) {
         should_fetch = YES;
     } else if (self->_flags.state != SGRenderableStateRendering) {
         should_pause = YES;
@@ -347,7 +359,8 @@
     __block BOOL draw_ret = NO;
     SGLockEXE11(self->_lock, ^SGBlock {
         SGBlock b1 = ^{}, b2 = ^{};
-        if (self->_flags.hasNewFrameToOutput && self->_currentFrame) {
+        if (self->_currentFrame &&
+            self->_flags.hasNewFrameToOutput) {
             SGVideoFrame *frame = self->_currentFrame;
             [frame lock];
             b1 = ^{
@@ -357,10 +370,15 @@
                 [frame unlock];
             };
         }
-        if ((self->_flags.hasNewFrameToDisplay || !self->_glView.framesDisplayed || (self->_displayMode == SGDisplayModeVR || self->_displayMode == SGDisplayModeVRBox)) && self->_currentFrame) {
+        if (self->_currentFrame &&
+            (self->_flags.hasNewFrameToDisplay ||
+             !self->_glView.framesDisplayed ||
+             (self->_displayMode == SGDisplayModeVR ||
+              self->_displayMode == SGDisplayModeVRBox))) {
             b2 = ^{
                 [self addGLViewIfNeeded];
-                if (self->_glView.superview && self->_glView.displaySize.width > 0) {
+                if (self->_glView.superview &&
+                    self->_glView.displaySize.width > 0) {
                     draw_ret = [self display];
                 }
             };
@@ -372,12 +390,16 @@
         block();
         SGLockEXE10(self->_lock, ^SGBlock {
             self->_flags.hasNewFrameToOutput = NO;
-            if (draw_ret && self->_flags.hasNewFrameToDisplay) {
+            if (draw_ret &&
+                self->_flags.hasNewFrameToDisplay) {
                 self->_flags.hasNewFrameToDisplay = NO;
                 self->_flags.framesDisplayed += 1;
             }
             SGBlock b1 = ^{};
-            if (self->_flags.state != SGRenderableStateRendering && self->_displayMode == SGDisplayModePlane && self->_flags.framesDisplayed && self->_glView.framesDisplayed) {
+            if (self->_flags.framesDisplayed &&
+                self->_flags.state != SGRenderableStateRendering &&
+                self->_displayMode == SGDisplayModePlane &&
+                self->_glView.framesDisplayed) {
                 b1 = ^{
                     self->_drawTimer.paused = YES;
                 };
@@ -393,18 +415,42 @@
 - (void)addGLViewIfNeeded
 {
     if (self->_view) {
-        if (!self->_glView) {
+        if (self->_glView == nil) {
             self->_glView = [[SGGLView alloc] initWithFrame:self->_view.bounds];
-            self->_glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self->_glView.context];
             self->_glView.delegate = self;
+            self->_glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self->_glView.context];
         }
         if (self->_glView.superview != self->_view) {
-            SGPLFViewInsertSubview(self->_view, self->_glView, 0);
             self->_glView.translatesAutoresizingMaskIntoConstraints = NO;
-            NSLayoutConstraint *c1 = [NSLayoutConstraint constraintWithItem:self->_glView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self->_view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
-            NSLayoutConstraint *c2 = [NSLayoutConstraint constraintWithItem:self->_glView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self->_view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
-            NSLayoutConstraint *c3 = [NSLayoutConstraint constraintWithItem:self->_glView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self->_view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
-            NSLayoutConstraint *c4 = [NSLayoutConstraint constraintWithItem:self->_glView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self->_view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0];
+            SGPLFViewInsertSubview(self->_view, self->_glView, 0);
+            NSLayoutConstraint *c1 = [NSLayoutConstraint constraintWithItem:self->_glView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self->_view
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0
+                                                                   constant:0.0];
+            NSLayoutConstraint *c2 = [NSLayoutConstraint constraintWithItem:self->_glView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self->_view
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1.0
+                                                                   constant:0.0];
+            NSLayoutConstraint *c3 = [NSLayoutConstraint constraintWithItem:self->_glView
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self->_view
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1.0
+                                                                   constant:0.0];
+            NSLayoutConstraint *c4 = [NSLayoutConstraint constraintWithItem:self->_glView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self->_view
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1.0
+                                                                   constant:0.0];
             [self->_view addConstraints:@[c1, c2, c3, c4]];
         }
     } else {
@@ -523,7 +569,10 @@
 - (void)glViewDidFlush:(SGGLView *)glView
 {
     SGLockCondEXE00(self->_lock, ^BOOL {
-        return self->_flags.state == SGRenderableStateRendering || self->_flags.state == SGRenderableStatePaused || self->_flags.state == SGRenderableStateFinished;
+        return
+        self->_flags.state == SGRenderableStateRendering ||
+        self->_flags.state == SGRenderableStatePaused ||
+        self->_flags.state == SGRenderableStateFinished;
     }, ^ {
         self->_drawTimer.paused = NO;
         self->_fetchTimer.paused = NO;
