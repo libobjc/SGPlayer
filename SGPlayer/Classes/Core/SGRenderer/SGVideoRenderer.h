@@ -44,17 +44,17 @@ typedef NS_ENUM(int, SGScalingMode) {
 /**
  *  Main thread only.
  */
+@property (nonatomic) NSInteger preferredFramesPerSecond;
+
+/**
+ *  Main thread only.
+ */
 @property (nonatomic) SGScalingMode scalingMode;
 
 /**
  *  Main thread only.
  */
 @property (nonatomic) SGDisplayMode displayMode;
-
-/**
- *  Main thread only.
- */
-@property (nonatomic) CMTime displayInterval;
 
 /**
  *  Main thread only.

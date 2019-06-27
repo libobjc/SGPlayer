@@ -12,34 +12,36 @@
 #import "SGOptions.h"
 #import "SGMapping.h"
 #import "SGOpenGL.h"
+#import "SGMetal.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
-@interface SGVideoRenderer () <SGGLViewDelegate>
+@interface SGVideoRenderer () <MTKViewDelegate>
 
 {
     struct {
         SGRenderableState state;
-        int framesOutput;
-        int framesDisplayed;
-        BOOL hasNewFrameToOutput;
-        BOOL hasNewFrameToDisplay;
-        double frameInvalidMediaTime;
+        BOOL hasNewFrame;
+        NSUInteger framesFetched;
+        NSUInteger framesDisplayed;
+        NSTimeInterval currentFrameEndTime;
     } _flags;
     SGCapacity _capacity;
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
-@property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
 @property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
-@property (nonatomic, strong, readonly) SGGLDisplayLink *drawTimer;
+@property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
 
-@property (nonatomic, strong, readonly) SGGLView *glView;
-@property (nonatomic, strong, readonly) SGGLModelPool *modelPool;
-@property (nonatomic, strong, readonly) SGGLProgramPool *programPool;
-@property (nonatomic, strong, readonly) SGVRMatrixMaker *matrixMaker;
-@property (nonatomic, strong, readonly) SGGLTextureUploader *glUploader;
+@property (nonatomic, strong, readonly) MTKView *metalView;
+@property (nonatomic, strong, readonly) SGMetalModel *planeModel;
+@property (nonatomic, strong, readonly) SGMetalModel *sphereModel;
+@property (nonatomic, strong, readonly) SGMetalRenderer *renderer;
+@property (nonatomic, strong, readonly) SGMetalProjection *projection;
+@property (nonatomic, strong, readonly) SGMetalRenderPipeline *pipeline;
+@property (nonatomic, strong, readonly) SGMetalTextureLoader *textureLoader;
+@property (nonatomic, strong, readonly) SGMetalRenderPipelinePool *pipelinePool;
 
 @end
 
@@ -62,12 +64,9 @@
         self->_rate = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
-        self->_scalingMode = SGScalingModeResizeAspect;
+        self->_preferredFramesPerSecond = 30;
         self->_displayMode = SGDisplayModePlane;
-        self->_displayInterval = CMTimeMake(1, 30);
-        self->_modelPool = [[SGGLModelPool alloc] init];
-        self->_programPool = [[SGGLProgramPool alloc] init];
-        self->_matrixMaker = [[SGVRMatrixMaker alloc] init];
+        self->_scalingMode = SGScalingModeResizeAspect;
         self->_options = [SGOptions sharedOptions].renderer.copy;
     }
     return self;
@@ -75,13 +74,13 @@
 
 - (void)dealloc
 {
+    [self performSelectorOnMainThread:@selector(destoryMetal)
+                           withObject:nil
+                        waitUntilDone:YES];
     [self->_fetchTimer invalidate];
     self->_fetchTimer = nil;
-    [self->_drawTimer invalidate];
-    self->_drawTimer = nil;
     [self->_currentFrame unlock];
     self->_currentFrame = nil;
-    [self performSelectorOnMainThread:@selector(removeGLViewIfNeeded) withObject:nil waitUntilDone:YES];
 }
 
 #pragma mark - Setter & Getter
@@ -133,7 +132,8 @@
 
 - (SGVRViewport *)viewport
 {
-    return self->_matrixMaker.viewport;
+    return nil;
+//    return self->_matrixMaker.viewport;
 }
 
 - (SGPLFImage *)originalImage
@@ -157,7 +157,8 @@
 
 - (SGPLFImage *)snapshot
 {
-    return SGPLFViewGetCurrentSnapshot(self->_glView);
+    return nil;
+//    return SGPLFViewGetCurrentSnapshot(self->_glView);
 }
 
 #pragma mark - Interface
@@ -170,18 +171,16 @@
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
         block();
+        [self performSelectorOnMainThread:@selector(setupMetal)
+                               withObject:nil
+                            waitUntilDone:YES];
         SGWeakify(self)
-        NSTimeInterval timeInterval = CMTimeGetSeconds(self->_displayInterval);
-        self->_drawTimer = [[SGGLDisplayLink alloc] initWithTimeInterval:timeInterval handler:^{
-            SGStrongify(self);
-            [self drawTimerHandler];
-        }];
-        self->_fetchTimer = [[SGGLTimer alloc] initWithTimeInterval:timeInterval / 2.0f handler:^{
+        NSTimeInterval interval = 0.5 / self->_preferredFramesPerSecond;
+        self->_fetchTimer = [[SGGLTimer alloc] initWithTimeInterval:interval handler:^{
             SGStrongify(self)
             [self fetchTimerHandler];
         }];
         self->_fetchTimer.paused = NO;
-        self->_drawTimer.paused = NO;
         return YES;
     });
 }
@@ -189,25 +188,20 @@
 - (BOOL)close
 {
     return SGLockEXE11(self->_lock, ^SGBlock {
-        SGBlock b1 = self->_flags.framesDisplayed ? ^{
-            [self performSelectorOnMainThread:@selector(clear) withObject:nil waitUntilDone:YES];
-        } : ^{};
-        SGBlock b2 = [self setState:SGRenderableStateNone];
+        SGBlock b1 = [self setState:SGRenderableStateNone];
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
-        self->_flags.hasNewFrameToDisplay = NO;
-        self->_flags.hasNewFrameToOutput = NO;
+        self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
-        self->_flags.framesOutput = 0;
+        self->_flags.hasNewFrame = NO;
         self->_capacity = SGCapacityCreate();
-        return ^{
-            b1(); b2();
-        };
+        return ^{b1();};
     }, ^BOOL(SGBlock block) {
+        [self performSelectorOnMainThread:@selector(destoryMetal)
+                               withObject:nil
+                            waitUntilDone:YES];
         [self->_fetchTimer invalidate];
         self->_fetchTimer = nil;
-        [self->_drawTimer invalidate];
-        self->_drawTimer = nil;
         block();
         return YES;
     });
@@ -222,7 +216,7 @@
     }, ^SGBlock {
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
-        self->_drawTimer.paused = NO;
+        self->_metalView.paused = NO;
         self->_fetchTimer.paused = NO;
         return YES;
     });
@@ -237,7 +231,7 @@
     }, ^SGBlock {
         return [self setState:SGRenderableStateRendering];
     }, ^BOOL(SGBlock block) {
-        self->_drawTimer.paused = NO;
+        self->_metalView.paused = NO;
         self->_fetchTimer.paused = NO;
         return YES;
     });
@@ -251,13 +245,14 @@
         self->_flags.state == SGRenderableStateRendering ||
         self->_flags.state == SGRenderableStateFinished;
     }, ^SGBlock {
-        self->_flags.hasNewFrameToDisplay = NO;
-        self->_flags.hasNewFrameToOutput = NO;
+        [self->_currentFrame unlock];
+        self->_currentFrame = nil;
+        self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
-        self->_flags.framesOutput = 0;
+        self->_flags.hasNewFrame = NO;
         return nil;
     }, ^BOOL(SGBlock block) {
-        self->_drawTimer.paused = NO;
+        self->_metalView.paused = NO;
         self->_fetchTimer.paused = NO;
         return YES;
     });
@@ -272,311 +267,258 @@
     }, ^SGBlock {
         return [self setState:SGRenderableStateFinished];
     }, ^BOOL(SGBlock block) {
-        self->_drawTimer.paused = NO;
+        self->_metalView.paused = NO;
         self->_fetchTimer.paused = NO;
         return YES;
     });
 }
 
-#pragma mark - Render
+#pragma mark - Fecth
 
 - (void)fetchTimerHandler
 {
-    BOOL should_fetch = NO;
-    BOOL should_pause = NO;
+    BOOL shouldFetch = NO;
+    BOOL shouldPause = NO;
     [self->_lock lock];
     if (self->_flags.state == SGRenderableStateRendering ||
         (self->_flags.state == SGRenderableStatePaused &&
-         self->_flags.framesOutput == 0)) {
-        should_fetch = YES;
+         self->_flags.framesFetched == 0)) {
+        shouldFetch = YES;
     } else if (self->_flags.state != SGRenderableStateRendering) {
-        should_pause = YES;
+        shouldPause = YES;
     }
     [self->_lock unlock];
-    if (should_pause) {
+    if (shouldPause) {
         self->_fetchTimer.paused = YES;
     }
-    if (!should_fetch) {
+    if (!shouldFetch) {
         return;
     }
-    __block int framesOutput = 0;
-    __block double media_time_current = CACurrentMediaTime();
+    __block NSUInteger framesFetched = 0;
+    __block NSTimeInterval currentMediaTime = CACurrentMediaTime();
     SGWeakify(self)
-    SGVideoFrame *ret = [self->_delegate renderable:self fetchFrame:^BOOL(CMTime *desire, BOOL *drop) {
+    SGVideoFrame *newFrame = [self->_delegate renderable:self fetchFrame:^BOOL(CMTime *desire, BOOL *drop) {
         SGStrongify(self)
-        return SGLockCondEXE11(self->_lock, ^BOOL {
-            framesOutput = self->_flags.framesOutput;
-            return self->_currentFrame && self->_flags.framesOutput != 0;
+        return SGLockCondEXE10(self->_lock, ^BOOL {
+            framesFetched = self->_flags.framesFetched;
+            return self->_currentFrame && framesFetched != 0;
         }, ^SGBlock {
-            return nil;
-        }, ^BOOL(SGBlock block) {
-            double media_time_next = [self->_drawTimer nextTimestamp];
-            media_time_current = CACurrentMediaTime();
-            CMTime time = self->_clock.currentTime;
-            CMTime next = CMTimeMaximum(SGCMTimeMakeWithSeconds(media_time_next - media_time_current), kCMTimeZero);
-            *desire = CMTimeAdd(time, next);
-            *drop = YES;
-            return YES;
+            return ^{
+                currentMediaTime = CACurrentMediaTime();
+                *desire = self->_clock.currentTime;
+                *drop = YES;
+            };
         });
     }];
     SGLockCondEXE10(self->_lock, ^BOOL {
-        return !ret || framesOutput == self->_flags.framesOutput;
+        return !newFrame || framesFetched == self->_flags.framesFetched;
     }, ^SGBlock {
-        SGBlock b1 = ^{}, b2 = ^{};
+        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
         SGCapacity capacity = SGCapacityCreate();
-        if (ret) {
-            [ret lock];
+        if (newFrame) {
+            [newFrame lock];
+            CMTime time = newFrame.timeStamp;
+            CMTime duration = CMTimeMultiplyByFloat64(newFrame.duration, self->_rate);
+            capacity.duration = duration;
             [self->_currentFrame unlock];
-            self->_currentFrame = ret;
-            self->_flags.hasNewFrameToDisplay = YES;
-            self->_flags.hasNewFrameToOutput = YES;
-            self->_flags.framesOutput += 1;
-            self->_flags.frameInvalidMediaTime = media_time_current + CMTimeGetSeconds(CMTimeMultiplyByFloat64(ret.duration, self->_rate));
-            capacity.duration = ret.duration;
-            CMTime videoCurrentTime = self->_currentFrame.timeStamp;
-            b1 = ^{
-                [self->_clock setVideoTime:videoCurrentTime];
+            self->_currentFrame = newFrame;
+            self->_flags.framesFetched += 1;
+            self->_flags.hasNewFrame = YES;
+            self->_flags.currentFrameEndTime = currentMediaTime + CMTimeGetSeconds(duration);
+            if (self->_frameOutput) {
+                [newFrame lock];
+                b1 = ^{
+                    self->_frameOutput(newFrame);
+                    [newFrame unlock];
+                };
+            }
+            b2 = ^{
+                [self->_clock setVideoTime:time];
             };
-        } else if (media_time_current < self->_flags.frameInvalidMediaTime) {
-            capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.frameInvalidMediaTime - media_time_current);
+        } else if (currentMediaTime < self->_flags.currentFrameEndTime) {
+            capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.currentFrameEndTime - currentMediaTime);
         }
-        
         if (!SGCapacityIsEqual(self->_capacity, capacity)) {
             self->_capacity = capacity;
-            b2 = ^{
+            b3 = ^{
                 [self->_delegate renderable:self didChangeCapacity:capacity];
             };
         }
-        return ^{
-            b1(); b2();
-        };
+        return ^{b1(); b2(); b3();};
     });
-    [ret unlock];
+    [newFrame unlock];
 }
 
-- (void)drawTimerHandler
-{
-    __block BOOL draw_ret = NO;
-    SGLockEXE11(self->_lock, ^SGBlock {
-        SGBlock b1 = ^{}, b2 = ^{};
-        if (self->_currentFrame &&
-            self->_flags.hasNewFrameToOutput) {
-            SGVideoFrame *frame = self->_currentFrame;
-            [frame lock];
-            b1 = ^{
-                if (self->_frameOutput) {
-                    self->_frameOutput(frame);
-                }
-                [frame unlock];
-            };
-        }
-        if (self->_currentFrame &&
-            (self->_flags.hasNewFrameToDisplay ||
-             !self->_glView.framesDisplayed ||
-             (self->_displayMode == SGDisplayModeVR ||
-              self->_displayMode == SGDisplayModeVRBox))) {
-            b2 = ^{
-                [self addGLViewIfNeeded];
-                if (self->_glView.superview &&
-                    self->_glView.displaySize.width > 0) {
-                    draw_ret = [self display];
-                }
-            };
-        }
-        return ^{
-            b1(); b2();
-        };
-    }, ^BOOL(SGBlock block) {
-        block();
-        SGLockEXE10(self->_lock, ^SGBlock {
-            self->_flags.hasNewFrameToOutput = NO;
-            if (draw_ret &&
-                self->_flags.hasNewFrameToDisplay) {
-                self->_flags.hasNewFrameToDisplay = NO;
-                self->_flags.framesDisplayed += 1;
-            }
-            SGBlock b1 = ^{};
-            if (self->_flags.framesDisplayed &&
-                self->_flags.state != SGRenderableStateRendering &&
-                self->_displayMode == SGDisplayModePlane &&
-                self->_glView.framesDisplayed) {
-                b1 = ^{
-                    self->_drawTimer.paused = YES;
-                };
-            }
-            return b1;
-        });
-        return YES;
-    });
-}
+#pragma mark - MTKViewDelegate
 
-#pragma mark - SGGLView
-
-- (void)addGLViewIfNeeded
-{
-    if (self->_view) {
-        if (self->_glView == nil) {
-            self->_glView = [[SGGLView alloc] initWithFrame:self->_view.bounds];
-            self->_glView.delegate = self;
-            self->_glUploader = [[SGGLTextureUploader alloc] initWithGLContext:self->_glView.context];
-        }
-        if (self->_glView.superview != self->_view) {
-            self->_glView.translatesAutoresizingMaskIntoConstraints = NO;
-            SGPLFViewInsertSubview(self->_view, self->_glView, 0);
-            NSLayoutConstraint *c1 = [NSLayoutConstraint constraintWithItem:self->_glView
-                                                                  attribute:NSLayoutAttributeTop
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self->_view
-                                                                  attribute:NSLayoutAttributeTop
-                                                                 multiplier:1.0
-                                                                   constant:0.0];
-            NSLayoutConstraint *c2 = [NSLayoutConstraint constraintWithItem:self->_glView
-                                                                  attribute:NSLayoutAttributeLeft
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self->_view
-                                                                  attribute:NSLayoutAttributeLeft
-                                                                 multiplier:1.0
-                                                                   constant:0.0];
-            NSLayoutConstraint *c3 = [NSLayoutConstraint constraintWithItem:self->_glView
-                                                                  attribute:NSLayoutAttributeBottom
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self->_view
-                                                                  attribute:NSLayoutAttributeBottom
-                                                                 multiplier:1.0
-                                                                   constant:0.0];
-            NSLayoutConstraint *c4 = [NSLayoutConstraint constraintWithItem:self->_glView
-                                                                  attribute:NSLayoutAttributeRight
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self->_view
-                                                                  attribute:NSLayoutAttributeRight
-                                                                 multiplier:1.0
-                                                                   constant:0.0];
-            [self->_view addConstraints:@[c1, c2, c3, c4]];
-        }
-    } else {
-        [self->_glView removeFromSuperview];
-    }
-}
-
-- (void)removeGLViewIfNeeded
-{
-    [self->_glView removeFromSuperview];
-}
-
-- (BOOL)display
-{
-#if SGPLATFORM_TARGET_OS_IPHONE
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        return [self->_glView display];
-    }
-    return NO;
-#else
-    return [self->_glView display];
-#endif
-}
-
-- (BOOL)clear
-{
-#if SGPLATFORM_TARGET_OS_IPHONE
-    if ([UIApplication sharedApplication].applicationState != UIApplicationStateBackground) {
-        return [self->_glView clear];
-    }
-    return NO;
-#else
-    return [self->_glView clear];
-#endif
-}
-
-- (BOOL)glView:(SGGLView *)glView display:(SGGLSize)size
+- (void)drawInMTKView:(MTKView *)view
 {
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
     SGVideoDescription *description = frame.videoDescription;
     if (!frame || description.width == 0 || description.height == 0) {
         [self->_lock unlock];
-        return NO;
+        return;
     }
+    BOOL shouldDraw = NO;
+    if (self->_flags.hasNewFrame ||
+        self->_flags.framesDisplayed == 0 ||
+        (self->_displayMode == SGDisplayModeVR ||
+         self->_displayMode == SGDisplayModeVRBox)) {
+            shouldDraw = YES;
+    }
+    if (!shouldDraw) {
+        BOOL shouldPause = self->_flags.state != SGRenderableStateRendering;
+        [self->_lock unlock];
+        if (shouldPause) {
+            self->_metalView.paused = YES;
+        }
+        return;
+    }
+    NSUInteger framesFetched = self->_flags.framesFetched;
     [frame lock];
     [self->_lock unlock];
-    SGGLSize textureSize = {description.width, description.height};
     SGDisplayMode displayMode = self->_displayMode;
-    id<SGGLModel> model = [self->_modelPool modelWithType:SGDisplay2Model(displayMode)];
-    id<SGGLProgram> program = [self->_programPool programWithType:SGFormat2Program(description.format, frame.pixelBuffer)];
-    if (!model || !program) {
+    SGMetalModel *model = displayMode == SGDisplayModePlane ? self->_planeModel : self->_sphereModel;
+    SGMetalRenderPipeline *pipeline = [self->_pipelinePool pipelineWithCVPixelFormat:frame.videoDescription.cv_format];
+    if (!model || !pipeline) {
         [frame unlock];
-        return NO;
+        return;
     }
-    [program use];
-    [program bindVariable];
-    BOOL success = [self->_glUploader uploadWithVideoFrame:frame];
-    if (!success) {
-        [model unbind];
-        [program unuse];
+    NSArray<id<MTLTexture>> *textures = nil;
+    if (frame.pixelBuffer) {
+        textures = [self->_textureLoader texturesWithCVPixelBuffer:frame.pixelBuffer];
+    } else {
+        textures = [self->_textureLoader texturesWithCVPixelFormat:frame.videoDescription.cv_format
+                                                             width:frame.videoDescription.width
+                                                            height:frame.videoDescription.height
+                                                             bytes:(void **)frame.data
+                                                       bytesPerRow:frame.linesize];
+    }
+    if (!textures.count) {
         [frame unlock];
-        return NO;
+        return;
     }
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    [model bindPosition_location:program.position_location
-      textureCoordinate_location:program.textureCoordinate_location];
-    switch (displayMode) {
-        case SGDisplayModePlane: {
-            [program updateModelViewProjectionMatrix:GLKMatrix4Identity];
-            [SGGLViewport updateWithLayerSize:size scale:glView.glScale textureSize:textureSize mode:SGScaling2Viewport(self->_scalingMode)];
-            [model draw];
-        }
-            break;
-        case SGDisplayModeVR: {
-            double aspect = (float)size.width / (float)size.height;
-            GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Identity;
-            if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix]) {
-                break;
-            }
-            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix];
-            [SGGLViewport updateWithLayerSize:size scale:glView.glScale];
-            [model draw];
-        }
-            break;
-        case SGDisplayModeVRBox: {
-            double aspect = (float)size.width / (float)size.height / 2;
-            GLKMatrix4 modelViewProjectionMatrix1 = GLKMatrix4Identity;
-            GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Identity;
-            if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&modelViewProjectionMatrix1 matrix2:&modelViewProjectionMatrix2]) {
-                break;
-            }
-            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix1];
-            [SGGLViewport updateWithLayerSizeForLeft:size scale:glView.glScale];
-            [model draw];
-            [program updateModelViewProjectionMatrix:modelViewProjectionMatrix2];
-            [SGGLViewport updateWithLayerSizeForRight:size scale:glView.glScale];
-            [model draw];
-        }
-            break;
-    }
-    [model unbind];
-    [program unuse];
+    id<CAMetalDrawable> drawable = [(CAMetalLayer *)self->_metalView.layer nextDrawable];
+    self.projection.inputSize = MTLSizeMake(description.width, description.height, 0);
+    self.projection.outputSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
+    id<MTLCommandBuffer> commandBuffer = [self.renderer drawModel:model
+                                                         pipeline:pipeline
+                                                       projection:self.projection
+                                                    inputTextures:textures
+                                                    outputTexture:drawable.texture];
+    [commandBuffer presentDrawable:drawable];
+    [commandBuffer commit];
     [frame unlock];
-    return YES;
+    [self->_lock lock];
+    if (self->_flags.framesFetched == framesFetched) {
+        self->_flags.framesDisplayed += 1;
+        self->_flags.hasNewFrame = NO;
+    }
+    [self->_lock unlock];
 }
 
-- (BOOL)glView:(SGGLView *)glView clear:(SGGLSize)size
+- (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size
 {
-    glClearColor(0, 0, 0, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    return YES;
-}
-
-- (void)glViewDidFlush:(SGGLView *)glView
-{
-    SGLockCondEXE00(self->_lock, ^BOOL {
+    SGLockCondEXE10(self->_lock, ^BOOL{
         return
         self->_flags.state == SGRenderableStateRendering ||
         self->_flags.state == SGRenderableStatePaused ||
         self->_flags.state == SGRenderableStateFinished;
-    }, ^ {
-        self->_drawTimer.paused = NO;
-        self->_fetchTimer.paused = NO;
+    }, ^SGBlock{
+        self->_flags.framesDisplayed = 0;
+        return ^{
+            self->_metalView.paused = NO;
+            self->_fetchTimer.paused = NO;
+        };
     });
+}
+
+#pragma mark - Metal
+
+- (void)setupMetal
+{
+    id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+    self->_projection = [[SGMetalProjection alloc] init];
+    self->_renderer = [[SGMetalRenderer alloc] initWithDevice:device];
+    self->_planeModel = [[SGMetalPlaneModel alloc] initWithDevice:device];
+    self->_sphereModel = [[SGMetalSphereModel alloc] initWithDevice:device];
+    self->_textureLoader = [[SGMetalTextureLoader alloc] initWithDevice:device];
+    self->_pipelinePool = [[SGMetalRenderPipelinePool alloc] initWithDevice:device];
+    self->_metalView = [[MTKView alloc] initWithFrame:CGRectZero device:device];
+    self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+    self->_metalView.translatesAutoresizingMaskIntoConstraints = NO;
+    self->_metalView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+    self->_metalView.delegate = self;
+    [self layoutMetalViewIfNeeded];
+}
+
+- (void)destoryMetal
+{
+    [self->_metalView removeFromSuperview];
+    self->_metalView = nil;
+    self->_projection = nil;
+    self->_renderer = nil;
+    self->_planeModel = nil;
+    self->_sphereModel = nil;
+    self->_textureLoader = nil;
+    self->_pipelinePool = nil;
+}
+
+- (void)setView:(SGPLFView *)view
+{
+    if (self->_view != view) {
+        self->_view = view;
+        [self layoutMetalViewIfNeeded];
+    }
+}
+
+- (void)setPreferredFramesPerSecond:(NSInteger)preferredFramesPerSecond
+{
+    if (self->_preferredFramesPerSecond != preferredFramesPerSecond) {
+        self->_preferredFramesPerSecond = preferredFramesPerSecond;
+        self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+    }
+}
+
+- (void)layoutMetalViewIfNeeded
+{
+    if (self->_view &&
+        self->_metalView &&
+        self->_metalView.superview != self->_view) {
+        SGPLFViewInsertSubview(self->_view, self->_metalView, 0);
+        NSLayoutConstraint *c1 = [NSLayoutConstraint constraintWithItem:self->_metalView
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self->_view
+                                                              attribute:NSLayoutAttributeTop
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c2 = [NSLayoutConstraint constraintWithItem:self->_metalView
+                                                              attribute:NSLayoutAttributeLeft
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self->_view
+                                                              attribute:NSLayoutAttributeLeft
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c3 = [NSLayoutConstraint constraintWithItem:self->_metalView
+                                                              attribute:NSLayoutAttributeBottom
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self->_view
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        NSLayoutConstraint *c4 = [NSLayoutConstraint constraintWithItem:self->_metalView
+                                                              attribute:NSLayoutAttributeRight
+                                                              relatedBy:NSLayoutRelationEqual
+                                                                 toItem:self->_view
+                                                              attribute:NSLayoutAttributeRight
+                                                             multiplier:1.0
+                                                               constant:0.0];
+        [self->_view addConstraints:@[c1, c2, c3, c4]];
+    } else {
+        [self->_metalView removeFromSuperview];
+    }
 }
 
 @end
