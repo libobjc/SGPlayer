@@ -137,7 +137,7 @@
         }
         if (self->_playbackTimebase) {
             CFRelease(self->_playbackTimebase);
-            self->_audioTimebase = NULL;
+            self->_playbackTimebase = NULL;
         }
     });
 }
