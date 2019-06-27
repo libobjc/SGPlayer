@@ -404,7 +404,7 @@
     switch (displayMode) {
         case SGDisplayModePlane: {
             ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = matrix_identity_float4x4;
-            viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize textureSize:textureSize mode:SGMetalViewportModeResizeAspect];
+            viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize textureSize:textureSize mode:SGScaling2Viewport(self->_scalingMode)];
             uniforms = @[self->_uniformBuffer1];
         }
             break;

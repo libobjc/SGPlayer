@@ -37,17 +37,17 @@ SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pix
     }
 }
 
-SGGLViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
+SGMetalViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
 {
     switch (scalingMode) {
         case SGScalingModeResize:
-            return SGGLViewportModeResize;
+            return SGMetalViewportModeResize;
         case SGScalingModeResizeAspect:
-            return SGGLViewportModeResizeAspect;
+            return SGMetalViewportModeResizeAspect;
         case SGScalingModeResizeAspectFill:
-            return SGGLViewportModeResizeAspectFill;
+            return SGMetalViewportModeResizeAspectFill;
     }
-    return SGGLViewportModeResizeAspect;
+    return SGMetalViewportModeResizeAspect;
 }
 
 SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType)
