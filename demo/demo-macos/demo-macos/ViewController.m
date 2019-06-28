@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "PlayerViewController.h"
+#import "SGPlayViewController.h"
 
 @interface ViewController ()
 
@@ -24,10 +24,10 @@
 
 - (void)prepareForSegue:(NSStoryboardSegue *)segue sender:(id)sender
 {
-    if ([segue.identifier isEqualToString:@"gotoPlay"]) {
-        PlayerViewController * obj = (PlayerViewController *)[segue.destinationController contentViewController];
-        [obj setup];
-    }
+    NSURL *URL = [[NSBundle mainBundle] URLForResource:@"i-see-fire" withExtension:@"mp4"];
+    SGPlayViewController *vc = (id)[segue.destinationController contentViewController];
+    vc.asset = [[SGURLAsset alloc] initWithURL:URL];
+    [vc run];
 }
 
 @end

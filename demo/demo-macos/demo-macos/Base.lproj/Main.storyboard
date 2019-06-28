@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14313.18"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="14460.31"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -692,12 +692,12 @@
                             <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="tyn-mX-tnY">
                                 <rect key="frame" x="18" y="17" width="317" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                <popUpButtonCell key="cell" type="push" title="i see fire,   FFmpeg" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Xbi-QP-43t" id="0BQ-tz-Hzd">
+                                <popUpButtonCell key="cell" type="push" title="i see fire,   FFmpeg" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Xbi-QP-43t" id="0BQ-tz-Hzd">
                                     <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="menu"/>
                                     <menu key="menu" id="zUj-bF-abr">
                                         <items>
-                                            <menuItem title="i see fire,   FFmpeg" id="Xbi-QP-43t"/>
+                                            <menuItem title="i see fire,   FFmpeg" state="on" id="Xbi-QP-43t"/>
                                             <menuItem title="google help,  FFmpeg,  VR" id="012-hm-Gfs"/>
                                         </items>
                                     </menu>
@@ -746,10 +746,10 @@
             </objects>
             <point key="canvasLocation" x="69" y="814"/>
         </scene>
-        <!--Player View Controller-->
+        <!--Play View Controller-->
         <scene sceneID="KbN-1X-dPk">
             <objects>
-                <viewController id="tkW-4P-838" customClass="PlayerViewController" sceneMemberID="viewController">
+                <viewController id="tkW-4P-838" customClass="SGPlayViewController" sceneMemberID="viewController">
                     <view key="view" id="scU-EH-Epl">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -783,6 +783,9 @@
                                     <constraint firstAttribute="height" constant="15" id="80V-p0-xkb"/>
                                 </constraints>
                                 <sliderCell key="cell" state="on" alignment="left" maxValue="1" tickMarkPosition="above" sliderType="linear" id="H1z-tp-Cm9"/>
+                                <connections>
+                                    <action selector="progressValueChanged:" target="tkW-4P-838" id="gOS-6O-JQH"/>
+                                </connections>
                             </slider>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="1hR-ud-bCv">
                                 <rect key="frame" x="14" y="46" width="81" height="32"/>
@@ -848,11 +851,11 @@
                     <connections>
                         <outlet property="controlView" destination="Huh-pA-rJq" id="m5A-i0-36q"/>
                         <outlet property="currentTimeLabel" destination="RKt-PB-ZCD" id="fW1-vb-eLd"/>
+                        <outlet property="durationLabel" destination="etO-nO-M5f" id="HUh-7h-EGj"/>
                         <outlet property="pauseButton" destination="ho2-Tg-Ev6" id="p1A-ri-rGc"/>
                         <outlet property="playButton" destination="1hR-ud-bCv" id="wxL-pN-2hk"/>
                         <outlet property="progressSilder" destination="yE1-QH-Q3h" id="mWl-eL-r6F"/>
                         <outlet property="stateLabel" destination="0FV-aY-ct6" id="EK8-sc-9F2"/>
-                        <outlet property="totalTimeLabel" destination="etO-nO-M5f" id="PhQ-eM-hut"/>
                     </connections>
                 </viewController>
                 <customObject id="Gjb-hx-ev1" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

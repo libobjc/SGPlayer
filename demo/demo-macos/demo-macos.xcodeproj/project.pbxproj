@@ -12,6 +12,7 @@
 		9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */; };
 		9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1671E8FBD100003B17A /* CoreMedia.framework */; };
 		9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */; };
+		9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18922C5F7AA009E2863 /* default.metallib */; };
 		9CB6951621906D2700196E54 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB694E42190599300196E54 /* AudioUnit.framework */; };
 		9CB6951821906D2F00196E54 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB6951721906D2F00196E54 /* SGPlayer.framework */; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
@@ -19,7 +20,7 @@
 		9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* ViewController.m */; };
 		9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925201E7942AC00DE6721 /* Assets.xcassets */; };
 		9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925221E7942AC00DE6721 /* Main.storyboard */; };
-		9CB925311E79469A00DE6721 /* PlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9252F1E79469A00DE6721 /* PlayerViewController.m */; };
+		9CB925311E79469A00DE6721 /* SGPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9252F1E79469A00DE6721 /* SGPlayViewController.m */; };
 		9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925361E79476E00DE6721 /* libiconv.tbd */; };
 		9CB925391E79477200DE6721 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925381E79477200DE6721 /* libz.tbd */; };
 		9CB9253B1E79477600DE6721 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253A1E79477600DE6721 /* libbz2.tbd */; };
@@ -33,6 +34,7 @@
 		9C36DD411E79537500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
 		9C3DD1671E8FBD100003B17A /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9CA1B18922C5F7AA009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		9CA86E811E8756E700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug/SGPlatform.framework"; sourceTree = "<group>"; };
 		9CA86E831E87571800E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
 		9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
@@ -47,8 +49,8 @@
 		9CB925201E7942AC00DE6721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9CB925231E7942AC00DE6721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9CB925251E7942AC00DE6721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9CB9252E1E79469A00DE6721 /* PlayerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerViewController.h; sourceTree = "<group>"; };
-		9CB9252F1E79469A00DE6721 /* PlayerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerViewController.m; sourceTree = "<group>"; };
+		9CB9252E1E79469A00DE6721 /* SGPlayViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayViewController.h; sourceTree = "<group>"; };
+		9CB9252F1E79469A00DE6721 /* SGPlayViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayViewController.m; sourceTree = "<group>"; };
 		9CB925341E79475C00DE6721 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = ../../build/Debug/SGPlayer.framework; sourceTree = "<group>"; };
 		9CB925361E79476E00DE6721 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		9CB925381E79477200DE6721 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -103,11 +105,9 @@
 				9CB925181E7942AC00DE6721 /* AppDelegate.m */,
 				9CB9251D1E7942AC00DE6721 /* ViewController.h */,
 				9CB9251E1E7942AC00DE6721 /* ViewController.m */,
-				9CB9252E1E79469A00DE6721 /* PlayerViewController.h */,
-				9CB9252F1E79469A00DE6721 /* PlayerViewController.m */,
-				9CB925201E7942AC00DE6721 /* Assets.xcassets */,
+				9CB9252E1E79469A00DE6721 /* SGPlayViewController.h */,
+				9CB9252F1E79469A00DE6721 /* SGPlayViewController.m */,
 				9CB925221E7942AC00DE6721 /* Main.storyboard */,
-				9CB925251E7942AC00DE6721 /* Info.plist */,
 				9CB9251A1E7942AC00DE6721 /* Supporting Files */,
 			);
 			path = "demo-macos";
@@ -116,8 +116,11 @@
 		9CB9251A1E7942AC00DE6721 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				9CB925201E7942AC00DE6721 /* Assets.xcassets */,
+				9CA1B18922C5F7AA009E2863 /* default.metallib */,
 				9C36DD401E79537500959FDA /* google-help-vr.mp4 */,
 				9C36DD411E79537500959FDA /* i-see-fire.mp4 */,
+				9CB925251E7942AC00DE6721 /* Info.plist */,
 				9CB9251B1E7942AC00DE6721 /* main.m */,
 			);
 			name = "Supporting Files";
@@ -208,6 +211,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */,
 				9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */,
 				9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */,
 				9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */,
@@ -223,7 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */,
-				9CB925311E79469A00DE6721 /* PlayerViewController.m in Sources */,
+				9CB925311E79469A00DE6721 /* SGPlayViewController.m in Sources */,
 				9CB9251C1E7942AC00DE6721 /* main.m in Sources */,
 				9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */,
 			);
@@ -354,7 +358,7 @@
 				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
@@ -368,7 +372,7 @@
 				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};

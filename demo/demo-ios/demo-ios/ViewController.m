@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import "PlayerViewController.h"
+#import "SGPlayViewController.h"
 
 @implementation ViewController
 
@@ -30,8 +30,15 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    PlayerViewController * obj = [[PlayerViewController alloc] init];
-    [self.navigationController pushViewController:obj animated:YES];
+    /*
+     rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
+     http://ivi.bupt.edu.cn/hls/cctv5phd.m3u8
+     rtmp://live.hkstv.hk.lxdns.com/live/hks1
+     */
+    NSURL *URL = [[NSBundle mainBundle] URLForResource:@"i-see-fire" withExtension:@"mp4"];
+    SGPlayViewController *vc = [[SGPlayViewController alloc] init];
+    vc.asset = [[SGURLAsset alloc] initWithURL:URL];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

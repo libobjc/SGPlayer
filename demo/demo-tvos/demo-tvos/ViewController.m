@@ -9,9 +9,11 @@
 #import "ViewController.h"
 #import <SGPlayer/SGPlayer.h>
 
-@interface ViewController () <SGPlayerDelegate>
+@interface ViewController ()
 
-@property (nonatomic, strong) SGPlayer * player;
+@property (nonatomic, assign) BOOL seeking;
+@property (nonatomic, strong) SGAsset *asset;
+@property (nonatomic, strong) SGPlayer *player;
 
 @end
 
@@ -21,45 +23,45 @@
 {
     [super viewDidLoad];
     
-    NSURL * URL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"i-see-fire" ofType:@"mp4"]];
+    NSURL *URL = [[NSBundle mainBundle] URLForResource:@"i-see-fire" withExtension:@"mp4"];
+    self.asset = [[SGURLAsset alloc] initWithURL:URL];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(infoChanged:)
+                                                 name:SGPlayerDidChangeInfosNotification
+                                               object:self.player];
     
     self.player = [[SGPlayer alloc] init];
-    self.player.delegate = self;
     self.player.videoRenderer.view = self.view;
-//    self.player.videoRenderer.displayMode = SGDisplayModeVR;
-//    [self.player.videoRenderer setFrameOutput:^(SGVideoFrame * frame) {
-//        NSLog(@"frame output : %f", CMTimeGetSeconds(frame.timeStamp));
-//    }];
-    [self.player replaceWithURL:URL];
-    [self.player waitUntilReady];
-    [self.player play];
+    [self.player replaceWithAsset:self.asset];
+    
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        if ([self.player waitUntilReady]) {
+            [self.player play];
+        }
+    });
 }
 
-#pragma mark - SGPlayerDelegate
+#pragma mark - SGPlayer Notifications
 
-- (void)player:(SGPlayer *)player didChangeStatus:(SGPlayerStatus)status
+- (void)infoChanged:(NSNotification *)notification
 {
-    //    NSLog(@"%s, %ld", __func__, status);
-}
-
-- (void)player:(SGPlayer *)player didChangePlaybackState:(SGPlaybackState)state
-{
-//    NSLog(@"%s, playing  : %d, %d, %d", __func__, state & SGPlaybackStatePlaying, state & SGPlaybackStateSeeking, state & SGPlaybackStateFinished);
-}
-
-- (void)player:(SGPlayer *)player didChangeLoadingState:(SGLoadingState)state
-{
-//    NSLog(@"%s, %d", __func__, state);
-}
-
-- (void)player:(SGPlayer *)player didChangeCurrentTime:(CMTime)currentTime duration:(CMTime)duration
-{
-//        NSLog(@"%s, %f", __func__, CMTimeGetSeconds(currentTime));
-}
-
-- (void)player:(SGPlayer *)player didChangeLoadedTime:(CMTime)loadedTime loadedDuuration:(CMTime)loadedDuuration
-{
-    //    NSLog(@"%s, %f, %f", __func__, CMTimeGetSeconds(loadedTime), CMTimeGetSeconds(loadedDuuration));
+    SGTimeInfo time = [SGPlayer timeInfoFromUserInfo:notification.userInfo];
+    SGStateInfo state = [SGPlayer stateInfoFromUserInfo:notification.userInfo];
+    SGInfoAction action = [SGPlayer infoActionFromUserInfo:notification.userInfo];
+    if (action & SGInfoActionTime) {
+        NSLog(@"playback: %f, duration: %f, cached: %f",
+              CMTimeGetSeconds(time.playback),
+              CMTimeGetSeconds(time.duration),
+              CMTimeGetSeconds(time.cached));
+    }
+    if (action & SGInfoActionState) {
+        NSLog(@"player: %d, loading: %d, playback: %d, playing: %d, seeking: %d, finished: %d",
+              state.player, state.loading, state.playback,
+              state.playback & SGPlaybackStatePlaying,
+              state.playback & SGPlaybackStateSeeking,
+              state.playback & SGPlaybackStateFinished);
+    }
 }
 
 @end
