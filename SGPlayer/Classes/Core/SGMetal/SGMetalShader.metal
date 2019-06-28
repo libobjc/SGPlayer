@@ -20,9 +20,9 @@ typedef struct {
 /**
  *  Vertex
  */
-vertex ColorInOut vertexShader(             uint              vertexID [[ vertex_id ]],
-                               const device SGMetalVertex   * in       [[ buffer(0) ]],
-                               constant     SGMetalUniforms & uniforms [[ buffer(1) ]])
+vertex ColorInOut vertexShader(         uint            vertexID [[ vertex_id ]],
+                               constant SGMetalVertex * in       [[ buffer(0) ]],
+                               constant SGMetalMatrix & uniforms [[ buffer(1) ]])
 {
     ColorInOut out;
     out.position = uniforms.mvp * in[vertexID].position;

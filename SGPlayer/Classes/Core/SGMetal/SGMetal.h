@@ -15,7 +15,7 @@
 #import "SGMetalTypes.h"
 #import "SGMetalRenderer.h"
 #import "SGMetalViewport.h"
-#import "SGMetalUtilities.h"
+#import "SGMetalProjection.h"
 #import "SGMetalTextureLoader.h"
 
 #import "SGMetalModel.h"

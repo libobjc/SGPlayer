@@ -18,6 +18,6 @@ typedef struct {
 
 typedef struct {
     matrix_float4x4 mvp;
-} SGMetalUniforms;
+} SGMetalMatrix;
 
 #endif /* SGMetalTypes_h */

@@ -34,8 +34,8 @@
 
 - (id<MTLCommandBuffer>)drawModel:(SGMetalModel *)model
                         viewports:(MTLViewport[])viewports
-                         uniforms:(NSArray<id<MTLBuffer>> *)uniforms
                          pipeline:(SGMetalRenderPipeline *)pipeline
+                      projections:(NSArray<SGMetalProjection *> *)projections
                     inputTextures:(NSArray<id<MTLTexture>> *)inputTextures
                     outputTexture:(id<MTLTexture>)outputTexture
 {
@@ -48,9 +48,9 @@
     for (NSUInteger i = 0; i < inputTextures.count; i++) {
         [encoder setFragmentTexture:inputTextures[i] atIndex:i];
     }
-    for (NSUInteger i = 0; i < uniforms.count; i++) {
+    for (NSUInteger i = 0; i < projections.count; i++) {
         [encoder setViewport:viewports[i]];
-        [encoder setVertexBuffer:uniforms[i] offset:0 atIndex:1];
+        [encoder setVertexBuffer:projections[i].matrixBuffer offset:0 atIndex:1];
         [encoder drawIndexedPrimitives:model.primitiveType
                             indexCount:model.indexCount
                              indexType:model.indexType

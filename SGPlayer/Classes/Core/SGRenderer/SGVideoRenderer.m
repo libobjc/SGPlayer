@@ -39,11 +39,11 @@
 @property (nonatomic, strong, readonly) SGMetalModel *planeModel;
 @property (nonatomic, strong, readonly) SGMetalModel *sphereModel;
 @property (nonatomic, strong, readonly) SGMetalRenderer *renderer;
+@property (nonatomic, strong, readonly) SGMetalProjection *projection1;
+@property (nonatomic, strong, readonly) SGMetalProjection *projection2;
 @property (nonatomic, strong, readonly) SGMetalRenderPipeline *pipeline;
 @property (nonatomic, strong, readonly) SGMetalTextureLoader *textureLoader;
 @property (nonatomic, strong, readonly) SGMetalRenderPipelinePool *pipelinePool;
-@property (nonatomic, strong, readonly) id<MTLBuffer> uniformBuffer1;
-@property (nonatomic, strong, readonly) id<MTLBuffer> uniformBuffer2;
 
 @end
 
@@ -386,15 +386,15 @@
         return;
     }
     MTLViewport viewports[2] = {};
-    NSArray<id<MTLBuffer>> *uniforms = nil;
+    NSArray<SGMetalProjection *> *projections = nil;
     id<CAMetalDrawable> drawable = [(CAMetalLayer *)self->_metalView.layer nextDrawable];
     MTLSize textureSize = MTLSizeMake(width, height, 0);
     MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
     switch (displayMode) {
         case SGDisplayModePlane: {
-            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = matrix_identity_float4x4;
+            self->_projection1.matrix = GLKMatrix4Identity;
+            projections = @[self->_projection1];
             viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize textureSize:textureSize mode:SGScaling2Viewport(self->_scalingMode)];
-            uniforms = @[self->_uniformBuffer1];
         }
             break;
         case SGDisplayModeVR: {
@@ -403,9 +403,9 @@
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix]) {
                 break;
             }
-            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix);
+            self->_projection1.matrix = matrix;
+            projections = @[self->_projection1];
             viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize];
-            uniforms = @[self->_uniformBuffer1];
         }
             break;
         case SGDisplayModeVRBox: {
@@ -415,19 +415,19 @@
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix1 matrix2:&matrix2]) {
                 break;
             }
-            ((SGMetalUniforms *)self->_uniformBuffer1.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix1);
-            ((SGMetalUniforms *)self->_uniformBuffer2.contents)->mvp = SGMatrixFloat4x4FromGLKMatrix4(matrix2);
+            self->_projection1.matrix = matrix1;
+            self->_projection2.matrix = matrix2;
+            projections = @[self->_projection1, self->_projection2];
             viewports[0] = [SGMetalViewport viewportWithLayerSizeForLeft:layerSize];
             viewports[1] = [SGMetalViewport viewportWithLayerSizeForRight:layerSize];
-            uniforms = @[self->_uniformBuffer1, self->_uniformBuffer2];
         }
             break;
     }
-    if (uniforms.count) {
+    if (projections.count) {
         id<MTLCommandBuffer> commandBuffer = [self.renderer drawModel:model
                                                             viewports:viewports
-                                                             uniforms:uniforms
                                                              pipeline:pipeline
+                                                          projections:projections
                                                         inputTextures:textures
                                                         outputTexture:drawable.texture];
         [commandBuffer presentDrawable:drawable];
@@ -464,13 +464,11 @@
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     self->_renderer = [[SGMetalRenderer alloc] initWithDevice:device];
     self->_planeModel = [[SGMetalPlaneModel alloc] initWithDevice:device];
+    self->_projection1 = [[SGMetalProjection alloc] initWithDevice:device];
+    self->_projection2 = [[SGMetalProjection alloc] initWithDevice:device];
     self->_sphereModel = [[SGMetalSphereModel alloc] initWithDevice:device];
     self->_textureLoader = [[SGMetalTextureLoader alloc] initWithDevice:device];
     self->_pipelinePool = [[SGMetalRenderPipelinePool alloc] initWithDevice:device];
-    self->_uniformBuffer1 = [device newBufferWithLength:sizeof(SGMetalUniforms)
-                                                options:MTLResourceStorageModeShared];
-    self->_uniformBuffer2 = [device newBufferWithLength:sizeof(SGMetalUniforms)
-                                                options:MTLResourceStorageModeShared];
     self->_metalView = [[MTKView alloc] initWithFrame:CGRectZero device:device];
     self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
     self->_metalView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -494,10 +492,10 @@
     self->_renderer = nil;
     self->_planeModel = nil;
     self->_sphereModel = nil;
-    self->_textureLoader = nil;
+    self->_projection1 = nil;
+    self->_projection2 = nil;
     self->_pipelinePool = nil;
-    self->_uniformBuffer1 = nil;
-    self->_uniformBuffer2 = nil;
+    self->_textureLoader = nil;
 }
 
 - (void)setView:(SGPLFView *)view

@@ -9,6 +9,7 @@
 #import <simd/simd.h>
 #import <Metal/Metal.h>
 #import "SGMetalModel.h"
+#import "SGMetalProjection.h"
 #import "SGMetalRenderPipeline.h"
 
 @interface SGMetalRenderer : NSObject
@@ -17,8 +18,8 @@
 
 - (id<MTLCommandBuffer>)drawModel:(SGMetalModel *)model
                         viewports:(MTLViewport[])viewports
-                         uniforms:(NSArray<id<MTLBuffer>> *)uniforms
                          pipeline:(SGMetalRenderPipeline *)pipeline
+                      projections:(NSArray<SGMetalProjection *> *)projections
                     inputTextures:(NSArray<id<MTLTexture>> *)inputTextures
                     outputTexture:(id<MTLTexture>)outputTexture;
 
