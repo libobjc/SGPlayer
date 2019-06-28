@@ -8,38 +8,9 @@
 
 #import "SGMapping.h"
 
-SGGLModelType SGDisplay2Model(SGDisplayMode displayMode)
+SGMetalViewportMode SGScaling2Viewport(SGScalingMode mode)
 {
-    switch (displayMode) {
-        case SGDisplayModePlane:
-            return SGGLModelTypePlane;
-        case SGDisplayModeVR:
-        case SGDisplayModeVRBox:
-            return SGGLModelTypeSphere;
-    }
-    return SGGLModelTypePlane;
-}
-
-SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer)
-{
-    if (format == AV_PIX_FMT_VIDEOTOOLBOX && pixelBuffer) {
-        format = SGPixelFormatAV2FF(CVPixelBufferGetPixelFormatType(pixelBuffer));
-    }
-    switch (format) {
-        case AV_PIX_FMT_YUV420P:
-            return SGGLProgramTypeYUV420P;
-        case AV_PIX_FMT_NV12:
-            return SGGLProgramTypeNV12;
-        case AV_PIX_FMT_BGRA:
-            return SGGLProgramTypeBGRA;
-        default:
-            return SGGLProgramTypeUnknown;
-    }
-}
-
-SGMetalViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
-{
-    switch (scalingMode) {
+    switch (mode) {
         case SGScalingModeResize:
             return SGMetalViewportModeResize;
         case SGScalingModeResizeAspect:
@@ -48,6 +19,19 @@ SGMetalViewportMode SGScaling2Viewport(SGScalingMode scalingMode)
             return SGMetalViewportModeResizeAspectFill;
     }
     return SGMetalViewportModeResizeAspect;
+}
+
+SGScalingMode SGViewport2Scaling(SGMetalViewportMode mode)
+{
+    switch (mode) {
+        case SGMetalViewportModeResize:
+            return SGScalingModeResize;
+        case SGMetalViewportModeResizeAspect:
+            return SGScalingModeResizeAspect;
+        case SGMetalViewportModeResizeAspectFill:
+            return SGScalingModeResizeAspectFill;
+    }
+    return SGScalingModeResizeAspect;
 }
 
 SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType)

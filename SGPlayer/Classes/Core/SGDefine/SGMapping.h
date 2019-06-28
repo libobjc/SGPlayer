@@ -7,17 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGGLTextureUploader.h"
 #import "SGVideoRenderer.h"
 #import "SGMetalViewport.h"
-#import "SGGLProgram.h"
-#import "SGGLModel.h"
 #import "SGFFmpeg.h"
 
-// FF/SG -> GL
-SGGLModelType SGDisplay2Model(SGDisplayMode displayMode);
-SGGLProgramType SGFormat2Program(enum AVPixelFormat format, CVPixelBufferRef pixelBuffer);
-SGMetalViewportMode SGScaling2Viewport(SGScalingMode scalingMode);
+// SG <-> SGMetal
+SGMetalViewportMode SGScaling2Viewport(SGScalingMode mode);
+SGScalingMode SGViewport2Scaling(SGMetalViewportMode mode);
 
 // FF <-> SG
 SGMediaType SGMediaTypeFF2SG(enum AVMediaType mediaType);

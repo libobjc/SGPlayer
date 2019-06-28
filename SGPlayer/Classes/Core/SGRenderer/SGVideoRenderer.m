@@ -8,7 +8,7 @@
 
 #import "SGVideoRenderer.h"
 #import "SGRenderer+Internal.h"
-#import "SGVRMatrixMaker.h"
+#import "SGVRProjection.h"
 #import "SGRenderTimer.h"
 #import "SGOptions.h"
 #import "SGMapping.h"
@@ -33,7 +33,7 @@
 @property (nonatomic, strong, readonly) SGClock *clock;
 @property (nonatomic, strong, readonly) SGRenderTimer *fetchTimer;
 @property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
-@property (nonatomic, strong, readonly) SGVRMatrixMaker *matrixMaker;
+@property (nonatomic, strong, readonly) SGVRProjection *matrixMaker;
 
 @property (nonatomic, strong, readonly) MTKView *metalView;
 @property (nonatomic, strong, readonly) SGMetalModel *planeModel;
@@ -69,7 +69,7 @@
         self->_preferredFramesPerSecond = 30;
         self->_displayMode = SGDisplayModePlane;
         self->_scalingMode = SGScalingModeResizeAspect;
-        self->_matrixMaker = [[SGVRMatrixMaker alloc] init];
+        self->_matrixMaker = [[SGVRProjection alloc] init];
         self->_options = [SGOptions sharedOptions].renderer.copy;
     }
     return self;

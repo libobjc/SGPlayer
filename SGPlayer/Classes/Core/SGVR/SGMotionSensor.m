@@ -11,11 +11,11 @@
 
 @interface SGMotionSensor ()
 
-@property (nonatomic, strong) CMMotionManager * manager;
-@property (nonatomic) UIInterfaceOrientation orientation;
+@property (nonatomic) CGFloat defalutRotateY;
 @property (nonatomic) GLKMatrix4 deviceToDisplay;
 @property (nonatomic) GLKMatrix4 worldToInertialReferenceFrame;
-@property (nonatomic) CGFloat defalutRotateY;
+@property (nonatomic, strong) CMMotionManager * manager;
+@property (nonatomic) UIInterfaceOrientation orientation;
 
 @end
 
@@ -23,13 +23,11 @@
 
 - (instancetype)init
 {
-    if (self = [super init])
-    {
-        self.manager = [[CMMotionManager alloc] init];
+    if (self = [super init]) {
         self.deviceToDisplay = GLKMatrix4Identity;
+        self.manager = [[CMMotionManager alloc] init];
         self.worldToInertialReferenceFrame = [self getRotateEulerMatrixX:-90 Y:0 Z:90];
-        switch ([UIApplication sharedApplication].statusBarOrientation)
-        {
+        switch ([UIApplication sharedApplication].statusBarOrientation) {
             case UIInterfaceOrientationPortrait:
             case UIInterfaceOrientationUnknown:
             case UIInterfaceOrientationPortraitUpsideDown:
@@ -48,11 +46,9 @@
 
 - (void)setOrientation:(UIInterfaceOrientation)orientation
 {
-    if (_orientation != orientation)
-    {
+    if (_orientation != orientation) {
         _orientation = orientation;
-        switch (orientation)
-        {
+        switch (orientation) {
             case UIInterfaceOrientationPortrait:
             case UIInterfaceOrientationUnknown:
                 self.deviceToDisplay = GLKMatrix4Identity;
@@ -72,8 +68,7 @@
 
 - (BOOL)ready
 {
-    if (self.manager.isDeviceMotionAvailable)
-    {
+    if (self.manager.isDeviceMotionAvailable) {
         return self.manager.deviceMotion && self.manager.isDeviceMotionActive;
     }
     return YES;
@@ -81,8 +76,7 @@
 
 - (void)start
 {
-    if (!self.ready && !self.manager.isDeviceMotionActive)
-    {
+    if (!self.ready && !self.manager.isDeviceMotionActive) {
         self.manager.deviceMotionUpdateInterval = 0.01;
         [self.manager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical];
     }
@@ -96,13 +90,12 @@
 
 - (GLKMatrix4)matrix
 {
-    if (!self.manager.isDeviceMotionAvailable || !self.manager.isDeviceMotionActive)
-    {
+    if (!self.manager.isDeviceMotionActive ||
+        !self.manager.isDeviceMotionAvailable) {
         return GLKMatrix4Identity;
     }
     CMDeviceMotion * motion = self.manager.deviceMotion;
-    if (!motion)
-    {
+    if (!motion) {
         return GLKMatrix4Identity;
     }
     self.orientation = [UIApplication sharedApplication].statusBarOrientation;

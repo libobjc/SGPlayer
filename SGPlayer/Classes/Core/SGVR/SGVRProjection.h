@@ -1,5 +1,5 @@
 //
-//  SGVRMatrixMaker.h
+//  SGVRProjection.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/23.
@@ -8,10 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <GLKit/GLKit.h>
-#import "SGGLDefines.h"
 #import "SGVRViewport.h"
 
-@interface SGVRMatrixMaker : NSObject
+@interface SGVRProjection : NSObject
 
 @property (nonatomic, strong) SGVRViewport * viewport;
 

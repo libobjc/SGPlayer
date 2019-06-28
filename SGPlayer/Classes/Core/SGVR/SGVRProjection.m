@@ -1,31 +1,31 @@
 //
-//  SGVRMatrixMaker.m
+//  SGVRProjection.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/23.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGVRMatrixMaker.h"
+#import "SGVRProjection.h"
 #import "SGPLFTargets.h"
 #if SGPLATFORM_TARGET_OS_IPHONE
 #import "SGMotionSensor.h"
 #endif
 
-@interface SGVRMatrixMaker ()
+@interface SGVRProjection ()
 
 #if SGPLATFORM_TARGET_OS_IPHONE
 @property (nonatomic, strong) SGMotionSensor * sensor;
 #endif
-@property (nonatomic) BOOL lastMatrix1Available;
-@property (nonatomic) BOOL lastMatrix2Available;
 @property (nonatomic) GLKMatrix4 lastMatrix11;
 @property (nonatomic) GLKMatrix4 lastMatrix21;
 @property (nonatomic) GLKMatrix4 lastMatrix22;
+@property (nonatomic) BOOL lastMatrix1Available;
+@property (nonatomic) BOOL lastMatrix2Available;
 
 @end
 
-@implementation SGVRMatrixMaker
+@implementation SGVRProjection
 
 - (instancetype)init
 {
@@ -99,7 +99,7 @@
     GLKMatrix4 projectionMatrix = GLKMatrix4MakePerspective(GLKMathDegreesToRadians(self.viewport.degress), aspect, 0.1f, 400.0f);
     GLKMatrix4 modelViewProjectionMatrix = GLKMatrix4Multiply(projectionMatrix, viewMatrix);
     modelViewProjectionMatrix = GLKMatrix4Multiply(modelViewProjectionMatrix, modelMatrix);
-    * matrix1 = modelViewProjectionMatrix;
+    *matrix1 = modelViewProjectionMatrix;
     self.lastMatrix1Available = YES;
     self.lastMatrix11 = modelViewProjectionMatrix;
     return YES;
@@ -135,8 +135,8 @@
     GLKMatrix4 modelViewProjectionMatrix2 = GLKMatrix4Multiply(projectionMatrix, rightViewMatrix);
     modelViewProjectionMatrix1 = GLKMatrix4Multiply(modelViewProjectionMatrix1, modelMatrix);
     modelViewProjectionMatrix2 = GLKMatrix4Multiply(modelViewProjectionMatrix2, modelMatrix);
-    * matrix1 = modelViewProjectionMatrix1;
-    * matrix2 = modelViewProjectionMatrix2;
+    *matrix1 = modelViewProjectionMatrix1;
+    *matrix2 = modelViewProjectionMatrix2;
     self.lastMatrix2Available = YES;
     self.lastMatrix21 = modelViewProjectionMatrix1;
     self.lastMatrix22 = modelViewProjectionMatrix2;
