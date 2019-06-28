@@ -33,6 +33,12 @@
 		9C11816A22C4E23200A12FD4 /* SGMetalViewport.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C11816422C4E23200A12FD4 /* SGMetalViewport.m */; };
 		9C13638E213934030025C72B /* SGGLBGRAProgram.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C13638C213934030025C72B /* SGGLBGRAProgram.h */; };
 		9C13638F213934030025C72B /* SGGLBGRAProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C13638D213934030025C72B /* SGGLBGRAProgram.m */; };
+		9C17554922C5B5B3003A93BC /* SGRenderTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C17554722C5B5B3003A93BC /* SGRenderTimer.h */; };
+		9C17554A22C5B5B3003A93BC /* SGRenderTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C17554722C5B5B3003A93BC /* SGRenderTimer.h */; };
+		9C17554B22C5B5B3003A93BC /* SGRenderTimer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C17554722C5B5B3003A93BC /* SGRenderTimer.h */; };
+		9C17554C22C5B5B3003A93BC /* SGRenderTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C17554822C5B5B3003A93BC /* SGRenderTimer.m */; };
+		9C17554D22C5B5B3003A93BC /* SGRenderTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C17554822C5B5B3003A93BC /* SGRenderTimer.m */; };
+		9C17554E22C5B5B3003A93BC /* SGRenderTimer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C17554822C5B5B3003A93BC /* SGRenderTimer.m */; };
 		9C1944E120198CEC00184416 /* SGGLPlaneModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */; };
 		9C1944E420198CEC00184416 /* SGGLPlaneModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C1944E020198CEC00184416 /* SGGLPlaneModel.m */; };
 		9C1944E92019A9AA00184416 /* SGGLSphereModel.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C1944E72019A9AA00184416 /* SGGLSphereModel.h */; };
@@ -699,6 +705,8 @@
 		9C11816422C4E23200A12FD4 /* SGMetalViewport.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMetalViewport.m; sourceTree = "<group>"; };
 		9C13638C213934030025C72B /* SGGLBGRAProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLBGRAProgram.h; sourceTree = "<group>"; };
 		9C13638D213934030025C72B /* SGGLBGRAProgram.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLBGRAProgram.m; sourceTree = "<group>"; };
+		9C17554722C5B5B3003A93BC /* SGRenderTimer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGRenderTimer.h; sourceTree = "<group>"; };
+		9C17554822C5B5B3003A93BC /* SGRenderTimer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGRenderTimer.m; sourceTree = "<group>"; };
 		9C1944DF20198CEC00184416 /* SGGLPlaneModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLPlaneModel.h; sourceTree = "<group>"; };
 		9C1944E020198CEC00184416 /* SGGLPlaneModel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGGLPlaneModel.m; sourceTree = "<group>"; };
 		9C1944E72019A9AA00184416 /* SGGLSphereModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGGLSphereModel.h; sourceTree = "<group>"; };
@@ -1569,6 +1577,8 @@
 				9CF15E062011AE0700585326 /* SGAudioRenderer.m */,
 				9C2C55A12015C1E100131E15 /* SGVideoRenderer.h */,
 				9C2C55A22015C1E100131E15 /* SGVideoRenderer.m */,
+				9C17554722C5B5B3003A93BC /* SGRenderTimer.h */,
+				9C17554822C5B5B3003A93BC /* SGRenderTimer.m */,
 			);
 			path = SGRenderer;
 			sourceTree = "<group>";
@@ -1670,6 +1680,7 @@
 				9C86386721904A0900D730EC /* SGFFmpeg.h in Headers */,
 				9C86386821904A0900D730EC /* SGPLFTargets.h in Headers */,
 				9C86386921904A0900D730EC /* SGRenderer+Internal.h in Headers */,
+				9C17554A22C5B5B3003A93BC /* SGRenderTimer.h in Headers */,
 				9CA57933219DAA270061093B /* SGCodecDescription.h in Headers */,
 				9C86386B21904A0900D730EC /* SGPLFObject.h in Headers */,
 				9C8D6B8B22C4A19500985D55 /* SGMetalRenderPipeline.h in Headers */,
@@ -1796,6 +1807,7 @@
 				9CD79F162190068E00E39A7D /* SGGLNV12Program.h in Headers */,
 				9C8D6B8C22C4A19500985D55 /* SGMetalRenderPipeline.h in Headers */,
 				9CD79F1B2190068E00E39A7D /* SGFFmpeg.h in Headers */,
+				9C17554B22C5B5B3003A93BC /* SGRenderTimer.h in Headers */,
 				9CD79F232190068E00E39A7D /* SGPLFTargets.h in Headers */,
 				9CD79F242190068E00E39A7D /* SGRenderer+Internal.h in Headers */,
 				9CD79F272190068E00E39A7D /* SGPLFObject.h in Headers */,
@@ -1978,6 +1990,7 @@
 				9C13638E213934030025C72B /* SGGLBGRAProgram.h in Headers */,
 				9CE68430200DD12F007BD834 /* SGAudioStreamPlayer.h in Headers */,
 				9C8D6B7522C4A19500985D55 /* SGMetalSphereModel.h in Headers */,
+				9C17554922C5B5B3003A93BC /* SGRenderTimer.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2194,6 +2207,7 @@
 				9C86382E21904A0900D730EC /* SGAudioFrame.m in Sources */,
 				9C8D6B5222C4A19500985D55 /* SGMetalRenderPipelinePool.m in Sources */,
 				9C86382F21904A0900D730EC /* SGGLViewport.m in Sources */,
+				9C17554D22C5B5B3003A93BC /* SGRenderTimer.m in Sources */,
 				9CC2AD8222A660080095A081 /* SGPaddingSegment.m in Sources */,
 				9C86383021904A0900D730EC /* SGAsset.m in Sources */,
 				9C86383121904A0900D730EC /* SGOptions.m in Sources */,
@@ -2294,6 +2308,7 @@
 				9CD79ED52190068E00E39A7D /* SGAudioFrame.m in Sources */,
 				9C8D6B5322C4A19500985D55 /* SGMetalRenderPipelinePool.m in Sources */,
 				9CD79ED62190068E00E39A7D /* SGGLViewport.m in Sources */,
+				9C17554E22C5B5B3003A93BC /* SGRenderTimer.m in Sources */,
 				9CC2AD8322A660080095A081 /* SGPaddingSegment.m in Sources */,
 				9CD79ED72190068E00E39A7D /* SGAsset.m in Sources */,
 				9CD79ED82190068E00E39A7D /* SGOptions.m in Sources */,
@@ -2401,6 +2416,7 @@
 				9CF63FC3211D8E33001B2684 /* SGAsset.m in Sources */,
 				9C43D50E2187037200235169 /* SGOptions.m in Sources */,
 				9C4663CD20D0F83600CADDA7 /* SGTime.m in Sources */,
+				9C17554C22C5B5B3003A93BC /* SGRenderTimer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

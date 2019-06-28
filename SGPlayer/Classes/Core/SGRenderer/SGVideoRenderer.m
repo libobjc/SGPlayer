@@ -9,9 +9,9 @@
 #import "SGVideoRenderer.h"
 #import "SGRenderer+Internal.h"
 #import "SGVRMatrixMaker.h"
+#import "SGRenderTimer.h"
 #import "SGOptions.h"
 #import "SGMapping.h"
-#import "SGOpenGL.h"
 #import "SGMetal.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -31,7 +31,7 @@
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
-@property (nonatomic, strong, readonly) SGGLTimer *fetchTimer;
+@property (nonatomic, strong, readonly) SGRenderTimer *fetchTimer;
 @property (nonatomic, strong, readonly) SGVideoFrame *currentFrame;
 @property (nonatomic, strong, readonly) SGVRMatrixMaker *matrixMaker;
 
@@ -77,11 +77,9 @@
 
 - (void)dealloc
 {
-    [self performSelectorOnMainThread:@selector(destoryMetal)
+    [self performSelectorOnMainThread:@selector(destoryDrawingLoop)
                            withObject:nil
                         waitUntilDone:YES];
-    [self->_fetchTimer invalidate];
-    self->_fetchTimer = nil;
     [self->_currentFrame unlock];
     self->_currentFrame = nil;
 }
@@ -167,16 +165,9 @@
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
         block();
-        [self performSelectorOnMainThread:@selector(setupMetal)
+        [self performSelectorOnMainThread:@selector(setupDrawingLoop)
                                withObject:nil
                             waitUntilDone:YES];
-        SGWeakify(self)
-        NSTimeInterval interval = 0.5 / self->_preferredFramesPerSecond;
-        self->_fetchTimer = [[SGGLTimer alloc] initWithTimeInterval:interval handler:^{
-            SGStrongify(self)
-            [self fetchTimerHandler];
-        }];
-        self->_fetchTimer.paused = NO;
         return YES;
     });
 }
@@ -187,17 +178,15 @@
         SGBlock b1 = [self setState:SGRenderableStateNone];
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
+        self->_flags.hasNewFrame = NO;
         self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
-        self->_flags.hasNewFrame = NO;
         self->_capacity = SGCapacityCreate();
         return ^{b1();};
     }, ^BOOL(SGBlock block) {
-        [self performSelectorOnMainThread:@selector(destoryMetal)
+        [self performSelectorOnMainThread:@selector(destoryDrawingLoop)
                                withObject:nil
                             waitUntilDone:YES];
-        [self->_fetchTimer invalidate];
-        self->_fetchTimer = nil;
         block();
         return YES;
     });
@@ -243,9 +232,9 @@
     }, ^SGBlock {
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
+        self->_flags.hasNewFrame = NO;
         self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
-        self->_flags.hasNewFrame = NO;
         return nil;
     }, ^BOOL(SGBlock block) {
         self->_metalView.paused = NO;
@@ -318,8 +307,8 @@
             capacity.duration = duration;
             [self->_currentFrame unlock];
             self->_currentFrame = newFrame;
-            self->_flags.framesFetched += 1;
             self->_flags.hasNewFrame = YES;
+            self->_flags.framesFetched += 1;
             self->_flags.currentFrameEndTime = currentMediaTime + CMTimeGetSeconds(duration);
             if (self->_frameOutput) {
                 [newFrame lock];
@@ -470,7 +459,7 @@
 
 #pragma mark - Metal
 
-- (void)setupMetal
+- (void)setupDrawingLoop
 {
     id<MTLDevice> device = MTLCreateSystemDefaultDevice();
     self->_renderer = [[SGMetalRenderer alloc] initWithDevice:device];
@@ -487,11 +476,19 @@
     self->_metalView.translatesAutoresizingMaskIntoConstraints = NO;
     self->_metalView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
     self->_metalView.delegate = self;
-    [self layoutMetalViewIfNeeded];
+    SGWeakify(self)
+    self->_fetchTimer = [[SGRenderTimer alloc] initWithHandler:^{
+        SGStrongify(self)
+        [self fetchTimerHandler];
+    }];
+    [self updateMetalView];
+    [self updateTimeInterval];
 }
 
-- (void)destoryMetal
+- (void)destoryDrawingLoop
 {
+    [self->_fetchTimer stop];
+    self->_fetchTimer = nil;
     [self->_metalView removeFromSuperview];
     self->_metalView = nil;
     self->_renderer = nil;
@@ -507,7 +504,7 @@
 {
     if (self->_view != view) {
         self->_view = view;
-        [self layoutMetalViewIfNeeded];
+        [self updateMetalView];
     }
 }
 
@@ -515,7 +512,7 @@
 {
     if (self->_preferredFramesPerSecond != preferredFramesPerSecond) {
         self->_preferredFramesPerSecond = preferredFramesPerSecond;
-        self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+        [self updateTimeInterval];
     }
 }
 
@@ -538,7 +535,7 @@
     }
 }
 
-- (void)layoutMetalViewIfNeeded
+- (void)updateMetalView
 {
     if (self->_view &&
         self->_metalView &&
@@ -576,6 +573,12 @@
     } else {
         [self->_metalView removeFromSuperview];
     }
+}
+
+- (void)updateTimeInterval
+{
+    self->_fetchTimer.timeInterval = 0.5 / self->_preferredFramesPerSecond;
+    self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
 }
 
 @end
