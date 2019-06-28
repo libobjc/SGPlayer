@@ -8,7 +8,7 @@
 
 #import "SGFrame.h"
 #import "SGAudioFrame.h"
-#import "SGCodecDescription.h"
+#import "SGCodecDescriptor.h"
 
 @interface SGFrame ()
 
@@ -20,7 +20,7 @@
 /**
  *
  */
-@property (nonatomic, strong) SGCodecDescription *codecDescription;
+@property (nonatomic, strong) SGCodecDescriptor *codecDescriptor;
 
 /**
  *
@@ -39,6 +39,6 @@
 /**
  *
  */
-+ (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples;
++ (instancetype)audioFrameWithDescriptor:(SGAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples;
 
 @end

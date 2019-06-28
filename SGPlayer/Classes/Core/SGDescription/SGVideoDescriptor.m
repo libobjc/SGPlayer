@@ -1,20 +1,20 @@
 //
-//  SGVideoDescription.m
+//  SGVideoDescriptor.m
 //  SGPlayer
 //
 //  Created by Single on 2018/12/11.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGVideoDescription.h"
+#import "SGVideoDescriptor.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
 
-@implementation SGVideoDescription
+@implementation SGVideoDescriptor
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGVideoDescription *obj = [[SGVideoDescription alloc] init];
+    SGVideoDescriptor *obj = [[SGVideoDescriptor alloc] init];
     obj->_format = self->_format;
     obj->_cv_format = self->_cv_format;
     obj->_width = self->_width;
@@ -44,16 +44,16 @@
     return self;
 }
 
-- (BOOL)isEqualToDescription:(SGVideoDescription *)description
+- (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor
 {
-    if (!description) {
+    if (!descriptor) {
         return NO;
     }
     return
-    self->_format == description->_format &&
-    self->_cv_format == description->_cv_format &&
-    self->_width == description->_width &&
-    self->_height == description->_height;
+    self->_format == descriptor->_format &&
+    self->_cv_format == descriptor->_cv_format &&
+    self->_width == descriptor->_width &&
+    self->_height == descriptor->_height;
 }
 
 @end

@@ -7,12 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGVideoDescription.h"
+#import "SGVideoDescriptor.h"
 
 @interface SGSWScale : NSObject
 
-@property (nonatomic, copy) SGVideoDescription *inputDescription;
-@property (nonatomic, copy) SGVideoDescription *outputDescription;
+@property (nonatomic, copy) SGVideoDescriptor *inputDescriptor;
+@property (nonatomic, copy) SGVideoDescriptor *outputDescriptor;
 
 @property (nonatomic) int flags;          // SWS_FAST_BILINEAR
 

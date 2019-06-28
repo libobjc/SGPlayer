@@ -8,7 +8,7 @@
 
 #import "SGAudioFrame.h"
 #import "SGFrame+Internal.h"
-#import "SGDescription+Internal.h"
+#import "SGDescriptor+Internal.h"
 #import "SGObjectPool.h"
 
 @interface SGAudioFrame ()
@@ -22,16 +22,16 @@
 
 @implementation SGAudioFrame
 
-+ (instancetype)audioFrameWithDescription:(SGAudioDescription *)description numberOfSamples:(int)numberOfSamples
++ (instancetype)audioFrameWithDescriptor:(SGAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples
 {
     SGAudioFrame *frame = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class] reuseName:[SGAudioFrame commonReuseName]];
-    frame.core->format = description.format;
-    frame.core->sample_rate = description.sampleRate;
-    frame.core->channels = description.numberOfChannels;
-    frame.core->channel_layout = description.channelLayout;
+    frame.core->format = descriptor.format;
+    frame.core->sample_rate = descriptor.sampleRate;
+    frame.core->channels = descriptor.numberOfChannels;
+    frame.core->channel_layout = descriptor.channelLayout;
     frame.core->nb_samples = numberOfSamples;
-    int linesize = [description linesize:numberOfSamples];
-    int numberOfPlanes = description.numberOfPlanes;
+    int linesize = [descriptor linesize:numberOfSamples];
+    int numberOfPlanes = descriptor.numberOfPlanes;
     for (int i = 0; i < numberOfPlanes; i++) {
         uint8_t *data = av_mallocz(linesize);
         memset(data, 0, linesize);
@@ -80,7 +80,7 @@
         self->_data[i] = nil;
         self->_linesize[i] = 0;
     }
-    self->_audioDescription = nil;
+    self->_descriptor = nil;
 }
 
 #pragma mark - Control
@@ -88,12 +88,12 @@
 - (void)fill
 {
     AVFrame *frame = self.core;
-    AVRational timebase = self.codecDescription.timebase;
-    SGCodecDescription *codecDescription = self.codecDescription;
+    AVRational timebase = self.codecDescriptor.timebase;
+    SGCodecDescriptor *cd = self.codecDescriptor;
     CMTime duration = CMTimeMake(frame->nb_samples, frame->sample_rate);
     CMTime timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     CMTime decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
+    for (SGTimeLayout *obj in cd.timeLayouts) {
         duration = [obj convertDuration:duration];
         timeStamp = [obj convertTimeStamp:timeStamp];
         decodeTimeStamp = [obj convertTimeStamp:decodeTimeStamp];
@@ -106,7 +106,7 @@
     [super fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
     AVFrame *frame = self.core;
     self->_numberOfSamples = frame->nb_samples;
-    self->_audioDescription = [[SGAudioDescription alloc] initWithFrame:frame];
+    self->_descriptor = [[SGAudioDescriptor alloc] initWithFrame:frame];
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];

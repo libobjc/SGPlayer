@@ -340,8 +340,8 @@
 {
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
-    NSUInteger width = frame.videoDescription.width;
-    NSUInteger height = frame.videoDescription.height;
+    NSUInteger width = frame.descriptor.width;
+    NSUInteger height = frame.descriptor.height;
     if (!frame || width == 0 || height == 0) {
         [self->_lock unlock];
         return;
@@ -366,7 +366,7 @@
     [self->_lock unlock];
     SGDisplayMode displayMode = self->_displayMode;
     SGMetalModel *model = displayMode == SGDisplayModePlane ? self->_planeModel : self->_sphereModel;
-    SGMetalRenderPipeline *pipeline = [self->_pipelinePool pipelineWithCVPixelFormat:frame.videoDescription.cv_format];
+    SGMetalRenderPipeline *pipeline = [self->_pipelinePool pipelineWithCVPixelFormat:frame.descriptor.cv_format];
     if (!model || !pipeline) {
         [frame unlock];
         return;
@@ -375,7 +375,7 @@
     if (frame.pixelBuffer) {
         textures = [self->_textureLoader texturesWithCVPixelBuffer:frame.pixelBuffer];
     } else {
-        textures = [self->_textureLoader texturesWithCVPixelFormat:frame.videoDescription.cv_format
+        textures = [self->_textureLoader texturesWithCVPixelFormat:frame.descriptor.cv_format
                                                              width:width
                                                             height:height
                                                              bytes:(void **)frame.data

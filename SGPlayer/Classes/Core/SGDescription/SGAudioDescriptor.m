@@ -1,20 +1,20 @@
 //
-//  SGAudioDescription.m
+//  SGAudioDescriptor.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/28.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGAudioDescription.h"
-#import "SGDescription+Internal.h"
+#import "SGAudioDescriptor.h"
+#import "SGDescriptor+Internal.h"
 #import "SGFFmpeg.h"
 
-@implementation SGAudioDescription
+@implementation SGAudioDescriptor
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGAudioDescription *obj = [[SGAudioDescription alloc] init];
+    SGAudioDescriptor *obj = [[SGAudioDescriptor alloc] init];
     obj->_format = self->_format;
     obj->_sampleRate = self->_sampleRate;
     obj->_numberOfChannels = self->_numberOfChannels;
@@ -66,16 +66,16 @@
     return linesize;
 }
 
-- (BOOL)isEqualToDescription:(SGAudioDescription *)description
+- (BOOL)isEqualToDescriptor:(SGAudioDescriptor *)descriptor
 {
-    if (!description) {
+    if (!descriptor) {
         return NO;
     }
     return
-    self->_format == description->_format &&
-    self->_sampleRate == description->_sampleRate &&
-    self->_numberOfChannels == description->_numberOfChannels &&
-    self->_channelLayout == description->_channelLayout;
+    self->_format == descriptor->_format &&
+    self->_sampleRate == descriptor->_sampleRate &&
+    self->_numberOfChannels == descriptor->_numberOfChannels &&
+    self->_channelLayout == descriptor->_channelLayout;
 }
 
 @end

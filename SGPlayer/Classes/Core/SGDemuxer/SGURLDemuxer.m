@@ -127,12 +127,12 @@
             [pkt unlock];
         } else {
             AVStream *stream = self->_context->streams[pkt.core->stream_index];
-            SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
             [cd appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
-            [pkt setCodecDescription:cd];
+            [pkt setCodecDescriptor:cd];
             [pkt fill];
             *packet = pkt;
         }

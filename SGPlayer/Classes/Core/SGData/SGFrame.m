@@ -91,7 +91,7 @@
     self->_duration = kCMTimeZero;
     self->_timeStamp = kCMTimeZero;
     self->_decodeTimeStamp = kCMTimeZero;
-    self->_codecDescription = nil;
+    self->_codecDescriptor = nil;
 }
 
 #pragma mark - Control
@@ -99,14 +99,14 @@
 - (void)fill
 {
     AVFrame *frame = self->_core;
-    AVRational timebase = self->_codecDescription.timebase;
-    SGCodecDescription *codecDescription = self->_codecDescription;
+    AVRational timebase = self->_codecDescriptor.timebase;
+    SGCodecDescriptor *cd = self->_codecDescriptor;
     self->_size = frame->pkt_size;
-    self->_track = codecDescription.track;
+    self->_track = cd.track;
     self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
+    for (SGTimeLayout *obj in cd.timeLayouts) {
         self->_duration = [obj convertDuration:self->_duration];
         self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
         self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];
@@ -116,9 +116,9 @@
 - (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
 {
     AVFrame *frame = self->_core;
-    SGCodecDescription *codecDescription = self->_codecDescription;
+    SGCodecDescriptor *cd = self->_codecDescriptor;
     self->_size = frame->pkt_size;
-    self->_track = codecDescription.track;
+    self->_track = cd.track;
     self->_duration = duration;
     self->_timeStamp = timeStamp;
     self->_decodeTimeStamp = decodeTimeStamp;

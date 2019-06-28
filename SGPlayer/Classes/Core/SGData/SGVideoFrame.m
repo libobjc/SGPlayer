@@ -8,7 +8,7 @@
 
 #import "SGVideoFrame.h"
 #import "SGFrame+Internal.h"
-#import "SGDescription+Internal.h"
+#import "SGDescriptor+Internal.h"
 #import "SGMapping.h"
 #import "SGSWScale.h"
 
@@ -58,24 +58,24 @@
 
 - (SGPLFImage *)image
 {
-    if (self->_videoDescription.width == 0 || self->_videoDescription.height == 0) {
+    if (self->_descriptor.width == 0 || self->_descriptor.height == 0) {
         return nil;
     }
-    SGVideoDescription *inputDescription = [self->_videoDescription copy];
-    SGVideoDescription *outputDescription = [self->_videoDescription copy];
-    outputDescription.format = AV_PIX_FMT_RGB24;
+    SGVideoDescriptor *inputDescriptor = [self->_descriptor copy];
+    SGVideoDescriptor *outputDescriptor = [self->_descriptor copy];
+    outputDescriptor.format = AV_PIX_FMT_RGB24;
     
     const uint8_t *src_data[SGFramePlaneCount] = {nil};
     uint8_t *dst_data[SGFramePlaneCount] = {nil};
     int src_linesize[SGFramePlaneCount] = {0};
     int dst_linesize[SGFramePlaneCount] = {0};
     
-    if (inputDescription.format == AV_PIX_FMT_VIDEOTOOLBOX) {
+    if (inputDescriptor.format == AV_PIX_FMT_VIDEOTOOLBOX) {
         if (!self->_pixelBuffer) {
             return nil;
         }
         OSType type = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
-        inputDescription.format = SGPixelFormatAV2FF(type);
+        inputDescriptor.format = SGPixelFormatAV2FF(type);
         
         CVReturn error = CVPixelBufferLockBaseAddress(self->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (error != kCVReturnSuccess) {
@@ -100,24 +100,24 @@
         }
     }
     
-    if (inputDescription.format == AV_PIX_FMT_NONE ||
+    if (inputDescriptor.format == AV_PIX_FMT_NONE ||
         !src_data[0] ||
         !src_linesize[0]) {
         return nil;
     }
     
     SGSWScale *context = [[SGSWScale alloc] init];
-    context.inputDescription = inputDescription;
-    context.outputDescription = outputDescription;
+    context.inputDescriptor = inputDescriptor;
+    context.outputDescriptor = outputDescriptor;
     if (![context open]) {
         return nil;
     }
     
     int result = av_image_alloc(dst_data,
                                 (int *)dst_linesize,
-                                outputDescription.width,
-                                outputDescription.height,
-                                outputDescription.format,
+                                outputDescriptor.width,
+                                outputDescriptor.height,
+                                outputDescriptor.format,
                                 1);
     if (result < 0) {
         return nil;
@@ -132,8 +132,8 @@
     }
     SGPLFImage *image = SGPLFImageWithRGBData(dst_data[0],
                                               dst_linesize[0],
-                                              outputDescription.width,
-                                              outputDescription.height);
+                                              outputDescriptor.width,
+                                              outputDescriptor.height);
     av_freep(dst_data);
     return image;
 }
@@ -148,7 +148,7 @@
         self->_linesize[i] = 0;
     }
     self->_pixelBuffer = nil;
-    self->_videoDescription = nil;
+    self->_descriptor = nil;
 }
 
 #pragma mark - Control
@@ -156,10 +156,10 @@
 static void SGVideoFrameFilling(SGVideoFrame *self)
 {
     AVFrame *frame = self.core;
-    self->_videoDescription = [[SGVideoDescription alloc] initWithFrame:frame];
+    self->_descriptor = [[SGVideoDescriptor alloc] initWithFrame:frame];
     if (frame->format == AV_PIX_FMT_VIDEOTOOLBOX) {
         self->_pixelBuffer = (CVPixelBufferRef)(frame->data[3]);
-        self->_videoDescription.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
+        self->_descriptor.cv_format = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
     }
     for (int i = 0; i < SGFramePlaneCount; i++) {
         self->_data[i] = frame->data[i];

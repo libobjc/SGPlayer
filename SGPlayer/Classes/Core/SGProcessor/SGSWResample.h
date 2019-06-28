@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 
 @interface SGSWResample : NSObject
 
 /**
  *
  */
-@property (nonatomic, copy) SGAudioDescription *inputDescription;
-@property (nonatomic, copy) SGAudioDescription *outputDescription;
+@property (nonatomic, copy) SGAudioDescriptor *inputDescriptor;
+@property (nonatomic, copy) SGAudioDescriptor *outputDescriptor;
 
 /**
  *

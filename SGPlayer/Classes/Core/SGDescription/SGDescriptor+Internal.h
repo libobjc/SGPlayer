@@ -8,16 +8,16 @@
 
 #import "SGPacket.h"
 #import "SGFFmpeg.h"
-#import "SGAudioDescription.h"
-#import "SGVideoDescription.h"
+#import "SGAudioDescriptor.h"
+#import "SGVideoDescriptor.h"
 
-@interface SGAudioDescription ()
+@interface SGAudioDescriptor ()
 
 - (instancetype)initWithFrame:(AVFrame *)frame;
 
 @end
 
-@interface SGVideoDescription ()
+@interface SGVideoDescriptor ()
 
 - (instancetype)initWithFrame:(AVFrame *)frame;
 

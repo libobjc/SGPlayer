@@ -40,7 +40,7 @@
 @synthesize volume = _volume;
 @synthesize options = _options;
 @synthesize delegate = _delegate;
-@synthesize audioDescription = _audioDescription;
+@synthesize descriptor = _descriptor;
 
 - (instancetype)init
 {
@@ -57,7 +57,7 @@
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
         self->_options = [SGOptions sharedOptions].renderer.copy;
-        self->_audioDescription = [[SGAudioDescription alloc] init];
+        self->_descriptor = [[SGAudioDescriptor alloc] init];
     }
     return self;
 }
@@ -142,11 +142,11 @@
     return ret;
 }
 
-- (SGAudioDescription *)audioDescription
+- (SGAudioDescriptor *)descriptor
 {
-    __block SGAudioDescription *ret = nil;
+    __block SGAudioDescriptor *ret = nil;
     SGLockEXE00(self->_lock, ^{
-        ret = self->_audioDescription;
+        ret = self->_descriptor;
     });
     return ret;
 }
@@ -278,11 +278,11 @@
             [self->_lock lock];
             self->_currentFrame = frame;
         }
-        SGAudioDescription *description = self->_currentFrame.audioDescription;
-        NSAssert(description.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
+        SGAudioDescriptor *descriptor = self->_currentFrame.descriptor;
+        NSAssert(descriptor.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
         UInt32 frame_nb_samples_left = self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples;
         UInt32 nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
-        for (int i = 0; i < data->mNumberBuffers && i < description.numberOfChannels; i++) {
+        for (int i = 0; i < data->mNumberBuffers && i < descriptor.numberOfChannels; i++) {
             UInt32 data_offset = self->_flags.renderCopiedSamples * (UInt32)sizeof(float);
             UInt32 frame_offset = self->_flags.frameCopiedSamples * (UInt32)sizeof(float);
             UInt32 size_to_copy = nb_samples_to_copy * (UInt32)sizeof(float);

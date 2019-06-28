@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 
 @interface SGSonic : NSObject
 
@@ -20,12 +20,12 @@
 /**
  *
  */
-- (instancetype)initWithAudioDescription:(SGAudioDescription *)audioDescription;
+- (instancetype)initWithDescriptor:(SGAudioDescriptor *)descriptor;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescriptor *descriptor;
 
 /**
  *

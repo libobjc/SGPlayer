@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 #import "SGAudioFrame.h"
 #import "SGCapacity.h"
 
@@ -21,12 +21,12 @@
  */
 - (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
                        weights:(NSArray<NSNumber *> *)weights
-              audioDescription:(SGAudioDescription *)audioDescription;
+                    descriptor:(SGAudioDescriptor *)descriptor;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescriptor *descriptor;
 
 /**
  *

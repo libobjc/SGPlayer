@@ -1,5 +1,5 @@
 //
-//  SGAudioDescription.h
+//  SGAudioDescriptor.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/28.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SGAudioDescription : NSObject <NSCopying>
+@interface SGAudioDescriptor : NSObject <NSCopying>
 
 /**
  *  AVSampleFormat
@@ -53,6 +53,6 @@
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGAudioDescription *)description;
+- (BOOL)isEqualToDescriptor:(SGAudioDescriptor *)descriptor;
 
 @end

@@ -76,10 +76,10 @@
     pkt.core->pts = av_rescale(AV_TIME_BASE, timeStamp.value, timeStamp.timescale);
     pkt.core->dts = av_rescale(AV_TIME_BASE, timeStamp.value, timeStamp.timescale);
     pkt.core->duration = av_rescale(AV_TIME_BASE, duration.value, duration.timescale);
-    SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+    SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
     cd.type = SGCodecType_Padding;
     cd.timebase = AV_TIME_BASE_Q;
-    [pkt setCodecDescription:cd];
+    [pkt setCodecDescriptor:cd];
     [pkt fill];
     *packet = pkt;
     self->_lasttime = self->_duration;

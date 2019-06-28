@@ -36,17 +36,17 @@
 
 - (BOOL)open
 {
-    if (!self->_inputDescription ||
-        !self->_outputDescription) {
+    if (!self->_inputDescriptor ||
+        !self->_outputDescriptor) {
         return NO;
     }
     self->_context = swr_alloc_set_opts(NULL,
-                                        self->_outputDescription.channelLayout,
-                                        self->_outputDescription.format,
-                                        self->_outputDescription.sampleRate,
-                                        self->_inputDescription.channelLayout,
-                                        self->_inputDescription.format,
-                                        self->_inputDescription.sampleRate,
+                                        self->_outputDescriptor.channelLayout,
+                                        self->_outputDescriptor.format,
+                                        self->_outputDescriptor.sampleRate,
+                                        self->_inputDescriptor.channelLayout,
+                                        self->_inputDescriptor.format,
+                                        self->_inputDescriptor.sampleRate,
                                         0, NULL);
     if (swr_init(self->_context) < 0) {
         return NO;
@@ -56,9 +56,9 @@
 
 - (int)write:(uint8_t **)data nb_samples:(int)nb_samples
 {
-    int numberOfPlanes = self->_outputDescription.numberOfPlanes;
+    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
     int numberOfSamples = swr_get_out_samples(self->_context, nb_samples);
-    int linesize = [self->_outputDescription linesize:numberOfSamples];
+    int linesize = [self->_outputDescriptor linesize:numberOfSamples];
     uint8_t *o_data[SGFramePlaneCount] = {NULL};
     for (int i = 0; i < numberOfPlanes; i++) {
         if (!self->_buffer[i] || self->_buffer[i]->size < linesize) {
@@ -75,8 +75,8 @@
 
 - (int)read:(uint8_t **)data nb_samples:(int)nb_samples
 {
-    int numberOfPlanes = self->_outputDescription.numberOfPlanes;
-    int linesize = [self->_outputDescription linesize:nb_samples];
+    int numberOfPlanes = self->_outputDescriptor.numberOfPlanes;
+    int linesize = [self->_outputDescriptor linesize:nb_samples];
     for (int i = 0; i < numberOfPlanes; i++) {
         memcpy(data[i], self->_buffer[i]->data, linesize);
     }

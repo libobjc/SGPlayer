@@ -45,7 +45,7 @@
         self->_frameOutput.delegate = self;
         self->_audioQueue = [[SGObjectQueue alloc] init];
         self->_videoQueue = [[SGObjectQueue alloc] init];
-        self->_audioDescription = [[SGAudioDescription alloc] init];
+        self->_audioDescriptor = [[SGAudioDescriptor alloc] init];
         for (int i = 0; i < 8; i++) {
             self->_capacityFlags[i] = NO;
             self->_capacities[i] = SGCapacityCreate();
@@ -156,7 +156,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
             [m addObjectsFromArray:self->_videoSelection.tracks];
             [self->_frameOutput selectTracks:[m copy]];
         }
-        [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags description:self->_audioDescription];
+        [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags descriptor:self->_audioDescriptor];
         return nil;
     });
 }
@@ -299,7 +299,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
                     self->_audioSelection.tracks = @[audio.firstObject];
                     self->_audioSelection.weights = @[@(1.0)];
                     self->_audioProcessor = [[SGAudioProcessor alloc] init];
-                    [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags description:self->_audioDescription];
+                    [self->_audioProcessor setSelection:self->_audioSelection actionFlags:actionFlags descriptor:self->_audioDescriptor];
                 }
                 if (video.count > 0) {
                     self->_videoSelection = [[SGVideoSelection alloc] init];

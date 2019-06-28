@@ -35,17 +35,17 @@
 
 - (BOOL)open
 {
-    if (!self->_inputDescription ||
-        !self->_outputDescription) {
+    if (!self->_inputDescriptor ||
+        !self->_outputDescriptor) {
         return NO;
     }
     self->_context = sws_getCachedContext(self->_context,
-                                          self->_inputDescription.width,
-                                          self->_inputDescription.height,
-                                          self->_inputDescription.format,
-                                          self->_outputDescription.width,
-                                          self->_outputDescription.height,
-                                          self->_outputDescription.format,
+                                          self->_inputDescriptor.width,
+                                          self->_inputDescriptor.height,
+                                          self->_inputDescriptor.format,
+                                          self->_outputDescriptor.width,
+                                          self->_outputDescriptor.height,
+                                          self->_outputDescriptor.format,
                                           self->_flags,
                                           NULL, NULL, NULL);
     return self->_context ? YES : NO;
@@ -57,7 +57,7 @@
                      inputData,
                      inputLinesize,
                      0,
-                     self->_inputDescription.height,
+                     self->_inputDescriptor.height,
                      outputData,
                      outputLinesize);;
 }

@@ -7,7 +7,7 @@
 //
 
 #import "SGPacket.h"
-#import "SGCodecDescription.h"
+#import "SGCodecDescriptor.h"
 
 @interface SGPacket ()
 
@@ -19,7 +19,7 @@
 /**
  *
  */
-@property (nonatomic, strong) SGCodecDescription *codecDescription;
+@property (nonatomic, strong) SGCodecDescriptor *codecDescriptor;
 
 /**
  *

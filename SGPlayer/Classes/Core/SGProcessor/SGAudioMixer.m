@@ -21,13 +21,13 @@
 
 - (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
                        weights:(NSArray<NSNumber *> *)weights
-              audioDescription:(SGAudioDescription *)audioDescription
+                    descriptor:(SGAudioDescriptor *)descriptor
 
 {
     if (self = [super init]) {
         self->_tracks = [tracks copy];
         self->_weights = [weights copy];
-        self->_audioDescription = [audioDescription copy];
+        self->_descriptor = [descriptor copy];
         self->_startTime = kCMTimeNegativeInfinity;
         self->_units = [NSMutableDictionary dictionary];
         for (SGTrack *obj in self->_tracks) {
@@ -48,8 +48,8 @@
         [frame unlock];
         return nil;
     }
-    NSAssert([self->_audioDescription isEqualToDescription:frame.audioDescription], @"Invalid Format.");
-    NSAssert(self->_audioDescription.format == AV_SAMPLE_FMT_FLTP, @"Invalid Format.");
+    NSAssert([self->_descriptor isEqualToDescriptor:frame.descriptor], @"Invalid Format.");
+    NSAssert(self->_descriptor.format == AV_SAMPLE_FMT_FLTP, @"Invalid Format.");
     SGAudioMixerUnit *unit = [self->_units objectForKey:@(frame.track.index)];
     BOOL ret = [unit putFrame:frame];
     [frame unlock];
@@ -156,9 +156,9 @@
     
     CMTime start = range.start;
     CMTime duration = range.duration;
-    SGAudioDescription *description = self->_audioDescription;
-    int numberOfSamples = (int)CMTimeConvertScale(duration, description.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
-    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:description numberOfSamples:numberOfSamples];
+    SGAudioDescriptor *descriptor = self->_descriptor;
+    int numberOfSamples = (int)CMTimeConvertScale(duration, descriptor.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescriptor:descriptor numberOfSamples:numberOfSamples];
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
         NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:CMTimeRangeGetEnd(range)];
@@ -170,7 +170,7 @@
     for (int t = 0; t < self->_tracks.count; t++) {
         int lastEE = 0;
         for (SGAudioFrame *obj in list[@(self->_tracks[t].index)]) {
-            int s = (int)CMTimeConvertScale(CMTimeSubtract(obj.timeStamp, start), description.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
+            int s = (int)CMTimeConvertScale(CMTimeSubtract(obj.timeStamp, start), descriptor.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             int e = s + obj.numberOfSamples;
             int ss = MAX(0, s);
             int ee = MIN(numberOfSamples, e);
@@ -180,7 +180,7 @@
             }
             lastEE = ee;
             for (int i = ss; i < ee; i++) {
-                for (int c = 0; c < description.numberOfPlanes; c++) {
+                for (int c = 0; c < descriptor.numberOfPlanes; c++) {
                     ((float *)ret.core->data[c])[i] += (((float *)obj.data[c])[i - s] * weights[t].floatValue);
                 }
             }
@@ -188,7 +188,7 @@
     }
     for (NSValue *obj in discontinuous) {
         NSRange range = obj.rangeValue;
-        for (int c = 0; c < description.numberOfPlanes; c++) {
+        for (int c = 0; c < descriptor.numberOfPlanes; c++) {
             float value = 0;
             if (range.location > 0) {
                 value += ((float *)ret.core->data[c])[range.location - 1] * 0.5;
@@ -206,7 +206,7 @@
             [obj unlock];
         }
     }];
-    [ret setCodecDescription:[[SGCodecDescription alloc] init]];
+    [ret setCodecDescriptor:[[SGCodecDescriptor alloc] init]];
     [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
     return ret;
 }

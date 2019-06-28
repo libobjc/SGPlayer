@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGCodecDescription.h"
+#import "SGCodecDescriptor.h"
 #import "SGDecoderOptions.h"
 #import "SGPacket.h"
 #import "SGFrame.h"

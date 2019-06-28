@@ -21,7 +21,7 @@
 /**
  *
  */
-- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags description:(SGAudioDescription *)description;
+- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags descriptor:(SGAudioDescriptor *)descriptor;
 
 /**
  *

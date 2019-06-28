@@ -7,7 +7,7 @@
 //
 
 #import "SGFrame.h"
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 
 @interface SGAudioFrame : SGFrame
 
@@ -19,7 +19,7 @@
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGAudioDescription *audioDescription;
+@property (nonatomic, strong, readonly) SGAudioDescriptor *descriptor;
 
 /**
  *

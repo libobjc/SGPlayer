@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 #import "SGAudioFrame.h"
 
 @interface SGAudioFormatter : NSObject
@@ -15,7 +15,7 @@
 /**
  *
  */
-@property (nonatomic, copy) SGAudioDescription *audioDescription;
+@property (nonatomic, copy) SGAudioDescriptor *descriptor;
 
 /**
  *

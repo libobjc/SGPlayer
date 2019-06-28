@@ -130,7 +130,7 @@
             [self->_currentSegment seekToTime:kCMTimeZero];
             continue;
         }
-        (*packet).codecDescription.track = self->_track;
+        (*packet).codecDescriptor.track = self->_track;
         [(*packet) fill];
         break;
     }

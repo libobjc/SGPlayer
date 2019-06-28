@@ -312,7 +312,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_currentItem.delegate = self;
         self->_currentItem.demuxerOptions = self->_options.demuxer;
         self->_currentItem.decoderOptions = self->_options.decoder;
-        self->_currentItem.audioDescription = self->_audioRenderer.audioDescription;
+        self->_currentItem.audioDescriptor = self->_audioRenderer.descriptor;
         self->_audioRenderer.options = self->_options.renderer;
         self->_videoRenderer.options = self->_options.renderer;
         return nil;

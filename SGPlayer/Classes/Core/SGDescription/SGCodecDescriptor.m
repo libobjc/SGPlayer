@@ -1,19 +1,19 @@
 //
-//  SGCodecDescription.m
+//  SGCodecDescriptor.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/15.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGCodecDescription.h"
+#import "SGCodecDescriptor.h"
 
-@implementation SGCodecDescription
+@implementation SGCodecDescriptor
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    SGCodecDescription *obj = [[SGCodecDescription alloc] init];
-    [self fillToDescription:obj];
+    SGCodecDescriptor *obj = [[SGCodecDescriptor alloc] init];
+    [self fillToDescriptor:obj];
     return obj;
 }
 
@@ -52,29 +52,29 @@
     self->_timeRange = SGCMTimeRangeGetIntersection(self->_timeRange, timeRange);
 }
 
-- (void)fillToDescription:(SGCodecDescription *)description
+- (void)fillToDescriptor:(SGCodecDescriptor *)descriptor
 {
-    description->_track = self->_track;
-    description->_scale = self->_scale;
-    description->_timebase = self->_timebase;
-    description->_codecpar = self->_codecpar;
-    description->_timeRange = self->_timeRange;
-    description->_timeLayouts = [self->_timeLayouts copy];
+    descriptor->_track = self->_track;
+    descriptor->_scale = self->_scale;
+    descriptor->_timebase = self->_timebase;
+    descriptor->_codecpar = self->_codecpar;
+    descriptor->_timeRange = self->_timeRange;
+    descriptor->_timeLayouts = [self->_timeLayouts copy];
 }
 
-- (BOOL)isEqualToDescription:(SGCodecDescription *)description
+- (BOOL)isEqualToDescriptor:(SGCodecDescriptor *)descriptor
 {
-    if (![self isEqualCodecContextToDescription:description]) {
+    if (![self isEqualCodecContextToDescriptor:descriptor]) {
         return NO;
     }
-    if (!CMTimeRangeEqual(description->_timeRange, self->_timeRange)) {
+    if (!CMTimeRangeEqual(descriptor->_timeRange, self->_timeRange)) {
         return NO;
     }
-    if (description->_timeLayouts.count != self->_timeLayouts.count) {
+    if (descriptor->_timeLayouts.count != self->_timeLayouts.count) {
         return NO;
     }
-    for (int i = 0; i < description->_timeLayouts.count; i++) {
-        SGTimeLayout *t1 = [description->_timeLayouts objectAtIndex:i];
+    for (int i = 0; i < descriptor->_timeLayouts.count; i++) {
+        SGTimeLayout *t1 = [descriptor->_timeLayouts objectAtIndex:i];
         SGTimeLayout *t2 = [self->_timeLayouts objectAtIndex:i];
         if (![t1 isEqualToTimeLayout:t2]) {
             return NO;
@@ -83,18 +83,18 @@
     return YES;
 }
 
-- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription *)description
+- (BOOL)isEqualCodecContextToDescriptor:(SGCodecDescriptor *)descriptor
 {
-    if (!description) {
+    if (!descriptor) {
         return NO;
     }
-    if (description.track != self->_track) {
+    if (descriptor.track != self->_track) {
         return NO;
     }
-    if (description->_codecpar != self->_codecpar) {
+    if (descriptor->_codecpar != self->_codecpar) {
         return NO;
     }
-    if (av_cmp_q(description->_timebase, self->_timebase) != 0) {
+    if (av_cmp_q(descriptor->_timebase, self->_timebase) != 0) {
         return NO;
     }
     return YES;

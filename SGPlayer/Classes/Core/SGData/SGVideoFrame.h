@@ -8,7 +8,7 @@
 
 #import "SGFrame.h"
 #import "SGPLFImage.h"
-#import "SGVideoDescription.h"
+#import "SGVideoDescriptor.h"
 
 @interface SGVideoFrame : SGFrame
 
@@ -20,7 +20,7 @@
 /**
  *
  */
-@property (nonatomic, strong, readonly) SGVideoDescription *videoDescription;
+@property (nonatomic, strong, readonly) SGVideoDescriptor *descriptor;
 
 /**
  *

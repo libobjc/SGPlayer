@@ -125,8 +125,8 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             error = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished, SGOperationCodeURLDemuxerFunnelNext);
             break;
         }
-        [pkt.codecDescription appendTimeLayout:self->_timeLayout];
-        [pkt.codecDescription appendTimeRange:self->_timeRange];
+        [pkt.codecDescriptor appendTimeLayout:self->_timeLayout];
+        [pkt.codecDescriptor appendTimeRange:self->_timeRange];
         [pkt fill];
         *packet = pkt;
         break;
@@ -142,8 +142,8 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         if (self->_flags.outputting) {
             [self->_packetQueue getObjectAsync:&pkt];
             if (pkt) {
-                [pkt.codecDescription appendTimeLayout:self->_timeLayout];
-                [pkt.codecDescription appendTimeRange:self->_timeRange];
+                [pkt.codecDescriptor appendTimeLayout:self->_timeLayout];
+                [pkt.codecDescriptor appendTimeRange:self->_timeRange];
                 [pkt fill];
                 *packet = pkt;
                 break;

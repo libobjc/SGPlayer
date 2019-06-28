@@ -1,5 +1,5 @@
 //
-//  SGVideoDescription.h
+//  SGVideoDescriptor.h
 //  SGPlayer
 //
 //  Created by Single on 2018/12/11.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SGVideoDescription : NSObject <NSCopying>
+@interface SGVideoDescriptor : NSObject <NSCopying>
 
 /**
  *  AVPixelFormat
@@ -33,6 +33,6 @@
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGVideoDescription *)description;
+- (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor;
 
 @end

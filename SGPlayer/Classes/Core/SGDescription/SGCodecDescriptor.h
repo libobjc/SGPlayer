@@ -1,5 +1,5 @@
 //
-//  SGCodecDescription.h
+//  SGCodecDescriptor.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/15.
@@ -16,7 +16,7 @@ typedef NS_ENUM(NSUInteger, SGCodecType) {
     SGCodecType_Padding,
 };
 
-@interface SGCodecDescription : NSObject <NSCopying>
+@interface SGCodecDescriptor : NSObject <NSCopying>
 
 /**
  *
@@ -66,16 +66,16 @@ typedef NS_ENUM(NSUInteger, SGCodecType) {
 /**
  *
  */
-- (void)fillToDescription:(SGCodecDescription *)description;
+- (void)fillToDescriptor:(SGCodecDescriptor *)descriptor;
 
 /**
  *
  */
-- (BOOL)isEqualToDescription:(SGCodecDescription *)description;
+- (BOOL)isEqualToDescriptor:(SGCodecDescriptor *)descriptor;
 
 /**
  *
  */
-- (BOOL)isEqualCodecContextToDescription:(SGCodecDescription *)description;
+- (BOOL)isEqualCodecContextToDescriptor:(SGCodecDescriptor *)descriptor;
 
 @end

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 #import "SGTrack.h"
 
 /**

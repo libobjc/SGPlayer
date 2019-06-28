@@ -48,7 +48,7 @@
 {
     return [NSString stringWithFormat:@"<%@: %p>, track: %d, pts: %f, end: %f, duration: %f",
             NSStringFromClass(self.class), self,
-            (int)self->_codecDescription.track.index,
+            (int)self->_codecDescriptor.track.index,
             CMTimeGetSeconds(self->_timeStamp),
             CMTimeGetSeconds(CMTimeAdd(self->_timeStamp, self->_duration)),
             CMTimeGetSeconds(self->_duration)];
@@ -96,7 +96,7 @@
     self->_duration = kCMTimeZero;
     self->_timeStamp = kCMTimeZero;
     self->_decodeTimeStamp = kCMTimeZero;
-    self->_codecDescription = nil;
+    self->_codecDescriptor = nil;
 }
 
 #pragma mark - Control
@@ -104,17 +104,17 @@
 - (void)fill
 {
     AVPacket *pkt = self->_core;
-    AVRational timebase = self->_codecDescription.timebase;
-    SGCodecDescription *codecDescription = self->_codecDescription;
+    AVRational timebase = self->_codecDescriptor.timebase;
+    SGCodecDescriptor *cd = self->_codecDescriptor;
     if (pkt->pts == AV_NOPTS_VALUE) {
         pkt->pts = pkt->dts;
     }
     self->_size = pkt->size;
-    self->_track = codecDescription.track;
+    self->_track = cd.track;
     self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in codecDescription.timeLayouts) {
+    for (SGTimeLayout *obj in cd.timeLayouts) {
         self->_duration = [obj convertDuration:self->_duration];
         self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
         self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];

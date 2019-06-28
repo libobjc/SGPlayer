@@ -7,7 +7,7 @@
 //
 
 #import "SGRenderable.h"
-#import "SGAudioDescription.h"
+#import "SGAudioDescriptor.h"
 #import "SGAudioRenderer.h"
 #import "SGVideoRenderer.h"
 #import "SGClock+Internal.h"
@@ -32,7 +32,7 @@
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioDescription *audioDescription;
+@property (nonatomic, copy, readonly) SGAudioDescriptor *descriptor;
 
 @end
 

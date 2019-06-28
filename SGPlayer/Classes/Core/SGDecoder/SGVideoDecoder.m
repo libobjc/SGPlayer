@@ -21,7 +21,7 @@
 }
 
 @property (nonatomic, strong, readonly) SGCodecContext *codecContext;
-@property (nonatomic, strong, readonly) SGCodecDescription *codecDescription;
+@property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
 @end
 
@@ -32,8 +32,8 @@
 - (void)setup
 {
     self->_flags.needsAlignment = YES;
-    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescription.timebase
-                                                          codecpar:self->_codecDescription.codecpar
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescriptor.timebase
+                                                          codecpar:self->_codecDescriptor.codecpar
                                                         frameClass:[SGVideoFrame class]
                                                     frameReuseName:[SGVideoFrame commonReuseName]];
     self->_codecContext.options = self->_options;
@@ -58,19 +58,19 @@
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
     NSMutableArray *ret = [NSMutableArray array];
-    SGCodecDescription *cd = packet.codecDescription;
-    NSAssert(cd, @"Invalid Codec Description.");
-    if (![cd isEqualCodecContextToDescription:self->_codecDescription]) {
+    SGCodecDescriptor *cd = packet.codecDescriptor;
+    NSAssert(cd, @"Invalid Codec Descriptor.");
+    if (![cd isEqualCodecContextToDescriptor:self->_codecDescriptor]) {
         NSArray<SGFrame *> *objs = [self processPacket:nil];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
-        self->_codecDescription = [cd copy];
+        self->_codecDescriptor = [cd copy];
         [self destroy];
         [self setup];
     }
-    [cd fillToDescription:self->_codecDescription];
-    switch (packet.codecDescription.type) {
+    [cd fillToDescriptor:self->_codecDescriptor];
+    switch (packet.codecDescriptor.type) {
         case SGCodecType_Decode: {
             NSArray<SGFrame *> *objs = [self processPacket:packet];
             for (SGFrame *obj in objs) {
@@ -95,10 +95,10 @@
 
 - (NSArray<__kindof SGFrame *> *)processPacket:(SGPacket *)packet
 {
-    if (!self->_codecContext || !self->_codecDescription) {
+    if (!self->_codecContext || !self->_codecDescriptor) {
         return nil;
     }
-    SGCodecDescription *cd = self->_codecDescription;
+    SGCodecDescriptor *cd = self->_codecDescriptor;
     NSArray *objs = [self->_codecContext decode:packet];
     objs = [self processFrames:objs done:!packet];
     objs = [self clipFrames:objs timeRange:cd.timeRange];
@@ -109,7 +109,7 @@
 {
     NSMutableArray *ret = [NSMutableArray array];
     for (SGAudioFrame *obj in frames) {
-        [obj setCodecDescription:[self->_codecDescription copy]];
+        [obj setCodecDescriptor:[self->_codecDescriptor copy]];
         [obj fill];
         [ret addObject:obj];
     }
@@ -137,18 +137,18 @@
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(CMTimeAdd(obj.timeStamp, obj.duration), start);
             if (CMTimeCompare(obj.timeStamp, start) > 0) {
-                SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
-                [obj setCodecDescription:cd];
+                [obj setCodecDescriptor:cd];
                 [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
             }
         }
         CMTime start = obj.timeStamp;
         CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
         if (CMTimeCompare(obj.duration, duration) > 0) {
-            SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = obj.track;
-            [obj setCodecDescription:cd];
+            [obj setCodecDescriptor:cd];
             [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
         }
         [ret addObject:obj];

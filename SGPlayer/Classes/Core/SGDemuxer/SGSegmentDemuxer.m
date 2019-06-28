@@ -91,7 +91,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     if (error) {
         return error;
     }
-    [(*packet).codecDescription appendTimeLayout:self->_timeLayout];
+    [(*packet).codecDescriptor appendTimeLayout:self->_timeLayout];
     [(*packet) fill];
     return nil;
 }

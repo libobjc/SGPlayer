@@ -24,12 +24,12 @@
         [frame unlock];
         return nil;
     }
-    if (![self->_context.inputDescription isEqualToDescription:frame.audioDescription] ||
-        ![self->_context.outputDescription isEqualToDescription:self->_audioDescription]) {
+    if (![self->_context.inputDescriptor isEqualToDescriptor:frame.descriptor] ||
+        ![self->_context.outputDescriptor isEqualToDescriptor:self->_descriptor]) {
         self->_context = nil;
         SGSWResample *context = [[SGSWResample alloc] init];
-        context.inputDescription = frame.audioDescription;
-        context.outputDescription = self->_audioDescription;
+        context.inputDescriptor = frame.descriptor;
+        context.outputDescriptor = self->_descriptor;
         if ([context open]) {
             self->_context = context;
         }
@@ -38,19 +38,19 @@
         [frame unlock];
         return nil;
     }
-    int nb_planes = self->_audioDescription.numberOfPlanes;
+    int nb_planes = self->_descriptor.numberOfPlanes;
     int nb_samples = [self->_context write:frame.data nb_samples:frame.numberOfSamples];
     CMTime start = frame.timeStamp;
-    CMTime duration = CMTimeMake(nb_samples, self->_audioDescription.sampleRate);
-    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescription:self->_audioDescription numberOfSamples:nb_samples];
+    CMTime duration = CMTimeMake(nb_samples, self->_descriptor.sampleRate);
+    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescriptor:self->_descriptor numberOfSamples:nb_samples];
     uint8_t *data[SGFramePlaneCount] = {NULL};
     for (int i = 0; i < nb_planes; i++) {
         data[i] = ret.core->data[i];
     }
     [self->_context read:data nb_samples:nb_samples];
-    SGCodecDescription *cd = [[SGCodecDescription alloc] init];
+    SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
     cd.track = frame.track;
-    [ret setCodecDescription:cd];
+    [ret setCodecDescriptor:cd];
     [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
     [frame unlock];
     return ret;
