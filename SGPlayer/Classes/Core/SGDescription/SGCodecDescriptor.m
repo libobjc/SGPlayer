@@ -20,7 +20,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_type = SGCodecType_Decode;
+        self->_type = SGCodecTypeDecode;
         self->_scale = CMTimeMake(1, 1);
         self->_timebase = AV_TIME_BASE_Q;
         self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity,

@@ -11,21 +11,13 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGErrorCode) {
-    SGErrorCodeUnknown,
+typedef NS_ENUM(NSUInteger, SGErrorCode) {
+    SGErrorCodeUnknown = 0,
     SGErrorImmediateExitRequested,
     SGErrorCodeNoValidFormat,
-    SGErrorCodeNoValidTrackToPlay,
     SGErrorCodeFormatNotSeekable,
-    SGErrorCodePacketOutputCannotOpen,
-    SGErrorCodePacketOutputCannotClose,
-    SGErrorCodePacketOutputCannotPause,
-    SGErrorCodePacketOutputCannotResume,
-    SGErrorCodePacketOutputCannotSeek,
     SGErrorCodePacketOutputCancelSeek,
     SGErrorCodeURLDemuxerFunnelFinished,
-    SGErrorCodeConcatDemuxerNotFoundUnit,
-    SGErrorCodeConcatDemuxerUnitInvaildDuration,
     SGErrorCodeMutilDemuxerEndOfFile,
     SGErrorCodeDemuxerEndOfFile,
     SGErrorCodeInvlidTime,
@@ -34,35 +26,28 @@ typedef NS_ENUM(int, SGErrorCode) {
 /**
  *
  */
-typedef NS_ENUM(int, SGOperationCode) {
-    SGOperationCodeUnknown,
-    SGOperationCodeFormatCreate,
-    SGOperationCodeFormatOpenInput,
-    SGOperationCodeFormatFindStreamInfo,
-    SGOperationCodeFormatSeekFrame,
-    SGOperationCodeFormatReadFrame,
-    SGOperationCodeFormatGetSeekable,
-    SGOperationCodeCodecSetParametersToContext,
-    SGOperationCodeCodecOpen2,
-    SGOperationCodeAuidoSwrInit,
-    SGOperationCodeSessionOpen,
-    SGOperationCodePacketOutputOpen,
-    SGOperationCodePacketOutputClose,
-    SGOperationCodePacketOutputPause,
-    SGOperationCodePacketOutputResmue,
-    SGOperationCodePacketOutputSeek,
-    SGOperationCodeURLDemuxerFunnelNext,
-    SGOperationCodeURLDemuxerSeek,
-    SGOperationCodeMutilDemuxerNext,
-    SGOperationCodeSegmentDemuxerNext,
+typedef NS_ENUM(NSUInteger, SGActionCode) {
+    SGActionCodeUnknown = 0,
+    SGActionCodeFormatCreate,
+    SGActionCodeFormatOpenInput,
+    SGActionCodeFormatFindStreamInfo,
+    SGActionCodeFormatSeekFrame,
+    SGActionCodeFormatReadFrame,
+    SGActionCodeFormatGetSeekable,
+    SGActionCodeCodecSetParametersToContext,
+    SGActionCodeCodecOpen2,
+    SGActionCodePacketOutputSeek,
+    SGActionCodeURLDemuxerFunnelNext,
+    SGActionCodeMutilDemuxerNext,
+    SGActionCodeSegmentDemuxerNext,
 };
 
 /**
  *
  */
-NSError * SGEGetError(int result, SGOperationCode operation);
+NSError * SGGetFFError(int result, SGActionCode operation);
 
 /**
  *
  */
-NSError * SGECreateError(int code, SGOperationCode operation);
+NSError * SGCreateError(NSUInteger code, SGActionCode operation);

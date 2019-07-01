@@ -399,7 +399,7 @@
             break;
         case SGDisplayModeVR: {
             GLKMatrix4 matrix = GLKMatrix4Identity;
-            double aspect = (float)drawable.texture.width / (float)drawable.texture.height;
+            Float64 aspect = (Float64)drawable.texture.width / drawable.texture.height;
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix]) {
                 break;
             }
@@ -411,7 +411,7 @@
         case SGDisplayModeVRBox: {
             GLKMatrix4 matrix1 = GLKMatrix4Identity;
             GLKMatrix4 matrix2 = GLKMatrix4Identity;
-            double aspect = (float)drawable.texture.width / (float)drawable.texture.height / 2.0;
+            Float64 aspect = (Float64)drawable.texture.width / drawable.texture.height / 2.0;
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix1 matrix2:&matrix2]) {
                 break;
             }

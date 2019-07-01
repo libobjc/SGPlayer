@@ -93,15 +93,15 @@
         if (self->_context->pb && self->_context->pb->seekable > 0) {
             return nil;
         }
-        return SGECreateError(SGErrorCodeFormatNotSeekable, SGOperationCodeFormatGetSeekable);
+        return SGCreateError(SGErrorCodeFormatNotSeekable, SGActionCodeFormatGetSeekable);
     }
-    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatGetSeekable);
+    return SGCreateError(SGErrorCodeNoValidFormat, SGActionCodeFormatGetSeekable);
 }
 
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     NSError *error = [self seekable];
     if (error) {
@@ -113,9 +113,9 @@
         if (ret >= 0) {
             self->_basetime = time;
         }
-        return SGEGetError(ret, SGOperationCodeFormatSeekFrame);
+        return SGGetFFError(ret, SGActionCodeFormatSeekFrame);
     }
-    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatSeekFrame);
+    return SGCreateError(SGErrorCodeNoValidFormat, SGActionCodeFormatSeekFrame);
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
@@ -136,9 +136,9 @@
             [pkt fill];
             *packet = pkt;
         }
-        return SGEGetError(ret, SGOperationCodeFormatReadFrame);
+        return SGGetFFError(ret, SGActionCodeFormatReadFrame);
     }
-    return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatReadFrame);
+    return SGCreateError(SGErrorCodeNoValidFormat, SGActionCodeFormatReadFrame);
 }
 
 #pragma mark - AVFormatContext
@@ -147,7 +147,7 @@ static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *U
 {
     AVFormatContext *ctx = avformat_alloc_context();
     if (!ctx) {
-        return SGECreateError(SGErrorCodeNoValidFormat, SGOperationCodeFormatCreate);
+        return SGCreateError(SGErrorCodeNoValidFormat, SGActionCodeFormatCreate);
     }
     ctx->interrupt_callback.callback = callback;
     ctx->interrupt_callback.opaque = opaque;
@@ -161,7 +161,7 @@ static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *U
     if (opts) {
         av_dict_free(&opts);
     }
-    NSError *error = SGEGetError(success, SGOperationCodeFormatOpenInput);
+    NSError *error = SGGetFFError(success, SGActionCodeFormatOpenInput);
     if (error) {
         if (ctx) {
             avformat_free_context(ctx);
@@ -169,7 +169,7 @@ static NSError * SGCreateFormatContext(AVFormatContext **formatContext, NSURL *U
         return error;
     }
     success = avformat_find_stream_info(ctx, NULL);
-    error = SGEGetError(success, SGOperationCodeFormatFindStreamInfo);
+    error = SGGetFFError(success, SGActionCodeFormatFindStreamInfo);
     if (error) {
         if (ctx) {
             avformat_close_input(&ctx);

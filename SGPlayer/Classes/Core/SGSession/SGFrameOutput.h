@@ -18,15 +18,15 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGFrameOutputState) {
-    SGFrameOutputStateNone,
-    SGFrameOutputStateOpening,
-    SGFrameOutputStateOpened,
-    SGFrameOutputStateReading,
-    SGFrameOutputStateSeeking,
-    SGFrameOutputStateFinished,
-    SGFrameOutputStateClosed,
-    SGFrameOutputStateFailed,
+typedef NS_ENUM(NSUInteger, SGFrameOutputState) {
+    SGFrameOutputStateNone     = 0,
+    SGFrameOutputStateOpening  = 1,
+    SGFrameOutputStateOpened   = 2,
+    SGFrameOutputStateReading  = 3,
+    SGFrameOutputStateSeeking  = 4,
+    SGFrameOutputStateFinished = 5,
+    SGFrameOutputStateClosed   = 6,
+    SGFrameOutputStateFailed   = 7,
 };
 
 @interface SGFrameOutput : NSObject

@@ -111,7 +111,7 @@
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     for (id<SGDemuxable> obj in self->_demuxables) {
         NSError *error = [obj seekToTime:time];
@@ -148,7 +148,7 @@
             }
         }
         if (!demuxable) {
-            return SGECreateError(SGErrorCodeMutilDemuxerEndOfFile, SGOperationCodeMutilDemuxerNext);
+            return SGCreateError(SGErrorCodeMutilDemuxerEndOfFile, SGActionCodeMutilDemuxerNext);
         }
         error = [demuxable nextPacket:packet];
         if (error) {

@@ -143,7 +143,7 @@
         }
         weights = [obj copy];
     } else {
-        double sum = 0;
+        Float64 sum = 0;
         for (NSNumber *obj in weights) {
             sum += obj.doubleValue;
         }

@@ -73,7 +73,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     if (!self->_demuxable) {
         return nil;
@@ -85,7 +85,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (!self->_demuxable) {
-        return SGECreateError(SGErrorCodeDemuxerEndOfFile, SGOperationCodeSegmentDemuxerNext);
+        return SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeSegmentDemuxerNext);
     }
     NSError *error = [self->_demuxable nextPacket:packet];
     if (error) {

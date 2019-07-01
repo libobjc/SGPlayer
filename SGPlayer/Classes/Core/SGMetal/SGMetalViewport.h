@@ -8,10 +8,10 @@
 
 #import <Metal/Metal.h>
 
-typedef NS_ENUM(int, SGMetalViewportMode) {
-    SGMetalViewportModeResize,
-    SGMetalViewportModeResizeAspect,
-    SGMetalViewportModeResizeAspectFill,
+typedef NS_ENUM(NSUInteger, SGMetalViewportMode) {
+    SGMetalViewportModeResize           = 0,
+    SGMetalViewportModeResizeAspect     = 1,
+    SGMetalViewportModeResizeAspectFill = 2,
 };
 
 @interface SGMetalViewport : NSObject

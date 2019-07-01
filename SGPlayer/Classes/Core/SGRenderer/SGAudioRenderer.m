@@ -120,7 +120,7 @@
     return ret;
 }
 
-- (void)setVolume:(double)volume
+- (void)setVolume:(Float64)volume
 {
     SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_volume != volume;
@@ -133,9 +133,9 @@
     });
 }
 
-- (double)volume
+- (Float64)volume
 {
-    __block double ret = 1.0f;
+    __block Float64 ret = 1.0f;
     SGLockEXE00(self->_lock, ^{
         ret = self->_volume;
     });
@@ -155,8 +155,8 @@
 
 - (BOOL)open
 {
-    __block float volume = 1.0;
     __block Float64 rate = 1.0;
+    __block Float64 volume = 1.0;
     return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_flags.state == SGRenderableStateNone;
     }, ^SGBlock {

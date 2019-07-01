@@ -15,8 +15,8 @@
 @property (nonatomic, strong) SGVRViewport * viewport;
 
 - (BOOL)ready;
-- (BOOL)matrixWithAspect:(double)aspect matrix1:(GLKMatrix4 *)matrix1;
-- (BOOL)matrixWithAspect:(double)aspect matrix1:(GLKMatrix4 *)matrix1 matrix2:(GLKMatrix4 *)matrix2;
+- (BOOL)matrixWithAspect:(Float64)aspect matrix1:(GLKMatrix4 *)matrix1;
+- (BOOL)matrixWithAspect:(Float64)aspect matrix1:(GLKMatrix4 *)matrix1 matrix2:(GLKMatrix4 *)matrix2;
 
 @end
 

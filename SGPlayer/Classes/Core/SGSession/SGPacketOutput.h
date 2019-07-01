@@ -14,16 +14,16 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGPacketOutputState) {
-    SGPacketOutputStateNone,
-    SGPacketOutputStateOpening,
-    SGPacketOutputStateOpened,
-    SGPacketOutputStateReading,
-    SGPacketOutputStatePaused,
-    SGPacketOutputStateSeeking,
-    SGPacketOutputStateFinished,
-    SGPacketOutputStateClosed,
-    SGPacketOutputStateFailed,
+typedef NS_ENUM(NSUInteger, SGPacketOutputState) {
+    SGPacketOutputStateNone     = 0,
+    SGPacketOutputStateOpening  = 1,
+    SGPacketOutputStateOpened   = 2,
+    SGPacketOutputStateReading  = 3,
+    SGPacketOutputStatePaused   = 4,
+    SGPacketOutputStateSeeking  = 5,
+    SGPacketOutputStateFinished = 6,
+    SGPacketOutputStateClosed   = 7,
+    SGPacketOutputStateFailed   = 8,
 };
 
 @interface SGPacketOutput : NSObject

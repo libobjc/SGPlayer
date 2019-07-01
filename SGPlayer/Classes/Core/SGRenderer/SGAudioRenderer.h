@@ -13,6 +13,6 @@
 /**
  *
  */
-@property (nonatomic) double volume;
+@property (nonatomic) Float64 volume;
 
 @end

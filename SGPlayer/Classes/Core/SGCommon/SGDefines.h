@@ -15,35 +15,35 @@
 #define SGPLAYER_EXTERN extern
 #endif
 
-typedef NS_ENUM(int, SGMediaType) {
+typedef NS_ENUM(NSUInteger, SGMediaType) {
     SGMediaTypeUnknown  = 0,
     SGMediaTypeAudio    = 1,
     SGMediaTypeVideo    = 2,
     SGMediaTypeSubtitle = 3,
 };
 
-typedef NS_ENUM(int, SGPlayerState) {
+typedef NS_ENUM(NSUInteger, SGPlayerState) {
     SGPlayerStateNone      = 0,
     SGPlayerStatePreparing = 1,
     SGPlayerStateReady     = 2,
     SGPlayerStateFailed    = 3,
 };
 
-typedef NS_OPTIONS(int, SGPlaybackState) {
+typedef NS_OPTIONS(NSUInteger, SGPlaybackState) {
     SGPlaybackStateNone     = 0,
     SGPlaybackStatePlaying  = 1 << 0,
     SGPlaybackStateSeeking  = 1 << 1,
     SGPlaybackStateFinished = 1 << 2,
 };
 
-typedef NS_ENUM(int, SGLoadingState) {
+typedef NS_ENUM(NSUInteger, SGLoadingState) {
     SGLoadingStateNone     = 0,
     SGLoadingStatePlaybale = 1,
     SGLoadingStateStalled  = 2,
     SGLoadingStateFinished = 3,
 };
 
-typedef NS_OPTIONS(int, SGInfoAction) {
+typedef NS_OPTIONS(NSUInteger, SGInfoAction) {
     SGInfoActionNone          = 0,
     SGInfoActionTimeCached    = 1 << 1,
     SGInfoActionTimePlayback  = 1 << 2,

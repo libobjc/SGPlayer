@@ -82,7 +82,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     NSError *error = [self->_demuxable seekToTime:CMTimeSubtract(time, self->_timeLayout.start)];
     if (error) {
@@ -122,7 +122,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
         if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
             [pkt unlock];
-            error = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished, SGOperationCodeURLDemuxerFunnelNext);
+            error = SGCreateError(SGErrorCodeURLDemuxerFunnelFinished, SGActionCodeURLDemuxerFunnelNext);
             break;
         }
         [pkt.codecDescriptor appendTimeLayout:self->_timeLayout];
@@ -150,7 +150,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             }
         }
         if (self->_flags.finished) {
-            error = SGECreateError(SGErrorCodeURLDemuxerFunnelFinished, SGOperationCodeURLDemuxerFunnelNext);
+            error = SGCreateError(SGErrorCodeURLDemuxerFunnelFinished, SGActionCodeURLDemuxerFunnelNext);
             break;
         }
         error = [self->_demuxable nextPacket:&pkt];

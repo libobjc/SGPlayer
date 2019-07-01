@@ -55,7 +55,7 @@
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
@@ -67,7 +67,7 @@
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (CMTimeCompare(self->_lasttime, self->_duration) >= 0) {
-        return SGECreateError(SGErrorCodeDemuxerEndOfFile, SGOperationCodeFormatReadFrame);
+        return SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeFormatReadFrame);
     }
     CMTime timeStamp = self->_lasttime;
     CMTime duration = CMTimeSubtract(self->_duration, self->_lasttime);
@@ -77,7 +77,7 @@
     pkt.core->dts = av_rescale(AV_TIME_BASE, timeStamp.value, timeStamp.timescale);
     pkt.core->duration = av_rescale(AV_TIME_BASE, duration.value, duration.timescale);
     SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
-    cd.type = SGCodecType_Padding;
+    cd.type = SGCodecTypePadding;
     cd.timebase = AV_TIME_BASE_Q;
     [pkt setCodecDescriptor:cd];
     [pkt fill];

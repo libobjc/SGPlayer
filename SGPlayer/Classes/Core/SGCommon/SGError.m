@@ -11,7 +11,7 @@
 
 static NSString * const SGErrorUserInfoKeyOperation = @"SGErrorUserInfoKeyOperation";
 
-NSError * SGEGetError(int result, SGOperationCode operation)
+NSError * SGGetFFError(int result, SGActionCode operation)
 {
     if (result >= 0) {
         return nil;
@@ -28,7 +28,7 @@ NSError * SGEGetError(int result, SGOperationCode operation)
     return [NSError errorWithDomain:domain code:result userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }
 
-NSError * SGECreateError(int code, SGOperationCode operation)
+NSError * SGCreateError(NSUInteger code, SGActionCode operation)
 {
     return [NSError errorWithDomain:@"SGPlayer-Error-SGErrorCode" code:(NSInteger)code userInfo:@{SGErrorUserInfoKeyOperation : @(operation)}];
 }

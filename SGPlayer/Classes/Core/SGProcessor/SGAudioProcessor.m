@@ -24,7 +24,7 @@
 - (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags descriptor:(SGAudioDescriptor *)descriptor
 {
     self->_selection = [selection copy];
-    if (actionFlags & SGAudioSelectionAction_Tracks) {
+    if (actionFlags & SGAudioSelectionActionTracks) {
         self->_mixer = [[SGAudioMixer alloc] initWithTracks:self->_selection.tracks
                                                     weights:self->_selection.weights
                                                  descriptor:descriptor];
@@ -35,7 +35,7 @@
             formatter.descriptor = descriptor;
             [self->_formatters setObject:formatter forKey:@(track.index)];
         }
-    } else if (actionFlags & SGAudioSelectionAction_Weights) {
+    } else if (actionFlags & SGAudioSelectionActionWeights) {
         self->_mixer.weights = self->_selection.weights;
     }
 }

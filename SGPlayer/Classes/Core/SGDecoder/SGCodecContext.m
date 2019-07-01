@@ -110,7 +110,7 @@
     codecContext->opaque = (__bridge void *)self;
     
     int result = avcodec_parameters_to_context(codecContext, self->_codecpar);
-    NSError *error = SGEGetError(result, SGOperationCodeCodecSetParametersToContext);
+    NSError *error = SGGetFFError(result, SGActionCodeCodecSetParametersToContext);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;
@@ -145,7 +145,7 @@
         av_dict_free(&opts);
     }
     
-    error = SGEGetError(result, SGOperationCodeCodecOpen2);
+    error = SGGetFFError(result, SGActionCodeCodecOpen2);
     if (error) {
         avcodec_free_context(&codecContext);
         return nil;

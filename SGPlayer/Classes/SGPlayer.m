@@ -28,7 +28,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         BOOL audioAvailable;
         BOOL videoAvailable;
         NSError *error;
-        UInt32 seekingIndex;
+        NSUInteger seekingIndex;
         SGTimeInfo timeInfo;
         SGStateInfo stateInfo;
         SGInfoAction additionalAction;
@@ -415,7 +415,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
-    __block uint32_t seekingCount = 0;
+    __block NSUInteger seekingCount = 0;
     __block SGPlayerItem *currentItem = nil;
     BOOL ret = SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.stateInfo.player == SGPlayerStateReady;
@@ -664,7 +664,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 + (SGInfoAction)infoActionFromUserInfo:(NSDictionary *)userInfo
 {
-    return [userInfo[SGPlayerInfoActionUserInfoKey] intValue];
+    return [userInfo[SGPlayerInfoActionUserInfoKey] unsignedIntegerValue];
 }
 
 @end

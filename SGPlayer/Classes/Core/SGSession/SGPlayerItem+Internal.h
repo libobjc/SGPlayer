@@ -18,15 +18,15 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGPlayerItemState) {
-    SGPlayerItemStateNone,
-    SGPlayerItemStateOpening,
-    SGPlayerItemStateOpened,
-    SGPlayerItemStateReading,
-    SGPlayerItemStateSeeking,
-    SGPlayerItemStateFinished,
-    SGPlayerItemStateClosed,
-    SGPlayerItemStateFailed,
+typedef NS_ENUM(NSUInteger, SGPlayerItemState) {
+    SGPlayerItemStateNone     = 0,
+    SGPlayerItemStateOpening  = 1,
+    SGPlayerItemStateOpened   = 2,
+    SGPlayerItemStateReading  = 3,
+    SGPlayerItemStateSeeking  = 4,
+    SGPlayerItemStateFinished = 5,
+    SGPlayerItemStateClosed   = 6,
+    SGPlayerItemStateFailed   = 7,
 };
 
 @interface SGPlayerItem ()

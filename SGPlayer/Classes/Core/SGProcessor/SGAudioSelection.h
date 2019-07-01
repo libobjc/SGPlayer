@@ -14,8 +14,8 @@
  *
  */
 typedef NS_OPTIONS(NSUInteger, SGAudioSelectionActionFlags) {
-    SGAudioSelectionAction_Tracks = 1 << 0,
-    SGAudioSelectionAction_Weights = 1 << 1,
+    SGAudioSelectionActionTracks  = 1 << 0,
+    SGAudioSelectionActionWeights = 1 << 1,
 };
 
 @interface SGAudioSelection : NSObject <NSCopying>

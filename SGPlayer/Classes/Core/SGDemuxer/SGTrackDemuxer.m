@@ -99,7 +99,7 @@
 - (NSError *)seekToTime:(CMTime)time
 {
     if (!CMTIME_IS_NUMERIC(time)) {
-        return SGECreateError(SGErrorCodeInvlidTime, SGOperationCodeFormatSeekFrame);
+        return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);

@@ -35,18 +35,18 @@
         case SGMetalViewportModeResize:
             break;
         case SGMetalViewportModeResizeAspect: {
-            double layerAspect = (double)layerSize.width / layerSize.height;
-            double textureAspect = (double)textureSize.width / textureSize.height;
+            Float64 layerAspect = (Float64)layerSize.width / layerSize.height;
+            Float64 textureAspect = (Float64)textureSize.width / textureSize.height;
             if (fabs(layerAspect - textureAspect) <= 0.0001) {
                 
             } else if (layerAspect < textureAspect) {
-                double height = layerSize.width / textureAspect;
+                Float64 height = layerSize.width / textureAspect;
                 viewport.originX = 0;
                 viewport.originY = (layerSize.height - height) / 2;
                 viewport.width = layerSize.width;
                 viewport.height = height;
             } else if (layerAspect > textureAspect) {
-                double width = layerSize.height * textureAspect;
+                Float64 width = layerSize.height * textureAspect;
                 viewport.originX = (layerSize.width - width) / 2;
                 viewport.originY = 0;
                 viewport.width = width;
@@ -55,18 +55,18 @@
         }
             break;
         case SGMetalViewportModeResizeAspectFill: {
-            double layerAspect = (double)layerSize.width / layerSize.height;
-            double textureAspect = (double)textureSize.width / textureSize.height;
+            Float64 layerAspect = (Float64)layerSize.width / layerSize.height;
+            Float64 textureAspect = (Float64)textureSize.width / textureSize.height;
             if (fabs(layerAspect - textureAspect) <= 0.0001) {
                 
             } else if (layerAspect < textureAspect) {
-                double width = layerSize.height * textureAspect;
+                Float64 width = layerSize.height * textureAspect;
                 viewport.originX = (layerSize.width - width) / 2;
                 viewport.originY = 0;
                 viewport.width = width;
                 viewport.height = layerSize.height;
             } else if (layerAspect > textureAspect) {
-                double height = layerSize.width / textureAspect;
+                Float64 height = layerSize.width / textureAspect;
                 viewport.originX = 0;
                 viewport.originY = (layerSize.height - height) / 2;
                 viewport.width = layerSize.width;

@@ -16,12 +16,12 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGRenderableState) {
-    SGRenderableStateNone,
-    SGRenderableStateRendering,
-    SGRenderableStatePaused,
-    SGRenderableStateFinished,
-    SGRenderableStateFailed,
+typedef NS_ENUM(NSUInteger, SGRenderableState) {
+    SGRenderableStateNone      = 0,
+    SGRenderableStateRendering = 1,
+    SGRenderableStatePaused    = 2,
+    SGRenderableStateFinished  = 3,
+    SGRenderableStateFailed    = 4,
 };
 
 @protocol SGRenderable <NSObject>

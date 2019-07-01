@@ -12,8 +12,8 @@
 #import "SGTrack.h"
 
 typedef NS_ENUM(NSUInteger, SGCodecType) {
-    SGCodecType_Decode,
-    SGCodecType_Padding,
+    SGCodecTypeDecode  = 0,
+    SGCodecTypePadding = 1,
 };
 
 @interface SGCodecDescriptor : NSObject <NSCopying>

@@ -84,14 +84,14 @@
     }
     [cd fillToDescriptor:self->_codecDescriptor];
     switch (packet.codecDescriptor.type) {
-        case SGCodecType_Decode: {
+        case SGCodecTypeDecode: {
             NSArray<SGFrame *> *objs = [self processPacket:packet];
             for (SGFrame *obj in objs) {
                 [ret addObject:obj];
             }
         }
             break;
-        case SGCodecType_Padding: {
+        case SGCodecTypePadding: {
             SGAudioDescriptor *ad = self->_audioDescriptor;
             if (ad == nil) {
                 ad = [[SGAudioDescriptor alloc] init];

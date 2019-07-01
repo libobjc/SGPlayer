@@ -150,7 +150,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
 {
     SGLockEXE10(self->_lock, ^SGBlock {
         self->_audioSelection = [audioSelection copy];
-        if (actionFlags & SGAudioSelectionAction_Tracks) {
+        if (actionFlags & SGAudioSelectionActionTracks) {
             NSMutableArray *m = [NSMutableArray array];
             [m addObjectsFromArray:self->_audioSelection.tracks];
             [m addObjectsFromArray:self->_videoSelection.tracks];
@@ -294,7 +294,7 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
                 if (audio.count > 0) {
                     SGAudioSelectionActionFlags actionFlags = 0;
                     actionFlags |= SGVideoSelectionAction_Tracks;
-                    actionFlags |= SGAudioSelectionAction_Weights;
+                    actionFlags |= SGAudioSelectionActionWeights;
                     self->_audioSelection = [[SGAudioSelection alloc] init];
                     self->_audioSelection.tracks = @[audio.firstObject];
                     self->_audioSelection.weights = @[@(1.0)];

@@ -15,12 +15,12 @@
 /**
  *
  */
-typedef NS_ENUM(int, SGDecodeLoopState) {
-    SGDecodeLoopStateNone,
-    SGDecodeLoopStateDecoding,
-    SGDecodeLoopStateStalled,
-    SGDecodeLoopStatePaused,
-    SGDecodeLoopStateClosed,
+typedef NS_ENUM(NSUInteger, SGDecodeLoopState) {
+    SGDecodeLoopStateNone     = 0,
+    SGDecodeLoopStateDecoding = 1,
+    SGDecodeLoopStateStalled  = 2,
+    SGDecodeLoopStatePaused   = 3,
+    SGDecodeLoopStateClosed   = 4,
 };
 
 @interface SGDecodeLoop : NSObject

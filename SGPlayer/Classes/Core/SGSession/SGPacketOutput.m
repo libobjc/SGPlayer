@@ -176,8 +176,8 @@ SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
             SGSeekResult lastSeekResult = self->_seekFlags.seekResult;
             b1 = ^{
                 lastSeekResult(lastSeekTime,
-                               SGECreateError(SGErrorCodePacketOutputCancelSeek,
-                                              SGOperationCodePacketOutputSeek));
+                               SGCreateError(SGErrorCodePacketOutputCancelSeek,
+                                              SGActionCodePacketOutputSeek));
             };
         }
         self->_seekFlags.seekTime = time;
