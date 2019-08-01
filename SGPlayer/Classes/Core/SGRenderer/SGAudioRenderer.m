@@ -8,29 +8,29 @@
 
 #import "SGAudioRenderer.h"
 #import "SGRenderer+Internal.h"
-#import "SGAudioStreamPlayer.h"
+#import "SGAudioPlayer.h"
 #import "SGAudioFrame.h"
 #import "SGOptions.h"
 #import "SGFFmpeg.h"
 #import "SGLock.h"
 
-@interface SGAudioRenderer () <SGAudioStreamPlayerDelegate>
+@interface SGAudioRenderer () <SGAudioPlayerDelegate>
 
 {
     struct {
         SGRenderableState state;
         CMTime renderTime;
         CMTime renderDuration;
-        int frameCopiedSamples;
-        int renderCopiedSamples;
+        int bufferCopiedFrames;
+        int currentFrameCopiedFrames;
     } _flags;
     SGCapacity _capacity;
 }
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
+@property (nonatomic, strong, readonly) SGAudioPlayer *player;
 @property (nonatomic, strong, readonly) SGAudioFrame *currentFrame;
-@property (nonatomic, strong, readonly) SGAudioStreamPlayer *player;
 
 @end
 
@@ -106,7 +106,7 @@
         self->_rate = rate;
         return nil;
     }, ^BOOL(SGBlock block) {
-        [self->_player setRate:rate error:nil];
+        self->_player.rate = rate;
         return YES;
     });
 }
@@ -128,7 +128,7 @@
         self->_volume = volume;
         return nil;
     }, ^BOOL(SGBlock block) {
-        [self->_player setVolume:volume error:nil];
+        self->_player.volume = volume;
         return YES;
     });
 }
@@ -165,10 +165,10 @@
         return [self setState:SGRenderableStatePaused];
     }, ^BOOL(SGBlock block) {
         block();
-        self->_player = [[SGAudioStreamPlayer alloc] init];
+        self->_player = [[SGAudioPlayer alloc] init];
         self->_player.delegate = self;
-        [self->_player setVolume:volume error:nil];
-        [self->_player setRate:rate error:nil];
+        self->_player.volume = volume;
+        self->_player.rate = rate;
         return YES;
     });
 }
@@ -176,8 +176,8 @@
 - (BOOL)close
 {
     return SGLockEXE11(self->_lock, ^SGBlock {
-        self->_flags.frameCopiedSamples = 0;
-        self->_flags.renderCopiedSamples = 0;
+        self->_flags.currentFrameCopiedFrames = 0;
+        self->_flags.bufferCopiedFrames = 0;
         self->_flags.renderTime = kCMTimeZero;
         self->_flags.renderDuration = kCMTimeZero;
         self->_capacity = SGCapacityCreate();
@@ -225,8 +225,8 @@
     }, ^SGBlock {
         [self->_currentFrame unlock];
         self->_currentFrame = nil;
-        self->_flags.frameCopiedSamples = 0;
-        self->_flags.renderCopiedSamples = 0;
+        self->_flags.currentFrameCopiedFrames = 0;
+        self->_flags.bufferCopiedFrames = 0;
         self->_flags.renderTime = kCMTimeZero;
         self->_flags.renderDuration = kCMTimeZero;
         return ^{};
@@ -251,21 +251,21 @@
 }
 
 
-#pragma mark - SGAudioStreamPlayerDelegate
+#pragma mark - SGAudioPlayerDelegate
 
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data nb_samples:(UInt32)nb_samples
+- (void)audioPlayer:(SGAudioPlayer *)player render:(const AudioTimeStamp *)timeStamp data:(AudioBufferList *)data numberOfFrames:(UInt32)numberOfFrames
 {
     [self->_lock lock];
-    self->_flags.renderCopiedSamples = 0;
+    self->_flags.bufferCopiedFrames = 0;
     self->_flags.renderTime = kCMTimeZero;
     self->_flags.renderDuration = kCMTimeZero;
     if (self->_flags.state != SGRenderableStateRendering) {
         [self->_lock unlock];
         return;
     }
-    UInt32 nb_samples_left = nb_samples;
+    UInt32 bufferLeftFrames = numberOfFrames;
     while (YES) {
-        if (nb_samples_left <= 0) {
+        if (bufferLeftFrames <= 0) {
             [self->_lock unlock];
             break;
         }
@@ -280,48 +280,48 @@
         }
         SGAudioDescriptor *descriptor = self->_currentFrame.descriptor;
         NSAssert(descriptor.format == AV_SAMPLE_FMT_FLTP, @"Invaild audio frame format.");
-        UInt32 frame_nb_samples_left = self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples;
-        UInt32 nb_samples_to_copy = MIN(nb_samples_left, frame_nb_samples_left);
+        UInt32 currentFrameLeftFrames = self->_currentFrame.numberOfSamples - self->_flags.currentFrameCopiedFrames;
+        UInt32 framesToCopy = MIN(bufferLeftFrames, currentFrameLeftFrames);
+        UInt32 sizeToCopy = framesToCopy * (UInt32)sizeof(float);
+        UInt32 bufferOffset = self->_flags.bufferCopiedFrames * (UInt32)sizeof(float);
+        UInt32 currentFrameOffset = self->_flags.currentFrameCopiedFrames * (UInt32)sizeof(float);
         for (int i = 0; i < data->mNumberBuffers && i < descriptor.numberOfChannels; i++) {
-            UInt32 data_offset = self->_flags.renderCopiedSamples * (UInt32)sizeof(float);
-            UInt32 frame_offset = self->_flags.frameCopiedSamples * (UInt32)sizeof(float);
-            UInt32 size_to_copy = nb_samples_to_copy * (UInt32)sizeof(float);
-            memcpy(data->mBuffers[i].mData + data_offset, self->_currentFrame.data[i] + frame_offset, size_to_copy);
+            memcpy(data->mBuffers[i].mData + bufferOffset, self->_currentFrame.data[i] + currentFrameOffset, sizeToCopy);
         }
-        if (self->_flags.renderCopiedSamples == 0) {
-            CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_flags.frameCopiedSamples, self->_currentFrame.numberOfSamples);
+        if (self->_flags.bufferCopiedFrames == 0) {
+            CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_flags.currentFrameCopiedFrames, self->_currentFrame.numberOfSamples);
             self->_flags.renderTime = CMTimeAdd(self->_currentFrame.timeStamp, duration);
         }
-        CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, nb_samples_to_copy, self->_currentFrame.numberOfSamples);
+        CMTime duration = CMTimeMultiplyByRatio(self->_currentFrame.duration, framesToCopy, self->_currentFrame.numberOfSamples);
         self->_flags.renderDuration = CMTimeAdd(self->_flags.renderDuration, duration);
-        self->_flags.renderCopiedSamples += nb_samples_to_copy;
-        self->_flags.frameCopiedSamples += nb_samples_to_copy;
-        if (self->_currentFrame.numberOfSamples <= self->_flags.frameCopiedSamples) {
+        self->_flags.bufferCopiedFrames += framesToCopy;
+        self->_flags.currentFrameCopiedFrames += framesToCopy;
+        if (self->_currentFrame.numberOfSamples <= self->_flags.currentFrameCopiedFrames) {
             [self->_currentFrame unlock];
             self->_currentFrame = nil;
-            self->_flags.frameCopiedSamples = 0;
+            self->_flags.currentFrameCopiedFrames = 0;
         }
-        nb_samples_left -= nb_samples_to_copy;
+        bufferLeftFrames -= framesToCopy;
     }
-    UInt32 nb_samples_copied = nb_samples - nb_samples_left;
+    UInt32 framesCopied = numberOfFrames - bufferLeftFrames;
+    UInt32 sizeCopied = framesCopied * (UInt32)sizeof(float);
     for (int i = 0; i < data->mNumberBuffers; i++) {
-        UInt32 size_copied = nb_samples_copied * (UInt32)sizeof(float);
-        UInt32 size_left = data->mBuffers[i].mDataByteSize - size_copied;
-        if (size_left > 0) {
-            memset(data->mBuffers[i].mData + size_copied, 0, size_left);
+        UInt32 sizeLeft = data->mBuffers[i].mDataByteSize - sizeCopied;
+        if (sizeLeft > 0) {
+            memset(data->mBuffers[i].mData + sizeCopied, 0, sizeLeft);
         }
     }
 }
 
-- (void)audioStreamPlayer:(SGAudioStreamPlayer *)player postRender:(const AudioTimeStamp *)timestamp
+- (void)audioPlayer:(SGAudioPlayer *)player didRender:(const AudioTimeStamp *)timestamp
 {
     [self->_lock lock];
     CMTime renderTime = self->_flags.renderTime;
     CMTime renderDuration = CMTimeMultiplyByFloat64(self->_flags.renderDuration, self->_rate);
-    CMTime frameDuration = !self->_currentFrame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_currentFrame.numberOfSamples - self->_flags.frameCopiedSamples, self->_currentFrame.numberOfSamples);
+    CMTime frameDuration = !self->_currentFrame ? kCMTimeZero : CMTimeMultiplyByRatio(self->_currentFrame.duration, self->_currentFrame.numberOfSamples - self->_flags.currentFrameCopiedFrames, self->_currentFrame.numberOfSamples);
     SGBlock clockBlock = ^{};
     if (self->_flags.state == SGRenderableStateRendering) {
-        if (self->_flags.renderCopiedSamples) {
+        if (self->_flags.bufferCopiedFrames) {
             clockBlock = ^{
                 [self->_clock setAudioTime:renderTime running:YES];
             };

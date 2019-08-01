@@ -38,6 +38,9 @@
     dispatch_async(dispatch_get_global_queue(0, 0), ^{
         if ([self.player waitUntilReady]) {
             [self.player play];
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                self.player.rate = 5.0;
+            });
         }
     });
 }
