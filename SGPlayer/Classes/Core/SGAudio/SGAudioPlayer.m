@@ -101,11 +101,8 @@
     AUGraphAddNode(_graph, &mixerACD, &_mixerNode);
     AUGraphAddNode(_graph, &outputACD, &_outputNode);
     AUGraphAddNode(_graph, &timePitchACD, &_timePitchNode);
+    
     AUGraphOpen(_graph);
-    
-    AUGraphConnectNodeInput(_graph, _mixerNode, 0, _timePitchNode, 0);
-    AUGraphConnectNodeInput(_graph, _timePitchNode, 0, _outputNode, 0);
-    
     AUGraphNodeInfo(_graph, _mixerNode, &mixerACD, &_mixerUnit);
     AUGraphNodeInfo(_graph, _outputNode, &outputACD, &_outputUnit);
     AUGraphNodeInfo(_graph, _timePitchNode, &timePitchACD, &_timePitchUnit);
@@ -124,8 +121,8 @@
     AUGraphSetNodeInputCallback(_graph, _mixerNode, 0, &inputCallbackStruct);
     AudioUnitAddRenderNotify(_outputUnit, outputCallback, (__bridge void *)self);
     
-    _rate = 1.0;
-    _volume = 1.0;
+    [self setRate:1];
+    [self setVolume:1];
     [self setAsbd:asbd];
 
     AUGraphInitialize(_graph);
@@ -157,24 +154,15 @@
 
 - (void)flush
 {
-    if (_mixerUnit) {
-        AudioUnitReset(_mixerUnit, kAudioUnitScope_Global, 0);
-    }
-    if (_outputUnit) {
-        AudioUnitReset(_outputUnit, kAudioUnitScope_Global, 0);
-    }
-    if (_timePitchUnit) {
-        AudioUnitReset(_timePitchUnit, kAudioUnitScope_Global, 0);
-    }
+    AudioUnitReset(_mixerUnit, kAudioUnitScope_Global, 0);
+    AudioUnitReset(_outputUnit, kAudioUnitScope_Global, 0);
+    AudioUnitReset(_timePitchUnit, kAudioUnitScope_Global, 0);
 }
 
 #pragma mark - Setter & Getter
 
 - (BOOL)isPlaying
 {
-    if (!_graph) {
-        return NO;
-    }
     Boolean ret = FALSE;
     AUGraphIsRunning(_graph, &ret);
     return ret == TRUE ? YES : NO;
@@ -182,9 +170,6 @@
 
 - (void)setVolume:(float)volume
 {
-    if (!_mixerUnit) {
-        return;
-    }
     AudioUnitParameterID param;
 #if SGPLATFORM_TARGET_OS_MAC
     param = kStereoMixerParam_Volume;
@@ -198,10 +183,22 @@
 
 - (void)setRate:(float)rate
 {
-    if (!_timePitchUnit) {
+    if (_rate == rate) {
         return;
     }
     if (AudioUnitSetParameter(_timePitchUnit, kNewTimePitchParam_Rate, kAudioUnitScope_Global, 0, rate, 0) == noErr) {
+        if (_rate == 1.0 || rate == 1.0) {
+            if (rate == 1.0) {
+                AUGraphDisconnectNodeInput(_graph, _outputNode, 0);
+                AUGraphDisconnectNodeInput(_graph, _timePitchNode, 0);
+                AUGraphConnectNodeInput(_graph, _mixerNode, 0, _outputNode, 0);
+            } else {
+                AUGraphDisconnectNodeInput(_graph, _outputNode, 0);
+                AUGraphConnectNodeInput(_graph, _mixerNode, 0, _timePitchNode, 0);
+                AUGraphConnectNodeInput(_graph, _timePitchNode, 0, _outputNode, 0);
+            }
+            AUGraphUpdate(_graph, NULL);
+        }
         _rate = rate;
     }
 }
@@ -211,28 +208,14 @@
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioUnitScope scope = kAudioUnitScope_Global;
     AudioUnitPropertyID param = kAudioUnitProperty_StreamFormat;
-    BOOL success = YES;
-    if (success && _mixerUnit) {
-        success &= AudioUnitSetProperty(_mixerUnit, param, scope, 0, &asbd, size) == noErr;
-    }
-    if (success && _outputUnit) {
-        success &= AudioUnitSetProperty(_mixerUnit, param, scope, 0, &asbd, size) == noErr;
-    }
-    if (success && _timePitchUnit) {
-        success &= AudioUnitSetProperty(_mixerUnit, param, scope, 0, &asbd, size) == noErr;
-    }
-    if (success) {
+    if (AudioUnitSetProperty(_mixerUnit, param, scope, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_outputUnit, param, scope, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_timePitchUnit, param, scope, 0, &asbd, size) == noErr) {
         _asbd = asbd;
     } else {
-        if (_mixerUnit) {
-            AudioUnitSetProperty(_mixerUnit, param, scope, 0, &_asbd, size);
-        }
-        if (_outputUnit) {
-            AudioUnitSetProperty(_outputUnit, param, scope, 0, &_asbd, size);
-        }
-        if (_timePitchUnit) {
-            AudioUnitSetProperty(_timePitchUnit, param, scope, 0, &_asbd, size);
-        }
+        AudioUnitSetProperty(_mixerUnit, param, scope, 0, &_asbd, size);
+        AudioUnitSetProperty(_outputUnit, param, scope, 0, &_asbd, size);
+        AudioUnitSetProperty(_timePitchUnit, param, scope, 0, &_asbd, size);
     }
 }
 
