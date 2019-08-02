@@ -30,6 +30,11 @@
 /**
  *
  */
+@property (nonatomic, strong, readonly) NSDictionary *metadata;
+
+/**
+ *
+ */
 @property (nonatomic, readonly) CMTime duration;
 
 /**

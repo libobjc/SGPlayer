@@ -105,7 +105,7 @@
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = packet.track;
                 [obj setCodecDescriptor:cd];
-                [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+                [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
                 [ret addObject:obj];
             }
         }
@@ -203,7 +203,7 @@
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
                 [obj1 setCodecDescriptor:cd];
-                [obj1 fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+                [obj1 fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
                 [ret addObject:obj1];
             }
         }
@@ -219,7 +219,7 @@
             SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = obj.track;
             [obj1 setCodecDescriptor:cd];
-            [obj1 fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+            [obj1 fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
             [ret addObject:obj1];
             [obj unlock];
             continue;
@@ -244,7 +244,7 @@
     SGCodecDescriptor *cd1 = [[SGCodecDescriptor alloc] init];
     cd1.track = cd.track;
     [obj setCodecDescriptor:cd1];
-    [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+    [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
     return obj;
 }
 

@@ -98,12 +98,12 @@
         timeStamp = [obj convertTimeStamp:timeStamp];
         decodeTimeStamp = [obj convertTimeStamp:decodeTimeStamp];
     }
-    [self fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
+    [self fillWithTimeStamp:timeStamp decodeTimeStamp:decodeTimeStamp duration:duration];
 }
 
-- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
+- (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration
 {
-    [super fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
+    [super fillWithTimeStamp:timeStamp decodeTimeStamp:decodeTimeStamp duration:duration];
     AVFrame *frame = self.core;
     self->_numberOfSamples = frame->nb_samples;
     self->_descriptor = [[SGAudioDescriptor alloc] initWithFrame:frame];

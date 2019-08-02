@@ -139,8 +139,9 @@
             if (CMTimeCompare(obj.timeStamp, start) > 0) {
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
+                cd.metadata = obj.codecDescriptor.metadata;
                 [obj setCodecDescriptor:cd];
-                [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+                [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
             }
         }
         CMTime start = obj.timeStamp;
@@ -148,8 +149,9 @@
         if (CMTimeCompare(obj.duration, duration) > 0) {
             SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = obj.track;
+            cd.metadata = obj.codecDescriptor.metadata;
             [obj setCodecDescriptor:cd];
-            [obj fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+            [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
         }
         [ret addObject:obj];
     }

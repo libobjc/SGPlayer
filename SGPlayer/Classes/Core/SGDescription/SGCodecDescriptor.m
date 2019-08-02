@@ -23,8 +23,7 @@
         self->_type = SGCodecTypeDecode;
         self->_scale = CMTimeMake(1, 1);
         self->_timebase = AV_TIME_BASE_Q;
-        self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity,
-                                           kCMTimePositiveInfinity);
+        self->_timeRange = CMTimeRangeMake(kCMTimeNegativeInfinity, kCMTimePositiveInfinity);
     }
     return self;
 }
@@ -56,6 +55,7 @@
 {
     descriptor->_track = self->_track;
     descriptor->_scale = self->_scale;
+    descriptor->_metadata = self->_metadata;
     descriptor->_timebase = self->_timebase;
     descriptor->_codecpar = self->_codecpar;
     descriptor->_timeRange = self->_timeRange;

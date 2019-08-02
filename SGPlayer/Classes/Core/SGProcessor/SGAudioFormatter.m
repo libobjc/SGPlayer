@@ -51,7 +51,7 @@
     SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
     cd.track = frame.track;
     [ret setCodecDescriptor:cd];
-    [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+    [ret fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
     [frame unlock];
     return ret;
 }

@@ -103,6 +103,7 @@
     SGCodecDescriptor *cd = self->_codecDescriptor;
     self->_size = frame->pkt_size;
     self->_track = cd.track;
+    self->_metadata = cd.metadata;
     self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
@@ -113,12 +114,13 @@
     }
 }
 
-- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
+- (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration
 {
     AVFrame *frame = self->_core;
     SGCodecDescriptor *cd = self->_codecDescriptor;
     self->_size = frame->pkt_size;
     self->_track = cd.track;
+    self->_metadata = cd.metadata;
     self->_duration = duration;
     self->_timeStamp = timeStamp;
     self->_decodeTimeStamp = decodeTimeStamp;

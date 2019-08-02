@@ -33,6 +33,9 @@
 
 @interface SGAudioPlayer : NSObject
 
+/**
+ *  Delegate.
+ */
 @property (nonatomic, weak) id<SGAudioPlayerDelegate> delegate;
 
 /**

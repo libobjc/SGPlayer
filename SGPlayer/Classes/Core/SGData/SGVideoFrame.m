@@ -153,7 +153,19 @@
 
 #pragma mark - Control
 
-static void SGVideoFrameFilling(SGVideoFrame *self)
+- (void)fill
+{
+    [super fill];
+    [self fillData];
+}
+
+- (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration
+{
+    [super fillWithTimeStamp:timeStamp decodeTimeStamp:decodeTimeStamp duration:duration];
+    [self fillData];
+}
+
+- (void)fillData
 {
     AVFrame *frame = self.core;
     self->_descriptor = [[SGVideoDescriptor alloc] initWithFrame:frame];
@@ -165,18 +177,6 @@ static void SGVideoFrameFilling(SGVideoFrame *self)
         self->_data[i] = frame->data[i];
         self->_linesize[i] = frame->linesize[i];
     }
-}
-
-- (void)fill
-{
-    [super fill];
-    SGVideoFrameFilling(self);
-}
-
-- (void)fillWithDuration:(CMTime)duration timeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp
-{
-    [super fillWithDuration:duration timeStamp:timeStamp decodeTimeStamp:decodeTimeStamp];
-    SGVideoFrameFilling(self);
 }
 
 @end

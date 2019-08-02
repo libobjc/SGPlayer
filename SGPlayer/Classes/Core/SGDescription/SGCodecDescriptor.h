@@ -41,6 +41,11 @@ typedef NS_ENUM(NSUInteger, SGCodecType) {
 /**
  *
  */
+@property (nonatomic, strong) NSDictionary *metadata;
+
+/**
+ *
+ */
 @property (nonatomic, readonly) CMTimeRange timeRange;
 
 /**

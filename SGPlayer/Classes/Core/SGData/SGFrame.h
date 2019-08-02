@@ -27,6 +27,11 @@ static int const SGFramePlaneCount = 8;
 /**
  *
  */
+@property (nonatomic, strong, readonly) NSDictionary *metadata;
+
+/**
+ *
+ */
 @property (nonatomic, readonly) CMTime duration;
 
 /**

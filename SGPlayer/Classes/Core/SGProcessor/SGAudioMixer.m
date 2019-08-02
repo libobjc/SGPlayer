@@ -207,7 +207,7 @@
         }
     }];
     [ret setCodecDescriptor:[[SGCodecDescriptor alloc] init]];
-    [ret fillWithDuration:duration timeStamp:start decodeTimeStamp:start];
+    [ret fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
     return ret;
 }
 

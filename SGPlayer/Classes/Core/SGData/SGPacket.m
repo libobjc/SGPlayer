@@ -111,6 +111,7 @@
     }
     self->_size = pkt->size;
     self->_track = cd.track;
+    self->_metadata = cd.metadata;
     self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
     self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
     self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);

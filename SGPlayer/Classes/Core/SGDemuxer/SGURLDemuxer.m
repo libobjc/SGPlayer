@@ -129,6 +129,7 @@
             AVStream *stream = self->_context->streams[pkt.core->stream_index];
             SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
+            cd.metadata = SGDictionaryFF2NS(stream->metadata);
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
             [cd appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
