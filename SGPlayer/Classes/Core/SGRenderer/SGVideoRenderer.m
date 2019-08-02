@@ -371,13 +371,21 @@
         [frame unlock];
         return;
     }
+    GLKMatrix4 baseMatrix = GLKMatrix4Identity;
+    NSInteger rotate = [frame.metadata[@"rotate"] integerValue];
+    if (rotate && (rotate % 90) == 0) {
+        float radians = GLKMathDegreesToRadians(-rotate);
+        baseMatrix = GLKMatrix4RotateZ(baseMatrix, radians);
+        width = frame.descriptor.width * ABS(cos(radians)) + frame.descriptor.height * ABS(sin(radians));
+        height = frame.descriptor.width * ABS(sin(radians)) + frame.descriptor.height * ABS(cos(radians));
+    }
     NSArray<id<MTLTexture>> *textures = nil;
     if (frame.pixelBuffer) {
         textures = [self->_textureLoader texturesWithCVPixelBuffer:frame.pixelBuffer];
     } else {
         textures = [self->_textureLoader texturesWithCVPixelFormat:frame.descriptor.cv_format
-                                                             width:width
-                                                            height:height
+                                                             width:frame.descriptor.width
+                                                            height:frame.descriptor.height
                                                              bytes:(void **)frame.data
                                                        bytesPerRow:frame.linesize];
     }
@@ -392,7 +400,7 @@
     MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
     switch (displayMode) {
         case SGDisplayModePlane: {
-            self->_projection1.matrix = GLKMatrix4Identity;
+            self->_projection1.matrix = baseMatrix;
             projections = @[self->_projection1];
             viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize textureSize:textureSize mode:SGScaling2Viewport(self->_scalingMode)];
         }
@@ -403,7 +411,7 @@
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix]) {
                 break;
             }
-            self->_projection1.matrix = matrix;
+            self->_projection1.matrix = GLKMatrix4Multiply(baseMatrix, matrix);
             projections = @[self->_projection1];
             viewports[0] = [SGMetalViewport viewportWithLayerSize:layerSize];
         }
@@ -415,8 +423,8 @@
             if (![self->_matrixMaker matrixWithAspect:aspect matrix1:&matrix1 matrix2:&matrix2]) {
                 break;
             }
-            self->_projection1.matrix = matrix1;
-            self->_projection2.matrix = matrix2;
+            self->_projection1.matrix = GLKMatrix4Multiply(baseMatrix, matrix1);
+            self->_projection2.matrix = GLKMatrix4Multiply(baseMatrix, matrix2);
             projections = @[self->_projection1, self->_projection2];
             viewports[0] = [SGMetalViewport viewportWithLayerSizeForLeft:layerSize];
             viewports[1] = [SGMetalViewport viewportWithLayerSizeForRight:layerSize];
