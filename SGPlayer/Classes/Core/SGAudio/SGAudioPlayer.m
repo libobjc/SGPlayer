@@ -62,8 +62,8 @@
 
 + (AudioStreamBasicDescription)commonASBD
 {
+    UInt32 byteSize = sizeof(float);
     AudioStreamBasicDescription asbd;
-    UInt32 byteSize   = sizeof(float);
     asbd.mBitsPerChannel   = byteSize * 8;
     asbd.mBytesPerFrame    = byteSize;
     asbd.mChannelsPerFrame = 2;
@@ -136,6 +136,24 @@
     DisposeAUGraph(_graph);
 }
 
+- (void)disconnectNodeInput:(AUNode)sourceNode destNode:(AUNode)destNode
+{
+    UInt32 count = 8;
+    AUNodeInteraction interactions[8];
+    if (AUGraphGetNodeInteractions(_graph, destNode, &count, interactions) == noErr) {
+        for (UInt32 i = 0; i < MIN(count, 8); i++) {
+            AUNodeInteraction interaction = interactions[i];
+            if (interaction.nodeInteractionType == kAUNodeInteraction_Connection) {
+                AUNodeConnection connection = interaction.nodeInteraction.connection;
+                if (connection.sourceNode == sourceNode) {
+                    AUGraphDisconnectNodeInput(_graph, connection.destNode, connection.destInputNumber);
+                    break;
+                }
+            }
+        }
+    }
+}
+
 #pragma mark - Interface
 
 - (void)play
@@ -189,11 +207,11 @@
     if (AudioUnitSetParameter(_timePitchUnit, kNewTimePitchParam_Rate, kAudioUnitScope_Global, 0, rate, 0) == noErr) {
         if (_rate == 1.0 || rate == 1.0) {
             if (rate == 1.0) {
-                AUGraphDisconnectNodeInput(_graph, _outputNode, 0);
-                AUGraphDisconnectNodeInput(_graph, _timePitchNode, 0);
+                [self disconnectNodeInput:_mixerNode destNode:_timePitchNode];
+                [self disconnectNodeInput:_timePitchNode destNode:_outputNode];
                 AUGraphConnectNodeInput(_graph, _mixerNode, 0, _outputNode, 0);
             } else {
-                AUGraphDisconnectNodeInput(_graph, _outputNode, 0);
+                [self disconnectNodeInput:_mixerNode destNode:_outputNode];
                 AUGraphConnectNodeInput(_graph, _mixerNode, 0, _timePitchNode, 0);
                 AUGraphConnectNodeInput(_graph, _timePitchNode, 0, _outputNode, 0);
             }
@@ -206,16 +224,15 @@
 - (void)setAsbd:(AudioStreamBasicDescription)asbd
 {
     UInt32 size = sizeof(AudioStreamBasicDescription);
-    AudioUnitScope scope = kAudioUnitScope_Global;
     AudioUnitPropertyID param = kAudioUnitProperty_StreamFormat;
-    if (AudioUnitSetProperty(_mixerUnit, param, scope, 0, &asbd, size) == noErr &&
-        AudioUnitSetProperty(_outputUnit, param, scope, 0, &asbd, size) == noErr &&
-        AudioUnitSetProperty(_timePitchUnit, param, scope, 0, &asbd, size) == noErr) {
+    if (AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Global, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_outputUnit, param, kAudioUnitScope_Input, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Global, 0, &asbd, size) == noErr) {
         _asbd = asbd;
     } else {
-        AudioUnitSetProperty(_mixerUnit, param, scope, 0, &_asbd, size);
-        AudioUnitSetProperty(_outputUnit, param, scope, 0, &_asbd, size);
-        AudioUnitSetProperty(_timePitchUnit, param, scope, 0, &_asbd, size);
+        AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Global, 0, &_asbd, size);
+        AudioUnitSetProperty(_outputUnit, param, kAudioUnitScope_Input, 0, &_asbd, size);
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Global, 0, &_asbd, size);
     }
 }
 
