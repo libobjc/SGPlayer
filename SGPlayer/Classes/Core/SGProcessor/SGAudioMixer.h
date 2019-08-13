@@ -19,9 +19,7 @@
 /**
  *
  */
-- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks
-                       weights:(NSArray<NSNumber *> *)weights
-                    descriptor:(SGAudioDescriptor *)descriptor;
+- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights descriptor:(SGAudioDescriptor *)descriptor;
 
 /**
  *

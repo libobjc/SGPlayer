@@ -31,6 +31,11 @@
 @property (nonatomic) int height;
 
 /**
+ *  AVColorSpace
+ */
+@property (nonatomic) int colorspace;
+
+/**
  *
  */
 - (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor;

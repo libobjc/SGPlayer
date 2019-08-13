@@ -19,6 +19,7 @@
     obj->_cv_format = self->_cv_format;
     obj->_width = self->_width;
     obj->_height = self->_height;
+    obj->_colorspace = self->_colorspace;
     return obj;
 }
 
@@ -29,6 +30,7 @@
         self->_cv_format = SGPixelFormatFF2AV(self->_format);
         self->_width = 0;
         self->_height = 0;
+        self->_colorspace = AVCOL_SPC_RGB;
     }
     return self;
 }
@@ -40,6 +42,7 @@
         self->_cv_format = SGPixelFormatFF2AV(self->_format);
         self->_width = frame->width;
         self->_height = frame->height;
+        self->_colorspace = frame->colorspace;
     }
     return self;
 }
@@ -53,7 +56,8 @@
     self->_format == descriptor->_format &&
     self->_cv_format == descriptor->_cv_format &&
     self->_width == descriptor->_width &&
-    self->_height == descriptor->_height;
+    self->_height == descriptor->_height &&
+    self->_colorspace == descriptor->_colorspace;
 }
 
 @end
