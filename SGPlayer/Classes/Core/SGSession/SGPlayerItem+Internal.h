@@ -7,6 +7,7 @@
 //
 
 #import "SGPlayerItem.h"
+#import "SGProcessorOptions.h"
 #import "SGAudioDescriptor.h"
 #import "SGDemuxerOptions.h"
 #import "SGDecoderOptions.h"
@@ -40,6 +41,11 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState) {
  *
  */
 @property (nonatomic, copy) SGDecoderOptions *decoderOptions;
+
+/**
+ *
+ */
+@property (nonatomic, copy) SGProcessorOptions *processorOptions;
 
 /**
  *

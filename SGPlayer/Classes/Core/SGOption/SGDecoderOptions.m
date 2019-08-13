@@ -26,12 +26,12 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.options = nil;
-        self.threadsAuto = YES;
-        self.refcountedFrames = YES;
-        self.hardwareDecodeH264 = YES;
-        self.hardwareDecodeH265 = YES;
-        self.preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
+        self->_options = nil;
+        self->_threadsAuto = YES;
+        self->_refcountedFrames = YES;
+        self->_hardwareDecodeH264 = YES;
+        self->_hardwareDecodeH265 = YES;
+        self->_preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
     }
     return self;
 }

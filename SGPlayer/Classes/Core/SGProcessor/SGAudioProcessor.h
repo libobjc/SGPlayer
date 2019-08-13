@@ -6,46 +6,14 @@
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "SGAudioSelection.h"
-#import "SGAudioFrame.h"
-#import "SGCapacity.h"
+#import "SGProcessor.h"
+#import "SGAudioDescriptor.h"
 
-@interface SGAudioProcessor : NSObject
+@interface SGAudioProcessor : NSObject <SGProcessor>
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioSelection *selection;
-
-/**
- *
- */
-- (void)setSelection:(SGAudioSelection *)selection actionFlags:(SGAudioSelectionActionFlags)actionFlags descriptor:(SGAudioDescriptor *)descriptor;
-
-/**
- *
- */
-- (SGAudioFrame *)putFrame:(SGAudioFrame *)frame;
-
-/**
- *
- */
-- (SGAudioFrame *)finish;
-
-/**
- *
- */
-- (SGCapacity)capacity;
-
-/**
- *
- */
-- (void)flush;
-
-/**
- *
- */
-- (void)close;
+- (void)setDescriptor:(SGAudioDescriptor *)descriptor;
 
 @end

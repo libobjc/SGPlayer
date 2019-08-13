@@ -7,8 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGAudioSelection.h"
-#import "SGVideoSelection.h"
+#import "SGTrackSelection.h"
 #import "SGAsset.h"
 #import "SGTrack.h"
 
@@ -45,21 +44,21 @@
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGAudioSelection *audioSelection;
+@property (nonatomic, copy, readonly) SGTrackSelection *audioSelection;
 
 /**
  *
  */
-- (void)setAudioSelection:(SGAudioSelection *)audioSelection actionFlags:(SGAudioSelectionActionFlags)actionFlags;
+- (void)setAudioSelection:(SGTrackSelection *)audioSelection action:(SGTrackSelectionAction)action;
 
 /**
  *
  */
-@property (nonatomic, copy, readonly) SGVideoSelection *videoSelection;
+@property (nonatomic, copy, readonly) SGTrackSelection *videoSelection;
 
 /**
  *
  */
-- (void)setVideoSelection:(SGVideoSelection *)videoSelection actionFlags:(SGVideoSelectionActionFlags)actionFlags;
+- (void)setVideoSelection:(SGTrackSelection *)videoSelection action:(SGTrackSelectionAction)action;
 
 @end

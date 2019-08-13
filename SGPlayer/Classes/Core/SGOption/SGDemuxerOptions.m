@@ -20,9 +20,9 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self.options = @{@"timeout" : @(20 * 1000 * 1000),
-                         @"reconnect" : @(1),
-                         @"user-agent" : @"SGPlayer"};
+        self->_options = @{@"timeout" : @(20 * 1000 * 1000),
+                           @"reconnect" : @(1),
+                           @"user-agent" : @"SGPlayer"};
     }
     return self;
 }
