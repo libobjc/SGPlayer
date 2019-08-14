@@ -7,6 +7,7 @@
 //
 
 #import "SGPlayer.h"
+#import <AVFoundation/AVFoundation.h>
 #import "SGPlayerItem+Internal.h"
 #import "SGRenderer+Internal.h"
 #import "SGActivity.h"
@@ -58,6 +59,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         [self stop];
         self->_options = [SGOptions sharedOptions].copy;
         self->_rate = 1.0;
+        self->_pausesWhenInterrupted = YES;
         self->_lock = [[NSLock alloc] init];
         self->_clock = [[SGClock alloc] init];
         self->_clock.delegate = self;
@@ -68,12 +70,17 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_actionMask = SGInfoActionNone;
         self->_minimumTimeInfoInterval = 1.0;
         self->_notificationQueue = [NSOperationQueue mainQueue];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(interruptionHandler:)
+                                                     name:AVAudioSessionInterruptionNotification
+                                                   object:nil];
     }
     return self;
 }
 
 - (void)dealloc
 {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [SGActivity removeTarget:self];
     [self->_currentItem close];
     [self->_clock close];
@@ -653,6 +660,19 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 + (SGInfoAction)infoActionFromUserInfo:(NSDictionary *)userInfo
 {
     return [userInfo[SGPlayerInfoActionUserInfoKey] unsignedIntegerValue];
+}
+
+#pragma mark - AVAudioSession
+
+- (void)interruptionHandler:(NSNotification *)notification
+{
+    if (self->_pausesWhenInterrupted == NO) {
+        return;
+    }
+    AVAudioSessionInterruptionType type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+    if (type == AVAudioSessionInterruptionTypeBegan) {
+        [self pause];
+    }
 }
 
 @end

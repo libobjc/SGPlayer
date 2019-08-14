@@ -52,9 +52,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 @property (nonatomic, strong) SGOptions *options;
 
-@property (nonatomic) NSInteger tag;
-@property (nonatomic, weak) id object;
-
 - (NSError *)error;
 - (SGTimeInfo)timeInfo;
 - (SGStateInfo)stateInfo;
@@ -84,6 +81,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @property (nonatomic) Float64 rate;
 
 @property (nonatomic, readonly) BOOL needsPlay;
+@property (nonatomic) BOOL pausesWhenInterrupted;
 
 - (BOOL)play;
 - (BOOL)pause;
