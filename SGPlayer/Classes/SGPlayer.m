@@ -194,44 +194,17 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 #pragma mark - Setter & Getter
 
-- (NSError *)error
-{
-    __block NSError *ret = nil;
-    SGLockEXE00(self->_lock, ^{
-        ret = [self->_flags.error copy];
-    });
-    return ret;
-}
-
-- (SGTimeInfo)timeInfo
-{
-    __block SGTimeInfo ret;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.timeInfo;
-    });
-    return ret;
-}
-
-- (SGStateInfo)stateInfo
-{
-    __block SGStateInfo ret;
-    SGLockEXE00(self->_lock, ^{
-        ret = self->_flags.stateInfo;
-    });
-    return ret;
-}
-
-- (BOOL)error:(NSError **)error timeInfo:(SGTimeInfo *)timeInfo stateInfo:(SGStateInfo *)stateInfo
+- (BOOL)stateInfo:(SGStateInfo *)stateInfo timeInfo:(SGTimeInfo *)timeInfo error:(NSError **)error
 {
     __block NSError *err = nil;
     SGLockEXE00(self->_lock, ^{
-        err = self->_flags.error;
-        if (timeInfo) {
-            *timeInfo = self->_flags.timeInfo;
-        }
         if (stateInfo) {
             *stateInfo = self->_flags.stateInfo;
         }
+        if (timeInfo) {
+            *timeInfo = self->_flags.timeInfo;
+        }
+        err = self->_flags.error;
     });
     if (error) {
         *error = err;

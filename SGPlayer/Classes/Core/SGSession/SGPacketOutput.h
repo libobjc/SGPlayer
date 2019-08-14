@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "SGDemuxable.h"
+#import "SGDemuxerOptions.h"
+#import "SGPacket.h"
+#import "SGAsset.h"
 
 @protocol SGPacketOutputDelegate;
 
@@ -34,7 +36,12 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState) {
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable;
+- (instancetype)initWithAsset:(SGAsset *)asset;
+
+/**
+ *
+ */
+@property (nonatomic, copy) SGDemuxerOptions *demuxerOptions;
 
 /**
  *

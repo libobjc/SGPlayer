@@ -7,6 +7,8 @@
 //
 
 #import "SGPacketOutput.h"
+#import "SGAsset+Internal.h"
+#import "SGDemuxable.h"
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -34,10 +36,10 @@
 
 @implementation SGPacketOutput
 
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable
+- (instancetype)initWithAsset:(SGAsset *)asset
 {
     if (self = [super init]) {
-        self->_demuxable = demuxable;
+        self->_demuxable = [asset newDemuxable];
         self->_demuxable.delegate = self;
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
@@ -62,6 +64,8 @@
 SGGet0Map(CMTime, duration, self->_demuxable)
 SGGet0Map(NSDictionary *, metadata, self->_demuxable)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
+SGGet0Map(SGDemuxerOptions *, options, self->_demuxable)
+SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
 
 #pragma mark - Setter & Getter
 
