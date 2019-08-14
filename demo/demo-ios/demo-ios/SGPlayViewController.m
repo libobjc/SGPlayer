@@ -22,27 +22,29 @@
 
 @implementation SGPlayViewController
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.player = [[SGPlayer alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoChanged:) name:SGPlayerDidChangeInfosNotification object:self.player];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(infoChanged:)
-                                                 name:SGPlayerDidChangeInfosNotification
-                                               object:self.player];
-    
-    self.player = [[SGPlayer alloc] init];
     self.player.videoRenderer.view = self.view;
+    self.player.readyHandler = ^(SGPlayer *player) {
+        [player play];
+    };
     [self.player replaceWithAsset:self.asset];
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        if ([self.player waitUntilReady]) {
-            [self.player play];
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                self.player.rate = 5.0;
-            });
-        }
-    });
 }
 
 #pragma mark - SGPlayer Notifications
