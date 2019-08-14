@@ -41,10 +41,8 @@
     [super viewDidLoad];
     
     self.player.videoRenderer.view = self.view;
-    self.player.readyHandler = ^(SGPlayer *player) {
-        [player play];
-    };
     [self.player replaceWithAsset:self.asset];
+    [self.player play];
 }
 
 #pragma mark - SGPlayer Notifications
