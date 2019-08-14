@@ -159,7 +159,9 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
             [m addObjectsFromArray:self->_videoSelection.tracks];
             [self->_frameOutput selectTracks:[m copy]];
         }
-        [self->_audioProcessor setSelection:self->_audioSelection action:action];
+        if (action > 0) {
+            [self->_audioProcessor setSelection:self->_audioSelection action:action];
+        }
         return nil;
     });
 }
@@ -174,7 +176,9 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
             [m addObjectsFromArray:self->_videoSelection.tracks];
             [self->_frameOutput selectTracks:[m copy]];
         }
-        [self->_videoProcessor setSelection:self->_videoSelection action:action];
+        if (action > 0) {
+            [self->_videoProcessor setSelection:self->_videoSelection action:action];
+        }
         return nil;
     });
 }

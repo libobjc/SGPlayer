@@ -38,7 +38,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 @property (nonatomic, strong, readonly) NSLock *lock;
 @property (nonatomic, strong, readonly) SGClock *clock;
-@property (nonatomic, strong, readonly) NSCondition *wakeup;
 @property (nonatomic, strong, readonly) SGPlayerItem *currentItem;
 @property (nonatomic, strong, readonly) SGAudioRenderer *audioRenderer;
 @property (nonatomic, strong, readonly) SGVideoRenderer *videoRenderer;
@@ -60,7 +59,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_options = [SGOptions sharedOptions].copy;
         self->_rate = 1.0;
         self->_lock = [[NSLock alloc] init];
-        self->_wakeup = [[NSCondition alloc] init];
         self->_clock = [[SGClock alloc] init];
         self->_clock.delegate = self;
         self->_audioRenderer = [[SGAudioRenderer alloc] initWithClock:self->_clock];
@@ -93,9 +91,9 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     *action |= SGInfoActionStatePlayer;
     self->_flags.stateInfo.player = state;
     return ^{
-        [self->_wakeup lock];
-        [self->_wakeup broadcast];
-        [self->_wakeup unlock];
+        if (self->_readyHandler && state == SGPlayerStateReady) {
+            self->_readyHandler(self);
+        }
     };
 }
 
@@ -322,26 +320,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     });
 }
 
-- (BOOL)waitUntilReady
-{
-    NSAssert(![NSThread isMainThread], @"Don't call this method on main thread.");
-    BOOL ret = NO;
-    [self->_wakeup lock];
-    while (YES) {
-        [self->_lock lock];
-        if (self->_flags.stateInfo.player == SGPlayerStatePreparing) {
-            [self->_lock unlock];
-            [self->_wakeup wait];
-            continue;
-        }
-        ret = self->_flags.stateInfo.player == SGPlayerStateReady;
-        [self->_lock unlock];
-        break;
-    }
-    [self->_wakeup unlock];
-    return ret;
-}
-
 - (BOOL)stop
 {
     [SGActivity removeTarget:self];
@@ -519,7 +497,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 {
     SGLockEXE10(self->_lock, ^SGBlock {
         SGInfoAction action = SGInfoActionNone;
-        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{};
+        SGBlock b1 = ^{}, b2 = ^{}, b3 = ^{}, b4 = ^{};
         switch (state) {
             case SGPlayerItemStateOpening: {
                 b1 = [self setPlayerState:SGPlayerStatePreparing action:&action];
@@ -527,8 +505,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
                 break;
             case SGPlayerItemStateOpened: {
                 CMTime duration = self->_currentItem.duration;
-                b2 = [self setPlayerState:SGPlayerStateReady action:&action];
-                b3 = [self setLoadingState:SGLoadingStateStalled action:&action];
                 [self setDuration:duration action:&action];
                 [self setPlaybackTime:kCMTimeZero action:&action];
                 [self setCachedDuration:kCMTimeZero action:&action];
@@ -542,6 +518,10 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
                         self->_flags.videoAvailable = YES;
                         [self->_videoRenderer open];
                     }
+                };
+                b2 = [self setPlayerState:SGPlayerStateReady action:&action];
+                b3 = [self setLoadingState:SGLoadingStateStalled action:&action];
+                b4 = ^{
                     [playerItem start];
                 };
             }
@@ -569,8 +549,8 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
             default:
                 break;
         }
-        SGBlock b4 = [self infoCallback:action];
-        return ^{b1(); b2(); b3(); b4();};
+        SGBlock b5 = [self infoCallback:action];
+        return ^{b1(); b2(); b3(); b4(); b5();};
     });
 }
 

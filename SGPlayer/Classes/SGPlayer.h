@@ -69,11 +69,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 - (SGPlayerItem *)currentItem;
 
+@property (nonatomic, copy) void (^readyHandler)(SGPlayer *player);
+
 - (BOOL)replaceWithURL:(NSURL *)URL;
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
 - (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item;
-
-- (BOOL)waitUntilReady;
 
 - (BOOL)stop;
 
@@ -105,11 +105,11 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 
 #pragma mark - Notification
 
+SGPLAYER_EXTERN NSNotificationName const SGPlayerDidChangeInfosNotification;
+
 SGPLAYER_EXTERN NSString * const SGPlayerTimeInfoUserInfoKey;
 SGPLAYER_EXTERN NSString * const SGPlayerStateInfoUserInfoKey;
 SGPLAYER_EXTERN NSString * const SGPlayerInfoActionUserInfoKey;
-
-SGPLAYER_EXTERN NSNotificationName const SGPlayerDidChangeInfosNotification;
 
 @interface SGPlayer ()
 
