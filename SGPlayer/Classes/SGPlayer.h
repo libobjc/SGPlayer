@@ -75,8 +75,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 - (BOOL)replaceWithAsset:(SGAsset *)asset;
 - (BOOL)replaceWithPlayerItem:(SGPlayerItem *)item;
 
-- (BOOL)stop;
-
 @end
 
 #pragma mark - Playback
@@ -84,6 +82,8 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 @interface SGPlayer ()
 
 @property (nonatomic) Float64 rate;
+
+@property (nonatomic, readonly) BOOL needsPlay;
 
 - (BOOL)play;
 - (BOOL)pause;

@@ -91,8 +91,13 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     *action |= SGInfoActionStatePlayer;
     self->_flags.stateInfo.player = state;
     return ^{
-        if (self->_readyHandler && state == SGPlayerStateReady) {
-            self->_readyHandler(self);
+        if (state == SGPlayerStateReady) {
+            if (self->_readyHandler) {
+                self->_readyHandler(self);
+            }
+            if (self->_needsPlay) {
+                [self play];
+            }
         }
     };
 }
@@ -360,6 +365,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (BOOL)play
 {
+    self->_needsPlay = YES;
     [SGActivity addTarget:self];
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.stateInfo.player == SGPlayerStateReady;
@@ -374,6 +380,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 - (BOOL)pause
 {
+    self->_needsPlay = NO;
     [SGActivity removeTarget:self];
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return self->_flags.stateInfo.player == SGPlayerStateReady;
