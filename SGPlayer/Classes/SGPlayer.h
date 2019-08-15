@@ -72,7 +72,9 @@
 /**
  *
  */
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 @property (nonatomic) BOOL pausesWhenInterrupted;
+#endif
 
 /**
  *

@@ -43,7 +43,7 @@
     AudioComponentDescription acd;
     acd.componentType = kAudioUnitType_Output;
 #if SGPLATFORM_TARGET_OS_MAC
-    acd.componentSuype = kAudioUnitSubType_DefaultOutput;
+    acd.componentSubType = kAudioUnitSubType_DefaultOutput;
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     acd.componentSubType = kAudioUnitSubType_RemoteIO;
 #endif

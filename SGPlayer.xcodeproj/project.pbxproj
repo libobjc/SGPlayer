@@ -174,8 +174,8 @@
 		9C6F902D219BE154001051CE /* SGMutableAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9028219BE154001051CE /* SGMutableAsset.m */; };
 		9C6F902E219BE154001051CE /* SGMutableAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6F9028219BE154001051CE /* SGMutableAsset.m */; };
 		9C82EEB121AE356D00E9D523 /* SGAudioProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */; };
-		9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */; };
+		9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C82EEAF21AE356D00E9D523 /* SGAudioProcessor.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C82EEB421AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
 		9C82EEB521AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
 		9C82EEB621AE356D00E9D523 /* SGAudioProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C82EEB021AE356D00E9D523 /* SGAudioProcessor.m */; };
@@ -1410,6 +1410,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9C86385721904A0900D730EC /* SGPLFScreen.h in Headers */,
 				9C86388721904A0900D730EC /* SGDemuxable.h in Headers */,
 				9C86385F21904A0900D730EC /* SGURLDemuxer.h in Headers */,
@@ -1436,7 +1437,6 @@
 				9C525D5221AEC421005C5708 /* SGAudioDescriptor.h in Headers */,
 				9C55337221B25EC000119235 /* SGData.h in Headers */,
 				9C4190FE21B00FC600134099 /* SGMutableTrack.h in Headers */,
-				9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9C8D6B8522C4A19500985D55 /* SGMetalPlaneModel.h in Headers */,
 				9CE71916219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191E219C408300256485 /* SGSegment.h in Headers */,
@@ -1519,6 +1519,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9CD79F032190068E00E39A7D /* SGPLFScreen.h in Headers */,
 				9CD79F6B2190068E00E39A7D /* SGDemuxable.h in Headers */,
 				9CD79F0C2190068E00E39A7D /* SGURLDemuxer.h in Headers */,
@@ -1545,7 +1546,6 @@
 				9C525D5321AEC421005C5708 /* SGAudioDescriptor.h in Headers */,
 				9C55337321B25EC000119235 /* SGData.h in Headers */,
 				9C4190FF21B00FC600134099 /* SGMutableTrack.h in Headers */,
-				9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9C8D6B8622C4A19500985D55 /* SGMetalPlaneModel.h in Headers */,
 				9CE71917219C3F7900256485 /* SGURLSegment.h in Headers */,
 				9CE7191F219C408300256485 /* SGSegment.h in Headers */,
