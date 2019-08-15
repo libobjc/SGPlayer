@@ -25,6 +25,20 @@
 
 @implementation SGPlayViewController
 
+- (instancetype)initWithCoder:(NSCoder *)coder
+{
+    if (self = [super initWithCoder:coder]) {
+        self.player = [[SGPlayer alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoChanged:) name:SGPlayerDidChangeInfosNotification object:self.player];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -34,24 +48,15 @@
     self.controlView.wantsLayer = YES;
     self.controlView.layer.backgroundColor = [NSColor colorWithWhite:0 alpha:0.5].CGColor;
     self.progressSilder.trackFillColor = [NSColor yellowColor];
+    
 }
 
 - (void)run
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(infoChanged:)
-                                                 name:SGPlayerDidChangeInfosNotification
-                                               object:self.player];
-    
-    self.player = [[SGPlayer alloc] init];
     self.player.videoRenderer.view = self.view;
-    [self.player replaceWithAsset:self.asset];
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        if ([self.player waitUntilReady]) {
-            [self.player play];
-        }
-    });
+    self.player.videoRenderer.displayMode = self.videoItem.displayMode;
+    [self.player replaceWithAsset:self.videoItem.asset];
+    [self.player play];
 }
 
 #pragma mark - SGPlayer Notifications
@@ -95,7 +100,7 @@
 
 - (IBAction)progressValueChanged:(id)sender
 {
-    CMTime time = CMTimeMultiplyByFloat64(self.player.timeInfo.duration, self.progressSilder.doubleValue);
+    CMTime time = CMTimeMultiplyByFloat64(self.player.currentItem.duration, self.progressSilder.doubleValue);
     self.seeking = YES;
     [self.player seekToTime:time result:^(CMTime time, NSError *error) {
         self.seeking = NO;

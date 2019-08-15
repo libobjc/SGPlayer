@@ -7,11 +7,11 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <SGPlayer/SGPlayer.h>
+#import "SGVideoItem.h"
 
 @interface SGPlayViewController : NSViewController
 
-@property (nonatomic, strong) SGAsset *asset;
+@property (nonatomic, strong) SGVideoItem *videoItem;
 
 - (void)run;
 

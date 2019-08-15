@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  SGListViewController.h
 //  demo-macos
 //
 //  Created by Single on 2017/3/15.
@@ -8,7 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface ViewController : NSViewController
+@interface SGListViewController : NSViewController
 
 
 @end

@@ -681,10 +681,10 @@
             </objects>
             <point key="canvasLocation" x="69" y="184.5"/>
         </scene>
-        <!--View Controller-->
+        <!--List View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
-                <viewController id="XfG-lQ-9wD" customClass="ViewController" sceneMemberID="viewController">
+                <viewController id="XfG-lQ-9wD" customClass="SGListViewController" sceneMemberID="viewController">
                     <view key="view" wantsLayer="YES" id="m2S-Jp-Qdl">
                         <rect key="frame" x="0.0" y="0.0" width="455" height="61"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -717,7 +717,7 @@
                         </subviews>
                     </view>
                     <connections>
-                        <outlet property="demoTypeButton" destination="tyn-mX-tnY" id="ahs-Ze-BZa"/>
+                        <outlet property="popUpButton" destination="tyn-mX-tnY" id="l1r-rB-iqm"/>
                     </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>

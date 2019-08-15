@@ -12,34 +12,36 @@
 @interface ViewController ()
 
 @property (nonatomic, assign) BOOL seeking;
-@property (nonatomic, strong) SGAsset *asset;
 @property (nonatomic, strong) SGPlayer *player;
 
 @end
 
 @implementation ViewController
 
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self.player = [[SGPlayer alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoChanged:) name:SGPlayerDidChangeInfosNotification object:self.player];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     NSURL *URL = [[NSBundle mainBundle] URLForResource:@"i-see-fire" withExtension:@"mp4"];
-    self.asset = [[SGURLAsset alloc] initWithURL:URL];
+    SGAsset *asset = [[SGURLAsset alloc] initWithURL:URL];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(infoChanged:)
-                                                 name:SGPlayerDidChangeInfosNotification
-                                               object:self.player];
-    
-    self.player = [[SGPlayer alloc] init];
     self.player.videoRenderer.view = self.view;
-    [self.player replaceWithAsset:self.asset];
-    
-    dispatch_async(dispatch_get_global_queue(0, 0), ^{
-        if ([self.player waitUntilReady]) {
-            [self.player play];
-        }
-    });
+    [self.player replaceWithAsset:asset];
+    [self.player play];
 }
 
 #pragma mark - SGPlayer Notifications
@@ -57,10 +59,10 @@
     }
     if (action & SGInfoActionState) {
         NSLog(@"player: %d, loading: %d, playback: %d, playing: %d, seeking: %d, finished: %d",
-              state.player, state.loading, state.playback,
-              state.playback & SGPlaybackStatePlaying,
-              state.playback & SGPlaybackStateSeeking,
-              state.playback & SGPlaybackStateFinished);
+              (int)state.player, (int)state.loading, (int)state.playback,
+              (int)(state.playback & SGPlaybackStatePlaying),
+              (int)(state.playback & SGPlaybackStateSeeking),
+              (int)(state.playback & SGPlaybackStateFinished));
     }
 }
 

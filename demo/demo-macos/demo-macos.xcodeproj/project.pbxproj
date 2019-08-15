@@ -12,12 +12,13 @@
 		9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */; };
 		9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1671E8FBD100003B17A /* CoreMedia.framework */; };
 		9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */; };
+		9C49E5FF23053DBD00C5FB1F /* SGVideoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */; };
 		9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18922C5F7AA009E2863 /* default.metallib */; };
 		9CB6951621906D2700196E54 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB694E42190599300196E54 /* AudioUnit.framework */; };
 		9CB6951821906D2F00196E54 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB6951721906D2F00196E54 /* SGPlayer.framework */; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
 		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
-		9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* ViewController.m */; };
+		9CB9251F1E7942AC00DE6721 /* SGListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251E1E7942AC00DE6721 /* SGListViewController.m */; };
 		9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925201E7942AC00DE6721 /* Assets.xcassets */; };
 		9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9CB925221E7942AC00DE6721 /* Main.storyboard */; };
 		9CB925311E79469A00DE6721 /* SGPlayViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9252F1E79469A00DE6721 /* SGPlayViewController.m */; };
@@ -34,6 +35,8 @@
 		9C36DD411E79537500959FDA /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
 		9C3DD1671E8FBD100003B17A /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGVideoItem.m; sourceTree = "<group>"; };
+		9C49E5FE23053DBD00C5FB1F /* SGVideoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGVideoItem.h; sourceTree = "<group>"; };
 		9CA1B18922C5F7AA009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		9CA86E811E8756E700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug/SGPlatform.framework"; sourceTree = "<group>"; };
 		9CA86E831E87571800E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
@@ -44,8 +47,8 @@
 		9CB925171E7942AC00DE6721 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9CB925181E7942AC00DE6721 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		9CB9251B1E7942AC00DE6721 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9CB9251D1E7942AC00DE6721 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9CB9251E1E7942AC00DE6721 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9CB9251D1E7942AC00DE6721 /* SGListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGListViewController.h; sourceTree = "<group>"; };
+		9CB9251E1E7942AC00DE6721 /* SGListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGListViewController.m; sourceTree = "<group>"; };
 		9CB925201E7942AC00DE6721 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9CB925231E7942AC00DE6721 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9CB925251E7942AC00DE6721 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -81,9 +84,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C49E5FC23053DBD00C5FB1F /* demo-common */ = {
+			isa = PBXGroup;
+			children = (
+				9C49E5FE23053DBD00C5FB1F /* SGVideoItem.h */,
+				9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */,
+			);
+			name = "demo-common";
+			path = "../demo-common";
+			sourceTree = "<group>";
+		};
 		9CB9250B1E7942AC00DE6721 = {
 			isa = PBXGroup;
 			children = (
+				9C49E5FC23053DBD00C5FB1F /* demo-common */,
 				9CB925161E7942AC00DE6721 /* demo-macos */,
 				9CB925151E7942AC00DE6721 /* Products */,
 				9CB925331E79475B00DE6721 /* Frameworks */,
@@ -103,8 +117,8 @@
 			children = (
 				9CB925171E7942AC00DE6721 /* AppDelegate.h */,
 				9CB925181E7942AC00DE6721 /* AppDelegate.m */,
-				9CB9251D1E7942AC00DE6721 /* ViewController.h */,
-				9CB9251E1E7942AC00DE6721 /* ViewController.m */,
+				9CB9251D1E7942AC00DE6721 /* SGListViewController.h */,
+				9CB9251E1E7942AC00DE6721 /* SGListViewController.m */,
 				9CB9252E1E79469A00DE6721 /* SGPlayViewController.h */,
 				9CB9252F1E79469A00DE6721 /* SGPlayViewController.m */,
 				9CB925221E7942AC00DE6721 /* Main.storyboard */,
@@ -226,8 +240,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CB9251F1E7942AC00DE6721 /* ViewController.m in Sources */,
+				9CB9251F1E7942AC00DE6721 /* SGListViewController.m in Sources */,
 				9CB925311E79469A00DE6721 /* SGPlayViewController.m in Sources */,
+				9C49E5FF23053DBD00C5FB1F /* SGVideoItem.m in Sources */,
 				9CB9251C1E7942AC00DE6721 /* main.m in Sources */,
 				9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */,
 			);
