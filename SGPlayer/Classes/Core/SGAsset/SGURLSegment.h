@@ -13,6 +13,11 @@
 /**
  *
  */
+- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index;
+
+/**
+ *
+ */
 - (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
 
 /**

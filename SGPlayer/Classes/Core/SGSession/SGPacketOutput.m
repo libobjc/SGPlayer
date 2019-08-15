@@ -275,7 +275,7 @@ SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
     [self->_demuxable close];
 }
 
-#pragma mark - SGPacketReaderDelegate
+#pragma mark - SGDemuxableDelegate
 
 - (BOOL)demuxableShouldAbortBlockingFunctions:(id<SGDemuxable>)demuxable
 {

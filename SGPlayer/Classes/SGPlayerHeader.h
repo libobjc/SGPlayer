@@ -41,6 +41,9 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGURLSegment.h>
 #import <SGPlayer/SGPaddingSegment.h>
 
+#import <SGPlayer/SGDemuxable.h>
+#import <SGPlayer/SGURLDemuxer.h>
+
 #import <SGPlayer/SGPlayerItem.h>
 #import <SGPlayer/SGFrameOutput.h>
 #import <SGPlayer/SGPacketOutput.h>
