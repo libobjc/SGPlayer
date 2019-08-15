@@ -67,6 +67,9 @@ typedef struct {
     SGPlaybackState playback;
 } SGStateInfo;
 
+@class SGPlayer;
+
 typedef void (^SGBlock)(void);
+typedef void (^SGHandler)(SGPlayer *player);
 typedef BOOL (^SGTimeReader)(CMTime *desire, BOOL *drop);
 typedef void (^SGSeekResult)(CMTime time, NSError *error);

@@ -36,7 +36,7 @@
 /**
  *
  */
-@property (nonatomic, copy) void (^readyHandler)(SGPlayer *player);
+@property (nonatomic, copy) SGHandler readyHandler;
 
 /**
  *
@@ -67,7 +67,7 @@
 /**
  *
  */
-@property (nonatomic, readonly) BOOL needsPlay;
+@property (nonatomic, readonly) BOOL wantsToPlay;
 
 /**
  *
