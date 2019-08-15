@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  SGListViewController.h
 //  demo-ios
 //
 //  Created by Single on 2017/3/15.
@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UITableViewController
+@interface SGListViewController : UITableViewController
 
 @end
 

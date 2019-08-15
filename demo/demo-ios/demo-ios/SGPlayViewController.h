@@ -7,10 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SGPlayer/SGPlayer.h>
+#import "SGVideoItem.h"
 
 @interface SGPlayViewController : UIViewController
 
-@property (nonatomic, strong) SGAsset *asset;
+@property (nonatomic, strong) SGVideoItem *videoItem;
 
 @end

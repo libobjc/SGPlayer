@@ -14,9 +14,10 @@
 		9C3DD16C1E8FBD420003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16B1E8FBD420003B17A /* VideoToolbox.framework */; };
 		9C3DD16E1E8FBD4A0003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */; };
 		9C3DD1701E8FBD4F0003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */; };
+		9C49E5F32304F77B00C5FB1F /* SGVideoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C49E5F12304F77B00C5FB1F /* SGVideoItem.m */; };
 		9C886B981E78EC9F00F2CFD1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B971E78EC9F00F2CFD1 /* main.m */; };
 		9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */; };
-		9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */; };
+		9C886B9E1E78EC9F00F2CFD1 /* SGListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C886B9D1E78EC9F00F2CFD1 /* SGListViewController.m */; };
 		9C886BA11E78EC9F00F2CFD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C886B9F1E78EC9F00F2CFD1 /* Main.storyboard */; };
 		9C886BA31E78EC9F00F2CFD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C886BA21E78EC9F00F2CFD1 /* Assets.xcassets */; };
 		9C886BA61E78EC9F00F2CFD1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C886BA41E78EC9F00F2CFD1 /* LaunchScreen.storyboard */; };
@@ -40,12 +41,14 @@
 		9C3DD16D1E8FBD4A0003B17A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9C3DD16F1E8FBD4F0003B17A /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		9C4032C41FAB1188005AEB36 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C49E5F12304F77B00C5FB1F /* SGVideoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGVideoItem.m; sourceTree = "<group>"; };
+		9C49E5F22304F77B00C5FB1F /* SGVideoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGVideoItem.h; sourceTree = "<group>"; };
 		9C886B931E78EC9F00F2CFD1 /* SGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C886B971E78EC9F00F2CFD1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9C886B991E78EC9F00F2CFD1 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		9C886B9C1E78EC9F00F2CFD1 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9C886B9C1E78EC9F00F2CFD1 /* SGListViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGListViewController.h; sourceTree = "<group>"; };
+		9C886B9D1E78EC9F00F2CFD1 /* SGListViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGListViewController.m; sourceTree = "<group>"; };
 		9C886BA01E78EC9F00F2CFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		9C886BA21E78EC9F00F2CFD1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9C886BA51E78EC9F00F2CFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -81,9 +84,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9C49E5F02304F77B00C5FB1F /* demo-common */ = {
+			isa = PBXGroup;
+			children = (
+				9C49E5F22304F77B00C5FB1F /* SGVideoItem.h */,
+				9C49E5F12304F77B00C5FB1F /* SGVideoItem.m */,
+			);
+			name = "demo-common";
+			path = "../demo-common";
+			sourceTree = "<group>";
+		};
 		9C886B8A1E78EC9F00F2CFD1 = {
 			isa = PBXGroup;
 			children = (
+				9C49E5F02304F77B00C5FB1F /* demo-common */,
 				9C886B951E78EC9F00F2CFD1 /* demo-ios */,
 				9C886B941E78EC9F00F2CFD1 /* Products */,
 				9C886BAE1E78ECE500F2CFD1 /* Frameworks */,
@@ -103,8 +117,8 @@
 			children = (
 				9C886B991E78EC9F00F2CFD1 /* AppDelegate.h */,
 				9C886B9A1E78EC9F00F2CFD1 /* AppDelegate.m */,
-				9C886B9C1E78EC9F00F2CFD1 /* ViewController.h */,
-				9C886B9D1E78EC9F00F2CFD1 /* ViewController.m */,
+				9C886B9C1E78EC9F00F2CFD1 /* SGListViewController.h */,
+				9C886B9D1E78EC9F00F2CFD1 /* SGListViewController.m */,
 				9C02F64E1E79293A00932489 /* SGPlayViewController.h */,
 				9C03E5F2212E732B001F0E1B /* SGPlayViewController.m */,
 				9C02F6501E79293A00932489 /* SGPlayViewController.xib */,
@@ -233,8 +247,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C886B9E1E78EC9F00F2CFD1 /* ViewController.m in Sources */,
+				9C886B9E1E78EC9F00F2CFD1 /* SGListViewController.m in Sources */,
 				9C03E5F3212E732B001F0E1B /* SGPlayViewController.m in Sources */,
+				9C49E5F32304F77B00C5FB1F /* SGVideoItem.m in Sources */,
 				9C886B9B1E78EC9F00F2CFD1 /* AppDelegate.m in Sources */,
 				9C886B981E78EC9F00F2CFD1 /* main.m in Sources */,
 			);

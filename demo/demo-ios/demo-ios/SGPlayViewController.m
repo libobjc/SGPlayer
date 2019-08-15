@@ -41,7 +41,8 @@
     [super viewDidLoad];
     
     self.player.videoRenderer.view = self.view;
-    [self.player replaceWithAsset:self.asset];
+    self.player.videoRenderer.displayMode = self.videoItem.displayMode;
+    [self.player replaceWithAsset:self.videoItem.asset];
     [self.player play];
 }
 
