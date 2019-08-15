@@ -24,15 +24,126 @@
         [items addObject:item];
     }
     {
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
+        SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
+        [track appendSegment:segment];
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"I See Fire, Video Track";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
+        SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
+        [track appendSegment:segment];
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"I See Fire, Audio Track";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
+        CMTime scale = kCMTimeInvalid;
+        CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(30, 1), CMTimeMake(10, 1));
+        
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
+            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
+            [track appendSegment:segment];
+        }
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
+            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
+            [track appendSegment:segment];
+        }
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"I See Fire, Range: 30s-40s";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
+        CMTime scale = CMTimeMake(1, 2);
+        CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(30, 1), CMTimeMake(20, 1));
+        
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
+            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
+            [track appendSegment:segment];
+        }
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
+            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
+            [track appendSegment:segment];
+        }
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"I See Fire, Range: 30s-50s, Scale: 0.5";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
+            SGSegment *segment1 = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
+            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:google_help_vr index:1];
+            [track appendSegment:segment1];
+            [track appendSegment:segment2];
+        }
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
+            SGSegment *segment1 = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
+            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:google_help_vr index:0];
+            [track appendSegment:segment1];
+            [track appendSegment:segment2];
+        }
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"I See Fire + Google Help";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
+        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
+            SGSegment *segment1 = [[SGPaddingSegment alloc] initWithDuration:CMTimeMake(5, 1)];
+            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
+            [track appendSegment:segment1];
+            [track appendSegment:segment2];
+        }
+        {
+            SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
+            SGSegment *segment1 = [[SGPaddingSegment alloc] initWithDuration:CMTimeMake(5, 1)];
+            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
+            [track appendSegment:segment1];
+            [track appendSegment:segment2];
+        }
+        
+        SGVideoItem *item = [[SGVideoItem alloc] init];
+        item.name = @"5s Padding + I See Fire";
+        item.asset = asset;
+        item.displayMode = SGDisplayModePlane;
+        [items addObject:item];
+    }
+    {
         SGVideoItem *item = [[SGVideoItem alloc] init];
         item.name = @"Google Help VR";
         item.asset = [[SGURLAsset alloc] initWithURL:google_help_vr];
         item.displayMode = SGDisplayModeVR;
         [items addObject:item];
     }
-    //rtsp://184.72.239.149/vod/mp4://BigBuckBunny_175k.mov
-    //http://ivi.bupt.edu.cn/hls/cctv5phd.m3u8
-    //rtmp://live.hkstv.hk.lxdns.com/live/hks1
     return items;
 }
 
