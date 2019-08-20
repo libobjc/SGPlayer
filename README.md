@@ -1,4 +1,4 @@
-![Logo](https://github.com/libobjc/SGPlayer/blob/dev/2.0/documents/banner.jpg?raw=true)
+![Logo](https://github.com/libobjc/SGPlayer/blob/master/documents/banner.jpg?raw=true)
 
 
 ![Build Status](https://img.shields.io/badge/build-%20passing%20-brightgreen.svg)
@@ -59,7 +59,7 @@ cd SGPlayer
 
 ## Flow Chart
 
-![Flow Chart](https://github.com/libobjc/SGPlayer/blob/dev/2.0/documents/flow-chart.jpg?raw=true)
+![Flow Chart](https://github.com/libobjc/SGPlayer/blob/master/documents/flow-chart.jpg?raw=true)
 
 ## Related
 
