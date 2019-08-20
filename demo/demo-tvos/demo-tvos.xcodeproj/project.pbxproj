@@ -13,13 +13,13 @@
 		9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C6901FF21901D3D00B546E3 /* Assets.xcassets */; };
 		9C69020321901D3D00B546E3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C69020221901D3D00B546E3 /* main.m */; };
 		9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C86356921902E5000D730EC /* SGPlayer.framework */; };
-		9C8637E52190479A00D730EC /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E42190479A00D730EC /* CoreMedia.framework */; };
 		9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E62190479F00D730EC /* AudioToolbox.framework */; };
 		9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E8219047A400D730EC /* VideoToolbox.framework */; };
 		9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EA219047A900D730EC /* libbz2.tbd */; };
 		9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EC219047AE00D730EC /* libz.tbd */; };
 		9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EE219047B400D730EC /* libiconv.tbd */; };
 		9CA1B18F22C624F4009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18E22C624F3009E2863 /* default.metallib */; };
+		9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD90237230BE08E00A358AA /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +40,7 @@
 		9C8637EC219047AE00D730EC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C8637EE219047B400D730EC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		9CA1B18E22C624F3009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		9CD90237230BE08E00A358AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +49,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */,
-				9C8637E52190479A00D730EC /* CoreMedia.framework in Frameworks */,
+				9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */,
 				9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */,
 				9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */,
 				9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */,
@@ -93,6 +94,7 @@
 		9C86356821902E5000D730EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CD90237230BE08E00A358AA /* AVFoundation.framework */,
 				9C8637EE219047B400D730EC /* libiconv.tbd */,
 				9C8637EC219047AE00D730EC /* libz.tbd */,
 				9C8637EA219047A900D730EC /* libbz2.tbd */,

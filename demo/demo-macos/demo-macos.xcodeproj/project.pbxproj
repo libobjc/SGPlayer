@@ -10,11 +10,9 @@
 		9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD401E79537500959FDA /* google-help-vr.mp4 */; };
 		9C36DD431E79537500959FDA /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 9C36DD411E79537500959FDA /* i-see-fire.mp4 */; };
 		9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */; };
-		9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1671E8FBD100003B17A /* CoreMedia.framework */; };
 		9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */; };
 		9C49E5FF23053DBD00C5FB1F /* SGVideoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */; };
 		9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18922C5F7AA009E2863 /* default.metallib */; };
-		9CB6951621906D2700196E54 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB694E42190599300196E54 /* AudioUnit.framework */; };
 		9CB6951821906D2F00196E54 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB6951721906D2F00196E54 /* SGPlayer.framework */; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
 		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
@@ -25,6 +23,7 @@
 		9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925361E79476E00DE6721 /* libiconv.tbd */; };
 		9CB925391E79477200DE6721 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB925381E79477200DE6721 /* libz.tbd */; };
 		9CB9253B1E79477600DE6721 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253A1E79477600DE6721 /* libbz2.tbd */; };
+		9CD90236230BDF5F00A358AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD90235230BDF5F00A358AA /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -63,6 +62,7 @@
 		9CB925401E79479500DE6721 /* VideoDecodeAcceleration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoDecodeAcceleration.framework; path = System/Library/Frameworks/VideoDecodeAcceleration.framework; sourceTree = SDKROOT; };
 		9CB925421E7947A900DE6721 /* liblzma.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.5.tbd; path = usr/lib/liblzma.5.tbd; sourceTree = SDKROOT; };
 		9CB925441E7947B000DE6721 /* liblzma.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = liblzma.tbd; path = usr/lib/liblzma.tbd; sourceTree = SDKROOT; };
+		9CD90235230BDF5F00A358AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +71,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9CB6951821906D2F00196E54 /* SGPlayer.framework in Frameworks */,
-				9CB6951621906D2700196E54 /* AudioUnit.framework in Frameworks */,
-				9C3DD1681E8FBD100003B17A /* CoreMedia.framework in Frameworks */,
+				9CD90236230BDF5F00A358AA /* AVFoundation.framework in Frameworks */,
 				9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */,
 				9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */,
 				9CB925371E79476E00DE6721 /* libiconv.tbd in Frameworks */,
@@ -143,6 +142,7 @@
 		9CB925331E79475B00DE6721 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				9CD90235230BDF5F00A358AA /* AVFoundation.framework */,
 				9CB6951721906D2F00196E54 /* SGPlayer.framework */,
 				9CB694E42190599300196E54 /* AudioUnit.framework */,
 				9C0EABCA21905574004D5604 /* SGPlayer.framework */,
