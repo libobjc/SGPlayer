@@ -16,6 +16,3 @@ DerivedData
 *.xcuserstate
 .DS_Store
 framework/
-SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-iOS
-SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-macOS
-SGPlayer/Classes/Core/SGFFPlayer/ffmpeg/lib-tvOS

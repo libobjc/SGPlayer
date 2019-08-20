@@ -3,117 +3,130 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9C2CF00E1F10D5F50099247F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2CF00D1F10D5F50099247F /* main.m */; };
-		9C2CF0111F10D5F50099247F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2CF0101F10D5F50099247F /* AppDelegate.m */; };
-		9C2CF0141F10D5F50099247F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C2CF0131F10D5F50099247F /* ViewController.m */; };
-		9C2CF0171F10D5F50099247F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C2CF0151F10D5F50099247F /* Main.storyboard */; };
-		9C2CF0191F10D5F50099247F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C2CF0181F10D5F50099247F /* Assets.xcassets */; };
-		9C69BC7A1F10D650008DC715 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C69BC791F10D650008DC715 /* SGPlayer.framework */; };
-		9C69BC7C1F10D656008DC715 /* SGPlatform.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C69BC7B1F10D656008DC715 /* SGPlatform.framework */; };
-		9C69BC7E1F10D75F008DC715 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C69BC7D1F10D75F008DC715 /* libz.tbd */; };
-		9C69BC801F10D768008DC715 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C69BC7F1F10D768008DC715 /* libbz2.tbd */; };
-		9C69BC821F10D76F008DC715 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C69BC811F10D76F008DC715 /* libiconv.tbd */; };
+		9C6901F821901D3C00B546E3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6901F721901D3C00B546E3 /* AppDelegate.m */; };
+		9C6901FB21901D3C00B546E3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C6901FA21901D3C00B546E3 /* ViewController.m */; };
+		9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9C6901FC21901D3C00B546E3 /* Main.storyboard */; };
+		9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9C6901FF21901D3D00B546E3 /* Assets.xcassets */; };
+		9C69020321901D3D00B546E3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C69020221901D3D00B546E3 /* main.m */; };
+		9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C86356921902E5000D730EC /* SGPlayer.framework */; };
+		9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E62190479F00D730EC /* AudioToolbox.framework */; };
+		9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637E8219047A400D730EC /* VideoToolbox.framework */; };
+		9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EA219047A900D730EC /* libbz2.tbd */; };
+		9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EC219047AE00D730EC /* libz.tbd */; };
+		9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EE219047B400D730EC /* libiconv.tbd */; };
+		9CA1B18F22C624F4009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18E22C624F3009E2863 /* default.metallib */; };
+		9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD90237230BE08E00A358AA /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9C2CF0091F10D5F50099247F /* demo-tvos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "demo-tvos.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		9C2CF00D1F10D5F50099247F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		9C2CF00F1F10D5F50099247F /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		9C2CF0101F10D5F50099247F /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		9C2CF0121F10D5F50099247F /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		9C2CF0131F10D5F50099247F /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
-		9C2CF0161F10D5F50099247F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		9C2CF0181F10D5F50099247F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		9C2CF01A1F10D5F50099247F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9C69BC791F10D650008DC715 /* SGPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlayer.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug-appletvsimulator/SGPlayer.framework"; sourceTree = "<group>"; };
-		9C69BC7B1F10D656008DC715 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug-appletvsimulator/SGPlatform.framework"; sourceTree = "<group>"; };
-		9C69BC7D1F10D75F008DC715 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		9C69BC7F1F10D768008DC715 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
-		9C69BC811F10D76F008DC715 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		9C6901F321901D3C00B546E3 /* SGPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SGPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C6901F621901D3C00B546E3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		9C6901F721901D3C00B546E3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		9C6901F921901D3C00B546E3 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		9C6901FA21901D3C00B546E3 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		9C6901FD21901D3C00B546E3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9C6901FF21901D3D00B546E3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9C69020121901D3D00B546E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		9C69020221901D3D00B546E3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		9C86356921902E5000D730EC /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C8637E42190479A00D730EC /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		9C8637E62190479F00D730EC /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		9C8637E8219047A400D730EC /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		9C8637EA219047A900D730EC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		9C8637EC219047AE00D730EC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		9C8637EE219047B400D730EC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
+		9CA1B18E22C624F3009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
+		9CD90237230BE08E00A358AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		9C2CF0061F10D5F50099247F /* Frameworks */ = {
+		9C6901F021901D3C00B546E3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C69BC821F10D76F008DC715 /* libiconv.tbd in Frameworks */,
-				9C69BC801F10D768008DC715 /* libbz2.tbd in Frameworks */,
-				9C69BC7E1F10D75F008DC715 /* libz.tbd in Frameworks */,
-				9C69BC7C1F10D656008DC715 /* SGPlatform.framework in Frameworks */,
-				9C69BC7A1F10D650008DC715 /* SGPlayer.framework in Frameworks */,
+				9C86356A21902E5000D730EC /* SGPlayer.framework in Frameworks */,
+				9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */,
+				9C8637E72190479F00D730EC /* AudioToolbox.framework in Frameworks */,
+				9C8637E9219047A400D730EC /* VideoToolbox.framework in Frameworks */,
+				9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */,
+				9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */,
+				9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		9C2CF0001F10D5F50099247F = {
+		9C6901EA21901D3C00B546E3 = {
 			isa = PBXGroup;
 			children = (
-				9C2CF00B1F10D5F50099247F /* demo-tvos */,
-				9C2CF00A1F10D5F50099247F /* Products */,
-				9C69BC781F10D650008DC715 /* Frameworks */,
+				9C6901F521901D3C00B546E3 /* demo-tvos */,
+				9C6901F421901D3C00B546E3 /* Products */,
+				9C86356821902E5000D730EC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
-		9C2CF00A1F10D5F50099247F /* Products */ = {
+		9C6901F421901D3C00B546E3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				9C2CF0091F10D5F50099247F /* demo-tvos.app */,
+				9C6901F321901D3C00B546E3 /* SGPlayer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		9C2CF00B1F10D5F50099247F /* demo-tvos */ = {
+		9C6901F521901D3C00B546E3 /* demo-tvos */ = {
 			isa = PBXGroup;
 			children = (
-				9C2CF00F1F10D5F50099247F /* AppDelegate.h */,
-				9C2CF0101F10D5F50099247F /* AppDelegate.m */,
-				9C2CF0121F10D5F50099247F /* ViewController.h */,
-				9C2CF0131F10D5F50099247F /* ViewController.m */,
-				9C2CF0151F10D5F50099247F /* Main.storyboard */,
-				9C2CF0181F10D5F50099247F /* Assets.xcassets */,
-				9C2CF01A1F10D5F50099247F /* Info.plist */,
-				9C2CF00C1F10D5F50099247F /* Supporting Files */,
+				9C6901F621901D3C00B546E3 /* AppDelegate.h */,
+				9C6901F721901D3C00B546E3 /* AppDelegate.m */,
+				9C6901F921901D3C00B546E3 /* ViewController.h */,
+				9C6901FA21901D3C00B546E3 /* ViewController.m */,
+				9C6901FC21901D3C00B546E3 /* Main.storyboard */,
+				9CA1B18D22C6241C009E2863 /* Supporting Files */,
 			);
 			path = "demo-tvos";
 			sourceTree = "<group>";
 		};
-		9C2CF00C1F10D5F50099247F /* Supporting Files */ = {
+		9C86356821902E5000D730EC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				9C2CF00D1F10D5F50099247F /* main.m */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		9C69BC781F10D650008DC715 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				9C69BC811F10D76F008DC715 /* libiconv.tbd */,
-				9C69BC7F1F10D768008DC715 /* libbz2.tbd */,
-				9C69BC7D1F10D75F008DC715 /* libz.tbd */,
-				9C69BC7B1F10D656008DC715 /* SGPlatform.framework */,
-				9C69BC791F10D650008DC715 /* SGPlayer.framework */,
+				9CD90237230BE08E00A358AA /* AVFoundation.framework */,
+				9C8637EE219047B400D730EC /* libiconv.tbd */,
+				9C8637EC219047AE00D730EC /* libz.tbd */,
+				9C8637EA219047A900D730EC /* libbz2.tbd */,
+				9C8637E8219047A400D730EC /* VideoToolbox.framework */,
+				9C8637E62190479F00D730EC /* AudioToolbox.framework */,
+				9C8637E42190479A00D730EC /* CoreMedia.framework */,
+				9C86356921902E5000D730EC /* SGPlayer.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9CA1B18D22C6241C009E2863 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9C6901FF21901D3D00B546E3 /* Assets.xcassets */,
+				9CA1B18E22C624F3009E2863 /* default.metallib */,
+				9C69020121901D3D00B546E3 /* Info.plist */,
+				9C69020221901D3D00B546E3 /* main.m */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		9C2CF0081F10D5F50099247F /* demo-tvos */ = {
+		9C6901F221901D3C00B546E3 /* demo-tvos */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 9C2CF01D1F10D5F50099247F /* Build configuration list for PBXNativeTarget "demo-tvos" */;
+			buildConfigurationList = 9C69020621901D3D00B546E3 /* Build configuration list for PBXNativeTarget "demo-tvos" */;
 			buildPhases = (
-				9C2CF0051F10D5F50099247F /* Sources */,
-				9C2CF0061F10D5F50099247F /* Frameworks */,
-				9C2CF0071F10D5F50099247F /* Resources */,
+				9C6901EF21901D3C00B546E3 /* Sources */,
+				9C6901F021901D3C00B546E3 /* Frameworks */,
+				9C6901F121901D3C00B546E3 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -121,73 +134,72 @@
 			);
 			name = "demo-tvos";
 			productName = "demo-tvos";
-			productReference = 9C2CF0091F10D5F50099247F /* demo-tvos.app */;
+			productReference = 9C6901F321901D3C00B546E3 /* SGPlayer.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		9C2CF0011F10D5F50099247F /* Project object */ = {
+		9C6901EB21901D3C00B546E3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = Single;
 				TargetAttributes = {
-					9C2CF0081F10D5F50099247F = {
-						CreatedOnToolsVersion = 8.3.3;
-						DevelopmentTeam = SWXNKT9754;
-						ProvisioningStyle = Automatic;
+					9C6901F221901D3C00B546E3 = {
+						CreatedOnToolsVersion = 10.0;
 					};
 				};
 			};
-			buildConfigurationList = 9C2CF0041F10D5F50099247F /* Build configuration list for PBXProject "demo-tvos" */;
-			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			buildConfigurationList = 9C6901EE21901D3C00B546E3 /* Build configuration list for PBXProject "demo-tvos" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 9C2CF0001F10D5F50099247F;
-			productRefGroup = 9C2CF00A1F10D5F50099247F /* Products */;
+			mainGroup = 9C6901EA21901D3C00B546E3;
+			productRefGroup = 9C6901F421901D3C00B546E3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				9C2CF0081F10D5F50099247F /* demo-tvos */,
+				9C6901F221901D3C00B546E3 /* demo-tvos */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		9C2CF0071F10D5F50099247F /* Resources */ = {
+		9C6901F121901D3C00B546E3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C2CF0191F10D5F50099247F /* Assets.xcassets in Resources */,
-				9C2CF0171F10D5F50099247F /* Main.storyboard in Resources */,
+				9CA1B18F22C624F4009E2863 /* default.metallib in Resources */,
+				9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */,
+				9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		9C2CF0051F10D5F50099247F /* Sources */ = {
+		9C6901EF21901D3C00B546E3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9C2CF0141F10D5F50099247F /* ViewController.m in Sources */,
-				9C2CF0111F10D5F50099247F /* AppDelegate.m in Sources */,
-				9C2CF00E1F10D5F50099247F /* main.m in Sources */,
+				9C6901FB21901D3C00B546E3 /* ViewController.m in Sources */,
+				9C69020321901D3D00B546E3 /* main.m in Sources */,
+				9C6901F821901D3C00B546E3 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		9C2CF0151F10D5F50099247F /* Main.storyboard */ = {
+		9C6901FC21901D3C00B546E3 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
-				9C2CF0161F10D5F50099247F /* Base */,
+				9C6901FD21901D3C00B546E3 /* Base */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -195,16 +207,17 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		9C2CF01B1F10D5F50099247F /* Debug */ = {
+		9C69020421901D3D00B546E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -223,13 +236,14 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -243,24 +257,25 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MTL_ENABLE_DEBUG_INFO = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.2;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 			};
 			name = Debug;
 		};
-		9C2CF01C1F10D5F50099247F /* Release */ = {
+		9C69020521901D3D00B546E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
@@ -279,13 +294,14 @@
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -294,61 +310,71 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
 				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.2;
+				TVOS_DEPLOYMENT_TARGET = 12.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		9C2CF01E1F10D5F50099247F /* Debug */ = {
+		9C69020721901D3D00B546E3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				DEVELOPMENT_TEAM = SWXNKT9754;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-tvos/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-tvos";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-tvos";
+				PRODUCT_NAME = SGPlayer;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Debug;
 		};
-		9C2CF01F1F10D5F50099247F /* Release */ = {
+		9C69020821901D3D00B546E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				DEVELOPMENT_TEAM = SWXNKT9754;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-tvos/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer-demo-tvos";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-tvos";
+				PRODUCT_NAME = SGPlayer;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 10.2;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		9C2CF0041F10D5F50099247F /* Build configuration list for PBXProject "demo-tvos" */ = {
+		9C6901EE21901D3C00B546E3 /* Build configuration list for PBXProject "demo-tvos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9C2CF01B1F10D5F50099247F /* Debug */,
-				9C2CF01C1F10D5F50099247F /* Release */,
+				9C69020421901D3D00B546E3 /* Debug */,
+				9C69020521901D3D00B546E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		9C2CF01D1F10D5F50099247F /* Build configuration list for PBXNativeTarget "demo-tvos" */ = {
+		9C69020621901D3D00B546E3 /* Build configuration list for PBXNativeTarget "demo-tvos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				9C2CF01E1F10D5F50099247F /* Debug */,
-				9C2CF01F1F10D5F50099247F /* Release */,
+				9C69020721901D3D00B546E3 /* Debug */,
+				9C69020821901D3D00B546E3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 9C2CF0011F10D5F50099247F /* Project object */;
+	rootObject = 9C6901EB21901D3C00B546E3 /* Project object */;
 }

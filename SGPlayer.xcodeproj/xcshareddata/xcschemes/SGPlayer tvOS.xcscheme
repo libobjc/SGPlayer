@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1000"
+   LastUpgradeVersion = "1010"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "9CEFA6EC1E7125CC00835CAB"
+               BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
                BuildableName = "SGPlayer.framework"
                BlueprintName = "SGPlayer tvOS"
                ReferencedContainer = "container:SGPlayer.xcodeproj">
@@ -41,11 +41,13 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
+      enableGPUFrameCaptureMode = "3"
+      enableGPUValidationMode = "1"
       allowLocationSimulation = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9CEFA6EC1E7125CC00835CAB"
+            BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
             BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer tvOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">
@@ -63,7 +65,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "9CEFA6EC1E7125CC00835CAB"
+            BlueprintIdentifier = "9CD79E9C2190068E00E39A7D"
             BuildableName = "SGPlayer.framework"
             BlueprintName = "SGPlayer tvOS"
             ReferencedContainer = "container:SGPlayer.xcodeproj">
