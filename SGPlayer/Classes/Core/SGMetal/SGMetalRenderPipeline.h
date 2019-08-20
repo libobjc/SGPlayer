@@ -10,7 +10,7 @@
 
 @interface SGMetalRenderPipeline : NSObject
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device;
+- (instancetype)initWithDevice:(id<MTLDevice>)device library:(id<MTLLibrary>)library;
 
 @property (nonatomic, strong) id<MTLDevice> device;
 @property (nonatomic, strong) id<MTLLibrary> library;

@@ -18,7 +18,6 @@
 		9C8637EB219047A900D730EC /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EA219047A900D730EC /* libbz2.tbd */; };
 		9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EC219047AE00D730EC /* libz.tbd */; };
 		9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EE219047B400D730EC /* libiconv.tbd */; };
-		9CA1B18F22C624F4009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18E22C624F3009E2863 /* default.metallib */; };
 		9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD90237230BE08E00A358AA /* AVFoundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -39,7 +38,6 @@
 		9C8637EA219047A900D730EC /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		9C8637EC219047AE00D730EC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C8637EE219047B400D730EC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
-		9CA1B18E22C624F3009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		9CD90237230BE08E00A358AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -110,7 +108,6 @@
 			isa = PBXGroup;
 			children = (
 				9C6901FF21901D3D00B546E3 /* Assets.xcassets */,
-				9CA1B18E22C624F3009E2863 /* default.metallib */,
 				9C69020121901D3D00B546E3 /* Info.plist */,
 				9C69020221901D3D00B546E3 /* main.m */,
 			);
@@ -174,7 +171,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CA1B18F22C624F4009E2863 /* default.metallib in Resources */,
 				9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */,
 				9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */,
 			);

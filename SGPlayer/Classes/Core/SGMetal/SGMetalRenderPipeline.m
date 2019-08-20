@@ -10,10 +10,11 @@
 
 @implementation SGMetalRenderPipeline
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device
+- (instancetype)initWithDevice:(id<MTLDevice>)device library:(id<MTLLibrary>)library
 {
     if (self = [super init]) {
         self.device = device;
+        self.library = library;
     }
     return self;
 }

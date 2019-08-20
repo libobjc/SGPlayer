@@ -10,10 +10,9 @@
 
 @implementation SGMetalYUVRenderPipeline
 
-- (instancetype)initWithDevice:(id<MTLDevice>)device
+- (instancetype)initWithDevice:(id<MTLDevice>)device library:(id<MTLLibrary>)library
 {
-    if (self = [super initWithDevice:device]) {
-        self.library = [self.device newDefaultLibrary];
+    if (self = [super initWithDevice:device library:library]) {
         self.descriptor = [[MTLRenderPipelineDescriptor alloc] init];
         self.descriptor.vertexFunction = [self.library newFunctionWithName:@"vertexShader"];
         self.descriptor.fragmentFunction = [self.library newFunctionWithName:@"fragmentShaderYUV"];
@@ -24,3 +23,5 @@
 }
 
 @end
+
+

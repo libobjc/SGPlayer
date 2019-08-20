@@ -12,7 +12,6 @@
 		9C3DD1661E8FBD090003B17A /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB9253E1E79478C00DE6721 /* VideoToolbox.framework */; };
 		9C3DD16A1E8FBD150003B17A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */; };
 		9C49E5FF23053DBD00C5FB1F /* SGVideoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */; };
-		9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */ = {isa = PBXBuildFile; fileRef = 9CA1B18922C5F7AA009E2863 /* default.metallib */; };
 		9CB6951821906D2F00196E54 /* SGPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CB6951721906D2F00196E54 /* SGPlayer.framework */; };
 		9CB925191E7942AC00DE6721 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB925181E7942AC00DE6721 /* AppDelegate.m */; };
 		9CB9251C1E7942AC00DE6721 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 9CB9251B1E7942AC00DE6721 /* main.m */; };
@@ -36,7 +35,6 @@
 		9C3DD1691E8FBD150003B17A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		9C49E5FD23053DBD00C5FB1F /* SGVideoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGVideoItem.m; sourceTree = "<group>"; };
 		9C49E5FE23053DBD00C5FB1F /* SGVideoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGVideoItem.h; sourceTree = "<group>"; };
-		9CA1B18922C5F7AA009E2863 /* default.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; path = default.metallib; sourceTree = "<group>"; };
 		9CA86E811E8756E700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = "../../../../../../Library/Developer/Xcode/DerivedData/demo-cxkylxbwkfilbmgwetaiuwiojpbb/Build/Products/Debug/SGPlatform.framework"; sourceTree = "<group>"; };
 		9CA86E831E87571800E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
 		9CA86E871E8757A700E4A8B1 /* SGPlatform.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SGPlatform.framework; path = ../../Vendors/SGPlatform/build/Debug/SGPlatform.framework; sourceTree = "<group>"; };
@@ -130,7 +128,6 @@
 			isa = PBXGroup;
 			children = (
 				9CB925201E7942AC00DE6721 /* Assets.xcassets */,
-				9CA1B18922C5F7AA009E2863 /* default.metallib */,
 				9C36DD401E79537500959FDA /* google-help-vr.mp4 */,
 				9C36DD411E79537500959FDA /* i-see-fire.mp4 */,
 				9CB925251E7942AC00DE6721 /* Info.plist */,
@@ -225,7 +222,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9CA1B18A22C5F7AA009E2863 /* default.metallib in Resources */,
 				9CB925211E7942AC00DE6721 /* Assets.xcassets in Resources */,
 				9C36DD421E79537500959FDA /* google-help-vr.mp4 in Resources */,
 				9CB925241E7942AC00DE6721 /* Main.storyboard in Resources */,
