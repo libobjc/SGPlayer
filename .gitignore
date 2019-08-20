@@ -16,5 +16,3 @@ DerivedData
 *.xcuserstate
 .DS_Store
 framework/
-SGPlayer/Classes/Core/SGFFmpeg/include
-SGPlayer/Classes/Core/SGFFmpeg/lib-*
