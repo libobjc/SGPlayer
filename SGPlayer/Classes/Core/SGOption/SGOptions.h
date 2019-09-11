@@ -13,23 +13,31 @@
 
 @interface SGOptions : NSObject <NSCopying>
 
-/**
- *
+/*!
+ @method sharedOptions
+ @abstract
+    Globally shared configuration options.
  */
 + (instancetype)sharedOptions;
 
-/**
- *
+/*!
+ @property demuxer
+ @abstract
+    The options for demuxer.
  */
 @property (nonatomic, strong) SGDemuxerOptions *demuxer;
 
-/**
- *
+/*!
+ @property decoder
+ @abstract
+    The options for decoder.
  */
 @property (nonatomic, strong) SGDecoderOptions *decoder;
 
-/**
- *
+/*!
+ @property processor
+ @abstract
+    The options for processor.
  */
 @property (nonatomic, strong) SGProcessorOptions *processor;
 

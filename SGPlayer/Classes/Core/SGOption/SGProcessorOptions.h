@@ -10,13 +10,19 @@
 
 @interface SGProcessorOptions : NSObject <NSCopying>
 
-/**
- *
+/*!
+ @property audioClass
+ @abstract
+    The audio frame processor class.
+    Default is SGAudioProcessor.
  */
 @property (nonatomic, copy) Class audioClass;
 
-/**
- *
+/*!
+ @property videoClass
+ @abstract
+    The video frame processor class.
+    Default is SGVideoProcessor.
  */
 @property (nonatomic, copy) Class videoClass;
 

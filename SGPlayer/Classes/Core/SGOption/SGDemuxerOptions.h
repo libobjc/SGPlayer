@@ -10,8 +10,14 @@
 
 @interface SGDemuxerOptions : NSObject <NSCopying>
 
-/**
- *
+/*!
+ @property options
+ @abstract
+    The options for avformat_open_input.
+    Default:
+        @{@"reconnect" : @(1),
+          @"user-agent" : @"SGPlayer",
+          @"timeout" : @(20 * 1000 * 1000)}
  */
 @property (nonatomic, copy) NSDictionary *options;
 

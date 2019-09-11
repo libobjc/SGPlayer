@@ -10,8 +10,10 @@
 
 @interface SGAudioRenderer : NSObject
 
-/**
- *
+/*!
+ @property volume
+ @abstract
+    Indicates the current audio volume.
  */
 @property (nonatomic) Float64 volume;
 

@@ -26,38 +26,74 @@ typedef NS_ENUM(NSUInteger, SGScalingMode) {
 
 @interface SGVideoRenderer : NSObject
 
-/**
- *  Main thread only.
+/*!
+ @property view
+ @abstract
+    Indicates the view that displays content.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic, strong) SGPLFView *view;
 
-/**
- *  Main thread only.
+/*!
+ @property viewport
+ @abstract
+    Indicates the current vr viewport.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic, strong, readonly) SGVRViewport *viewport;
 
-/**
- *  Main thread only.
+/*!
+ @property frameOutput
+ @abstract
+    Capture the video frame that will be rendered.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic, copy) void (^frameOutput)(SGVideoFrame *frame);
 
-/**
- *  Main thread only.
+/*!
+ @property preferredFramesPerSecond
+ @abstract
+    Indicates how many frames are rendered in one second.
+    Default is 30.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic) NSInteger preferredFramesPerSecond;
 
-/**
- *  Main thread only.
+/*!
+ @property scalingMode
+ @abstract
+    Indicates current scaling mode.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic) SGScalingMode scalingMode;
 
-/**
- *  Main thread only.
+/*!
+ @property displayMode
+ @abstract
+    Indicates current display mode.
+ 
+ @discussion
+    Main thread only.
  */
 @property (nonatomic) SGDisplayMode displayMode;
 
-/**
- *  Main thread only.
+/*!
+ @method currentImage
+ @abstract
+    Generate a screenshot of the current view.
+ 
+ @discussion
+    Main thread only.
  */
 - (SGPLFImage *)currentImage;
 
