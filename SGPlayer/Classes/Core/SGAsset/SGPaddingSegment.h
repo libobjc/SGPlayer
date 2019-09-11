@@ -10,8 +10,10 @@
 
 @interface SGPaddingSegment : SGSegment
 
-/**
- *
+/*!
+ @method initWithDuration:
+ @abstract
+    Initializes an SGPaddingSegment.
  */
 - (instancetype)initWithDuration:(CMTime)duration;
 

@@ -15,37 +15,11 @@ typedef struct SGCapacity {
     CMTime duration;
 } SGCapacity;
 
-/**
- *
- */
 SGCapacity SGCapacityCreate(void);
-
-/**
- *
- */
 SGCapacity SGCapacityAdd(SGCapacity c1, SGCapacity c2);
-
-/**
- *
- */
 SGCapacity SGCapacityMinimum(SGCapacity c1, SGCapacity c2);
-
-/**
- *
- */
 SGCapacity SGCapacityMaximum(SGCapacity c1, SGCapacity c2);
 
-/**
- *
- */
 BOOL SGCapacityIsEqual(SGCapacity c1, SGCapacity c2);
-
-/**
- *
- */
 BOOL SGCapacityIsEnough(SGCapacity c1);
-
-/**
- *
- */
 BOOL SGCapacityIsEmpty(SGCapacity c1);

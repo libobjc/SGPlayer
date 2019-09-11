@@ -9,9 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGTrack.h"
 
-/**
- *
- */
 typedef NS_OPTIONS(NSUInteger, SGTrackSelectionAction) {
     SGTrackSelectionActionTracks  = 1 << 0,
     SGTrackSelectionActionWeights = 1 << 1,
@@ -19,13 +16,17 @@ typedef NS_OPTIONS(NSUInteger, SGTrackSelectionAction) {
 
 @interface SGTrackSelection : NSObject <NSCopying>
 
-/**
- *
+/*!
+ @property tracks
+ @abstract
+    Provides array of SGTrackSelection tracks.
  */
 @property (nonatomic, copy) NSArray<SGTrack *> *tracks;
 
-/**
- *
+/*!
+ @property weights
+ @abstract
+    Provides array of SGTrackSelection weights.
  */
 @property (nonatomic, copy) NSArray<NSNumber *> *weights;
 

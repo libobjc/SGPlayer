@@ -12,13 +12,17 @@
 
 @interface SGMutableAsset : SGAsset
 
-/**
- *
- */
+/*!
+ @property tracks
+ @abstract
+    Provides array of SGMutableAsset tracks.
+*/
 @property (nonatomic, copy, readonly) NSArray<SGMutableTrack *> *tracks;
 
-/**
- *
+/*!
+ @method addTrack:
+ @abstract
+    Add a track to the asset.
  */
 - (SGMutableTrack *)addTrack:(SGMediaType)type;
 

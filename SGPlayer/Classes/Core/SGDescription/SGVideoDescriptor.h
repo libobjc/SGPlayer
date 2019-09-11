@@ -10,33 +10,54 @@
 
 @interface SGVideoDescriptor : NSObject <NSCopying>
 
-/**
- *  AVPixelFormat
+/*!
+ @property format
+ @abstract
+    Indicates the vdieo format.
+ 
+ @discussion
+    The value corresponds to AVPixelFormat.
  */
 @property (nonatomic) int format;
 
-/**
- *  kCVPixelFormatType_XXX
+/*!
+ @property cv_format
+ @abstract
+    Indicates the vdieo format.
+ 
+ @discussion
+    The value corresponds to kCVPixelFormatType_XXX.
  */
 @property (nonatomic) OSType cv_format;
 
-/**
- *
+/*!
+ @property width
+ @abstract
+    Indicates the width.
  */
 @property (nonatomic) int width;
 
-/**
- *
+/*!
+ @property height
+ @abstract
+    Indicates the height.
  */
 @property (nonatomic) int height;
 
-/**
- *  AVColorSpace
+/*!
+ @property colorspace
+ @abstract
+    Indicates the colorspace.
+ 
+ @discussion
+    The value corresponds to AVColorSpace.
  */
 @property (nonatomic) int colorspace;
 
-/**
- *
+/*!
+ @method isEqualToDescriptor:
+ @abstract
+    Check if the descriptor is equal to another.
  */
 - (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor;
 

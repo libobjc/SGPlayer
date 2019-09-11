@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-/**
- *
- */
 typedef NS_ENUM(NSUInteger, SGErrorCode) {
     SGErrorCodeUnknown = 0,
     SGErrorImmediateExitRequested,
@@ -23,9 +20,6 @@ typedef NS_ENUM(NSUInteger, SGErrorCode) {
     SGErrorCodeInvlidTime,
 };
 
-/**
- *
- */
 typedef NS_ENUM(NSUInteger, SGActionCode) {
     SGActionCodeUnknown = 0,
     SGActionCodeFormatCreate,
@@ -42,12 +36,5 @@ typedef NS_ENUM(NSUInteger, SGActionCode) {
     SGActionCodeSegmentDemuxerNext,
 };
 
-/**
- *
- */
 NSError * SGGetFFError(int result, SGActionCode operation);
-
-/**
- *
- */
 NSError * SGCreateError(NSUInteger code, SGActionCode operation);

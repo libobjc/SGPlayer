@@ -11,19 +11,20 @@
 
 @interface SGSegment : NSObject <NSCopying>
 
-/**
- *
- */
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-/**
- *
+/*!
+ @property timeRange
+ @abstract
+    Indicates the timeRange of the segment.
  */
 @property (nonatomic, readonly) CMTimeRange timeRange;
 
-/**
- *
+/*!
+ @property scale
+ @abstract
+    Indicates the scale of the segment.
  */
 @property (nonatomic, readonly) CMTime scale;
 

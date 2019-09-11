@@ -10,19 +10,20 @@
 
 @interface SGURLAsset : SGAsset
 
-/**
- *
- */
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-/**
- *
+/*!
+ @method initWithURL:
+ @abstract
+    Initializes an SGURLAsset with an NSURL.
  */
 - (instancetype)initWithURL:(NSURL *)URL;
 
-/**
- *
+/*!
+ @property URL
+ @abstract
+    Indicates the URL of the asset.
  */
 @property (nonatomic, copy, readonly) NSURL *URL;
 

@@ -12,13 +12,17 @@
 
 @interface SGMutableTrack : SGTrack
 
-/**
- *
+/*!
+ @property segments
+ @abstract
+    Provides array of SGMutableTrack segments.
  */
 @property (nonatomic, copy, readonly) NSArray<SGSegment *> *segments;
 
-/**
- *
+/*!
+ @method appendSegment:
+ @abstract
+    Append a segment to the track.
  */
 - (BOOL)appendSegment:(SGSegment *)segment;
 

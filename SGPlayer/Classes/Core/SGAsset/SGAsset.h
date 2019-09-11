@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+/*!
+ @class SGAsset
+ @abstract
+    Abstract class for asset.
+ 
+ @discussion
+    Use SGURLAsset or SGMutableAsset.
+ */
 @interface SGAsset : NSObject <NSCopying>
 
 @end
