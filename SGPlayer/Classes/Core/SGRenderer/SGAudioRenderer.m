@@ -38,7 +38,6 @@
 
 @synthesize rate = _rate;
 @synthesize volume = _volume;
-@synthesize options = _options;
 @synthesize delegate = _delegate;
 @synthesize descriptor = _descriptor;
 
@@ -56,7 +55,6 @@
         self->_volume = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
-        self->_options = [SGOptions sharedOptions].renderer.copy;
         self->_descriptor = [[SGAudioDescriptor alloc] init];
     }
     return self;

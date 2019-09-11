@@ -50,7 +50,6 @@
 @implementation SGVideoRenderer
 
 @synthesize rate = _rate;
-@synthesize options = _options;
 @synthesize delegate = _delegate;
 
 - (instancetype)init
@@ -70,7 +69,6 @@
         self->_displayMode = SGDisplayModePlane;
         self->_scalingMode = SGScalingModeResizeAspect;
         self->_matrixMaker = [[SGVRProjection alloc] init];
-        self->_options = [SGOptions sharedOptions].renderer.copy;
     }
     return self;
 }

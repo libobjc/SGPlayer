@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import "SGProcessorOptions.h"
-#import "SGRendererOptions.h"
 #import "SGDecoderOptions.h"
 #import "SGDemuxerOptions.h"
 
@@ -33,10 +32,5 @@
  *
  */
 @property (nonatomic, strong) SGProcessorOptions *processor;
-
-/**
- *
- */
-@property (nonatomic, strong) SGRendererOptions *renderer;
 
 @end

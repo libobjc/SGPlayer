@@ -26,7 +26,6 @@
     obj->_demuxer = self->_demuxer.copy;
     obj->_decoder = self->_decoder.copy;
     obj->_processor = self->_processor.copy;
-    obj->_renderer = self->_renderer.copy;
     return obj;
 }
 
@@ -36,7 +35,6 @@
         self->_demuxer = [[SGDemuxerOptions alloc] init];
         self->_decoder = [[SGDecoderOptions alloc] init];
         self->_processor = [[SGProcessorOptions alloc] init];
-        self->_renderer = [[SGRendererOptions alloc] init];
     }
     return self;
 }
