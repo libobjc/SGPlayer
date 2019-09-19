@@ -93,7 +93,7 @@
 
 - (void)setVideoTime:(CMTime)time
 {
-    SGLockCondEXE00(self->_lock, ^BOOL{
+    SGLockCondEXE00(self->_lock, ^BOOL {
         return self->_audioRunning == NO && CMTIME_IS_NUMERIC(time);
     }, ^{
         if (self->_videoRunning == NO) {
@@ -107,7 +107,7 @@
 
 - (BOOL)open
 {
-    return SGLockCondEXE00(self->_lock, ^BOOL{
+    return SGLockCondEXE00(self->_lock, ^BOOL {
         return self->_audioTimebase == NULL;
     }, ^{
         CMTimebaseCreateWithMasterClock(NULL, self->_masterClock, &self->_playbackTimebase);

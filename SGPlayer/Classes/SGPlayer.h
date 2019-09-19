@@ -120,9 +120,26 @@
 /*!
  @property pausesWhenInterrupted
  @abstract
-    Indicates whether to automatically pause whan audio session is interrupted.
+    Indicates whether to automatically pause when audio session is interrupted.
+    Default is YES.
  */
 @property (nonatomic) BOOL pausesWhenInterrupted;
+
+/*!
+ @property pausesWhenEnteredBackground
+ @abstract
+    Indicates whether to automatically pause when application did enter background.
+    Default is YES.
+ */
+@property (nonatomic) BOOL pausesWhenEnteredBackground;
+
+/*!
+ @property pausesWhenEnteredBackgroundIfNoAudioTrack
+ @abstract
+    Indicates whether to automatically pause when application did enter background if no audio track.
+    Default is YES.
+ */
+@property (nonatomic) BOOL pausesWhenEnteredBackgroundIfNoAudioTrack;
 #endif
 
 /*!

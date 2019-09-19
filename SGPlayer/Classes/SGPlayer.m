@@ -14,6 +14,10 @@
 #import "SGMacro.h"
 #import "SGLock.h"
 
+#if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
+#import <UIKit/UIKit.h>
+#endif
+
 NSString * const SGPlayerTimeInfoUserInfoKey   = @"SGPlayerTimeInfoUserInfoKey";
 NSString * const SGPlayerStateInfoUserInfoKey  = @"SGPlayerStateInfoUserInfoKey";
 NSString * const SGPlayerInfoActionUserInfoKey = @"SGPlayerInfoActionUserInfoKey";
@@ -71,7 +75,10 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_notificationQueue = [NSOperationQueue mainQueue];
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         self->_pausesWhenInterrupted = YES;
+        self->_pausesWhenEnteredBackground = YES;
+        self->_pausesWhenEnteredBackgroundIfNoAudioTrack = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(interruptionHandler:) name:AVAudioSessionInterruptionNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterBackgroundHandler:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 #endif
     }
     return self;
@@ -637,12 +644,24 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
 - (void)interruptionHandler:(NSNotification *)notification
 {
-    if (self->_pausesWhenInterrupted == NO) {
-        return;
+    if (self->_pausesWhenInterrupted == YES) {
+        AVAudioSessionInterruptionType type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
+        if (type == AVAudioSessionInterruptionTypeBegan) {
+            [self pause];
+        }
     }
-    AVAudioSessionInterruptionType type = [notification.userInfo[AVAudioSessionInterruptionTypeKey] unsignedIntegerValue];
-    if (type == AVAudioSessionInterruptionTypeBegan) {
+}
+
+- (void)enterBackgroundHandler:(NSNotification *)notification
+{
+    if (self->_pausesWhenEnteredBackground) {
         [self pause];
+    } else if (self->_pausesWhenEnteredBackgroundIfNoAudioTrack) {
+        SGLockCondEXE11(self->_lock, ^BOOL {
+            return self->_flags.audioAvailable == NO && self->_flags.videoAvailable == YES;
+        }, nil, ^BOOL(SGBlock block) {
+            return [self pause];
+        });
     }
 }
 #endif

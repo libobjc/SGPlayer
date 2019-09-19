@@ -453,7 +453,7 @@
 
 - (void)mtkView:(MTKView *)view drawableSizeWillChange:(CGSize)size
 {
-    SGLockCondEXE10(self->_lock, ^BOOL{
+    SGLockCondEXE10(self->_lock, ^BOOL {
         return
         self->_flags.state == SGRenderableStateRendering ||
         self->_flags.state == SGRenderableStatePaused ||
@@ -528,7 +528,7 @@
 {
     if (self->_displayMode != displayMode) {
         self->_displayMode = displayMode;
-        SGLockCondEXE10(self->_lock, ^BOOL{
+        SGLockCondEXE10(self->_lock, ^BOOL {
             return
             self->_displayMode != SGDisplayModePlane &&
             (self->_flags.state == SGRenderableStateRendering ||

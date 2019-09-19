@@ -259,7 +259,7 @@ SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
                 SGPacket *packet = nil;
                 NSError *error = [self->_demuxable nextPacket:&packet];
                 if (error) {
-                    SGLockCondEXE10(self->_lock, ^BOOL{
+                    SGLockCondEXE10(self->_lock, ^BOOL {
                         return self->_flags.state == SGPacketOutputStateReading;
                     }, ^SGBlock{
                         return [self setState:SGPacketOutputStateFinished];
