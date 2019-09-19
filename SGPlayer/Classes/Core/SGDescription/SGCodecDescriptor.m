@@ -8,6 +8,12 @@
 
 #import "SGCodecDescriptor.h"
 
+@interface SGCodecDescriptor ()
+
+@property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> *timeLayouts;
+
+@end
+
 @implementation SGCodecDescriptor
 
 - (id)copyWithZone:(NSZone *)zone
@@ -34,7 +40,9 @@
     [timeLayouts addObject:timeLayout];
     CMTime scale = CMTimeMake(1, 1);
     for (SGTimeLayout *obj in timeLayouts) {
-        scale = SGCMTimeMultiply(scale, obj.scale);
+        if (CMTIME_IS_NUMERIC(obj.scale)) {
+            scale = SGCMTimeMultiply(scale, obj.scale);
+        }
     }
     self->_scale = scale;
     self->_timeLayouts = timeLayouts;
@@ -49,6 +57,21 @@
                                     [obj convertDuration:timeRange.duration]);
     }
     self->_timeRange = SGCMTimeRangeGetIntersection(self->_timeRange, timeRange);
+}
+- (CMTime)convertDuration:(CMTime)duration
+{
+    for (SGTimeLayout *obj in self->_timeLayouts) {
+        duration = [obj convertDuration:duration];
+    }
+    return duration;
+}
+
+- (CMTime)convertTimeStamp:(CMTime)timeStamp
+{
+    for (SGTimeLayout *obj in self->_timeLayouts) {
+        timeStamp = [obj convertTimeStamp:timeStamp];
+    }
+    return timeStamp;
 }
 
 - (void)fillToDescriptor:(SGCodecDescriptor *)descriptor

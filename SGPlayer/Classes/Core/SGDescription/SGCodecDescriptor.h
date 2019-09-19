@@ -56,7 +56,12 @@ typedef NS_ENUM(NSUInteger, SGCodecType) {
 /**
  *
  */
-@property (nonatomic, copy, readonly) NSArray<SGTimeLayout *> *timeLayouts;
+- (CMTime)convertTimeStamp:(CMTime)timeStamp;
+
+/**
+ *
+ */
+- (CMTime)convertDuration:(CMTime)duration;
 
 /**
  *

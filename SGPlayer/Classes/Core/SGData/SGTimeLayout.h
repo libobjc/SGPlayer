@@ -14,18 +14,12 @@
 /**
  *
  */
-+ (instancetype)new NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithScale:(CMTime)scale;
 
 /**
  *
  */
-- (instancetype)initWithStart:(CMTime)start scale:(CMTime)scale;
-
-/**
- *
- */
-@property (nonatomic, readonly) CMTime start;
+- (instancetype)initWithOffset:(CMTime)offset;
 
 /**
  *
@@ -35,12 +29,22 @@
 /**
  *
  */
-- (CMTime)convertTimeStamp:(CMTime)timeStamp;
+@property (nonatomic, readonly) CMTime offset;
 
 /**
  *
  */
 - (CMTime)convertDuration:(CMTime)duration;
+
+/**
+ *
+ */
+- (CMTime)convertTimeStamp:(CMTime)timeStamp;
+
+/**
+ *
+ */
+- (CMTime)reconvertTimeStamp:(CMTime)timeStamp;
 
 /**
  *

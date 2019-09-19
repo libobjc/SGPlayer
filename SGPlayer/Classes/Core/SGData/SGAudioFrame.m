@@ -93,11 +93,9 @@
     CMTime duration = CMTimeMake(frame->nb_samples, frame->sample_rate);
     CMTime timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     CMTime decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
-        duration = [obj convertDuration:duration];
-        timeStamp = [obj convertTimeStamp:timeStamp];
-        decodeTimeStamp = [obj convertTimeStamp:decodeTimeStamp];
-    }
+    duration = [cd convertDuration:duration];
+    timeStamp = [cd convertTimeStamp:timeStamp];
+    decodeTimeStamp = [cd convertTimeStamp:decodeTimeStamp];
     [self fillWithTimeStamp:timeStamp decodeTimeStamp:decodeTimeStamp duration:duration];
 }
 

@@ -1,5 +1,5 @@
 //
-//  SGDemuxerFunnel.h
+//  SGExtractingDemuxer.h
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
@@ -8,7 +8,7 @@
 
 #import "SGDemuxable.h"
 
-@interface SGDemuxerFunnel : NSObject <SGDemuxable>
+@interface SGExtractingDemuxer : NSObject <SGDemuxable>
 
 /**
  *
@@ -19,7 +19,12 @@
 /**
  *
  */
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange;
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
+
+/**
+ *
+ */
+@property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
 
 /**
  *
@@ -30,6 +35,11 @@
  *
  */
 @property (nonatomic, readonly) CMTimeRange timeRange;
+
+/**
+ *
+ */
+@property (nonatomic, readonly) CMTime scale;
 
 /**
  *

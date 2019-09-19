@@ -10,13 +10,8 @@
 
 @interface SGURLSegment : SGSegment
 
-/*!
- @method initWithURL:index:
- @abstract
-    Equivalent:
-        [self initWithURL:URL index:index timeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];
- */
-- (instancetype)initWithURL:(NSURL *)URL index:(NSInteger)index;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 /*!
  @method initWithURL:index:timeRange:scale:
@@ -38,5 +33,19 @@
     Indicates the index.
  */
 @property (nonatomic, readonly) NSInteger index;
+
+/*!
+ @property timeRange
+ @abstract
+    Indicates the timeRange of the segment.
+ */
+@property (nonatomic, readonly) CMTimeRange timeRange;
+
+/*!
+ @property scale
+ @abstract
+    Indicates the scale of the segment.
+ */
+@property (nonatomic, readonly) CMTime scale;
 
 @end

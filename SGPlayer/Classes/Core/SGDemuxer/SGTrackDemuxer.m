@@ -7,15 +7,18 @@
 //
 
 #import "SGTrackDemuxer.h"
-#import "SGSegmentDemuxer.h"
 #import "SGPacket+Internal.h"
+#import "SGSegment+Internal.h"
 #import "SGError.h"
 
 @interface SGTrackDemuxer ()
 
 @property (nonatomic, strong, readonly) SGMutableTrack *track;
-@property (nonatomic, strong, readonly) SGSegmentDemuxer *currentSegment;
-@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *segments;
+@property (nonatomic, strong, readonly) SGTimeLayout *currentLayout;
+@property (nonatomic, strong, readonly) id<SGDemuxable> currentDemuxer;
+@property (nonatomic, strong, readonly) NSMutableArray<SGTimeLayout *> *layouts;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *demuxers;
+
 
 @end
 
@@ -30,7 +33,8 @@
     if (self = [super init]) {
         self->_track = [track copy];
         self->_tracks = @[self->_track];
-        self->_segments = [NSMutableArray array];
+        self->_layouts = [NSMutableArray array];
+        self->_demuxers = [NSMutableArray array];
     }
     return self;
 }
@@ -39,26 +43,26 @@
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {
-    for (SGSegmentDemuxer *obj in self->_segments) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         obj.delegate = delegate;
     }
 }
 
 - (id<SGDemuxableDelegate>)delegate
 {
-    return self->_segments.firstObject.delegate;
+    return self->_demuxers.firstObject.delegate;
 }
 
 - (void)setOptions:(SGDemuxerOptions *)options
 {
-    for (SGSegmentDemuxer *obj in self->_segments) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         obj.options = options;
     }
 }
 
 - (SGDemuxerOptions *)options
 {
-    return self->_segments.firstObject.options;
+    return self->_demuxers.firstObject.options;
 }
 
 #pragma mark - Control
@@ -67,25 +71,29 @@
 {
     CMTime basetime = kCMTimeZero;
     for (SGSegment *obj in self->_track.segments) {
-        SGSegmentDemuxer *segment = [[SGSegmentDemuxer alloc] initWithSegment:obj basetime:basetime];
-        [self->_segments addObject:segment];
-        NSError *error = [segment open];
+        SGTimeLayout *layout = [[SGTimeLayout alloc] initWithOffset:basetime];
+        id<SGDemuxable> demuxer = [obj newDemuxable];
+        [self->_layouts addObject:layout];
+        [self->_demuxers addObject:demuxer];
+        NSError *error = [demuxer open];
         if (error) {
             return error;
         }
-        NSAssert(CMTIME_IS_VALID(segment.duration), @"Invaild Duration.");
-        NSAssert(!segment.tracks.firstObject || segment.tracks.firstObject.type == self->_track.type, @"Invaild mediaType.");
-        basetime = CMTimeAdd(basetime, segment.duration);
+        NSAssert(CMTIME_IS_VALID(demuxer.duration), @"Invaild Duration.");
+        NSAssert(!demuxer.tracks.firstObject || demuxer.tracks.firstObject.type == self->_track.type, @"Invaild mediaType.");
+        
+        basetime = CMTimeAdd(basetime, demuxer.duration);
     }
     self->_duration = basetime;
-    self->_currentSegment = self->_segments.firstObject;
-    [self->_currentSegment seekToTime:kCMTimeZero];
+    self->_currentLayout = self->_layouts.firstObject;
+    self->_currentDemuxer = self->_demuxers.firstObject;
+    [self->_currentDemuxer seekToTime:kCMTimeZero];
     return nil;
 }
 
 - (NSError *)close
 {
-    for (SGSegmentDemuxer *obj in self->_segments) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         [obj close];
     }
     return nil;
@@ -93,6 +101,12 @@
 
 - (NSError *)seekable
 {
+    for (id<SGDemuxable> obj in self->_demuxers) {
+        NSError *error = [obj seekable];
+        if (error) {
+            return error;
+        }
+    }
     return nil;
 }
 
@@ -103,34 +117,43 @@
     }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
-    SGSegmentDemuxer *unit = nil;
-    for (SGSegmentDemuxer *obj in self->_segments) {
-        if (CMTimeCompare(time, CMTimeAdd(obj.basetime, obj.duration)) <= 0) {
-            unit = obj;
+    SGTimeLayout *currentLayout = self->_layouts.lastObject;
+    id<SGDemuxable> currentDemuxer = self->_demuxers.lastObject;
+    for (NSUInteger i = 0; i < self->_demuxers.count; i++) {
+        SGTimeLayout *layout = [self->_layouts objectAtIndex:i];
+        id<SGDemuxable> demuxer = [self->_demuxers objectAtIndex:i];
+        if (CMTimeCompare(time, CMTimeAdd(layout.offset, demuxer.duration)) <= 0) {
+            currentLayout = layout;
+            currentDemuxer = demuxer;
             break;
         }
     }
-    self->_currentSegment = unit ? unit : self->_segments.lastObject;
-    return [self->_currentSegment seekToTime:CMTimeSubtract(time, self->_currentSegment.basetime)];
+    time = CMTimeSubtract(time, currentLayout.offset);
+    self->_currentLayout = currentLayout;
+    self->_currentDemuxer = currentDemuxer;
+    return [self->_currentDemuxer seekToTime:time];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     NSError *error = nil;
     while (YES) {
-        error = [self->_currentSegment nextPacket:packet];
+        error = [self->_currentDemuxer nextPacket:packet];
         if (error) {
             if (error.code == SGErrorImmediateExitRequested) {
                 break;
             }
-            if (self->_currentSegment == self->_segments.lastObject) {
+            if (self->_currentDemuxer == self->_demuxers.lastObject) {
                 break;
             }
-            self->_currentSegment = [self->_segments objectAtIndex:[self->_segments indexOfObject:self->_currentSegment] + 1];
-            [self->_currentSegment seekToTime:kCMTimeZero];
+            NSUInteger index = [self->_demuxers indexOfObject:self->_currentDemuxer];
+            self->_currentLayout = [self->_layouts objectAtIndex:index + 1];
+            self->_currentDemuxer = [self->_demuxers objectAtIndex:index + 1];
+            [self->_currentDemuxer seekToTime:kCMTimeZero];
             continue;
         }
-        (*packet).codecDescriptor.track = self->_track;
+        [(*packet).codecDescriptor setTrack:self->_track];
+        [(*packet).codecDescriptor appendTimeLayout:self->_currentLayout];
         [(*packet) fill];
         break;
     }

@@ -11,8 +11,8 @@
 
 @interface SGMutilDemuxer ()
 
-@property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *demuxables;
-@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *finishedDemuxables;
+@property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *demuxers;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *finishedDemuxers;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, NSValue *> *timeStamps;
 
 @end
@@ -26,8 +26,8 @@
 - (instancetype)initWithDemuxables:(NSArray<id<SGDemuxable>> *)demuxables
 {
     if (self = [super init]) {
-        self->_demuxables = demuxables;
-        self->_finishedDemuxables = [NSMutableArray array];
+        self->_demuxers = demuxables;
+        self->_finishedDemuxers = [NSMutableArray array];
     }
     return self;
 }
@@ -36,33 +36,33 @@
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         obj.delegate = delegate;
     }
 }
 
 - (id<SGDemuxableDelegate>)delegate
 {
-    return self->_demuxables.firstObject.delegate;
+    return self->_demuxers.firstObject.delegate;
 }
 
 - (void)setOptions:(SGDemuxerOptions *)options
 {
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         obj.options = options;
     }
 }
 
 - (SGDemuxerOptions *)options
 {
-    return self->_demuxables.firstObject.options;
+    return self->_demuxers.firstObject.options;
 }
 
 #pragma mark - Control
 
 - (NSError *)open
 {
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         NSError *error = [obj open];
         if (error) {
             return error;
@@ -70,7 +70,7 @@
     }
     CMTime duration = kCMTimeZero;
     NSMutableArray<SGTrack *> *tracks = [NSMutableArray array];
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         NSAssert(CMTIME_IS_VALID(obj.duration), @"Invalid Duration.");
         duration = CMTimeMaximum(duration, obj.duration);
         [tracks addObjectsFromArray:obj.tracks];
@@ -88,7 +88,7 @@
 
 - (NSError *)close
 {
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         NSError *error = [obj close];
         if (error) {
             return error;
@@ -99,7 +99,7 @@
 
 - (NSError *)seekable
 {
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         NSError *error = [obj seekable];
         if (error) {
             return error;
@@ -113,14 +113,14 @@
     if (!CMTIME_IS_NUMERIC(time)) {
         return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
-    for (id<SGDemuxable> obj in self->_demuxables) {
+    for (id<SGDemuxable> obj in self->_demuxers) {
         NSError *error = [obj seekToTime:time];
         if (error) {
             return error;
         }
     }
     [self->_timeStamps removeAllObjects];
-    [self->_finishedDemuxables removeAllObjects];
+    [self->_finishedDemuxers removeAllObjects];
     return nil;
 }
 
@@ -130,8 +130,8 @@
     while (YES) {
         id<SGDemuxable> demuxable = nil;
         CMTime minimumTime = kCMTimePositiveInfinity;
-        for (id<SGDemuxable> obj in self->_demuxables) {
-            if ([self->_finishedDemuxables containsObject:obj]) {
+        for (id<SGDemuxable> obj in self->_demuxers) {
+            if ([self->_finishedDemuxers containsObject:obj]) {
                 continue;
             }
             NSString *key = [NSString stringWithFormat:@"%p", obj];
@@ -155,7 +155,7 @@
             if (error.code == SGErrorImmediateExitRequested) {
                 break;
             }
-            [self->_finishedDemuxables addObject:demuxable];
+            [self->_finishedDemuxers addObject:demuxable];
             continue;
         }
         CMTime decodeTimeStamp = (*packet).decodeTimeStamp;

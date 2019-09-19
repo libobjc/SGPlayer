@@ -16,7 +16,7 @@
 /*!
  @method initWithURL:
  @abstract
-    Initializes an SGURLAsset with an NSURL.
+    Initializes an SGURLAsset with the given URL.
  */
 - (instancetype)initWithURL:(NSURL *)URL;
 

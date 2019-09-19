@@ -8,27 +8,30 @@
 
 #import "SGSegment.h"
 #import "SGSegment+Internal.h"
-#import "SGTime.h"
+#import "SGPaddingSegment.h"
+#import "SGURLSegment.h"
 
 @implementation SGSegment
+
++ (instancetype)segmentWithDuration:(CMTime)duration
+{
+    return [[SGPaddingSegment alloc] initWithDuration:duration];
+}
+
++ (instancetype)segmentWithURL:(NSURL *)URL index:(NSInteger)index
+{
+    return [[SGURLSegment alloc] initWithURL:URL index:index timeRange:kCMTimeRangeInvalid scale:kCMTimeInvalid];
+}
+
++ (instancetype)segmentWithURL:(NSURL *)URL index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
+{
+    return [[SGURLSegment alloc] initWithURL:URL index:index timeRange:timeRange scale:scale];
+}
 
 - (id)copyWithZone:(NSZone *)zone
 {
     SGSegment *obj = [[self.class alloc] init];
-    obj->_timeRange = self->_timeRange;
-    obj->_scale = self->_scale;
     return obj;
-}
-
-- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale
-{
-    if (self = [super init]) {
-        self->_timeRange = timeRange;
-        self->_scale = SGCMTimeValidate(scale, CMTimeMake(1, 1), NO);
-        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(1, 10)) >= 0, @"Invalid Scale.");
-        NSAssert(CMTimeCompare(self->_scale, CMTimeMake(10, 1)) <= 0, @"Invalid Scale.");
-    }
-    return self;
 }
 
 - (id<SGDemuxable>)newDemuxable

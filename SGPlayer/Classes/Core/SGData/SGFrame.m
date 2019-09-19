@@ -104,14 +104,12 @@
     self->_size = frame->pkt_size;
     self->_track = cd.track;
     self->_metadata = cd.metadata;
-    self->_duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
-    self->_timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
-    self->_decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
-        self->_duration = [obj convertDuration:self->_duration];
-        self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
-        self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];
-    }
+    CMTime duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
+    CMTime timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
+    CMTime decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
+    self->_duration = [cd convertDuration:duration];
+    self->_timeStamp = [cd convertTimeStamp:timeStamp];
+    self->_decodeTimeStamp = [cd convertTimeStamp:decodeTimeStamp];
 }
 
 - (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration

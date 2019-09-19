@@ -168,7 +168,7 @@
     The renderer for audio frame.
  
  @discussion
-    The life cycle is consistent with the player. so the settings for the renderer will always take effect.
+    The life cycle is consistent with the player. The settings for the renderer will always take effect.
  */
 - (SGAudioRenderer *)audioRenderer;
 
@@ -178,7 +178,7 @@
     The renderer for video frame.
  
  @discussion
-    The life cycle is consistent with the player. so the settings for the renderer will always take effect.
+    The life cycle is consistent with the player. The settings for the renderer will always take effect.
  */
 - (SGVideoRenderer *)videoRenderer;
 

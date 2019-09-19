@@ -19,14 +19,14 @@
     {
         SGVideoItem *item = [[SGVideoItem alloc] init];
         item.name = @"I See Fire";
-        item.asset = [[SGURLAsset alloc] initWithURL:i_see_fire];
+        item.asset = [SGAsset assetWithURL:i_see_fire];
         item.displayMode = SGDisplayModePlane;
         [items addObject:item];
     }
     {
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-        SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
+        SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:0];
         [track appendSegment:segment];
         
         SGVideoItem *item = [[SGVideoItem alloc] init];
@@ -38,7 +38,7 @@
     {
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-        SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
+        SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:1];
         [track appendSegment:segment];
         
         SGVideoItem *item = [[SGVideoItem alloc] init];
@@ -54,12 +54,12 @@
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
+            SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
             [track appendSegment:segment];
         }
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
+            SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
             [track appendSegment:segment];
         }
         
@@ -76,12 +76,12 @@
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
+            SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:1 timeRange:timeRange scale:scale];
             [track appendSegment:segment];
         }
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-            SGSegment *segment = [[SGURLSegment alloc] initWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
+            SGSegment *segment = [SGSegment segmentWithURL:i_see_fire index:0 timeRange:timeRange scale:scale];
             [track appendSegment:segment];
         }
         
@@ -95,15 +95,15 @@
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-            SGSegment *segment1 = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
-            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:google_help_vr index:1];
+            SGSegment *segment1 = [SGURLSegment segmentWithURL:i_see_fire index:1];
+            SGSegment *segment2 = [SGURLSegment segmentWithURL:google_help_vr index:1];
             [track appendSegment:segment1];
             [track appendSegment:segment2];
         }
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-            SGSegment *segment1 = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
-            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:google_help_vr index:0];
+            SGSegment *segment1 = [SGURLSegment segmentWithURL:i_see_fire index:0];
+            SGSegment *segment2 = [SGURLSegment segmentWithURL:google_help_vr index:0];
             [track appendSegment:segment1];
             [track appendSegment:segment2];
         }
@@ -118,15 +118,15 @@
         SGMutableAsset *asset = [[SGMutableAsset alloc] init];
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-            SGSegment *segment1 = [[SGPaddingSegment alloc] initWithDuration:CMTimeMake(5, 1)];
-            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:i_see_fire index:1];
+            SGSegment *segment1 = [SGSegment segmentWithDuration:CMTimeMake(5, 1)];
+            SGSegment *segment2 = [SGSegment segmentWithURL:i_see_fire index:1];
             [track appendSegment:segment1];
             [track appendSegment:segment2];
         }
         {
             SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-            SGSegment *segment1 = [[SGPaddingSegment alloc] initWithDuration:CMTimeMake(5, 1)];
-            SGSegment *segment2 = [[SGURLSegment alloc] initWithURL:i_see_fire index:0];
+            SGSegment *segment1 = [SGSegment segmentWithDuration:CMTimeMake(5, 1)];
+            SGSegment *segment2 = [SGSegment segmentWithURL:i_see_fire index:0];
             [track appendSegment:segment1];
             [track appendSegment:segment2];
         }
@@ -140,7 +140,7 @@
     {
         SGVideoItem *item = [[SGVideoItem alloc] init];
         item.name = @"Google Help VR";
-        item.asset = [[SGURLAsset alloc] initWithURL:google_help_vr];
+        item.asset = [SGAsset assetWithURL:google_help_vr];
         item.displayMode = SGDisplayModeVR;
         [items addObject:item];
     }

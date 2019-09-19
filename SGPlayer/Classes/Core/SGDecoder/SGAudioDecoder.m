@@ -236,9 +236,7 @@
     SGCodecDescriptor *cd = self->_codecDescriptor;
     CMTime start = CMTimeMake(pts * cd.timebase.num, cd.timebase.den);
     CMTime duration = CMTimeMake(nb_samples, ad.sampleRate);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
-        start = [obj convertTimeStamp:start];
-    }
+    start = [cd convertTimeStamp:start];
     SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
     [self->_sonic read:obj.core->data nb_samples:nb_samples];
     SGCodecDescriptor *cd1 = [[SGCodecDescriptor alloc] init];

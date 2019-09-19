@@ -11,8 +11,10 @@
 
 @interface SGAsset ()
 
-/**
- *
+/*!
+ @method newDemuxable
+ @abstract
+    Create a new demuxer.
  */
 - (id<SGDemuxable>)newDemuxable;
 

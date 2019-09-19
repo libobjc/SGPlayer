@@ -112,14 +112,12 @@
     self->_size = pkt->size;
     self->_track = cd.track;
     self->_metadata = cd.metadata;
-    self->_duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
-    self->_timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
-    self->_decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);
-    for (SGTimeLayout *obj in cd.timeLayouts) {
-        self->_duration = [obj convertDuration:self->_duration];
-        self->_timeStamp = [obj convertTimeStamp:self->_timeStamp];
-        self->_decodeTimeStamp = [obj convertTimeStamp:self->_decodeTimeStamp];
-    }
+    CMTime duration = CMTimeMake(pkt->duration * timebase.num, timebase.den);
+    CMTime timeStamp = CMTimeMake(pkt->pts * timebase.num, timebase.den);
+    CMTime decodeTimeStamp = CMTimeMake(pkt->dts * timebase.num, timebase.den);
+    self->_duration = [cd convertDuration:duration];
+    self->_timeStamp = [cd convertTimeStamp:timeStamp];
+    self->_decodeTimeStamp = [cd convertTimeStamp:decodeTimeStamp];
 }
 
 @end

@@ -8,8 +8,14 @@
 
 #import "SGAsset.h"
 #import "SGAsset+Internal.h"
+#import "SGURLAsset.h"
 
 @implementation SGAsset
+
++ (instancetype)assetWithURL:(NSURL *)URL
+{
+    return [[SGURLAsset alloc] initWithURL:URL];
+}
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -19,6 +25,7 @@
 
 - (id<SGDemuxable>)newDemuxable
 {
+    NSAssert(NO, @"Subclass only.");
     return nil;
 }
 

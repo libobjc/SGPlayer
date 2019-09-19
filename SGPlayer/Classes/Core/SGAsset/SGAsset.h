@@ -11,11 +11,23 @@
 /*!
  @class SGAsset
  @abstract
-    Abstract class for asset.
+    Abstract class for assets.
  
  @discussion
     Use SGURLAsset or SGMutableAsset.
  */
 @interface SGAsset : NSObject <NSCopying>
+
+/*!
+ @method assetWithURL:
+ @abstract
+    Returns an instance of SGAsset for inspection of a media resource.
+ @result
+    An instance of SGAsset.
+ 
+ @discussion
+    Returns a newly allocated instance of a subclass of SGAsset initialized with the specified URL.
+ */
++ (instancetype)assetWithURL:(NSURL *)URL;
 
 @end

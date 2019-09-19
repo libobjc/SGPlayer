@@ -19,7 +19,7 @@
 /*!
  @method initWithAsset:
  @abstract
-    Initializes an SGPlayerItem with an SGAsset.
+    Initializes an SGPlayerItem with asset.
  */
 - (instancetype)initWithAsset:(SGAsset *)asset;
 

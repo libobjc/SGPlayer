@@ -196,7 +196,7 @@
 				TargetAttributes = {
 					9C886B921E78EC9F00F2CFD1 = {
 						CreatedOnToolsVersion = 8.2.1;
-						DevelopmentTeam = KAGR32AB25;
+						DevelopmentTeam = 79WDBYQ4TC;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
@@ -385,7 +385,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KAGR32AB25;
+				DEVELOPMENT_TEAM = 79WDBYQ4TC;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -405,7 +405,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KAGR32AB25;
+				DEVELOPMENT_TEAM = 79WDBYQ4TC;
 				INFOPLIST_FILE = "demo-ios/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

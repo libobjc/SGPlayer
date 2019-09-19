@@ -14,11 +14,6 @@
 /**
  *
  */
-- (instancetype)initWithTimeRange:(CMTimeRange)timeRange scale:(CMTime)scale;
-
-/**
- *
- */
 - (id<SGDemuxable>)newDemuxable;
 
 @end

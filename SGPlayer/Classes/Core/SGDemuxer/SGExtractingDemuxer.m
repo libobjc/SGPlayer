@@ -1,18 +1,18 @@
 //
-//  SGDemuxerFunnel.m
+//  SGExtractingDemuxer.m
 //  SGPlayer
 //
 //  Created by Single on 2018/11/14.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGDemuxerFunnel.h"
+#import "SGExtractingDemuxer.h"
 #import "SGPacket+Internal.h"
 #import "SGObjectQueue.h"
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGDemuxerFunnel ()
+@interface SGExtractingDemuxer ()
 
 {
     struct {
@@ -23,21 +23,22 @@
 }
 
 @property (nonatomic, strong, readonly) SGTrack *track;
-@property (nonatomic, strong, readonly) SGTimeLayout *timeLayout;
-@property (nonatomic, strong, readonly) id<SGDemuxable> demuxable;
+@property (nonatomic, strong, readonly) SGTimeLayout *scaleLayout;
+@property (nonatomic, strong, readonly) SGTimeLayout *offsetLayout;
 @property (nonatomic, strong, readonly) SGObjectQueue *packetQueue;
 
 @end
 
-@implementation SGDemuxerFunnel
+@implementation SGExtractingDemuxer
 
 @synthesize tracks = _tracks;
 @synthesize duration = _duration;
 
-- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange
+- (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
     if (self = [super init]) {
         self->_overgop = YES;
+        self->_scale = scale;
         self->_index = index;
         self->_demuxable = demuxable;
         self->_timeRange = SGCMTimeRangeFit(timeRange);
@@ -73,9 +74,10 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     }
     CMTime start = CMTimeMaximum(self->_timeRange.start, kCMTimeZero);
     CMTime duration = CMTimeMinimum(self->_timeRange.duration, CMTimeSubtract(self->_demuxable.duration, start));
-    self->_duration = duration;
     self->_timeRange = CMTimeRangeMake(start, duration);
-    self->_timeLayout = [[SGTimeLayout alloc] initWithStart:CMTimeMultiply(start, -1) scale:kCMTimeInvalid];
+    self->_duration = SGCMTimeMultiply(duration, self->_scale);
+    self->_scaleLayout = [[SGTimeLayout alloc] initWithScale:self->_scale];
+    self->_offsetLayout = [[SGTimeLayout alloc] initWithOffset:CMTimeMultiply(start, -1)];
     return nil;
 }
 
@@ -84,7 +86,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     if (!CMTIME_IS_NUMERIC(time)) {
         return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
-    NSError *error = [self->_demuxable seekToTime:CMTimeSubtract(time, self->_timeLayout.start)];
+    time = [self->_scaleLayout reconvertTimeStamp:time];
+    time = [self->_offsetLayout reconvertTimeStamp:time];
+    NSError *error = [self->_demuxable seekToTime:time];
     if (error) {
         return error;
     }
@@ -125,7 +129,8 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             error = SGCreateError(SGErrorCodeURLDemuxerFunnelFinished, SGActionCodeURLDemuxerFunnelNext);
             break;
         }
-        [pkt.codecDescriptor appendTimeLayout:self->_timeLayout];
+        [pkt.codecDescriptor appendTimeLayout:self->_offsetLayout];
+        [pkt.codecDescriptor appendTimeLayout:self->_scaleLayout];
         [pkt.codecDescriptor appendTimeRange:self->_timeRange];
         [pkt fill];
         *packet = pkt;
@@ -142,7 +147,8 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         if (self->_flags.outputting) {
             [self->_packetQueue getObjectAsync:&pkt];
             if (pkt) {
-                [pkt.codecDescriptor appendTimeLayout:self->_timeLayout];
+                [pkt.codecDescriptor appendTimeLayout:self->_offsetLayout];
+                [pkt.codecDescriptor appendTimeLayout:self->_scaleLayout];
                 [pkt.codecDescriptor appendTimeRange:self->_timeRange];
                 [pkt fill];
                 *packet = pkt;

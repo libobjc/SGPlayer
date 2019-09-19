@@ -13,7 +13,6 @@
 
 @interface SGPaddingDemuxer ()
 
-@property (nonatomic, readonly) CMTime basetime;
 @property (nonatomic, readonly) CMTime lasttime;
 
 @end
@@ -59,7 +58,6 @@
     }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
-    self->_basetime = time;
     self->_lasttime = time;
     return nil;
 }

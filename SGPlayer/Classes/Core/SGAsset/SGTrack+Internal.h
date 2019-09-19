@@ -10,8 +10,10 @@
 
 @interface SGTrack ()
 
-/**
- *
+/*!
+ @method initWithType:index:
+ @abstract
+    Initializes an SGTrack.
  */
 - (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index;
 
