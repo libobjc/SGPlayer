@@ -11,7 +11,13 @@
 
 @interface SGSegment : NSObject <NSCopying>
 
-/**
+/*!
+ @method segmentWithDuration:
+ @abstract
+    Returns an instance of SGSegment with the given duration.
+ 
+ @discussion
+    For audio track:
  *
  */
 + (instancetype)segmentWithDuration:(CMTime)duration;

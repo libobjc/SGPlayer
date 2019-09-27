@@ -129,7 +129,7 @@
  @property pausesWhenEnteredBackground
  @abstract
     Indicates whether to automatically pause when application did enter background.
-    Default is YES.
+    Default is NO.
  */
 @property (nonatomic) BOOL pausesWhenEnteredBackground;
 

@@ -75,7 +75,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_notificationQueue = [NSOperationQueue mainQueue];
 #if SGPLATFORM_TARGET_OS_IPHONE_OR_TV
         self->_pausesWhenInterrupted = YES;
-        self->_pausesWhenEnteredBackground = YES;
+        self->_pausesWhenEnteredBackground = NO;
         self->_pausesWhenEnteredBackgroundIfNoAudioTrack = YES;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(interruptionHandler:) name:AVAudioSessionInterruptionNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(enterBackgroundHandler:) name:UIApplicationDidEnterBackgroundNotification object:nil];
