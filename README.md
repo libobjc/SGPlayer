@@ -29,7 +29,7 @@
 ```obj-c
 git clone https://github.com/libobjc/SGPlayer.git
 cd SGPlayer
-git checkout 2.0.0 -B latest
+git checkout 2.0.1 -B latest
 
 // iOS
 ./build.sh iOS build
