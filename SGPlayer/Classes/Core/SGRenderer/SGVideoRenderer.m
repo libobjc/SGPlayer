@@ -393,11 +393,11 @@
     }
     MTLViewport viewports[2] = {};
     NSArray<SGMetalProjection *> *projections = nil;
-    CAMetalLayer *layer = (CAMetalLayer *)self->_metalView.layer;
-    if (layer.drawableSize.width == 0 || layer.drawableSize.height == 0) {
+    CGSize drawableSize = [self->_metalView drawableSize];
+    id <CAMetalDrawable> drawable = [self->_metalView currentDrawable];
+    if (drawableSize.width == 0 || drawableSize.height == 0) {
         return;
     }
-    id<CAMetalDrawable> drawable = [layer nextDrawable];
     MTLSize textureSize = MTLSizeMake(width, height, 0);
     MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
     switch (displayMode) {
