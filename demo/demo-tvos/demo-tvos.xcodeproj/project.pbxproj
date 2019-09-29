@@ -19,6 +19,7 @@
 		9C8637ED219047AE00D730EC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EC219047AE00D730EC /* libz.tbd */; };
 		9C8637EF219047B400D730EC /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C8637EE219047B400D730EC /* libiconv.tbd */; };
 		9CD90238230BE08E00A358AA /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9CD90237230BE08E00A358AA /* AVFoundation.framework */; };
+		B0198812231B601000EC1C47 /* i-see-fire.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = B0198811231B601000EC1C47 /* i-see-fire.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		9C8637EC219047AE00D730EC /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		9C8637EE219047B400D730EC /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		9CD90237230BE08E00A358AA /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		B0198811231B601000EC1C47 /* i-see-fire.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; name = "i-see-fire.mp4"; path = "../../demo-assset/i-see-fire.mp4"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				9C6901FF21901D3D00B546E3 /* Assets.xcassets */,
+				B0198811231B601000EC1C47 /* i-see-fire.mp4 */,
 				9C69020121901D3D00B546E3 /* Info.plist */,
 				9C69020221901D3D00B546E3 /* main.m */,
 			);
@@ -173,6 +176,7 @@
 			files = (
 				9C69020021901D3D00B546E3 /* Assets.xcassets in Resources */,
 				9C6901FE21901D3C00B546E3 /* Main.storyboard in Resources */,
+				B0198812231B601000EC1C47 /* i-see-fire.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -318,7 +322,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = KAGR32AB25;
+				DEVELOPMENT_TEAM = 2ZDN69KUUV;
 				INFOPLIST_FILE = "demo-tvos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

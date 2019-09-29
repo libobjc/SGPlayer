@@ -8,13 +8,15 @@
 
 #import "SGVRProjection.h"
 #import "SGPLFTargets.h"
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
 #import "SGMotionSensor.h"
 #endif
 
+const GLKMatrix4 GLKMatrix4Identity = { 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+
 @interface SGVRProjection ()
 
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
 @property (nonatomic, strong) SGMotionSensor * sensor;
 #endif
 @property (nonatomic) GLKMatrix4 lastMatrix11;
@@ -42,7 +44,7 @@
 
 - (void)start
 {
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
     if (!self.sensor) {
         self.sensor = [[SGMotionSensor alloc] init];
         [self.sensor start];
@@ -52,7 +54,7 @@
 
 - (void)stop
 {
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
     if (self.sensor) {
         [self.sensor stop];
         self.sensor = nil;
@@ -64,7 +66,7 @@
 
 - (BOOL)ready
 {
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
     if (self.viewport.sensorEnable) {
         [self start];
         return self.sensor.ready;
@@ -75,7 +77,10 @@
 
 - (BOOL)matrixWithAspect:(Float64)aspect matrix1:(GLKMatrix4 *)matrix1
 {
-#if SGPLATFORM_TARGET_OS_IPHONE
+#if TARGET_OS_MACCATALYST
+	return NO;
+#else
+#if SGPLATFORM_TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST
     if (self.viewport.sensorEnable) {
         [self start];
         if (!self.sensor.ready) {
@@ -103,10 +108,14 @@
     self.lastMatrix1Available = YES;
     self.lastMatrix11 = modelViewProjectionMatrix;
     return YES;
+#endif
 }
 
 - (BOOL)matrixWithAspect:(Float64)aspect matrix1:(GLKMatrix4 *)matrix1 matrix2:(GLKMatrix4 *)matrix2
 {
+	#if TARGET_OS_MACCATALYST
+		return NO;
+	#else
 #if SGPLATFORM_TARGET_OS_IPHONE
     if (self.viewport.sensorEnable) {
         [self start];
@@ -141,6 +150,7 @@
     self.lastMatrix21 = modelViewProjectionMatrix1;
     self.lastMatrix22 = modelViewProjectionMatrix2;
     return YES;
+#endif
 }
 
 @end

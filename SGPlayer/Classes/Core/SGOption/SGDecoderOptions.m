@@ -26,7 +26,7 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_options = nil;
+        self->_options = @{@"sn":[NSNull null]};
         self->_threadsAuto = YES;
         self->_refcountedFrames = YES;
         self->_hardwareDecodeH264 = YES;

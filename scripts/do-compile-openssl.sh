@@ -52,7 +52,7 @@ esac
 # common defines
 FF_PLATFORM=$1
 if [ -z "$FF_PLATFORM" ]; then
-    echo "You must specific an platform 'iOS, tvOS, macOS'.\n"
+    echo "You must specific an platform 'iOS, tvOS, macOS, Catalyst'.\n"
     exit 1
 fi
 
@@ -133,6 +133,16 @@ elif [ "$FF_PLATFORM" = "tvOS" ]; then
         FF_XCRUN_PLATFORM="AppleTVOS"
         FF_XCRUN_OSVERSION="-DHAVE_FORK=0 -mtvos-version-min=10.2"
         OPENSSL_CFG_FLAGS="iphoneos-cross $OPENSSL_CFG_FLAGS"
+    else
+        echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
+        exit 1
+    fi
+elif [ "$FF_PLATFORM" = "Catalyst" ]; then
+    if [ "$FF_ARCH" = "x86_64" ]; then
+        FF_BUILD_NAME="openssl-x86_64"
+        FF_XCRUN_PLATFORM="iPhoneSimulator"
+        FF_XCRUN_OSVERSION="-DHAVE_FORK=0 -target x86_64-apple-ios13.0-macabi -DTARGET_OS_MACCATALYST=1 -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        OPENSSL_CFG_FLAGS="darwin64-x86_64-cc $OPENSSL_CFG_FLAGS"
     else
         echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
         exit 1

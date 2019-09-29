@@ -42,7 +42,8 @@
     
     self.player.videoRenderer.view = self.view;
     self.player.videoRenderer.displayMode = self.videoItem.displayMode;
-    [self.player replaceWithAsset:self.videoItem.asset];
+
+	[self.player replaceWithAsset:self.videoItem.asset];
     [self.player play];
 }
 
@@ -50,6 +51,8 @@
 
 - (void)infoChanged:(NSNotification *)notification
 {
+	
+	NSLog(@"UI = %@", notification.userInfo);
     SGTimeInfo time = [SGPlayer timeInfoFromUserInfo:notification.userInfo];
     SGStateInfo state = [SGPlayer stateInfoFromUserInfo:notification.userInfo];
     SGInfoAction action = [SGPlayer infoActionFromUserInfo:notification.userInfo];

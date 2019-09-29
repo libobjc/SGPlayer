@@ -15,8 +15,9 @@
 @property (nonatomic) GLKMatrix4 deviceToDisplay;
 @property (nonatomic) GLKMatrix4 worldToInertialReferenceFrame;
 @property (nonatomic, strong) CMMotionManager * manager;
+#if !TARGET_OS_MACCATALYST
 @property (nonatomic) UIInterfaceOrientation orientation;
-
+#endif
 @end
 
 @implementation SGMotionSensor
@@ -27,6 +28,7 @@
         self.deviceToDisplay = GLKMatrix4Identity;
         self.manager = [[CMMotionManager alloc] init];
         self.worldToInertialReferenceFrame = [self getRotateEulerMatrixX:-90 Y:0 Z:90];
+		#if !TARGET_OS_MACCATALYST
         switch ([UIApplication sharedApplication].statusBarOrientation) {
             case UIInterfaceOrientationPortrait:
             case UIInterfaceOrientationUnknown:
@@ -40,10 +42,12 @@
                 self.defalutRotateY = 90;
                 break;
         }
+		#endif
     }
     return self;
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void)setOrientation:(UIInterfaceOrientation)orientation
 {
     if (_orientation != orientation) {
@@ -65,6 +69,7 @@
         }
     }
 }
+#endif
 
 - (BOOL)ready
 {
@@ -98,7 +103,9 @@
     if (!motion) {
         return GLKMatrix4Identity;
     }
+	#if !TARGET_OS_MACCATALYST
     self.orientation = [UIApplication sharedApplication].statusBarOrientation;
+#endif
     CMRotationMatrix rotationMatrix = motion.attitude.rotationMatrix;
     GLKMatrix4 inertialReferenceFrameToDevice = GLKMatrix4Transpose([self glMatrixFromRotationMatrix:rotationMatrix]);
     GLKMatrix4 worldToDevice = GLKMatrix4Multiply(inertialReferenceFrameToDevice, self.worldToInertialReferenceFrame);

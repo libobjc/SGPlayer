@@ -12,12 +12,16 @@
 #import "SGMetalBGRARenderPipeline.h"
 
 #import "SGPLFTargets.h"
+#if TARGET_OS_MACCATALYST
+#import "SGMetalShader_macOS.h"
+#else
 #if SGPLATFORM_TARGET_OS_IPHONE
 #import "SGMetalShader_iOS.h"
 #elif SGPLATFORM_TARGET_OS_TV
 #import "SGMetalShader_tvOS.h"
 #elif SGPLATFORM_TARGET_OS_MAC
 #import "SGMetalShader_macOS.h"
+#endif
 #endif
 
 @interface SGMetalRenderPipelinePool ()
@@ -36,8 +40,8 @@
 {
     if (self = [super init]) {
         self.device = device;
-        self.library = [device newLibraryWithData:dispatch_data_create(metallib, sizeof(metallib), dispatch_get_global_queue(0, 0), ^{}) error:NULL];
-    }
+		self.library = [device newLibraryWithData:dispatch_data_create(metallib, sizeof(metallib), dispatch_get_global_queue(0, 0), ^{}) error:NULL];
+	}
     return self;
 }
 

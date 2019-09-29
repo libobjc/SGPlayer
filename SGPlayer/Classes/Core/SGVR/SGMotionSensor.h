@@ -7,13 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_MACCATALYST
+#import "Catalyst.h"
+#else
 #import <GLKit/GLKit.h>
+#endif
+
 
 @interface SGMotionSensor : NSObject
 
 @property (nonatomic, readonly) BOOL ready;
 @property (nonatomic, readonly) GLKMatrix4 matrix;
-
 - (void)start;
 - (void)stop;
 
