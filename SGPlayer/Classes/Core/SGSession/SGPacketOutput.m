@@ -169,6 +169,7 @@ SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
     }
     return SGLockCondEXE10(self->_lock, ^BOOL {
         return
+        self->_flags.state == SGPacketOutputStateOpened ||
         self->_flags.state == SGPacketOutputStateReading ||
         self->_flags.state == SGPacketOutputStatePaused ||
         self->_flags.state == SGPacketOutputStateSeeking ||
@@ -181,7 +182,7 @@ SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
             b1 = ^{
                 lastSeekResult(lastSeekTime,
                                SGCreateError(SGErrorCodePacketOutputCancelSeek,
-                                              SGActionCodePacketOutputSeek));
+                                             SGActionCodePacketOutputSeek));
             };
         }
         self->_seekFlags.seekTime = time;

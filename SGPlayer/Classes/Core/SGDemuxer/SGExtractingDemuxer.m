@@ -101,10 +101,10 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)nextPacket:(SGPacket **)packet
 {
-    if (!self->_overgop) {
-        return [self nextPacketInternal:packet];
+    if (self->_overgop) {
+        return [self nextPacketInternalOvergop:packet];
     }
-    return [self nextPacketInternalOvergop:packet];
+    return [self nextPacketInternal:packet];
 }
 
 - (NSError *)nextPacketInternal:(SGPacket **)packet
