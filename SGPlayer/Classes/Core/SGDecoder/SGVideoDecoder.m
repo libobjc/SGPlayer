@@ -9,7 +9,7 @@
 #import "SGVideoDecoder.h"
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
-#import "SGCodecContext.h"
+#import "SGDecodeContext.h"
 #import "SGVideoFrame.h"
 
 @interface SGVideoDecoder ()
@@ -20,7 +20,7 @@
     } _flags;
 }
 
-@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
+@property (nonatomic, strong, readonly) SGDecodeContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
 @end
@@ -32,10 +32,10 @@
 - (void)setup
 {
     self->_flags.needsAlignment = YES;
-    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescriptor.timebase
-                                                          codecpar:self->_codecDescriptor.codecpar
-                                                        frameClass:[SGVideoFrame class]
-                                                    frameReuseName:[SGVideoFrame commonReuseName]];
+    self->_codecContext = [[SGDecodeContext alloc] initWithTimebase:self->_codecDescriptor.timebase
+                                                           codecpar:self->_codecDescriptor.codecpar
+                                                         frameClass:[SGVideoFrame class]
+                                                     frameReuseName:[SGVideoFrame commonReuseName]];
     self->_codecContext.options = self->_options;
     [self->_codecContext open];
 }

@@ -1,5 +1,5 @@
 //
-//  SGCodecContext.h
+//  SGDecodeContext.h
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/16.
@@ -12,7 +12,7 @@
 #import "SGPacket.h"
 #import "SGFrame.h"
 
-@interface SGCodecContext : NSObject
+@interface SGDecodeContext : NSObject
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;

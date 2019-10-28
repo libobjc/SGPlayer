@@ -1,12 +1,12 @@
 //
-//  SGCodecContext.m
+//  SGDecodeContext.m
 //  SGPlayer iOS
 //
 //  Created by Single on 2018/8/16.
 //  Copyright © 2018 single. All rights reserved.
 //
 
-#import "SGCodecContext.h"
+#import "SGDecodeContext.h"
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGOptions.h"
@@ -15,7 +15,7 @@
 #import "SGError.h"
 #import "SGMacro.h"
 
-@interface SGCodecContext ()
+@interface SGDecodeContext ()
 
 @property (nonatomic, copy, readonly) Class frameClass;
 @property (nonatomic, copy, readonly) NSString *frameReuseName;
@@ -25,7 +25,7 @@
 
 @end
 
-@implementation SGCodecContext
+@implementation SGDecodeContext
 
 - (instancetype)initWithTimebase:(AVRational)timebase
                         codecpar:(AVCodecParameters *)codecpar
@@ -118,7 +118,7 @@
     codecContext->pkt_timebase = self->_timebase;
     if ((self->_options.hardwareDecodeH264 && self->_codecpar->codec_id == AV_CODEC_ID_H264) ||
         (self->_options.hardwareDecodeH265 && self->_codecpar->codec_id == AV_CODEC_ID_H265)) {
-        codecContext->get_format = SGCodecContextGetFormat;
+        codecContext->get_format = SGDecodeContextGetFormat;
     }
     
     AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
@@ -154,9 +154,9 @@
     return codecContext;
 }
 
-static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext *s, const enum AVPixelFormat *fmt)
+static enum AVPixelFormat SGDecodeContextGetFormat(struct AVCodecContext *s, const enum AVPixelFormat *fmt)
 {
-    SGCodecContext *self = (__bridge SGCodecContext *)s->opaque;
+    SGDecodeContext *self = (__bridge SGDecodeContext *)s->opaque;
     for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
         if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
             AVBufferRef *device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
