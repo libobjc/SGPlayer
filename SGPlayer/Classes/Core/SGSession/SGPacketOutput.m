@@ -9,6 +9,7 @@
 #import "SGPacketOutput.h"
 #import "SGAsset+Internal.h"
 #import "SGDemuxable.h"
+#import "SGOptions.h"
 #import "SGError.h"
 #import "SGMacro.h"
 #import "SGLock.h"
@@ -43,6 +44,7 @@
         self->_demuxable.delegate = self;
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
+        [self setOptions:[SGOptions sharedOptions].demuxer.copy];
     }
     return self;
 }

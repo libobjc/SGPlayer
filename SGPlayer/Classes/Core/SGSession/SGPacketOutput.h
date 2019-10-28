@@ -41,7 +41,7 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState) {
 /**
  *
  */
-@property (nonatomic, copy) SGDemuxerOptions *demuxerOptions;
+@property (nonatomic, copy) SGDemuxerOptions *options;
 
 /**
  *

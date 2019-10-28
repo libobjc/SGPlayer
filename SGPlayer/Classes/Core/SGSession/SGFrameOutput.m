@@ -11,6 +11,7 @@
 #import "SGVideoDecoder.h"
 #import "SGPacketOutput.h"
 #import "SGDecodeLoop.h"
+#import "SGOptions.h"
 #import "SGMacro.h"
 #import "SGLock.h"
 
@@ -53,6 +54,7 @@
             self->_capacityFlags[i] = NO;
             self->_capacities[i] = SGCapacityCreate();
         }
+        [self setDecoderOptions:[SGOptions sharedOptions].decoder.copy];
     }
     return self;
 }
@@ -75,9 +77,9 @@
 SGGet0Map(CMTime, duration, self->_packetOutput)
 SGGet0Map(NSDictionary *, metadata, self->_packetOutput)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_packetOutput)
-SGGet0Map(SGDemuxerOptions *, demuxerOptions, self->_packetOutput)
-SGSet1Map(void, setDemuxerOptions, SGDemuxerOptions *, self->_packetOutput)
+SGGet00Map(SGDemuxerOptions *,demuxerOptions, options, self->_packetOutput)
 SGGet00Map(SGDecoderOptions *, decoderOptions, options, self->_audioDecoder)
+SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_packetOutput)
 
 #pragma mark - Setter & Getter
 
