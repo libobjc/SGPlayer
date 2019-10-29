@@ -7,6 +7,7 @@
 //
 
 #import "SGTrackDemuxer.h"
+#import "SGTrack+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGSegment+Internal.h"
 #import "SGError.h"
@@ -70,6 +71,7 @@
 - (NSError *)open
 {
     CMTime basetime = kCMTimeZero;
+    NSMutableArray<SGTrack *> *subTracks = [NSMutableArray array];
     for (SGSegment *obj in self->_track.segments) {
         SGTimeLayout *layout = [[SGTimeLayout alloc] initWithOffset:basetime];
         id<SGDemuxable> demuxer = [obj newDemuxable];
@@ -83,8 +85,12 @@
         NSAssert(!demuxer.tracks.firstObject || demuxer.tracks.firstObject.type == self->_track.type, @"Invaild mediaType.");
         
         basetime = CMTimeAdd(basetime, demuxer.duration);
+        if (demuxer.tracks.firstObject) {
+            [subTracks addObject:demuxer.tracks.firstObject];
+        }
     }
     self->_duration = basetime;
+    self->_track.subTracks = subTracks;
     self->_currentLayout = self->_layouts.firstObject;
     self->_currentDemuxer = self->_demuxers.firstObject;
     [self->_currentDemuxer seekToTime:kCMTimeZero];

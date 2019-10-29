@@ -72,6 +72,7 @@
             type = SGMediaTypeUnknown;
         }
         SGTrack *obj = [[SGTrack alloc] initWithType:type index:i];
+        obj.core = stream;
         [tracks addObject:obj];
     }
     self->_tracks = [tracks copy];

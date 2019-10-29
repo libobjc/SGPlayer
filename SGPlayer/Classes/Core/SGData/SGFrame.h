@@ -17,7 +17,7 @@ static int const SGFramePlaneCount = 8;
 /**
  *
  */
-@property (nonatomic, readonly) void * coreptr;
+@property (nonatomic, readonly) void *coreptr;
 
 /**
  *

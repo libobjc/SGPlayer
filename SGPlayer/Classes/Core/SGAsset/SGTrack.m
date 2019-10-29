@@ -16,6 +16,7 @@
     SGTrack *obj = [[self.class alloc] init];
     obj->_type = self->_type;
     obj->_index = self->_index;
+    obj->_core = self->_core;
     return obj;
 }
 
@@ -26,6 +27,11 @@
         self->_index = index;
     }
     return self;
+}
+
+- (void *)coreptr
+{
+    return self->_core;
 }
 
 @end

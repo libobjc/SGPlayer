@@ -7,6 +7,8 @@
 //
 
 #import "SGTrack.h"
+#import "SGMutableTrack.h"
+#import "avformat.h"
 
 @interface SGTrack ()
 
@@ -16,5 +18,23 @@
     Initializes an SGTrack.
  */
 - (instancetype)initWithType:(SGMediaType)type index:(NSInteger)index;
+
+/*!
+ @property core
+ @abstract
+    Indicates the pointer to the AVStream.
+*/
+@property (nonatomic) AVStream *core;
+
+@end
+
+@interface SGMutableTrack ()
+
+/*!
+ @property subTracks
+ @abstract
+    Indicates the sub tracks.
+ */
+@property (nonatomic, copy) NSArray<SGTrack *> *subTracks;
 
 @end

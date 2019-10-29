@@ -15,6 +15,13 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 /*!
+ @property coreptr
+ @abstract
+    Indicates the pointer to the AVStream.
+ */
+@property (nonatomic, readonly) void *coreptr;
+
+/*!
  @property type
  @abstract
     Indicates the track media type.
