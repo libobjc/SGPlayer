@@ -7,8 +7,8 @@
 //
 
 #import "SGTrack.h"
+#import "SGFFmpeg.h"
 #import "SGMutableTrack.h"
-#import "avformat.h"
 
 @interface SGTrack ()
 

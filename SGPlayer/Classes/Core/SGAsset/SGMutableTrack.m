@@ -37,13 +37,18 @@
 
 - (void *)coreptr
 {
-    void *ret = [super coreptr];
+    return [self core];
+}
+
+- (AVStream *)core
+{
+    void *ret = [super core];
     if (ret) {
         return ret;
     }
     for (SGTrack *obj in self->_subTracks) {
-        if (obj.coreptr) {
-            ret = obj.coreptr;
+        if (obj.core) {
+            ret = obj.core;
             break;
         }
     }
