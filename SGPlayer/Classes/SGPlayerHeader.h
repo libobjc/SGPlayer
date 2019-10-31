@@ -85,7 +85,6 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import "SGOptions.h"
 #import "SGDemuxerOptions.h"
 #import "SGDecoderOptions.h"
-#import "SGRendererOptions.h"
 #import "SGProcessorOptions.h"
 
 #import "SGAudioDescriptor.h"

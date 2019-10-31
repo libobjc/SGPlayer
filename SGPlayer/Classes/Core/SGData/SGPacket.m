@@ -78,6 +78,7 @@
 - (void)unlock
 {
     [self->_lock lock];
+    NSAssert(self->_lockingCount > 0, @"SGPacket, Invalid locking count");
     self->_lockingCount -= 1;
     BOOL comeback = self->_lockingCount == 0;
     [self->_lock unlock];
