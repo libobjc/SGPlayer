@@ -59,7 +59,7 @@
                      0,
                      self->_inputDescriptor.height,
                      outputData,
-                     outputLinesize);;
+                     outputLinesize);
 }
 
 @end

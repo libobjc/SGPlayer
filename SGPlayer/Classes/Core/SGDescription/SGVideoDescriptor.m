@@ -47,6 +47,18 @@
     return self;
 }
 
+- (void)setFormat:(int)format
+{
+    self->_format = format;
+    self->_cv_format = SGPixelFormatFF2AV(format);
+}
+
+- (void)setCv_format:(OSType)cv_format
+{
+    self->_format = SGPixelFormatAV2FF(cv_format);
+    self->_cv_format = cv_format;
+}
+
 - (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor
 {
     if (!descriptor) {
