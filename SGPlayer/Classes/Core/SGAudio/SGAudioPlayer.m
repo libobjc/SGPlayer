@@ -225,14 +225,18 @@
 {
     UInt32 size = sizeof(AudioStreamBasicDescription);
     AudioUnitPropertyID param = kAudioUnitProperty_StreamFormat;
-    if (AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Global, 0, &asbd, size) == noErr &&
+    if (AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Input, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Output, 0, &asbd, size) == noErr &&
         AudioUnitSetProperty(_outputUnit, param, kAudioUnitScope_Input, 0, &asbd, size) == noErr &&
-        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Global, 0, &asbd, size) == noErr) {
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Input, 0, &asbd, size) == noErr &&
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Output, 0, &asbd, size) == noErr) {
         _asbd = asbd;
     } else {
-        AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Global, 0, &_asbd, size);
+        AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Input, 0, &_asbd, size);
+        AudioUnitSetProperty(_mixerUnit, param, kAudioUnitScope_Output, 0, &_asbd, size);
         AudioUnitSetProperty(_outputUnit, param, kAudioUnitScope_Input, 0, &_asbd, size);
-        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Global, 0, &_asbd, size);
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Input, 0, &_asbd, size);
+        AudioUnitSetProperty(_timePitchUnit, param, kAudioUnitScope_Output, 0, &_asbd, size);
     }
 }
 
