@@ -25,6 +25,11 @@
 /**
  *
  */
+- (SGAudioFrame *)finish;
+
+/**
+ *
+ */
 - (void)flush;
 
 @end
