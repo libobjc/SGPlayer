@@ -153,22 +153,15 @@
 
 - (BOOL)open
 {
-    __block Float64 rate = 1.0;
-    __block Float64 volume = 1.0;
     return SGLockCondEXE11(self->_lock, ^BOOL {
         return self->_flags.state == SGRenderableStateNone;
     }, ^SGBlock {
-        rate = self->_rate;
-        volume = self->_volume;
-        return [self setState:SGRenderableStatePaused];
-    }, ^BOOL(SGBlock block) {
-        block();
         self->_player = [[SGAudioPlayer alloc] init];
         self->_player.delegate = self;
-        self->_player.volume = volume;
-        self->_player.rate = rate;
-        return YES;
-    });
+        self->_player.rate = self->_rate;
+        self->_player.volume = self->_volume;
+        return [self setState:SGRenderableStatePaused];
+    }, nil);
 }
 
 - (BOOL)close
