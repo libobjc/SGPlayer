@@ -177,8 +177,7 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
-    if (!SGCMTimeIsValid(timeRange.start, NO) ||
-        !SGCMTimeIsValid(timeRange.duration, NO)) {
+    if (!SGCMTimeIsValid(timeRange.start, NO)) {
         return frames;
     }
     NSMutableArray *ret = [NSMutableArray array];
@@ -187,7 +186,8 @@
             [obj unlock];
             continue;
         }
-        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(timeRange)) >= 0) {
+        if (SGCMTimeIsValid(timeRange.duration, NO) &&
+            CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(timeRange)) >= 0) {
             [obj unlock];
             continue;
         }
@@ -207,22 +207,24 @@
                 [ret addObject:obj1];
             }
         }
-        CMTime start = obj.timeStamp;
-        CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
-        int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
-        if (nb_samples < obj.numberOfSamples) {
-            duration = CMTimeMake(nb_samples, ad.sampleRate);
-            SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
-            for (int i = 0; i < ad.numberOfPlanes; i++) {
-                memcpy(obj1.core->data[i], obj.core->data[i], obj1.core->linesize[i]);
+        if (SGCMTimeIsValid(timeRange.duration, NO)) {
+            CMTime start = obj.timeStamp;
+            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), start);
+            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
+            if (nb_samples < obj.numberOfSamples) {
+                duration = CMTimeMake(nb_samples, ad.sampleRate);
+                SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+                for (int i = 0; i < ad.numberOfPlanes; i++) {
+                    memcpy(obj1.core->data[i], obj.core->data[i], obj1.core->linesize[i]);
+                }
+                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+                cd.track = obj.track;
+                [obj1 setCodecDescriptor:cd];
+                [obj1 fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+                [ret addObject:obj1];
+                [obj unlock];
+                continue;
             }
-            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
-            cd.track = obj.track;
-            [obj1 setCodecDescriptor:cd];
-            [obj1 fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
-            [ret addObject:obj1];
-            [obj unlock];
-            continue;
         }
         [ret addObject:obj];
     }

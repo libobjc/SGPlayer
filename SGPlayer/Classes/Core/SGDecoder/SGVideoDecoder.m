@@ -118,8 +118,7 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
-    if (!SGCMTimeIsValid(timeRange.start, NO) ||
-        !SGCMTimeIsValid(timeRange.duration, NO)) {
+    if (!SGCMTimeIsValid(timeRange.start, NO)) {
         return frames;
     }
     NSMutableArray *ret = [NSMutableArray array];
@@ -128,7 +127,8 @@
             [obj unlock];
             continue;
         }
-        if (CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(timeRange)) >= 0) {
+        if (SGCMTimeIsValid(timeRange.duration, NO) &&
+            CMTimeCompare(obj.timeStamp, CMTimeRangeGetEnd(timeRange)) >= 0) {
             [obj unlock];
             continue;
         }
@@ -144,14 +144,16 @@
                 [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
             }
         }
-        CMTime start = obj.timeStamp;
-        CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), obj.timeStamp);
-        if (CMTimeCompare(obj.duration, duration) > 0) {
-            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
-            cd.track = obj.track;
-            cd.metadata = obj.codecDescriptor.metadata;
-            [obj setCodecDescriptor:cd];
-            [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+        if (SGCMTimeIsValid(timeRange.duration, NO)) {
+            CMTime start = obj.timeStamp;
+            CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), start);
+            if (CMTimeCompare(obj.duration, duration) > 0) {
+                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+                cd.track = obj.track;
+                cd.metadata = obj.codecDescriptor.metadata;
+                [obj setCodecDescriptor:cd];
+                [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+            }
         }
         [ret addObject:obj];
     }
