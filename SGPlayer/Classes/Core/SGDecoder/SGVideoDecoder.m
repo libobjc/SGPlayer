@@ -17,9 +17,11 @@
 {
     struct {
         BOOL needsAlignment;
+        NSUInteger outputCount;
     } _flags;
 }
 
+@property (nonatomic, strong, readonly) SGVideoFrame *lastFrame;
 @property (nonatomic, strong, readonly) SGDecodeContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
@@ -28,6 +30,11 @@
 @implementation SGVideoDecoder
 
 @synthesize options = _options;
+
+- (void)dealloc
+{
+    [self destroy];
+}
 
 - (void)setup
 {
@@ -42,17 +49,23 @@
 
 - (void)destroy
 {
+    self->_flags.outputCount = 0;
     self->_flags.needsAlignment = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
+    [self->_lastFrame unlock];
+    self->_lastFrame = nil;
 }
 
 #pragma mark - Control
 
 - (void)flush
 {
+    self->_flags.outputCount = 0;
     self->_flags.needsAlignment = YES;
     [self->_codecContext flush];
+    [self->_lastFrame unlock];
+    self->_lastFrame = nil;
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
@@ -83,12 +96,21 @@
         }
             break;
     }
+    self->_flags.outputCount += ret.count;
     return ret;
 }
 
 - (NSArray<__kindof SGFrame *> *)finish
 {
-    return [self processPacket:nil];
+    NSArray<SGFrame *> *objs = [self processPacket:nil];
+    if (objs.count > 0) {
+        [self->_lastFrame unlock];
+    } else if (self->_lastFrame) {
+        objs = @[self->_lastFrame];
+    }
+    self->_lastFrame = nil;
+    self->_flags.outputCount += objs.count;
+    return objs;
 }
 
 #pragma mark - Process
@@ -118,9 +140,15 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
+    if (frames.count <= 0) {
+        return nil;
+    }
     if (!SGCMTimeIsValid(timeRange.start, NO)) {
         return frames;
     }
+    [self->_lastFrame unlock];
+    self->_lastFrame = frames.lastObject;
+    [self->_lastFrame lock];
     NSMutableArray *ret = [NSMutableArray array];
     for (SGFrame *obj in frames) {
         if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {

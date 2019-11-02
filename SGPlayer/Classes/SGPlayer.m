@@ -613,7 +613,8 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     } else if (action & SGInfoActionTime) {
         NSTimeInterval currentTime = CACurrentMediaTime();
         NSTimeInterval interval = currentTime - self->_flags.lastNotificationTime;
-        if (interval >= self->_minimumTimeInfoInterval) {
+        if (self->_flags.playing == NO ||
+            interval >= self->_minimumTimeInfoInterval) {
             needed = YES;
             self->_flags.lastNotificationTime = currentTime;
         } else {

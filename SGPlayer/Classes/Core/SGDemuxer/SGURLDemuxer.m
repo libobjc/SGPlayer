@@ -118,6 +118,9 @@
         int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
             if (CMTIME_IS_NUMERIC(toleranceBefor)) {
+                if (CMTimeCompare(self->_duration, kCMTimeZero) > 0) {
+                    time = CMTimeMinimum(time, self->_duration);
+                }
                 toleranceBefor = CMTimeMaximum(toleranceBefor, kCMTimeZero);
                 self->_basetime = CMTimeSubtract(time, toleranceBefor);
             } else {

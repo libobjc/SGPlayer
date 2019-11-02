@@ -35,6 +35,11 @@
 
 @synthesize options = _options;
 
+- (void)dealloc
+{
+    [self destroy];
+}
+
 - (void)setup
 {
     self->_flags.nextTimeStamp = 0;
@@ -177,6 +182,9 @@
 
 - (NSArray<__kindof SGFrame *> *)clipFrames:(NSArray<__kindof SGFrame *> *)frames timeRange:(CMTimeRange)timeRange
 {
+    if (frames.count <= 0) {
+        return nil;
+    }
     if (!SGCMTimeIsValid(timeRange.start, NO)) {
         return frames;
     }
