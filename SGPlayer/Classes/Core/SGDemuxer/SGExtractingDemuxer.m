@@ -83,12 +83,17 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid];
+}
+
+- (NSError *)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter
+{
     if (!CMTIME_IS_NUMERIC(time)) {
         return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
     time = [self->_scaleLayout reconvertTimeStamp:time];
     time = [self->_offsetLayout reconvertTimeStamp:time];
-    NSError *error = [self->_demuxable seekToTime:time];
+    NSError *error = [self->_demuxable seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter];
     if (error) {
         return error;
     }

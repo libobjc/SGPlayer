@@ -101,6 +101,11 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid];
+}
+
+- (NSError *)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter
+{
     if (!CMTIME_IS_NUMERIC(time)) {
         return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
@@ -112,7 +117,12 @@
         int64_t timeStamp = CMTimeConvertScale(time, AV_TIME_BASE, kCMTimeRoundingMethod_RoundTowardZero).value;
         int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
-            self->_basetime = time;
+            if (CMTIME_IS_NUMERIC(toleranceBefor)) {
+                toleranceBefor = CMTimeMaximum(toleranceBefor, kCMTimeZero);
+                self->_basetime = CMTimeSubtract(time, toleranceBefor);
+            } else {
+                self->_basetime = kCMTimeNegativeInfinity;
+            }
         }
         return SGGetFFError(ret, SGActionCodeFormatSeekFrame);
     }

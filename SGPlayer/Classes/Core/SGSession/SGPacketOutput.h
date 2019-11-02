@@ -101,7 +101,17 @@ typedef NS_ENUM(NSUInteger, SGPacketOutputState) {
 /**
  *
  */
+- (BOOL)seekToTime:(CMTime)time;
+
+/**
+ *
+ */
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
+
+/**
+ *
+ */
+- (BOOL)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter result:(SGSeekResult)result;
 
 @end
 

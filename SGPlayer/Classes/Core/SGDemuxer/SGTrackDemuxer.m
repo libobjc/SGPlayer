@@ -118,6 +118,11 @@
 
 - (NSError *)seekToTime:(CMTime)time
 {
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid];
+}
+
+- (NSError *)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter
+{
     if (!CMTIME_IS_NUMERIC(time)) {
         return SGCreateError(SGErrorCodeInvlidTime, SGActionCodeFormatSeekFrame);
     }
@@ -137,7 +142,7 @@
     time = CMTimeSubtract(time, currentLayout.offset);
     self->_currentLayout = currentLayout;
     self->_currentDemuxer = currentDemuxer;
-    return [self->_currentDemuxer seekToTime:time];
+    return [self->_currentDemuxer seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter];
 }
 
 - (NSError *)nextPacket:(SGPacket **)packet

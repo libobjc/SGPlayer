@@ -62,6 +62,11 @@
 /**
  *
  */
+- (NSError *)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter;
+
+/**
+ *
+ */
 - (NSError *)nextPacket:(SGPacket **)packet;
 
 @end

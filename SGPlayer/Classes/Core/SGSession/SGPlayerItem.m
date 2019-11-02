@@ -233,10 +233,20 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
     return self->_frameOutput.seekable;
 }
 
+- (BOOL)seekToTime:(CMTime)time
+{
+    return [self seekToTime:time result:nil];
+}
+
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid result:result];
+}
+
+- (BOOL)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter result:(SGSeekResult)result
+{
     SGWeakify(self)
-    return ![self->_frameOutput seekToTime:time result:^(CMTime time, NSError *error) {
+    return ![self->_frameOutput seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
             SGLockEXE10(self->_lock, ^SGBlock {

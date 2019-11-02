@@ -202,6 +202,27 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 #pragma mark - Setter & Getter
 
+- (NSError *)error
+{
+    NSError *error;
+    [self stateInfo:nil timeInfo:nil error:&error];
+    return error;
+}
+
+- (SGTimeInfo)timeInfo
+{
+    SGTimeInfo timeInfo;
+    [self stateInfo:nil timeInfo:&timeInfo error:nil];
+    return timeInfo;
+}
+
+- (SGStateInfo)sstateInfo
+{
+    SGStateInfo stateInfo;
+    [self stateInfo:&stateInfo timeInfo:nil error:nil];
+    return stateInfo;
+}
+
 - (BOOL)stateInfo:(SGStateInfo *)stateInfo timeInfo:(SGTimeInfo *)timeInfo error:(NSError **)error
 {
     __block NSError *err = nil;
@@ -385,7 +406,17 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
     return [currentItem seekable];
 }
 
+- (BOOL)seekToTime:(CMTime)time
+{
+    return [self seekToTime:time result:nil];
+}
+
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
+{
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid result:result];
+}
+
+- (BOOL)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter result:(SGSeekResult)result
 {
     __block NSUInteger seekingCount = 0;
     __block SGPlayerItem *currentItem = nil;
@@ -404,7 +435,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         return NO;
     }
     SGWeakify(self)
-    return [currentItem seekToTime:time result:^(CMTime time, NSError *error) {
+    return [currentItem seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         SGLockCondEXE11(self->_lock, ^BOOL {
             return seekingCount == self->_flags.seekingIndex;

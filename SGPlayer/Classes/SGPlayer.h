@@ -24,6 +24,27 @@
 @property (nonatomic, strong) SGOptions *options;
 
 /*!
+ @method error
+ @abstract
+    Get player error information.
+ */
+- (NSError *)error;
+
+/*!
+ @method timeInfo
+ @abstract
+    Get player time information.
+ */
+- (SGTimeInfo)timeInfo;
+
+/*!
+ @method sstateInfo
+ @abstract
+    Get player state information.
+ */
+- (SGStateInfo)sstateInfo;
+
+/*!
  @method stateInfo:timeInfo:error:
  @abstract
     Get player state and time information.
@@ -164,14 +185,30 @@
 - (BOOL)seekable;
 
 /*!
+ @method seekToTime:
+ @abstract
+    Equivalent:
+        [self seekToTime:time result:nil];
+ */
+- (BOOL)seekToTime:(CMTime)time;
+
+/*!
  @method seekToTime:result:
  @abstract
+    Equivalent:
+        [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid result:result];
+ */
+- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
+
+/*!
+ @method seekToTime:toleranceBefor:toleranceAfter:result:
+ @abstract
     Moves the playback cursor.
- 
+
  @discussion
     Use this method to seek to a specified time for the current player item and to be notified when the seek operation is complete. The result handler for any prior seek request that is still in process will be invoked immediately with the error parameter. If the new request completes without being interrupted by another seek request or by any other operation the specified result handler will be invoked without error.
  */
-- (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result;
+- (BOOL)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter result:(SGSeekResult)result;
 
 @end
 

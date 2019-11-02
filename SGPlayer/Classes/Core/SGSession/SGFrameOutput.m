@@ -223,10 +223,20 @@ SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_packe
     return [self->_packetOutput seekable];
 }
 
+- (BOOL)seekToTime:(CMTime)time
+{
+    return [self seekToTime:time result:nil];
+}
+
 - (BOOL)seekToTime:(CMTime)time result:(SGSeekResult)result
 {
+    return [self seekToTime:time toleranceBefor:kCMTimeInvalid toleranceAfter:kCMTimeInvalid result:result];
+}
+
+- (BOOL)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter result:(SGSeekResult)result
+{
     SGWeakify(self)
-    return [self->_packetOutput seekToTime:time result:^(CMTime time, NSError *error) {
+    return [self->_packetOutput seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter result:^(CMTime time, NSError *error) {
         SGStrongify(self)
         if (!error) {
             [self->_audioDecoder flush];
