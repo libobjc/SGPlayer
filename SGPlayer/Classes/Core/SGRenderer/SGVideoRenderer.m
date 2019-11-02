@@ -336,6 +336,11 @@
 
 - (void)drawInMTKView:(MTKView *)view
 {
+    if (!view.superview ||
+        (view.frame.size.width <= 1 &&
+         view.frame.size.height <= 1)) {
+        return;
+    }
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
     NSUInteger width = frame.descriptor.width;
@@ -513,6 +518,7 @@
     if (self->_view != view) {
         self->_view = view;
         [self updateMetalView];
+        [self updateTimeInterval];
     }
 }
 
@@ -586,7 +592,12 @@
 - (void)updateTimeInterval
 {
     self->_fetchTimer.timeInterval = 0.5 / self->_preferredFramesPerSecond;
-    self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+    if (self->_view &&
+        self->_view == self->_metalView.superview) {
+        self->_metalView.preferredFramesPerSecond = self->_preferredFramesPerSecond;
+    } else {
+        self->_metalView.preferredFramesPerSecond = 1;
+    }
 }
 
 @end
