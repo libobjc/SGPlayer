@@ -16,6 +16,7 @@
 
 {
     struct {
+        BOOL needsKeyFrame;
         BOOL needsAlignment;
         NSUInteger outputCount;
     } _flags;
@@ -30,6 +31,14 @@
 @implementation SGVideoDecoder
 
 @synthesize options = _options;
+
+- (instancetype)init
+{
+    if (self = [super init]) {
+        self->_outputFromKeyFrame = YES;
+    }
+    return self;
+}
 
 - (void)dealloc
 {
@@ -50,6 +59,7 @@
 - (void)destroy
 {
     self->_flags.outputCount = 0;
+    self->_flags.needsKeyFrame = YES;
     self->_flags.needsAlignment = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
@@ -62,6 +72,7 @@
 - (void)flush
 {
     self->_flags.outputCount = 0;
+    self->_flags.needsKeyFrame = YES;
     self->_flags.needsAlignment = YES;
     [self->_codecContext flush];
     [self->_lastFrame unlock];
@@ -123,6 +134,7 @@
     SGCodecDescriptor *cd = self->_codecDescriptor;
     NSArray *objs = [self->_codecContext decode:packet];
     objs = [self processFrames:objs done:!packet];
+    objs = [self clipKeyFrames:objs];
     objs = [self clipFrames:objs timeRange:cd.timeRange];
     return objs;
 }
@@ -134,6 +146,26 @@
         [obj setCodecDescriptor:[self->_codecDescriptor copy]];
         [obj fill];
         [ret addObject:obj];
+    }
+    return ret;
+}
+
+- (NSArray<__kindof SGFrame *> *)clipKeyFrames:(NSArray<__kindof SGFrame *> *)frames
+{
+    if (self->_outputFromKeyFrame == NO ||
+        self->_flags.needsKeyFrame == NO) {
+        return frames;
+    }
+    NSMutableArray *ret = [NSMutableArray array];
+    for (SGFrame *obj in frames) {
+        if (self->_flags.needsKeyFrame == NO) {
+            [ret addObject:obj];
+        } else if (obj.core->key_frame) {
+            [ret addObject:obj];
+            self->_flags.needsKeyFrame = NO;
+        } else {
+            [obj unlock];
+        }
     }
     return ret;
 }

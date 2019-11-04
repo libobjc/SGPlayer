@@ -10,4 +10,9 @@
 
 @interface SGVideoDecoder : NSObject <SGDecodable>
 
+/**
+ *
+ */
+@property (nonatomic) BOOL outputFromKeyFrame;
+
 @end
