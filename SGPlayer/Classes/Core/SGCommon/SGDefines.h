@@ -56,6 +56,11 @@ typedef NS_OPTIONS(NSUInteger, SGInfoAction) {
 };
 
 typedef struct {
+    int num;
+    int den;
+} SGRational;
+
+typedef struct {
     CMTime cached;
     CMTime playback;
     CMTime duration;

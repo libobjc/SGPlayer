@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGDefines.h"
 
 @interface SGVideoDescriptor : NSObject <NSCopying>
 
@@ -43,6 +44,27 @@
     Indicates the height.
  */
 @property (nonatomic) int height;
+
+/*!
+ @property sampleAspectRatio
+ @abstract
+    Indicates the sample aspect ratio, 0/1 if unknown/unspecified.
+*/
+@property (nonatomic) SGRational sampleAspectRatio;
+
+/*!
+ @property frameSize
+ @abstract
+    Indicates the pixel buffer frame size.
+*/
+@property (nonatomic, readonly) SGRational frameSize;
+
+/*!
+ @property presentationSize
+ @abstract
+    Indicates the best presentation size.
+*/
+@property (nonatomic, readonly) SGRational presentationSize;
 
 /*!
  @property colorspace
