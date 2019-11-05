@@ -64,16 +64,15 @@
     SGVideoDescriptor *inputDescriptor = [self->_descriptor copy];
     SGVideoDescriptor *outputDescriptor = [self->_descriptor copy];
     outputDescriptor.format = AV_PIX_FMT_RGB24;
+    outputDescriptor.width = self->_descriptor.presentationSize.num;
+    outputDescriptor.height = self->_descriptor.presentationSize.den;
     
     const uint8_t *src_data[SGFramePlaneCount] = {nil};
     uint8_t *dst_data[SGFramePlaneCount] = {nil};
     int src_linesize[SGFramePlaneCount] = {0};
     int dst_linesize[SGFramePlaneCount] = {0};
     
-    if (inputDescriptor.format == AV_PIX_FMT_VIDEOTOOLBOX) {
-        if (!self->_pixelBuffer) {
-            return nil;
-        }
+    if (self->_pixelBuffer) {
         OSType type = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
         inputDescriptor.format = SGPixelFormatAV2FF(type);
         
