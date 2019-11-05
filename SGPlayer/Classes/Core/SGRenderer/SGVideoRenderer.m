@@ -403,7 +403,7 @@
     if (drawableSize.width == 0 || drawableSize.height == 0) {
         return;
     }
-    MTLSize textureSize = MTLSizeMake(width, height, 0);
+    MTLSize textureSize = MTLSizeMake(frame.descriptor.presentationSize.num, frame.descriptor.presentationSize.den, 0);
     MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
     switch (displayMode) {
         case SGDisplayModePlane: {
