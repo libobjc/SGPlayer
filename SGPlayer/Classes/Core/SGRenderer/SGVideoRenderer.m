@@ -343,9 +343,10 @@
     }
     [self->_lock lock];
     SGVideoFrame *frame = self->_currentFrame;
-    NSUInteger width = frame.descriptor.width;
-    NSUInteger height = frame.descriptor.height;
-    if (!frame || width == 0 || height == 0) {
+    SGRational presentationSize = frame.descriptor.presentationSize;
+    if (!frame ||
+        presentationSize.num == 0 ||
+        presentationSize.den == 0) {
         [self->_lock unlock];
         return;
     }
@@ -379,8 +380,11 @@
     if (rotate && (rotate % 90) == 0) {
         float radians = GLKMathDegreesToRadians(-rotate);
         baseMatrix = GLKMatrix4RotateZ(baseMatrix, radians);
-        width = frame.descriptor.width * ABS(cos(radians)) + frame.descriptor.height * ABS(sin(radians));
-        height = frame.descriptor.width * ABS(sin(radians)) + frame.descriptor.height * ABS(cos(radians));
+        SGRational size = {
+            presentationSize.num * ABS(cos(radians)) + presentationSize.den * ABS(sin(radians)),
+            presentationSize.num * ABS(sin(radians)) + presentationSize.den * ABS(cos(radians)),
+        };
+        presentationSize = size;
     }
     NSArray<id<MTLTexture>> *textures = nil;
     if (frame.pixelBuffer) {
@@ -403,7 +407,7 @@
     if (drawableSize.width == 0 || drawableSize.height == 0) {
         return;
     }
-    MTLSize textureSize = MTLSizeMake(frame.descriptor.presentationSize.num, frame.descriptor.presentationSize.den, 0);
+    MTLSize textureSize = MTLSizeMake(presentationSize.num, presentationSize.den, 0);
     MTLSize layerSize = MTLSizeMake(drawable.texture.width, drawable.texture.height, 0);
     switch (displayMode) {
         case SGDisplayModePlane: {

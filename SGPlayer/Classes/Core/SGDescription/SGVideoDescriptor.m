@@ -83,12 +83,11 @@
         aspectRatio = av_make_q(1, 1);
     }
     aspectRatio = av_mul_q(aspectRatio, av_make_q(width, height));
-    if (av_q2d(aspectRatio) >= 1) {
-        width = av_rescale(height, aspectRatio.num, aspectRatio.den) & ~1;
-    } else {
-        height = av_rescale(width, aspectRatio.den, aspectRatio.num) & ~1;
-    }
-    return (SGRational){width, height};
+    SGRational size1 = {width, av_rescale(width, aspectRatio.den, aspectRatio.num) & ~1};
+    SGRational size2 = {av_rescale(height, aspectRatio.num, aspectRatio.den) & ~1, height};
+    int64_t pixels1 = size1.num * size1.den;
+    int64_t pixels2 = size2.num * size2.den;
+    return (pixels1 > pixels2) ? size1 : size2;
 }
 
 - (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor
