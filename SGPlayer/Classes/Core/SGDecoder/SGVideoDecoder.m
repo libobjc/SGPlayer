@@ -114,10 +114,12 @@
 - (NSArray<__kindof SGFrame *> *)finish
 {
     NSArray<SGFrame *> *objs = [self processPacket:nil];
-    if (objs.count > 0) {
-        [self->_lastFrame unlock];
-    } else if (self->_lastFrame) {
+    if (objs.count == 0 &&
+        self->_lastFrame &&
+        self->_flags.outputCount == 0) {
         objs = @[self->_lastFrame];
+    } else {
+        [self->_lastFrame unlock];
     }
     self->_lastFrame = nil;
     self->_flags.outputCount += objs.count;

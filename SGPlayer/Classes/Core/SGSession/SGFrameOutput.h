@@ -72,6 +72,16 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState) {
 /**
  *
  */
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *selectedTracks;
+
+/**
+ *
+ */
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *finishedTracks;
+
+/**
+ *
+ */
 @property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**
@@ -128,11 +138,6 @@ typedef NS_ENUM(NSUInteger, SGFrameOutputState) {
  *
  */
 - (BOOL)selectTracks:(NSArray<SGTrack *> *)tracks;
-
-/**
- *
- */
-- (NSArray<SGTrack *> *)selectedTracks;
 
 /**
  *

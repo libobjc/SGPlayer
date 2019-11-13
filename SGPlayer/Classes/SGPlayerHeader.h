@@ -44,6 +44,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import <SGPlayer/SGURLDemuxer.h>
 
 #import <SGPlayer/SGPlayerItem.h>
+#import <SGPlayer/SGFrameReader.h>
 #import <SGPlayer/SGFrameOutput.h>
 #import <SGPlayer/SGPacketOutput.h>
 
@@ -106,6 +107,7 @@ FOUNDATION_EXPORT const unsigned char SGPlayerVersionString[];
 #import "SGURLDemuxer.h"
 
 #import "SGPlayerItem.h"
+#import "SGFrameReader.h"
 #import "SGFrameOutput.h"
 #import "SGPacketOutput.h"
 

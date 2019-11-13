@@ -30,8 +30,6 @@
 @property (nonatomic, strong, readonly) SGDecodeLoop *audioDecoder;
 @property (nonatomic, strong, readonly) SGDecodeLoop *videoDecoder;
 @property (nonatomic, strong, readonly) SGPacketOutput *packetOutput;
-@property (nonatomic, strong, readonly) NSArray<SGTrack *> *selectedTracks;
-@property (nonatomic, strong, readonly) NSArray<SGTrack *> *finishedTracks;
 
 @end
 

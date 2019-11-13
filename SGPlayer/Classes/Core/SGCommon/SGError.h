@@ -34,6 +34,7 @@ typedef NS_ENUM(NSUInteger, SGActionCode) {
     SGActionCodeURLDemuxerFunnelNext,
     SGActionCodeMutilDemuxerNext,
     SGActionCodeSegmentDemuxerNext,
+    SGActionCodeNextFrame,
 };
 
 NSError * SGGetFFError(int result, SGActionCode operation);

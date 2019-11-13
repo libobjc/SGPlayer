@@ -66,6 +66,12 @@
 		9C20C5962333268100E183B2 /* SGPaddingSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C20C5922333268100E183B2 /* SGPaddingSegment.m */; };
 		9C20C5972333268100E183B2 /* SGPaddingSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C20C5922333268100E183B2 /* SGPaddingSegment.m */; };
 		9C20C5982333268100E183B2 /* SGPaddingSegment.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C20C5922333268100E183B2 /* SGPaddingSegment.m */; };
+		9C22AE68237AC19E004D33DE /* SGFrameReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C22AE66237AC19E004D33DE /* SGFrameReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C22AE69237AC19E004D33DE /* SGFrameReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C22AE66237AC19E004D33DE /* SGFrameReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C22AE6A237AC19E004D33DE /* SGFrameReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C22AE66237AC19E004D33DE /* SGFrameReader.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		9C22AE6B237AC19E004D33DE /* SGFrameReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C22AE67237AC19E004D33DE /* SGFrameReader.m */; };
+		9C22AE6C237AC19E004D33DE /* SGFrameReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C22AE67237AC19E004D33DE /* SGFrameReader.m */; };
+		9C22AE6D237AC19E004D33DE /* SGFrameReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C22AE67237AC19E004D33DE /* SGFrameReader.m */; };
 		9C2536501FAB199500BBFA5C /* SGPlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C25364E1FAB199500BBFA5C /* SGPlayer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9C2536531FAB199500BBFA5C /* SGPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C25364F1FAB199500BBFA5C /* SGPlayer.m */; };
 		9C262A3322B344D3006C8542 /* SGDemuxerOptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C262A3122B344D3006C8542 /* SGDemuxerOptions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -602,6 +608,8 @@
 		9C1F2DE621AF8F1A00D42158 /* SGAudioMixer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGAudioMixer.m; sourceTree = "<group>"; };
 		9C20C5912333268100E183B2 /* SGPaddingSegment.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGPaddingSegment.h; sourceTree = "<group>"; };
 		9C20C5922333268100E183B2 /* SGPaddingSegment.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGPaddingSegment.m; sourceTree = "<group>"; };
+		9C22AE66237AC19E004D33DE /* SGFrameReader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGFrameReader.h; sourceTree = "<group>"; };
+		9C22AE67237AC19E004D33DE /* SGFrameReader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGFrameReader.m; sourceTree = "<group>"; };
 		9C25364E1FAB199500BBFA5C /* SGPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGPlayer.h; sourceTree = "<group>"; };
 		9C25364F1FAB199500BBFA5C /* SGPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGPlayer.m; sourceTree = "<group>"; };
 		9C262A3122B344D3006C8542 /* SGDemuxerOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGDemuxerOptions.h; sourceTree = "<group>"; };
@@ -1162,6 +1170,8 @@
 				9C8D4E46200DFFC700ED8A58 /* SGPlayerItem.h */,
 				9C8D4E47200DFFC700ED8A58 /* SGPlayerItem.m */,
 				9CC649F921818D8C00453B3E /* SGPlayerItem+Internal.h */,
+				9C22AE66237AC19E004D33DE /* SGFrameReader.h */,
+				9C22AE67237AC19E004D33DE /* SGFrameReader.m */,
 				9C29D110217D741500343975 /* SGFrameOutput.h */,
 				9C29D111217D741500343975 /* SGFrameOutput.m */,
 				9C8D4E61200E0ACC00ED8A58 /* SGPacketOutput.h */,
@@ -1556,6 +1566,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C22AE69237AC19E004D33DE /* SGFrameReader.h in Headers */,
 				9C20C5942333268100E183B2 /* SGPaddingSegment.h in Headers */,
 				9C82EEB221AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9C86385721904A0900D730EC /* SGPLFScreen.h in Headers */,
@@ -1664,6 +1675,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C22AE6A237AC19E004D33DE /* SGFrameReader.h in Headers */,
 				9C20C5952333268100E183B2 /* SGPaddingSegment.h in Headers */,
 				9C82EEB321AE356D00E9D523 /* SGAudioProcessor.h in Headers */,
 				9CD79F032190068E00E39A7D /* SGPLFScreen.h in Headers */,
@@ -1772,6 +1784,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C22AE68237AC19E004D33DE /* SGFrameReader.h in Headers */,
 				9C20C5932333268100E183B2 /* SGPaddingSegment.h in Headers */,
 				9CE6F54B2004D97D00D1F4C8 /* SGPLFScreen.h in Headers */,
 				9C0DF028215A2FB9007142DB /* SGDemuxable.h in Headers */,
@@ -1940,7 +1953,7 @@
 		9CEFA6CD1E7122BF00835CAB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = single;
 				TargetAttributes = {
 					9C8637F521904A0900D730EC = {
@@ -2027,6 +2040,7 @@
 				9C8D6B8E22C4A19500985D55 /* SGMetalRenderer.m in Sources */,
 				9CB01C97219E863D00B36CFA /* SGMutilDemuxer.m in Sources */,
 				9C86380E21904A0900D730EC /* SGMapping.m in Sources */,
+				9C22AE6C237AC19E004D33DE /* SGFrameReader.m in Sources */,
 				9CC2AD7A22A65C7B0095A081 /* SGPaddingDemuxer.m in Sources */,
 				9C6F902D219BE154001051CE /* SGMutableAsset.m in Sources */,
 				9C86381121904A0900D730EC /* SGFrameOutput.m in Sources */,
@@ -2110,6 +2124,7 @@
 				9C8D6B8F22C4A19500985D55 /* SGMetalRenderer.m in Sources */,
 				9CB01C98219E863D00B36CFA /* SGMutilDemuxer.m in Sources */,
 				9CD79EB52190068E00E39A7D /* SGMapping.m in Sources */,
+				9C22AE6D237AC19E004D33DE /* SGFrameReader.m in Sources */,
 				9CC2AD7B22A65C7B0095A081 /* SGPaddingDemuxer.m in Sources */,
 				9C6F902E219BE154001051CE /* SGMutableAsset.m in Sources */,
 				9CD79EB82190068E00E39A7D /* SGFrameOutput.m in Sources */,
@@ -2240,6 +2255,7 @@
 				9C3A686621CB77010031DDE1 /* SGSonic.m in Sources */,
 				9CAAC9A22133A6800065E364 /* SGVRViewport.m in Sources */,
 				9CB01C96219E863D00B36CFA /* SGMutilDemuxer.m in Sources */,
+				9C22AE6B237AC19E004D33DE /* SGFrameReader.m in Sources */,
 				9CF15E222011BC5400585326 /* SGAudioFrame.m in Sources */,
 				9CF63FC3211D8E33001B2684 /* SGAsset.m in Sources */,
 				9C20C5962333268100E183B2 /* SGPaddingSegment.m in Sources */,
@@ -2407,6 +2423,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -2465,6 +2482,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
