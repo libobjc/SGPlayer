@@ -94,18 +94,13 @@
         [self setup];
     }
     [cd fillToDescriptor:self->_codecDescriptor];
-    switch (packet.codecDescriptor.type) {
-        case SGCodecTypeDecode: {
-            NSArray<SGFrame *> *objs = [self processPacket:packet];
-            for (SGFrame *obj in objs) {
-                [ret addObject:obj];
-            }
+    if (packet.flags & SGDataFlagPadding) {
+        
+    } else {
+        NSArray<SGFrame *> *objs = [self processPacket:packet];
+        for (SGFrame *obj in objs) {
+            [ret addObject:obj];
         }
-            break;
-        case SGCodecTypePadding: {
-            
-        }
-            break;
     }
     self->_flags.outputCount += ret.count;
     return ret;
@@ -117,6 +112,7 @@
     if (objs.count == 0 &&
         self->_lastFrame &&
         self->_flags.outputCount == 0) {
+        self->_lastFrame.flags |= SGDataFlagPadding;
         objs = @[self->_lastFrame];
     } else {
         [self->_lastFrame unlock];

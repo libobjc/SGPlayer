@@ -88,33 +88,28 @@
         [self setup];
     }
     [cd fillToDescriptor:self->_codecDescriptor];
-    switch (packet.codecDescriptor.type) {
-        case SGCodecTypeDecode: {
-            NSArray<SGFrame *> *objs = [self processPacket:packet];
-            for (SGFrame *obj in objs) {
-                [ret addObject:obj];
-            }
+    if (packet.flags & SGDataFlagPadding) {
+        SGAudioDescriptor *ad = self->_audioDescriptor;
+        if (ad == nil) {
+            ad = [[SGAudioDescriptor alloc] init];
         }
-            break;
-        case SGCodecTypePadding: {
-            SGAudioDescriptor *ad = self->_audioDescriptor;
-            if (ad == nil) {
-                ad = [[SGAudioDescriptor alloc] init];
-            }
-            CMTime start = packet.timeStamp;
-            CMTime duration = packet.duration;
-            int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
-            if (nb_samples > 0) {
-                duration = CMTimeMake(nb_samples, ad.sampleRate);
-                SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
-                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
-                cd.track = packet.track;
-                [obj setCodecDescriptor:cd];
-                [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
-                [ret addObject:obj];
-            }
+        CMTime start = packet.timeStamp;
+        CMTime duration = packet.duration;
+        int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
+        if (nb_samples > 0) {
+            duration = CMTimeMake(nb_samples, ad.sampleRate);
+            SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+            cd.track = packet.track;
+            [obj setCodecDescriptor:cd];
+            [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+            [ret addObject:obj];
         }
-            break;
+    } else {
+        NSArray<SGFrame *> *objs = [self processPacket:packet];
+        for (SGFrame *obj in objs) {
+            [ret addObject:obj];
+        }
     }
     return ret;
 }

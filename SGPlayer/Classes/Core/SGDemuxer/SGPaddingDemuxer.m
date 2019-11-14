@@ -75,12 +75,12 @@
     CMTime timeStamp = self->_lasttime;
     CMTime duration = CMTimeSubtract(self->_duration, self->_lasttime);
     SGPacket *pkt = [[SGObjectPool sharedPool] objectWithClass:[SGPacket class] reuseName:[SGPacket commonReuseName]];
+    pkt.flags |= SGDataFlagPadding;
     pkt.core->size = 1;
     pkt.core->pts = av_rescale(AV_TIME_BASE, timeStamp.value, timeStamp.timescale);
     pkt.core->dts = av_rescale(AV_TIME_BASE, timeStamp.value, timeStamp.timescale);
     pkt.core->duration = av_rescale(AV_TIME_BASE, duration.value, duration.timescale);
     SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
-    cd.type = SGCodecTypePadding;
     cd.timebase = AV_TIME_BASE_Q;
     [pkt setCodecDescriptor:cd];
     [pkt fill];

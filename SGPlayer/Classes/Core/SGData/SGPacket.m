@@ -21,6 +21,7 @@
 
 @implementation SGPacket
 
+@synthesize flags = _flags;
 @synthesize reuseName = _reuseName;
 
 - (instancetype)init
@@ -93,6 +94,7 @@
         av_packet_unref(self->_core);
     }
     self->_size = 0;
+    self->_flags = 0;
     self->_track = nil;
     self->_duration = kCMTimeZero;
     self->_timeStamp = kCMTimeZero;
