@@ -169,8 +169,12 @@ SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_demux
             [obj unlock];
         }
     }
-    if (ret && frame) {
-        *frame = ret;
+    if (ret) {
+        if (frame) {
+            *frame = ret;
+        } else {
+            [ret unlock];
+        }
     }
     return err;
 }
