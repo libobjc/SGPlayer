@@ -22,8 +22,7 @@
  */
 - (instancetype)initWithTimebase:(AVRational)timebase
                         codecpar:(AVCodecParameters *)codecpar
-                      frameClass:(Class)frameClass
-                  frameReuseName:(NSString *)frameReuseName;
+                  frameGenerator:(__kindof SGFrame *(^)(void))frameGenerator;
 
 /**
  *

@@ -10,7 +10,6 @@
 #import "SGPacket+Internal.h"
 #import "SGTrack+Internal.h"
 #import "SGOptions.h"
-#import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGFFmpeg.h"
 #import "SGError.h"
@@ -115,7 +114,7 @@
     }
     if (self->_context) {
         int64_t timeStamp = CMTimeConvertScale(time, AV_TIME_BASE, kCMTimeRoundingMethod_RoundTowardZero).value;
-        int ret = av_seek_frame(self->_context, -1, timeStamp, AVSEEK_FLAG_BACKWARD);
+        int ret = avformat_seek_file(self->_context, -1, INT64_MIN, timeStamp, INT64_MAX, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
             if (CMTIME_IS_NUMERIC(toleranceBefor)) {
                 if (CMTimeCompare(self->_duration, kCMTimeZero) > 0) {
@@ -135,7 +134,7 @@
 - (NSError *)nextPacket:(SGPacket **)packet
 {
     if (self->_context) {
-        SGPacket *pkt = [[SGObjectPool sharedPool] objectWithClass:[SGPacket class] reuseName:[SGPacket commonReuseName]];
+        SGPacket *pkt = [SGPacket packet];
         int ret = av_read_frame(self->_context, pkt.core);
         if (ret < 0) {
             [pkt unlock];

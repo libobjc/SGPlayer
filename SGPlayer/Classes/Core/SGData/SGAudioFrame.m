@@ -22,20 +22,25 @@
 
 @implementation SGAudioFrame
 
-+ (instancetype)audioFrameWithDescriptor:(SGAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples
++ (instancetype)frame
 {
-    SGAudioFrame *frame = [[SGObjectPool sharedPool] objectWithClass:[SGAudioFrame class] reuseName:[SGAudioFrame commonReuseName]];
+    static NSString *name = @"SGAudioFrame";
+    return [[SGObjectPool sharedPool] objectWithClass:[self class] reuseName:name];
+}
+
++ (instancetype)frameWithDescriptor:(SGAudioDescriptor *)descriptor numberOfSamples:(int)numberOfSamples
+{
+    SGAudioFrame *frame = [SGAudioFrame frame];
     frame.core->format = descriptor.format;
+    frame.core->nb_samples = numberOfSamples;
     frame.core->sample_rate = descriptor.sampleRate;
     frame.core->channels = descriptor.numberOfChannels;
     frame.core->channel_layout = descriptor.channelLayout;
-    frame.core->nb_samples = numberOfSamples;
     int linesize = [descriptor linesize:numberOfSamples];
-    int numberOfPlanes = descriptor.numberOfPlanes;
-    for (int i = 0; i < numberOfPlanes; i++) {
+    for (int i = 0; i < descriptor.numberOfPlanes; i++) {
         uint8_t *data = av_mallocz(linesize);
         memset(data, 0, linesize);
-        AVBufferRef *buffer = av_buffer_create(data, linesize, av_buffer_default_free, NULL, 0);
+        AVBufferRef *buffer = av_buffer_create(data, linesize, NULL, NULL, 0);
         frame.core->buf[i] = buffer;
         frame.core->data[i] = buffer->data;
         frame.core->linesize[i] = buffer->size;
@@ -44,16 +49,6 @@
 }
 
 #pragma mark - Setter & Getter
-
-+ (NSString *)commonReuseName
-{
-    static NSString *ret = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        ret = NSStringFromClass(self.class);
-    });
-    return ret;
-}
 
 - (SGMediaType)type
 {
@@ -97,6 +92,18 @@
     timeStamp = [cd convertTimeStamp:timeStamp];
     decodeTimeStamp = [cd convertTimeStamp:decodeTimeStamp];
     [self fillWithTimeStamp:timeStamp decodeTimeStamp:decodeTimeStamp duration:duration];
+}
+
+- (void)fillWithFrame:(SGFrame *)frame
+{
+    [super fillWithFrame:frame];
+    SGAudioFrame *audioFrame = (SGAudioFrame *)frame;
+    self->_numberOfSamples = audioFrame->_numberOfSamples;
+    self->_descriptor = audioFrame->_descriptor.copy;
+    for (int i = 0; i < SGFramePlaneCount; i++) {
+        self->_data[i] = audioFrame->_data[i];
+        self->_linesize[i] = audioFrame->_linesize[i];
+    }
 }
 
 - (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration

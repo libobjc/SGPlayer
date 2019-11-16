@@ -120,6 +120,16 @@ static SGPacket *gFinishPacket = nil;
     };
 }
 
+- (SGObjectQueue *)packetQueueWithKey:(NSNumber *)key
+{
+    SGObjectQueue *queue = self->_packetQueues[key];
+    if (!queue) {
+        queue = [[SGObjectQueue alloc] init];
+        self->_packetQueues[key] = queue;
+    }
+    return queue;
+}
+
 #pragma mark - Interface
 
 - (BOOL)open
@@ -141,7 +151,9 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)close
 {
     return SGLockCondEXE11(self->_lock, ^BOOL {
-        return self->_flags.state != SGDecodeLoopStateClosed;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
         return [self setState:SGDecodeLoopStateClosed];
     }, ^BOOL(SGBlock block) {
@@ -158,7 +170,9 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)pause
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state == SGDecodeLoopStateDecoding;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state == SGDecodeLoopStateDecoding;
     }, ^SGBlock {
         return [self setState:SGDecodeLoopStatePaused];
     });
@@ -167,7 +181,9 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)resume
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state == SGDecodeLoopStatePaused;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state == SGDecodeLoopStatePaused;
     }, ^SGBlock {
         return [self setState:SGDecodeLoopStateDecoding];
     });
@@ -176,7 +192,9 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)flush
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state != SGDecodeLoopStateClosed;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
         [self->_packetQueues enumerateKeysAndObjectsUsingBlock:^(id key, SGObjectQueue *obj, BOOL *stop) {
             [obj flush];
@@ -198,10 +216,13 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)finish:(NSArray<SGTrack *> *)tracks
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state != SGDecodeLoopStateClosed;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
         for (SGTrack *obj in tracks) {
-            [self->_packetQueues[@(obj.index)] putObjectSync:gFinishPacket];
+            SGObjectQueue *queue = [self packetQueueWithKey:@(obj.index)];
+            [queue putObjectSync:gFinishPacket];
         }
         SGBlock b1 = ^{};
         SGBlock b2 = [self setCapacityIfNeeded];
@@ -217,16 +238,11 @@ static SGPacket *gFinishPacket = nil;
 - (BOOL)putPacket:(SGPacket *)packet
 {
     return SGLockCondEXE10(self->_lock, ^BOOL {
-        return self->_flags.state != SGDecodeLoopStateClosed;
+        return
+        self->_flags.state != SGDecodeLoopStateNone &&
+        self->_flags.state != SGDecodeLoopStateClosed;
     }, ^SGBlock {
-        SGObjectQueue *queue = self->_packetQueues[@(packet.track.index)];
-        if (!queue) {
-            queue = [[SGObjectQueue alloc] init];
-            id<SGDecodable> obj = [[self->_decodableClass alloc] init];
-            obj.options = self->_options;
-            [self->_decodables setObject:obj forKey:@(packet.track.index)];
-            [self->_packetQueues setObject:queue forKey:@(packet.track.index)];
-        }
+        SGObjectQueue *queue = [self packetQueueWithKey:@(packet.track.index)];
         [queue putObjectSync:packet];
         SGBlock b1 = ^{};
         SGBlock b2 = [self setCapacityIfNeeded];
@@ -285,6 +301,11 @@ static SGPacket *gFinishPacket = nil;
                 }
                 SGObjectQueue *queue = self->_packetQueues[index];
                 id<SGDecodable> decodable = self->_decodables[index];
+                if (!decodable) {
+                    decodable = [[self->_decodableClass alloc] init];
+                    decodable.options = self->_options;
+                    self->_decodables[index] = decodable;
+                }
                 SGPacket *packet = nil;
                 [queue getObjectAsync:&packet];
                 NSAssert(packet, @"Invalid Packet.");

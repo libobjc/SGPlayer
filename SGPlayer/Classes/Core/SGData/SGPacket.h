@@ -15,11 +15,6 @@
 /**
  *
  */
-+ (NSString *)commonReuseName;
-
-/**
- *
- */
 @property (nonatomic, readonly) void *coreptr;
 
 /**

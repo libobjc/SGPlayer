@@ -71,7 +71,7 @@
 
 - (SGAudioFrame *)frameWithStart:(CMTime)start nb_samples:(int)nb_samples
 {
-    SGAudioFrame *frame = [SGAudioFrame audioFrameWithDescriptor:self->_descriptor numberOfSamples:nb_samples];
+    SGAudioFrame *frame = [SGAudioFrame frameWithDescriptor:self->_descriptor numberOfSamples:nb_samples];
     uint8_t nb_planes = self->_descriptor.numberOfPlanes;
     uint8_t *data[SGFramePlaneCount] = {NULL};
     for (int i = 0; i < nb_planes; i++) {

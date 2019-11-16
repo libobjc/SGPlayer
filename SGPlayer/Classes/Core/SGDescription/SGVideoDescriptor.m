@@ -19,7 +19,6 @@
     obj->_cv_format = self->_cv_format;
     obj->_width = self->_width;
     obj->_height = self->_height;
-    obj->_colorspace = self->_colorspace;
     obj->_sampleAspectRatio = self->_sampleAspectRatio;
     return obj;
 }
@@ -31,7 +30,6 @@
         self->_cv_format = SGPixelFormatFF2AV(self->_format);
         self->_width = 0;
         self->_height = 0;
-        self->_colorspace = AVCOL_SPC_RGB;
         self->_sampleAspectRatio = (SGRational){0, 1};
     }
     return self;
@@ -44,7 +42,6 @@
         self->_cv_format = SGPixelFormatFF2AV(self->_format);
         self->_width = frame->width;
         self->_height = frame->height;
-        self->_colorspace = frame->colorspace;
         SGRational sar = {
             frame->sample_aspect_ratio.num,
             frame->sample_aspect_ratio.den,
@@ -90,6 +87,11 @@
     return (pixels1 > pixels2) ? size1 : size2;
 }
 
+- (int)numberOfPlanes
+{
+    return av_pix_fmt_count_planes(self->_format);
+}
+
 - (BOOL)isEqualToDescriptor:(SGVideoDescriptor *)descriptor
 {
     if (!descriptor) {
@@ -100,7 +102,6 @@
     self->_cv_format == descriptor->_cv_format &&
     self->_width == descriptor->_width &&
     self->_height == descriptor->_height &&
-    self->_colorspace == descriptor->_colorspace &&
     self->_sampleAspectRatio.num == descriptor->_sampleAspectRatio.num &&
     self->_sampleAspectRatio.den == descriptor->_sampleAspectRatio.den;
 }

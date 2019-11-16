@@ -9,6 +9,7 @@
 #import "SGVideoFrame.h"
 #import "SGFrame+Internal.h"
 #import "SGDescriptor+Internal.h"
+#import "SGObjectPool.h"
 #import "SGMapping.h"
 #import "SGSWScale.h"
 
@@ -24,17 +25,43 @@
 
 @implementation SGVideoFrame
 
-#pragma mark - Setter & Getter
-
-+ (NSString *)commonReuseName
++ (instancetype)frame
 {
-    static NSString *ret = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        ret = NSStringFromClass(self.class);
-    });
-    return ret;
+    static NSString *name = @"SGVideoFrame";
+    return [[SGObjectPool sharedPool] objectWithClass:[self class] reuseName:name];
 }
+
++ (instancetype)frameWithDescriptor:(SGVideoDescriptor *)descriptor
+{
+    SGVideoFrame *frame = [SGVideoFrame frame];
+    uint8_t *data[SGFramePlaneCount] = {nil};
+    int linesize[SGFramePlaneCount] = {0};
+    int result = av_image_alloc(data,
+                                linesize,
+                                descriptor.width,
+                                descriptor.height,
+                                descriptor.format,
+                                1);
+    if (result < 0) {
+        return frame;
+    }
+    frame.core->width = descriptor.width;
+    frame.core->height = descriptor.height;
+    frame.core->format = descriptor.format;
+    frame.core->sample_aspect_ratio = (AVRational){
+        descriptor.sampleAspectRatio.num,
+        descriptor.sampleAspectRatio.den
+    };
+    for (int i = 0; i < descriptor.numberOfPlanes; i++) {
+        AVBufferRef *buffer = av_buffer_create(data[i], linesize[i], NULL, NULL, 0);
+        frame.core->buf[i] = buffer;
+        frame.core->data[i] = buffer->data;
+        frame.core->linesize[i] = buffer->size;
+    }
+    return frame;
+}
+
+#pragma mark - Setter & Getter
 
 - (SGMediaType)type
 {
@@ -58,24 +85,20 @@
 
 - (SGPLFImage *)image
 {
-    if (self->_descriptor.width == 0 || self->_descriptor.height == 0) {
+    SGRational presentationSize = self->_descriptor.presentationSize;
+    if (presentationSize.num == 0 ||
+        presentationSize.den == 0) {
         return nil;
     }
-    SGVideoDescriptor *inputDescriptor = [self->_descriptor copy];
-    SGVideoDescriptor *outputDescriptor = [self->_descriptor copy];
-    outputDescriptor.format = AV_PIX_FMT_RGB24;
-    outputDescriptor.width = self->_descriptor.presentationSize.num;
-    outputDescriptor.height = self->_descriptor.presentationSize.den;
-    
+    SGVideoDescriptor *descriptor = [[SGVideoDescriptor alloc] init];
+    descriptor.format = AV_PIX_FMT_RGB24;
+    descriptor.width = presentationSize.num;
+    descriptor.height = presentationSize.den;
     const uint8_t *src_data[SGFramePlaneCount] = {nil};
     uint8_t *dst_data[SGFramePlaneCount] = {nil};
     int src_linesize[SGFramePlaneCount] = {0};
     int dst_linesize[SGFramePlaneCount] = {0};
-    
     if (self->_pixelBuffer) {
-        OSType type = CVPixelBufferGetPixelFormatType(self->_pixelBuffer);
-        inputDescriptor.format = SGPixelFormatAV2FF(type);
-        
         CVReturn error = CVPixelBufferLockBaseAddress(self->_pixelBuffer, kCVPixelBufferLock_ReadOnly);
         if (error != kCVReturnSuccess) {
             return nil;
@@ -98,25 +121,21 @@
             src_linesize[i] = frame->linesize[i];
         }
     }
-    
-    if (inputDescriptor.format == AV_PIX_FMT_NONE ||
-        !src_data[0] ||
+    if (!src_data[0] ||
         !src_linesize[0]) {
         return nil;
     }
-    
     SGSWScale *context = [[SGSWScale alloc] init];
-    context.inputDescriptor = inputDescriptor;
-    context.outputDescriptor = outputDescriptor;
+    context.inputDescriptor = self->_descriptor;
+    context.outputDescriptor = descriptor;
     if (![context open]) {
         return nil;
     }
-    
     int result = av_image_alloc(dst_data,
                                 (int *)dst_linesize,
-                                outputDescriptor.width,
-                                outputDescriptor.height,
-                                outputDescriptor.format,
+                                descriptor.width,
+                                descriptor.height,
+                                descriptor.format,
                                 1);
     if (result < 0) {
         return nil;
@@ -131,8 +150,8 @@
     }
     SGPLFImage *image = SGPLFImageWithRGBData(dst_data[0],
                                               dst_linesize[0],
-                                              outputDescriptor.width,
-                                              outputDescriptor.height);
+                                              descriptor.width,
+                                              descriptor.height);
     av_freep(dst_data);
     return image;
 }
@@ -156,6 +175,18 @@
 {
     [super fill];
     [self fillData];
+}
+
+- (void)fillWithFrame:(SGFrame *)frame
+{
+    [super fillWithFrame:frame];
+    SGVideoFrame *videoFrame = (SGVideoFrame *)frame;
+    self->_pixelBuffer = videoFrame->_pixelBuffer;
+    self->_descriptor = videoFrame->_descriptor.copy;
+    for (int i = 0; i < SGFramePlaneCount; i++) {
+        self->_data[i] = videoFrame->_data[i];
+        self->_linesize[i] = videoFrame->_linesize[i];
+    }
 }
 
 - (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration

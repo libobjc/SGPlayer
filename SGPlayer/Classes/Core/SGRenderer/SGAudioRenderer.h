@@ -7,8 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGAudioDescriptor.h"
 
 @interface SGAudioRenderer : NSObject
+
+/*!
+ @method supportedAudioDescriptor
+ @abstract
+    Indicates all supported audio descriptor.
+*/
++ (SGAudioDescriptor *)supportedAudioDescriptor;
 
 /*!
  @property volume

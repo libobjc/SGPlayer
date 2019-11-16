@@ -41,6 +41,11 @@
 @synthesize delegate = _delegate;
 @synthesize descriptor = _descriptor;
 
++ (SGAudioDescriptor *)supportedAudioDescriptor
+{
+    return [[SGAudioDescriptor alloc] init];
+}
+
 - (instancetype)init
 {
     NSAssert(NO, @"Invalid Function.");
@@ -55,7 +60,7 @@
         self->_volume = 1.0;
         self->_lock = [[NSLock alloc] init];
         self->_capacity = SGCapacityCreate();
-        self->_descriptor = [[SGAudioDescriptor alloc] init];
+        self->_descriptor = [SGAudioRenderer supportedAudioDescriptor];
     }
     return self;
 }

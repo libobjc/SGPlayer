@@ -325,7 +325,6 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
         self->_currentItem.demuxerOptions = self->_options.demuxer;
         self->_currentItem.decoderOptions = self->_options.decoder;
         self->_currentItem.processorOptions = self->_options.processor;
-        self->_currentItem.audioDescriptor = self->_audioRenderer.descriptor;
         return nil;
     }, ^BOOL(SGBlock block) {
         return [item open];

@@ -9,26 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "SGDefines.h"
 
-@class SGTrack;
-
-/*!
- @abstract
-   Get track with index.
-*/
-SGTrack *SGTrackWithIndex(NSArray<SGTrack *> *tracks, NSInteger index);
-
-/*!
- @abstract
-   Get track with media type.
-*/
-SGTrack *SGTrackWithType(NSArray<SGTrack *> *tracks, SGMediaType type);
-
-/*!
- @abstract
-   Get tracks with media types.
-*/
-NSArray<SGTrack *> *SGTracksWithType(NSArray<SGTrack *> *tracks, SGMediaType type);
-
 @interface SGTrack : NSObject <NSCopying>
 
 + (instancetype)new NS_UNAVAILABLE;
@@ -54,5 +34,26 @@ NSArray<SGTrack *> *SGTracksWithType(NSArray<SGTrack *> *tracks, SGMediaType typ
     Indicates the track index.
  */
 @property (nonatomic, readonly) NSInteger index;
+
+/*!
+ @method trackWithTracks:type:
+ @abstract
+   Get track with media type.
+*/
++ (SGTrack *)trackWithTracks:(NSArray<SGTrack *> *)tracks type:(SGMediaType)type;
+
+/*!
+ @method trackWithTracks:index:
+ @abstract
+   Get track with index.
+*/
++ (SGTrack *)trackWithTracks:(NSArray<SGTrack *> *)tracks index:(NSInteger)index;
+
+/*!
+ @method tracksWithTracks:type:
+ @abstract
+   Get tracks with media types.
+*/
++ (NSArray<SGTrack *> *)tracksWithTracks:(NSArray<SGTrack *> *)tracks type:(SGMediaType)type;
 
 @end

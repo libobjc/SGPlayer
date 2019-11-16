@@ -90,5 +90,6 @@ BOOL SGCapacityIsEmpty(SGCapacity c1)
     return
     c1.size == 0 &&
     c1.count == 0 &&
-    CMTimeCompare(c1.duration, kCMTimeZero) == 0;
+    (CMTIME_IS_INVALID(c1.duration) ||
+     CMTimeCompare(c1.duration, kCMTimeZero) == 0);
 }

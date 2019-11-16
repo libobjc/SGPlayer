@@ -67,14 +67,11 @@
 @property (nonatomic, readonly) SGRational presentationSize;
 
 /*!
- @property colorspace
+ @method numberOfPlanes
  @abstract
-    Indicates the colorspace.
- 
- @discussion
-    The value corresponds to AVColorSpace.
+    Get the number of planes.
  */
-@property (nonatomic) int colorspace;
+- (int)numberOfPlanes;
 
 /*!
  @method isEqualToDescriptor:

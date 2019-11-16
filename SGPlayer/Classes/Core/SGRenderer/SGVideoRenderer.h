@@ -27,6 +27,20 @@ typedef NS_ENUM(NSUInteger, SGScalingMode) {
 @interface SGVideoRenderer : NSObject
 
 /*!
+ @method supportedPixelFormats
+ @abstract
+    Indicates all supported pixel formats.
+*/
++ (NSArray<NSNumber *> *)supportedPixelFormats;
+
+/*!
+ @method isSupportedInputFormat:
+ @abstract
+    Indicates whether the input format is supported.
+*/
++ (BOOL)isSupportedInputFormat:(int)format;
+
+/*!
  @property view
  @abstract
     Indicates the view that displays content.

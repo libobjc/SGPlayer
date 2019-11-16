@@ -155,7 +155,7 @@
     CMTime duration = range.duration;
     SGAudioDescriptor *descriptor = self->_descriptor;
     int numberOfSamples = (int)CMTimeConvertScale(duration, descriptor.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
-    SGAudioFrame *ret = [SGAudioFrame audioFrameWithDescriptor:descriptor numberOfSamples:numberOfSamples];
+    SGAudioFrame *ret = [SGAudioFrame frameWithDescriptor:descriptor numberOfSamples:numberOfSamples];
     NSMutableDictionary *list = [NSMutableDictionary dictionary];
     for (SGTrack *obj in self->_tracks) {
         NSArray *frames = [self->_units[@(obj.index)] framesToEndTime:CMTimeRangeGetEnd(range)];

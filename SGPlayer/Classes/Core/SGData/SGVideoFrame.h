@@ -15,11 +15,6 @@
 /**
  *
  */
-+ (NSString *)commonReuseName;
-
-/**
- *
- */
 @property (nonatomic, strong, readonly) SGVideoDescriptor *descriptor;
 
 /**

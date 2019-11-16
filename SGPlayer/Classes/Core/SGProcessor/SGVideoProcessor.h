@@ -10,4 +10,9 @@
 
 @interface SGVideoProcessor : NSObject <SGProcessor>
 
+/**
+ *
+ */
+- (void)setSupportedPixelFormats:(NSArray<NSNumber *> *)supportedPixelFormats;
+
 @end

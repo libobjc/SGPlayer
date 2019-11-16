@@ -110,11 +110,6 @@ typedef NS_ENUM(NSUInteger, SGPlayerItemState) {
 /**
  *
  */
-@property (nonatomic, copy) SGAudioDescriptor *audioDescriptor;
-
-/**
- *
- */
 - (__kindof SGFrame *)copyAudioFrame:(SGTimeReader)timeReader;
 - (__kindof SGFrame *)copyVideoFrame:(SGTimeReader)timeReader;
 

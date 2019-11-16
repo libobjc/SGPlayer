@@ -24,6 +24,12 @@
 @synthesize flags = _flags;
 @synthesize reuseName = _reuseName;
 
++ (instancetype)frame
+{
+    NSAssert(NO, @"Subclass only.");
+    return nil;
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -113,6 +119,18 @@
     self->_duration = [cd convertDuration:duration];
     self->_timeStamp = [cd convertTimeStamp:timeStamp];
     self->_decodeTimeStamp = [cd convertTimeStamp:decodeTimeStamp];
+}
+
+- (void)fillWithFrame:(SGFrame *)frame
+{
+    av_frame_ref(self->_core, frame->_core);
+    self->_size = frame->_size;
+    self->_track = frame->_track;
+    self->_metadata = frame->_metadata;
+    self->_duration = frame->_duration;
+    self->_timeStamp = frame->_timeStamp;
+    self->_decodeTimeStamp = frame->_decodeTimeStamp;
+    self->_codecDescriptor = frame->_codecDescriptor.copy;
 }
 
 - (void)fillWithTimeStamp:(CMTime)timeStamp decodeTimeStamp:(CMTime)decodeTimeStamp duration:(CMTime)duration

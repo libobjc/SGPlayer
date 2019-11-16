@@ -24,6 +24,12 @@
 @synthesize flags = _flags;
 @synthesize reuseName = _reuseName;
 
++ (instancetype)packet
+{
+    static NSString *name = @"SGPacket";
+    return [[SGObjectPool sharedPool] objectWithClass:[self class] reuseName:name];
+}
+
 - (instancetype)init
 {
     if (self = [super init]) {
@@ -56,16 +62,6 @@
 }
 
 #pragma mark - Setter & Getter
-
-+ (NSString *)commonReuseName
-{
-    static NSString *ret = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        ret = NSStringFromClass(self.class);
-    });
-    return ret;
-}
 
 #pragma mark - Data
 

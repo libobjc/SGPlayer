@@ -9,6 +9,8 @@
 #import "SGProcessorOptions.h"
 #import "SGAudioProcessor.h"
 #import "SGVideoProcessor.h"
+#import "SGAudioRenderer.h"
+#import "SGVideoRenderer.h"
 
 @implementation SGProcessorOptions
 
@@ -25,6 +27,8 @@
     if (self = [super init]) {
         self->_audioClass = [SGAudioProcessor class];
         self->_videoClass = [SGVideoProcessor class];
+        self->_supportedPixelFormats = [SGVideoRenderer supportedPixelFormats];
+        self->_supportedAudioDescriptor = [SGAudioRenderer supportedAudioDescriptor];
     }
     return self;
 }

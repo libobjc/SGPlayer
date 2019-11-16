@@ -50,8 +50,9 @@
     self->_flags.needsAlignment = YES;
     self->_codecContext = [[SGDecodeContext alloc] initWithTimebase:self->_codecDescriptor.timebase
                                                            codecpar:self->_codecDescriptor.codecpar
-                                                         frameClass:[SGVideoFrame class]
-                                                     frameReuseName:[SGVideoFrame commonReuseName]];
+                                                     frameGenerator:^__kindof SGFrame *{
+        return [SGVideoFrame frame];
+    }];
     self->_codecContext.options = self->_options;
     [self->_codecContext open];
 }

@@ -52,6 +52,25 @@
 @synthesize rate = _rate;
 @synthesize delegate = _delegate;
 
++ (NSArray<NSNumber *> *)supportedPixelFormats
+{
+    return @[
+        @(AV_PIX_FMT_BGRA),
+        @(AV_PIX_FMT_NV12),
+        @(AV_PIX_FMT_YUV420P),
+    ];
+}
+
++ (BOOL)isSupportedInputFormat:(int)format
+{
+    for (NSNumber *obj in [self supportedPixelFormats]) {
+        if (format == obj.intValue) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (instancetype)init
 {
     NSAssert(NO, @"Invalid Function.");

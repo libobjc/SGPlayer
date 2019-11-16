@@ -47,8 +47,9 @@
     self->_flags.needsResetSonic = YES;
     self->_codecContext = [[SGDecodeContext alloc] initWithTimebase:self->_codecDescriptor.timebase
                                                            codecpar:self->_codecDescriptor.codecpar
-                                                         frameClass:[SGAudioFrame class]
-                                                     frameReuseName:[SGAudioFrame commonReuseName]];
+                                                     frameGenerator:^__kindof SGFrame *{
+        return [SGAudioFrame frame];
+    }];
     self->_codecContext.options = self->_options;
     [self->_codecContext open];
 }
@@ -98,7 +99,7 @@
         int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
         if (nb_samples > 0) {
             duration = CMTimeMake(nb_samples, ad.sampleRate);
-            SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+            SGAudioFrame *obj = [SGAudioFrame frameWithDescriptor:ad numberOfSamples:nb_samples];
             SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = packet.track;
             [obj setCodecDescriptor:cd];
@@ -202,7 +203,7 @@
             int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             if (nb_samples > 0) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
-                SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+                SGAudioFrame *obj1 = [SGAudioFrame frameWithDescriptor:ad numberOfSamples:nb_samples];
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
                 [obj1 setCodecDescriptor:cd];
@@ -216,7 +217,7 @@
             int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             if (nb_samples < obj.numberOfSamples) {
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
-                SGAudioFrame *obj1 = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+                SGAudioFrame *obj1 = [SGAudioFrame frameWithDescriptor:ad numberOfSamples:nb_samples];
                 for (int i = 0; i < ad.numberOfPlanes; i++) {
                     memcpy(obj1.core->data[i], obj.core->data[i], obj1.core->linesize[i]);
                 }
@@ -242,7 +243,7 @@
     CMTime start = CMTimeMake(pts * cd.timebase.num, cd.timebase.den);
     CMTime duration = CMTimeMake(nb_samples, ad.sampleRate);
     start = [cd convertTimeStamp:start];
-    SGAudioFrame *obj = [SGAudioFrame audioFrameWithDescriptor:ad numberOfSamples:nb_samples];
+    SGAudioFrame *obj = [SGAudioFrame frameWithDescriptor:ad numberOfSamples:nb_samples];
     [self->_sonic read:obj.core->data nb_samples:nb_samples];
     SGCodecDescriptor *cd1 = [[SGCodecDescriptor alloc] init];
     cd1.track = cd.track;
