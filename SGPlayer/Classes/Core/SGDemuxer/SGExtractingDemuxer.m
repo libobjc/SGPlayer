@@ -41,7 +41,7 @@
         self->_scale = scale;
         self->_index = index;
         self->_demuxable = demuxable;
-        self->_timeRange = SGCMTimeRangeFit(timeRange);
+        self->_timeRange = SGCMTimeRangeFitting(timeRange);
         self->_packetQueue = [[SGObjectQueue alloc] init];
     }
     return self;
@@ -72,8 +72,14 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             break;
         }
     }
-    CMTime start = CMTimeMaximum(self->_timeRange.start, kCMTimeZero);
-    CMTime duration = CMTimeMinimum(self->_timeRange.duration, CMTimeSubtract(self->_demuxable.duration, start));
+    CMTime start = self->_timeRange.start;
+    if (!CMTIME_IS_NUMERIC(start)) {
+        start = kCMTimeZero;
+    }
+    CMTime duration = self->_timeRange.duration;
+    if (!CMTIME_IS_NUMERIC(duration)) {
+        duration = CMTimeSubtract(self->_demuxable.duration, start);
+    }
     self->_timeRange = CMTimeRangeMake(start, duration);
     self->_duration = SGCMTimeMultiply(duration, self->_scale);
     self->_scaleLayout = [[SGTimeLayout alloc] initWithScale:self->_scale];

@@ -17,5 +17,5 @@ CMTime SGCMTimeMultiply(CMTime time, CMTime multiplier);
 CMTime SGCMTimeDivide(CMTime time, CMTime divisor);
 CMTime SGCMTimeDivide(CMTime time, CMTime divisor);
 
-CMTimeRange SGCMTimeRangeFit(CMTimeRange timeRange);
+CMTimeRange SGCMTimeRangeFitting(CMTimeRange timeRange);
 CMTimeRange SGCMTimeRangeGetIntersection(CMTimeRange timeRange1, CMTimeRange timeRange2);

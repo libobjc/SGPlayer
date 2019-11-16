@@ -22,7 +22,8 @@
     } _flags;
 }
 
-@property (nonatomic, strong, readonly) SGVideoFrame *lastFrame;
+@property (nonatomic, strong, readonly) SGVideoFrame *lastDecodeFrame;
+@property (nonatomic, strong, readonly) SGVideoFrame *lastOutputFrame;
 @property (nonatomic, strong, readonly) SGDecodeContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
@@ -64,8 +65,10 @@
     self->_flags.needsAlignment = YES;
     [self->_codecContext close];
     self->_codecContext = nil;
-    [self->_lastFrame unlock];
-    self->_lastFrame = nil;
+    [self->_lastDecodeFrame unlock];
+    self->_lastDecodeFrame = nil;
+    [self->_lastOutputFrame unlock];
+    self->_lastOutputFrame = nil;
 }
 
 #pragma mark - Control
@@ -76,8 +79,10 @@
     self->_flags.needsKeyFrame = YES;
     self->_flags.needsAlignment = YES;
     [self->_codecContext flush];
-    [self->_lastFrame unlock];
-    self->_lastFrame = nil;
+    [self->_lastDecodeFrame unlock];
+    self->_lastDecodeFrame = nil;
+    [self->_lastOutputFrame unlock];
+    self->_lastOutputFrame = nil;
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
@@ -103,6 +108,11 @@
             [ret addObject:obj];
         }
     }
+    if (ret.firstObject) {
+        [self->_lastOutputFrame unlock];
+        self->_lastOutputFrame = ret.firstObject;
+        [self->_lastOutputFrame lock];
+    }
     self->_flags.outputCount += ret.count;
     return ret;
 }
@@ -111,14 +121,50 @@
 {
     NSArray<SGFrame *> *objs = [self processPacket:nil];
     if (objs.count == 0 &&
-        self->_lastFrame &&
+        self->_lastDecodeFrame &&
         self->_flags.outputCount == 0) {
-        self->_lastFrame.flags |= SGDataFlagPadding;
-        objs = @[self->_lastFrame];
-    } else {
-        [self->_lastFrame unlock];
+        self->_lastDecodeFrame.flags |= SGDataFlagPadding;
+        objs = @[self->_lastDecodeFrame];
+        [self->_lastDecodeFrame lock];
+    } else if (objs.count == 0 &&
+               self->_lastOutputFrame) {
+        CMTimeRange timeRange = self->_codecDescriptor.timeRange;
+        if (CMTIME_IS_NUMERIC(timeRange.start) &&
+            CMTIME_IS_NUMERIC(timeRange.duration)) {
+            CMTime end = CMTimeRangeGetEnd(timeRange);
+            CMTime lastEnd = CMTimeAdd(self->_lastOutputFrame.timeStamp, self->_lastOutputFrame.duration);
+            CMTime duration = CMTimeSubtract(end, lastEnd);
+            if (CMTimeCompare(duration, kCMTimeZero) > 0) {
+                SGVideoFrame *frame = [SGVideoFrame frame];
+                [frame fillWithFrame:self->_lastOutputFrame];
+                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+                cd.track = frame.track;
+                cd.metadata = frame.codecDescriptor.metadata;
+                [frame setCodecDescriptor:cd];
+                [frame fillWithTimeStamp:lastEnd decodeTimeStamp:lastEnd duration:duration];
+                objs = @[frame];
+            }
+        }
+    } else if (objs.count > 0) {
+        CMTimeRange timeRange = self->_codecDescriptor.timeRange;
+        if (CMTIME_IS_NUMERIC(timeRange.start) &&
+            CMTIME_IS_NUMERIC(timeRange.duration)) {
+            CMTime end = CMTimeRangeGetEnd(timeRange);
+            CMTime lastEnd = CMTimeAdd(objs.lastObject.timeStamp, objs.lastObject.duration);
+            CMTime duration = CMTimeSubtract(end, lastEnd);
+            if (CMTimeCompare(duration, kCMTimeZero) > 0) {
+                SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+                cd.track = objs.lastObject.track;
+                cd.metadata = objs.lastObject.codecDescriptor.metadata;
+                [objs.lastObject setCodecDescriptor:cd];
+                [objs.lastObject fillWithTimeStamp:objs.lastObject.timeStamp decodeTimeStamp:objs.lastObject.timeStamp duration:CMTimeSubtract(end, objs.lastObject.timeStamp)];
+            }
+        }
     }
-    self->_lastFrame = nil;
+    [self->_lastDecodeFrame unlock];
+    self->_lastDecodeFrame = nil;
+    [self->_lastOutputFrame unlock];
+    self->_lastOutputFrame = nil;
     self->_flags.outputCount += objs.count;
     return objs;
 }
@@ -177,9 +223,9 @@
     if (!SGCMTimeIsValid(timeRange.start, NO)) {
         return frames;
     }
-    [self->_lastFrame unlock];
-    self->_lastFrame = frames.lastObject;
-    [self->_lastFrame lock];
+    [self->_lastDecodeFrame unlock];
+    self->_lastDecodeFrame = frames.lastObject;
+    [self->_lastDecodeFrame lock];
     NSMutableArray *ret = [NSMutableArray array];
     for (SGFrame *obj in frames) {
         if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {
