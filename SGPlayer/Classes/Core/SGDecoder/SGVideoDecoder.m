@@ -91,7 +91,7 @@
     SGCodecDescriptor *cd = packet.codecDescriptor;
     NSAssert(cd, @"Invalid Codec Descriptor.");
     if (![cd isEqualCodecContextToDescriptor:self->_codecDescriptor]) {
-        NSArray<SGFrame *> *objs = [self processPacket:nil];
+        NSArray<SGFrame *> *objs = [self finish];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
@@ -108,9 +108,9 @@
             [ret addObject:obj];
         }
     }
-    if (ret.firstObject) {
+    if (ret.lastObject) {
         [self->_lastOutputFrame unlock];
-        self->_lastOutputFrame = ret.firstObject;
+        self->_lastOutputFrame = ret.lastObject;
         [self->_lastOutputFrame lock];
     }
     self->_flags.outputCount += ret.count;
