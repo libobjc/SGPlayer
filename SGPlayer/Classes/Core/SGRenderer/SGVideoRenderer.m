@@ -25,6 +25,7 @@
         NSUInteger framesFetched;
         NSUInteger framesDisplayed;
         NSTimeInterval currentFrameEndTime;
+        NSTimeInterval currentFrameBeginTime;
     } _flags;
     SGCapacity _capacity;
 }
@@ -198,6 +199,8 @@
         self->_flags.hasNewFrame = NO;
         self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
+        self->_flags.currentFrameEndTime = 0;
+        self->_flags.currentFrameBeginTime = 0;
         self->_capacity = SGCapacityCreate();
         return ^{b1();};
     }, ^BOOL(SGBlock block) {
@@ -252,6 +255,8 @@
         self->_flags.hasNewFrame = NO;
         self->_flags.framesFetched = 0;
         self->_flags.framesDisplayed = 0;
+        self->_flags.currentFrameEndTime = 0;
+        self->_flags.currentFrameBeginTime = 0;
         return nil;
     }, ^BOOL(SGBlock block) {
         self->_metalView.paused = NO;
@@ -326,6 +331,7 @@
             self->_currentFrame = newFrame;
             self->_flags.hasNewFrame = YES;
             self->_flags.framesFetched += 1;
+            self->_flags.currentFrameBeginTime = currentMediaTime;
             self->_flags.currentFrameEndTime = currentMediaTime + CMTimeGetSeconds(duration);
             if (self->_frameOutput) {
                 [newFrame lock];
@@ -338,7 +344,12 @@
                 [self->_clock setVideoTime:time];
             };
         } else if (currentMediaTime < self->_flags.currentFrameEndTime) {
+            CMTime time = self->_currentFrame.timeStamp;
+            time = CMTimeAdd(time, SGCMTimeMakeWithSeconds(currentMediaTime - self->_flags.currentFrameBeginTime));
             capacity.duration = SGCMTimeMakeWithSeconds(self->_flags.currentFrameEndTime - currentMediaTime);
+            b2 = ^{
+                [self->_clock setVideoTime:time];
+            };
         }
         if (!SGCapacityIsEqual(self->_capacity, capacity)) {
             self->_capacity = capacity;
