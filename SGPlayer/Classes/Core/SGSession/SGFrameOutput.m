@@ -42,9 +42,9 @@
 {
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
-        self->_audioDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGAudioDecoder class]];
+        self->_audioDecoder = [[SGDecodeLoop alloc] initWithDecoderClass:[SGAudioDecoder class]];
         self->_audioDecoder.delegate = self;
-        self->_videoDecoder = [[SGDecodeLoop alloc] initWithDecodableClass:[SGVideoDecoder class]];
+        self->_videoDecoder = [[SGDecodeLoop alloc] initWithDecoderClass:[SGVideoDecoder class]];
         self->_videoDecoder.delegate = self;
         self->_packetOutput = [[SGPacketOutput alloc] initWithAsset:asset];
         self->_packetOutput.delegate = self;

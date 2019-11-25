@@ -110,7 +110,7 @@
     if (!descriptor) {
         return NO;
     }
-    if (descriptor.track != self->_track) {
+    if (descriptor->_track != self->_track) {
         return NO;
     }
     if (descriptor->_codecpar != self->_codecpar) {

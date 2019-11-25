@@ -31,7 +31,7 @@ typedef NS_ENUM(NSUInteger, SGDecodeLoopState) {
 /**
  *
  */
-- (instancetype)initWithDecodableClass:(Class)decodableClass;
+- (instancetype)initWithDecoderClass:(Class)decoderClass;
 
 /**
  *

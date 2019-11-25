@@ -1,184 +1,208 @@
 //
 //  SGDecodeContext.m
-//  SGPlayer iOS
+//  KTVMediaKitDemo
 //
-//  Created by Single on 2018/8/16.
-//  Copyright © 2018 single. All rights reserved.
+//  Created by Single on 2019/11/18.
+//  Copyright © 2019 Single. All rights reserved.
 //
 
 #import "SGDecodeContext.h"
 #import "SGPacket+Internal.h"
-#import "SGFrame+Internal.h"
-#import "SGMapping.h"
-#import "SGOptions.h"
-#import "SGError.h"
-#import "SGMacro.h"
+#import "SGObjectQueue.h"
+#import "SGDecodable.h"
+
+static SGPacket *gFlushPacket = nil;
+static SGPacket *gFinishPacket = nil;
 
 @interface SGDecodeContext ()
 
-@property (nonatomic, readonly) AVRational timebase;
-@property (nonatomic, readonly) AVCodecParameters *codecpar;
-@property (nonatomic, readonly) AVCodecContext *codecContext;
-@property (nonatomic, copy, readonly) __kindof SGFrame *(^frameGenerator)(void);
+@property (nonatomic, readonly) BOOL needsFlush;
+@property (nonatomic, readonly) NSInteger decodeIndex;
+@property (nonatomic, readonly) NSInteger predecodeIndex;
+@property (nonatomic, copy, readonly) Class decoderClass;
+@property (nonatomic, strong, readonly) id<SGDecodable> decoder;
+@property (nonatomic, strong, readonly) id<SGDecodable> predecoder;
+@property (nonatomic, strong, readonly) NSArray<SGFrame *> *predecodeFrames;
+@property (nonatomic, strong, readonly) NSMutableArray<SGObjectQueue *> *packetQueues;
+@property (nonatomic, strong, readonly) NSMutableArray<SGCodecDescriptor *> *codecDescriptors;
 
 @end
 
 @implementation SGDecodeContext
 
-- (instancetype)initWithTimebase:(AVRational)timebase
-                        codecpar:(AVCodecParameters *)codecpar
-                  frameGenerator:(__kindof SGFrame *(^)(void))frameGenerator
+- (instancetype)initWithDecoderClass:(Class)decoderClass
 {
     if (self = [super init]) {
-        self->_timebase = timebase;
-        self->_codecpar = codecpar;
-        self->_frameGenerator = frameGenerator;
-        self->_options = [SGOptions sharedOptions].decoder.copy;
+        static dispatch_once_t onceToken;
+        dispatch_once(&onceToken, ^{
+            gFlushPacket = [[SGPacket alloc] init];
+            gFinishPacket = [[SGPacket alloc] init];
+            [gFlushPacket lock];
+            [gFinishPacket lock];
+        });
+        self->_needsFlush = NO;
+        self->_decodeIndex = 0;
+        self->_predecodeIndex = 0;
+        self->_decoderClass = decoderClass;
+        self->_decodeTimeStamp = kCMTimeInvalid;
+        self->_packetQueues = [NSMutableArray array];
+        self->_codecDescriptors = [NSMutableArray array];
     }
     return self;
 }
 
-- (void)dealloc
+- (SGCapacity)capacity
 {
-    [self close];
+    SGCapacity capacity = SGCapacityCreate();
+    for (SGObjectQueue *obj in self->_packetQueues) {
+        capacity = SGCapacityAdd(capacity, obj.capacity);
+    }
+    return capacity;
 }
 
-#pragma mark - Interface
-
-- (BOOL)open
+- (void)putPacket:(SGPacket *)packet
 {
-    if (!self->_codecpar) {
+    SGObjectQueue *packetQueue = self->_packetQueues.lastObject;
+    SGCodecDescriptor *codecDescriptor = self->_codecDescriptors.lastObject;
+    if (![codecDescriptor isEqualCodecContextToDescriptor:packet.codecDescriptor]) {
+        packetQueue = [[SGObjectQueue alloc] init];
+        codecDescriptor = [packet.codecDescriptor copy];
+        [self->_packetQueues addObject:packetQueue];
+        [self->_codecDescriptors addObject:codecDescriptor];
+    }
+    [packetQueue putObjectSync:packet];
+}
+
+- (BOOL)needsPredecode
+{
+    if (self->_predecodeFrames.count > 0) {
         return NO;
     }
-    self->_codecContext = [self createCcodecContext];
-    if (!self->_codecContext) {
-        return NO;
+    for (NSInteger i = self->_decodeIndex + 1; i < self->_packetQueues.count; i++) {
+        SGCodecDescriptor *codecDescriptor = self->_codecDescriptors[i];
+        if (codecDescriptor.codecpar &&
+            codecDescriptor.codecpar->codec_type == AVMEDIA_TYPE_VIDEO &&
+            (codecDescriptor.codecpar->codec_id == AV_CODEC_ID_H264 ||
+             codecDescriptor.codecpar->codec_id == AV_CODEC_ID_H265)) {
+            self->_predecodeIndex = i;
+            return self->_packetQueues[i].capacity.count > 0;
+        }
     }
-    return YES;
+    return NO;
 }
 
-- (void)close
+- (void)predecode:(SGBlock)lock unlock:(SGBlock)unlock
 {
-    if (self->_codecContext) {
-        avcodec_free_context(&self->_codecContext);
-        self->_codecContext = nil;
+    SGPacket *packet = nil;
+    SGObjectQueue *queue = self->_packetQueues[self->_predecodeIndex];
+    if ([queue getObjectAsync:&packet]) {
+        if (!self->_predecoder) {
+            self->_predecoder = [[self->_decoderClass alloc] init];
+            self->_predecoder.options = self->_options;
+        }
+        self->_predecodeFrames = [self->_predecoder decode:packet];
+        [packet unlock];
     }
 }
 
-- (void)flush
+- (NSArray<SGFrame *> *)decode:(SGBlock)lock unlock:(SGBlock)unlock
 {
-    if (self->_codecContext) {
-        avcodec_flush_buffers(self->_codecContext);
-    }
-}
-
-- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
-{
-    if (!self->_codecContext) {
-        return nil;
-    }
-    int result = avcodec_send_packet(self->_codecContext, packet ? packet.core : NULL);
-    if (result < 0) {
-        return nil;
-    }
-    NSMutableArray *array = [NSMutableArray array];
-    while (result != AVERROR(EAGAIN)) {
-        __kindof SGFrame *frame = self->_frameGenerator();
-        result = avcodec_receive_frame(self->_codecContext, frame.core);
-        if (result < 0) {
-            [frame unlock];
+    NSMutableArray<SGFrame *> *objs = [NSMutableArray array];
+    SGPacket *packet = nil;
+    SGObjectQueue *queue = nil;
+    for (SGObjectQueue *obj in self->_packetQueues) {
+        if ([obj getObjectAsync:&packet]) {
+            queue = obj;
             break;
-        } else {
-            [array addObject:frame];
         }
     }
-    return array;
-}
-
-#pragma mark - AVCodecContext
-
-- (AVCodecContext *)createCcodecContext
-{
-    AVCodecContext *codecContext = avcodec_alloc_context3(NULL);
-    if (!codecContext) {
-        return nil;
-    }
-    codecContext->opaque = (__bridge void *)self;
-    
-    int result = avcodec_parameters_to_context(codecContext, self->_codecpar);
-    NSError *error = SGGetFFError(result, SGActionCodeCodecSetParametersToContext);
-    if (error) {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    codecContext->pkt_timebase = self->_timebase;
-    if ((self->_options.hardwareDecodeH264 && self->_codecpar->codec_id == AV_CODEC_ID_H264) ||
-        (self->_options.hardwareDecodeH265 && self->_codecpar->codec_id == AV_CODEC_ID_H265)) {
-        codecContext->get_format = SGDecodeContextGetFormat;
-    }
-    
-    AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
-    if (!codec) {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    codecContext->codec_id = codec->id;
-    
-    AVDictionary *opts = SGDictionaryNS2FF(self->_options.options);
-    if (self->_options.threadsAuto &&
-        !av_dict_get(opts, "threads", NULL, 0)) {
-        av_dict_set(&opts, "threads", "auto", 0);
-    }
-    if (self->_options.refcountedFrames &&
-        !av_dict_get(opts, "refcounted_frames", NULL, 0) &&
-        (codecContext->codec_type == AVMEDIA_TYPE_VIDEO || codecContext->codec_type == AVMEDIA_TYPE_AUDIO)) {
-        av_dict_set(&opts, "refcounted_frames", "1", 0);
-    }
-    
-    result = avcodec_open2(codecContext, codec, &opts);
-    
-    if (opts) {
-        av_dict_free(&opts);
-    }
-    
-    error = SGGetFFError(result, SGActionCodeCodecOpen2);
-    if (error) {
-        avcodec_free_context(&codecContext);
-        return nil;
-    }
-    
-    return codecContext;
-}
-
-static enum AVPixelFormat SGDecodeContextGetFormat(struct AVCodecContext *s, const enum AVPixelFormat *fmt)
-{
-    SGDecodeContext *self = (__bridge SGDecodeContext *)s->opaque;
-    for (int i = 0; fmt[i] != AV_PIX_FMT_NONE; i++) {
-        if (fmt[i] == AV_PIX_FMT_VIDEOTOOLBOX) {
-            AVBufferRef *device_ctx = av_hwdevice_ctx_alloc(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
-            if (!device_ctx) {
-                break;
-            }
-            AVBufferRef *frames_ctx = av_hwframe_ctx_alloc(device_ctx);
-            av_buffer_unref(&device_ctx);
-            if (!frames_ctx) {
-                break;
-            }
-            AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
-            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredPixelFormat);
-            frames_ctx_data->width = s->width;
-            frames_ctx_data->height = s->height;
-            int err = av_hwframe_ctx_init(frames_ctx);
-            if (err < 0) {
-                av_buffer_unref(&frames_ctx);
-                break;
-            }
-            s->hw_frames_ctx = frames_ctx;
-            return fmt[i];
+    NSAssert(packet, @"Invalid Packet.");
+    if (packet == gFlushPacket) {
+        self->_needsFlush = NO;
+        self->_decodeIndex = 0;
+        self->_decodeTimeStamp = kCMTimeInvalid;
+        [self->_packetQueues removeObjectAtIndex:0];
+        [self->_codecDescriptors removeObjectAtIndex:0];
+        for (SGFrame *obj in self->_predecodeFrames) {
+            [obj unlock];
         }
+        self->_predecodeFrames = nil;
+        self->_predecodeIndex = 0;
+        unlock();
+        [self->_decoder flush];
+        [self->_predecoder flush];
+        lock();
+    } else if (packet == gFinishPacket) {
+        [self->_packetQueues removeLastObject];
+        [self->_codecDescriptors removeLastObject];
+        unlock();
+        [objs addObjectsFromArray:[self->_decoder finish]];
+        [objs addObjectsFromArray:self->_predecodeFrames];
+        self->_predecodeFrames = nil;
+        self->_predecodeIndex = 0;
+        lock();
+    } else {
+        self->_decodeTimeStamp = packet.decodeTimeStamp;
+        unlock();
+        NSInteger index = [self->_packetQueues indexOfObject:queue];
+        if (self->_decodeIndex < index) {
+            self->_decodeIndex = index;
+            [objs addObjectsFromArray:[self->_decoder finish]];
+            if (self->_predecodeIndex <= index) {
+                if (self->_predecodeIndex == index) {
+                    self->_decoder = self->_predecoder;
+                }
+                [objs addObjectsFromArray:self->_predecodeFrames];
+                self->_predecodeFrames = nil;
+                self->_predecodeIndex = 0;
+                self->_predecoder = nil;
+            }
+        }
+        id<SGDecodable> decoder = self->_decoder;
+        if (!decoder) {
+            decoder = [[self->_decoderClass alloc] init];
+            decoder.options = self->_options;
+            self->_decoder = decoder;
+        }
+        [objs addObjectsFromArray:[decoder decode:packet]];
+        [packet unlock];
+        lock();
     }
-    return fmt[0];
+    if (self->_needsFlush) {
+        for (SGFrame *obj in objs) {
+            [obj unlock];
+        }
+        [objs removeAllObjects];
+    }
+    return objs.count ? objs.copy : nil;
+}
+
+- (void)setNeedsFlush
+{
+    self->_needsFlush = YES;
+    [self->_packetQueues removeAllObjects];
+    [self->_codecDescriptors removeAllObjects];
+    [self->_packetQueues addObject:[[SGObjectQueue alloc] init]];
+    [self->_codecDescriptors addObject:[[SGCodecDescriptor alloc] init]];
+    [self->_packetQueues.lastObject putObjectSync:gFlushPacket];
+}
+
+- (void)markAsFinished
+{
+    [self->_packetQueues addObject:[[SGObjectQueue alloc] init]];
+    [self->_codecDescriptors addObject:[[SGCodecDescriptor alloc] init]];
+    [self->_packetQueues.lastObject putObjectSync:gFinishPacket];
+}
+
+- (void)destory
+{
+    [self->_packetQueues removeAllObjects];
+    [self->_codecDescriptors removeAllObjects];
+    for (SGFrame *obj in self->_predecodeFrames) {
+        [obj unlock];
+    }
+    self->_predecodeFrames = nil;
+    self->_predecodeIndex = 0;
 }
 
 @end

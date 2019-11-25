@@ -9,7 +9,7 @@
 #import "SGVideoDecoder.h"
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
-#import "SGDecodeContext.h"
+#import "SGCodecContext.h"
 #import "SGVideoFrame.h"
 
 @interface SGVideoDecoder ()
@@ -18,13 +18,14 @@
     struct {
         BOOL needsKeyFrame;
         BOOL needsAlignment;
+        BOOL sessionFinished;
         NSUInteger outputCount;
     } _flags;
 }
 
 @property (nonatomic, strong, readonly) SGVideoFrame *lastDecodeFrame;
 @property (nonatomic, strong, readonly) SGVideoFrame *lastOutputFrame;
-@property (nonatomic, strong, readonly) SGDecodeContext *codecContext;
+@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
 @end
@@ -49,9 +50,9 @@
 - (void)setup
 {
     self->_flags.needsAlignment = YES;
-    self->_codecContext = [[SGDecodeContext alloc] initWithTimebase:self->_codecDescriptor.timebase
-                                                           codecpar:self->_codecDescriptor.codecpar
-                                                     frameGenerator:^__kindof SGFrame *{
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescriptor.timebase
+                                                          codecpar:self->_codecDescriptor.codecpar
+                                                    frameGenerator:^__kindof SGFrame *{
         return [SGVideoFrame frame];
     }];
     self->_codecContext.options = self->_options;
@@ -63,6 +64,7 @@
     self->_flags.outputCount = 0;
     self->_flags.needsKeyFrame = YES;
     self->_flags.needsAlignment = YES;
+    self->_flags.sessionFinished = NO;
     [self->_codecContext close];
     self->_codecContext = nil;
     [self->_lastDecodeFrame unlock];
@@ -78,6 +80,7 @@
     self->_flags.outputCount = 0;
     self->_flags.needsKeyFrame = YES;
     self->_flags.needsAlignment = YES;
+    self->_flags.sessionFinished = NO;
     [self->_codecContext flush];
     [self->_lastDecodeFrame unlock];
     self->_lastDecodeFrame = nil;
@@ -98,6 +101,9 @@
         self->_codecDescriptor = [cd copy];
         [self destroy];
         [self setup];
+    }
+    if (self->_flags.sessionFinished) {
+        return nil;
     }
     [cd fillToDescriptor:self->_codecDescriptor];
     if (packet.flags & SGDataFlagPadding) {
@@ -253,11 +259,14 @@
             CMTime start = obj.timeStamp;
             CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), start);
             if (CMTimeCompare(obj.duration, duration) > 0) {
+                self->_flags.sessionFinished = YES;
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
                 cd.metadata = obj.codecDescriptor.metadata;
                 [obj setCodecDescriptor:cd];
                 [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+            } else if (CMTimeCompare(obj.duration, duration) == 0) {
+                self->_flags.sessionFinished = YES;
             }
         }
         [ret addObject:obj];

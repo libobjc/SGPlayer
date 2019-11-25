@@ -10,7 +10,7 @@
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGDescriptor+Internal.h"
-#import "SGDecodeContext.h"
+#import "SGCodecContext.h"
 #import "SGAudioFrame.h"
 #import "SGSonic.h"
 
@@ -26,7 +26,7 @@
 }
 
 @property (nonatomic, strong, readonly) SGSonic *sonic;
-@property (nonatomic, strong, readonly) SGDecodeContext *codecContext;
+@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 @property (nonatomic, strong, readonly) SGAudioDescriptor *audioDescriptor;
 
@@ -46,9 +46,9 @@
     self->_flags.nextTimeStamp = 0;
     self->_flags.needsAlignment = YES;
     self->_flags.needsResetSonic = YES;
-    self->_codecContext = [[SGDecodeContext alloc] initWithTimebase:self->_codecDescriptor.timebase
-                                                           codecpar:self->_codecDescriptor.codecpar
-                                                     frameGenerator:^__kindof SGFrame *{
+    self->_codecContext = [[SGCodecContext alloc] initWithTimebase:self->_codecDescriptor.timebase
+                                                          codecpar:self->_codecDescriptor.codecpar
+                                                    frameGenerator:^__kindof SGFrame *{
         return [SGAudioFrame frame];
     }];
     self->_codecContext.options = self->_options;

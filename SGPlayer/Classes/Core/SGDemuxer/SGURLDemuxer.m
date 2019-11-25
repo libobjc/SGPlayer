@@ -17,6 +17,8 @@
 @interface SGURLDemuxer ()
 
 @property (nonatomic, readonly) CMTime basetime;
+@property (nonatomic, readonly) CMTime seektime;
+@property (nonatomic, readonly) CMTime seektimeMinimum;
 @property (nonatomic, readonly) AVFormatContext *context;
 
 @end
@@ -33,9 +35,11 @@
 {
     if (self = [super init]) {
         self->_URL = [URL copy];
-        self->_options = [SGOptions sharedOptions].demuxer.copy;
-        self->_basetime = kCMTimeNegativeInfinity;
         self->_duration = kCMTimeInvalid;
+        self->_basetime = kCMTimeInvalid;
+        self->_seektime = kCMTimeInvalid;
+        self->_seektimeMinimum = kCMTimeInvalid;
+        self->_options = [SGOptions sharedOptions].demuxer.copy;
     }
     return self;
 }
@@ -116,14 +120,12 @@
         int64_t timeStamp = CMTimeConvertScale(time, AV_TIME_BASE, kCMTimeRoundingMethod_RoundTowardZero).value;
         int ret = avformat_seek_file(self->_context, -1, INT64_MIN, timeStamp, INT64_MAX, AVSEEK_FLAG_BACKWARD);
         if (ret >= 0) {
+            self->_seektime = time;
+            self->_basetime = kCMTimeInvalid;
             if (CMTIME_IS_NUMERIC(toleranceBefor)) {
-                if (CMTimeCompare(self->_duration, kCMTimeZero) > 0) {
-                    time = CMTimeMinimum(time, self->_duration);
-                }
-                toleranceBefor = CMTimeMaximum(toleranceBefor, kCMTimeZero);
-                self->_basetime = CMTimeSubtract(time, toleranceBefor);
+                self->_seektimeMinimum = CMTimeSubtract(time, CMTimeMaximum(toleranceBefor, kCMTimeZero));
             } else {
-                self->_basetime = kCMTimeNegativeInfinity;
+                self->_seektimeMinimum = kCMTimeInvalid;
             }
         }
         return SGGetFFError(ret, SGActionCodeFormatSeekFrame);
@@ -140,12 +142,22 @@
             [pkt unlock];
         } else {
             AVStream *stream = self->_context->streams[pkt.core->stream_index];
+            if (CMTIME_IS_INVALID(self->_basetime)) {
+                self->_basetime = CMTimeMake(pkt.core->pts * stream->time_base.num, stream->time_base.den);
+            }
+            CMTime start = self->_basetime;
+            if (CMTIME_IS_NUMERIC(self->_seektime)) {
+                start = CMTimeMinimum(start, self->_seektime);
+            }
+            if (CMTIME_IS_NUMERIC(self->_seektimeMinimum)) {
+                start = CMTimeMaximum(start, self->_seektimeMinimum);
+            }
             SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
             cd.track = [self->_tracks objectAtIndex:pkt.core->stream_index];
             cd.metadata = SGDictionaryFF2NS(stream->metadata);
             cd.timebase = stream->time_base;
             cd.codecpar = stream->codecpar;
-            [cd appendTimeRange:CMTimeRangeMake(self->_basetime, kCMTimePositiveInfinity)];
+            [cd appendTimeRange:CMTimeRangeMake(start, kCMTimePositiveInfinity)];
             [pkt setCodecDescriptor:cd];
             [pkt fill];
             *packet = pkt;

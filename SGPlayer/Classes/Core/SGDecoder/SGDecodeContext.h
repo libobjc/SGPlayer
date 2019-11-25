@@ -1,14 +1,14 @@
 //
 //  SGDecodeContext.h
-//  SGPlayer iOS
+//  KTVMediaKitDemo
 //
-//  Created by Single on 2018/8/16.
-//  Copyright © 2018 single. All rights reserved.
+//  Created by Single on 2019/11/18.
+//  Copyright © 2019 Single. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
-#import "SGCodecDescriptor.h"
 #import "SGDecoderOptions.h"
+#import "SGCapacity.h"
 #import "SGPacket.h"
 #import "SGFrame.h"
 
@@ -20,33 +20,57 @@
 /**
  *
  */
-- (instancetype)initWithTimebase:(AVRational)timebase
-                        codecpar:(AVCodecParameters *)codecpar
-                  frameGenerator:(__kindof SGFrame *(^)(void))frameGenerator;
+- (instancetype)initWithDecoderClass:(Class)decoderClass;
 
 /**
  *
  */
-@property (nonatomic, strong) SGDecoderOptions *options;
+@property (nonatomic, copy) SGDecoderOptions *options;
 
 /**
  *
  */
-- (BOOL)open;
+@property (nonatomic, readonly) CMTime decodeTimeStamp;
 
 /**
  *
  */
-- (void)close;
+- (SGCapacity)capacity;
 
 /**
  *
  */
-- (void)flush;
+- (void)putPacket:(SGPacket *)packet;
 
 /**
  *
  */
-- (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet;
+- (BOOL)needsPredecode;
+
+/**
+ *
+ */
+- (void)predecode:(SGBlock)lock unlock:(SGBlock)unlock;
+
+/**
+ *
+ */
+- (NSArray<__kindof SGFrame *> *)decode:(SGBlock)lock unlock:(SGBlock)unlock;
+
+/**
+ *
+ */
+- (void)setNeedsFlush;
+
+/**
+ *
+ */
+- (void)markAsFinished;
+
+/**
+ *
+ */
+- (void)destory;
 
 @end
+
