@@ -64,7 +64,7 @@ static SGPacket *gFinishPacket = nil;
 {
     SGObjectQueue *packetQueue = self->_packetQueues.lastObject;
     SGCodecDescriptor *codecDescriptor = self->_codecDescriptors.lastObject;
-    if (![codecDescriptor isEqualCodecContextToDescriptor:packet.codecDescriptor]) {
+    if (![codecDescriptor isEqualToDescriptor:packet.codecDescriptor]) {
         packetQueue = [[SGObjectQueue alloc] init];
         codecDescriptor = [packet.codecDescriptor copy];
         [self->_packetQueues addObject:packetQueue];
