@@ -51,6 +51,11 @@
 
 #pragma mark - Control
 
+- (id<SGDemuxable>)sharedDemuxer
+{
+    return self;
+}
+
 - (NSError *)open
 {
     if (self->_context) {

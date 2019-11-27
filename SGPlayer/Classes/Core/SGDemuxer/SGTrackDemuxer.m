@@ -14,18 +14,21 @@
 
 @interface SGTrackDemuxer ()
 
+@property (nonatomic, readonly) NSInteger currentIndex;
 @property (nonatomic, strong, readonly) SGMutableTrack *track;
 @property (nonatomic, strong, readonly) SGTimeLayout *currentLayout;
 @property (nonatomic, strong, readonly) id<SGDemuxable> currentDemuxer;
 @property (nonatomic, strong, readonly) NSMutableArray<SGTimeLayout *> *layouts;
 @property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *demuxers;
-
+@property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, id<SGDemuxable>> *sharedDemuxers;
 
 @end
 
 @implementation SGTrackDemuxer
 
 @synthesize tracks = _tracks;
+@synthesize options = _options;
+@synthesize delegate = _delegate;
 @synthesize duration = _duration;
 @synthesize metadata = _metadata;
 
@@ -36,6 +39,7 @@
         self->_tracks = @[self->_track];
         self->_layouts = [NSMutableArray array];
         self->_demuxers = [NSMutableArray array];
+        self->_sharedDemuxers = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -44,29 +48,26 @@
 
 - (void)setDelegate:(id<SGDemuxableDelegate>)delegate
 {
+    self->_delegate = delegate;
     for (id<SGDemuxable> obj in self->_demuxers) {
         obj.delegate = delegate;
     }
 }
 
-- (id<SGDemuxableDelegate>)delegate
-{
-    return self->_demuxers.firstObject.delegate;
-}
-
 - (void)setOptions:(SGDemuxerOptions *)options
 {
+    self->_options = [options copy];
     for (id<SGDemuxable> obj in self->_demuxers) {
         obj.options = options;
     }
 }
 
-- (SGDemuxerOptions *)options
-{
-    return self->_demuxers.firstObject.options;
-}
-
 #pragma mark - Control
+
+- (id<SGDemuxable>)sharedDemuxer
+{
+    return nil;
+}
 
 - (NSError *)open
 {
@@ -74,7 +75,22 @@
     NSMutableArray<SGTrack *> *subTracks = [NSMutableArray array];
     for (SGSegment *obj in self->_track.segments) {
         SGTimeLayout *layout = [[SGTimeLayout alloc] initWithOffset:basetime];
-        id<SGDemuxable> demuxer = [obj newDemuxable];
+        NSString *demuxerKey = [obj sharedDemuxerKey];
+        id<SGDemuxable> sharedDemuxer = self->_sharedDemuxers[demuxerKey];
+        id<SGDemuxable> demuxer = nil;
+        if (!demuxerKey) {
+            demuxer = [obj newDemuxer];
+        } else if (sharedDemuxer) {
+            demuxer = [obj newDemuxerWithSharedDemuxer:sharedDemuxer];
+        } else {
+            demuxer = [obj newDemuxer];
+            id<SGDemuxable> reuseDemuxer = [demuxer sharedDemuxer];
+            if (reuseDemuxer) {
+                self->_sharedDemuxers[demuxerKey] = reuseDemuxer;
+            }
+        }
+        demuxer.options = self->_options;
+        demuxer.delegate = self->_delegate;
         [self->_layouts addObject:layout];
         [self->_demuxers addObject:demuxer];
         NSError *error = [demuxer open];
@@ -83,7 +99,6 @@
         }
         NSAssert(CMTIME_IS_VALID(demuxer.duration), @"Invaild Duration.");
         NSAssert(!demuxer.tracks.firstObject || demuxer.tracks.firstObject.type == self->_track.type, @"Invaild mediaType.");
-        
         basetime = CMTimeAdd(basetime, demuxer.duration);
         if (demuxer.tracks.firstObject) {
             [subTracks addObject:demuxer.tracks.firstObject];
@@ -91,6 +106,7 @@
     }
     self->_duration = basetime;
     self->_track.subTracks = subTracks;
+    self->_currentIndex = 0;
     self->_currentLayout = self->_layouts.firstObject;
     self->_currentDemuxer = self->_demuxers.firstObject;
     [self->_currentDemuxer seekToTime:kCMTimeZero];
@@ -128,18 +144,21 @@
     }
     time = CMTimeMaximum(time, kCMTimeZero);
     time = CMTimeMinimum(time, self->_duration);
+    NSInteger currentIndex = self->_demuxers.count - 1;
     SGTimeLayout *currentLayout = self->_layouts.lastObject;
     id<SGDemuxable> currentDemuxer = self->_demuxers.lastObject;
     for (NSUInteger i = 0; i < self->_demuxers.count; i++) {
         SGTimeLayout *layout = [self->_layouts objectAtIndex:i];
         id<SGDemuxable> demuxer = [self->_demuxers objectAtIndex:i];
         if (CMTimeCompare(time, CMTimeAdd(layout.offset, demuxer.duration)) <= 0) {
+            currentIndex = i;
             currentLayout = layout;
             currentDemuxer = demuxer;
             break;
         }
     }
     time = CMTimeSubtract(time, currentLayout.offset);
+    self->_currentIndex = currentIndex;
     self->_currentLayout = currentLayout;
     self->_currentDemuxer = currentDemuxer;
     return [self->_currentDemuxer seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter];
@@ -149,18 +168,26 @@
 {
     NSError *error = nil;
     while (YES) {
+        if (!self->_currentDemuxer) {
+            error = SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeFormatReadFrame);
+            break;
+        }
         error = [self->_currentDemuxer nextPacket:packet];
         if (error) {
             if (error.code == SGErrorImmediateExitRequested) {
                 break;
             }
-            if (self->_currentDemuxer == self->_demuxers.lastObject) {
-                break;
+            NSInteger nextIndex = self->_currentIndex + 1;
+            if (nextIndex < self->_demuxers.count) {
+                self->_currentIndex = nextIndex;
+                self->_currentLayout = [self->_layouts objectAtIndex:nextIndex];
+                self->_currentDemuxer = [self->_demuxers objectAtIndex:nextIndex];
+                [self->_currentDemuxer seekToTime:kCMTimeZero];
+            } else {
+                self->_currentIndex = 0;
+                self->_currentLayout = nil;
+                self->_currentDemuxer = nil;
             }
-            NSUInteger index = [self->_demuxers indexOfObject:self->_currentDemuxer];
-            self->_currentLayout = [self->_layouts objectAtIndex:index + 1];
-            self->_currentDemuxer = [self->_demuxers objectAtIndex:index + 1];
-            [self->_currentDemuxer seekToTime:kCMTimeZero];
             continue;
         }
         [(*packet).codecDescriptor setTrack:self->_track];

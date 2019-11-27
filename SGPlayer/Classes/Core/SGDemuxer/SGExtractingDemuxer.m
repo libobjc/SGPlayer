@@ -59,6 +59,11 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
 
 #pragma mark - Control
 
+- (id<SGDemuxable>)sharedDemuxer
+{
+    return [self->_demuxable sharedDemuxer];
+}
+
 - (NSError *)open
 {
     NSError *error = [self->_demuxable open];

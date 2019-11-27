@@ -60,6 +60,11 @@
 
 #pragma mark - Control
 
+- (id<SGDemuxable>)sharedDemuxer
+{
+    return nil;
+}
+
 - (NSError *)open
 {
     for (id<SGDemuxable> obj in self->_demuxers) {

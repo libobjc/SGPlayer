@@ -17,7 +17,7 @@
 /**
  *
  */
-@property (nonatomic, strong) SGDemuxerOptions *options;
+@property (nonatomic, copy) SGDemuxerOptions *options;
 
 /**
  *
@@ -38,6 +38,11 @@
  *
  */
 @property (nonatomic, readonly) CMTime duration;
+
+/**
+ *
+ */
+- (id<SGDemuxable>)sharedDemuxer;
 
 /**
  *

@@ -93,14 +93,20 @@
     NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescriptor *cd = packet.codecDescriptor;
     NSAssert(cd, @"Invalid Codec Descriptor.");
-    if (![cd isEqualCodecContextToDescriptor:self->_codecDescriptor]) {
+    BOOL isEqual = [cd isEqualToDescriptor:self->_codecDescriptor];
+    BOOL isEqualCodec = [cd isEqualCodecContextToDescriptor:self->_codecDescriptor];
+    if (!isEqual) {
         NSArray<SGFrame *> *objs = [self finish];
         for (SGFrame *obj in objs) {
             [ret addObject:obj];
         }
         self->_codecDescriptor = [cd copy];
-        [self destroy];
-        [self setup];
+        if (isEqualCodec) {
+            [self flush];
+        } else {
+            [self destroy];
+            [self setup];
+        }
     }
     if (self->_flags.sessionFinished) {
         return nil;

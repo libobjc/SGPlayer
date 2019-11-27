@@ -35,6 +35,11 @@
 
 #pragma mark - Control
 
+- (id<SGDemuxable>)sharedDemuxer
+{
+    return nil;
+}
+
 - (NSError *)open
 {
     return nil;
