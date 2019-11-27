@@ -42,7 +42,7 @@
     if (self = [super init]) {
         self->_lock = [[NSLock alloc] init];
         self->_wakeup = [[NSCondition alloc] init];
-        self->_demuxable = [asset newDemuxable];
+        self->_demuxable = [asset newDemuxer];
         self->_demuxable.delegate = self;
         self->_demuxable.options = [SGOptions sharedOptions].demuxer.copy;
     }

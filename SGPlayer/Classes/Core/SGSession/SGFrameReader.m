@@ -38,7 +38,7 @@
 - (instancetype)initWithAsset:(SGAsset *)asset
 {
     if (self = [super init]) {
-        self->_demuxer = [asset newDemuxable];
+        self->_demuxer = [asset newDemuxer];
         self->_demuxer.delegate = self;
         self->_demuxer.options = [SGOptions sharedOptions].demuxer.copy;
         self->_decoderOptions = [SGOptions sharedOptions].decoder.copy;

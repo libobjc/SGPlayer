@@ -23,7 +23,7 @@
     return obj;
 }
 
-- (id<SGDemuxable>)newDemuxable
+- (id<SGDemuxable>)newDemuxer
 {
     NSAssert(NO, @"Subclass only.");
     return nil;

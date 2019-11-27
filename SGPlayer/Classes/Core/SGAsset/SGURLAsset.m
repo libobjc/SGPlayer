@@ -27,7 +27,7 @@
     return self;
 }
 
-- (id<SGDemuxable>)newDemuxable
+- (id<SGDemuxable>)newDemuxer
 {
     return [[SGURLDemuxer alloc] initWithURL:self->_URL];
 }
