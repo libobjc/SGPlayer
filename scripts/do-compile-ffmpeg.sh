@@ -189,7 +189,7 @@ elif [ "$FF_PLATFORM" = "Catalyst" ]; then
         FF_BUILD_NAME="ffmpeg-x86_64"
         FF_BUILD_NAME_OPENSSL=openssl-x86_64
         FF_XCRUN_PLATFORM="iPhoneSimulator"
-        FF_XCRUN_OSVERSION="-target x86_64-apple-ios13.0-macabi -DTARGET_OS_MACCATALYST=1 -isysroot /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        FF_XCRUN_OSVERSION="-target x86_64-apple-ios13.0-macabi -DTARGET_OS_MACCATALYST=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_INTEL"
     else
         echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
