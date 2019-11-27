@@ -100,7 +100,9 @@ static SGPacket *gFinishPacket = nil;
             self->_predecoder = [[self->_decoderClass alloc] init];
             self->_predecoder.options = self->_options;
         }
+        unlock();
         self->_predecodeFrames = [self->_predecoder decode:packet];
+        lock();
         [packet unlock];
     }
 }

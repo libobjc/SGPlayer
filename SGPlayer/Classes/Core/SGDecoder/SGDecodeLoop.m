@@ -313,7 +313,6 @@
                 }
                 [context predecode:lock unlock:unlock];
                 [self->_lock unlock];
-                [NSThread sleepForTimeInterval:0.001];
                 continue;
             } else if (self->_flags.state == SGDecodeLoopStateDecoding) {
                 SGDecodeContext *context = [self currentDecodeContext];
