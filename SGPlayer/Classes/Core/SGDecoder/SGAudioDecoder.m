@@ -83,7 +83,7 @@
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    NSMutableArray *ret = [NSMutableArray array];
+    NSMutableArray *frames = [NSMutableArray array];
     SGCodecDescriptor *cd = packet.codecDescriptor;
     NSAssert(cd, @"Invalid codec descriptor.");
     BOOL isEqual = [cd isEqualToDescriptor:self->_codecDescriptor];
@@ -91,7 +91,7 @@
     if (!isEqual) {
         NSArray<SGFrame *> *objs = [self finish];
         for (SGFrame *obj in objs) {
-            [ret addObject:obj];
+            [frames addObject:obj];
         }
         self->_codecDescriptor = [cd copy];
         if (isEqualCodec) {
@@ -118,26 +118,26 @@
             cd.metadata = packet.metadata;
             [obj setCodecDescriptor:cd];
             [obj fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
-            [ret addObject:obj];
+            [frames addObject:obj];
         }
     } else {
         NSArray<SGFrame *> *objs = [self processPacket:packet];
         for (SGFrame *obj in objs) {
-            [ret addObject:obj];
+            [frames addObject:obj];
         }
     }
-    if (ret.count > 0) {
-        SGFrame *obj = ret.lastObject;
+    if (frames.count > 0) {
+        SGFrame *obj = frames.lastObject;
         self->_flags.lastEndTimeStamp = CMTimeAdd(obj.timeStamp, obj.duration);
     }
-    return ret;
+    return frames;
 }
 
 - (NSArray<__kindof SGFrame *> *)finish
 {
-    NSArray<SGFrame *> *objs = [self processPacket:nil];
-    if (objs.count > 0) {
-        self->_flags.lastEndTimeStamp = CMTimeAdd(objs.lastObject.timeStamp, objs.lastObject.duration);
+    NSArray<SGFrame *> *frames = [self processPacket:nil];
+    if (frames.count > 0) {
+        self->_flags.lastEndTimeStamp = CMTimeAdd(frames.lastObject.timeStamp, frames.lastObject.duration);
     }
     CMTime lastEnd = self->_flags.lastEndTimeStamp;
     CMTimeRange timeRange = self->_codecDescriptor.timeRange;
@@ -156,12 +156,12 @@
             cd.metadata = self->_codecDescriptor.metadata;
             [obj setCodecDescriptor:cd];
             [obj fillWithTimeStamp:lastEnd decodeTimeStamp:lastEnd duration:duration];
-            NSMutableArray<SGFrame *> *newObjs = [NSMutableArray arrayWithArray:objs];
-            [newObjs addObject:obj];
-            objs = [newObjs copy];
+            NSMutableArray<SGFrame *> *newFrames = [NSMutableArray arrayWithArray:frames];
+            [newFrames addObject:obj];
+            frames = [newFrames copy];
         }
     }
-    return objs;
+    return frames;
 }
 
 #pragma mark - Process
@@ -172,11 +172,11 @@
         return nil;
     }
     SGCodecDescriptor *cd = self->_codecDescriptor;
-    NSArray *objs = [self->_codecContext decode:packet];
-    objs = [self processFrames:objs done:!packet];
-    objs = [self clipFrames:objs timeRange:cd.timeRange];
-    objs = [self formatFrames:objs];
-    return objs;
+    NSArray *frames = [self->_codecContext decode:packet];
+    frames = [self processFrames:frames done:!packet];
+    frames = [self clipFrames:frames timeRange:cd.timeRange];
+    frames = [self formatFrames:frames];
+    return frames;
 }
 
 - (NSArray<__kindof SGFrame *> *)processFrames:(NSArray<__kindof SGFrame *> *)frames done:(BOOL)done

@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SGAudioDescriptor.h"
+#import "SGTime.h"
 
 @interface SGDecoderOptions : NSObject <NSCopying>
 
@@ -72,5 +73,21 @@
     Indicates the supported audio descriptors.
  */
 @property (nonatomic, copy) NSArray<SGAudioDescriptor *> *supportedAudioDescriptors;
+
+/*!
+ @property resetFrameRate
+ @abstract
+    Indicates whether video decoder needs reset frame rate.
+    Default is NO.
+ */
+@property (nonatomic) BOOL resetFrameRate;
+
+/*!
+ @property preferredFrameRate
+ @abstract
+    Indicates the preferred video track frame rate.
+    Default is (1, 25).
+ */
+@property (nonatomic) CMTime preferredFrameRate;
 
 @end

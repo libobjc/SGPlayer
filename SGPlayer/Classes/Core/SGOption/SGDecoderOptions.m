@@ -24,6 +24,8 @@
     obj->_preferredPixelFormat = self->_preferredPixelFormat;
     obj->_supportedPixelFormats = self->_supportedPixelFormats.copy;
     obj->_supportedAudioDescriptors = self->_supportedAudioDescriptors.copy;
+    obj->_resetFrameRate = self->_resetFrameRate;
+    obj->_preferredFrameRate = self->_preferredFrameRate;
     return obj;
 }
 
@@ -38,6 +40,8 @@
         self->_preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
         self->_supportedPixelFormats = [SGVideoRenderer supportedPixelFormats];
         self->_supportedAudioDescriptors = @[[SGAudioRenderer supportedAudioDescriptor]];
+        self->_resetFrameRate = NO;
+        self->_preferredFrameRate = CMTimeMake(1, 25);
     }
     return self;
 }
