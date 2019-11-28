@@ -340,7 +340,31 @@
 
 - (NSArray<__kindof SGFrame *> *)resampleFrames:(NSArray<__kindof SGFrame *> *)frames
 {
-    return frames;
+    if (!self->_options.resetFrameRate &&
+        CMTIME_IS_NUMERIC(self->_options.preferredFrameRate)) {
+        return frames;
+    }
+    CMTime frameRate = self->_options.preferredFrameRate;
+    NSMutableArray *ret = [NSMutableArray array];
+    for (SGVideoFrame *obj in frames) {
+        SGVideoFrame *frame = obj;
+        while (CMTimeCompare(frame.duration, frameRate) > 0) {
+            CMTime start = CMTimeAdd(frame.timeStamp, frameRate);
+            CMTime duration = CMTimeSubtract(frame.duration, frameRate);
+            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+            cd.track = frame.track;
+            cd.metadata = frame.codecDescriptor.metadata;
+            [frame setCodecDescriptor:cd];
+            [frame fillWithTimeStamp:frame.timeStamp decodeTimeStamp:frame.timeStamp duration:frameRate];
+            SGVideoFrame *newFrame = [SGVideoFrame frame];
+            [newFrame fillWithFrame:frame];
+            [newFrame fillWithTimeStamp:start decodeTimeStamp:start duration:duration];
+            [ret addObject:frame];
+            frame = newFrame;
+        }
+        [ret addObject:frame];
+    }
+    return ret;
 }
 
 @end

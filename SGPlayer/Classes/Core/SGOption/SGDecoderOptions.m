@@ -41,7 +41,7 @@
         self->_supportedPixelFormats = [SGVideoRenderer supportedPixelFormats];
         self->_supportedAudioDescriptors = @[[SGAudioRenderer supportedAudioDescriptor]];
         self->_resetFrameRate = NO;
-        self->_preferredFrameRate = CMTimeMake(1, 25);
+        self->_preferredFrameRate = CMTimeMake(1, 20);
     }
     return self;
 }
