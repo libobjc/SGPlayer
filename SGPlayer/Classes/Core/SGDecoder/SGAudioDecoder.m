@@ -21,6 +21,7 @@
     struct {
         BOOL needsAlignment;
         BOOL needsResetSonic;
+        BOOL sessionFinished;
         int64_t nextTimeStamp;
         CMTime lastEndTimeStamp;
     } _flags;
@@ -62,6 +63,7 @@
     self->_flags.nextTimeStamp = 0;
     self->_flags.needsAlignment = YES;
     self->_flags.needsResetSonic = YES;
+    self->_flags.sessionFinished = NO;
     self->_flags.lastEndTimeStamp = kCMTimeInvalid;
     [self->_codecContext close];
     self->_codecContext = nil;
@@ -76,6 +78,7 @@
     self->_flags.nextTimeStamp = 0;
     self->_flags.needsAlignment = YES;
     self->_flags.needsResetSonic = YES;
+    self->_flags.sessionFinished = NO;
     self->_flags.lastEndTimeStamp = kCMTimeInvalid;
     [self->_codecContext flush];
     [self->_formatter flush];
@@ -100,6 +103,9 @@
             [self destroy];
             [self setup];
         }
+    }
+    if (self->_flags.sessionFinished) {
+        return nil;
     }
     [cd fillToDescriptor:self->_codecDescriptor];
     if (packet.flags & SGDataFlagPadding) {
@@ -135,6 +141,9 @@
 
 - (NSArray<__kindof SGFrame *> *)finish
 {
+    if (self->_flags.sessionFinished) {
+        return nil;
+    }
     NSArray<SGFrame *> *frames = [self processPacket:nil];
     if (frames.count > 0) {
         self->_flags.lastEndTimeStamp = CMTimeAdd(frames.lastObject.timeStamp, frames.lastObject.duration);
@@ -262,6 +271,7 @@
             CMTime duration = CMTimeSubtract(CMTimeRangeGetEnd(timeRange), start);
             int nb_samples = (int)CMTimeConvertScale(duration, ad.sampleRate, kCMTimeRoundingMethod_RoundTowardZero).value;
             if (nb_samples < obj.numberOfSamples) {
+                self->_flags.sessionFinished = YES;
                 duration = CMTimeMake(nb_samples, ad.sampleRate);
                 SGAudioFrame *obj1 = [SGAudioFrame frameWithDescriptor:ad numberOfSamples:nb_samples];
                 for (int i = 0; i < ad.numberOfPlanes; i++) {
@@ -275,6 +285,8 @@
                 [ret addObject:obj1];
                 [obj unlock];
                 continue;
+            } else if (nb_samples == obj.numberOfSamples) {
+                self->_flags.sessionFinished = YES;
             }
         }
         [ret addObject:obj];

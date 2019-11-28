@@ -134,6 +134,9 @@
 
 - (NSArray<__kindof SGFrame *> *)finish
 {
+    if (self->_flags.sessionFinished) {
+        return nil;
+    }
     NSArray<SGFrame *> *frames = [self processPacket:nil];
     if (frames.count == 0 &&
         self->_lastDecodeFrame &&
