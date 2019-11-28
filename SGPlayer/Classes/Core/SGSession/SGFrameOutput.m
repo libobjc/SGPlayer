@@ -287,8 +287,8 @@ SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_packe
             case SGPacketOutputStateFinished: {
                 NSArray<SGTrack *> *tracks = self->_selectedTracks;
                 b1 = ^{
-                    [self->_audioDecoder finish:tracks];
-                    [self->_videoDecoder finish:tracks];
+                    [self->_audioDecoder finish:[SGTrack tracksWithTracks:tracks type:SGMediaTypeAudio]];
+                    [self->_videoDecoder finish:[SGTrack tracksWithTracks:tracks type:SGMediaTypeVideo]];
                 };
             }
                 break;
