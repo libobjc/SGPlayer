@@ -11,20 +11,39 @@
 #import "SGObjectQueue.h"
 #import "SGDecodable.h"
 
-static SGPacket *gFlushPacket = nil;
-static SGPacket *gFinishPacket = nil;
+static SGPacket *kFlushPacket = nil;
+static SGPacket *kFinishPacket = nil;
+static NSInteger kMaxPredecoderCount = 2;
+
+@interface SGDecodeContextUnit : NSObject
+
+@property (nonatomic, strong) NSArray *frames;
+@property (nonatomic, strong) id<SGDecodable> decoder;
+@property (nonatomic, strong) SGObjectQueue *packetQueue;
+@property (nonatomic, strong) SGCodecDescriptor *codecDescriptor;
+
+@end
+
+@implementation SGDecodeContextUnit
+
+- (void)dealloc
+{
+    for (SGFrame *obj in self->_frames) {
+        [obj unlock];
+    }
+    self->_frames = nil;
+}
+
+@end
 
 @interface SGDecodeContext ()
 
 @property (nonatomic, readonly) BOOL needsFlush;
 @property (nonatomic, readonly) NSInteger decodeIndex;
 @property (nonatomic, readonly) NSInteger predecodeIndex;
-@property (nonatomic, copy, readonly) Class decoderClass;
-@property (nonatomic, strong, readonly) id<SGDecodable> decoder;
-@property (nonatomic, strong, readonly) id<SGDecodable> predecoder;
-@property (nonatomic, strong, readonly) NSArray<SGFrame *> *predecodeFrames;
-@property (nonatomic, strong, readonly) NSMutableArray<SGObjectQueue *> *packetQueues;
-@property (nonatomic, strong, readonly) NSMutableArray<SGCodecDescriptor *> *codecDescriptors;
+@property (nonatomic, strong, readonly) Class decoderClass;
+@property (nonatomic, strong, readonly) NSMutableArray<id<SGDecodable>> *decoders;
+@property (nonatomic, strong, readonly) NSMutableArray<SGDecodeContextUnit *> *units;
 
 @end
 
@@ -35,18 +54,18 @@ static SGPacket *gFinishPacket = nil;
     if (self = [super init]) {
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
-            gFlushPacket = [[SGPacket alloc] init];
-            gFinishPacket = [[SGPacket alloc] init];
-            [gFlushPacket lock];
-            [gFinishPacket lock];
+            kFlushPacket = [[SGPacket alloc] init];
+            kFinishPacket = [[SGPacket alloc] init];
+            [kFlushPacket lock];
+            [kFinishPacket lock];
         });
         self->_needsFlush = NO;
         self->_decodeIndex = 0;
         self->_predecodeIndex = 0;
         self->_decoderClass = decoderClass;
         self->_decodeTimeStamp = kCMTimeInvalid;
-        self->_packetQueues = [NSMutableArray array];
-        self->_codecDescriptors = [NSMutableArray array];
+        self->_units = [NSMutableArray array];
+        self->_decoders = [NSMutableArray array];
     }
     return self;
 }
@@ -54,38 +73,43 @@ static SGPacket *gFinishPacket = nil;
 - (SGCapacity)capacity
 {
     SGCapacity capacity = SGCapacityCreate();
-    for (SGObjectQueue *obj in self->_packetQueues) {
-        capacity = SGCapacityAdd(capacity, obj.capacity);
+    for (SGDecodeContextUnit *obj in self->_units) {
+        capacity = SGCapacityAdd(capacity, obj.packetQueue.capacity);
     }
     return capacity;
 }
 
 - (void)putPacket:(SGPacket *)packet
 {
-    SGObjectQueue *packetQueue = self->_packetQueues.lastObject;
-    SGCodecDescriptor *codecDescriptor = self->_codecDescriptors.lastObject;
-    if (![codecDescriptor isEqualToDescriptor:packet.codecDescriptor]) {
-        packetQueue = [[SGObjectQueue alloc] init];
-        codecDescriptor = [packet.codecDescriptor copy];
-        [self->_packetQueues addObject:packetQueue];
-        [self->_codecDescriptors addObject:codecDescriptor];
+    SGDecodeContextUnit *unit = self->_units.lastObject;
+    if (![unit.codecDescriptor isEqualToDescriptor:packet.codecDescriptor]) {
+        unit = [[SGDecodeContextUnit alloc] init];
+        unit.packetQueue = [[SGObjectQueue alloc] init];
+        unit.codecDescriptor = packet.codecDescriptor.copy;
+        [self->_units addObject:unit];
     }
-    [packetQueue putObjectSync:packet];
+    [unit.packetQueue putObjectSync:packet];
 }
 
 - (BOOL)needsPredecode
 {
-    if (self->_predecodeFrames.count > 0) {
-        return NO;
-    }
-    for (NSInteger i = self->_decodeIndex + 1; i < self->_packetQueues.count; i++) {
-        SGCodecDescriptor *codecDescriptor = self->_codecDescriptors[i];
-        if (codecDescriptor.codecpar &&
-            codecDescriptor.codecpar->codec_type == AVMEDIA_TYPE_VIDEO &&
-            (codecDescriptor.codecpar->codec_id == AV_CODEC_ID_H264 ||
-             codecDescriptor.codecpar->codec_id == AV_CODEC_ID_H265)) {
+    NSInteger count = 0;
+    for (NSInteger i = self->_decodeIndex + 1; i < self->_units.count; i++) {
+        if (count >= kMaxPredecoderCount) {
+            return NO;
+        }
+        SGDecodeContextUnit *unit = self->_units[i];
+        SGCodecDescriptor *cd = unit.codecDescriptor;
+        if (cd.codecpar &&
+            cd.codecpar->codec_type == AVMEDIA_TYPE_VIDEO &&
+            (cd.codecpar->codec_id == AV_CODEC_ID_H264 ||
+             cd.codecpar->codec_id == AV_CODEC_ID_H265)) {
+            count += 1;
+            if (unit.frames.count > 0) {
+                continue;
+            }
             self->_predecodeIndex = i;
-            return self->_packetQueues[i].capacity.count > 0;
+            return unit.packetQueue.capacity.count > 0;
         }
     }
     return NO;
@@ -94,117 +118,125 @@ static SGPacket *gFinishPacket = nil;
 - (void)predecode:(SGBlock)lock unlock:(SGBlock)unlock
 {
     SGPacket *packet = nil;
-    SGObjectQueue *queue = self->_packetQueues[self->_predecodeIndex];
-    if ([queue getObjectAsync:&packet]) {
-        if (!self->_predecoder) {
-            self->_predecoder = [[self->_decoderClass alloc] init];
-            self->_predecoder.options = self->_options;
-        }
+    SGDecodeContextUnit *unit = self->_units[self->_predecodeIndex];
+    if ([unit.packetQueue getObjectAsync:&packet]) {
+        [self setDecoderIfNeeded:unit];
+        id<SGDecodable> decoder = unit.decoder;
         unlock();
-        self->_predecodeFrames = [self->_predecoder decode:packet];
+        NSArray *frames = [decoder decode:packet];
         lock();
+        unit.frames = frames;
         [packet unlock];
     }
 }
 
 - (NSArray<SGFrame *> *)decode:(SGBlock)lock unlock:(SGBlock)unlock
 {
-    NSMutableArray<SGFrame *> *objs = [NSMutableArray array];
+    NSMutableArray *frames = [NSMutableArray array];
+    NSInteger index = 0;
     SGPacket *packet = nil;
-    SGObjectQueue *queue = nil;
-    for (SGObjectQueue *obj in self->_packetQueues) {
-        if ([obj getObjectAsync:&packet]) {
-            queue = obj;
+    SGDecodeContextUnit *unit = nil;
+    for (NSInteger i = 0; i < self->_units.count; i++) {
+        SGDecodeContextUnit *obj = self->_units[i];
+        if ([obj.packetQueue getObjectAsync:&packet]) {
+            index = i;
+            unit = obj;
             break;
         }
     }
     NSAssert(packet, @"Invalid Packet.");
-    if (packet == gFlushPacket) {
+    if (packet == kFlushPacket) {
         self->_needsFlush = NO;
         self->_decodeIndex = 0;
+        self->_predecodeIndex = 0;
         self->_decodeTimeStamp = kCMTimeInvalid;
-        [self->_packetQueues removeObjectAtIndex:0];
-        [self->_codecDescriptors removeObjectAtIndex:0];
-        for (SGFrame *obj in self->_predecodeFrames) {
-            [obj unlock];
+        [self->_units removeObjectAtIndex:0];
+    } else if (packet == kFinishPacket) {
+        [self->_units removeLastObject];
+        for (NSInteger i = self->_decodeIndex; i < self->_units.count; i++) {
+            SGDecodeContextUnit *obj = self->_units[i];
+            [frames addObjectsFromArray:obj.frames];
+            [frames addObjectsFromArray:[obj.decoder finish]];
+            [self removeDecoderIfNeeded:obj];
         }
-        self->_predecodeFrames = nil;
-        self->_predecodeIndex = 0;
-        unlock();
-        [self->_decoder flush];
-        [self->_predecoder flush];
-        lock();
-    } else if (packet == gFinishPacket) {
-        [self->_packetQueues removeLastObject];
-        [self->_codecDescriptors removeLastObject];
-        unlock();
-        [objs addObjectsFromArray:[self->_decoder finish]];
-        [objs addObjectsFromArray:self->_predecodeFrames];
-        self->_predecodeFrames = nil;
-        self->_predecodeIndex = 0;
-        lock();
+        [self->_units removeAllObjects];
     } else {
         self->_decodeTimeStamp = packet.decodeTimeStamp;
-        unlock();
-        NSInteger index = [self->_packetQueues indexOfObject:queue];
         if (self->_decodeIndex < index) {
-            self->_decodeIndex = index;
-            [objs addObjectsFromArray:[self->_decoder finish]];
-            if (self->_predecodeIndex <= index) {
-                if (self->_predecodeIndex == index) {
-                    self->_decoder = self->_predecoder;
-                }
-                [objs addObjectsFromArray:self->_predecodeFrames];
-                self->_predecodeFrames = nil;
-                self->_predecodeIndex = 0;
-                self->_predecoder = nil;
+            for (NSInteger i = self->_decodeIndex; i < MIN(index, self->_units.count); i++) {
+                SGDecodeContextUnit *obj = self->_units[i];
+                [frames addObjectsFromArray:obj.frames];
+                [frames addObjectsFromArray:[obj.decoder finish]];
+                [self removeDecoderIfNeeded:obj];
             }
+            [frames addObjectsFromArray:unit.frames];
+            unit.frames = nil;
+            self->_decodeIndex = index;
         }
-        id<SGDecodable> decoder = self->_decoder;
-        if (!decoder) {
-            decoder = [[self->_decoderClass alloc] init];
-            decoder.options = self->_options;
-            self->_decoder = decoder;
-        }
-        [objs addObjectsFromArray:[decoder decode:packet]];
-        [packet unlock];
+        [self setDecoderIfNeeded:unit];
+        id<SGDecodable> decoder = unit.decoder;
+        unlock();
+        [frames addObjectsFromArray:[decoder decode:packet]];
         lock();
+        [packet unlock];
     }
     if (self->_needsFlush) {
-        for (SGFrame *obj in objs) {
+        for (SGFrame *obj in frames) {
             [obj unlock];
         }
-        [objs removeAllObjects];
+        [frames removeAllObjects];
     }
-    return objs.count ? objs.copy : nil;
+    return frames.count ? frames.copy : nil;
 }
 
 - (void)setNeedsFlush
 {
     self->_needsFlush = YES;
-    [self->_packetQueues removeAllObjects];
-    [self->_codecDescriptors removeAllObjects];
-    [self->_packetQueues addObject:[[SGObjectQueue alloc] init]];
-    [self->_codecDescriptors addObject:[[SGCodecDescriptor alloc] init]];
-    [self->_packetQueues.lastObject putObjectSync:gFlushPacket];
+    for (SGDecodeContextUnit *obj in self->_units) {
+        [self removeDecoderIfNeeded:obj];
+    }
+    [self->_units removeAllObjects];
+    SGDecodeContextUnit *unit = [[SGDecodeContextUnit alloc] init];
+    unit.packetQueue = [[SGObjectQueue alloc] init];
+    unit.codecDescriptor = [[SGCodecDescriptor alloc] init];
+    [unit.packetQueue putObjectSync:kFlushPacket];
+    [self->_units addObject:unit];
 }
 
 - (void)markAsFinished
 {
-    [self->_packetQueues addObject:[[SGObjectQueue alloc] init]];
-    [self->_codecDescriptors addObject:[[SGCodecDescriptor alloc] init]];
-    [self->_packetQueues.lastObject putObjectSync:gFinishPacket];
+    SGDecodeContextUnit *unit = [[SGDecodeContextUnit alloc] init];
+    unit.packetQueue = [[SGObjectQueue alloc] init];
+    unit.codecDescriptor = [[SGCodecDescriptor alloc] init];
+    [unit.packetQueue putObjectSync:kFinishPacket];
+    [self->_units addObject:unit];
 }
 
 - (void)destory
 {
-    [self->_packetQueues removeAllObjects];
-    [self->_codecDescriptors removeAllObjects];
-    for (SGFrame *obj in self->_predecodeFrames) {
-        [obj unlock];
+    [self->_units removeAllObjects];
+}
+
+- (void)setDecoderIfNeeded:(SGDecodeContextUnit *)unit
+{
+    if (!unit.decoder) {
+        if (self->_decoders.count) {
+            unit.decoder = self->_decoders.lastObject;
+            [unit.decoder flush];
+            [self->_decoders removeLastObject];
+        } else {
+            unit.decoder = [[self->_decoderClass alloc] init];
+            unit.decoder.options = self->_options;
+        }
     }
-    self->_predecodeFrames = nil;
-    self->_predecodeIndex = 0;
+}
+
+- (void)removeDecoderIfNeeded:(SGDecodeContextUnit *)unit
+{
+    if (unit.decoder) {
+        [self->_decoders addObject:unit.decoder];
+        unit.decoder = nil;
+    }
 }
 
 @end
