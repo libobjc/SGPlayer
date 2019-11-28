@@ -7,6 +7,8 @@
 //
 
 #import "SGDecoderOptions.h"
+#import "SGAudioRenderer.h"
+#import "SGVideoRenderer.h"
 #import "SGMapping.h"
 
 @implementation SGDecoderOptions
@@ -20,6 +22,8 @@
     obj->_hardwareDecodeH264 = self->_hardwareDecodeH264;
     obj->_hardwareDecodeH265 = self->_hardwareDecodeH265;
     obj->_preferredPixelFormat = self->_preferredPixelFormat;
+    obj->_supportedPixelFormats = self->_supportedPixelFormats.copy;
+    obj->_supportedAudioDescriptors = self->_supportedAudioDescriptors.copy;
     return obj;
 }
 
@@ -32,6 +36,8 @@
         self->_hardwareDecodeH264 = YES;
         self->_hardwareDecodeH265 = YES;
         self->_preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
+        self->_supportedPixelFormats = [SGVideoRenderer supportedPixelFormats];
+        self->_supportedAudioDescriptors = @[[SGAudioRenderer supportedAudioDescriptor]];
     }
     return self;
 }

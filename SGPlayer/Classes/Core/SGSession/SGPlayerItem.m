@@ -316,7 +316,6 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
                     self->_audioSelection.tracks = @[audio.firstObject];
                     self->_audioSelection.weights = @[@(1.0)];
                     self->_audioProcessor = [[self->_processorOptions.audioClass alloc] init];
-                    [self->_audioProcessor setDescriptor:self->_processorOptions.supportedAudioDescriptor];
                     [self->_audioProcessor setSelection:self->_audioSelection action:action];
                 }
                 if (video.count > 0) {
@@ -327,7 +326,6 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
                     self->_videoSelection.tracks = @[video.firstObject];
                     self->_videoSelection.weights = @[@(1.0)];
                     self->_videoProcessor = [[self->_processorOptions.videoClass alloc] init];
-                    [self->_videoProcessor setSupportedPixelFormats:self->_processorOptions.supportedPixelFormats];
                     [self->_videoProcessor setSelection:self->_videoSelection action:action];
                 }
                 return [self setState:SGPlayerItemStateOpened];

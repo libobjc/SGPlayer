@@ -10,6 +10,7 @@
 #import "SGFrame+Internal.h"
 #import "SGPacket+Internal.h"
 #import "SGDescriptor+Internal.h"
+#import "SGAudioFormatter.h"
 #import "SGCodecContext.h"
 #import "SGAudioFrame.h"
 #import "SGSonic.h"
@@ -26,6 +27,7 @@
 }
 
 @property (nonatomic, strong, readonly) SGSonic *sonic;
+@property (nonatomic, strong, readonly) SGAudioFormatter *formatter;
 @property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 @property (nonatomic, strong, readonly) SGAudioDescriptor *audioDescriptor;
@@ -64,6 +66,7 @@
     [self->_codecContext close];
     self->_codecContext = nil;
     self->_audioDescriptor = nil;
+    self->_formatter = nil;
 }
 
 #pragma mark - Control
@@ -75,11 +78,12 @@
     self->_flags.needsResetSonic = YES;
     self->_flags.lastEndTimeStamp = kCMTimeInvalid;
     [self->_codecContext flush];
+    [self->_formatter flush];
 }
 
 - (NSArray<__kindof SGFrame *> *)decode:(SGPacket *)packet
 {
-    NSMutableArray<__kindof SGFrame *> *ret = [NSMutableArray array];
+    NSMutableArray *ret = [NSMutableArray array];
     SGCodecDescriptor *cd = packet.codecDescriptor;
     NSAssert(cd, @"Invalid codec descriptor.");
     BOOL isEqual = [cd isEqualToDescriptor:self->_codecDescriptor];
@@ -122,8 +126,9 @@
             [ret addObject:obj];
         }
     }
-    if (ret.count) {
-        self->_flags.lastEndTimeStamp = CMTimeAdd(ret.lastObject.timeStamp, ret.lastObject.duration);
+    if (ret.count > 0) {
+        SGFrame *obj = ret.lastObject;
+        self->_flags.lastEndTimeStamp = CMTimeAdd(obj.timeStamp, obj.duration);
     }
     return ret;
 }
@@ -170,6 +175,7 @@
     NSArray *objs = [self->_codecContext decode:packet];
     objs = [self processFrames:objs done:!packet];
     objs = [self clipFrames:objs timeRange:cd.timeRange];
+    objs = [self formatFrames:objs];
     return objs;
 }
 
@@ -272,6 +278,37 @@
             }
         }
         [ret addObject:obj];
+    }
+    return ret;
+}
+
+- (NSArray<__kindof SGFrame *> *)formatFrames:(NSArray<__kindof SGFrame *> *)frames
+{
+    NSArray<SGAudioDescriptor *> *descriptors = self->_options.supportedAudioDescriptors;
+    if (descriptors.count <= 0) {
+        return frames;
+    }
+    NSMutableArray *ret = [NSMutableArray array];
+    for (SGAudioFrame *obj in frames) {
+        BOOL supported = NO;
+        for (SGAudioDescriptor *descriptor in descriptors) {
+            if ([obj.descriptor isEqualToDescriptor:descriptor]) {
+                supported = YES;
+                break;
+            }
+        }
+        if (supported) {
+            [ret addObject:obj];
+            continue;
+        }
+        if (!self->_formatter) {
+            self->_formatter = [[SGAudioFormatter alloc] init];
+            self->_formatter.descriptor = descriptors.firstObject;
+        }
+        SGAudioFrame *newObj = [self->_formatter format:obj];
+        if (newObj) {
+            [ret addObject:newObj];
+        }
     }
     return ret;
 }

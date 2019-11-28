@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "SGAudioDescriptor.h"
 
 @interface SGDecoderOptions : NSObject <NSCopying>
 
@@ -57,5 +58,19 @@
     Default is kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
  */
 @property (nonatomic) OSType preferredPixelFormat;
+
+/*!
+ @property supportedPixelFormats
+ @abstract
+    Indicates the supported pixel formats.
+ */
+@property (nonatomic, copy) NSArray<NSNumber *> *supportedPixelFormats;
+
+/*!
+ @property supportedAudioDescriptors
+ @abstract
+    Indicates the supported audio descriptors.
+ */
+@property (nonatomic, copy) NSArray<SGAudioDescriptor *> *supportedAudioDescriptors;
 
 @end

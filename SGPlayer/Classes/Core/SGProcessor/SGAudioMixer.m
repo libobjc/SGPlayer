@@ -13,18 +13,18 @@
 @interface SGAudioMixer ()
 
 @property (nonatomic, readonly) CMTime startTime;
+@property (nonatomic, strong, readonly) SGAudioDescriptor *descriptor;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, SGAudioMixerUnit *> *units;
 
 @end
 
 @implementation SGAudioMixer
 
-- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights descriptor:(SGAudioDescriptor *)descriptor
+- (instancetype)initWithTracks:(NSArray<SGTrack *> *)tracks weights:(NSArray<NSNumber *> *)weights
 {
     if (self = [super init]) {
         self->_tracks = [tracks copy];
         self->_weights = [weights copy];
-        self->_descriptor = [descriptor copy];
         self->_startTime = kCMTimeNegativeInfinity;
         self->_units = [NSMutableDictionary dictionary];
         for (SGTrack *obj in self->_tracks) {
@@ -44,6 +44,9 @@
     if (CMTimeCompare(CMTimeAdd(frame.timeStamp, frame.duration), self->_startTime) <= 0) {
         [frame unlock];
         return nil;
+    }
+    if (!self->_descriptor) {
+        self->_descriptor = frame.descriptor.copy;
     }
     NSAssert([self->_descriptor isEqualToDescriptor:frame.descriptor], @"Invalid Format.");
     NSAssert(self->_descriptor.format == AV_SAMPLE_FMT_FLTP, @"Invalid Format.");

@@ -11,6 +11,7 @@
 #import "SGPacket+Internal.h"
 #import "SGCodecContext.h"
 #import "SGVideoFrame.h"
+#import "SGSWScale.h"
 
 @interface SGVideoDecoder ()
 
@@ -23,9 +24,10 @@
     } _flags;
 }
 
+@property (nonatomic, strong, readonly) SGSWScale *scaler;
+@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGVideoFrame *lastDecodeFrame;
 @property (nonatomic, strong, readonly) SGVideoFrame *lastOutputFrame;
-@property (nonatomic, strong, readonly) SGCodecContext *codecContext;
 @property (nonatomic, strong, readonly) SGCodecDescriptor *codecDescriptor;
 
 @end
@@ -193,6 +195,7 @@
     objs = [self processFrames:objs done:!packet];
     objs = [self clipKeyFrames:objs];
     objs = [self clipFrames:objs timeRange:cd.timeRange];
+    objs = [self formatFrames:objs];
     return objs;
 }
 
@@ -276,6 +279,58 @@
             }
         }
         [ret addObject:obj];
+    }
+    return ret;
+}
+
+- (NSArray<__kindof SGFrame *> *)formatFrames:(NSArray<__kindof SGFrame *> *)frames
+{
+    NSArray<NSNumber *> *formats = self->_options.supportedPixelFormats;
+    if (formats.count <= 0) {
+        return frames;
+    }
+    NSMutableArray *ret = [NSMutableArray array];
+    for (SGVideoFrame *obj in frames) {
+        BOOL supported = NO;
+        for (NSNumber *format in formats) {
+            if (obj.pixelBuffer ||
+                obj.descriptor.format == format.intValue) {
+                supported = YES;
+                break;
+            }
+        }
+        if (supported) {
+            [ret addObject:obj];
+            continue;
+        }
+        int format = formats.firstObject.intValue;
+        if (![self->_scaler.inputDescriptor isEqualToDescriptor:obj.descriptor]) {
+            SGSWScale *scaler = [[SGSWScale alloc] init];
+            scaler.inputDescriptor = obj.descriptor;
+            scaler.outputDescriptor = obj.descriptor.copy;
+            scaler.outputDescriptor.format = format;
+            if ([scaler open]) {
+                self->_scaler = scaler;
+            }
+        }
+        if (!self->_scaler) {
+            [obj unlock];
+            continue;
+        }
+        SGVideoFrame *newObj = [SGVideoFrame frameWithDescriptor:self->_scaler.outputDescriptor];
+        int result = [self->_scaler convert:(void *)obj.data
+                              inputLinesize:obj.linesize
+                                 outputData:newObj.core->data
+                             outputLinesize:newObj.core->linesize];
+        if (result < 0) {
+            [newObj unlock];
+            [obj unlock];
+            continue;
+        }
+        [newObj setCodecDescriptor:obj.codecDescriptor];
+        [newObj fillWithTimeStamp:obj.timeStamp decodeTimeStamp:obj.decodeTimeStamp duration:obj.duration];
+        [ret addObject:newObj];
+        [obj unlock];
     }
     return ret;
 }
