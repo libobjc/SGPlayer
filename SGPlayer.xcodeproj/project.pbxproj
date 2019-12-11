@@ -1116,7 +1116,6 @@
 		B019872A231A9DB500EC1C47 /* libavformat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavformat.a; path = build/build/Catalyst/universal/lib/libavformat.a; sourceTree = "<group>"; };
 		B0198733231AA2AC00EC1C47 /* Catalyst.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Catalyst.h; sourceTree = "<group>"; };
 		B019880A231AAB3900EC1C47 /* SGPlayer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SGPlayer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B019880B231AAB3900EC1C47 /* SGPlayer iOS copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "SGPlayer iOS copy-Info.plist"; path = "/Users/steven/Temp/SGPlayer-2.0.0/SGPlayer iOS copy-Info.plist"; sourceTree = "<absolute>"; };
 		B019880C231AAB8200EC1C47 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -1616,7 +1615,6 @@
 				9CEFA6D81E7122BF00835CAB /* SGPlayer */,
 				9CEFA6D71E7122BF00835CAB /* Products */,
 				9C4793421E71402E00AD4289 /* Frameworks */,
-				B019880B231AAB3900EC1C47 /* SGPlayer iOS copy-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3178,7 +3176,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/build/build/iOS/universal/include";
-				INFOPLIST_FILE = "SGPlayer iOS copy-Info.plist";
+				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3216,7 +3214,7 @@
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_UNKNOWN_PRAGMAS = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/build/build/iOS/universal/include";
-				INFOPLIST_FILE = "SGPlayer iOS copy-Info.plist";
+				INFOPLIST_FILE = SGPlayer/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = (
