@@ -44,6 +44,11 @@
 @property (nonatomic) float rate;
 
 /**
+ *  Pitch.
+ */
+@property (nonatomic) float pitch;
+
+/**
  *  Volume.
  */
 @property (nonatomic) float volume;
