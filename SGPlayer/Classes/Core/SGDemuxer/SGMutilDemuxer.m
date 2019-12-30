@@ -12,6 +12,7 @@
 @interface SGMutilDemuxer ()
 
 @property (nonatomic, strong, readonly) NSArray<id<SGDemuxable>> *demuxers;
+@property (nonatomic, strong, readonly) NSMutableArray<SGTrack *> *finishedTracksInternal;
 @property (nonatomic, strong, readonly) NSMutableArray<id<SGDemuxable>> *finishedDemuxers;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSString *, NSValue *> *timeStamps;
 
@@ -28,6 +29,7 @@
     if (self = [super init]) {
         self->_demuxers = demuxables;
         self->_finishedDemuxers = [NSMutableArray array];
+        self->_finishedTracksInternal = [NSMutableArray array];
     }
     return self;
 }
@@ -56,6 +58,11 @@
 - (SGDemuxerOptions *)options
 {
     return self->_demuxers.firstObject.options;
+}
+
+- (NSArray<SGTrack *> *)finishedTracks
+{
+    return self->_finishedTracksInternal.copy;
 }
 
 #pragma mark - Control
@@ -131,6 +138,7 @@
     }
     [self->_timeStamps removeAllObjects];
     [self->_finishedDemuxers removeAllObjects];
+    [self->_finishedTracksInternal removeAllObjects];
     return nil;
 }
 
@@ -158,7 +166,7 @@
             }
         }
         if (!demuxable) {
-            return SGCreateError(SGErrorCodeMutilDemuxerEndOfFile, SGActionCodeMutilDemuxerNext);
+            return SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeMutilDemuxerNext);
         }
         error = [demuxable nextPacket:packet];
         if (error) {
@@ -166,6 +174,7 @@
                 break;
             }
             [self->_finishedDemuxers addObject:demuxable];
+            [self->_finishedTracksInternal addObjectsFromArray:demuxable.tracks];
             continue;
         }
         CMTime decodeTimeStamp = (*packet).decodeTimeStamp;

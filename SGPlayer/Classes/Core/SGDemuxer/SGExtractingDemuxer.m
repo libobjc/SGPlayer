@@ -33,6 +33,7 @@
 
 @synthesize tracks = _tracks;
 @synthesize duration = _duration;
+@synthesize finishedTracks = _finishedTracks;
 
 - (instancetype)initWithDemuxable:(id<SGDemuxable>)demuxable index:(NSInteger)index timeRange:(CMTimeRange)timeRange scale:(CMTime)scale
 {
@@ -112,6 +113,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
     self->_flags.finished = NO;
     self->_flags.inputting = NO;
     self->_flags.outputting = NO;
+    self->_finishedTracks = nil;
     return nil;
 }
 
@@ -142,7 +144,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         }
         if (CMTimeCompare(pkt.timeStamp, CMTimeRangeGetEnd(self->_timeRange)) >= 0) {
             [pkt unlock];
-            error = SGCreateError(SGErrorCodeURLDemuxerFunnelFinished, SGActionCodeURLDemuxerFunnelNext);
+            error = SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeURLDemuxerFunnelNext);
             break;
         }
         [pkt.codecDescriptor appendTimeLayout:self->_offsetLayout];
@@ -151,6 +153,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         [pkt fill];
         *packet = pkt;
         break;
+    }
+    if (error.code == SGErrorCodeDemuxerEndOfFile) {
+        self->_finishedTracks = self->_tracks.copy;
     }
     return error;
 }
@@ -172,7 +177,7 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
             }
         }
         if (self->_flags.finished) {
-            error = SGCreateError(SGErrorCodeURLDemuxerFunnelFinished, SGActionCodeURLDemuxerFunnelNext);
+            error = SGCreateError(SGErrorCodeDemuxerEndOfFile, SGActionCodeURLDemuxerFunnelNext);
             break;
         }
         error = [self->_demuxable nextPacket:&pkt];
@@ -214,6 +219,9 @@ SGGet0Map(NSError *, seekable, self->_demuxable)
         [self->_packetQueue putObjectSync:pkt];
         [pkt unlock];
         continue;
+    }
+    if (error.code == SGErrorCodeDemuxerEndOfFile) {
+        self->_finishedTracks = self->_tracks.copy;
     }
     return error;
 }

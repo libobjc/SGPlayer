@@ -32,6 +32,11 @@
 /**
  *
  */
+@property (nonatomic, copy, readonly) NSArray<SGTrack *> *finishedTracks;
+
+/**
+ *
+ */
 @property (nonatomic, copy, readonly) NSDictionary *metadata;
 
 /**

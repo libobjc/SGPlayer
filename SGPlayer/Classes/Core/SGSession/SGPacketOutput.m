@@ -66,6 +66,7 @@
 SGGet0Map(CMTime, duration, self->_demuxable)
 SGGet0Map(NSDictionary *, metadata, self->_demuxable)
 SGGet0Map(NSArray<SGTrack *> *, tracks, self->_demuxable)
+SGGet0Map(NSArray<SGTrack *> *, finishedTracks, self->_demuxable)
 SGGet0Map(SGDemuxerOptions *, options, self->_demuxable)
 SGSet1Map(void, setOptions, SGDemuxerOptions *, self->_demuxable)
 

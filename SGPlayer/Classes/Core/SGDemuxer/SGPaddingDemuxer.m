@@ -23,6 +23,7 @@
 @synthesize delegate = _delegate;
 @synthesize metadata = _metadata;
 @synthesize duration = _duration;
+@synthesize finishedTracks = _finishedTracks;
 
 - (instancetype)initWithDuration:(CMTime)duration
 {

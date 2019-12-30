@@ -31,6 +31,7 @@
 @synthesize delegate = _delegate;
 @synthesize duration = _duration;
 @synthesize metadata = _metadata;
+@synthesize finishedTracks = _finishedTracks;
 
 - (instancetype)initWithTrack:(SGMutableTrack *)track
 {
@@ -158,6 +159,7 @@
         }
     }
     time = CMTimeSubtract(time, currentLayout.offset);
+    self->_finishedTracks = nil;
     self->_currentIndex = currentIndex;
     self->_currentLayout = currentLayout;
     self->_currentDemuxer = currentDemuxer;
@@ -194,6 +196,9 @@
         [(*packet).codecDescriptor appendTimeLayout:self->_currentLayout];
         [(*packet) fill];
         break;
+    }
+    if (error.code == SGErrorCodeDemuxerEndOfFile) {
+        self->_finishedTracks = self->_tracks.copy;
     }
     return error;
 }

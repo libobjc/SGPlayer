@@ -30,6 +30,7 @@
 @synthesize delegate = _delegate;
 @synthesize metadata = _metadata;
 @synthesize duration = _duration;
+@synthesize finishedTracks = _finishedTracks;
 
 - (instancetype)initWithURL:(NSURL *)URL
 {
@@ -132,6 +133,7 @@
             } else {
                 self->_seektimeMinimum = kCMTimeInvalid;
             }
+            self->_finishedTracks = nil;
         }
         return SGGetFFError(ret, SGActionCodeFormatSeekFrame);
     }
@@ -167,7 +169,11 @@
             [pkt fill];
             *packet = pkt;
         }
-        return SGGetFFError(ret, SGActionCodeFormatReadFrame);
+        NSError *error = SGGetFFError(ret, SGActionCodeFormatReadFrame);
+        if (error.code == SGErrorCodeDemuxerEndOfFile) {
+            self->_finishedTracks = self->_tracks.copy;
+        }
+        return error;
     }
     return SGCreateError(SGErrorCodeNoValidFormat, SGActionCodeFormatReadFrame);
 }
