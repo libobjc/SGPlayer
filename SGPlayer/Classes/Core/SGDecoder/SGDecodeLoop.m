@@ -323,8 +323,9 @@
                 }
                 NSArray *objs = [context decode:lock unlock:unlock];
                 [self->_lock unlock];
+                // TODO: In special cases, use needsDrop to determine whether needs to discard frames. It is not implemented now for performance reasons.
+                [self->_delegate decodeLoop:self didOutputFrames:objs needsDrop:nil];
                 for (SGFrame *obj in objs) {
-                    [self->_delegate decodeLoop:self didOutputFrame:obj];
                     [obj unlock];
                 }
                 [self->_lock lock];

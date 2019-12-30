@@ -383,30 +383,42 @@ SGSet1Map(void, setDecoderOptions, SGDecoderOptions *, self->_frameOutput)
     });
 }
 
-- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrame:(__kindof SGFrame *)frame
+- (void)frameOutput:(SGFrameOutput *)frameOutput didOutputFrames:(NSArray<__kindof SGFrame *> *)frames needsDrop:(BOOL (^)(void))needsDrop
 {
-    __block __kindof SGFrame *obj = frame;
-    [obj lock];
     SGLockEXE10(self->_lock, ^SGBlock {
-        SGMediaType type = obj.track.type;
-        if (type == SGMediaTypeAudio) {
-            obj = [self->_audioProcessor putFrame:obj];
-            if (!obj) {
-                return nil;
-            }
-            [self->_audioQueue putObjectSync:obj];
-            return [self setFrameQueueCapacity:SGMediaTypeAudio];
-        } else if (type == SGMediaTypeVideo) {
-            obj = [self->_videoProcessor putFrame:obj];
-            if (!obj) {
-                return nil;
-            }
-            [self->_videoQueue putObjectSync:obj];
-            return [self setFrameQueueCapacity:SGMediaTypeVideo];
+        if (needsDrop && needsDrop()) {
+            return nil;
         }
-        return nil;
+        BOOL hasAudio = NO, hasVideo = NO;
+        NSArray<__kindof SGFrame *> *objs = frames;
+        for (NSInteger i = 0; i < objs.count; i++) {
+            __kindof SGFrame *obj = objs[i];
+            [obj lock];
+            SGMediaType type = obj.track.type;
+            if (type == SGMediaTypeAudio) {
+                obj = [self->_audioProcessor putFrame:obj];
+                if (obj) {
+                    hasAudio = YES;
+                    [self->_audioQueue putObjectSync:obj];
+                }
+            } else if (type == SGMediaTypeVideo) {
+                obj = [self->_videoProcessor putFrame:obj];
+                if (obj) {
+                    hasVideo = YES;
+                    [self->_videoQueue putObjectSync:obj];
+                }
+            }
+            [obj unlock];
+        }
+        SGBlock b1 = ^{}, b2 = ^{};
+        if (hasAudio) {
+            b1 = [self setFrameQueueCapacity:SGMediaTypeAudio];
+        }
+        if (hasVideo) {
+            b2 = [self setFrameQueueCapacity:SGMediaTypeVideo];
+        }
+        return ^{b1(); b2();};
     });
-    [obj unlock];
 }
 
 #pragma mark - Capacity

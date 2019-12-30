@@ -399,9 +399,9 @@ SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_packe
     });
 }
 
-- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didOutputFrame:(__kindof SGFrame *)frame
+- (void)decodeLoop:(SGDecodeLoop *)decodeLoop didOutputFrames:(NSArray<__kindof SGFrame *> *)frames needsDrop:(BOOL (^)(void))needsDrop
 {
-    [self->_delegate frameOutput:self didOutputFrame:frame];
+    [self->_delegate frameOutput:self didOutputFrames:frames needsDrop:needsDrop];
 }
 
 @end
