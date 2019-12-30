@@ -141,7 +141,15 @@
     if (frames.count == 0 &&
         self->_lastDecodeFrame &&
         self->_flags.outputCount == 0) {
-        self->_lastDecodeFrame.flags |= SGDataFlagPadding;
+        CMTimeRange timeRange = self->_codecDescriptor.timeRange;
+        if (CMTIME_IS_NUMERIC(timeRange.start) &&
+            CMTIME_IS_NUMERIC(timeRange.duration)) {
+            SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
+            cd.track = self->_lastDecodeFrame.track;
+            cd.metadata = self->_lastDecodeFrame.codecDescriptor.metadata;
+            [self->_lastDecodeFrame setCodecDescriptor:cd];
+            [self->_lastDecodeFrame fillWithTimeStamp:timeRange.start decodeTimeStamp:timeRange.start duration:timeRange.duration];
+        }
         frames = @[self->_lastDecodeFrame];
         [self->_lastDecodeFrame lock];
     } else if (frames.count == 0 &&
