@@ -10,8 +10,8 @@
 
 static void SGFFmpegLogCallback(void * context, int level, const char * format, va_list args)
 {
-//    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
-//    NSLog(@"SGFFLog : %@", message);
+    NSString * message = [[NSString alloc] initWithFormat:[NSString stringWithUTF8String:format] arguments:args];
+    NSLog(@"> SGFFLog : %@", message);
 }
 
 void SGFFmpegSetupIfNeeded(void)

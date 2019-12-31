@@ -25,6 +25,7 @@ FF_ALL_ARCHS=
 FF_ALL_ARCHS_IOS="armv7 arm64 i386 x86_64"
 FF_ALL_ARCHS_TVOS="arm64 x86_64"
 FF_ALL_ARCHS_MACOS="x86_64"
+FF_ALL_ARCHS_MACCATALYST="x86_64"
 
 FF_PLATFORM=$1
 FF_ACTION=$2
@@ -127,8 +128,10 @@ elif [ "$FF_PLATFORM" = "tvOS" ]; then
     FF_ALL_ARCHS=$FF_ALL_ARCHS_TVOS
 elif [ "$FF_PLATFORM" = "macOS" ]; then
     FF_ALL_ARCHS=$FF_ALL_ARCHS_MACOS
+elif [ "$FF_PLATFORM" = "Catalyst" ]; then
+    FF_ALL_ARCHS=$FF_ALL_ARCHS_MACCATALYST
 else
-    echo "You must specific an platform 'iOS, tvOS, macOS'.\n"
+    echo "You must specific an platform 'iOS, tvOS, macOS, Catalyst'.\n"
     exit 1
 fi
 
@@ -165,6 +168,9 @@ else
     echo " ---"
     echo "  compile-ffmpeg.sh macOS build"
     echo "  compile-ffmpeg.sh macOS clean"
+    echo " ---"
+    echo "  compile-ffmpeg.sh Catalyst build"
+    echo "  compile-ffmpeg.sh Catalyst clean"
     exit 1
 fi
 

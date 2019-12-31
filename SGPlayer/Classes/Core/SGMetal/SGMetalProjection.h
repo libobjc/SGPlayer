@@ -7,7 +7,11 @@
 //
 
 #import <Metal/Metal.h>
+#if TARGET_OS_MACCATALYST
+#import "Catalyst.h"
+#else
 #import <GLKit/GLKit.h>
+#endif
 
 @interface SGMetalProjection : NSObject
 

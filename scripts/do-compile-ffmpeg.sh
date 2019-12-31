@@ -36,7 +36,7 @@ set -e
 # common defines
 FF_PLATFORM=$1
     if [ -z "$FF_PLATFORM" ]; then
-        echo "You must specific an platform 'iOS, tvOS, macOS'.\n"
+        echo "You must specific an platform 'iOS, tvOS, macOS, Catalyst'.\n"
     exit 1
 fi
 
@@ -184,6 +184,18 @@ elif [ "$FF_PLATFORM" = "tvOS" ]; then
         echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
     exit 1
     fi
+elif [ "$FF_PLATFORM" = "Catalyst" ]; then
+    if [ "$FF_ARCH" = "x86_64" ]; then
+        FF_BUILD_NAME="ffmpeg-x86_64"
+        FF_BUILD_NAME_OPENSSL=openssl-x86_64
+        FF_XCRUN_PLATFORM="iPhoneSimulator"
+        FF_XCRUN_OSVERSION="-target x86_64-apple-ios13.0-macabi -DTARGET_OS_MACCATALYST=1 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+        FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_INTEL"
+    else
+        echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
+    exit 1
+    fi
+
 else
     echo "unknown platform $FF_PLATFORM";
     exit 1
@@ -239,6 +251,8 @@ if [ -f "${FFMPEG_DEP_OPENSSL_LIB}/libssl.a" ]; then
     FFMPEG_CFLAGS="$FFMPEG_CFLAGS -I${FFMPEG_DEP_OPENSSL_INC}"
     FFMPEG_DEP_LIBS="$FFMPEG_CFLAGS -L${FFMPEG_DEP_OPENSSL_LIB} -lssl -lcrypto"
 fi
+
+FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --enable-decoder=mpeg2video --enable-decoder=ac3 --enable-decoder=ac3_fixed --enable-decoder=dvbsub --enable-decoder=mp2 --enable-decoder=mp2float --enable-gpl --enable-nonfree"
 
 #--------------------
 echo "\n--------------------"

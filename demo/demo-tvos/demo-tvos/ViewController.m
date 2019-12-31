@@ -18,10 +18,13 @@
 
 @implementation ViewController
 
-- (instancetype)init
+- (instancetype)initWithCoder:(NSCoder *)coder
 {
-    if (self = [super init]) {
+    if (self = [super initWithCoder:coder]) {
+		
         self.player = [[SGPlayer alloc] init];
+		
+		NSLog(@"player = %@", self.player);
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoChanged:) name:SGPlayerDidChangeInfosNotification object:self.player];
     }
     return self;
@@ -42,6 +45,7 @@
     self.player.videoRenderer.view = self.view;
     [self.player replaceWithAsset:asset];
     [self.player play];
+	NSLog(@"Loaded, play");
 }
 
 #pragma mark - SGPlayer Notifications

@@ -31,8 +31,8 @@
 {
     AudioComponentDescription acd;
     acd.componentType = kAudioUnitType_Mixer;
-#if SGPLATFORM_TARGET_OS_MAC
-    acd.componentSubType = kAudioUnitSubType_StereoMixer;
+#if SGPLATFORM_TARGET_OS_MAC || TARGET_OS_MACCATALYST
+    acd.componentSubType = kAudioUnitSubType_SpatialMixer;
 #elif SGPLATFORM_TARGET_OS_IPHONE_OR_TV
     acd.componentSubType = kAudioUnitSubType_MultiChannelMixer;
 #endif

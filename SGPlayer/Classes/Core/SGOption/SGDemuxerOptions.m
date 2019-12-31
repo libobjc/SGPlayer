@@ -20,9 +20,13 @@
 - (instancetype)init
 {
     if (self = [super init]) {
-        self->_options = @{@"reconnect" : @(1),
+        self->_options = @{@"timeout" : @(20 * 1000 * 1000),
+                           @"reconnect" : @(1),
                            @"user-agent" : @"SGPlayer",
-                           @"timeout" : @(20 * 1000 * 1000)};
+//						   @"headers": @"Connection: Keep-Alive\r\n",
+//						   @"sn" : @"",
+//						   @"vf" : @"scale=w=1920:h=1080:force_original_aspect_ratio=decrease"
+		};
     }
     return self;
 }
