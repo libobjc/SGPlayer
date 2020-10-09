@@ -469,7 +469,7 @@ NSNotificationName const SGPlayerDidChangeInfosNotification = @"SGPlayerDidChang
 
 #pragma mark - SGClockDelegate
 
-- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime
+- (void)clock:(SGClock *)clock didChangeCurrentTime:(CMTime)currentTime
 {
     SGLockEXE10(self->_lock, ^SGBlock {
         SGInfoAction action = SGInfoActionNone;
