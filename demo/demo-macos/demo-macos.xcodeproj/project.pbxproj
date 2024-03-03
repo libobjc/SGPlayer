@@ -373,7 +373,7 @@
 				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};
@@ -388,7 +388,7 @@
 				DEVELOPMENT_TEAM = KAGR32AB25;
 				INFOPLIST_FILE = "demo-macos/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-macos";
 				PRODUCT_NAME = SGPlayer;
 			};

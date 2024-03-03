@@ -327,7 +327,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-tvos";
 				PRODUCT_NAME = SGPlayer;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.2;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Debug;
 		};
@@ -345,7 +345,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.libobjc.SGPlayer.demo-tvos";
 				PRODUCT_NAME = SGPlayer;
 				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 10.2;
+				TVOS_DEPLOYMENT_TARGET = 13.0;
 			};
 			name = Release;
 		};
