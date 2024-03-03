@@ -5,8 +5,8 @@ set -e
 PLATFORM=$1
 ACTION=$2
 
-FFMPEG_VERSION=n4.2
-OPENSSL_VERSION=OpenSSL_1_0_2s
+FFMPEG_VERSION=n4.4.4
+OPENSSL_VERSION=OpenSSL_1_1_1w
 
 if [ "$ACTION" = "build" ]; then
     sh scripts/init-openssl.sh $PLATFORM $OPENSSL_VERSION
@@ -18,13 +18,13 @@ elif [ "$ACTION" = "clean" ]; then
     sh scripts/compile-ffmpeg.sh $PLATFORM "clean"
 else
     echo "Usage:"
-    echo "  build.sh iOS build"
-    echo "  build.sh iOS clean"
+    echo "  sudo build.sh iOS build"
+    echo "  sudo build.sh iOS clean"
     echo " ---"
-    echo "  build.sh tvOS build"
-    echo "  build.sh tvOS clean"
+    echo "  sudo build.sh tvOS build"
+    echo "  sudo build.sh tvOS clean"
     echo " ---"
-    echo "  build.sh macOS build"
-    echo "  build.sh macOS clean"
+    echo "  sudo build.sh macOS build"
+    echo "  sudo build.sh macOS clean"
     exit 1
 fi
