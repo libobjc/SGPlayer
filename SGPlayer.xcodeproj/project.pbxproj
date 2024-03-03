@@ -588,6 +588,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4E274A152B9433120032C98B /* do-compile-openssl.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "do-compile-openssl.sh"; sourceTree = "<group>"; };
+		4E274A162B9433120032C98B /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		4E274A172B9433120032C98B /* avconfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = avconfig.h; sourceTree = "<group>"; };
+		4E274A182B9433120032C98B /* module.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = module.sh; sourceTree = "<group>"; };
+		4E274A192B9433120032C98B /* do-compile-ffmpeg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "do-compile-ffmpeg.sh"; sourceTree = "<group>"; };
+		4E274A1A2B9433120032C98B /* ffversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ffversion.h; sourceTree = "<group>"; };
+		4E274A1B2B9433120032C98B /* init-openssl.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "init-openssl.sh"; sourceTree = "<group>"; };
+		4E274A1C2B9433120032C98B /* compile-openssl.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "compile-openssl.sh"; sourceTree = "<group>"; };
+		4E274A1D2B9433120032C98B /* init-ffmpeg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "init-ffmpeg.sh"; sourceTree = "<group>"; };
+		4E274A1E2B9433120032C98B /* pull-repo-base.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pull-repo-base.sh"; sourceTree = "<group>"; };
+		4E274A1F2B9433120032C98B /* pull-repo-ref.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "pull-repo-ref.sh"; sourceTree = "<group>"; };
+		4E274A202B9433120032C98B /* compile-ffmpeg.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "compile-ffmpeg.sh"; sourceTree = "<group>"; };
+		4E274A212B94332D0032C98B /* build.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = build.sh; sourceTree = SOURCE_ROOT; };
 		9C03E5EA212E616B001F0E1B /* SGMotionSensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGMotionSensor.h; sourceTree = "<group>"; };
 		9C03E5EB212E616B001F0E1B /* SGMotionSensor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMotionSensor.m; sourceTree = "<group>"; };
 		9C03E5EE212E645B001F0E1B /* SGVRProjection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVRProjection.h; sourceTree = "<group>"; };
@@ -948,6 +961,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4E274A142B9433120032C98B /* scripts */ = {
+			isa = PBXGroup;
+			children = (
+				4E274A162B9433120032C98B /* config.h */,
+				4E274A172B9433120032C98B /* avconfig.h */,
+				4E274A1A2B9433120032C98B /* ffversion.h */,
+				4E274A212B94332D0032C98B /* build.sh */,
+				4E274A182B9433120032C98B /* module.sh */,
+				4E274A1D2B9433120032C98B /* init-ffmpeg.sh */,
+				4E274A1B2B9433120032C98B /* init-openssl.sh */,
+				4E274A202B9433120032C98B /* compile-ffmpeg.sh */,
+				4E274A1C2B9433120032C98B /* compile-openssl.sh */,
+				4E274A192B9433120032C98B /* do-compile-ffmpeg.sh */,
+				4E274A152B9433120032C98B /* do-compile-openssl.sh */,
+				4E274A1E2B9433120032C98B /* pull-repo-base.sh */,
+				4E274A1F2B9433120032C98B /* pull-repo-ref.sh */,
+			);
+			path = scripts;
+			sourceTree = "<group>";
+		};
 		9C03E5E9212E60F7001F0E1B /* SGVR */ = {
 			isa = PBXGroup;
 			children = (
@@ -1344,6 +1377,7 @@
 		9CEFA6CC1E7122BF00835CAB = {
 			isa = PBXGroup;
 			children = (
+				4E274A142B9433120032C98B /* scripts */,
 				9CEFA6D81E7122BF00835CAB /* SGPlayer */,
 				9CEFA6D71E7122BF00835CAB /* Products */,
 				9C4793421E71402E00AD4289 /* Frameworks */,
