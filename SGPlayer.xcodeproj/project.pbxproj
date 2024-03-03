@@ -2319,7 +2319,6 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -2357,7 +2356,6 @@
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};
