@@ -27,9 +27,12 @@ IJK_GASP_LOCAL_REPO=build/extra/gas-preprocessor
 set -e
 
 FF_ALL_ARCHS=
-FF_ALL_ARCHS_IOS="arm64 x86_64"
-FF_ALL_ARCHS_TVOS="arm64 x86_64"
+FF_ALL_ARCHS_IOS="arm64"
+FF_ALL_ARCHS_TVOS="arm64"
 FF_ALL_ARCHS_MACOS="arm64 x86_64"
+
+#FF_ALL_ARCHS_IOS="x86_64 arm64-simulator"
+#FF_ALL_ARCHS_TVOS="x86_64 arm64-simulator"
 
 FF_PLATFORM=$1
 

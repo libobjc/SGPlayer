@@ -40,10 +40,11 @@ FF_PLATFORM=$1
     exit 1
 fi
 
-FF_ARCH=$2
-    if [ -z "$FF_ARCH" ]; then
-        echo "You must specific an architecture 'armv7, armv7s, arm64, i386, x86_64, ...'.\n"
-    exit 1
+FF_ARCH_FULL=$2
+if [ "$FF_ARCH_FULL" = "arm64-simulator" ]; then
+    FF_ARCH="arm64"
+else
+    FF_ARCH=$FF_ARCH_FULL
 fi
 
 
@@ -114,7 +115,7 @@ echo "gasp: $FF_TOOLS_ROOT/gas-preprocessor/gas-preprocessor.pl"
 
 #--------------------
 echo "===================="
-echo "[*] config arch $FF_ARCH"
+echo "[*] config arch $FF_ARCH, $FF_ARCH_FULL"
 echo "===================="
 
 FF_BUILD_NAME="unknown"
@@ -126,17 +127,24 @@ FF_DEP_OPENSSL_LIB=
 FF_XCODE_BITCODE="-fembed-bitcode"
 
 if [ "$FF_PLATFORM" = "iOS" ]; then
-    if [ "$FF_ARCH" = "x86_64" ]; then
+    if [ "$FF_ARCH_FULL" = "x86_64" ]; then
         FF_BUILD_NAME="ffmpeg-x86_64"
         FF_BUILD_NAME_OPENSSL=openssl-x86_64
         FF_XCRUN_PLATFORM="iPhoneSimulator"
         FF_XCRUN_OSVERSION="-mios-simulator-version-min=13.0"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_INTEL"
-    elif [ "$FF_ARCH" = "arm64" ]; then
+    elif [ "$FF_ARCH_FULL" = "arm64" ]; then
         FF_BUILD_NAME="ffmpeg-arm64"
         FF_BUILD_NAME_OPENSSL=openssl-arm64
         FF_XCRUN_PLATFORM="iPhoneOS"
         FF_XCRUN_OSVERSION="-miphoneos-version-min=13.0"
+        FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_ARM"
+        FF_GASPP_EXPORT="GASPP_FIX_XCODE5=1"
+    elif [ "$FF_ARCH_FULL" = "arm64-simulator" ]; then
+        FF_BUILD_NAME="ffmpeg-arm64-simulator"
+        FF_BUILD_NAME_OPENSSL=openssl-arm64-simulator
+        FF_XCRUN_PLATFORM="iPhoneSimulator"
+        FF_XCRUN_OSVERSION="-mios-simulator-version-min=13.0"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_ARM"
         FF_GASPP_EXPORT="GASPP_FIX_XCODE5=1"
     else
@@ -144,13 +152,13 @@ if [ "$FF_PLATFORM" = "iOS" ]; then
     exit 1
     fi
 elif [ "$FF_PLATFORM" = "macOS" ]; then
-    if [ "$FF_ARCH" = "x86_64" ]; then
+    if [ "$FF_ARCH_FULL" = "x86_64" ]; then
         FF_BUILD_NAME="ffmpeg-x86_64"
         FF_BUILD_NAME_OPENSSL=openssl-x86_64
         FF_XCRUN_PLATFORM="MacOSX"
         FF_XCRUN_OSVERSION="-mmacosx-version-min=10.15"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_INTEL"
-    elif [ "$FF_ARCH" = "arm64" ]; then
+    elif [ "$FF_ARCH_FULL" = "arm64" ]; then
         FF_BUILD_NAME="ffmpeg-arm64"
         FF_BUILD_NAME_OPENSSL=openssl-arm64
         FF_XCRUN_PLATFORM="MacOSX"
@@ -162,17 +170,24 @@ elif [ "$FF_PLATFORM" = "macOS" ]; then
     exit 1
     fi
 elif [ "$FF_PLATFORM" = "tvOS" ]; then
-    if [ "$FF_ARCH" = "x86_64" ]; then
+    if [ "$FF_ARCH_FULL" = "x86_64" ]; then
         FF_BUILD_NAME="ffmpeg-x86_64"
         FF_BUILD_NAME_OPENSSL=openssl-x86_64
         FF_XCRUN_PLATFORM="AppleTVSimulator"
         FF_XCRUN_OSVERSION="-mtvos-simulator-version-min=13.0"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_INTEL"
-    elif [ "$FF_ARCH" = "arm64" ]; then
+    elif [ "$FF_ARCH_FULL" = "arm64" ]; then
         FF_BUILD_NAME="ffmpeg-arm64"
         FF_BUILD_NAME_OPENSSL=openssl-arm64
         FF_XCRUN_PLATFORM="AppleTVOS"
         FF_XCRUN_OSVERSION="-mtvos-version-min=13.0"
+        FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_ARM"
+        FF_GASPP_EXPORT="GASPP_FIX_XCODE5=1"
+    elif [ "$FF_ARCH_FULL" = "arm64-simulator" ]; then
+        FF_BUILD_NAME="ffmpeg-arm64-simulator"
+        FF_BUILD_NAME_OPENSSL=openssl-arm64-simulator
+        FF_XCRUN_PLATFORM="AppleTVSimulator"
+        FF_XCRUN_OSVERSION="-mtvos-simulator-version-min=13.0"
         FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS $FFMPEG_CFG_FLAGS_ARM"
         FF_GASPP_EXPORT="GASPP_FIX_XCODE5=1"
     else
