@@ -143,6 +143,12 @@ elif [ "$FF_PLATFORM" = "tvOS" ]; then
         echo "unknown architecture $FF_PLATFORM, $FF_ARCH";
         exit 1
     fi
+    FF_BUILD_SOURCE_TEMP="$FF_BUILD_ROOT/source/$FF_PLATFORM/$FF_BUILD_NAME"
+    LANG=C sed -i -- 's/define HAVE_FORK 1/define HAVE_FORK 0/' "$FF_BUILD_SOURCE_TEMP/apps/speed.c"
+    LANG=C sed -i -- 's/!defined(OPENSSL_NO_POSIX_IO)/defined(HAVE_FORK)/' "$FF_BUILD_SOURCE_TEMP/apps/ocsp.c"
+    LANG=C sed -i -- 's/fork()/-1/' "$FF_BUILD_SOURCE_TEMP/apps/ocsp.c"
+    LANG=C sed -i -- 's/fork()/-1/' "$FF_BUILD_SOURCE_TEMP/test/drbgtest.c"
+    LANG=C sed -i -- 's/!defined(OPENSSL_NO_ASYNC)/defined(HAVE_FORK)/' "$FF_BUILD_SOURCE_TEMP/crypto/async/arch/async_posix.h"
 else
     echo "unknown platform $FF_PLATFORM";
     exit 1
