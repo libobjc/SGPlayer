@@ -18,13 +18,13 @@ elif [ "$ACTION" = "clean" ]; then
     sh scripts/compile-ffmpeg.sh $PLATFORM "clean"
 else
     echo "Usage:"
-    echo "  sudo build.sh iOS build"
-    echo "  sudo build.sh iOS clean"
+    echo "  sudo sh build.sh iOS build"
+    echo "  sudo sh build.sh iOS clean"
     echo " ---"
-    echo "  sudo build.sh tvOS build"
-    echo "  sudo build.sh tvOS clean"
+    echo "  sudo sh build.sh tvOS build"
+    echo "  sudo sh build.sh tvOS clean"
     echo " ---"
-    echo "  sudo build.sh macOS build"
-    echo "  sudo build.sh macOS clean"
+    echo "  sudo sh build.sh macOS build"
+    echo "  sudo sh build.sh macOS clean"
     exit 1
 fi
