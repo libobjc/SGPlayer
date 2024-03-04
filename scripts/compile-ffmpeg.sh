@@ -34,7 +34,7 @@ FF_ACTION=$2
 
 #----------
 UNI_BUILD_ROOT=`pwd`/build
-UNI_TMP="$UNI_BUILD_ROOT/build/tmp"
+UNI_TMP="$UNI_BUILD_ROOT/libs/tmp"
 UNI_TMP_LLVM_VER_FILE="$UNI_TMP/llvm.ver.txt"
 
 #----------
@@ -55,7 +55,7 @@ do_lipo_ffmpeg () {
     LIPO_FLAGS=
     for ARCH in $FF_ALL_ARCHS
     do
-        ARCH_LIB_FILE="$UNI_BUILD_ROOT/build/$FF_PLATFORM/ffmpeg-$ARCH/output/lib/$LIB_FILE"
+        ARCH_LIB_FILE="$UNI_BUILD_ROOT/libs/$FF_PLATFORM/ffmpeg-$ARCH/output/lib/$LIB_FILE"
         if [ -f "$ARCH_LIB_FILE" ]; then
             LIPO_FLAGS="$LIPO_FLAGS $ARCH_LIB_FILE"
         else
@@ -63,8 +63,8 @@ do_lipo_ffmpeg () {
         fi
     done
 
-    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
-    xcrun lipo -info $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
+    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
+    xcrun lipo -info $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
 }
 
 do_lipo_ssl () {
@@ -72,7 +72,7 @@ do_lipo_ssl () {
     LIPO_FLAGS=
     for ARCH in $FF_ALL_ARCHS
     do
-        ARCH_LIB_FILE="$UNI_BUILD_ROOT/build/$FF_PLATFORM/openssl-$ARCH/output/lib/$LIB_FILE"
+        ARCH_LIB_FILE="$UNI_BUILD_ROOT/libs/$FF_PLATFORM/openssl-$ARCH/output/lib/$LIB_FILE"
         if [ -f "$ARCH_LIB_FILE" ]; then
             LIPO_FLAGS="$LIPO_FLAGS $ARCH_LIB_FILE"
         else
@@ -81,13 +81,13 @@ do_lipo_ssl () {
     done
 
     if [ "$LIPO_FLAGS" != "" ]; then
-        xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
-        xcrun lipo -info $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
+        xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
+        xcrun lipo -info $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
     fi
 }
 
 do_lipo_all () {
-    mkdir -p $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib
+    mkdir -p $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib
     echo "lipo archs: $FF_ALL_ARCHS"
     for FF_LIB in $FF_LIBS
     do
@@ -97,14 +97,14 @@ do_lipo_all () {
     ANY_ARCH=
     for ARCH in $FF_ALL_ARCHS
     do
-        ARCH_INC_DIR="$UNI_BUILD_ROOT/build/$FF_PLATFORM/ffmpeg-$ARCH/output/include"
+        ARCH_INC_DIR="$UNI_BUILD_ROOT/libs/$FF_PLATFORM/ffmpeg-$ARCH/output/include"
         if [ -d "$ARCH_INC_DIR" ]; then
             if [ -z "$ANY_ARCH" ]; then
                 ANY_ARCH=$ARCH
-                cp -R "$ARCH_INC_DIR" "$UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/"
+                cp -R "$ARCH_INC_DIR" "$UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/"
             fi
 
-            UNI_INC_DIR="$UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/include"
+            UNI_INC_DIR="$UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/include"
 
             mkdir -p "$UNI_INC_DIR/libavutil/$ARCH"
             cp -f "$ARCH_INC_DIR/libavutil/avconfig.h"  "$UNI_INC_DIR/libavutil/$ARCH/avconfig.h"
@@ -153,10 +153,10 @@ elif [ "$FF_ACTION" = "clean" ]; then
     done
     echo "clean build cache"
     echo "================="
-    rm -rf $UNI_BUILD_ROOT/build/$FF_PLATFORM/ffmpeg-*
-    rm -rf $UNI_BUILD_ROOT/build/$FF_PLATFORM/openssl-*
-    rm -rf $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/include
-    rm -rf $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib
+    rm -rf $UNI_BUILD_ROOT/libs/$FF_PLATFORM/ffmpeg-*
+    rm -rf $UNI_BUILD_ROOT/libs/$FF_PLATFORM/openssl-*
+    rm -rf $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/include
+    rm -rf $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib
     echo "clean success"
 else
     echo "Usage:"

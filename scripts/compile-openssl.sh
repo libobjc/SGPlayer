@@ -34,7 +34,7 @@ FF_ACTION=$2
 
 #----------
 UNI_BUILD_ROOT=`pwd`/build
-UNI_TMP="$UNI_BUILD_ROOT/build/tmp"
+UNI_TMP="$UNI_BUILD_ROOT/libs/tmp"
 UNI_TMP_LLVM_VER_FILE="$UNI_TMP/llvm.ver.txt"
 
 #----------
@@ -54,22 +54,32 @@ do_lipo () {
     LIPO_FLAGS=
     for ARCH in $FF_ALL_ARCHS
     do
-        LIPO_FLAGS="$LIPO_FLAGS $UNI_BUILD_ROOT/build/$FF_PLATFORM/openssl-$ARCH/output/lib/$LIB_FILE"
+        LIPO_FLAGS="$LIPO_FLAGS $UNI_BUILD_ROOT/libs/$FF_PLATFORM/openssl-$ARCH/output/lib/$LIB_FILE"
     done
 
-    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
-    xcrun lipo -info $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib/$LIB_FILE
+    xcrun lipo -create $LIPO_FLAGS -output $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
+    xcrun lipo -info $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib/$LIB_FILE
 }
 
 do_lipo_all () {
-    mkdir -p $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/lib
+    mkdir -p $UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/lib
     echo "lipo archs: $FF_ALL_ARCHS"
     for FF_LIB in $FF_LIBS
     do
         do_lipo "$FF_LIB.a";
     done
-
-    cp -R $UNI_BUILD_ROOT/build/$FF_PLATFORM/openssl-arm64/output/include $UNI_BUILD_ROOT/build/$FF_PLATFORM/universal/
+    
+    ANY_ARCH=
+    for ARCH in $FF_ALL_ARCHS
+    do
+        ARCH_INC_DIR="$UNI_BUILD_ROOT/libs/$FF_PLATFORM/openssl-$ARCH/output/include"
+        if [ -d "$ARCH_INC_DIR" ]; then
+            if [ -z "$ANY_ARCH" ]; then
+                ANY_ARCH=$ARCH
+                cp -R "$ARCH_INC_DIR" "$UNI_BUILD_ROOT/libs/$FF_PLATFORM/universal/"
+            fi
+        fi
+    done
 }
 
 #----------

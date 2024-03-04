@@ -209,7 +209,7 @@ echo "[*] make ios toolchain $FF_BUILD_NAME"
 echo "===================="
 
 FF_BUILD_SOURCE="$FF_BUILD_ROOT/source/$FF_PLATFORM/$FF_BUILD_NAME"
-FF_BUILD_PREFIX="$FF_BUILD_ROOT/build/$FF_PLATFORM/$FF_BUILD_NAME/output"
+FF_BUILD_PREFIX="$FF_BUILD_ROOT/libs/$FF_PLATFORM/$FF_BUILD_NAME/output"
 
 FFMPEG_CFG_FLAGS="$FFMPEG_CFG_FLAGS --prefix=$FF_BUILD_PREFIX"
 
@@ -239,8 +239,8 @@ FFMPEG_DEP_LIBS=
 echo "\n--------------------"
 echo "[*] check OpenSSL"
 echo "----------------------"
-FFMPEG_DEP_OPENSSL_INC=$FF_BUILD_ROOT/build/$FF_PLATFORM/$FF_BUILD_NAME_OPENSSL/output/include
-FFMPEG_DEP_OPENSSL_LIB=$FF_BUILD_ROOT/build/$FF_PLATFORM/$FF_BUILD_NAME_OPENSSL/output/lib
+FFMPEG_DEP_OPENSSL_INC=$FF_BUILD_ROOT/libs/$FF_PLATFORM/$FF_BUILD_NAME_OPENSSL/output/include
+FFMPEG_DEP_OPENSSL_LIB=$FF_BUILD_ROOT/libs/$FF_PLATFORM/$FF_BUILD_NAME_OPENSSL/output/lib
 #--------------------
 # with openssl
 if [ -f "${FFMPEG_DEP_OPENSSL_LIB}/libssl.a" ]; then
