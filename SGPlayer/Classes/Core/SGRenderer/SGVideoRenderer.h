@@ -38,7 +38,7 @@ typedef NS_ENUM(NSUInteger, SGScalingMode) {
  @abstract
     Indicates whether the input format is supported.
 */
-+ (BOOL)isSupportedInputFormat:(int)format;
++ (BOOL)isSupportedPixelFormat:(int)format;
 
 /*!
  @property view

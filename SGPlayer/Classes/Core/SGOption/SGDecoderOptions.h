@@ -58,7 +58,7 @@
     Indicates the default hardware decoding output format.
     Default is kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange.
  */
-@property (nonatomic) OSType preferredPixelFormat;
+@property (nonatomic) OSType preferredCVPixelFormat;
 
 /*!
  @property supportedPixelFormats

@@ -62,7 +62,7 @@
     ];
 }
 
-+ (BOOL)isSupportedInputFormat:(int)format
++ (BOOL)isSupportedPixelFormat:(int)format
 {
     for (NSNumber *obj in [self supportedPixelFormats]) {
         if (format == obj.intValue) {

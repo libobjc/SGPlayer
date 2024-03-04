@@ -166,7 +166,7 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext *s, cons
             }
             AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
             frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredPixelFormat);
+            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredCVPixelFormat);
             frames_ctx_data->width = s->width;
             frames_ctx_data->height = s->height;
             int err = av_hwframe_ctx_init(frames_ctx);

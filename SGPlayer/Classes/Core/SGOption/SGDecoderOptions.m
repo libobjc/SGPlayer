@@ -21,7 +21,7 @@
     obj->_refcountedFrames = self->_refcountedFrames;
     obj->_hardwareDecodeH264 = self->_hardwareDecodeH264;
     obj->_hardwareDecodeH265 = self->_hardwareDecodeH265;
-    obj->_preferredPixelFormat = self->_preferredPixelFormat;
+    obj->_preferredCVPixelFormat = self->_preferredCVPixelFormat;
     obj->_supportedPixelFormats = self->_supportedPixelFormats.copy;
     obj->_supportedAudioDescriptors = self->_supportedAudioDescriptors.copy;
     obj->_resetFrameRate = self->_resetFrameRate;
@@ -37,7 +37,7 @@
         self->_refcountedFrames = YES;
         self->_hardwareDecodeH264 = YES;
         self->_hardwareDecodeH265 = YES;
-        self->_preferredPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
+        self->_preferredCVPixelFormat = SGPixelFormatFF2AV(AV_PIX_FMT_NV12);
         self->_supportedPixelFormats = [SGVideoRenderer supportedPixelFormats];
         self->_supportedAudioDescriptors = @[[SGAudioRenderer supportedAudioDescriptor]];
         self->_resetFrameRate = NO;
