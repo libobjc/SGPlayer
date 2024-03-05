@@ -257,7 +257,7 @@
     [self->_lastDecodeFrame lock];
     NSMutableArray *ret = [NSMutableArray array];
     for (SGFrame *obj in frames) {
-        if (CMTimeCompare(obj.timeStamp, timeRange.start) < 0) {
+        if (CMTimeCompare(CMTimeAdd(obj.timeStamp, obj.duration), timeRange.start) <= 0) {
             [obj unlock];
             continue;
         }
@@ -270,7 +270,7 @@
             self->_flags.needsAlignment = NO;
             CMTime start = timeRange.start;
             CMTime duration = CMTimeSubtract(CMTimeAdd(obj.timeStamp, obj.duration), start);
-            if (CMTimeCompare(obj.timeStamp, start) > 0) {
+            if (CMTimeCompare(obj.timeStamp, start) != 0) {
                 SGCodecDescriptor *cd = [[SGCodecDescriptor alloc] init];
                 cd.track = obj.track;
                 cd.metadata = obj.codecDescriptor.metadata;
