@@ -115,29 +115,6 @@
         [items addObject:item];
     }
     {
-        SGMutableAsset *asset = [[SGMutableAsset alloc] init];
-        {
-            SGMutableTrack *track = [asset addTrack:SGMediaTypeAudio];
-            SGSegment *segment1 = [SGSegment segmentWithDuration:CMTimeMake(5, 1)];
-            SGSegment *segment2 = [SGSegment segmentWithURL:i_see_fire index:1];
-            [track appendSegment:segment1];
-            [track appendSegment:segment2];
-        }
-        {
-            SGMutableTrack *track = [asset addTrack:SGMediaTypeVideo];
-            SGSegment *segment1 = [SGSegment segmentWithDuration:CMTimeMake(5, 1)];
-            SGSegment *segment2 = [SGSegment segmentWithURL:i_see_fire index:0];
-            [track appendSegment:segment1];
-            [track appendSegment:segment2];
-        }
-        
-        SGVideoItem *item = [[SGVideoItem alloc] init];
-        item.name = @"5s Padding + I See Fire";
-        item.asset = asset;
-        item.displayMode = SGDisplayModePlane;
-        [items addObject:item];
-    }
-    {
         SGVideoItem *item = [[SGVideoItem alloc] init];
         item.name = @"Google Help VR";
         item.asset = [SGAsset assetWithURL:google_help_vr];
