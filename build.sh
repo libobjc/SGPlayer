@@ -5,7 +5,7 @@ set -e
 PLATFORM=$1
 ACTION=$2
 
-FFMPEG_VERSION=n7.0.1
+FFMPEG_VERSION=7.0.1
 OPENSSL_VERSION=OpenSSL_1_1_1w
 
 if [ "$ACTION" = "build" ]; then

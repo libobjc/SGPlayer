@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-IJK_FFMPEG_UPSTREAM=https://github.com/FFmpeg/FFmpeg.git
-IJK_FFMPEG_FORK=https://github.com/FFmpeg/FFmpeg.git
+IJK_FFMPEG_UPSTREAM=https://github.com/libobjc/FFmpeg.git
+IJK_FFMPEG_FORK=https://github.com/libobjc/FFmpeg.git
 IJK_FFMPEG_COMMIT=$2
 IJK_FFMPEG_LOCAL_REPO=build/extra/ffmpeg
 
