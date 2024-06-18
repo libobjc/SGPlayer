@@ -34,8 +34,7 @@
     frame.core->format = descriptor.format;
     frame.core->nb_samples = numberOfSamples;
     frame.core->sample_rate = descriptor.sampleRate;
-    frame.core->channels = descriptor.numberOfChannels;
-    frame.core->channel_layout = descriptor.channelLayout;
+    frame.core->ch_layout = descriptor.channelLayout;
     int linesize = [descriptor linesize:numberOfSamples];
     for (int i = 0; i < descriptor.numberOfPlanes; i++) {
         uint8_t *data = av_mallocz(linesize);
@@ -43,7 +42,7 @@
         AVBufferRef *buffer = av_buffer_create(data, linesize, NULL, NULL, 0);
         frame.core->buf[i] = buffer;
         frame.core->data[i] = buffer->data;
-        frame.core->linesize[i] = buffer->size;
+        frame.core->linesize[i] = (int)buffer->size;
     }
     return frame;
 }

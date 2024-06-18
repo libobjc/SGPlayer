@@ -31,6 +31,9 @@
 		4E274A5F2B957A940032C98B /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E274A572B957A930032C98B /* libcrypto.a */; };
 		4E274A602B957A940032C98B /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E274A582B957A930032C98B /* libssl.a */; };
 		4E274A612B957A940032C98B /* libavutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E274A592B957A940032C98B /* libavutil.a */; };
+		4E9A9B662C219955008CFA70 /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E9A9B4D2C219955008CFA70 /* avcodec.h */; };
+		4E9A9B992C219DFD008CFA70 /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E9A9B802C219DFD008CFA70 /* avcodec.h */; };
+		4E9A9BCA2C219F04008CFA70 /* avcodec.h in Headers */ = {isa = PBXBuildFile; fileRef = 4E9A9BB12C219F04008CFA70 /* avcodec.h */; };
 		9C03E5EC212E616B001F0E1B /* SGMotionSensor.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C03E5EA212E616B001F0E1B /* SGMotionSensor.h */; };
 		9C03E5ED212E616B001F0E1B /* SGMotionSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9C03E5EB212E616B001F0E1B /* SGMotionSensor.m */; };
 		9C03E5F0212E645B001F0E1B /* SGVRProjection.h in Headers */ = {isa = PBXBuildFile; fileRef = 9C03E5EE212E645B001F0E1B /* SGVRProjection.h */; };
@@ -625,6 +628,9 @@
 		4E274A572B957A930032C98B /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = build/libs/tvOS/universal/lib/libcrypto.a; sourceTree = "<group>"; };
 		4E274A582B957A930032C98B /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = build/libs/tvOS/universal/lib/libssl.a; sourceTree = "<group>"; };
 		4E274A592B957A940032C98B /* libavutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libavutil.a; path = build/libs/tvOS/universal/lib/libavutil.a; sourceTree = "<group>"; };
+		4E9A9B4D2C219955008CFA70 /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
+		4E9A9B802C219DFD008CFA70 /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
+		4E9A9BB12C219F04008CFA70 /* avcodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = avcodec.h; sourceTree = "<group>"; };
 		9C03E5EA212E616B001F0E1B /* SGMotionSensor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGMotionSensor.h; sourceTree = "<group>"; };
 		9C03E5EB212E616B001F0E1B /* SGMotionSensor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SGMotionSensor.m; sourceTree = "<group>"; };
 		9C03E5EE212E645B001F0E1B /* SGVRProjection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SGVRProjection.h; sourceTree = "<group>"; };
@@ -909,6 +915,30 @@
 				4E274A1F2B9433120032C98B /* pull-repo-ref.sh */,
 			);
 			path = scripts;
+			sourceTree = "<group>";
+		};
+		4E9A9B632C219955008CFA70 /* libavcodec */ = {
+			isa = PBXGroup;
+			children = (
+				4E9A9B4D2C219955008CFA70 /* avcodec.h */,
+			);
+			path = libavcodec;
+			sourceTree = "<group>";
+		};
+		4E9A9B962C219DFD008CFA70 /* libavcodec */ = {
+			isa = PBXGroup;
+			children = (
+				4E9A9B802C219DFD008CFA70 /* avcodec.h */,
+			);
+			path = libavcodec;
+			sourceTree = "<group>";
+		};
+		4E9A9BC72C219F04008CFA70 /* libavcodec */ = {
+			isa = PBXGroup;
+			children = (
+				4E9A9BB12C219F04008CFA70 /* avcodec.h */,
+			);
+			path = libavcodec;
 			sourceTree = "<group>";
 		};
 		9C03E5E9212E60F7001F0E1B /* SGVR */ = {
@@ -1334,10 +1364,11 @@
 		9CFA234B230BCFFC00061AAC /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA234C230BCFFC00061AAC /* libavutil */,
+				4E9A9B962C219DFD008CFA70 /* libavcodec */,
 				9CFA234E230BCFFC00061AAC /* libavformat */,
-				9CFA2350230BCFFC00061AAC /* libswscale */,
+				9CFA234C230BCFFC00061AAC /* libavutil */,
 				9CFA2352230BCFFC00061AAC /* libswresample */,
+				9CFA2350230BCFFC00061AAC /* libswscale */,
 			);
 			name = iOS;
 			path = ../../../../build/libs/iOS/universal/include;
@@ -1378,10 +1409,11 @@
 		9CFA2358230BD00400061AAC /* macOS */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA2359230BD00400061AAC /* libavutil */,
+				4E9A9B632C219955008CFA70 /* libavcodec */,
 				9CFA235B230BD00400061AAC /* libavformat */,
-				9CFA235D230BD00400061AAC /* libswscale */,
+				9CFA2359230BD00400061AAC /* libavutil */,
 				9CFA235F230BD00400061AAC /* libswresample */,
+				9CFA235D230BD00400061AAC /* libswscale */,
 			);
 			name = macOS;
 			path = ../../../../build/libs/macOS/universal/include;
@@ -1422,10 +1454,11 @@
 		9CFA2365230BD00C00061AAC /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
-				9CFA2366230BD00C00061AAC /* libavutil */,
+				4E9A9BC72C219F04008CFA70 /* libavcodec */,
 				9CFA2368230BD00C00061AAC /* libavformat */,
-				9CFA236A230BD00C00061AAC /* libswscale */,
+				9CFA2366230BD00C00061AAC /* libavutil */,
 				9CFA236C230BD00C00061AAC /* libswresample */,
+				9CFA236A230BD00C00061AAC /* libswscale */,
 			);
 			name = tvOS;
 			path = ../../../../build/libs/tvOS/universal/include;
@@ -1488,6 +1521,7 @@
 				9C1378BD23029F2E00FE0CFD /* SGProcessorOptions.h in Headers */,
 				9C1378B823026C6700FE0CFD /* SGProcessor.h in Headers */,
 				9C1378B123026B3A00FE0CFD /* SGTrackSelection.h in Headers */,
+				4E9A9B662C219955008CFA70 /* avcodec.h in Headers */,
 				9C86386121904A0900D730EC /* SGPacket.h in Headers */,
 				9C86386021904A0900D730EC /* SGPacketOutput.h in Headers */,
 				9C262A3C22B3450F006C8542 /* SGDecoderOptions.h in Headers */,
@@ -1598,6 +1632,7 @@
 				9C1378AA2302681C00FE0CFD /* SGVideoProcessor.h in Headers */,
 				9C1378BE23029F2E00FE0CFD /* SGProcessorOptions.h in Headers */,
 				9C1378B923026C6700FE0CFD /* SGProcessor.h in Headers */,
+				4E9A9BCA2C219F04008CFA70 /* avcodec.h in Headers */,
 				9C1378B223026B3A00FE0CFD /* SGTrackSelection.h in Headers */,
 				9CD79F0E2190068E00E39A7D /* SGPacket.h in Headers */,
 				9CD79F0D2190068E00E39A7D /* SGPacketOutput.h in Headers */,
@@ -1779,6 +1814,7 @@
 				9CC649FB21818D8C00453B3E /* SGPlayerItem+Internal.h in Headers */,
 				9C8D6B8722C4A19500985D55 /* SGMetalYUVRenderPipeline.h in Headers */,
 				9CA57932219DAA270061093B /* SGCodecDescriptor.h in Headers */,
+				4E9A9B992C219DFD008CFA70 /* avcodec.h in Headers */,
 				9C8D6B8122C4A19500985D55 /* SGMetalTextureLoader.h in Headers */,
 				9C3082C3212518EC00B44298 /* SGVideoDecoder.h in Headers */,
 				9C8D6B8A22C4A19500985D55 /* SGMetalRenderPipeline.h in Headers */,

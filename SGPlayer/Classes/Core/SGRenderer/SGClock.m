@@ -110,10 +110,10 @@
     return SGLockCondEXE00(self->_lock, ^BOOL {
         return self->_audioTimebase == NULL;
     }, ^{
-        CMTimebaseCreateWithMasterClock(NULL, self->_masterClock, &self->_playbackTimebase);
+        CMTimebaseCreateWithSourceClock(NULL, self->_masterClock, &self->_playbackTimebase);
         CMTimebaseSetRateAndAnchorTime(self->_playbackTimebase, 0.0, kCMTimeZero, CMClockGetTime(self->_masterClock));
-        CMTimebaseCreateWithMasterTimebase(NULL, self->_playbackTimebase, &self->_audioTimebase);
-        CMTimebaseCreateWithMasterTimebase(NULL, self->_playbackTimebase, &self->_videoTimebase);
+        CMTimebaseCreateWithSourceTimebase(NULL, self->_playbackTimebase, &self->_audioTimebase);
+        CMTimebaseCreateWithSourceTimebase(NULL, self->_playbackTimebase, &self->_videoTimebase);
         self->_audioRunning = NO;
         self->_videoRunning = NO;
         CMTime playbackTime = CMTimebaseGetTime(self->_playbackTimebase);

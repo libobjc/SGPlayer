@@ -234,7 +234,7 @@
     for (SGFrame *obj in frames) {
         if (self->_flags.needsKeyFrame == NO) {
             [ret addObject:obj];
-        } else if (obj.core->key_frame) {
+        } else if (obj.core->flags & AV_FRAME_FLAG_KEY) {
             [ret addObject:obj];
             self->_flags.needsKeyFrame = NO;
         } else {

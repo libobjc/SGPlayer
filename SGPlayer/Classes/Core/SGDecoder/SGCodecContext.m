@@ -117,7 +117,7 @@
         codecContext->get_format = SGCodecContextGetFormat;
     }
     
-    AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
+    const AVCodec *codec = avcodec_find_decoder(codecContext->codec_id);
     if (!codec) {
         avcodec_free_context(&codecContext);
         return nil;
@@ -159,22 +159,24 @@ static enum AVPixelFormat SGCodecContextGetFormat(struct AVCodecContext *s, cons
             if (!device_ctx) {
                 break;
             }
-            AVBufferRef *frames_ctx = av_hwframe_ctx_alloc(device_ctx);
-            av_buffer_unref(&device_ctx);
-            if (!frames_ctx) {
-                break;
-            }
-            AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
-            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
-            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredCVPixelFormat);
-            frames_ctx_data->width = s->width;
-            frames_ctx_data->height = s->height;
-            int err = av_hwframe_ctx_init(frames_ctx);
-            if (err < 0) {
-                av_buffer_unref(&frames_ctx);
-                break;
-            }
-            s->hw_frames_ctx = frames_ctx;
+//            AVBufferRef *frames_ctx = av_hwframe_ctx_alloc(device_ctx);
+//            av_buffer_unref(&device_ctx);
+//            if (!frames_ctx) {
+//                break;
+//            }
+//            AVHWFramesContext *frames_ctx_data = (AVHWFramesContext *)frames_ctx->data;
+//            frames_ctx_data->format = AV_PIX_FMT_VIDEOTOOLBOX;
+//            frames_ctx_data->sw_format = SGPixelFormatAV2FF(self->_options.preferredCVPixelFormat);
+//            frames_ctx_data->width = s->width;
+//            frames_ctx_data->height = s->height;
+//            int err = av_hwframe_ctx_init(frames_ctx);
+//            if (err < 0) {
+//                av_buffer_unref(&frames_ctx);
+//                break;
+//            }
+//            s->hw_frames_ctx = frames_ctx;
+            
+            s->hw_device_ctx = device_ctx;
             return fmt[i];
         }
     }

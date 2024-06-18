@@ -35,13 +35,6 @@
 @property (nonatomic) int numberOfChannels;
 
 /*!
- @property channelLayout
- @abstract
-    Indicates the channel layout.
- */
-@property (nonatomic) uint64_t channelLayout;
-
-/*!
  @method isPlanar
  @abstract
     Get whether the sample format is planar.

@@ -13,6 +13,7 @@
 #import "imgutils.h"
 #import "swresample.h"
 #import "swscale.h"
+#import "avcodec.h"
 #pragma clang diagnostic pop
 
 void SGFFmpegSetupIfNeeded(void);

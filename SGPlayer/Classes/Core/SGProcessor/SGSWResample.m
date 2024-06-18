@@ -7,6 +7,7 @@
 //
 
 #import "SGSWResample.h"
+#import "SGDescriptor+Internal.h"
 #import "SGFFmpeg.h"
 #import "SGFrame.h"
 
@@ -40,14 +41,19 @@
         !self->_outputDescriptor) {
         return NO;
     }
-    self->_context = swr_alloc_set_opts(NULL,
-                                        self->_outputDescriptor.channelLayout,
-                                        self->_outputDescriptor.format,
-                                        self->_outputDescriptor.sampleRate,
-                                        self->_inputDescriptor.channelLayout,
-                                        self->_inputDescriptor.format,
-                                        self->_inputDescriptor.sampleRate,
-                                        0, NULL);
+    AVChannelLayout inputChannelLayout = self->_inputDescriptor.channelLayout;
+    AVChannelLayout outputChannelLayout = self->_outputDescriptor.channelLayout;
+    int result = swr_alloc_set_opts2(&self->_context,
+                                     &outputChannelLayout,
+                                     self->_outputDescriptor.format,
+                                     self->_outputDescriptor.sampleRate,
+                                     &inputChannelLayout,
+                                     self->_inputDescriptor.format,
+                                     self->_inputDescriptor.sampleRate,
+                                     0, NULL);
+    if (result < 0) {
+        return NO;
+    }
     if (swr_init(self->_context) < 0) {
         return NO;
     }

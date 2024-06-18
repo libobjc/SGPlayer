@@ -113,7 +113,7 @@
     self->_size = frame->pkt_size;
     self->_track = cd.track;
     self->_metadata = cd.metadata;
-    CMTime duration = CMTimeMake(frame->pkt_duration * timebase.num, timebase.den);
+    CMTime duration = CMTimeMake(frame->duration * timebase.num, timebase.den);
     CMTime timeStamp = CMTimeMake(frame->best_effort_timestamp * timebase.num, timebase.den);
     CMTime decodeTimeStamp = CMTimeMake(frame->pkt_dts * timebase.num, timebase.den);
     self->_duration = [cd convertDuration:duration];

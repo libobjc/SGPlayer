@@ -196,7 +196,7 @@
         if (self->_audioDescriptor == nil) {
             self->_audioDescriptor = [[SGAudioDescriptor alloc] initWithFrame:frame];
         }
-        self->_flags.nextTimeStamp = frame->best_effort_timestamp + frame->pkt_duration;
+        self->_flags.nextTimeStamp = frame->best_effort_timestamp + frame->duration;
         SGAudioDescriptor *ad = self->_audioDescriptor;
         SGCodecDescriptor *cd = self->_codecDescriptor;
         if (CMTimeCompare(cd.scale, CMTimeMake(1, 1)) != 0) {

@@ -28,7 +28,7 @@
         self->_format = AV_SAMPLE_FMT_FLTP;
         self->_sampleRate = 44100;
         self->_numberOfChannels = 2;
-        self->_channelLayout = av_get_default_channel_layout(2);
+        av_channel_layout_default(&self->_channelLayout, 2);
     }
     return self;
 }
@@ -38,8 +38,8 @@
     if (self = [super init]) {
         self->_format = frame->format;
         self->_sampleRate = frame->sample_rate;
-        self->_numberOfChannels = frame->channels;
-        self->_channelLayout = frame->channel_layout ? frame->channel_layout : av_get_default_channel_layout(frame->channels);
+        self->_numberOfChannels = frame->ch_layout.nb_channels;
+        self->_channelLayout = frame->ch_layout;
     }
     return self;
 }
@@ -75,7 +75,7 @@
     self->_format == descriptor->_format &&
     self->_sampleRate == descriptor->_sampleRate &&
     self->_numberOfChannels == descriptor->_numberOfChannels &&
-    self->_channelLayout == descriptor->_channelLayout;
+    (av_channel_layout_compare(&self->_channelLayout, &descriptor->_channelLayout) == 0);
 }
 
 @end

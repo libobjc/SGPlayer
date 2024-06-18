@@ -15,6 +15,13 @@
 
 - (instancetype)initWithFrame:(AVFrame *)frame;
 
+/*!
+ @property channelLayout
+ @abstract
+    Indicates the channel layout.
+ */
+@property (nonatomic) AVChannelLayout channelLayout;
+
 @end
 
 @interface SGVideoDescriptor ()
