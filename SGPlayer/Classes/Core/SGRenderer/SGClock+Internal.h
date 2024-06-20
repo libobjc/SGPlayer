@@ -70,6 +70,6 @@
 /**
  *
  */
-- (void)clock:(SGClock *)clock didChcnageCurrentTime:(CMTime)currentTime;
+- (void)clock:(SGClock *)clock didChangeCurrentTime:(CMTime)currentTime;
 
 @end
