@@ -58,10 +58,10 @@
         int channels = self->_descriptor.numberOfChannels;
         int sampleRate = self->_descriptor.sampleRate;
         self->_sonic = sonicCreateStream(sampleRate, channels);
+        sonicSetVolume(self->_sonic, self->_volume);
         sonicSetSpeed(self->_sonic, self->_speed);
         sonicSetPitch(self->_sonic, self->_pitch);
         sonicSetRate(self->_sonic, self->_rate);
-        sonicSetRate(self->_sonic, self->_volume);
     }
     return YES;
 }
