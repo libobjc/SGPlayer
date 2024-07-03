@@ -104,7 +104,7 @@ SGSet11Map(void, setDemuxerOptions, setOptions, SGDemuxerOptions *, self->_demux
 
 - (NSError *)seekToTime:(CMTime)time toleranceBefor:(CMTime)toleranceBefor toleranceAfter:(CMTime)toleranceAfter
 {
-    NSError *error = [self seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter];
+    NSError *error = [self->_demuxer seekToTime:time toleranceBefor:toleranceBefor toleranceAfter:toleranceAfter];
     if (!error) {
         for (id<SGDecodable> obj in self->_decoders.allValues) {
             [obj flush];
