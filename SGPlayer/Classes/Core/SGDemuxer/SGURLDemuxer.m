@@ -150,7 +150,11 @@
         } else {
             AVStream *stream = self->_context->streams[pkt.core->stream_index];
             if (CMTIME_IS_INVALID(self->_basetime)) {
-                self->_basetime = CMTimeMake(pkt.core->pts * stream->time_base.num, stream->time_base.den);
+                if (pkt.core->pts == AV_NOPTS_VALUE) {
+                    self->_basetime = kCMTimeZero;
+                } else {
+                    self->_basetime = CMTimeMake(pkt.core->pts * stream->time_base.num, stream->time_base.den);
+                }
             }
             CMTime start = self->_basetime;
             if (CMTIME_IS_NUMERIC(self->_seektime)) {
