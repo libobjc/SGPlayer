@@ -83,7 +83,7 @@
                 CMTimebaseSetTime(self->_audioTimebase, time);
                 CMTimebaseSetTime(self->_videoTimebase, time);
             }
-            [self.delegate clock:self didChcnageCurrentTime:time];
+            [self.delegate clock:self didChangeCurrentTime:time];
         } else if (self->_audioRunning != running) {
             self->_audioRunning = running;
             CMTimebaseSetRate(self->_audioTimebase, running ? 1.0 : 0.0);
@@ -101,7 +101,7 @@
             CMTimebaseSetTime(self->_videoTimebase, time);
             CMTimebaseSetRate(self->_videoTimebase, 1.0);
         }
-        [self.delegate clock:self didChcnageCurrentTime:time];
+        [self.delegate clock:self didChangeCurrentTime:time];
     });
 }
 
