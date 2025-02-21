@@ -216,7 +216,7 @@
 - (NSArray<__kindof SGFrame *> *)processFrames:(NSArray<__kindof SGFrame *> *)frames done:(BOOL)done
 {
     NSMutableArray *ret = [NSMutableArray array];
-    for (SGAudioFrame *obj in frames) {
+    for (SGVideoFrame *obj in frames) {
         [obj setCodecDescriptor:[self->_codecDescriptor copy]];
         [obj fill];
         [ret addObject:obj];
